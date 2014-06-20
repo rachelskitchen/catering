@@ -1,0 +1,79 @@
+<script type="text/template" id="checkout_main-template">
+    <dl class="checkout <% if(isFirefox) { %>firefox<% } %>">
+        <dt>Contact Information</dt>
+        <dd class="contact_info">
+            <label class="input required">
+                <input type="text" placeholder="First Name" class="firstName" value="<%= firstName %>">
+            </label>
+            <label class="input required">
+                <input type="text" placeholder="Last Name" class="lastName" value="<%= lastName %>">
+            </label>
+            <label class="input required">
+                <input type="text" placeholder="Email" class="email" value="<%= email %>" autocapitalize="none">
+            </label>
+            <label class="input required">
+                <input type="tel" placeholder="Phone #" class="phone" value="<%=phone%>" min="0" />
+            </label>
+            <div class="delivery_address">
+            </div>
+        </dd>
+        <% if(enableRewardCard) { %>
+        <dt>Reward Card</dt>
+        <dd class="rewardCard">
+            <label class="input rewardCard">
+                <input type="<%= rewardCardType %>" placeholder="Reward Card #" class="rewardCard" value="<%= rewardCard %>">
+            </label>
+        </dd>
+        <% } %>
+    </dl>
+</script>
+
+<script type="text/template" id="checkout_pickup-template">
+    <dl class="checkout <% if(isFirefox) { %>firefox<% } %>">
+        <dt class="pickup"><%= pickupTimeLabel %></dt>
+        <dd>
+            <label class="select required">
+                <select class="day"></select>
+            </label>
+            <label class="select required">
+                <select class="time"></select>
+            </label>
+        </dd>
+    </dl>
+</script>
+
+<script type="text/template" id="checkout_order_type-template">
+    <dl class="checkout checkout-order-type <% if(isFirefox) { %>firefox<% } %>">
+        <dt class="order-type-head">Order Type</dt>
+        <dd>
+            <label class="select required">
+                <select class="order-type-select">
+                </select>
+            </label>
+        </dd>
+    </dl>
+</script>
+
+<script type="text/template" id="checkout_address-template">
+    <label class="input required">
+        <input type="text" placeholder="Address Line 1" name="address_line1" value="<%= street_1 %>">
+    </label>
+    <label class="input">
+        <input type="text" placeholder="Address Line 2" name="address_line2" value="<%= street_2 %>">
+    </label>
+    <label class="input required">
+        <input type="text" placeholder="City" name="city" value="<%= city %>">
+    </label>
+    <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
+    <label class="select">
+        <select class="states">
+        <% for(var i in states) { %>
+            <option value="<%= i %>" <% if(i.toLowerCase() == state.toLowerCase()) { %>selected="selected"<% } %>><%= states[i] %></option>
+        <% } %>
+        </select>
+    </label>
+    <% } %>
+    <label class="input required">
+        <input type="text" placeholder="Zip Code" name="zip" value="<%= zipcode %>">
+    </label>
+</script>

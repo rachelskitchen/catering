@@ -1,0 +1,71 @@
+<script type="text/template" id="footer_main-template">
+    <ul>
+        <li class="left">
+            <div id="about" class="btn1"><span>About</span></div>
+        </li>
+        <li class="center">
+            <div id="myorder" class="btn2">
+                <span>My Order</span>
+                <span class="count"></span>
+            </div>
+        </li>
+        <li class="right">
+            <div id="location" class="btn1"><span>Location</span></div>
+        </li>
+    </ul>
+</script>
+
+<script type="text/template" id="footer_checkout-template">
+    <ul class="checkout">
+        <li>
+            <div id="confirmOrder" class="btn1"><span>Confirm Order</span></div>
+        </li>
+    </ul>
+</script>
+
+<script type="text/template" id="footer_card-template">
+    <ul class="card">
+        <li>
+            <div id="cancel" class="btn1"><span>Cancel</span></div>
+        </li>
+        <li>
+            <div id="proceed" class="btn1"><span>Proceed</span></div>
+        </li>
+    </ul>
+</script>
+
+<script type="text/template" id="footer_confirm-template">
+        <ul class="confirm">
+            <% if(paypal) { %>
+            <li>
+                <div id="payPaypal" class="btn1"><span>Check out with <img src='data:image/png;base64,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' /></span></div>
+            </li>
+            <% } %>
+            <% if((paypal && paypal_direct_credit_card) || usaepay) { %>
+            <li>
+                <span class="half">
+                    <div id="creditCard" class="btn1"><span>Credit Card</span></div>
+                </span>
+                <span class="half">
+                    <div id="pay" class="btn1"><span>Pay</span></div>
+                </span>
+            </li>
+            <% } %>
+            <% if(cash) { %>
+            <li>
+                <div id="cash" class="btn1"><span><%=cashBtnText%></span></div>
+            </li>
+            <% } %>
+        </ul>
+</script>
+
+<script type="text/template" id="footer_done-template">
+    <div id="returnToMenu" class="btn1"><span>Return To Menu</span></div>
+</script>
+
+<script type="text/template" id="footer_maintenance-template">
+    <div id="reload" class="btn1"><span>Restart</span></div>
+</script>
+
+<script type="text/template" id="footer_maintenance_directory-template">
+</script>

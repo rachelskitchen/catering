@@ -1,0 +1,39 @@
+<script type="text/template" id="done_main-template">
+    <span class="thanks">Thank You!</span>
+    <dl class="orderCompleted">
+        <dt><span>Order ID:</span></dt>
+        <dd>
+            <span><%= order_id %></span>
+        </dd>
+        <% if (!isOnlyGift) { %>
+            <dt><span><%= type %>:</span></dt>
+            <dd>
+                <span>
+                    <%= pickup_time %>
+                    <span class="line"><%= pickup_day %></span>
+                </span>
+            </dd>
+        <% } %>
+        <% if(reward_points) { %>
+        <dt><span>Reward Card Points:</span></dt>
+        <dd>
+            <span>
+                <%= reward_points %>
+            </span>
+        </dd>
+        <% } %>
+        <dt><span>Total Amount Charged:</span></dt>
+        <dd>
+            <span>
+                <strong>
+                    <span class="currency_symbol"><%= currency_symbol %></span>
+                    <span class="price"><%= total %></span>
+                </strong>
+            </span>
+        </dd>
+    </dl>
+</script>
+
+<script type="text/template" id="done_error-template">
+    <span class="error"><%= message %></span>
+</script>

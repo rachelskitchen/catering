@@ -1,0 +1,37 @@
+<script type="text/template" id="modifiers_item-template">
+    <label for="modifier<%= id %>" class="s<%= slength %>">
+        <input type="<%= type %>" id="modifier<%= id %>" name="modifier<%= modifierClassName %>">
+        <span class="input <%= type %>"></span>
+        <span class="title <% if(isSpecial) { %>special<% } %>"><%= name %></span>
+        <% if(isSize) { %>
+            <span class="cost">
+                <span class="currency_symbol"><%= currency_symbol %></span>
+                <span class="price"><%= price %></span>
+            </span>
+        <% } else if(!isSpecial) { %>
+            <span class="cost">
+                <span class="plus">+</span>
+                <span class="currency_symbol"><%= currency_symbol %></span>
+                <span class="price"><%= price %></span>
+            </span>
+        <% } %>
+    </label>
+</script>
+
+<script type="text/template" id="modifiers_list-template">
+    <ul class="modifiers modifiers-list"></span>
+</script>
+
+<script type="text/template" id="modifiers_classes_item-template">
+    <dt class="modifier_class"><%= name %></dt>
+    <dd class="modifier_class_list"></dd>
+</script>
+
+<script type="text/template" id="modifiers_classes_list-template">
+    <dl class="modifier_classes"></dl>
+</script>
+
+<script type="text/template" id="modifiers_classes_matrix-template">
+    <h2> Please select: <%= attributes %> </h2>
+    <dl class="modifier_classes"></dl>
+</script>
