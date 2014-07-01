@@ -88,8 +88,11 @@ define(["backbone"], function(Backbone) {
         prepare: function(page, callback, dependencies) {
             if(isMaintenance && page != 'maintenance') return;
 
-            var skin = App.Data.settings.get('skin'),
-                settings_skin = App.Data.settings.get('settings_skin'),
+            var settings = App.Data.settings,
+                skin = settings.get('skin'),
+                settings_skin = settings.get('settings_skin'),
+                skinPath = settings.get('skinPath'),
+                basePath = settings.get('basePath'),
                 scripts = page && Array.isArray(settings_skin.routing[page].js) ? settings_skin.routing[page].js : [],
                 templates = page && Array.isArray(settings_skin.routing[page].templates) ? settings_skin.routing[page].templates : [],
                 views = page && Array.isArray(settings_skin.routing[page].views) ? settings_skin.routing[page].views : [],
@@ -106,7 +109,7 @@ define(["backbone"], function(Backbone) {
 
             dependencies = Array.isArray(dependencies) ? dependencies : [];
 
-            if(skin == 'weborder' && !this.prepare.initialized) {
+            if(skin == App.Skins.WEBORDER && !this.prepare.initialized) {
                 var color_scheme = typeof system_settings.color_scheme == 'string' ? system_settings.color_scheme.toLowerCase().replace(/\s/g, '_') : null;
                 if(color_schemes.indexOf(color_scheme) > -1) {
                     css.push('themes/' + color_scheme + '/colors');
@@ -118,23 +121,22 @@ define(["backbone"], function(Backbone) {
             }
 
             for(i = 0, j = scripts.length; i < j; i++)
-                js.push("skins/" + skin + "/js/" + scripts[i]);
+                js.push(skin + "/js/" + scripts[i]);
 
             for(i = 0, j = templates.length; i < j; i++)
                 loadTemplate2(null, templates[i]);
 
             for(i = 0, j = views.length; i < j; i++)
-                js.push("skins/" + skin + "/views/" + views[i]);
+                js.push(skin + "/views/" + views[i]);
 
             for(i = 0, j = css.length; i < j; i++)
-                loadCSS("skins/" + skin + "/css/" + css[i]);
+                loadCSS(skinPath + "/css/" + css[i]);
 
             for(i = 0, j = cssCore.length; i < j; i++)
-                loadCSS("css/" + cssCore[i]);
+                loadCSS(basePath + "/css/" + cssCore[i]);
 
             for(i = 0, j = models.length; i < j; i++)
-                js.push("skins/" + skin + "/models/" + models[i]);
-
+                js.push(skin + "/models/" + models[i]);
 
             require(js, function() {
                 if (App.Data.loadModelTemplate && App.Data.loadModelTemplate.dfd) {
@@ -154,7 +156,7 @@ define(["backbone"], function(Backbone) {
                 App.Data.myorder.submit_order_and_pay(App.Data.myorder.checkout.get('payment_type'));
             });
         },
-        loadData : function() {
+        loadData: function() {
             var load = $.Deferred();
 
             this.prepare('pay', function() {

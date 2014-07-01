@@ -105,13 +105,13 @@
 }
 .product_table .product.short .name {
     margin-right: 60%;
-    margin-top: 3px;    
+    margin-top: 3px;
     font-size: 16px;
-    font-weight: bold;       
+    font-weight: bold;
 }
 .product_table .product.short .name div{
     font-size: 16px;
-    font-weight: bold;       
+    font-weight: bold;
 }
 .product_table .product.short .s2 .name {
     margin-right: 35px;
@@ -140,8 +140,6 @@
 .product_table .product.short .s10 .name {
     margin-right: 123px;
 }
-
-/* Kasi wish to align the price always top */
 .product_table .product {
     padding-top: 5px;
 }
@@ -150,13 +148,13 @@
 }
 .product_table .product .name {
     margin-right: 60%;
-    margin-top: 3px;  
+    margin-top: 3px;
     font-size: 16px;
-    font-weight: bold;       
+    font-weight: bold;
 }
 .product_table .product .name div {
     font-size: 16px;
-    font-weight: bold;       
+    font-weight: bold;
 }
 .product_table .product .s2 .name {
     margin-right: 35px;
@@ -225,7 +223,7 @@
     width: auto;
     max-height: 95%;
     max-width: 95%;
-    vertical-align: middle; 
+    vertical-align: middle;
 }
 #modifiers_popup .product .img_wrapper {
     width: 100px;
@@ -245,10 +243,7 @@
     font-weight: bold;
     font-size: 24px;
     margin-bottom: 10px;
-}/*
-#modifiers_popup .product .price {
-    margin-left: -7px;
-}*/
+}
 #modifiers_popup .product .cost {
     white-space: nowrap;
     float: right;
@@ -283,9 +278,9 @@
     font-weight: bold;
     font-size: 24px;
 }
-#modifiers_popup .product .currency_symbol, 
-#modifiers_popup .product .uom, 
-#modifiers_popup .product .cost, 
+#modifiers_popup .product .currency_symbol,
+#modifiers_popup .product .uom,
+#modifiers_popup .product .cost,
 #modifiers_popup .product .price {
     font-weight: inherit;
 }

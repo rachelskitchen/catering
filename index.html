@@ -32,7 +32,6 @@
         @*/
         </script>
         <meta name="msapplication-tap-highlight" content="no" />
-        <link rel="stylesheet" type="text/css" href="css/libs/jquery/jquery.mobile/jquery.mobile.css" />
         <link rel="stylesheet" type="text/css" href="css/libs/jquery/jquery.alerts/jquery.alerts.css" />
         <link rel="stylesheet" type="text/css" href="css/spinner.min.css" />
         <script>
@@ -61,62 +60,6 @@
                     document.head.innerHTML += deviceDpi;
                 }
             })();
-        </script>
-        <script type="text/javascript" language="javascript">
-            "use strict";
-            window.App = {
-                Collections: {},
-                Data: {
-                    modifiers: {},
-                    myorder: {},
-                    orders: {},
-                    products: {},
-                    router: {},
-                    settings: {},
-                    taxes: {},
-                    paypal_iOS: /device=ios/.test(location.search),
-                    devMode: /dev=true/.test(location.search),
-                    images: {},
-                    log: {}
-                },
-                Models: {},
-                Routers: {},
-                Views: {},
-                init: function() {
-                    App.Data.errors=new App.Models.Errors;
-                    App.Data.errors.on("change", function(model) {
-                        alert_message({
-                            message: model.get("message"),
-                            reload_page: model.get("reload_page"),
-                            type: model.get("type")
-                        }); // user notification
-                    });
-                    if (typeof(is_browser_unsupported) !== 'undefined' && is_browser_unsupported === true) {
-                        App.Data.errors.alert("The current browser version is not supported. Please update it to the latest release.", false);
-                        $("#popup_overlay").css('height', '100%');
-                        $("#loader_image").hide();
-                        return;
-                    }
-                    var get = parse_get_params();
-                    if (typeof get.brand === "string") {
-                        App.Data.brandName = get.brand;
-                    }
-                    App.Data.settings = new App.Models.Settings;
-
-                    App.Data.settings.load().then(function() {
-                        load_styles_and_scripts(); // load styles and scripts
-                        App.Data.myorder = new App.Collections.Myorders;
-                        App.Data.timetables = new App.Models.Timetable;
-                        require(["skins/" + App.Data.settings.get("skin") + "/router"], function() {
-                            App.Data.router = new App.Routers.Router;
-                            if(App.Data.settings.get('isMaintenance')) {
-                                window.location.hash = "#maintenance";
-                            }
-                            Backbone.history.start();
-                        });
-                    });
-                }
-            };
         </script>
         <script type="text/javascript" language="javascript" src="js/libs/require.js" data-main="js/main"> </script>
         <!--[if IE]>

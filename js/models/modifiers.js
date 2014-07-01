@@ -27,16 +27,20 @@ define(["backbone"], function(Backbone) {
         defaults: {
             id: null,
             name: null,
-            price: null,
+                price: null, // base modifier price
+                order_price: null, // modifier price with feature max price 6137
             selected: false,
             sort: null,
             cost: null, // only for order send.
             img: null
         },
         initialize: function() {
-            this.set("img", App.Data.settings.get("img_path"));
+            this.set('img', App.Data.settings.get('img_path'));
         },
         addJSON: function(data) {
+            if (!data.order_price) {
+                data.order_price = data.price;
+            }
             this.set(data);
             return this;
         },
@@ -58,22 +62,6 @@ define(["backbone"], function(Backbone) {
             return this;
         },
         /**
-         * check modifiers before repeat order
-         */
-        check_repeat: function() {
-            var m_actual = this.get('actual_data');
-
-            //remove item if it is inactive
-            if(!m_actual.active) {
-                return 'remove';
-            }
-            // set actual data if product changed
-            if(this.get('price') !== m_actual.price) {
-                this.set('price', m_actual.price);
-                return 'changed';
-            }
-        },
-        /**
          * prepare information for submit order
          */
         modifiers_submit: function() {
@@ -81,18 +69,26 @@ define(["backbone"], function(Backbone) {
                 return {
                     modifier: this.get('id'),
                     modifier_cost: (this.get('cost') === null) ? 0 : this.get('cost'),
-                    modifier_price: this.get('price') * 1,
-                    qty: 1,
-                    qty_type: 0
+                        modifier_price: this.get('order_price') * 1,
+                        qty: 1,
+                        qty_type: 0
                 };
             }
+            },
+        /**
+         * update modifiers price due to max feature
+         */
+        update_prices: function(max_price) {
+            var price = Math.min(this.get('price'), max_price);
+            this.set('order_price', price, {silent: true});
+            return max_price - price;
         }
     });
 
     App.Collections.Modifiers = Backbone.Collection.extend({
         model: App.Models.Modifier,
         comparator: function(model) {
-            return model.get("sort");
+            return model.get('sort');
         },
         addJSON: function(data) {
             var self = this;
@@ -129,31 +125,12 @@ define(["backbone"], function(Backbone) {
             this.where({selected: true}).map(function(el) { el.set('selected', false) });
         },
         /**
-         * check modifiers before repeat order
-         */
-        check_repeat: function() {
-            var changes,
-                self = this;
-
-            this.where({selected: true}).forEach(function(modifier) {
-                var result = modifier.check_repeat();
-                if (result === 'remove') {
-                    self.remove(modifier);
-                    changes = 'changed';
-                } else if (result === 'changed') {
-                    changes = 'changed';
-                }
-            });
-
-            return changes;
-        },
-        /**
          * get modifiers sum
          */
         get_sum: function() {
             var sum = 0;
             this.where({selected: true}).forEach(function(modifier) {
-                sum += modifier.get('price');
+                sum += modifier.get('order_price');
             });
             return sum;
         },
@@ -167,8 +144,16 @@ define(["backbone"], function(Backbone) {
                 res && modifiers.push(res);
             });
             return modifiers;
+        },
+        /**
+         * update price due to max price feature
+         */
+        update_prices: function(max_price) {
+            this.where({selected: true}).forEach(function(el) {
+                max_price = el.update_prices(max_price);
+            });
+            return max_price;
         }
-
     });
 
     App.Models.ModifierBlock = Backbone.Model.extend({
@@ -210,7 +195,7 @@ define(["backbone"], function(Backbone) {
             for (var key in this.attributes) {
                 var value = this.get(key);
                 if (value && value.clone) { value = value.clone(); }
-                newBlock.set(key, value, {silent : true });
+                newBlock.set(key, value, {silent: true });
             }
             newBlock.listenTo(newBlock.get('modifiers'), 'change', function(model, opts) {
                 newBlock.trigger('change', newBlock, _.extend({modifier: model}, opts));
@@ -235,12 +220,6 @@ define(["backbone"], function(Backbone) {
             this.get('modifiers').reset_checked();
         },
         /**
-         * check modifiers before repeat order
-         */
-        check_repeat: function() {
-            return this.get('modifiers').check_repeat();
-        },
-        /**
          * get modifiers sum
          */
         get_sum: function() {
@@ -255,11 +234,24 @@ define(["backbone"], function(Backbone) {
          */
         modifiers_submit: function() {
             // selected special modifiers add to special_request
-            if(this.get('admin_modifier') && this.get('admin_mod_key') === 'SPECIAL') {
+            if(this.isSpecial()) {
                 return [];
             }
 
             return this.get('modifiers').modifiers_submit();
+        },
+        isSpecial: function() {
+            return this.get('admin_modifier') && this.get('admin_mod_key') === 'SPECIAL';
+        },
+        /**
+         * update modifiers price due to max feature
+         */
+        update_prices: function(max_price) {
+            if (this.isSpecial()) {
+                return max_price;
+            } else {
+                return this.get('modifiers').update_prices(max_price);
+            }
         }
     });
 
@@ -271,25 +263,36 @@ define(["backbone"], function(Backbone) {
         initialize: function() {
             this.listenTo(this, 'change', function(model, opts) {
                 var isSizeSelection = opts
-                    && opts.modifier instanceof App.Models.Modifier
-                    && opts.modifier.get('selected')
-                    && model instanceof App.Models.ModifierBlock
-                    && model.get('admin_mod_key') === 'SIZE'
-                    && model.get('admin_modifier');
-
-                if (isSizeSelection) {
-                    this.trigger('modifiers_size', opts.modifier.get('price'));
-                } else {
-                    var isSpecialSelection = opts
+                        && opts.modifier instanceof App.Models.Modifier
+                        && opts.modifier.get('selected')
+                        && model instanceof App.Models.ModifierBlock
+                        && model.get('admin_mod_key') === 'SIZE'
+                        && model.get('admin_modifier'),
+                    isSpecialSelection = opts
                         && opts.modifier instanceof App.Models.Modifier
                         && opts.modifier.get('selected')
                         && model instanceof App.Models.ModifierBlock
                         && model.get('admin_mod_key') === 'SPECIAL'
                         && model.get('admin_modifier');
 
-                    isSpecialSelection && this.trigger('modifiers_special');
+                if (isSpecialSelection) {
+                    this.trigger('modifiers_special');
+                } else if (isSizeSelection) {
+                    this.trigger('modifiers_changed');
+                    this.trigger('modifiers_size', this.getSizeModel().get('order_price'));
+                } else {
+                    this.trigger('modifiers_changed');
                 }
             }, this);
+        },
+        /**
+         * update price due to max price feature
+         */
+        update_prices: function(max_price) {
+            this.each(function(el) {
+                max_price = el.update_prices(max_price);
+            });
+            return max_price;
         },
         addJSON: function(data) {
             var self = this;
@@ -359,9 +362,9 @@ define(["backbone"], function(Backbone) {
                 var list = [];
                 this.each(function(model) {
                     if (model.get('admin_mod_key') !== 'SIZE' && model.get('admin_mod_key') !== 'SPECIAL') {
-                       model.get('modifiers').each(function(model) {
-                           list.push(model);
-                       });
+                        model.get('modifiers').each(function(model) {
+                            list.push(model);
+                        });
                     }
                 });
                 this.list = list;
@@ -413,27 +416,12 @@ define(["backbone"], function(Backbone) {
             return unselected.length > 0 ? unselected : true;
         },
         /**
-         * check modifiers before repeat order
-         */
-        check_repeat: function() {
-            var changes;
-
-            // set actual data for modifiers
-            this.each(function(item) {
-                if (item.check_repeat() === 'changed') {
-                    changes = 'changed';
-                }
-            });
-
-            return changes;
-        },
-        /**
          * unselect all special modifiers
          */
         uncheck_special: function(special_text) {
             var special = this.get_special();
             if (special[0] && special[0].get('name') !== special_text) {
-                special.map(function(model) { model.set({ selected: false}, { silent: true }); });
+                special.map(function(model) { model.set({selected: false}, {silent: true}); });
             }
         },
         /**

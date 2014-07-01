@@ -31,9 +31,9 @@
             "core": ["categories", "products", "modifiers", "modifiers_view", "instructions_view"]
         },
         "myorder": {
-            "css": ["myorder", "total"],
-            "views": ["myorder"],
-            "templates": ["myorder", "total"],
+            "css": ["myorder", "total", "checkout"],
+            "views": ["myorder", "checkout"],
+            "templates": ["myorder", "total", "checkout"],
             "core": ["myorder_view", "total_view"]
         },
         "checkout": {

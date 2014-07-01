@@ -97,7 +97,6 @@
 .categories_products_wrapper, .products_spinner {
     position: absolute;
     top: 65px;
-    /*right:32px;*/
     right:0px;
     padding-right:32px;
     left:32px;

@@ -131,15 +131,10 @@ define(["backbone", "main_router"], function(Backbone) {
 
             // onPay event occurs when 'Pay' button is clicked
             this.listenTo(App.Data.myorder, 'onPay', function() {
-                if(!App.Data.card)
-                    App.Data.card = new App.Models.Card;
-
                 App.Data.mainModel.set('popup', {
                     modelName: 'Checkout',
                     mod: 'Pay',
-                    collection: App.Data.myorder,
-                    timetable: App.Data.timetables,
-                    card: App.Data.card
+                    collection: App.Data.myorder
                 });
             });
 
@@ -273,6 +268,10 @@ define(["backbone", "main_router"], function(Backbone) {
         },
         checkout: function() {
             this.prepare('checkout', function() {
+                if(!App.Data.card) {
+                    App.Data.card = new App.Models.Card;
+                }
+
                 if (!App.Data.customer) {
                     App.Data.customer = new App.Models.Customer();
                 }
@@ -292,7 +291,7 @@ define(["backbone", "main_router"], function(Backbone) {
                         timetable: App.Data.timetables,
                         customer: App.Data.customer,
                         acceptTips: settings.accept_tips_online,
-                        specialRequests: settings.special_requests_online
+                        noteAllow:  App.Data.settings.get('settings_system').order_notes_allow
                     }
                 });
                 this.change_page();

@@ -116,27 +116,45 @@
     <div id='pay_popup'>
         <h2>How would you like to pay?</h2>
         <div class='btn_wrapper'>
-            <% if(paypal) { %>
-                <div class='btn paypal'></div>
-            <% } %>
-            <% if((paypal && paypal_direct_credit_card) || usaepay) { %>
-                <div class='btn credit-card'>Credit Card</div>
-            <% } %>
-            <% if(cash) { %>
-            <div class='btn cash'><%=cashBtnText%></div>
-            <% } %>
         </div>
     </div>
+</script>
+
+
+<script type="text/template" id="checkout_pay_button-template">
+    <% if (payment_count === 1 && flag) {%>
+            <% if(paypal) { %>
+        <div class='btn paypal'>Checkout with PayPal</div>
+            <% } %>
+            <% if((paypal && paypal_direct_credit_card) || usaepay) { %>
+        <div class='btn credit-card'>Pay with Credit Card</div>
+            <% } %>
+            <% if(cash) { %>
+        <div class='btn cash'></div>
+            <% } %>
+    <% } else if (flag) { %>
+        <div class="btn pay unselectable">Pay</div>
+    <% } else { %>
+        <% if(paypal) { %>
+        <div class='btn paypal'></div>
+        <% } %>
+        <% if((paypal && paypal_direct_credit_card) || usaepay) { %>
+        <div class='btn credit-card'>Credit Card</div>
+        <% } %>
+        <% if(cash) { %>
+        <div class='btn cash'></div>
+        <% } %>
+    <% } %>
 </script>
 
 <script type="text/template" id="checkout_page-template">
     <h2>Checkout & Order Details</h2>
     <div class="data">
         <div class="specials row">
-            <% if(specialRequests) {%>
-            <label><span class="bold">Special Instructions:</span></label>
+            <% if(noteAllow) {%>
+                <label><span class="bold">Order Notes:</span></label>
             <div class="input_beauty special">
-                <div></div>
+                    <textarea><%=note%></textarea>
             </div>
             <% } %>
         </div>

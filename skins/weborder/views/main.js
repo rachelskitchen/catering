@@ -1,4 +1,26 @@
-﻿define(["backbone", "factory", "generator"], function(Backbone) {
+﻿/*
+ * Revel Systems Online Ordering Application
+ *
+ *  Copyright (C) 2014 by Revel Systems
+ *
+ * This file is part of Revel Systems Online Ordering open source application.
+ *
+ * Revel Systems Online Ordering open source application is free software: you
+ * can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * Revel Systems Online Ordering open source application is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Revel Systems Online Ordering Application.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
+
+define(["backbone", "factory", "generator"], function(Backbone) {
     'use strict';
 
     App.Views.MainView = {};
@@ -163,6 +185,10 @@
     App.Views.MainView.MainMaintenanceView = App.Views.FactoryView.extend({
         name: 'main',
         mod: 'maintenance',
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.listenToOnce(App.Data.mainModel, 'loadCompleted', App.Data.myorder.check_maintenance);
+        },
         events: {
             "click .btn": 'reload'
         },
@@ -223,7 +249,7 @@
         return_menu: function() {
             if (this.model.success) {
                 App.Data.myorder.empty_myorder();
-                App.Data.card.empty_card_number();
+                App.Data.card && App.Data.card.empty_card_number();
                 this.initial_model.trigger('onMenu');
             } else {
                 this.initial_model.trigger('onCheckout');

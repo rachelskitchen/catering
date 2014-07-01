@@ -38,7 +38,8 @@ define(["backbone"], function(Backbone) {
                 email: "", //TBD: probably remove this field. Customer.email is used now.
                 rewardCard: '',
                 dining_option: '',
-                selected_dining_option: '' // It set when dining_option changed on DINING_OPTION_ONLINE. It uses for recovery user selection of Order Type
+                selected_dining_option: '', // It set when dining_option has changed on DINING_OPTION_ONLINE. It is used for recovery user selection of Order Type
+                notes: ''
             };
         },
         initialize: function() {
@@ -74,28 +75,47 @@ define(["backbone"], function(Backbone) {
             this.set('dining_option', this.get('selected_dining_option') || 'DINING_OPTION_TOGO');
         },
         check: function() {
-            var skin = App.Data.settings.get('skin'),
-                err = [],
-                dining_option = this.get('dining_option');
+            var isStoreClosed = this.isStoreClosed(),
+                orderFromSeat = this.checkOrderFromSeat();
 
-            if (this.get('pickupTS') === null && dining_option !== 'DINING_OPTION_DELIVERY_SEAT' && dining_option !== 'DINING_OPTION_ONLINE') {
+            if(isStoreClosed)
+                return isStoreClosed;
+
+            if(orderFromSeat)
+                return orderFromSeat;
+
+            return {
+                status: "OK"
+            };
+        },
+        isStoreClosed: function() {
+            var dining_option = this.get('dining_option');
+            if(this.get('pickupTS') === null && dining_option !== 'DINING_OPTION_DELIVERY_SEAT' && dining_option !== 'DINING_OPTION_ONLINE') {
                 return {
                     status: 'ERROR',
                     errorMsg: MSG.ERROR_STORE_IS_CLOSED
                 };
             }
+        },
+        checkOrderFromSeat: function() {
+            var orderFromSeat = App.Data.orderFromSeat,
+                dining_option = this.get('dining_option'),
+                err = [];
 
-            if (err.length) {
+            if(orderFromSeat instanceof Object && dining_option === 'DINING_OPTION_DELIVERY_SEAT') {
+                orderFromSeat.enable_level && !this.get('level') && err.push('Level');
+                orderFromSeat.enable_sector && !this.get('section') && err.push('Section');
+                orderFromSeat.enable_row && !this.get('row') && err.push('Row');
+                !this.get('seat') && err.push('Seat');
+            }
+
+            if(err.length) {
                 return {
                     status: "ERROR_EMPTY_FIELDS",
                     errorMsg: MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, err.join(', ')),
                     errorList: err
                 };
             }
-
-            return {
-                status: "OK"
-            };
         }
     });
 });

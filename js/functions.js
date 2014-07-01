@@ -77,6 +77,7 @@ MSG.ERROR_GRATUITY_EXCEEDS = "Gratuity amount can't exceed the receipt amount";
 MSG.ERROR_CARD_EXP = "Exp. Date less then current date";
 MSG.ERROR_FORCED_MODIFIER = "This modifier is required";
 MSG.ERROR_CHROME_CRASH = "This version of Chrome is unstable and unsupported. Please update to the latest version or use different browser.";
+MSG.ERROR_UNSUPPORTED_BROWSER = "The current browser version is not supported. Please update it to the latest release.";
 MSG.PAY_AT_STORE = "Pay at Store";
 MSG.PAY_AT_DELIVERY = "Pay at Delivery";
 MSG.ERROR_GET_CHILD_PRODUCTS = "Unable to get the information about the product from backend. Now the page is reloaded.";
@@ -468,12 +469,11 @@ function loadTemplate2(name,file) {
     if (!App.Data.loadModelTemplate.count) {
         App.Data.loadModelTemplate.count = 0;
     }
-    var skin = App.Data.settings.get('skin');
     if (loadTemplate2[file] === undefined) {
         App.Data.loadModelTemplate.dfd = $.Deferred();
         App.Data.loadModelTemplate.count++;
         $.ajax({
-            url: "skins/" + skin + "/template/" + file + ".html",
+            url: App.Data.settings.get('skinPath') + "/template/" + file + ".html",
             dataType: "html",
             success : function(data) {
                 $("head").append(data);
@@ -490,11 +490,10 @@ function loadTemplate2(name,file) {
  * load template
  */
 function loadTemplate(name,file) {
-    var skin = App.Data.settings.get('skin');
     var dfd = $.Deferred();
     if ($("#" + name).length === 0) {
         $.ajax({
-            url: "skins/" + skin + "/template/" + file + ".html",
+            url: App.Data.settings.get('skinPath') + "/template/" + file + ".html",
             dataType: "html",
             success: function(data) {
                 $("head").append(data);
@@ -886,4 +885,5 @@ function saveAllData() {
     App.Data.card && App.Data.card.saveCard();
     App.Data.customer.saveCustomer();
     App.Data.customer.saveAddresses();
+    App.Data.settings.saveSettings();
 }

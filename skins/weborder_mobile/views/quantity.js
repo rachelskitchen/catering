@@ -1,3 +1,25 @@
+/*
+ * Revel Systems Online Ordering Application
+ *
+ *  Copyright (C) 2014 by Revel Systems
+ *
+ * This file is part of Revel Systems Online Ordering open source application.
+ *
+ * Revel Systems Online Ordering open source application is free software: you
+ * can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * Revel Systems Online Ordering open source application is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Revel Systems Online Ordering Application.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
+
 define(["backbone", "factory", "quantity_view"], function(Backbone) {
     'use strict';
 
@@ -36,17 +58,7 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
             this.num_digits = Math.abs((App.Data.settings.get("settings_system").scales.number_of_digits_to_right_of_decimal).toFixed(0)*1);
         },
         events: {
-            'click .increase': 'increase',
-            'click .decrease': 'decrease',
             'change .weight_edit_input': 'change_weight'
-        },
-        increase: function() {
-            var w = this.model.get('weight');
-            this.model.set('weight', (++w).toFixed(this.num_digits) * 1);
-        },
-        decrease: function() {
-            var w = this.model.get('weight');
-            this.model.set('weight', (w > 1 ? w-1 : w).toFixed(this.num_digits) * 1);
         },
         change_weight: function(e) {
             this.model.set('weight', e.target.value * 1);

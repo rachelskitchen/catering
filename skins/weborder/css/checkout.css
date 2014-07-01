@@ -12,7 +12,7 @@
 #content > .checkout div.row, #content > .checkout div.delivery_address > div > div {
     position: relative;
 }
-#content > .checkout .input_beauty, 
+#content > .checkout .input_beauty,
 #content > .checkout div.tips {
     left: 292px;
     right: 120px;
@@ -137,10 +137,10 @@
 #content > .checkout.tips {
     margin-top: 15px;
 }
-#content > .checkout input_beauty.firstName, 
-#content > .checkout input_beauty.lastName, 
+#content > .checkout input_beauty.firstName,
+#content > .checkout input_beauty.lastName,
 #content > .checkout input[name="city"],
-#content > .checkout input[name="address_line1"], 
+#content > .checkout input[name="address_line1"],
 #content > .checkout input[name="address_line2"] {
     text-transform: capitalize;
 }
@@ -160,18 +160,6 @@
 
 #content > .checkout .input_beauty.special {
     height: 115px;
-}
-
-#content > .checkout .input_beauty.special > div {
-    overflow: auto;
-    width: 100%;
-    height: 100%;
-    position: relative;
-    z-index: 1;
-}
-
-#content > .checkout .input_beauty.special strong {
-    font-weight: bold;
 }
 
 #content > .checkout {
@@ -237,7 +225,7 @@
     #content > .checkout h2 {
         padding-left: 50px !important;
     }
-    #content > .checkout div.input_beauty, 
+    #content > .checkout div.input_beauty,
     #content > .checkout div.tips {
         left: 194px !important;
         right: 60px !important;

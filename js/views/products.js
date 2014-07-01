@@ -71,11 +71,17 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             this.listenTo(this.collection, 'add', this.addItem, this);
         },
         render: function() {
+            var self = this;
             App.Views.ListView.prototype.render.apply(this, arguments);
-            this.collection.each(this.addItem.bind(this));
+            this.collection.each( function(item) {
+                self.addItem(item); 
+            });
             return this;
         },
         addItem: function(model) {
+            if (model.get("attribute_type") == 2) { // to hide child products
+                return;
+            }
             var productDescr = !App.Data.settings.get('settings_system').hide_products_description;
             var view = App.Views.GeneratorView.create('Product', {
                 el: productDescr ? $('<li class="product"></li>') : $('<li class="product short"></li>'),

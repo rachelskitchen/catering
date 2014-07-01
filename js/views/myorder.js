@@ -31,7 +31,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         render: function() {
             var model = this.model.toJSON();
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
-            model.price = round_monetary_currency(this.model.get('price'));
+            model.price = round_monetary_currency(this.model.get('order_price'));
             this.$el.html(this.template(model));
             return this;
         }
@@ -54,7 +54,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.subViews.push(this.viewProduct);
 
             this.listenTo(model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.update);
-
 
             switch(model.get_attribute_type()) {
                 case 0:
@@ -220,6 +219,24 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
+    App.Views.CoreMyOrderView.CoreMyOrderNoteView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'note',
+        events: {
+            'change .note_field textarea' : 'change_note'
+        },
+        render: function() {
+            var data = {
+                noteAllow: App.Data.settings.get('settings_system').order_notes_allow,
+                note: this.model.get('notes')
+            };
+            this.$el.html(this.template(data));
+        },
+        change_note: function(e) {
+            this.model.set('notes', e.target.value);
+        }
+    });
+
     App.Views.MyOrderView = {};
 
     App.Views.MyOrderView.MyOrderModifierView = App.Views.CoreMyOrderView.CoreMyOrderModifierView;
@@ -229,4 +246,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
     App.Views.MyOrderView.MyOrderListView = App.Views.CoreMyOrderView.CoreMyOrderListView;
 
     App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView;
+
+    App.Views.MyOrderView.MyOrderNoteView = App.Views.CoreMyOrderView.CoreMyOrderNoteView;
 });

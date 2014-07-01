@@ -41,6 +41,7 @@ define(['backbone'], function(Backbone) {
         initialize: function() {
             this.template = template_helper(this.name, this.mod);
             this.render();
+            App.Data.devMode && this.$el.attr("data-tmpl", this.name + "_" + this.mod + "-template");
         },
         render: function() {
             this.$el.html(this.template(this.model ? (this.model.toJSON ? this.model.toJSON() : this.model) : undefined));

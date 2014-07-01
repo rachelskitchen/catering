@@ -34,23 +34,21 @@ define(["backbone", "factory", "jquery_numbermask"], function(Backbone) {
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.inputValue = '';
+                    
             var self = this,
-                inputValue = '',
                 opts = {
-                    pattern: /^.{0,255}$/,
+                    pattern: /^[\s\S]{0,255}$/,
                     defaultValueInput: {
                         toString: function() {
-                            return inputValue;
+                            return self.inputValue;
                         }
                     }
                 };
             this.$('.instructions').on('keyup blur', function() {
-                // Need trim text values that are more than 255 symbols.
-                // It should be assigned to listeners before numberMask initialization.
-                if(this.value.length > 255) {
-                    inputValue = this.value.slice(0, 255);
-                    this.value = inputValue;
-                    self.change_special({target: this}); // it has to be invoked due to 'change' event doesn't occur after it
+                if (this.value.length > 255) {
+                    this.value = this.value.slice(0, 255);
+                    self.change_special.apply(self, arguments);
                 }
             }).numberMask(opts);
             return this;
@@ -59,10 +57,12 @@ define(["backbone", "factory", "jquery_numbermask"], function(Backbone) {
             'change .instructions': 'change_special'
         },
         change_special: function(e) {
-            this.model.set('special', e.target.value, {silent : true});
+            this.model.set('special', e.target.value);
         },
         update: function() {
-            this.$('.instructions').val(this.model.get('special'));
+            var value = this.model.get('special');
+            this.inputValue = value;
+            this.$('.instructions').val(value);
         }
     });
 

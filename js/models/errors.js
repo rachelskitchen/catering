@@ -55,6 +55,16 @@ define(["backbone"], function(Backbone) {
                 type: "warning"
             });
             return this;
+        },
+        initialize: function() {
+            this.on("change", function(model) {
+                // user notification
+                alert_message({
+                    message: model.get("message"),
+                    reload_page: model.get("reload_page"),
+                    type: model.get("type")
+                });
+            });
         }
     });
 });

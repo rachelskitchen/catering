@@ -53,4 +53,11 @@
     </div>
     <div class='product_instructions'>
     </div>
+</script><script type="text/template" id="myorder_note-template">
+    <% if(noteAllow) {%>
+      <div class='note_text'>Order Notes</div>
+      <div class='note_field'>
+          <textarea class="instructions" placeholder='Order notes'><%=note%></textarea>
+      </div>
+    <% } %>
 </script>

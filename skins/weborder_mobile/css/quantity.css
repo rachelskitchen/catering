@@ -78,18 +78,11 @@
 /* css for sold_by_weight case */
 .quantity div.weight_edit_center {
     position: relative;
-    width: 30em;
+    width: 10em;
     margin: 0 auto;
 }
 
-.weight_edit {
-    width: 7em;
-    height: 7em;
-    margin-left: 7.5em;
-}
-
 .weight_edit_inner {
-    width: 7em;
     height: 5em;
     top: 0.8em;
 }
@@ -99,17 +92,5 @@
     font-size: 2.4em;
     padding-top: 0.1em !important;
     padding-left: 0.1em !important;
-}
-
-.quantity .uom {
-    width: 7em;
-    min-width: 2em;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    font-size: 2.4em;
-    position: absolute;
-    left: 7em;
-    top: 0.9em;
 }
 /* main mod end */

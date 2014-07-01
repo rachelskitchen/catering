@@ -61,14 +61,9 @@ define(["backbone"], function(Backbone) {
             var cardPattern = /^[3-6]\d{12,18}$/,
                 skin = App.Data.settings.get('skin'),
                 card = this.toJSON(),
-                payment = App.Data.settings.get_payment_process(),
                 err = [];
 
-            if (payment.paypal && payment.paypal_direct_credit_card) {
-                !card.firstName && err.push('First Name');
-                !card.secondName && err.push('Last Name');
-            }
-
+            err = err.concat(this.checkPerson());
             !cardPattern.test(card.cardNumber) && err.push('Card Number');
 
             if (err.length) {
@@ -93,6 +88,18 @@ define(["backbone"], function(Backbone) {
             return {
                 status: "OK"
             };
+        },
+        checkPerson: function() {
+            var card = this.toJSON(),
+                payment = App.Data.settings.get_payment_process(),
+                err = [];
+
+            if (payment.paypal && payment.paypal_direct_credit_card) {
+                !card.firstName && err.push('First Name');
+                !card.secondName && err.push('Last Name');
+            }
+
+            return err;
         }
     });
 });

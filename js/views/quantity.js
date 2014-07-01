@@ -65,28 +65,21 @@ define(["backbone", "factory"], function(Backbone) {
                 model = this.model.toJSON(),
                 product = this.model.get_product();
                 model.sold_by_weight = product.get("sold_by_weight");
-                model.weight = this.model.get('weight');
+                model.weight = this.model.get('weight') ? this.model.get('weight') : '';            
                 model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
 
             this.$el.html(this.template(model));
 
             if (model.sold_by_weight) {
                 var reg_str, elem = self.$('.weight_edit_input');
-                var number_decimal_digits = Math.abs((App.Data.settings.get("settings_system").scales.number_of_digits_to_right_of_decimal).toFixed(0)*1);
+                var number_decimal_digits = App.Data.settings.get("settings_system").scales.number_of_digits_to_right_of_decimal;
                 if (number_decimal_digits)
                    reg_str = "^\\d{0,4}\\.{0,1}\\d{0," + number_decimal_digits + "}$";
                 else
                    reg_str = "^\\d{0,4}$";
 
                 inputTypeNumberMask(elem, new RegExp(reg_str));
-
-                setTimeout( function () {
-                    if (!model.weight) {
-                       elem.val((1).toFixed(number_decimal_digits));
-                    }
-                    elem.change();
-                }, 0);
-            }
+            }                           
         },
         update: function() {
 

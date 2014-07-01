@@ -53,8 +53,8 @@ function GeoPoint( lat, lon ){
  * @returns {Boolean} True if latitude and logitude is correct, false if incorrect
  */
 GeoPoint.prototype.check = function( lat, lon ) {
-     if ( isNumber(lat) && isNumber(lon) && lat <=90 && lat >= -90 && lon <= 180 && lon >= -180 ) return true;
-     return false;
+    if ( isNumber(lat) && isNumber(lon) && lat <=90 && lat >= -90 && lon <= 180 && lon >= -180 ) return true;
+    return false;
 };
 
 /**
@@ -64,8 +64,8 @@ GeoPoint.prototype.check = function( lat, lon ) {
  * @returns {Boolean} True if geo is GeoPoint object, false if incorrect
  */
 GeoPoint.prototype.checkGeo = function( geo ) {
-     if ( geo instanceof GeoPoint ) return true;
-     return false;
+    if ( geo instanceof GeoPoint ) return true;
+    return false;
 };
 
 /**

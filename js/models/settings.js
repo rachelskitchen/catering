@@ -20,25 +20,31 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-var REVEL_HOST = "https://weborder-dev-branch.revelup.com";
-
 define(["backbone", "async"], function(Backbone) {
     'use strict';
 
     App.Models.Settings = Backbone.Model.extend({
+        initialize: function() {
+            this.set('basePath', require('app').config.baseUrl.replace(/\/$/, '') || '.');
+        },
         load: function() {
-            var self = this,
-                referrer;
+            var self = this;
+
+            this.listenTo(this, 'change:skin', this.setSkinPath, this);
 
             // listen to skin assign
             this.listenTo(this, 'change:skin', function(model, value) {
                 // if device is Nexus 7 or smaller than weborder mobile version should be applied
-                var isMobileVersion = value == 'weborder' && 'matchMedia' in window
+                var isMobileVersion = App.Skins.WEBORDER_MOBILE
+                    && value == App.Skins.WEBORDER && 'matchMedia' in window
                     && (window.devicePixelRatio ? window.devicePixelRatio > 1.33 : /IEMobile/i.test(navigator.userAgent))
                     && !/ipad|Nexus\s?10/i.test(navigator.userAgent)
                     && cssua.userAgent.mobile
                     && (matchMedia("(orientation:portrait)").matches || matchMedia("(orientation:landscape)").matches);
-                isMobileVersion && model.set('skin', 'weborder_mobile', {silent: true});
+                if(isMobileVersion) {
+                    model.set('skin', App.Skins.WEBORDER_MOBILE, {silent: true});
+                    model.setSkinPath();
+                };
             });
 
             self.get_data_warehouse(); // selection of the data warehouse
@@ -94,7 +100,7 @@ define(["backbone", "async"], function(Backbone) {
             x_revel_revision: null,
             isMaintenance: false,
             version: 1.06,
-            supported_skins: ['weborder', 'weborder_mobile']
+            supported_skins: []
         },
         /**
          * Selection of the data warehouse.
@@ -120,13 +126,13 @@ define(["backbone", "async"], function(Backbone) {
          * Get settings from file "settings.xml".
          */
         get_settings_main: function() {
-            var self=this,
+            var self = this,
                 params = parse_get_params(),
                 skin = params.skin;
 
-            self.set("skin", skin && self.get('supported_skins').indexOf(skin) > -1 ? skin : "weborder");
-            self.set("img_path", "skins/" + this.get("skin") + "/img/");
-            self.set("host", REVEL_HOST);
+            self.set("skin", skin && self.get('supported_skins').indexOf(skin) > -1 ? skin : App.Skins.DEFAULT);
+            self.set("img_path", self.get("skinPath") + "/img/");
+            self.set("host", require('app').REVEL_HOST);
 
         },
         /**
@@ -136,7 +142,7 @@ define(["backbone", "async"], function(Backbone) {
             var self = this,
                 load = $.Deferred();
             $.ajax({
-                url: "skins/" + self.get("skin") + "/settings.json",
+                url: self.get("skinPath") + "/settings.json",
                 dataType: "json",
                 success: function(data) {
                     var settings_skin = {};
@@ -187,13 +193,14 @@ define(["backbone", "async"], function(Backbone) {
                 settings_system = {
                     address: {},
                     business_name: "",
-                    email: "unknown",
+                    email: "",
                     hide_images: false,
                     phone: "",
                     prevailing_surcharge: 0,
                     prevailing_tax: 0,
                     tax_country: "",
                     currency_symbol: "X",
+                    order_notes_allow: true,
                     min_items: 1,
                     hide_products_description: false,
                     color_scheme: saved_color_scheme instanceof Object ? saved_color_scheme.color_scheme : 'default',
@@ -368,6 +375,15 @@ define(["backbone", "async"], function(Backbone) {
             } else {
                 return '';
             }
+        },
+        saveSettings: function() {
+            setData('settings', this);
+        },
+        loadSettings: function() {
+            this.set('settings_system', getData('settings').settings_system);
+        },
+        setSkinPath: function() {
+            this.set('skinPath', this.get('basePath') + '/skins/' + this.get('skin'));
         }
     });
 });

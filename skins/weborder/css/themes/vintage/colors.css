@@ -14,7 +14,6 @@ select {
     border-radius: 20px;
 }
 select:active {
-    /*box-shadow: 0 0 1px 2px #fff inset, 0 0 8px 2px rgba(60, 167, 222, 0.33);*/
 }
 select:hover {
     border-color: #66CCFF;
@@ -190,7 +189,7 @@ ul.categories {
 .product_image {
     background: #fff;
 }
-#modifiers_popup .product .cost, 
+#modifiers_popup .product .cost,
 #modifiers_popup .modifiers-list .cost,
 #modifiers_popup .product .cost input {
     color: #781b00;
@@ -268,13 +267,6 @@ ul.categories {
 #content > .checkout .tips .btn.disabled {
     color: #aaa;
 }
-#content > .checkout .input_beauty.special > div {
-    background: transparent;
-    color: #aaa;
-}
-#content > .checkout .input_beauty.special:after {
-    background: #eee;
-}
 .products_spinner {
     background: rgba(231, 231, 231, 0.5);
     box-shadow: 0 0 40px rgba(231, 231, 231, 0.8);
@@ -316,15 +308,17 @@ ul.categories {
 }
 
 #modifiers_popup .quantity_select,
-#modifiers_popup .product_instructions .add_instructions {
+#modifiers_popup .product_instructions .add_instructions,
+#modifiers_popup .modifiers_table .special_button {
     background-image: -o-linear-gradient(bottom,rgba(235,235,235,1) 0, rgba(249,249,249,1) 100%);
     background-image: -moz-linear-gradient(bottom,rgba(235,235,235,1) 0, rgba(249,249,249,1) 100%);
     background-image: -ms-linear-gradient(bottom,rgba(235,235,235,1) 0, rgba(249,249,249,1) 100%);
     background-image: -webkit-linear-gradient(bottom,rgba(235,235,235,1) 0, rgba(249,249,249,1) 100%);
     background-image: linear-gradient(bottom,rgba(235,235,235,1) 0, rgba(249,249,249,1) 100%);
 }
-#modifiers_popup .product_instructions .add_instructions ,
-#modifiers_popup select {
+#modifiers_popup .product_instructions .add_instructions,
+#modifiers_popup select,
+#modifiers_popup .modifiers_table .special_button {
     border-color: #716e68;
     box-shadow: 1px 3px 3px 1px #CAC9C9;
 }
@@ -344,7 +338,8 @@ ul.categories {
 }
 
 #modifiers_popup .quantity .quantity_select select:not([disabled]):hover,
-#modifiers_popup .product_instructions .add_instructions:hover {
+#modifiers_popup .product_instructions .add_instructions:hover,
+#modifiers_popup .modifiers_table .modifiers-list label:hover .special_button {
     box-shadow: 0 0 1px 2px #fff inset, 0 0 8px 2px rgba(60, 167, 222, 0.33);
     -moz-box-shadow: 0 0 1px 2px #fff inset, 0 0 8px 2px rgba(60, 167, 222, 0.33);
     -webkit-box-shadow: 0 0 1px 2px #fff inset, 0 0 8px 2px rgba(60, 167, 222, 0.33);
@@ -359,7 +354,7 @@ ul.categories {
     background-color: #e6decb;
     border-color: #a09d94;
 }
-#modifiers_popup .modifiers_table .product_attributes_selected .modifier_class_wrapper:first-child, 
+#modifiers_popup .modifiers_table .product_attributes_selected .modifier_class_wrapper:first-child,
 #modifiers_popup .modifier_class_wrapper {
     border-top-color: #362b19;
 }
@@ -465,12 +460,12 @@ ul.categories {
     background-image: -ms-linear-gradient(bottom,rgba(226,226,226,0.62) 0,rgba(29,78,60,0.22) 70%,rgba(29,78,60,0.62) 100%);
     background-image: linear-gradient(bottom,rgba(226,226,226,0.62) 0,rgba(29,78,60,0.22) 70%,rgba(29,78,60,0.62) 100%);
 }
-.input_beauty input, 
+.input_beauty input,
 .input_beauty:after {
     background: #fff;
 }
 .input_beauty input:focus,
-.input_beauty textarea:focus, 
+.input_beauty textarea:focus,
 .input_beauty input:hover,
 .input_beauty textarea:hover {
     -webkit-box-shadow: 0px 0px 3px 4px rgba(129,195,222,0.3);

@@ -312,6 +312,8 @@ define(["backbone", "main_router"], function(Backbone) {
                     forward: this.navigate.bind(this, 'checkout', true)
                 });
 
+                var isNote = App.Data.settings.get('settings_system').order_notes_allow;
+
                 App.Data.mainModel.set({
                     header: headerModes.Myorder,
                     footer: footerModes.Myorder,
@@ -320,14 +322,20 @@ define(["backbone", "main_router"], function(Backbone) {
                             modelName: 'MyOrder',
                             collection: App.Data.myorder,
                             mod: 'List',
-                            className: 'myorderList'
+                            className: 'myorderList' + (isNote ? ' isNote' : '')
                         },
                         {
                             modelName: 'Total',
                             model: App.Data.myorder.total,
                             mod: 'Main',
-                            className: 'myorderSubtotal',
+                            className: 'myorderSubtotal' + (isNote ? ' isNote' : ''),
                             collection: App.Data.myorder
+                        },
+                        {
+                            modelName: 'MyOrder',
+                            model: App.Data.myorder.checkout,
+                            mod: 'Note',
+                            className: 'myorderNote'
                         }
                     ]
                 });

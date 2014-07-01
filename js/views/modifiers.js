@@ -32,7 +32,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         name: 'modifiers',
         mod: 'item',
         events: {
-            'change input': 'change'
+            'change input': 'change',
+            'click .special_label': 'add_special'
         },
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
@@ -45,15 +46,23 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             model.price = round_monetary_currency(model.price);
             model.slength = model.price.length;
             model.isSpecial = this.options.type === SPECIAL;
+            model.isInventoryMatrix = false;
             model.isSize = this.options.type === SIZE;
             model.name = this.model.escape('name');
             model.modifierClassName = this.options.modifierClass.escape('name').replace(/ /g,'_');
+
+            if (model.isSpecial) {
+                this.model.set('selected', false);
+            }
 
             this.$el.html(this.template(model));
             this.afterRender(model.sort);
             this.update();
 
             return this;
+        },
+        add_special: function() {
+            this.model.set('selected', true);
         },
         change: function(e, stat) {
             var modifierBlock = this.options.modifierClass;
@@ -106,7 +115,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
             model.price = "";
             model.slength = 0;
-            model.isSpecial = true;
+            model.isSpecial = false;
+            model.isInventoryMatrix = this.options.data.product.get("attribute_type") === 1;
             model.isSize = false;
             model.id = this.options.data.name.replace(/ /g,'_') + this.options.id;
             model.name = this.options.name;
@@ -237,6 +247,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 model.type = 1;
             } else if (this.model.get('admin_modifier') && this.model.get('admin_mod_key') === 'SPECIAL') {
                 this.type = SPECIAL;
+                model.name = 'Select special request';
                 model.type = 2;
             }
 

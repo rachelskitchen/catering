@@ -9,6 +9,10 @@
     overflow: auto;
 }
 
+#content .myorderList.isNote {
+    bottom: 24.3em;
+}
+
 #content ul.myorder {
     list-style: none;
 }

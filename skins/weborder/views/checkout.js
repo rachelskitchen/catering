@@ -1,3 +1,25 @@
+/*
+ * Revel Systems Online Ordering Application
+ *
+ *  Copyright (C) 2014 by Revel Systems
+ *
+ * This file is part of Revel Systems Online Ordering open source application.
+ *
+ * Revel Systems Online Ordering open source application is free software: you
+ * can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * Revel Systems Online Ordering open source application is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Revel Systems Online Ordering Application.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
+
 define(["backbone", "checkout_view", "generator"], function(Backbone) {
     'use strict';
 
@@ -16,6 +38,20 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
     App.Views.CheckoutView.CheckoutPayView = App.Views.FactoryView.extend({
         name: 'checkout',
         mod: 'pay',
+        render: function() {
+            this.$el.html(this.template());
+            this.subViews.push(App.Views.GeneratorView.create('Checkout', {
+                el: this.$('.btn_wrapper'),
+                mod: 'PayButton',
+                collection: this.collection
+            }));
+            return this;
+        }
+    });
+
+    App.Views.CheckoutView.CheckoutPayButtonView = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'pay_button',
         initialize: function() {
             this.listenTo(this.collection, 'cancelPayment', function() {
                 this.canceled = true;
@@ -24,13 +60,18 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
                 this.collection.trigger('hideSpinner');
             }, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.collection.checkout, 'change:dining_option', this.change_cash_text);
         },
         render: function() {
-            var payment = App.Data.settings.get_payment_process(),
-                isDelivery = this.collection.checkout.get("dining_option") == 'DINING_OPTION_DELIVERY';
+            var payment = App.Data.settings.get_payment_process();
+            payment.flag = this.options.flag === 'checkout';
+            payment.payment_count = 0,
+            payment.paypal && payment.payment_count++;
+            if((payment.paypal && payment.paypal_direct_credit_card) || payment.usaepay) payment.payment_count++;
+            payment.cash && payment.payment_count++;
 
-            payment.cashBtnText = isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE;
             this.$el.html(this.template(payment));
+            this.change_cash_text();
             return this;
         },
         events: {
@@ -42,25 +83,54 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
                 this.pay(4);
             }
         },
+        change_cash_text: function() {
+            var isDelivery = this.collection.checkout.get("dining_option") === 'DINING_OPTION_DELIVERY';
+            this.$('.cash').html(isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE);
+        },
         credit_card: function() {
+            var self = this;
             $('#popup .cancel').trigger('click');
+            if (this.options.flag) {
+                App.Data.myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                    validation: true
+                }, function() {
+                    card_popup();
+                });
+            } else {
+                card_popup();
+            }
+
+            function card_popup() {
             App.Data.mainModel.set('popup', {
                 modelName: 'Confirm',
                 mod: 'PayCard',
-                collection: this.collection,
+                    collection: self.collection,
                 className: 'confirmPayCard',
-                timetable: this.options.timetable,
-                card: this.options.card
+                    timetable: App.Data.timetables,
+                    card: App.Data.card
             });
+            }
             //remove the background from popup
             $('#popup').removeClass("popup-background");
         },
         pay: function(payment_type) {
             saveAllData();
+            var self = this;
 
-            this.collection.pay_order_and_create_order_backend(payment_type);
-            !this.canceled && this.collection.trigger('showSpinner');
+            self.collection.check_order({
+                order: true,
+                tip: true,
+                customer: true,
+                checkout: true
+            }, function() {
+                self.collection.pay_order_and_create_order_backend(payment_type);
+                !self.canceled && self.collection.trigger('showSpinner');
             $('#popup .cancel').trigger('click');
+            });
         }
     });
 
@@ -68,21 +138,19 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
         name: 'checkout',
         mod: 'page',
         initialize: function() {
-            if(this.options.specialRequests) {
-                this.listenTo(this.collection, 'add', this.addSpecial, this);
-                this.listenTo(this.collection, 'remove', this.removeSpecial, this);
-            }
+            this.collection.checkout.on('change:notes', this.update_note, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         events: {
-            'input click': 'inputClick'
+            'click input': 'inputClick',
+            'change .input_beauty.special' : 'change_note'
         },
         render: function() {
-            var data = {specialRequests: this.options.specialRequests};
+            var data = {
+                noteAllow: this.options.noteAllow,
+                note: this.collection.checkout.get('notes')
+            };
             this.$el.html(this.template(data));
-
-            if(this.options.specialRequests)
-                this.collection.each(this.addSpecial.bind(this));
 
             var order_type = App.Views.GeneratorView.create('Checkout', {
                 model: this.collection.checkout,
@@ -121,27 +189,15 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
             main.$el.on('touchstart', 'input', this.inputClick.bind(this));
             return this;
         },
+        update_note: function(e) {
+            this.$('.input_beauty.special textarea').val(this.collection.checkout.get('notes'));
+        },
+        change_note: function(e) {
+            this.collection.checkout.set('notes', e.target.value);
+        },
         remove: function() {
             this.$('.data').contentarrow('destroy');
             App.Views.FactoryView.prototype.remove.apply(this, arguments);
-        },
-        addSpecial: function(model) {
-            if(!model.get_special())
-                return;
-            var view = App.Views.GeneratorView.create('MyOrder', {
-                model: model,
-                mod: 'ItemSpecial'
-            });
-            this.$('.special > div').append(view.el);
-            this.subViews.push(view);
-        },
-        removeSpecial: function(model) {
-            this.subViews.some(function(view) {
-                if(view.model === model) {
-                    view.remove();
-                    return true;
-                }
-            });
         },
         inputClick: function(event) {
             var self = this,
@@ -150,7 +206,7 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
             function restoreFocus() {
                 $(event.target).focus();
                 cont.off('onScroll', restoreFocus);
-        }
+            }
         }
     });
 });

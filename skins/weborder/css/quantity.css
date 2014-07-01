@@ -34,19 +34,18 @@
 /* css for sold_by_weight case */
 .weight_edit_input {
     font-weight: bold;
-    font-size: 16px;   
+    font-size: 16px;
 }
 
 .weight_edit_inner {
-    width: 38px !important;
+    width: 60px !important;
     height: 24px !important;
 }
 
 .weight_edit {
     display: inline-block;
     vertical-align: bottom;
-    width: 63px;
-    margin-left: 4px;    
+    margin-left: 4px;
 }
 
 .quantity_weight_wrapper {
@@ -64,6 +63,6 @@
 }
 
 .product_instructions .add_instructions.sold_by_weight {
-    left: 210px;
+    left: 230px;
 }
 /* end of sold_by_weight case */

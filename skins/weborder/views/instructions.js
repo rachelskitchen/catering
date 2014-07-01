@@ -1,3 +1,25 @@
+/*
+ * Revel Systems Online Ordering Application
+ *
+ *  Copyright (C) 2014 by Revel Systems
+ *
+ * This file is part of Revel Systems Online Ordering open source application.
+ *
+ * Revel Systems Online Ordering open source application is free software: you
+ * can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * Revel Systems Online Ordering open source application is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Revel Systems Online Ordering Application.
+ * If not, see <http://www.gnu.org/licenses/>.
+ */
+
 define(["backbone", "factory", "instructions_view"], function(Backbone) {
     'use strict';
 
@@ -7,6 +29,7 @@ define(["backbone", "factory", "instructions_view"], function(Backbone) {
         initialize: function() {
             App.Views.CoreInstructionsView.CoreInstructionsModifiersView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.position);
+            this.listenTo(this.model, 'change:special', this.update_show, this);
             this.position();
         },
         events: {
@@ -18,6 +41,16 @@ define(["backbone", "factory", "instructions_view"], function(Backbone) {
                 this.$el.addClass('is_gift');
             } else {
                 this.$el.removeClass('is_gift');
+            }
+        },
+        update_show: function() {
+            var block = this.$('.instruction_block'),
+                button = this.$('.add_instructions');
+
+            if (!block.is(':visible')) {
+                block.show();
+                button.html('Remove Special Instructions');
+            this.$el.trigger('change_height');
             }
         },
         show_hide: function() {
