@@ -396,6 +396,7 @@ function tmpl_alert_message(options) {
 
     if ($("#alert-template").length == 0) {
         jq_alert_message(options);
+        return;
     }
     if (alert.length == 0) {
         alert = $("<div id='alert'></div>").appendTo("body");
