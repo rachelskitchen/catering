@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator", "list"], function(Backbone) {
+define(["backbone", "factory", "generator", "list", "slider_view"], function(Backbone) {
     'use strict';
 
     App.Views.CategoriesView = {};
@@ -34,7 +34,8 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             this.show_hide();
         },
         render: function() {
-            this.$el.html(this.template(this.model.toJSON()));
+            var model = $.extend({list_name: 'categories'}, this.model.toJSON());
+            this.$el.html(this.template(model));
             this.afterRender.call(this, this.model.get('parent_sort'));
             return this;
         },
@@ -51,43 +52,33 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             var value = this.model.get('parent_name');
             if (!this.collection.where({parent_name : value, active: true}).length) {
                 this.$el.addClass('hide');
-                // this.options.self.update_slider_render();
+                this.options.self.update_slider_render();
             } else {
                 this.$el.removeAttr('style');
-                // this.options.self.update_slider_render();
+                this.options.self.update_slider_render();
             }
         }
     });
 
-    App.Views.CategoriesView.CategoriesTabsView = App.Views.ListView.extend({
+    App.Views.CategoriesView.CategoriesTabsView = App.Views.SliderView.extend({
         name: 'categories',
         mod: 'tabs',
         initialize: function() {
             this.parent_categories = [];
-            App.Views.ListView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.collection, 'add', this.addItem, this);
-            // $(window).resize(this.create_slider.bind(this));
-            // this.listenTo(this.model, "loadCompleted", this.create_slider.bind(this));
+            App.Views.SliderView.prototype.initialize.apply(this, arguments);
 
-            var self = this;
-            this.collection.receiving.then(function() {
-                self.$('input').first().click();
-            });
+        },
+        render: function() {
+            App.Views.SliderView.prototype.render.apply(this, arguments);
+            this.$wrapper = this.$('.tabs');
+            this.$items = this.$('.tabs > ul');
+            this.$toLeft = this.$('.arrow_left');
+            this.$toRight = this.$('.arrow_right');
+            return this;
         },
         events: {
             "click .arrow_left": 'slide_left',
             "click .arrow_right": 'slide_right'
-        },
-        render: function() {
-            App.Views.ListView.prototype.render.apply(this, arguments);
-            this.collection.each(this.addItem.bind(this));
-            return this;
-        },
-        update_slider_render: function() {
-            this.create_slider();
-            if (this.$('.checked').parent().hasClass('hide')) {
-                this.$('input').first().trigger('change');
-            }
         },
         addItem: function(model) {
             if (this.parent_categories.indexOf(model.get('parent_name')) === -1) {
@@ -99,74 +90,127 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                     collection: this.collection,
                     self: this
                 }, model.cid);
-                App.Views.ListView.prototype.addItem.call(this, view, this.$('.tabs'), model.escape('parent_sort'));
+                App.Views.SliderView.prototype.addItem.call(this, view, this.$('.tabs > ul'), model.escape('parent_sort'));
                 this.subViews.push(view);
-                // this.create_slider();
             }
         },
         create_slider: function() {
-            var slider = this.$('.categories_slider'),
-                wrapper = this.$('.slider_wrapper'),
-                ul = this.$('.categories'),
-                sliderWidth = slider.width(),
-                lis = this.$('li').not('.hide'),
-                elemWidth = lis.outerWidth();
+            this.$item = this.$('li');
+            App.Views.SliderView.prototype.create_slider.apply(this, arguments);
+        }
+    });
 
-            if (sliderWidth <= 0) {
-                return;
-            }
-            this.slider_count = Math.floor(sliderWidth / elemWidth);
-            this.slider_elem_count = lis.length;
-            this.slider_index = this.slider_index || 0;
-            this.slider_elem_width = elemWidth;
-
-            wrapper.css('max-width', (elemWidth * Math.min(this.slider_count, this.slider_elem_count) - 1) + 'px'); // minus border and padding
-            if (this.slider_elem_count < this.slider_count) {
-                this.slider_index = 0;
+    App.Views.CategoriesView.CategoriesSubView = App.Views.ItemView.extend({
+        name: 'categories',
+        mod: 'tab',
+        initialize: function() {
+            App.Views.ItemView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.collection, 'change:active', this.show_hide);
+            this.show_hide();
+        },
+        render: function() {
+            var model = $.extend({list_name: 'subcategories'}, this.model.toJSON());
+            model.parent_name = model.name; // it is required die to we use `tab` template
+            this.$el.html(this.template(model));
+            this.afterRender.call(this, this.model.get('parent_sort'));
+            return this;
+        },
+        events: {
+            "change input": "change"
+        },
+        change: function() {
+            var value = this.model.get('id');
+            this.trigger('selected', {selected: value});
+        },
+        show_hide: function() {
+            var value = this.model.get('parent_name');
+            if (!this.collection.where({parent_name : value, active: true}).length) {
+                this.$el.addClass('hide');
+                this.options.self.update_slider_render();
             } else {
-                this.slider_index = Math.min(this.slider_elem_count - this.slider_count, this.slider_index);
+                this.$el.removeAttr('style');
+                this.options.self.update_slider_render();
             }
-            ul.css('left', -this.slider_index * this.slider_elem_width + 'px');
+        }
+    });
 
-            this.update_slider();
+    App.Views.CategoriesView.CategoriesSubsView = App.Views.SliderView.extend({
+        name: 'categories',
+        mod: 'tabs',
+        initialize: function() {
+            App.Views.SliderView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            App.Views.SliderView.prototype.render.apply(this, arguments);
+            this.$wrapper = this.$('.tabs');
+            this.$items = this.$('.tabs > ul');
+            this.$toLeft = this.$('.arrow_left');
+            this.$toRight = this.$('.arrow_right');
+            return this;
+        },
+        events: {
+            "click .arrow_left": 'slide_left',
+            "click .arrow_right": 'slide_right'
+        },
+        addItem: function(model) {
+            var view = App.Views.GeneratorView.create('Categories', {
+                el: $('<li></li>'),
+                mod: 'Sub',
+                model: model,
+                collection: this.collection,
+                self: this
+            }, model.parent_name + '_sub_' + model.cid);
+            App.Views.SliderView.prototype.addItem.call(this, view, this.$('.tabs > ul'), model.escape('parent_sort'));
+            this.subViews.push(view);
+            this.listenTo(view, 'selected', function(opts) {
+                this.trigger('selected', opts);
+            }, this);
+        },
+        create_slider: function() {
+            this.$item = this.$('li');
+            App.Views.SliderView.prototype.create_slider.apply(this, arguments);
         },
         update_slider: function() {
-            var lis = this.$('li').not('.hide');
+            var lis = this.$item.not(':hidden');
             lis.removeClass('first').removeClass('last');
             $(lis.get(this.slider_index)).addClass('first');
             $(lis.get(Math.min(this.slider_index + this.slider_count, this.slider_elem_count) - 1)).addClass('last');
+            return App.Views.SliderView.prototype.update_slider.apply(this, arguments);
+        }
+    });
 
-            if (this.slider_index === 0) {
-                this.$('.arrow_left').hide();
-            } else {
-                this.$('.arrow_left').show();
-            }
-
-            if (this.slider_count + this.slider_index >= this.slider_elem_count) {
-                this.$('.arrow_right').hide();
-            } else {
-                this.$('.arrow_right').show();
-            }
+    App.Views.CategoriesView.CategoriesSubListView = App.Views.FactoryView.extend({
+        name: 'categories',
+        mod: 'sublist',
+        initialize: function() {
+            this.listenTo(this.collection, 'change:parent_selected', this.update, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
-        slide_right: function() {
-            var ul = this.$('.categories');
-            ul.css('left', -this.slider_index * this.slider_elem_width + 'px');
-            this.slider_index++;
-            ul.animate({
-                left: "-=" + this.slider_elem_width
-            });
-
-            this.update_slider();
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.collection.parent_selected && this.update();
+            return this;
         },
-        slide_left: function() {
-            var ul = this.$('.categories');
-            ul.css('left', -this.slider_index * this.slider_elem_width + 'px');
-            this.slider_index--;
-            ul.animate({
-                left: "+=" + this.slider_elem_width
-            });
+        update: function() {
+            var cats = this.collection,
+                subs = cats.where({active: true, parent_name: cats.parent_selected}),
+                collect = new Backbone.Collection(subs),
+                view;
 
-            this.update_slider();
+            collect.receiving = $.Deferred();
+            view = App.Views.GeneratorView.create('Categories', {
+                mod: 'Subs',
+                model: new Backbone.Model,
+                collection: collect
+            }, cats.parent_selected + '_sublist');
+
+            this.subViews.removeFromDOMTree();
+            this.$('.sublist').append(view.el);
+            this.subViews.push(view);
+            this.listenTo(view, 'selected', function(opts) {
+                this.collection.selected = opts.selected;
+                this.collection.trigger('change:selected', this.collection, opts.selected);
+            }, this);
         }
     });
 

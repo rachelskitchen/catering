@@ -1,13 +1,28 @@
+#header .categories {
+    position: relative;
+    white-space: nowrap;
+    height: 32px;
+    top: 83px;
+    z-index: 1;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
 #header .categories .tabs {
     position: absolute;
-    bottom: 0;
+    bottom: -1px;
     left: 70px;
     right: 70px;
+    overflow: hidden;
+    height: 45px;
+}
+#header .categories .tabs > ul {
+    position: relative;
+    white-space: nowrap;
 }
 #header .categories .tabs li,
 #header .categories .tabs label {
     display: inline-block;
-    width: 82px;
+    width: 100px;
     height: 35px;
     text-align: center;
     line-height: 40px;
@@ -19,6 +34,9 @@
     font-weight: bold;
     cursor: pointer;
     position: relative;
+}
+#header .categories .tabs li {
+    bottom: -8px;
 }
 #header .categories .tabs label {
     margin: 0;
@@ -64,76 +82,50 @@
 #header .categories .arrow_right {
     right: 35px;
 }
-.categories_slider {
-    padding: 0 15px;
+.subcategories {
+    padding: 0 64px;
     position: relative;
     text-align: center;
     margin-top: 6px;
 }
-
-.categories_slider .arrow {
+.subcategories .arrow {
     position: absolute;
     line-height: 25px;
-    font-size:1.5em;
+    font-size: 1.5em;
     display: none;
     cursor: pointer;
     width: 20px;
     border-radius: 4px;
 }
-
-.categories {
-    position: relative;
-    white-space: nowrap;
-    height: 32px;
-    top: 83px;
-    z-index: 1;
+.subcategories .arrow_left {
+    top: 0;
+    left: 26px;
 }
-/*
-.categories li {
-    display: inline-block;
-    width:113px;
-    text-align:center;
-    border-right-style:solid;
-    border-right-width:1px;
+.subcategories .arrow_right {
+    top: 0;
+    right: 26px;
 }
-
-.categories li.last {
-  border-right: 0px;
-}*/
-
-
-/* Hack for safari. background color out of border radius*/
-/*.categories li label {
-    border-top-style:solid;
-    border-top-width:1px;
-    border-bottom-style:solid;
-    border-bottom-width:1px;
-}
-
-.categories li.last label {
-    border-right-style:solid;
-    border-right-width:1px;
-    border-top-right-radius: 15px;
-    border-bottom-right-radius: 15px;
-}
-
-.categories li.first label {
-    border-left-style:solid;
-    border-left-width:1px;
-    border-top-left-radius: 15px;
-    border-bottom-left-radius: 15px;
-}
-/* End hack for safari*/
-
-.slider_wrapper {
-   /* border:1px solid; // bad look with safari hack
-    border-radius: 15px;*/
+.subcategories .tabs {
     overflow: hidden;
-    margin:0 auto;
+    margin: 0 auto;
     border-radius: 15px;
 }
-
-/*.categories label {
+.subcategories .tabs > ul {
+    position: relative;
+    white-space: nowrap;
+    height: 25px;
+}
+.subcategories li {
+    display: inline-block;
+    width: 113px;
+    text-align: center;
+    border-right-style: solid;
+    border-right-width: 1px;
+}
+.subcategories li.last {
+  border-right: 0px;
+}
+.subcategories label {
     display: block;
     padding: 0 5px;
     cursor: pointer;
@@ -142,8 +134,30 @@
     text-overflow: ellipsis;
     overflow: hidden;
 }
-*/
-.categories input {
+/* Hack for safari. background color out of border radius*/
+.subcategories li label {
+    border-top-style:solid;
+    border-top-width:1px;
+    border-bottom-style:solid;
+    border-bottom-width:1px;
+}
+
+.subcategories li.last label {
+    border-right-style:solid;
+    border-right-width:1px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+.subcategories li.first label {
+    border-left-style: solid;
+    border-left-width: 1px;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+/* End hack for safari*/
+
+.categories input, .subcategories input {
     display: none;
 }
 .content_arrow.arrow_top {

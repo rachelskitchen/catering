@@ -37,7 +37,8 @@ define(["backbone", "factory"], function(Backbone) {
             var view = new App.Views.GeneratorView.create('Categories', {
                 collection: this.collection,
                 mod: 'Tabs',
-                el: this.$('.categories')
+                el: this.$('.categories'),
+                model: this.options.mainModel
             });
             this.subViews.push(view);
             loadSpinner(this.$('img.logo'));

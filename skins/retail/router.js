@@ -200,9 +200,11 @@ define(["backbone", "main_router"], function(Backbone) {
                     cart: carts.main,
                     content: [
                         {
-                            modelName: 'SubCategories',
+                            modelName: 'Categories',
                             collection: App.Data.categories,
-                            mod: 'Select'
+                            model: App.Data.mainModel,
+                            mod: 'SubList',
+                            className: 'subcategories'
                         },
                         {
                             modelName: 'Categories',

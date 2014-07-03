@@ -14,10 +14,10 @@
             "js" : ["jquery.contentarrow"]
         },
         "index": {
-            "css": ["categories", "subcategories"],
-            "views": ["categories", "subcategories"],
-            "templates": ["categories", "subcategories"],
-            "core": ["categories"]
+            "css": ["categories"],
+            "views": ["categories"],
+            "templates": ["categories"],
+            "core": ["categories", "slider_view"]
         },
         "about": {
             "views": ["store_info"],
