@@ -649,13 +649,13 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             var data = this.clone(); // create one more bagcharge item via cloning, need to delete both
 
             // need remove bag charge / delivery charge item from storage
-            var obj = this.find(function(model) {
+            var obj = data.find(function(model) {
                 return model.get('product').id == null &&
                        model.get('product').get('name') == MSG.DELIVERY_ITEM;
             });
             data.remove(obj);
 
-            obj = this.find(function(model) {
+            obj = data.find(function(model) {
                 return model.get('product').id == null &&
                        model.get('product').get('name') == MSG.BAG_CHARGE_ITEM;
             });

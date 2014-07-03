@@ -35,7 +35,7 @@
 }
 #content > .checkout div.select {
     display: inline-block;
-    width: 110px;
+    width: 140px;
     position: relative;
     left: -22px;
 }
@@ -45,7 +45,7 @@
 #content > .checkout div.select_day, #content > .checkout div.select.states {
     width: 210px;
 }
-#content > .checkout div.select_day:last-child {
+#content > .checkout div.select {
     margin-bottom: 10px;
 }
 #content > .checkout div.select_day[disabled="disabled"] {

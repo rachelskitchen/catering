@@ -50,6 +50,9 @@ define(["backbone", "checkout_view"], function(Backbone) {
 
             this.$el.html(this.template(new_model));
 
+             //remove the background from popup
+            $('#popup').removeClass("popup-background");
+
             this.subViews.push(App.Views.GeneratorView.create('Card', {
                 el: this.$('#credit-card'),
                 mod: 'Main',

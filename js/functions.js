@@ -91,7 +91,7 @@ var DINING_OPTION = {
         DINING_OPTION_DRIVETHROUGH : 4,
         DINING_OPTION_ONLINE : 5,
         DINING_OPTION_OTHER : 6,
-        DINING_OPTION_DELIVERY_SEAT: 0
+        DINING_OPTION_DELIVERY_SEAT: 6
     };
 
 /**
@@ -396,6 +396,7 @@ function tmpl_alert_message(options) {
 
     if ($("#alert-template").length == 0) {
         jq_alert_message(options);
+        return;
     }
     if (alert.length == 0) {
         alert = $("<div id='alert'></div>").appendTo("body");
@@ -886,4 +887,12 @@ function saveAllData() {
     App.Data.customer.saveCustomer();
     App.Data.customer.saveAddresses();
     App.Data.settings.saveSettings();
+}
+/*
+*  Transfor the first text letter to upper case
+*/
+function fistLetterToUpperCase(text) {
+    return text.replace(/(^[a-z])|\s([a-z])/g, function(m, g1, g2){
+        return g1 ? g1.toUpperCase() : ' ' + g2.toUpperCase();
+    });
 }

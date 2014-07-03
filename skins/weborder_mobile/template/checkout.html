@@ -16,6 +16,8 @@
             </label>
             <div class="delivery_address">
             </div>
+            <div class="delivery_seat">
+            </div>
         </dd>
         <% if(enableRewardCard) { %>
         <dt>Reward Card</dt>
@@ -28,8 +30,31 @@
     </dl>
 </script>
 
+<script type="text/template" id="checkout_seat-template">
+    <% if(isDeliverToSeat) { %>
+        <% if(orderFromSeat.enable_level) { %>
+            <label class="input required">
+                <input type="text" placeholder="Level" name="level" class="level" maxlength="4" value="<%= level %>">
+            </label>
+        <% } %>
+        <% if(orderFromSeat.enable_sector) { %>
+            <label class="input required">
+                <input type="text" placeholder="Section" name="section" class="section" maxlength="4" value="<%= section %>">
+            </label>
+        <% } %>
+        <% if(orderFromSeat.enable_row) { %>
+            <label class="input required">
+                <input type="text" placeholder="Row" name="row" class="row" maxlength="4" value="<%= row %>">
+            </label>
+        <% } %>
+            <label class="input required">
+                <input type="text" placeholder="Seat" name="seat" class="seat" maxlength="4" value="<%= seat %>">
+            </label>
+    <% } %>
+</script>
+
 <script type="text/template" id="checkout_pickup-template">
-    <dl class="checkout <% if(isFirefox) { %>firefox<% } %>">
+    <dl class="checkout <% if(isFirefox) { %>firefox<% } %> <% if (isOrderFromSeat) { print('hidden'); } %>">   
         <dt class="pickup"><%= pickupTimeLabel %></dt>
         <dd>
             <label class="select required">

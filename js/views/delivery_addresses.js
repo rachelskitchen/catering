@@ -181,12 +181,6 @@ define(['backbone', 'factory'], function(Backbone) {
         };
     }
 
-    function fistLetterToUpperCase(text) {
-        return text.replace(/(^[a-z])|\s([a-z])/g, function(m, g1, g2){
-            return g1 ? g1.toUpperCase() : ' ' + g2.toUpperCase();
-        });
-    }
-
     function getInitialAddresses(i) {
         return !i.street_1;
     }

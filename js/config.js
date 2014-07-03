@@ -70,7 +70,8 @@ define({
         total_view: "js/views/total",
         tips_view: "js/views/tips",
         card_view: "js/views/card",
-        instructions_view: "js/views/instructions"
+        instructions_view: "js/views/instructions",
+        done_view: "js/views/done"
     },
     waitSeconds: 30,
     shim: {

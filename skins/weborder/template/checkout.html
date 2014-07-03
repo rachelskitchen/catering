@@ -36,7 +36,11 @@
             <input type="tel" id="phone" class="phone" value="<%= phone %>">
         </div>
     </div>
+    
     <div class="delivery_address"></div>
+
+    <div class="delivery_seat"></div>
+
     <% if(enableRewardCard) { %>
     <div class="row">
         <label for="rewardCard">Reward Card #:</label>
@@ -48,6 +52,7 @@
 </script>
 
 <script type="text/template" id="checkout_pickup-template">
+  <div class="<% if (isOrderFromSeat) { print('hidden'); }%>">
     <div class="row">
         <label for="pickupTimeDay"><span class="pickup bold required"><%= pickupTimeLabel %></span>:</label>
         <div class="select select_day">
@@ -62,6 +67,7 @@
             <select class="time" id="pickupTimeHour"></select>
         </div>
     </div>
+  </div>
 </script>
 
 <script type="text/template" id="checkout_order_type-template">
@@ -111,6 +117,41 @@
         </div>
     </div>
 </script>
+
+<script type="text/template" id="checkout_seat-template">
+    <% if(isDeliverToSeat) { %>
+        <% if(orderFromSeat.enable_level) { %>
+            <div class="row">
+            <label for="deliveryLevel"><span class="required bold">Level:</span></label>
+            <div class="input_beauty">
+                <input type="text" id="deliveryLevel" name="level" value="<%= level %>" maxlength="4">
+            </div>
+        </div>
+        <% } %>
+        <% if(orderFromSeat.enable_sector) { %>
+        <div class="row">
+            <label for="deliverySection"><span class="required bold">Section:</span></label>
+            <div class="input_beauty">
+                <input type="text" id="deliverySection" name="section" value="<%= section %>" maxlength="4">
+            </div>
+        </div>
+        <% } %>
+        <% if(orderFromSeat.enable_row) { %>
+        <div class="row">
+            <label for="deliveryRow"><span class="required bold">Row:</span></label>
+            <div class="input_beauty">
+                <input type="text" id="deliveryRow" name="row" value="<%= row %>" maxlength="4">
+            </div>
+        </div>
+        <% } %>
+        <div class="row">
+            <label for="deliverySeat"><span class="required bold">Seat:</span></label>
+            <div class="input_beauty">
+                <input type="text" id="deliverySeat" name="seat" value="<%= seat %>" maxlength="4">
+            </div>
+        </div>
+    <% } %>
+</script>    
 
 <script type="text/template" id="checkout_pay-template">
     <div id='pay_popup'>

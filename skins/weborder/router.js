@@ -23,12 +23,6 @@
 define(["backbone", "main_router"], function(Backbone) {
     'use strict';
 
-    var DINING_OPTION_NAME = {
-        DINING_OPTION_TOGO: 'Take Out',
-        DINING_OPTION_EATIN: 'Eat In',
-        DINING_OPTION_DELIVERY: 'Delivery'
-    };
-
     var headers = {},
         carts = {};
 
@@ -55,14 +49,6 @@ define(["backbone", "main_router"], function(Backbone) {
             clearQueryString();
             $('body').html('<div></div>');
             this.bodyElement = $('body');
-
-            // remove Delivery option if it is necessary
-            if (!App.Data.myorder.total.get('delivery').get('enable'))
-                delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
-
-            if (!App.Data.settings.get('settings_system').eat_in_for_online_orders) {
-                delete DINING_OPTION_NAME.DINING_OPTION_EATIN;
-            }
 
             // load main, header, footer necessary files
             this.prepare('main', function() {
@@ -94,6 +80,7 @@ define(["backbone", "main_router"], function(Backbone) {
             });
 
             this.listenTo(App.Data.myorder, 'paymentResponse', function() {
+                App.Data.settings.usaepayBack = true;
                 clearQueryString(true);
                 App.Data.get_parameters = parse_get_params();
                 this.navigate('confirm',  true);
@@ -298,10 +285,13 @@ define(["backbone", "main_router"], function(Backbone) {
             });
         },
         confirm: function() {
+            if(!App.Data.settings.usaepayBack) {
+                return this.navigate('index', true);
+            }
+            
             this.prepare('confirm', function() {
                 App.Data.mainModel.set({
-                    mod: 'Confirm',
-                    DINING_OPTION_NAME: DINING_OPTION_NAME
+                    mod: 'Done'
                 });
                 this.change_page();
             });

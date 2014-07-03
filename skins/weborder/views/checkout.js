@@ -113,9 +113,7 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
                     timetable: App.Data.timetables,
                     card: App.Data.card
             });
-            }
-            //remove the background from popup
-            $('#popup').removeClass("popup-background");
+            }            
         },
         pay: function(payment_type) {
             saveAllData();

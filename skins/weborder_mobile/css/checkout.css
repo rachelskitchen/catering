@@ -19,6 +19,19 @@
     height: 93em !important;
 }
 
+#content .checkout dd.contact_info.delivery-to-seat-1 {
+    height: 52em !important;
+}
+#content .checkout dd.contact_info.delivery-to-seat-2 {
+    height: 62em !important;
+}
+#content .checkout dd.contact_info.delivery-to-seat-3 {
+    height: 72em !important;
+}
+#content .checkout dd.contact_info.delivery-to-seat-4 {
+    height: 82em !important;
+}
+
 #content .checkout dd:last-child {
     height: 17em;
 }
@@ -208,7 +221,7 @@
 }
 
 #content .checkout dd.rewardCard {
-    height: 12em;
+    height: 11em;
 }
 
 #content .checkout .input.rewardCard {
