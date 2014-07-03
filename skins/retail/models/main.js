@@ -20,18 +20,15 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-require(['app'], function() {
-    var app = require('app'),
-        skins = app.skins;
+define(["backbone"], function(Backbone) {
+    'use strict';
 
-    // add skins
-    skins.set('WEBORDER', 'weborder');
-    skins.set('WEBORDER_MOBILE', 'weborder_mobile');
-    skins.set('RETAIL', 'retail');
-
-    // set REVEL_HOST for getting data from it
-    app.REVEL_HOST = "https://weborder-dev-branch.revelup.com";
-
-    // run app
-    app.init();
+    App.Models.MainModel=Backbone.Model.extend({
+        defaults: {
+            header: {},
+            content: {},
+            cart: {},
+            img: App.Data.settings.get("img_path")
+        }
+    });
 });

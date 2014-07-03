@@ -20,18 +20,25 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-require(['app'], function() {
-    var app = require('app'),
-        skins = app.skins;
+define(["backbone"], function(Backbone) {
+    'use strict';
 
-    // add skins
-    skins.set('WEBORDER', 'weborder');
-    skins.set('WEBORDER_MOBILE', 'weborder_mobile');
-    skins.set('RETAIL', 'retail');
+    App.Models.HeaderModel = Backbone.Model.extend({
+        defaults: {
+            page_title: "",
+            img: App.Data.settings.get("img_path"),
+            logo: "",
+            business_name: "",
+            tab_index: 0
+        },
+        initialize: function() {
+            var settings = App.Data.settings.toJSON(),
+                settings_system = settings.settings_system;
 
-    // set REVEL_HOST for getting data from it
-    app.REVEL_HOST = "https://weborder-dev-branch.revelup.com";
-
-    // run app
-    app.init();
+            if(settings_system instanceof Object) {
+                typeof settings_system.logo == 'string' && this.set('logo', settings.host + settings_system.logo.replace(/^([^\/])/, '/$1'));
+                typeof settings_system.business_name == 'string' && this.set('business_name', settings_system.business_name);
+            }
+        }
+    });
 });

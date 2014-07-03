@@ -109,16 +109,8 @@ define(["backbone"], function(Backbone) {
 
             dependencies = Array.isArray(dependencies) ? dependencies : [];
 
-            if(skin == App.Skins.WEBORDER && !this.prepare.initialized) {
-                var color_scheme = typeof system_settings.color_scheme == 'string' ? system_settings.color_scheme.toLowerCase().replace(/\s/g, '_') : null;
-                if(color_schemes.indexOf(color_scheme) > -1) {
-                    css.push('themes/' + color_scheme + '/colors');
-                } else {
-                    App.Data.log.pushJSError('"' + system_settings.color_scheme + '" color scheme is not available', 'js/router/main.js', '79');
-                    css.push('themes/default/colors');
-                }
-                this.prepare.initialized = true;
-            }
+            skin == App.Skins.WEBORDER && !this.prepare.initialized && initTheme.call(this);
+            skin == App.Skins.RETAIL && !this.prepare.initialized && initTheme.call(this);
 
             for(i = 0, j = scripts.length; i < j; i++)
                 js.push(skin + "/js/" + scripts[i]);
@@ -150,6 +142,17 @@ define(["backbone"], function(Backbone) {
                     callback();
                 });
             });
+
+            function initTheme() {
+                var color_scheme = typeof system_settings.color_scheme == 'string' ? system_settings.color_scheme.toLowerCase().replace(/\s/g, '_') : null;
+                if(color_schemes.indexOf(color_scheme) > -1) {
+                    css.push('themes/' + color_scheme + '/colors');
+                } else {
+                    App.Data.log.pushJSError('"' + system_settings.color_scheme + '" color scheme is not available', 'js/router/main.js', '151');
+                    css.push('themes/default/colors');
+                }
+                this.prepare.initialized = true;
+            }
         },
         pay: function() {
             this.loadData().then(function() {

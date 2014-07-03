@@ -20,18 +20,20 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-require(['app'], function() {
-    var app = require('app'),
-        skins = app.skins;
+define(["backbone", "factory", 'modifiers_view'], function(Backbone) {
+    'use strict';
 
-    // add skins
-    skins.set('WEBORDER', 'weborder');
-    skins.set('WEBORDER_MOBILE', 'weborder_mobile');
-    skins.set('RETAIL', 'retail');
+    App.Views.ModifiersClassesView.ModifiersClassesMatrixesView = App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView.extend({
+        addItem: function() {
+            App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView.prototype.addItem.apply(this, arguments);
+            this.$el.parents('.modifiers_table').show();
+        }
+    });
 
-    // set REVEL_HOST for getting data from it
-    app.REVEL_HOST = "https://weborder-dev-branch.revelup.com";
-
-    // run app
-    app.init();
+    App.Views.ModifiersClassesView.ModifiersClassesListView = App.Views.CoreModifiersClassesView.CoreModifiersClassesListView.extend({
+        addItem: function() {
+            App.Views.CoreModifiersClassesView.CoreModifiersClassesListView.prototype.addItem.apply(this, arguments);
+            this.$el.parents('.modifiers_table').show();
+        }
+    });
 });

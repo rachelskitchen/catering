@@ -1,0 +1,196 @@
+#header .categories .tabs {
+    position: absolute;
+    bottom: 0;
+    left: 70px;
+    right: 70px;
+}
+#header .categories .tabs li,
+#header .categories .tabs label {
+    display: inline-block;
+    width: 82px;
+    height: 35px;
+    text-align: center;
+    line-height: 40px;
+    margin: 0 3px;
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+}
+#header .categories .tabs label {
+    margin: 0;
+    font-size: 14px;
+}
+#header .categories .tabs input:checked + label {
+    height: 38px;
+    border-width: 0;
+    z-index: 2;
+    bottom: 3px;
+}
+#header .categories .tabs input:checked + label:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: 0;
+    border-width: 3px 3px 0 3px;
+    border-style: solid;
+    border-top-left-radius: 13px;
+    border-top-right-radius: 13px;
+}
+#header .categories .tabs input:checked + label:after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: -10px;
+    left: -10px;
+    right: -10px;
+    height: 10px;
+}
+#header .categories .arrow_left, #header .categories .arrow_right {
+    width: 23px;
+    height: 100%;
+    position: absolute;
+    cursor: pointer;
+}
+#header .categories .arrow_left {
+    left: 35px;
+}
+#header .categories .arrow_right {
+    right: 35px;
+}
+.categories_slider {
+    padding: 0 15px;
+    position: relative;
+    text-align: center;
+    margin-top: 6px;
+}
+
+.categories_slider .arrow {
+    position: absolute;
+    line-height: 25px;
+    font-size:1.5em;
+    display: none;
+    cursor: pointer;
+    width: 20px;
+    border-radius: 4px;
+}
+
+.categories {
+    position: relative;
+    white-space: nowrap;
+    height: 32px;
+    top: 83px;
+    z-index: 1;
+}
+/*
+.categories li {
+    display: inline-block;
+    width:113px;
+    text-align:center;
+    border-right-style:solid;
+    border-right-width:1px;
+}
+
+.categories li.last {
+  border-right: 0px;
+}*/
+
+
+/* Hack for safari. background color out of border radius*/
+/*.categories li label {
+    border-top-style:solid;
+    border-top-width:1px;
+    border-bottom-style:solid;
+    border-bottom-width:1px;
+}
+
+.categories li.last label {
+    border-right-style:solid;
+    border-right-width:1px;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+.categories li.first label {
+    border-left-style:solid;
+    border-left-width:1px;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+/* End hack for safari*/
+
+.slider_wrapper {
+   /* border:1px solid; // bad look with safari hack
+    border-radius: 15px;*/
+    overflow: hidden;
+    margin:0 auto;
+    border-radius: 15px;
+}
+
+/*.categories label {
+    display: block;
+    padding: 0 5px;
+    cursor: pointer;
+    line-height: 23px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+*/
+.categories input {
+    display: none;
+}
+.content_arrow.arrow_top {
+    top: 45px;
+}
+.content_arrow.arrow_bottom {
+    bottom:15px;
+}
+.categories_products_wrapper, .products_spinner {
+    position: absolute;
+    top: 65px;
+    right:0px;
+    padding-right:32px;
+    left:32px;
+    bottom:40px;
+    overflow-x: hidden;
+}
+.products_spinner {
+    right: 32px;
+    z-index: -1;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+.category_description {
+    height:30px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 13px;
+    font-style: italic;
+    margin-bottom: 6px;
+    margin-top: 1px;
+}
+.category_description h2 {
+    display: inline;
+    font-weight: bold;
+    font-size: 20px;
+}
+.categories_table li {
+    margin-top:10px;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+}
+.categories_table li:first-child {
+    margin-top:0px;
+}
+.categories_table > li:last-child {
+    border-bottom: none;
+}
