@@ -58,7 +58,7 @@
             "css": ["done"],
             "views": ["done"],
             "templates": ["done"],
-            "core": ["products", "modifiers", "tip", "checkout", "card"]
+            "core": ["products", "modifiers", "tip", "checkout", "card", "done_view"]
         },
         "store_info": {
             "css": ["store_info"],

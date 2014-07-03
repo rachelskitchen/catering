@@ -26,9 +26,36 @@ define(["backbone"], function(Backbone) {
     // flag for maintenance mode
     var isMaintenance;
 
+    window.DINING_OPTION_NAME = {
+        DINING_OPTION_TOGO: 'Take Out',
+        DINING_OPTION_EATIN: 'Eat In',
+        DINING_OPTION_DELIVERY: 'Delivery',
+        DINING_OPTION_DELIVERY_SEAT: 'Deliver to Seat'
+    };
+
     App.Routers.MainRouter = Backbone.Router.extend({
         initialize: function() {
             var self = this;
+
+             // remove Delivery option if it is necessary
+            if (!App.Data.myorder.total.get('delivery').get('enable'))
+                delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
+
+            if (!App.Data.settings.get('settings_system').eat_in_for_online_orders) {
+                delete DINING_OPTION_NAME.DINING_OPTION_EATIN;
+            }
+
+            var orderFromSeat = App.Data.settings.get('settings_system').order_from_seat || [];
+            if(orderFromSeat[0]) {
+                App.Data.orderFromSeat = {
+                    enable_level: orderFromSeat[1],
+                    enable_sector: orderFromSeat[2],
+                    enable_row: orderFromSeat[3]
+                };
+                DINING_OPTION_NAME.DINING_OPTION_TOGO = 'Pickup';
+            } else {
+                delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
+            }
 
             // set page title
             pageTitle(App.Data.settings.get("settings_skin").name_app);

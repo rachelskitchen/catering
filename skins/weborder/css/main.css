@@ -53,6 +53,9 @@ body {
 .bold {
     font-weight: bold;
 }
+.hidden { 
+    display: none !important; 
+}
 textarea {
     resize: none;
 }

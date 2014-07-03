@@ -23,12 +23,7 @@
 define(["backbone", "main_router"], function(Backbone) {
     'use strict';
 
-    var DINING_OPTION_NAME = {
-            DINING_OPTION_TOGO : 'Take Out',
-            DINING_OPTION_EATIN : 'Eat In',
-            DINING_OPTION_DELIVERY: 'Delivery'
-        },
-        headerModes = {},
+    var headerModes = {},
         footerModes = {};
 
     headerModes.Main = {mod: 'Main', className: 'main'};
@@ -92,15 +87,6 @@ define(["backbone", "main_router"], function(Backbone) {
             // check if we here from paypal payment page
             if (App.Data.get_parameters.pay) {
                 window.location.hash = "#pay";
-            }
-
-            // remove Delivery option if it is necessary
-            if(!App.Data.myorder.total.get('delivery').get('enable')) {
-                delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
-            }
-
-            if (!App.Data.settings.get('settings_system').eat_in_for_online_orders) {
-                delete DINING_OPTION_NAME.DINING_OPTION_EATIN;
             }
 
             // load main, header, footer necessary files
@@ -455,41 +441,19 @@ define(["backbone", "main_router"], function(Backbone) {
                 return this.navigate('index', true);
 
             this.prepare('done', function() {
-                var params = App.Data.myorder.paymentResponse,
-                    amount = parseFloat(params.total),
-                    mod = 'Main',
-                    dining_option = App.Data.myorder.checkout.get('dining_option'),
-                    data, error;
-
-                if (params.status === 'OK') {
-                    App.Data.myorder.order_id = params.orderId;
-                    data = {
-                        order_id: params.orderId,                         // order id
-                        total: round_monetary_currency(amount),           // order total
-                        dining_option: dining_option,
-                        pickup_time: App.Data.myorder.checkout.get('pickupTime'), // order time
-                        success : true,
-                        reward_points: params.reward_points
-                    };
-                } else {
-                    error = params.errorMsg.replace(/\+/g,' ').replace(/%\d+/g,'');
-                    mod = 'Error';
-                    data = {
-                        message : error,
-                        success : false
-                    };
-                }
-
-                App.Data.header.set('page_title', data.success ? 'Order has been Submitted.' : 'Order has not been Submitted.');
-                App.Data.footer.set({success_payment: data.success});
-
+                var params = App.Data.myorder.paymentResponse;
+                var isSuccess = params.status === 'OK';
+ 
+                App.Data.header.set('page_title', isSuccess ? 'Order has been Submitted.' : 'Order has not been Submitted.');
+                App.Data.footer.set({success_payment: isSuccess});
+               
                 App.Data.mainModel.set({
                     header: headerModes.Done,
                     footer: footerModes.Done,
                     content: {
-                        modelName: 'Done',
-                        model: new Backbone.Model(data),
-                        mod: mod,
+                        modelName: 'Main',
+                        model: App.Data.mainModel,
+                        mod: "Done",
                         className: 'done'
                     }
                 });

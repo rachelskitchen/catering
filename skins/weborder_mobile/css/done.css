@@ -22,7 +22,7 @@
 #content .done .orderCompleted dt, #content .done .orderCompleted dd {
     float: left;
     font-size: 2.8em;
-    height: 2em;
+    max-height: 8em;
     line-height: 2em;
 }
 
