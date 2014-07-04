@@ -151,6 +151,7 @@ aside:after, aside:before {
 #content .subcategories .tabs,
 #content .subcategories li label {
     border-color: #d7d7d7;
+    text-shadow: none;
 }
 #content .subcategories label:active {
     background-color: #362b18;

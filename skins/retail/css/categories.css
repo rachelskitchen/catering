@@ -22,7 +22,7 @@
 #header .categories .tabs li,
 #header .categories .tabs label {
     display: inline-block;
-    width: 100px;
+    width: 120px;
     height: 35px;
     text-align: center;
     line-height: 40px;
@@ -31,7 +31,6 @@
     border-style: solid;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    font-weight: bold;
     cursor: pointer;
     position: relative;
 }
@@ -40,7 +39,37 @@
 }
 #header .categories .tabs label {
     margin: 0;
+}
+#header .categories .tabs span {
+    display: inline-block;
     font-size: 14px;
+    font-weight: bold;
+    padding: 0 5px;
+    position: relative;
+    overflow: hidden;
+}
+#header .categories .tabs input:checked + label span {
+    bottom: -3px;
+}
+#header .categories .tabs span.first-line,
+#header .categories .tabs span.second-line,
+#header .categories .tabs span.one-line {
+    width: 110px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+#header .categories .tabs span.first-line {
+    top: -10px;
+}
+#header .categories .tabs input:checked + label span.first-line {
+    top: -7px;
+}
+#header .categories .tabs span.second-line {
+    left: -120px;
+    top: 3px;
+}
+#header .categories .tabs input:checked + label span.second-line {
+    top: 6px;
 }
 #header .categories .tabs input:checked + label {
     height: 38px;
@@ -75,6 +104,8 @@
     height: 100%;
     position: absolute;
     cursor: pointer;
+    overflow: hidden;
+    text-indent: 50px;
 }
 #header .categories .arrow_left {
     left: 35px;
@@ -117,7 +148,7 @@
 }
 .subcategories li {
     display: inline-block;
-    width: 113px;
+    width: 167px;
     text-align: center;
     border-right-style: solid;
     border-right-width: 1px;

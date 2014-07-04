@@ -42,7 +42,8 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
         events: {
             "change input": "change"
         },
-        change: function() {
+        change: function(e) {
+            e.stopPropagation();
             var value = this.model.get('parent_name');
             this.collection.parent_selected = value;
             this.collection.selected = 0;
@@ -56,6 +57,35 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
             } else {
                 this.$el.removeAttr('style');
                 this.options.self.update_slider_render();
+            }
+        },
+        formatText: function() {
+            var span = this.$('span'),
+                wLabel = this.$('label').width(),
+                words;
+
+            if(isOut())
+                words = span.text().match(/([^\s]+)/g);
+
+            Array.isArray(words) && words.some(function(word, index) {
+                var prev = span.text(),
+                    _isOut;
+
+                if(index == 0)
+                    span.text(word);
+                else
+                    span.text(prev + ' ' + word);
+
+                _isOut = isOut();
+
+                if(_isOut && index == 0)
+                    return span.text(this.model.get('parent_name')).addClass('one-line');
+                else if(_isOut)
+                    return span.text(prev).addClass('first-line').after('<span class="second-line">' + this.model.get('parent_name').replace(prev, '') + '</span>');
+            }, this);
+
+            function isOut() {
+                return span.outerWidth(true) >= wLabel;
             }
         }
     });
@@ -92,6 +122,7 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
                 }, model.cid);
                 App.Views.SliderView.prototype.addItem.call(this, view, this.$('.tabs > ul'), model.escape('parent_sort'));
                 this.subViews.push(view);
+                view.formatText();
             }
         },
         create_slider: function() {
@@ -142,6 +173,7 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
         },
         render: function() {
             App.Views.SliderView.prototype.render.apply(this, arguments);
+            this.collection.receiving.resolve(); // select first subcategory
             this.$wrapper = this.$('.tabs');
             this.$items = this.$('.tabs > ul');
             this.$toLeft = this.$('.arrow_left');
@@ -211,6 +243,7 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
                 this.collection.selected = opts.selected;
                 this.collection.trigger('change:selected', this.collection, opts.selected);
             }, this);
+            view.model.trigger('loadCompleted'); // run view.slider_create() method
         }
     });
 
@@ -309,10 +342,10 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
             this.listenTo(view, 'loadStarted', this.showSpinner, this);
             this.listenTo(view, 'loadCompleted', this.hideSpinner, this);
         },
-        showSpinner: function() {console.log('started');
+        showSpinner: function() {
             this.$('.products_spinner').addClass('ui-visible');
         },
-        hideSpinner: function() {console.log('completed');
+        hideSpinner: function() {
             var spinner = this.$('.products_spinner');
             setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), 500);
         },

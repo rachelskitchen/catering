@@ -77,14 +77,20 @@ define(["backbone", "list"], function(Backbone) {
             this.create_slider();
         },
         create_slider: function() {
+            if(!this.$wrapper)
+                return;
+
+            if(typeof this.widthOffset == 'undefined')
+                this.widthOffset = this.$el.width() - this.$wrapper.width();
+
             var slider = this.$el,
-                sliderWidth = slider.width(),
+                sliderWidth = slider.width() - this.widthOffset,
                 lis = this.$item.not(':hidden'),
                 elemWidth = lis.outerWidth(true);
 
-            if (sliderWidth <= 0) {
+            if (sliderWidth <= 0)
                 return;
-            }
+
             this.slider_count = Math.floor(sliderWidth / elemWidth);
             this.slider_elem_count = lis.length;
             this.slider_index = this.slider_index || 0;
