@@ -16,8 +16,8 @@
 </script>
 
 <script type="text/template" id="categories_tab-template">
-    <input type="radio" id="category<%= id %>" name="<%= list_name %>">
-    <label for="category<%= id %>">
+    <input type="radio" id="<%= list_name + id %>" name="<%= list_name %>">
+    <label for="<%= list_name + id %>">
         <span><%= parent_name %></span>
     </label>
 </script>

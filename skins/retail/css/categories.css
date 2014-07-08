@@ -200,21 +200,20 @@
 .categories_products_wrapper, .products_spinner {
     position: absolute;
     top: 65px;
-    right:0px;
-    padding-right:32px;
-    left:32px;
-    bottom:40px;
+    right: 0px;
+    padding-right: 75px;
+    left: 75px;
+    bottom: 40px;
     overflow-x: hidden;
 }
 .products_spinner {
-    right: 32px;
+    right: 75px;
     z-index: -1;
     opacity: 0;
     filter: alpha(opacity=0);
 }
-
 .category_description {
-    height:30px;
+    height:25px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -227,11 +226,6 @@
     display: inline;
     font-weight: bold;
     font-size: 20px;
-}
-.categories_table li {
-    margin-top:10px;
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
 }
 .categories_table li:first-child {
     margin-top:0px;

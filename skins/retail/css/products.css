@@ -1,26 +1,20 @@
 .product_table {
     margin-bottom: 8px;
 }
-
 .product_table .product {
-    width: 44%;
-    padding: 7px 7px 7px 10px;
+    display: inline-block;
+    width: 205px;
+    height: 305px;
+    padding: 3px;
     cursor: pointer;
-    margin-top: 2px;
-    border-radius: 8px;
-    border-width: 1px;
-    border-style: dotted;
-    border: 0px;
+    margin-right: 20px;
 }
-.product_table .product:not(.hide):nth-child(2n) {
-    float: right;
-}
-.product_table .product:not(.hide):nth-child(2n-1) {
-    float: left;
+.product_table .product.no-image {
+    height: 50px;
 }
 .product_table .product dl {
     position: relative;
-    height: 67px;
+    height: 50px;
     overflow: hidden;
 }
 .product_table .product .name {
@@ -36,35 +30,8 @@
     font-size: 13px;
     margin-top: 7px;
 }
-.product_table .product .description.uom1 {
-    padding-right: 22px;
-}
-.product_table .product .description.uom2 {
-    padding-right: 32px;
-}
-.product_table .product .description.uom3 {
-    padding-right: 42px;
-}
-.product_table .product .description.uom4 {
-    padding-right: 52px;
-}
-.product_table .product .description.uom5 {
-    padding-right: 62px;
-}
-.product_table .product .description.uom6 {
-    padding-right: 70px;
-}
-.product_table .product .description.uom7 {
-    padding-right: 78px;
-}
-.product_table .product .description.uom8 {
-    padding-right: 86px;
-}
 .product_table .product .cost_block {
-    position: absolute;
-    top: 28px;
-    right: 0px;
-    font-size: 18px;
+    font-size: 16px;
 }
 .product_table .product .cost_block .uom {
     white-space: nowrap;
@@ -73,18 +40,15 @@
     font-size:12px;
     font-weight: normal;
     max-width: 83px;
-    margin-top: -5px;
+    margin-top: -16px;
     text-align: right;
     margin-right: 7px;
 }
 .product_table .product .cost {
-    padding: 0 5px;
-    margin: -7px 2px 0px 2px;
-    text-align: right;
+    margin: -7px 2px 0px 0;
 }
 .product_table .product .cost .currency_symbol {
     margin-right: -6px;
-    font-weight: bold;
     padding-right: 2px;
 }
 .product_table .product .cost .price {
@@ -95,106 +59,30 @@
 .product_table .product.short {
     padding-top: 5px;
     padding-bottom: 5px;
-    margin-top: 0px;
+    margin: 0 10px 30px;
 }
 .product_table .product.short dl {
     height: 42px;
 }
-.product_table .product.short .cost_block {
-    top: 9px;
-}
-.product_table .product.short .name {
-    margin-right: 60%;
-    margin-top: 3px;
-    font-size: 16px;
-    font-weight: bold;
-}
-.product_table .product.short .name div{
-    font-size: 16px;
-    font-weight: bold;
-}
-.product_table .product.short .s2 .name {
-    margin-right: 35px;
-}
-.product_table .product.short .s3 .name {
-    margin-right: 46px;
-}
-.product_table .product.short .s4 .name {
-    margin-right: 57px;
-}
-.product_table .product.short .s5 .name {
-    margin-right: 68px;
-}
-.product_table .product.short .s6 .name {
-    margin-right: 79px;
-}
-.product_table .product.short .s7 .name {
-    margin-right: 90px;
-}
-.product_table .product.short .s8 .name {
-    margin-right: 101px;
-}
-.product_table .product.short .s9 .name {
-    margin-right: 112px;
-}
-.product_table .product.short .s10 .name {
-    margin-right: 123px;
-}
-.product_table .product {
-    padding-top: 5px;
-}
-.product_table .product .cost_block {
-    top: 9px;
-}
 .product_table .product .name {
-    margin-right: 60%;
     margin-top: 3px;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 600;
+    text-transform: uppercase;
 }
 .product_table .product .name div {
     font-size: 16px;
     font-weight: bold;
 }
-.product_table .product .s2 .name {
-    margin-right: 35px;
-}
-.product_table .product .s3 .name {
-    margin-right: 46px;
-}
-.product_table .product .s4 .name {
-    margin-right: 57px;
-}
-.product_table .product .s5 .name {
-    margin-right: 68px;
-}
-.product_table .product .s6 .name {
-    margin-right: 79px;
-}
-.product_table .product .s7 .name {
-    margin-right: 90px;
-}
-.product_table .product .s8 .name {
-    margin-right: 101px;
-}
-.product_table .product .s9 .name {
-    margin-right: 112px;
-}
-.product_table .product .s10 .name {
-    margin-right: 123px;
-}
 .product_table .product.short .name div.product_image div {
     font-size: 3px;
 }
 .product_image {
-    width: 50px;
-    height: 35px;
-    border-radius: 5px;
+    width: 205px;
+    height: 270px;
     text-align: center;
     font-size: 7px;
-    line-height: 35px;
-    margin-right: 10px;
-    float: left;
+    line-height: 270px;
     overflow: hidden;
 }
 .product_image img {

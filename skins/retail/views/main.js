@@ -113,7 +113,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 className: 'header',
                 modelName: 'Header',
                 collection: this.options.categories,
-                mainModel: this.model
+                mainModel: this.model,
+                cart: this.options.cartCollection
             };
         },
         cart_defaults: function() {

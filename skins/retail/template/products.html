@@ -2,35 +2,22 @@
     <ul class="products"></ul>
 </script>
 
-<script type="text/template" id="product_list_item-template">    
+<script type="text/template" id="product_list_item-template">
+    <% if(!hide_images) { %>
+    <div class="product_image">
+        <img src="<%= image %>" alt="logo for <%= name %>[<%= id %>]" <% if(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent)) print('class="safari"'); %>>
+    </div>
+    <% } %>
     <dl class="s<%= price_length %>">
-        <dt class="name">
-            <% if(!show_product_description && !hide_images) { %>
-            <div class="product_image">
-                <img src="<%= image %>" alt="logo for <%= name %>[<%= id %>]" <% if(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent)) print('class="safari"'); %>>
-            </div>
-            <% } %>
-            <%= name %>
-        </dt>
-        <dd class="description <% if(sold_by_weight && uom) {print('uom' + (uom.length >= 8 ? 8 : uom.length))} %>">
-        <% if(show_product_description) { %>
-            <% if(!hide_images) { %>
-            <div class="product_image">
-                <img src="<%= image %>" alt="logo for <%= name %>[<%= id %>]" <% if(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent)) print('class="safari"'); %>>
-            </div>
-            <% } %>
-            <%= description %>
-        <% } %>
-        </dd>
-        <dt class="hide">Price</dt>
+        <dt class="name"><%= name %></dt>
         <dd class='cost_block'>
             <div class='cost'>
                 <span class="currency_symbol"><%= currency_symbol %></span>
                 <span class="price"><%= price %></span>
+                <% if(sold_by_weight && uom) { %>
+                <span class="uom">/ <%= uom %></span>
+                <% } %>
             </div>
-            <% if(sold_by_weight && uom) { %>
-            <div class="uom">/ <%= uom %></div>
-            <% } %>
         </dd>
     </dl>
 </script>
@@ -61,7 +48,7 @@
         </dt>
         <dd><%= description %></dd>
     </dl>
-    
+
     <% if (is_gift) { %>
     <div class='gift_card'>
         <span>Gift Card Number: </span>

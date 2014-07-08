@@ -141,9 +141,11 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
         },
         render: function() {
             var model = $.extend({list_name: 'subcategories'}, this.model.toJSON());
-            model.parent_name = model.name; // it is required die to we use `tab` template
+            model.parent_name = model.name; // it is required due to we use `tab` template
             this.$el.html(this.template(model));
-            this.afterRender.call(this, this.model.get('parent_sort'));
+            this.afterRender.call(this, this.model.get('sort'));
+            if(model.id == this.collection.selected)
+                console.log(model.id);
             return this;
         },
         events: {
@@ -170,10 +172,11 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
         mod: 'tabs',
         initialize: function() {
             App.Views.SliderView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'loadCompleted', this.restore, this);
         },
         render: function() {
             App.Views.SliderView.prototype.render.apply(this, arguments);
-            this.collection.receiving.resolve(); // select first subcategory
+            this.restore();
             this.$wrapper = this.$('.tabs');
             this.$items = this.$('.tabs > ul');
             this.$toLeft = this.$('.arrow_left');
@@ -192,11 +195,9 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
                 collection: this.collection,
                 self: this
             }, model.parent_name + '_sub_' + model.cid);
-            App.Views.SliderView.prototype.addItem.call(this, view, this.$('.tabs > ul'), model.escape('parent_sort'));
+            App.Views.SliderView.prototype.addItem.call(this, view, this.$('.tabs > ul'), model.escape('sort'));
             this.subViews.push(view);
-            this.listenTo(view, 'selected', function(opts) {
-                this.trigger('selected', opts);
-            }, this);
+            this.listenTo(view, 'selected', this.onSelected, this);
         },
         create_slider: function() {
             this.$item = this.$('li');
@@ -208,6 +209,14 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
             $(lis.get(this.slider_index)).addClass('first');
             $(lis.get(Math.min(this.slider_index + this.slider_count, this.slider_elem_count) - 1)).addClass('last');
             return App.Views.SliderView.prototype.update_slider.apply(this, arguments);
+        },
+        restore: function() {
+            if(typeof this.selected == 'number')
+                this.onSelected({selected: this.selected});
+        },
+        onSelected: function(opts) {
+            this.trigger('selected', opts);
+            this.selected = opts.selected; // save selected value to restore selection in future
         }
     });
 
@@ -243,7 +252,8 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
                 this.collection.selected = opts.selected;
                 this.collection.trigger('change:selected', this.collection, opts.selected);
             }, this);
-            view.model.trigger('loadCompleted'); // run view.slider_create() method
+            collect.receiving.resolve();         // select first subcategory
+            view.model.trigger('loadCompleted'); // run view.slider_create() and view.restore() methods
         }
     });
 
@@ -292,17 +302,11 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
             App.Views.ListView.prototype.initialize.apply(this, arguments);
             var self = this,
                 parent_name = this.collection.parent_selected,
-                ids = this.collection.filter(function(model) {
-                    return parent_name && model.get('parent_name') === parent_name;
-                }).map(function(model) {
-                    return model.get('id');
-                });
+                id = App.Data.categories.selected;
 
             // Receives all products for current parent categories
-            App.Collections.Products.get_slice_products(ids, this).then(function() {
-                ids.forEach(function(id) {
-                    self.addItem(App.Data.products[id], App.Data.categories.get(id));
-                });
+            App.Collections.Products.get_slice_products([id], this).then(function() {
+                self.addItem(App.Data.products[id], App.Data.categories.get(id));
                 self.trigger('loadCompleted');
             });
             setTimeout(this.trigger.bind(this, 'loadStarted'), 0);
@@ -325,7 +329,7 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
         mod: 'main_products',
         initialize: function() {
             App.Views.ListView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.collection, 'change:parent_selected', this.update_table);
+            this.listenTo(this.collection, 'change:selected', this.update_table);
             this.$('.categories_products_wrapper').contentarrow();
             this.$('.products_spinner').css('position', 'absolute').spinner();
         },
@@ -335,7 +339,7 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
                 el: $("<ul class='categories_table'></ul>"),
                 mod: 'Products',
                 collection: this.collection
-            }, value);
+            }, 'products_' + value);
             this.subViews.push(view);
             this.$('.categories_products_wrapper').append(view.el);
             this.$(".categories_products_wrapper").scrollTop(0);

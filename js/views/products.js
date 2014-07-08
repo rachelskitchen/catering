@@ -74,7 +74,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             var self = this;
             App.Views.ListView.prototype.render.apply(this, arguments);
             this.collection.each( function(item) {
-                self.addItem(item); 
+                self.addItem(item);
             });
             return this;
         },
@@ -82,12 +82,17 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             if (model.get("attribute_type") == 2) { // to hide child products
                 return;
             }
-            var productDescr = !App.Data.settings.get('settings_system').hide_products_description;
-            var view = App.Views.GeneratorView.create('Product', {
-                el: productDescr ? $('<li class="product"></li>') : $('<li class="product short"></li>'),
+            var settings = App.Data.settings.get('settings_system'),
+                noImg = settings.hide_images,
+                noDesc = settings.hide_products_description,
+                view;
+            view = App.Views.GeneratorView.create('Product', {
+                el: $('<li class="product"></li>'),
                 mod: 'ListItem',
                 model: model
-            }, model.cid);
+            }, 'product_' + model.cid);
+            noDesc && view.$el.addClass('short');
+            noImg && view.$el.addClass('no-image');
             App.Views.ListView.prototype.addItem.call(this, view, this.$('.products'), model.escape('sort'));
             this.subViews.push(view);
             $(window).resize();

@@ -30,6 +30,7 @@ define(["backbone", "factory"], function(Backbone) {
         mod: 'main',
         initialize: function() {
             this.listenTo(this.model, 'change:menu_index', this.menu, this);
+            this.listenTo(this.options.cart, 'add remove', this.update, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
@@ -42,6 +43,7 @@ define(["backbone", "factory"], function(Backbone) {
             });
             this.subViews.push(view);
             loadSpinner(this.$('img.logo'));
+            this.update();
             return this;
         },
         events: {
@@ -62,6 +64,14 @@ define(["backbone", "factory"], function(Backbone) {
         },
         onLocations: function() {
             this.model.trigger('onLocations');
+        },
+        update: function() {
+            var quantity = this.options.cart.get_only_product_quantity(),
+                cart = this.$('.cart');
+            if(quantity)
+                cart.text(quantity);
+            else
+                cart.text('');
         }
     });
 
