@@ -23,17 +23,16 @@
 define(["backbone", "main_router"], function(Backbone) {
     'use strict';
 
-    var DINING_OPTION_NAME = {
-        DINING_OPTION_TOGO: 'Take Out',
-        DINING_OPTION_EATIN: 'Eat In',
-        DINING_OPTION_DELIVERY: 'Delivery'
-    };
+    delete DINING_OPTION_NAME.DINING_OPTION_EATIN;
+    delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
 
     var headers = {},
         carts = {};
 
     headers.main = {mod: 'Main', className: 'main'};
     headers.confirm = {mod: 'Confirm', className: 'confirm'};
+    headers.checkout = {mod: 'Checkout', className: 'checkout'};
+
     carts.main = {mod: 'Main', className: 'main'};
     carts.checkout = {mod: 'Checkout', className: 'checkout'};
 
@@ -55,14 +54,6 @@ define(["backbone", "main_router"], function(Backbone) {
             clearQueryString();
             $('body').html('<div></div>');
             this.bodyElement = $('body');
-
-            // remove Delivery option if it is necessary
-            if (!App.Data.myorder.total.get('delivery').get('enable'))
-                delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
-
-            if (!App.Data.settings.get('settings_system').eat_in_for_online_orders) {
-                delete DINING_OPTION_NAME.DINING_OPTION_EATIN;
-            }
 
             // load main, header, footer necessary files
             this.prepare('main', function() {

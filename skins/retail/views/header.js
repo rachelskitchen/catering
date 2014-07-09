@@ -79,4 +79,16 @@ define(["backbone", "factory"], function(Backbone) {
         name: 'header',
         mod: 'confirmation'
     });
+
+    App.Views.HeaderView.HeaderCheckoutView = App.Views.HeaderView.HeaderMainView.extend({
+        name: 'header',
+        mod: 'checkout',
+        render: function() {
+            this.$el.addClass("main"); // using the same styles for header from main view
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            loadSpinner(this.$('img.logo'));
+            App.Views.HeaderView.HeaderMainView.prototype.update.apply(this);
+            return this;
+        }
+    });
 });

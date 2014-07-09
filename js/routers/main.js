@@ -41,20 +41,24 @@ define(["backbone"], function(Backbone) {
             if (!App.Data.myorder.total.get('delivery').get('enable'))
                 delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
 
-            if (!App.Data.settings.get('settings_system').eat_in_for_online_orders) {
+            if (!App.Settings.eat_in_for_online_orders) {
                 delete DINING_OPTION_NAME.DINING_OPTION_EATIN;
             }
 
-            var orderFromSeat = App.Data.settings.get('settings_system').order_from_seat || [];
+            var orderFromSeat = App.Settings.order_from_seat || [];
             if(orderFromSeat[0]) {
                 App.Data.orderFromSeat = {
                     enable_level: orderFromSeat[1],
                     enable_sector: orderFromSeat[2],
                     enable_row: orderFromSeat[3]
                 };
-                DINING_OPTION_NAME.DINING_OPTION_TOGO = 'Pickup';
+                //DINING_OPTION_NAME.DINING_OPTION_TOGO = 'Pickup';
             } else {
                 delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
+            }
+
+            if (App.Data.settings.get("skin") == App.Skins.RETAIL && App.Settings.service_type == ServiceType.RETAIL) {
+                DINING_OPTION_NAME.DINING_OPTION_TOGO = 'Pick up in store';
             }
 
             // set page title

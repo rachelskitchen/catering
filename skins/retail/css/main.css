@@ -95,6 +95,9 @@ section {
     top: 65px;
     bottom: 30px;
 }
+section.cart_left_panel {
+    width: 65%;
+}
 section:before {
     content: '';
     display: block;
@@ -116,6 +119,9 @@ aside {
     right: 0;
     top: 0;
     bottom: 30px;
+}
+aside.cart_left_panel {
+    width: 35%;
 }
 aside:before, aside:after {
     content: '';

@@ -1,3 +1,16 @@
+#header .checkout .title {
+    position: relative;
+    white-space: nowrap;
+    height: 30px;
+    top: 78px;
+    width: 65%;
+    margin-left: -6px;
+    z-index: 1;
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
 #content > .checkout label {
     display: inline-block;
     width: 302px;
@@ -35,16 +48,16 @@
 }
 #content > .checkout div.select {
     display: inline-block;
-    width: 110px;
+    width: 210px;
     position: relative;
     left: -22px;
 }
 #content > .checkout div.select_arrows {
     right: 2px;
 }
-#content > .checkout div.select_day, #content > .checkout div.select.states {
+/*#content > .checkout div.select_day, #content > .checkout div.select.states {
     width: 210px;
-}
+}*/
 #content > .checkout div.select_day:last-child {
     margin-bottom: 10px;
 }
@@ -170,7 +183,7 @@
 
 #content > .checkout .data {
     position: absolute;
-    top: 40px;
+    top: 20px;
     bottom: 20px;
     left: 0;
     right: -10px;

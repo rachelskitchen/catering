@@ -158,11 +158,16 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
                 DINING_OPTION_NAME: this.options.DINING_OPTION_NAME,
                 mod: 'OrderType',
                 className: 'row'
-            }), pickup = App.Views.GeneratorView.create('Checkout', {
-                model: this.collection.checkout,
-                timetable: this.options.timetable,
-                mod: 'Pickup'
-            }), main = App.Views.GeneratorView.create('Checkout', {
+            }); 
+
+            if (App.Settings.service_type != ServiceType.RETAIL) {
+                var pickup = App.Views.GeneratorView.create('Checkout', {
+                    model: this.collection.checkout,
+                    timetable: this.options.timetable,
+                    mod: 'Pickup'
+                });
+            }
+            var main = App.Views.GeneratorView.create('Checkout', {
                 model: this.collection.checkout,
                 customer: this.options.customer,
                 mod: 'Main'
@@ -171,7 +176,7 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
 
             this.subViews.push(order_type, pickup, main);
             specials.before(order_type.el);
-            specials.before(pickup.el);
+            pickup && specials.before(pickup.el);
             specials.before(main.el);
 
             if(this.options.acceptTips) {

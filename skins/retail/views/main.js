@@ -77,6 +77,15 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
             this.subViews[0] && this.subViews[0].removeFromDOMTree();
             this.subViews[0] = App.Views.GeneratorView.create(data.modelName, data, id);
+
+             if ( this.model.get("content").isCartLeftPanel ) {
+                this.$("section").addClass("cart_left_panel");
+                this.$("#cart").addClass("cart_left_panel");
+            } else {
+                this.$("section").removeClass("cart_left_panel");
+                this.$("#cart").removeClass("cart_left_panel");
+            }
+
             this.$('#header').append(this.subViews[0].el);
         },
         cart_change: function() {

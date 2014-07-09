@@ -208,7 +208,8 @@ define(["backbone", "async"], function(Backbone) {
                         default_weighing_unit: "",
                         label_for_manual_weights: "",
                         number_of_digits_to_right_of_decimal: 0
-                    }
+                    },
+                    service_type: ServiceType.RETAIL
                 },
                 load = $.Deferred();
 
@@ -297,6 +298,7 @@ define(["backbone", "async"], function(Backbone) {
                             settings_system.scales.number_of_digits_to_right_of_decimal = Math.abs((settings_system.scales.number_of_digits_to_right_of_decimal).toFixed(0) * 1);
 
                             self.set("settings_system", settings_system);
+                            App.Settings = App.Data.settings.get("settings_system");                           
                             if (!self.get_payment_process()) {
                                 console.log("payment processor not found");
                                 self.set('isMaintenance', true);

@@ -94,6 +94,16 @@ var DINING_OPTION = {
         DINING_OPTION_DELIVERY_SEAT: 6
     };
 
+var ServiceType = {
+    TABLE_SERVICE : 0,
+    QUICK_SERVICE : 1,
+    RETAIL : 2,
+    GROCERY : 3,
+    REVELLITE_QSR : 4,
+    REVELLITE_RETAIL : 5,
+    DONATION : 6
+}    
+
 /**
 *  format message by formatting string and params.
 *  example: msgFrm("Message text param1 = %s, param2 = %s", 10, 20) returns the string "Message text param1 = 10, param2 = 20"
