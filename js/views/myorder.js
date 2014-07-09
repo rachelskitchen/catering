@@ -42,9 +42,26 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         mod: 'matrix',
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            var model = this.model,
-                viewModifiers;
-
+            var model = this.model;
+            this.renderProduct();
+            this.listenTo(model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.update);
+            this.renderModifiers();
+            return this;
+        },
+        update: function() {
+            var index = this.subViews.indexOf(this.viewProduct);
+            if (index !== -1) {
+                this.viewProduct.remove();
+                this.subViews[index] = this.viewProduct = App.Views.GeneratorView.create('Product', {
+                    modelName: 'Product',
+                    model: this.model,
+                    mod: 'Modifiers'
+                });
+                this.$('.product_info').append(this.viewProduct.el);
+            }
+        },
+        renderProduct: function() {
+            var model = this.model;
             this.viewProduct = App.Views.GeneratorView.create('Product', {
                 modelName: 'Product',
                 model: model,
@@ -52,8 +69,10 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             });
             this.$('.product_info').append(this.viewProduct.el);
             this.subViews.push(this.viewProduct);
-
-            this.listenTo(model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.update);
+        },
+        renderModifiers: function() {
+            var model = this.model,
+                viewModifiers;
 
             switch(model.get_attribute_type()) {
                 case 0:
@@ -75,18 +94,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     });
             }
             this.subViews.push(viewModifiers);
-        },
-        update: function() {
-            var index = this.subViews.indexOf(this.viewProduct);
-            if (index !== -1) {
-                this.viewProduct.remove();
-                this.subViews[index] = this.viewProduct = App.Views.GeneratorView.create('Product', {
-                    modelName: 'Product',
-                    model: this.model,
-                    mod: 'Modifiers'
-                });
-                this.$('.product_info').append(this.viewProduct.el);
-            }
         }
     });
 
@@ -115,6 +122,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.gift_card_number = product.get('gift_card_number');
             model.sold_by_weight = model.product.get("sold_by_weight");
             model.label_manual_weights = App.Data.settings.get("settings_system").scales.label_for_manual_weights;
+            model.image = product.get_product().get('image');
+            model.id = product.get_product().get('id');
             if (model.sold_by_weight) {
                 num_digits = App.Data.settings.get("settings_system").scales.number_of_digits_to_right_of_decimal;
                 model.weight = model.weight.toFixed(num_digits);

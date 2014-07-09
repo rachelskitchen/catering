@@ -343,7 +343,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             attribute_1_enable && attr.push(this.product.get('attribute_1_name'));
             attribute_2_enable && attr.push(this.product.get('attribute_2_name'));
 
-            this.$el.html(this.template({attributes : attr.join(' / ')}));
+            this.$el.html(this.template({attributes: attr.join(' / ')}));
 
             if (!empty_object(this.modifiers)) {
                 var data1 = {

@@ -32,8 +32,7 @@ define(["backbone", "main_router"], function(Backbone) {
     headers.main = {mod: 'Main', className: 'main'};
     headers.confirm = {mod: 'Confirm', className: 'confirm'};
     headers.checkout = {mod: 'Checkout', className: 'checkout'};
-
-    carts.main = {mod: 'Main', className: 'main'};
+    carts.main = {mod: 'Main', className: 'main animation'};
     carts.checkout = {mod: 'Checkout', className: 'checkout'};
 
     App.Routers.Router = App.Routers.MainRouter.extend({
@@ -155,6 +154,11 @@ define(["backbone", "main_router"], function(Backbone) {
 
             // onLocations event occurs when 'Locations' item is clicked
             this.listenTo(App.Data.header, 'onLocations', this.navigate.bind(this, 'map', true));
+
+            // onCart event occurs when 'cart' item is clicked
+            this.listenTo(App.Data.header, 'onCart', function() {
+                App.Data.myorder.trigger('showCart');
+            });
 
             //onBack event occurs when 'Back' buttons is clicked
             this.listenTo(App.Data.header, 'onBack', function() {

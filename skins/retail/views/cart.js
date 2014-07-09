@@ -34,21 +34,15 @@ define(["backbone", "factory", "generator", "products_view"], function(Backbone)
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             $(window).on('resize.cart', this.resize.bind(this));
             this.listenTo(App.Data.mainModel, 'loadCompleted', this.resize.bind(this));
-
-            this.subViews.push(App.Views.GeneratorView.create('MyOrder', {
-                el: this.$('.order-items'),
-                mod: 'List',
-                collection: this.collection
-            }));
-
+            this.showItems();
             this.$('.order-items').contentarrow();
             this.onChangeOrder();
         },
         onChangeOrder: function() {
             if (this.collection.get_only_product_quantity() > 0)
-                this.$(".order-items_wrapper, .total_block").show();
+                this.$(".order-items-wrapper, .subtotal, .checkout").show();
             else
-                this.$(".order-items_wrapper, .total_block").hide();
+                this.$(".order-items-wrapper, .subtotal, .checkout").hide();
         },
         resize: function() {
             var self = this;
@@ -72,34 +66,65 @@ define(["backbone", "factory", "generator", "products_view"], function(Backbone)
             this.$('.order-items').contentarrow('destroy');
             $(window).off('resize.cart');
             App.Views.FactoryView.prototype.remove.apply(this, arguments);
+        },
+        showItems: function() {
+            this.subViews.push(App.Views.GeneratorView.create('MyOrder', {
+                el: this.$('.order-items'),
+                mod: 'List',
+                collection: this.collection
+            }));
         }
     });
 
     App.Views.CartView.CartMainView = App.Views.CartView.CartCoreView.extend({
         name: 'cart',
         mod: 'main',
+        initialize: function() {
+            App.Views.CartView.CartCoreView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.collection, 'showCart', this.show, this);
+        },
         render: function() {
-            App.Views.CartView.CartCoreView.prototype.render.apply(this, arguments);
-
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.showItems();
+            this.onChangeOrder();
             this.subViews.push(App.Views.GeneratorView.create('Total', {
-                el: this.$('.total_block'),
+                el: this.$('.subtotal'),
                 mod: 'Main',
                 model: this.collection.total,
                 collection: this.collection
             }));
         },
         events: {
-            'click .btn': 'checkout_event'
+            'click .checkout': 'checkout_event',
+            'click .cancel': 'cancel',
         },
         checkout_event: function() {
             var self = this;
 
-            App.Data.myorder.check_order({
+            this.collection.check_order({
                 order: true,
                 first_page: true
             }, function() {
+                self.cancel();
                 self.collection.trigger('onCheckoutClick');
             });
+        },
+        cancel: function() {
+            this.$el.removeClass('visible');
+        },
+        show: function() {
+            var self = this;
+            this.collection.check_order({
+                order: true,
+                first_page: true
+            }, function() {
+                self.$el.addClass('visible');
+            });
+        },
+        onChangeOrder: function() {
+            App.Views.CartView.CartCoreView.prototype.onChangeOrder.apply(this, arguments);
+            if(this.collection.get_only_product_quantity() == 0)
+                this.cancel();
         }
     });
 

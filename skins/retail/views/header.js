@@ -49,7 +49,8 @@ define(["backbone", "factory"], function(Backbone) {
         events: {
             'click .shop': 'onMenu',
             'click .about': 'onAbout',
-            'click .locations': 'onLocations'
+            'click .locations': 'onLocations',
+            'click .cart': 'onCart'
         },
         menu: function(model, value) {
             var menu = this.$('.menu li');
@@ -64,6 +65,9 @@ define(["backbone", "factory"], function(Backbone) {
         },
         onLocations: function() {
             this.model.trigger('onLocations');
+        },
+        onCart: function() {
+            this.model.trigger('onCart');
         },
         update: function() {
             var quantity = this.options.cart.get_only_product_quantity(),
