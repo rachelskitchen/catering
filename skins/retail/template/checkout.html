@@ -74,6 +74,17 @@
 
 <script type="text/template" id="checkout_address-template">
     <div class="row">
+        <label class="select" for="countries"><span class="required bold">Country:</span></label>
+        <div class="select countries">
+            <div class="select_arrows"></div>
+            <select class="states" id="countries">
+            <% for (var i in countries) { %>
+                <option value="<%= i %>" <% if(i.toLowerCase() == country.toLowerCase()) { %>selected="selected"<% } %>><%= countries[i] %></option>
+            <% } %>
+            </select>
+        </div>
+    </div>
+    <div class="row">
         <label for="addressLine1"><span class="required bold">Address Line 1:</span></label>
         <div class="input_beauty">
             <input type="text" id="addressLine1" name="address_line1" class='street_1' value="<%= street_1 %>">
@@ -109,6 +120,11 @@
         <div class="input_beauty">
             <input type="text" id="zip" name="zip" class='zipcode' value="<%= zipcode %>">
         </div>
+    </div>
+    <label class="select"><span class="required bold">Shipping & Handling:</span></label>
+    <div class="select shipping">
+        <div class="select_arrows"></div>
+        <select class="shipping-select"></select>
     </div>
 </script>
 

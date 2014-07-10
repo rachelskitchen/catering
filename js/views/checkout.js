@@ -32,7 +32,6 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             this.listenTo(this.model, 'change:dining_option', this.controlAddress, this);
             this.listenTo(this.model, 'change:dining_option', this.controlDeliverySeat, this);
             this.customer = this.options.customer;
-            this.address_constructor = App.Views.CheckoutView.CheckoutAddressView;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.model.get('dining_option') === 'DINING_OPTION_DELIVERY' && 
                  this.controlAddress(null, 'DINING_OPTION_DELIVERY');
@@ -113,7 +112,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         controlAddress: function(model, value) {
             if(value === 'DINING_OPTION_DELIVERY') {
                 this.customer.set('shipping_address', -1);
-                var address = new this.address_constructor({customer: this.customer});
+                var address = new App.Views.CheckoutView.CheckoutAddressView({customer: this.customer});
                 this.subViews.push(address);
                 this.$('.delivery_address').append(address.el);
                 if(address.model.state)

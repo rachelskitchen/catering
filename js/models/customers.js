@@ -31,7 +31,17 @@ define(["backbone", "geopoint"], function(Backbone) {
             email: "",
             id: null,
             addresses: [],
-            shipping_address: null
+            shipping_address: null,
+            shipping_services: [{
+                    "shipping_charge":15.0,
+                    "class_of_service":"One-day delivery"
+                },
+                {
+                    "shipping_charge":12.0,
+                    "class_of_service":"7-10 business days"
+                }
+            ],
+            shipping_selected: 1,
             /**
              * address - from function address_str. available only for other addresses
              * city

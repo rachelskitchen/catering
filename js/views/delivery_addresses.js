@@ -35,13 +35,18 @@ define(['backbone', 'factory'], function(Backbone) {
                             ? this.model.addresses[this.model.addresses.length - 1] : undefined;
 
             this.model.addresses = this.model.addresses.filter(getInitialAddresses);
-            this.model.country = settings.address && settings.address.country;
+            
+            if (this.model.addresses[0] && this.model.addresses[0].country) 
+                var country_selected = this.model.addresses[0].country;
+
+            this.model.country = country_selected ? country_selected : (settings.address && settings.address.country);
             this.model.state = settings.address && settings.address.state ? (lastAddress ? lastAddress.state : settings.address.state) : null;
             this.model.states = getStates();
             this.model.street_1 = lastAddress ? lastAddress.street_1 : '';
             this.model.street_2 = lastAddress ? lastAddress.street_2 : '';
             this.model.city = lastAddress ? lastAddress.city : '';
             this.model.zipcode = lastAddress ? lastAddress.zipcode : '';
+            this.model.countries = getCountries();
 
             this.otherAddress = {
                 street_1: lastAddress ? lastAddress.street_1 : '',
@@ -60,15 +65,47 @@ define(['backbone', 'factory'], function(Backbone) {
             this.events['focus input[name="address_line2"]'] = this.focus.bind(this, 'ALine2');
             this.events['blur input[name="address_line2"]'] = this.blur.bind(this, 'ALine2', this.changeLine2);
 
+            this.model.isShippingSelector = App.Settings.service_type == ServiceType.RETAIL;
+
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
             this.$el.html(this.template(this.model));
+            this.updateShippingServises();
             return this;
         },
         events: {
             'change select.states': 'changeState',
-            'change input[name="zip"]': 'changeZip'
+            'change input[name="zip"]': 'changeZip',
+            'change .shipping-select': 'change_shipping'
+        },
+        updateShippingServises: function(){
+            if (this.model.isShippingSelector) {
+                var shipping = this.$('.shipping-select').empty();
+                for (var index in this.model.shipping_services) {
+                    var name = this.model.shipping_services[index].class_of_service + " (" + App.Settings.currency_symbol + 
+                               this.model.shipping_services[index].shipping_charge +")";
+                    shipping.append('<option value="' + index + '">' + name + '</option>');
+                };
+                if (this.model.shipping_services.length == 0) {
+                    shipping.append('<option value="-1">' + MSG.SHIPPING_SERVICES_NOT_FOUND + '</option>');
+                }
+            }
+        },       
+        change_shipping : function(e) {
+            var value = e.currentTarget.value,
+                oldValue = this.options.customer.get("shipping_selected");
+
+            if (value !== oldValue) {
+                this.options.customer.set('shipping_selected', value);
+                App.Data.myorder.reculculate_tax();
+            }
+        },
+        set_shipping : function() {
+            var value = this.options.customer.get("shipping_selected") || 0,
+                type = this.$('.shipping-select');
+
+            type.val(value);
         },
         changeLine1: function(e) {
             e.target.value = fistLetterToUpperCase(e.target.value);
@@ -125,6 +162,15 @@ define(['backbone', 'factory'], function(Backbone) {
             typeof cb === 'function' && cb.call(this, event);
         }
     });
+
+    function getCountries() {
+        return {
+            US: 'United States',
+            RU: 'Russia',            
+            GB: 'Great Britain',
+            FR: 'France'
+        }
+    }
 
     function getStates() {
         return {

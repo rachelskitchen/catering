@@ -271,6 +271,7 @@ define(["backbone", "main_router"], function(Backbone) {
                     header: headers.checkout,
                     cart: carts.checkout,
                     content: {
+                        isCartLeftPanel: true,
                         modelName: 'Checkout',
                         collection: App.Data.myorder,
                         mod: 'Page',
