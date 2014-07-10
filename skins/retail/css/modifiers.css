@@ -24,8 +24,10 @@
 }
 
 .modifiers_info > div, .product_attribute_info {
-    position: relative;
+    position: absolute;
     padding-right: 15px;
+    padding-left: 400px;
+    bottom: 0;
 }
 
 .modifiers_table .product_attributes_selected .modifier_class_wrapper:first-child, .modifier_class_wrapper {
@@ -118,4 +120,8 @@
     border-radius: 15px;
     border-style: solid;
     padding: 2px 7px;
+}
+#modifiers_popup .product_attribute_info .modifier_class_wrapper {
+    border: none;
+    padding-top: 0;
 }

@@ -90,6 +90,8 @@ define(["backbone"], function(Backbone) {
         },
         isStoreClosed: function() {
             var dining_option = this.get('dining_option');
+            if(App.Settings.service_type == App.Skins.RETAIL)
+                return false;
             if(this.get('pickupTS') === null && dining_option !== 'DINING_OPTION_DELIVERY_SEAT' && dining_option !== 'DINING_OPTION_ONLINE') {
                 return {
                     status: 'ERROR',

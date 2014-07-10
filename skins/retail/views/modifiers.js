@@ -23,6 +23,64 @@
 define(["backbone", "factory", 'modifiers_view'], function(Backbone) {
     'use strict';
 
+    App.Views.ModifiersView.ModifiersMatrixView = App.Views.CoreModifiersView.CoreModifiersMatrixView.extend({
+        name: 'modifiers',
+        mod: 'matrix',
+        initialize: function() {
+            App.Views.CoreModifiersView.CoreModifiersMatrixView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'change:option', this.change, this);
+        },
+        change: function(model, value) {
+            if(value != this.options.id)
+                return;
+
+            var data = this.options.data,
+                id = this.options.id,
+                product = data.product,
+                row = 'attribute_' + data.row +'_selected';
+
+            product.set(row, id);
+        }
+    });
+
+    App.Views.ModifiersView.ModifiersMatrixesView = App.Views.CoreModifiersView.CoreModifiersMatrixesView.extend({
+        initialize: function() {
+            this.model = new Backbone.Model;
+            App.Views.CoreModifiersView.CoreModifiersMatrixesView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            App.Views.CoreModifiersView.CoreModifiersMatrixesView.prototype.render.apply(this, arguments);
+            var data = this.options.data,
+                row = data.row,
+                selected = data.product.get('attribute_' + row + '_selected');
+            this.$('select').val(selected);
+            return this;
+        },
+        events: {
+            'change select': 'change'
+        },
+        addItem: function(data) {
+            var view = App.Views.GeneratorView.create('Modifiers', {
+                el: $('<option class="modifier"></option>'),
+                mod: 'Matrix',
+                data: data.data,
+                id: data.id,
+                name: data.name,
+                model: this.model
+            });
+            view.$el.attr('value', data.id);
+            this.$('.modifiers-list').append(view.el);
+            this.subViews.push(view);
+        },
+        change: function(e) {
+            var data = this.options.data;
+            if(e.target.value == -1)
+                data.product.set('attribute_' + data.row +'_selected', null);
+            else
+                this.model.trigger('change:option', this.model, e.target.value);
+        }
+    });
+
     App.Views.ModifiersClassesView.ModifiersClassesMatrixesView = App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView.extend({
         addItem: function() {
             App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView.prototype.addItem.apply(this, arguments);

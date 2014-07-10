@@ -31,7 +31,7 @@ define(["backbone", "myorder_view"], function(Backbone) {
         render: function() {
             App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.render.apply(this, arguments);
             if (this.options.action === 'add') {
-                this.$('.action_button').html('Add Item');
+                this.$('.action_button').html('Add to Bag');
             } else {
                 this.$('.action_button').html('Update Item');
             }
@@ -78,7 +78,6 @@ define(["backbone", "myorder_view"], function(Backbone) {
             }
         },
         action: function (event) {
-
             var check = this.model.check_order(),
                 self = this;
 

@@ -19,9 +19,14 @@
     </label>
 </script>
 
+<script type="text/template" id="modifiers_matrix-template">
+    <%= name %>
+</script>
+
 <script type="text/template" id="modifiers_list-template">
-    <ul class="modifiers modifiers-list"></ul>
-    <div class='clear'></div>
+    <select class="modifiers modifiers-list">
+        <option value="-1">Please select...</option>
+    </select>
 </script>
 
 <script type="text/template" id="modifiers_classes_item-template">
@@ -32,8 +37,6 @@
             Choose one or more
         <% } else if (type === 0 && forced) { %>
             Choose one or more
-        <% } else if (type === 1) { %>
-            Choose one
         <% } else if (type === 2) { %>
             Optional
         <% } %>

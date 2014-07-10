@@ -8,6 +8,7 @@
     border-radius: 18px;
     border-width: 1px;
     border-style: solid;
+    position: relative;
 }
 #modifiers_popup .action_button {
     position: absolute;

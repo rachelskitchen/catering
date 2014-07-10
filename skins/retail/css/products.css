@@ -99,6 +99,17 @@
 .product_image .img-spinner {
     height: 100%;
 }
+.product_info dl {
+    height: 250px;
+    overflow-x: hidden;
+}
+.product_attribute_info select {
+    width: 200px;
+    margin-left: 0;
+}
+.product_attribute_info .modifiers_classes_title {
+    font-weight: 700;
+}
 /* list item mod block start */
 #modifiers_popup .product {
     position: relative;
@@ -120,12 +131,11 @@
     margin-right: 50px;
     float: left;
     text-align: center;
-    outline: 1px solid red;
 }
 
 #modifiers_popup .product .img-spinner {
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    height: 100%;
 }
 
 #modifiers_popup .product .name {

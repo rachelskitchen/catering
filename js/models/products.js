@@ -140,6 +140,27 @@ define(["backbone", 'childproducts'], function(Backbone) {
                 return child.get_attributes_list();
             }
         },
+        /*
+         * returns {name: <name>, value: <value>, selected: <id>}
+         */
+        get_attribute: function(type) {
+            if(type != 1 || type !=2)
+                type = 1;
+
+            if(!this.get('attribute_' + type + '_enable'))
+                return;
+
+            var all_attrs = this.get_attributes_list(),
+                name = this.get('attribute_' + type + '_name'),
+                selected = this.get('attribute_' + type + '_selected'),
+                value = all_attrs['attribute_' + type + '_all'][selected];
+
+            return {
+                name: name,
+                value: value,
+                selected: selected
+            };
+        },
         get_child_products: function() {
             var type = this.get('attribute_type'),
                 def = $.Deferred();
@@ -227,7 +248,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
             } else {
                 $.ajax({
                     type: "POST",
-                    url: App.Data.settings.get("host")+"/weborders/check_gift/",
+                    url: App.Data.settings.get("host") + "/weborders/check_gift/",
                     dataType: 'JSON',
                     data: {
                         card: gift_number,
