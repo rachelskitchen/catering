@@ -131,6 +131,10 @@ define(["backbone", "async"], function(Backbone) {
                 skin = params.skin;
 
             self.set("skin", skin && self.get('supported_skins').indexOf(skin) > -1 ? skin : App.Skins.DEFAULT);
+            
+            //set alias to current skin
+            App.skin = self.get("skin");
+
             self.set("img_path", self.get("skinPath") + "/img/");
             self.set("host", require('app').REVEL_HOST);
 
@@ -298,7 +302,7 @@ define(["backbone", "async"], function(Backbone) {
                             settings_system.scales.number_of_digits_to_right_of_decimal = Math.abs((settings_system.scales.number_of_digits_to_right_of_decimal).toFixed(0) * 1);
 
                             self.set("settings_system", settings_system);
-                            App.Settings = App.Data.settings.get("settings_system");                           
+                            App.Settings = App.Data.settings.get("settings_system");
                             if (!self.get_payment_process()) {
                                 console.log("payment processor not found");
                                 self.set('isMaintenance', true);

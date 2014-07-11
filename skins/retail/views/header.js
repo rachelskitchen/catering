@@ -93,6 +93,20 @@ define(["backbone", "factory"], function(Backbone) {
             loadSpinner(this.$('img.logo'));
             App.Views.HeaderView.HeaderMainView.prototype.update.apply(this);
             return this;
+        },
+        events: {
+            'click .shop': 'onMenu',
+            'click .about': 'onAbout',
+            'click .locations': 'onLocations',
+        },
+        onMenu: function() {
+            this.model.trigger('onShop');
+        },
+        onAbout: function() {
+            this.model.trigger('onAbout');
+        },
+        onLocations: function() {
+            this.model.trigger('onLocations');
         }
     });
 });

@@ -383,7 +383,8 @@ function position_alert() {
 }
 
 function alert_message(options) {
-    if (App.Data.settings.get && App.Data.settings.get("skin") == "weborder") {
+
+    if (App.Data.settings.get && (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL)) {
         tmpl_alert_message(options);
     } else {
         jq_alert_message(options);
