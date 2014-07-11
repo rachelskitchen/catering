@@ -24,6 +24,12 @@
         <li class="special">*** <%= special %></li>
         <% } %>
     </ul>
+    <% _.each(attrs, function(attr) { %>
+    <div class="attrs">
+        <span><%= attr.name %></span>:
+        <span><%= attr.value %></span>
+    </div>
+    <% }); %>
     <div class="cost">
         <span class="currency_symbol"><%= currency_symbol %></span>
         <span class="price"><%= price_sum %></span>

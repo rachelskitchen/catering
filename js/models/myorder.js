@@ -324,6 +324,15 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             return this.get('product').get_attributes_list();
         },
         /**
+         * get selected attributes
+         * returns array with selected attributes
+         *      or `undefined` if there is not any selected attributes
+         */
+        get_attributes: function() {
+            var product = this.get('product');
+            return product ? product.get_attributes() : undefined;
+        },
+        /**
          * check if order is gift
          */
         is_gift: function() {

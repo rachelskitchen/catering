@@ -144,7 +144,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
          * returns {name: <name>, value: <value>, selected: <id>}
          */
         get_attribute: function(type) {
-            if(type != 1 || type !=2)
+            if(type != 1 && type != 2)
                 type = 1;
 
             if(!this.get('attribute_' + type + '_enable'))
@@ -160,6 +160,18 @@ define(["backbone", 'childproducts'], function(Backbone) {
                 value: value,
                 selected: selected
             };
+        },
+        /*
+         * returns array of selected attributes [{name: <name>, value: <value>, selected: <id>}, ...]
+         */
+        get_attributes: function() {
+            var attr1 = this.get_attribute(1),
+                attr2 = this.get_attribute(2),
+                attrs = [];
+            attr1 && attrs.push(attr1);
+            attr2 && attrs.push(attr2);
+            if(attrs.length > 0)
+                return attrs;
         },
         get_child_products: function() {
             var type = this.get('attribute_type'),

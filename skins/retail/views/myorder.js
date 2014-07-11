@@ -167,6 +167,14 @@ define(["backbone", "myorder_view"], function(Backbone) {
                     real: model,
                     action: 'update'
                 });
+        },
+        getData: function() {
+            var data = App.Views.CoreMyOrderView.CoreMyOrderItemView.prototype.getData.apply(this, arguments),
+                attrs = this.model.get_attributes();
+
+            return $.extend(data, {
+                attrs: attrs || []
+            });
         }
     });
 

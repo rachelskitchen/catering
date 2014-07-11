@@ -105,6 +105,31 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'change', this.update);
         },
         render: function() {
+            var self = this,
+                modifiers = this.model.get_modifiers();
+
+            this.$el.html(this.template(this.getData()));
+
+            modifiers && modifiers.each(function(modifier) {
+                if(modifier.get('admin_modifier') && (modifier.get('admin_mod_key') == 'SPECIAL' || modifier.get('admin_mod_key') == 'SIZE'))
+                    return;
+                var selected = modifier.get('modifiers').where({selected: true});
+                selected.forEach(function(modifier) {
+                    var view = App.Views.GeneratorView.create('MyOrder', {
+                        el: $('<li></li>'),
+                        mod: 'Modifier',
+                        model: modifier
+                    });
+                    self.subViews.push(view);
+                    view.$el.addClass('s' + (round_monetary_currency(modifier.get('price')).length + 1));
+
+                    self.$('ul').append(view.el);
+                });
+            });
+
+            return this;
+        },
+        getData: function() {
             var self = this, num_digits,
                 model = this.model.toJSON(),
                 modifiers = this.model.get_modifiers(),
@@ -130,26 +155,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 model.weight = model.weight.toFixed(num_digits);
             }
 
-            this.$el.html(this.template(model));
-
-            modifiers && modifiers.each(function(modifier) {
-                if(modifier.get('admin_modifier') && (modifier.get('admin_mod_key') == 'SPECIAL' || modifier.get('admin_mod_key') == 'SIZE'))
-                    return;
-                var selected = modifier.get('modifiers').where({selected: true});
-                selected.forEach(function(modifier) {
-                    var view = App.Views.GeneratorView.create('MyOrder', {
-                        el: $('<li></li>'),
-                        mod: 'Modifier',
-                        model: modifier
-                    });
-                    self.subViews.push(view);
-                    view.$el.addClass('s' + (round_monetary_currency(modifier.get('price')).length + 1));
-
-                    self.$('ul').append(view.el);
-                });
-            });
-
-            return this;
+            return model;
         },
         events: {
             'click .remove': "removeItem",

@@ -535,7 +535,7 @@ section.maintenance p {
     text-transform: uppercase;
     font-size: 14px;
 }
-#cart .order-items .cost {
+#cart .order-items .cost, #cart .order-items .attrs {
     height: 15px;
     font-size: 12px;
 }
