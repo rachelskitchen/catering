@@ -53,9 +53,14 @@ define(["backbone", "factory"], function(Backbone) {
             'click .cart': 'onCart'
         },
         menu: function(model, value) {
-            var menu = this.$('.menu li');
+            var menu = this.$('.menu li'),
+                tabs = this.subViews[0].$el;
             menu.removeClass('active');
             menu.eq(value).addClass('active');
+            if(value === 0)
+                tabs.removeClass('hidden');
+            else
+                tabs.addClass('hidden');
         },
         onMenu: function() {
             this.model.trigger('onShop');
@@ -85,28 +90,18 @@ define(["backbone", "factory"], function(Backbone) {
     });
 
     App.Views.HeaderView.HeaderCheckoutView = App.Views.HeaderView.HeaderMainView.extend({
-        name: 'header',
-        mod: 'checkout',
+        initialize: function() {
+            this.listenTo(this.options.cart, 'add remove', this.update, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
         render: function() {
-            this.$el.addClass("main"); // using the same styles for header from main view
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             loadSpinner(this.$('img.logo'));
-            App.Views.HeaderView.HeaderMainView.prototype.update.apply(this);
+            this.update();
             return this;
         },
-        events: {
-            'click .shop': 'onMenu',
-            'click .about': 'onAbout',
-            'click .locations': 'onLocations',
-        },
-        onMenu: function() {
-            this.model.trigger('onShop');
-        },
-        onAbout: function() {
-            this.model.trigger('onAbout');
-        },
-        onLocations: function() {
-            this.model.trigger('onLocations');
+        onCart: function() {
+            return;
         }
     });
 });

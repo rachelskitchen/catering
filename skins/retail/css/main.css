@@ -218,6 +218,9 @@ footer {
     text-shadow: none;
     font-weight: bold;
 }
+#header .main.checkout ul.menu li.cart {
+    cursor: default;
+}
 #header .main div.logo .img-spinner,
 .confirm #header .img-spinner {
     height: 100%;

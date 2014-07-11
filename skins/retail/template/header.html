@@ -4,26 +4,13 @@
         <img src=<%= logo %> alt="<%= business_name %> logo" class="logo" data-default-index="1">
     </div>
     <ul class="menu">
-        <li class="shop <% if(typeof tab_index == 'number' && tab_index === 0) { %> active <% } %>">Shop</li>
-        <li class="about <% if(typeof tab_index == 'number' && tab_index === 1) { %> active <% } %>">About</li>
-        <li class="locations <% if(typeof tab_index == 'number' && tab_index === 2) { %> active <% } %>">Locations</li>
+        <li class="shop <% if(menu_index === 0) { %> active <% } %>">Shop</li>
+        <li class="about <% if(menu_index === 1) { %> active <% } %>">About</li>
+        <li class="locations <% if(menu_index === 2) { %> active <% } %>">Locations</li>
         <li class="cart"></li>
     </ul>
 </script>
 
 <script type="text/template" id="header_confirmation-template">
     <img src=<%= logo %> alt="<%= business_name %> logo" class="logo">
-</script>
-
-<script type="text/template" id="header_checkout-template">
-    <h3 class='title'>Checkout & Order Details</h3>
-    <div class="logo">
-        <img src=<%= logo %> alt="<%= business_name %> logo" class="logo" data-default-index="1">
-    </div>
-    <ul class="menu">
-        <li class="shop <% if (tab_index === 0) { %> active <% } %>">Shop</li>
-        <li class="about <% if (tab_index === 1) { %> active <% } %>">About</li>
-        <li class="locations <% if (tab_index === 2) { %> active <% } %>">Locations</li>
-        <li class="cart"></li>
-    </ul>
 </script>
