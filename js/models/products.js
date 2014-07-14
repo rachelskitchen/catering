@@ -29,6 +29,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
             id: null,
             id_category : null,
             image: null,
+            images: null,
             is_cold: false,
             name: null,
             price: null,
@@ -59,6 +60,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
                 img: App.Data.settings.get("img_path"),
                 checked_gift_cards: {}
             });
+            this.listenTo(this, 'change:images change:image', this.images, this);
         },
         addJSON: function(data) {
             if (data.image === '') delete data.image;
@@ -280,6 +282,28 @@ define(["backbone", 'childproducts'], function(Backbone) {
                     }
                 });
             }
+        },
+        images: function(model, imgs) {
+            var img = this.get('image'),
+                imgs = this.get('images'),
+                settings = App.Data.settings,
+                defImg = settings.get_img_default(),
+                host = settings.get('host'),
+                images = [];
+
+            if(Array.isArray(imgs)) {
+                images = imgs.map(function(image) {
+                    return /^https?:\/\//.test(image) ? image : host + image.replace(/^([^\/])/, '/$1');
+                });
+            }
+
+            if(defImg != img) {
+                images.indexOf(img) == -1 && images.unshift(img);
+            } else if(images.length == 0){
+                images.indexOf(img) == -1 && images.push(img);
+            }
+
+            this.set('images', images, {silent: true});
         }
     });
 

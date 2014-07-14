@@ -48,4 +48,30 @@ define(["backbone", "factory", "generator", 'products_view'], function(Backbone)
             }
         }
     });
+
+    App.Views.ProductView.ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView.extend({
+        render: function() {
+            App.Views.CoreProductView.CoreProductModifiersView.prototype.render.apply(this, arguments);
+            this.showImage({
+                currentTarget: this.$('.gallery > li:first')
+            });
+            return this;
+        },
+        events: function() {
+            var parent = App.Views.CoreProductView.CoreProductModifiersView.prototype.events;
+            return $.extend(parent, {
+                'click li[data-index]': 'showImage'
+            });
+        },
+        showImage: function(event) {
+            var images = this.model.get('product').get('images'),
+                li = $(event.currentTarget),
+                index = li.attr('data-index'),
+                image = this.$('.large');
+            image.attr('src', images[index]);
+            loadSpinner(image);
+            this.$('.gallery > li').removeClass('active');
+            li.addClass('active');
+        }
+    });
 });

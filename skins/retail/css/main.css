@@ -186,7 +186,7 @@ footer {
     height: 100%;
     position: absolute;
     left: 0;
-    right: 340px;
+    right: 550px;
     top: 0;
     text-align: left;
     line-height: 62px;
@@ -232,6 +232,35 @@ footer {
     max-height: 85%;
     max-width: 100%;
     vertical-align: middle;
+}
+#header .main .search {
+    position: absolute;
+    right: 360px;
+    top: 18px;
+    border-width: 1px;
+    border-style: solid;
+    padding: 0 10px 0 30px;
+    height: 25px;
+    width: 130px;
+    border-radius: 14px;
+}
+#header .main .search:before {
+    content: '\f002';
+    font-family: FontAwesome;
+    position: absolute;
+    top: 0;
+    left: 10px;
+    width: 25px;
+    height: 100%;
+    line-height: 25px;
+}
+#header .main .search input {
+    border: none;
+    padding: 5px 0;
+    width: 100%;
+}
+#header .checkout .search {
+    display: none;
 }
 .powered-by {
     display: block;

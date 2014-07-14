@@ -25,7 +25,7 @@
 <script type="text/template" id="product_modifiers-template">
     <% if(!hide_images) { %>
         <div class='img_wrapper'>
-            <img class="block_img img" src="<%=image%>" alt="<%= name %> <%= id %> " />
+            <img class="block_img img large" src="<%= images[0] %>" alt="<%= name %> <%= id %>" />
         </div>
     <% } %>
     <dl>
@@ -58,4 +58,11 @@
     </div>
     <% } %>
     <div class='clear'></div>
+    <% if(!hide_images) { %>
+    <ul class="gallery">
+    <% _.each(images, function(image, i) { %>
+        <li data-index="<%= i %>"><img class="block_img img" src="<%= images[i] %>" alt="<% print('[' + i + ']' + name + ' ' + id); %>"></li>
+    <% }); %>
+    </ul>
+    <% } %>
 </script>

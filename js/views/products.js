@@ -121,6 +121,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             model.price_length = model.price.length;
             model.not_size = this.modifiers && this.modifiers.getSizeModel() === undefined;
             model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
+            model.images = Array.isArray(model.images) ? model.images : [];
             this.gift_price = model.is_gift && model.not_size;
 
             this.$el.html(this.template(model));

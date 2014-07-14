@@ -104,7 +104,7 @@ var ServiceType = {
     REVELLITE_QSR : 4,
     REVELLITE_RETAIL : 5,
     DONATION : 6
-}    
+}
 
 /**
 *  format message by formatting string and params.
@@ -757,8 +757,9 @@ function isAndroidWebKit() {
  */
 function loadSpinner(logo, anim, cb) {
     anim = typeof anim == 'undefined' ? true : anim;
-    if (logo.length !== 0) {
-        var src = btoa(logo.attr('src') + logo.attr('alt')),
+    logo.each(function() {
+        var logo = $(this),
+            src = btoa(logo.attr('src') + logo.attr('alt')),
             img, spinner;
         if(src in App.Data.images)
             return logo.replaceWith(App.Data.images[src].clone());
@@ -782,7 +783,7 @@ function loadSpinner(logo, anim, cb) {
             App.Data.log && App.Data.log.pushImageError(e.target.src);
         });
         return spinner;
-    }
+    });
 }
 
 /**
