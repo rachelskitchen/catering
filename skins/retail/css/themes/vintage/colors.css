@@ -437,7 +437,7 @@ aside:after, aside:before {
     -moz-box-shadow: 0px 0px 3px 3px rgba(129,195,222,0.5);
     box-shadow: 0px 0px 3px 3px rgba(129,195,222,0.5);
 }
-.product_info .gallery li.active:before {
+.product_info .images li.active:before {
     border-color: #611500;
 }
 
