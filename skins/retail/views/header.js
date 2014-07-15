@@ -31,6 +31,7 @@ define(["backbone", "factory"], function(Backbone) {
         initialize: function() {
             this.listenTo(this.model, 'change:menu_index', this.menu, this);
             this.listenTo(this.options.cart, 'add remove', this.update, this);
+            this.listenTo(this.options.search, 'onSearchComplete', this.searchComplete, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
@@ -39,7 +40,8 @@ define(["backbone", "factory"], function(Backbone) {
                 collection: this.collection,
                 mod: 'Tabs',
                 el: this.$('.categories'),
-                model: this.options.mainModel
+                model: this.options.mainModel,
+                search: this.options.search
             });
             this.subViews.push(view);
             loadSpinner(this.$('img.logo'));
@@ -50,7 +52,8 @@ define(["backbone", "factory"], function(Backbone) {
             'click .shop': 'onMenu',
             'click .about': 'onAbout',
             'click .locations': 'onLocations',
-            'click .cart': 'onCart'
+            'click .cart': 'onCart',
+            'submit .search': 'onSearch'
         },
         menu: function(model, value) {
             var menu = this.$('.menu li'),
@@ -73,6 +76,18 @@ define(["backbone", "factory"], function(Backbone) {
         },
         onCart: function() {
             this.model.trigger('onCart');
+        },
+        onSearch: function(event) {
+            event.preventDefault();
+            var search = this.$('input[name=search]').val();
+            if(search.length > 0)
+                this.options.search.search(search);
+        },
+        searchComplete: function(result) {
+            this.$('.search').get(0).reset();
+            var products = result.get('products');
+            if(!products || products.length == 0)
+                App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT);
         },
         update: function() {
             var quantity = this.options.cart.get_only_product_quantity(),
@@ -102,6 +117,9 @@ define(["backbone", "factory"], function(Backbone) {
         },
         onCart: function() {
             return;
-        }
+        },
+        onSearch: function() {
+            return;
+        },
     });
 });

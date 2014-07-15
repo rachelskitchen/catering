@@ -3,8 +3,8 @@
     <div class="logo">
         <img src=<%= logo %> alt="<%= business_name %> logo" class="logo" data-default-index="1">
     </div>
-    <form action="#index" method="get" class="search">
-        <input type="search" placeholder="Search" name="search">
+    <form class="search">
+        <input type="search" placeholder="Search" name="search" autocomplete="off">
     </form>
     <ul class="menu">
         <li class="shop <% if(menu_index === 0) { %> active <% } %>">Shop</li>

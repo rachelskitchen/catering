@@ -84,6 +84,7 @@ MSG.ERROR_GET_CHILD_PRODUCTS = "Unable to get the information about the product 
 MSG.SHIPPING_SERVICES_NOT_FOUND = "No shipping services found";
 MSG.SHIPPING_SERVICES_RETRIVE_IN_PROGRESS = "Retriving shipping services...";
 MSG.SHIPPING_SERVICES_SET_ADDRESS = "Fill required address fields above";
+MSG.PRODUCTS_EMPTY_RESULT = "No products found";
 
 // Dining options
 var DINING_OPTION = {

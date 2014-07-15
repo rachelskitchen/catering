@@ -72,7 +72,8 @@ define({
         card_view: "js/views/card",
         instructions_view: "js/views/instructions",
         done_view: "js/views/done",
-        slider_view: "js/views/slider"
+        slider_view: "js/views/slider",
+        search: "js/models/search"
     },
     waitSeconds: 30,
     shim: {
@@ -179,6 +180,9 @@ define({
         },
         "instructions_view": {
             deps: ["backbone", "factory"]
+        },
+        "search": {
+            deps: ["products"]
         }
     },
     map: {
