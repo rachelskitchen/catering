@@ -57,7 +57,7 @@ define(["backbone"], function(Backbone) {
                 delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
             }
 
-            if (App.Data.settings.get("skin") == App.Skins.RETAIL && App.Settings.service_type == ServiceType.RETAIL) {
+            if (App.Data.settings.get("skin") == App.Skins.RETAIL) {
                 DINING_OPTION_NAME.DINING_OPTION_TOGO = 'Pick up in store';
             }
 

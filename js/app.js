@@ -77,6 +77,8 @@
         Skins: skins
     };
 
+    App.Settings = {};
+
     // define main module
     define(['config'], function(config) {
         return {

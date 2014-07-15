@@ -160,7 +160,7 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
                 className: 'row'
             }); 
 
-            if (App.Settings.service_type != ServiceType.RETAIL) {
+            if (App.skin != App.Skins.RETAIL) {
                 var pickup = App.Views.GeneratorView.create('Checkout', {
                     model: this.collection.checkout,
                     timetable: this.options.timetable,

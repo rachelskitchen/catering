@@ -213,7 +213,7 @@ define(["backbone", "async"], function(Backbone) {
                         label_for_manual_weights: "",
                         number_of_digits_to_right_of_decimal: 0
                     },
-                    service_type: ServiceType.RETAIL
+                    type_of_service: ServiceType.TABLE_SERVICE
                 },
                 load = $.Deferred();
 

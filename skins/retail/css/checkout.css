@@ -53,10 +53,19 @@
     left: -22px;
 }
 #content > .checkout div.select.shipping {
+    display: inline-block;
     width: 320px;
 }
 #content > .checkout div.select_arrows {
     right: 2px;
+}
+#content > .checkout .shipping-status {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    vertical-align: middle;
+    margin-top: -4px;
+    font-size: 8px;    
 }
 /*#content > .checkout div.select_day, #content > .checkout div.select.states {
     width: 210px;
@@ -193,14 +202,18 @@
     overflow-x: hidden;
 }
 #content .checkout .arrow_top {
-    top: 24px;
+    top: 4px;
     left: 0;
-    right: 0;
+    right: 7px;
 }
 #content .checkout .arrow_bottom {
     bottom: 0;
     left: 0;
     right: 0;
+}
+#content > .checkout .delivery_address {
+    margin-bottom: 10px;
+    margin-top: 12px;
 }
 /* Pay card / PayPal selection popup */
 #pay_popup {

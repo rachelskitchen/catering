@@ -41,6 +41,7 @@ define(['backbone', 'factory'], function(Backbone) {
 
             this.model.country = country_selected ? country_selected : (settings.address && settings.address.country);
             this.model.state = settings.address && settings.address.state ? (lastAddress ? lastAddress.state : settings.address.state) : null;
+            this.model.originalState = this.model.state;
             this.model.states = getStates();
             this.model.street_1 = lastAddress ? lastAddress.street_1 : '';
             this.model.street_2 = lastAddress ? lastAddress.street_2 : '';
@@ -52,86 +53,121 @@ define(['backbone', 'factory'], function(Backbone) {
                 street_1: lastAddress ? lastAddress.street_1 : '',
                 street_2: lastAddress ? lastAddress.street_2 : '',
                 city: lastAddress ? lastAddress.city : '',
-                zipcode: lastAddress ? lastAddress.zipcode : ''
+                zipcode: lastAddress ? lastAddress.zipcode : '',
+                country: settings.address ? settings.address.country : undefined
             };
             if(this.model.country === 'US')
                 this.otherAddress.state = this.model.state || undefined;
 
-            // set listeners that format address fields
-            this.events['focus input[name="city"]'] = this.focus.bind(this, 'City');
-            this.events['blur input[name="city"]'] = this.blur.bind(this, 'City', this.changeCity);
-            this.events['focus input[name="address_line1"]'] = this.focus.bind(this, 'ALine1');
-            this.events['blur input[name="address_line1"]'] = this.blur.bind(this, 'ALine1', this.changeLine1);
-            this.events['focus input[name="address_line2"]'] = this.focus.bind(this, 'ALine2');
-            this.events['blur input[name="address_line2"]'] = this.blur.bind(this, 'ALine2', this.changeLine2);
+            this.model.isShippingServices = App.skin == App.Skins.RETAIL;
 
-            this.model.isShippingSelector = App.Settings.service_type == ServiceType.RETAIL;
+            if (this.model.isShippingServices)
+                this.listenTo(this.options.customer, 'change:shipping_services', this.updateShippingServices, this);
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
             this.$el.html(this.template(this.model));
-            this.updateShippingServises();
+
+            if (this.model.isShippingServices)
+                this.updateShippingServices();
+
             return this;
         },
-        events: {
+        events: {            
+            'change input[name]': 'onChangeElem',
+            'change select.country': 'countryChange',
             'change select.states': 'changeState',
-            'change input[name="zip"]': 'changeZip',
-            'change .shipping-select': 'change_shipping'
+            'change .shipping-select': 'changeShipping',
+            'focus input[name]': 'focus',
+            'blur input[name]': 'blur'
         },
-        updateShippingServises: function(){
-            if (this.model.isShippingSelector) {
+        onChangeElem: function(e) {
+            e.target.value = fistLetterToUpperCase(e.target.value).trim();
+            this.otherAddress[e.target.name] = e.target.value;
+            this.trigger('update_address');
+        },
+        updateShippingServices: function(){
+            var customer = this.options.customer,
+                shipping_services = customer.get("shipping_services"),
+                shipping_status = customer.get("load_shipping_status");
+           
+            if (this.model.isShippingServices) {
                 var shipping = this.$('.shipping-select').empty();
-                for (var index in this.model.shipping_services) {
-                    var name = this.model.shipping_services[index].class_of_service + " (" + App.Settings.currency_symbol + 
-                               this.model.shipping_services[index].shipping_charge +")";
+                if (!shipping_status || shipping_status == "panding") {
+                    shipping_services = [];
+                }
+                for (var index in shipping_services) {
+                    
+                    if (!parseFloat(shipping_services[index].shipping_charge)) {
+                        //Dummi code for incorrect server responce
+                        var A = shipping_services[index].class_of_service;
+                        var B = shipping_services[index].shipping_charge;
+                        shipping_services[index].class_of_service = B;
+                        shipping_services[index].shipping_charge = A;
+                    }
+                    
+                    var name = shipping_services[index].class_of_service + " (" + App.Settings.currency_symbol + 
+                               parseFloat(shipping_services[index].shipping_charge).toFixed(2) +")";
                     shipping.append('<option value="' + index + '">' + name + '</option>');
                 };
-                if (this.model.shipping_services.length == 0) {
-                    shipping.append('<option value="-1">' + MSG.SHIPPING_SERVICES_NOT_FOUND + '</option>');
+
+                shipping.removeAttr("status");
+                if (!shipping_status || shipping_status == "pending" || shipping_services.length == 0) {
+                    shipping.attr("disabled", "disabled");
+                    shipping.attr("status", "panding");
                 }
+                else {
+                    shipping.removeAttr("disabled");    
+                }                
+                
+                if (shipping_status && shipping_status != "pending" && shipping_services.length == 0) {
+                    shipping.append('<option value="-1">' + MSG.SHIPPING_SERVICES_NOT_FOUND + '</option>');
+                    shipping.attr("status", "error");
+                }
+                
+                if (!shipping_status) {
+                    shipping.append('<option value="-1">' + MSG.SHIPPING_SERVICES_SET_ADDRESS.toLowerCase() + '</option>');
+                }
+                
+                this.$(".shipping-status").html("");
+                if (shipping_status == "pending") {
+                    shipping.append('<option value="-1">' + MSG.SHIPPING_SERVICES_RETRIVE_IN_PROGRESS.toLowerCase() + '</option>');
+                    this.$(".shipping-status").spinner();
+                }                
             }
+        },
+        countryChange: function(e) {
+            this.otherAddress.country = e.target.value;
+            this.model.country = this.otherAddress.country;
+            
+            if (this.otherAddress.country == 'US') {
+                this.otherAddress.state =  this.model.originalState;
+                this.model.state = this.model.originalState;
+            } 
+            else {
+                this.otherAddress.state = undefined;
+            }
+            
+            this.render();
+            this.trigger('update_address');
         },       
-        change_shipping : function(e) {
+        changeShipping: function(e) {
             var value = e.currentTarget.value,
                 oldValue = this.options.customer.get("shipping_selected");
 
             if (value !== oldValue) {
                 this.options.customer.set('shipping_selected', value);
-                App.Data.myorder.reculculate_tax();
+                //App.Data.myorder.reculculate_tax();
             }
-        },
-        set_shipping : function() {
-            var value = this.options.customer.get("shipping_selected") || 0,
-                type = this.$('.shipping-select');
-
-            type.val(value);
-        },
-        changeLine1: function(e) {
-            e.target.value = fistLetterToUpperCase(e.target.value);
-            this.otherAddress.street_1 = e.target.value;
-            this.trigger('update_address');
-        },
-        changeLine2: function(e) {
-            e.target.value = fistLetterToUpperCase(e.target.value);
-            this.otherAddress.street_2 = e.target.value;
-            this.trigger('update_address');
-        },
-        changeCity: function(e) {
-            e.target.value = fistLetterToUpperCase(e.target.value);
-            this.otherAddress.city = e.target.value;
-            this.trigger('update_address');
-        },
-        changeZip: function(e) {
-            this.otherAddress.zipcode = e.target.value;
-            this.trigger('update_address');
         },
         changeState: function(e) {
             this.otherAddress.state = e.target.value;
-            this.trigger('update_address');
+            this.trigger('update_address');                       
         },
-        focus: function(name, event){
-            var prev = null,
+        focus: function(event){
+            var name = event.target.name,
+                prev = null,
                 format = 'format' + name,
                 listen = 'listen' + name;
             this[format] = function() {
@@ -153,24 +189,263 @@ define(['backbone', 'factory'], function(Backbone) {
             };
             this[listen] = setInterval(this[format], 50);
         },
-        blur: function(name, cb, event){
-            var format = 'format' + name,
+        blur: function(event){
+            var name = event.target.name,
+                format = 'format' + name,
                 listen = 'listen' + name;
             clearInterval(this['listen' + name]);
             delete this[format];
             delete this[listen];
-            typeof cb === 'function' && cb.call(this, event);
         }
     });
 
-    function getCountries() {
-        return {
-            US: 'United States',
-            RU: 'Russia',            
-            GB: 'Great Britain',
-            FR: 'France'
-        }
+function getCountries(){
+    return {
+        "AF":"Afghanistan",
+        "AX":"Åland Islands",
+        "AL":"Albania",
+        "DZ":"Algeria",
+        "AS":"American Samoa",
+        "AD":"AndorrA",
+        "AO":"Angola",
+        "AI":"Anguilla",
+        "AQ":"Antarctica",
+        "AG":"Antigua and Barbuda",
+        "AR":"Argentina",
+        "AM":"Armenia",
+        "AW":"Aruba",
+        "AU":"Australia",
+        "AT":"Austria",
+        "AZ":"Azerbaijan",
+        "BS":"Bahamas",
+        "BH":"Bahrain",
+        "BD":"Bangladesh",
+        "BB":"Barbados",
+        "BY":"Belarus",
+        "BE":"Belgium",
+        "BZ":"Belize",
+        "BJ":"Benin",
+        "BM":"Bermuda",
+        "BT":"Bhutan",
+        "BO":"Bolivia",
+        "BA":"Bosnia and Herzegovina",
+        "BW":"Botswana",
+        "BV":"Bouvet Island",
+        "BR":"Brazil",
+        "IO":"British Indian Ocean Territory",
+        "BN":"Brunei Darussalam",
+        "BG":"Bulgaria",
+        "BF":"Burkina Faso",
+        "BI":"Burundi",
+        "KH":"Cambodia",
+        "CM":"Cameroon",
+        "CA":"Canada",
+        "CV":"Cape Verde",
+        "KY":"Cayman Islands",
+        "CF":"Central African Republic",
+        "TD":"Chad",
+        "CL":"Chile",
+        "CN":"China",
+        "CX":"Christmas Island",
+        "CC":"Cocos (Keeling) Islands",
+        "CO":"Colombia",
+        "KM":"Comoros",
+        "CG":"Congo",
+        "CD":"Congo, The Democratic Republic of the",
+        "CK":"Cook Islands",
+        "CR":"Costa Rica",
+        "CI":"Cote D'Ivoire",
+        "HR":"Croatia",
+        "CU":"Cuba",
+        "CY":"Cyprus",
+        "CZ":"Czech Republic",
+        "DK":"Denmark",
+        "DJ":"Djibouti",
+        "DM":"Dominica",
+        "DO":"Dominican Republic",
+        "EC":"Ecuador",
+        "EG":"Egypt",
+        "SV":"El Salvador",
+        "GQ":"Equatorial Guinea",
+        "ER":"Eritrea",
+        "EE":"Estonia",
+        "ET":"Ethiopia",
+        "FK":"Falkland Islands (Malvinas)",
+        "FO":"Faroe Islands",
+        "FJ":"Fiji",
+        "FI":"Finland",
+        "FR":"France",
+        "GF":"French Guiana",
+        "PF":"French Polynesia",
+        "TF":"French Southern Territories",
+        "GA":"Gabon",
+        "GM":"Gambia",
+        "GE":"Georgia",
+        "DE":"Germany",
+        "GH":"Ghana",
+        "GI":"Gibraltar",
+        "GR":"Greece",
+        "GL":"Greenland",
+        "GD":"Grenada",
+        "GP":"Guadeloupe",
+        "GU":"Guam",
+        "GT":"Guatemala",
+        "GG":"Guernsey",
+        "GN":"Guinea",
+        "GW":"Guinea-Bissau",
+        "GY":"Guyana",
+        "HT":"Haiti",
+        "HM":"Heard Island and Mcdonald Islands",
+        "VA":"Holy See (Vatican City State)",
+        "HN":"Honduras",
+        "HK":"Hong Kong",
+        "HU":"Hungary",
+        "IS":"Iceland",
+        "IN":"India",
+        "ID":"Indonesia",
+        "IR":"Iran, Islamic Republic Of",
+        "IQ":"Iraq",
+        "IE":"Ireland",
+        "IM":"Isle of Man",
+        "IL":"Israel",
+        "IT":"Italy",
+        "JM":"Jamaica",
+        "JP":"Japan",
+        "JE":"Jersey",
+        "JO":"Jordan",
+        "KZ":"Kazakhstan",
+        "KE":"Kenya",
+        "KI":"Kiribati",
+        "KP":"Korea, Democratic People'S Republic of",
+        "KR":"Korea, Republic of",
+        "KW":"Kuwait",
+        "KG":"Kyrgyzstan",
+        "LA":"Lao People'S Democratic Republic",
+        "LV":"Latvia",
+        "LB":"Lebanon",
+        "LS":"Lesotho",
+        "LR":"Liberia",
+        "LY":"Libyan Arab Jamahiriya",
+        "LI":"Liechtenstein",
+        "LT":"Lithuania",
+        "LU":"Luxembourg",
+        "MO":"Macao",
+        "MK":"Macedonia, The Former Yugoslav Republic of",
+        "MG":"Madagascar",
+        "MW":"Malawi",
+        "MY":"Malaysia",
+        "MV":"Maldives",
+        "ML":"Mali",
+        "MT":"Malta",
+        "MH":"Marshall Islands",
+        "MQ":"Martinique",
+        "MR":"Mauritania",
+        "MU":"Mauritius",
+        "YT":"Mayotte",
+        "MX":"Mexico",
+        "FM":"Micronesia, Federated States of",
+        "MD":"Moldova, Republic of",
+        "MC":"Monaco",
+        "MN":"Mongolia",
+        "MS":"Montserrat",
+        "MA":"Morocco",
+        "MZ":"Mozambique",
+        "MM":"Myanmar",
+        "NA":"Namibia",
+        "NR":"Nauru",
+        "NP":"Nepal",
+        "NL":"Netherlands",
+        "AN":"Netherlands Antilles",
+        "NC":"New Caledonia",
+        "NZ":"New Zealand",
+        "NI":"Nicaragua",
+        "NE":"Niger",
+        "NG":"Nigeria",
+        "NU":"Niue",
+        "NF":"Norfolk Island",
+        "MP":"Northern Mariana Islands",
+        "NO":"Norway",
+        "OM":"Oman",
+        "PK":"Pakistan",
+        "PW":"Palau",
+        "PS":"Palestinian Territory, Occupied",
+        "PA":"Panama",
+        "PG":"Papua New Guinea",
+        "PY":"Paraguay",
+        "PE":"Peru",
+        "PH":"Philippines",
+        "PN":"Pitcairn",
+        "PL":"Poland",
+        "PT":"Portugal",
+        "PR":"Puerto Rico",
+        "QA":"Qatar",
+        "RE":"Reunion",
+        "RO":"Romania",
+        "RU":"Russian Federation",
+        "RW":"RWANDA",
+        "SH":"Saint Helena",
+        "KN":"Saint Kitts and Nevis",
+        "LC":"Saint Lucia",
+        "PM":"Saint Pierre and Miquelon",
+        "VC":"Saint Vincent and the Grenadines",
+        "WS":"Samoa",
+        "SM":"San Marino",
+        "ST":"Sao Tome and Principe",
+        "SA":"Saudi Arabia",
+        "SN":"Senegal",
+        "CS":"Serbia and Montenegro",
+        "SC":"Seychelles",
+        "SL":"Sierra Leone",
+        "SG":"Singapore",
+        "SK":"Slovakia",
+        "SI":"Slovenia",
+        "SB":"Solomon Islands",
+        "SO":"Somalia",
+        "ZA":"South Africa",
+        "GS":"South Georgia and the South Sandwich Islands",
+        "ES":"Spain",
+        "LK":"Sri Lanka",
+        "SD":"Sudan",
+        "SR":"Suriname",
+        "SJ":"Svalbard and Jan Mayen",
+        "SZ":"Swaziland",
+        "SE":"Sweden",
+        "CH":"Switzerland",
+        "SY":"Syrian Arab Republic",
+        "TW":"Taiwan, Province of China",
+        "TJ":"Tajikistan",
+        "TZ":"Tanzania, United Republic of",
+        "TH":"Thailand",
+        "TL":"Timor-Leste",
+        "TG":"Togo",
+        "TK":"Tokelau",
+        "TO":"Tonga",
+        "TT":"Trinidad and Tobago",
+        "TN":"Tunisia",
+        "TR":"Turkey",
+        "TM":"Turkmenistan",
+        "TC":"Turks and Caicos Islands",
+        "TV":"Tuvalu",
+        "UG":"Uganda",
+        "UA":"Ukraine",
+        "AE":"United Arab Emirates",
+        "GB":"United Kingdom",
+        "US":"United States",
+        "UM":"United States Minor Outlying Islands",
+        "UY":"Uruguay",
+        "UZ":"Uzbekistan",
+        "VU":"Vanuatu",
+        "VE":"Venezuela",
+        "VN":"Viet Nam",
+        "VG":"Virgin Islands, British",
+        "VI":"Virgin Islands, U.S.",
+        "WF":"Wallis and Futuna",
+        "EH":"Western Sahara",
+        "YE":"Yemen",
+        "ZM":"Zambia",
+        "ZW":"Zimbabwe"
     }
+}
 
     function getStates() {
         return {

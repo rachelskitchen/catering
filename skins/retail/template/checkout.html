@@ -77,7 +77,7 @@
         <label class="select" for="countries"><span class="required bold">Country:</span></label>
         <div class="select countries">
             <div class="select_arrows"></div>
-            <select class="states" id="countries">
+            <select class="country" id="countries">
             <% for (var i in countries) { %>
                 <option value="<%= i %>" <% if(i.toLowerCase() == country.toLowerCase()) { %>selected="selected"<% } %>><%= countries[i] %></option>
             <% } %>
@@ -87,13 +87,13 @@
     <div class="row">
         <label for="addressLine1"><span class="required bold">Address Line 1:</span></label>
         <div class="input_beauty">
-            <input type="text" id="addressLine1" name="address_line1" class='street_1' value="<%= street_1 %>">
+            <input type="text" id="addressLine1" name="street_1" class='street_1' value="<%= street_1 %>">
         </div>
     </div>
     <div class="row">
         <label for="addressLine2">Address Line 2:</label>
         <div class="input_beauty">
-            <input type="text" id="addressLine2" name="address_line2" class='street_2' value="<%= street_2 %>">
+            <input type="text" id="addressLine2" name="street_2" class='street_2' value="<%= street_2 %>">
         </div>
     </div>
     <div class="row">
@@ -118,7 +118,7 @@
     <div class="row">
         <label for="zip"><span class="required bold">Zip Code:</span></label>
         <div class="input_beauty">
-            <input type="text" id="zip" name="zip" class='zipcode' value="<%= zipcode %>">
+            <input type="text" id="zip" name="zipcode" class='zipcode' value="<%= zipcode %>">
         </div>
     </div>
     <label class="select"><span class="required bold">Shipping & Handling:</span></label>
@@ -126,6 +126,7 @@
         <div class="select_arrows"></div>
         <select class="shipping-select"></select>
     </div>
+    <div class="shipping-status img-spinner"></div>
 </script>
 
 <script type="text/template" id="checkout_pay-template">

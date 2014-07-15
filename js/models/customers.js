@@ -42,6 +42,7 @@ define(["backbone", "geopoint"], function(Backbone) {
                 }
             ],
             shipping_selected: 1,
+            load_shipping_status: ""
             /**
              * address - from function address_str. available only for other addresses
              * city
@@ -166,6 +167,57 @@ define(["backbone", "geopoint"], function(Backbone) {
                 });
             } catch(e) {
                 return error(MSG.ERROR_DELIVERY_ADDRESS);
+            }
+        },
+        get_shipping_services: function() {
+            var self = this,       
+                data = {}, 
+                address = this.get('addresses'), 
+                shipping_addr_index = this.get('shipping_address') === -1 ? address.length - 1 : this.get('shipping_address');
+            
+            if (!address.length)
+                return;
+
+            data.address = address[shipping_addr_index];
+            data.items = [];
+            data.establishment = App.Data.settings.get("establishment");
+            App.Data.myorder.each(function(model) {
+                data.items.push(model.item_submit());
+            });
+
+            this.set("shipping_services", [], {silent: true});
+            this.set("load_shipping_status", "pending", {silent: true});
+            this.trigger("change:shipping_services");                               
+
+           var data_json = JSON.stringify(data);
+            $.ajax({
+                type: "POST",
+                url: App.Data.settings.get("host") + "/weborders/shipping_options/",
+                data: data_json,
+                dataType: "json",
+                success: function(response) {
+                    switch (response.status) {
+                        case "OK":
+                            self.set("shipping_services", response.data, {silent: true});
+                            self.set("load_shipping_status", "resolved", {silent: true});
+                            self.trigger("change:shipping_services");                            
+                            break;
+                        default: 
+                            onError(self);                           
+                    }
+                },
+                error: function() {
+                    onError(self);
+                },
+                complete: function() {                                   
+                }
+            });
+
+            function onError(self) {
+                setTimeout(function() {
+                    self.set("load_shipping_status", "resolved", {silent: true});
+                    self.trigger("change:shipping_services"); 
+                }, 300);
             }
         }
     });

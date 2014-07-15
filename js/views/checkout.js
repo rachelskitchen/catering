@@ -208,9 +208,12 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                 street_2: this.otherAddress.street_2,
                 city: this.otherAddress.city,
                 state: this.otherAddress.state,
-                country: settings.address ? settings.address.country : undefined,
                 zipcode: this.otherAddress.zipcode
             };
+
+            if (App.skin = App.Skins.RETAIL) {
+                address.country = this.otherAddress.country;
+            }
             var addresses = this.options.customer.get('addresses');
 
             if (addresses.length === 0 || typeof addresses[addresses.length - 1].street_1 !== 'string') {
@@ -219,6 +222,11 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                 addresses[addresses.length - 1] = address;
             }
             addresses[addresses.length - 1].address = this.options.customer.address_str();
+            
+            if (this.model.isShippingServices && address.street_1 && address.city && address.country && 
+                address.zipcode && (address.country == 'US' ? address.state : true)) {
+                this.options.customer.get_shipping_services();
+            }
         }
     });
 

@@ -864,7 +864,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
                 if (pickup) pickup = new Date(time > pickup ? time : pickup);
 
-                if(!pickup || !App.Data.timetables.checking_work_shop(pickup, delivery)) { //pickup may by null or string
+                if (App.skin != App.Skins.RETAIL && (!pickup || !App.Data.timetables.checking_work_shop(pickup, delivery)) ) { //pickup may by null or string
                     this.trigger('cancelPayment');
                     delete this.paymentInProgress;
                     App.Data.errors.alert(MSG.ERROR_STORE_IS_CLOSED);
