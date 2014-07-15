@@ -31,7 +31,7 @@ define(["backbone", "main_router"], function(Backbone) {
 
     headers.main = {mod: 'Main', className: 'main'};
     headers.confirm = {mod: 'Confirm', className: 'confirm'};
-    headers.checkout = {mod: 'Checkout', className: 'checkout'};
+    headers.checkout = {mod: 'Checkout', className: 'checkout main'};
     carts.main = {mod: 'Main', className: 'main animation'};
     carts.checkout = {mod: 'Checkout', className: 'checkout'};
 
@@ -255,6 +255,7 @@ define(["backbone", "main_router"], function(Backbone) {
             });
         },
         checkout: function() {
+            App.Data.header.set('menu_index', NaN);
             this.prepare('checkout', function() {
                 if(!App.Data.card) {
                     App.Data.card = new App.Models.Card;

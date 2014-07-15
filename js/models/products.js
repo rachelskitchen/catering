@@ -29,6 +29,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
             id: null,
             id_category : null,
             image: null,
+            images: null,
             is_cold: false,
             name: null,
             price: null,
@@ -59,6 +60,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
                 img: App.Data.settings.get("img_path"),
                 checked_gift_cards: {}
             });
+            this.listenTo(this, 'change:images change:image', this.images, this);
         },
         addJSON: function(data) {
             if (data.image === '') delete data.image;
@@ -144,7 +146,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
          * returns {name: <name>, value: <value>, selected: <id>}
          */
         get_attribute: function(type) {
-            if(type != 1 || type !=2)
+            if(type != 1 && type != 2)
                 type = 1;
 
             if(!this.get('attribute_' + type + '_enable'))
@@ -160,6 +162,18 @@ define(["backbone", 'childproducts'], function(Backbone) {
                 value: value,
                 selected: selected
             };
+        },
+        /*
+         * returns array of selected attributes [{name: <name>, value: <value>, selected: <id>}, ...]
+         */
+        get_attributes: function() {
+            var attr1 = this.get_attribute(1),
+                attr2 = this.get_attribute(2),
+                attrs = [];
+            attr1 && attrs.push(attr1);
+            attr2 && attrs.push(attr2);
+            if(attrs.length > 0)
+                return attrs;
         },
         get_child_products: function() {
             var type = this.get('attribute_type'),
@@ -268,6 +282,28 @@ define(["backbone", 'childproducts'], function(Backbone) {
                     }
                 });
             }
+        },
+        images: function(model, imgs) {
+            var img = this.get('image'),
+                imgs = this.get('images'),
+                settings = App.Data.settings,
+                defImg = settings.get_img_default(),
+                host = settings.get('host'),
+                images = [];
+
+            if(Array.isArray(imgs)) {
+                images = imgs.map(function(image) {
+                    return /^https?:\/\//.test(image) ? image : host + image.replace(/^([^\/])/, '/$1');
+                });
+            }
+
+            if(defImg != img) {
+                images.indexOf(img) == -1 && images.unshift(img);
+            } else if(images.length == 0){
+                images.indexOf(img) == -1 && images.push(img);
+            }
+
+            this.set('images', images, {silent: true});
         }
     });
 

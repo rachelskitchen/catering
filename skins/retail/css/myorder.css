@@ -38,7 +38,7 @@
 }
 
 @media only screen and (max-device-width: 949px) {
-    #modifiers_popup {
+    #modifiers_popup, #modifiers_popup .info {
         min-width: 670px !important;
     }
 }

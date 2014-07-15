@@ -29,7 +29,7 @@ define(["backbone"], function(Backbone) {
             img: App.Data.settings.get("img_path"),
             logo: "",
             business_name: "",
-            tab_index: 0
+            menu_index: 0
         },
         initialize: function() {
             var settings = App.Data.settings.toJSON(),
