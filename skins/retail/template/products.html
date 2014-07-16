@@ -59,7 +59,7 @@
     <% } %>
     <div class='clear'></div>
     <% if(!hide_images) { %>
-    <ul class="gallery">
+    <ul class="images">
     <% _.each(images, function(image, i) { %>
         <li data-index="<%= i %>"><img class="block_img img" src="<%= images[i] %>" alt="<% print('[' + i + ']' + name + ' ' + id); %>"></li>
     <% }); %>

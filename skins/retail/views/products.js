@@ -53,7 +53,7 @@ define(["backbone", "factory", "generator", 'products_view'], function(Backbone)
         render: function() {
             App.Views.CoreProductView.CoreProductModifiersView.prototype.render.apply(this, arguments);
             this.showImage({
-                currentTarget: this.$('.gallery > li:first')
+                currentTarget: this.$('.images > li:first')
             });
             return this;
         },
@@ -64,13 +64,13 @@ define(["backbone", "factory", "generator", 'products_view'], function(Backbone)
             });
         },
         showImage: function(event) {
-            var images = this.model.get('product').get('images'),
+            var images = this.model.get_product().get('images'),
                 li = $(event.currentTarget),
                 index = li.attr('data-index'),
                 image = this.$('.large');
             image.attr('src', images[index]);
             loadSpinner(image);
-            this.$('.gallery > li').removeClass('active');
+            this.$('.images > li').removeClass('active');
             li.addClass('active');
         }
     });

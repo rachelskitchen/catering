@@ -96,7 +96,7 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
         initialize: function() {
             this.parent_categories = [];
             App.Views.SliderView.prototype.initialize.apply(this, arguments);
-
+            this.listenTo(this.options.search, 'onSearchComplete', this.reset, this);
         },
         render: function() {
             App.Views.SliderView.prototype.render.apply(this, arguments);
@@ -128,6 +128,11 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
         create_slider: function() {
             this.$item = this.$('li');
             App.Views.SliderView.prototype.create_slider.apply(this, arguments);
+        },
+        reset: function(result) {
+            var products = result.get('products');
+            if(products && products.length)
+                this.$('.tabs').get(0).reset();
         }
     });
 
@@ -197,6 +202,7 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
             }, model.parent_name + '_sub_' + model.cid);
             App.Views.SliderView.prototype.addItem.call(this, view, this.$('.tabs > ul'), model.escape('sort'));
             this.subViews.push(view);
+            this.stopListening(view);
             this.listenTo(view, 'selected', this.onSelected, this);
         },
         create_slider: function() {
@@ -225,6 +231,7 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
         mod: 'sublist',
         initialize: function() {
             this.listenTo(this.collection, 'change:parent_selected', this.update, this);
+            this.listenTo(this.options.search, 'onSearchComplete', this.hide, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
@@ -246,14 +253,19 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
             }, cats.parent_selected + '_sublist');
 
             this.subViews.removeFromDOMTree();
-            this.$('.sublist').append(view.el);
+            this.$('.sublist').show().append(view.el);
             this.subViews.push(view);
+            this.stopListening(view);
             this.listenTo(view, 'selected', function(opts) {
                 this.collection.selected = opts.selected;
                 this.collection.trigger('change:selected', this.collection, opts.selected);
             }, this);
             collect.receiving.resolve();         // select first subcategory
             view.model.trigger('loadCompleted'); // run view.slider_create() and view.restore() methods
+        },
+        hide: function(result) {
+            var products = result.get('products');
+            products && products.length && this.$('.sublist').hide();
         }
     });
 
@@ -300,16 +312,7 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
         mod: 'products',
         initialize: function() {
             App.Views.ListView.prototype.initialize.apply(this, arguments);
-            var self = this,
-                parent_name = this.collection.parent_selected,
-                id = App.Data.categories.selected;
-
-            // Receives all products for current parent categories
-            App.Collections.Products.get_slice_products([id], this).then(function() {
-                self.addItem(App.Data.products[id], App.Data.categories.get(id));
-                self.trigger('loadCompleted');
-            });
-            setTimeout(this.trigger.bind(this, 'loadStarted'), 0);
+            this.initData();
         },
         addItem: function(products, category) {
             var view = App.Views.GeneratorView.create('Categories', {
@@ -321,6 +324,33 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
             }, category.cid);
             App.Views.ListView.prototype.addItem.call(this, view, this.$el, category.escape('sort'));
             this.subViews.push(view);
+        },
+        initData: function() {
+            var self = this,
+                id = App.Data.categories.selected;
+
+            // Receives all products for current parent categories
+            App.Collections.Products.get_slice_products([id], this).then(function() {
+                self.addItem(App.Data.products[id], App.Data.categories.get(id));
+                self.trigger('loadCompleted');
+            });
+            setTimeout(this.trigger.bind(this, 'loadStarted'), 0);
+        }
+    });
+
+    App.Views.CategoriesView.CategoriesSearchResultsView = App.Views.CategoriesView.CategoriesProductsView.extend({
+        name: 'categories',
+        mod: 'products',
+        initData: function() {
+            var self = this,
+                id = App.Data.categories.selected;
+
+            this.addItem(this.model.get('products'), new Backbone.Model({
+                parent_name: 'Search',
+                name: this.model.get('pattern'),
+                description: '',
+                active: true
+            }));
         }
     });
 
@@ -330,19 +360,35 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
         initialize: function() {
             App.Views.ListView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection, 'change:selected', this.update_table);
+            this.listenTo(this.options.search, 'onSearchComplete', this.update_table, this);
             this.$('.categories_products_wrapper').contentarrow();
             this.$('.products_spinner').css('position', 'absolute').spinner();
         },
         update_table: function(model, value) {
+            var isCategories = typeof value != 'undefined',
+                mod = isCategories ? 'Products' : 'SearchResults',
+                data = isCategories ? undefined : model,
+                view;
+
+            value = isCategories ? value : model.get('pattern');
+
+            // if search result and result is empty
+            if(data && (!data.get('products') || data.get('products').length == 0))
+                return;
+
             this.subViews.removeFromDOMTree();
-            var view = App.Views.GeneratorView.create('Categories', {
+            view = App.Views.GeneratorView.create('Categories', {
                 el: $("<ul class='categories_table'></ul>"),
-                mod: 'Products',
+                mod: mod,
+                model: data,                // should be App.Models.Search or undefined
                 collection: this.collection
             }, 'products_' + value);
+
             this.subViews.push(view);
             this.$('.categories_products_wrapper').append(view.el);
             this.$(".categories_products_wrapper").scrollTop(0);
+
+            this.stopListening(view);
             this.listenTo(view, 'loadStarted', this.showSpinner, this);
             this.listenTo(view, 'loadCompleted', this.hideSpinner, this);
         },

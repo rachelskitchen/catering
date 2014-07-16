@@ -103,11 +103,11 @@
     height: 250px;
     overflow-x: hidden;
 }
-.product_info .gallery {
+.product_info .images {
     width: 340px;
     margin-right: 50px;
 }
-.product_info .gallery li {
+.product_info .images li {
     display: inline-block;
     vertical-align: top;
     width: 53px;
@@ -119,7 +119,7 @@
     position: relative;
     font-size: 10px;
 }
-.product_info .gallery li.active:before {
+.product_info .images li.active:before {
     content: '';
     display: block;
     width: 100%;

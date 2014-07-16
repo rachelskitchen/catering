@@ -331,7 +331,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
         /**
          * Get products from backend.
          */
-        get_products: function(id_category) {
+        get_products: function(id_category, search) {
             var self = this,
                 settings = App.Data.settings,
                 fetching = $.Deferred(); // deferred for check if all product load;
@@ -340,7 +340,8 @@ define(["backbone", 'childproducts'], function(Backbone) {
                 url: settings.get("host") + "/weborders/products/",
                 data: {
                     category: id_category,
-                    establishment: settings.get("establishment")
+                    establishment: settings.get("establishment"),
+                    search: search
                 },
                 dataType: "json",
                 successResp: function(data) {
@@ -355,10 +356,13 @@ define(["backbone", 'childproducts'], function(Backbone) {
                     fetching.resolve();
                 },
                 error: function() {
-                    App.Data.errors.alert(MSG.ERROR_PRODUCTS_LOAD, true); // user notification
+                    self.onProductsError();
                 }
             });
             return fetching;
+        },
+        onProductsError: function() {
+            App.Data.errors.alert(MSG.ERROR_PRODUCTS_LOAD, true); // user notification
         },
         /**
          * Check if all models is inactive

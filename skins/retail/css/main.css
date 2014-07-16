@@ -621,6 +621,7 @@ section.maintenance p {
     z-index: 2;
     margin-top: -1px;
     height: 1px;
+    pointer-events: none;
 }
 .select_arrows:before, .select_arrows:after {
     display: block;

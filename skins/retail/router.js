@@ -61,6 +61,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Data.header = new App.Models.HeaderModel();
                 App.Data.mainModel = new App.Models.MainModel();
                 App.Data.categories = new App.Collections.Categories();
+                App.Data.search = new App.Collections.Search();
 
                 this.listenTo(App.Data.mainModel, 'change:mod', this.createMainView);
 
@@ -69,7 +70,8 @@ define(["backbone", "main_router"], function(Backbone) {
                     model: App.Data.mainModel,
                     headerModel: App.Data.header,
                     cartCollection: App.Data.myorder,
-                    categories: App.Data.categories
+                    categories: App.Data.categories,
+                    search: App.Data.search
                 });
 
                 // listen to navigation control
@@ -119,6 +121,16 @@ define(["backbone", "main_router"], function(Backbone) {
             this.mainView = mainView;
         },
         navigationControl: function() {
+            // onSearchStart event occurs when 'search' form is submitted
+            this.listenTo(App.Data.search, 'onSearchStart', function() {
+                App.Data.mainModel.trigger('loadStarted');
+            });
+
+            // onSearchComplete event occurs when search results are ready
+            this.listenTo(App.Data.search, 'onSearchComplete', function(result) {
+                App.Data.mainModel.trigger('loadCompleted');
+            });
+
             // onCheckoutClick event occurs when 'checkout' button is clicked
             this.listenTo(App.Data.myorder, 'onCheckoutClick', this.navigate.bind(this, 'checkout', true));
 
@@ -199,12 +211,14 @@ define(["backbone", "main_router"], function(Backbone) {
                             modelName: 'Categories',
                             collection: App.Data.categories,
                             model: App.Data.mainModel,
+                            search: App.Data.search,
                             mod: 'SubList',
                             className: 'subcategories'
                         },
                         {
                             modelName: 'Categories',
                             collection: App.Data.categories,
+                            search: App.Data.search,
                             mod: 'MainProducts'
                         }
                     ]
