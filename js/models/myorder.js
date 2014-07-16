@@ -662,10 +662,15 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             var obj = data.find(function(model) {
                 return model.get('product').id == null &&
                        model.get('product').get('isDeliveryItem') === true;
-            });
-            data.remove(obj);
-            setData('delivery_data', {name: obj.get('product').get('name'),
+            });            
+            if (obj) {
+                data.remove(obj);
+                setData('delivery_data', {name: obj.get('product').get('name'),
                                       price: obj.get('product').get('price') });
+            }
+            else {
+                setData('delivery_data', {});
+            }
 
             obj = data.find(function(model) {
                 return model.get('product').id == null &&
