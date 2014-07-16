@@ -1,0 +1,13 @@
+#content .filter {
+    width: 200px;
+    position: relative;
+    float: right;
+    margin-top: 10px;
+}
+#content .filter select {
+    width: 100%;
+    font-size: 14px;
+}
+#content .filter.sort {
+    margin-right: 62px;
+}

@@ -32,6 +32,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(this.model, 'change:menu_index', this.menu, this);
             this.listenTo(this.options.cart, 'add remove', this.update, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.searchComplete, this);
+            this.listenTo(this.options.search, 'onSearchStart', this.searchStart, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
@@ -88,6 +89,9 @@ define(["backbone", "factory"], function(Backbone) {
             var products = result.get('products');
             if(!products || products.length == 0)
                 App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT);
+        },
+        searchStart: function() {
+            this.$('input[name=search]').blur();
         },
         update: function() {
             var quantity = this.options.cart.get_only_product_quantity(),

@@ -295,7 +295,8 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
             var model = this.model,
                 view = App.Views.GeneratorView.create('Product', {
                     mod: 'List',
-                    collection: this.collection
+                    collection: this.collection,
+                    filter: this.options.filter
                 }, model.cid);
             this.$('.product_table').prepend(view.el);
             this.subViews.push(view);
@@ -320,7 +321,8 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
                 mod: 'ProductsItem',
                 collection: products,
                 model: category,
-                categories: this.collection
+                categories: this.collection,
+                filter: this.options.filter
             }, category.cid);
             App.Views.ListView.prototype.addItem.call(this, view, this.$el, category.escape('sort'));
             this.subViews.push(view);
@@ -381,7 +383,8 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
                 el: $("<ul class='categories_table'></ul>"),
                 mod: mod,
                 model: data,                // should be App.Models.Search or undefined
-                collection: this.collection
+                collection: this.collection,
+                filter: this.options.filter
             }, 'products_' + value);
 
             this.subViews.push(view);
@@ -394,10 +397,12 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
         },
         showSpinner: function() {
             this.$('.products_spinner').addClass('ui-visible');
+            this.collection.trigger('onLoadStart');
         },
         hideSpinner: function() {
             var spinner = this.$('.products_spinner');
             setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), 500);
+            this.collection.trigger('onLoadComplete');
         },
         remove: function() {
             this.$('.categories_products_wrapper').contentarrow('destroy');

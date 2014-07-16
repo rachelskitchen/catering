@@ -54,6 +54,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
             stock_amount: 10,
             active: true,
             isDeliveryItem: false
+            created_date: null
         },
         initialize: function() {
             this.set({
@@ -227,6 +228,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
             if (product.is_gift)
                 product.sold_by_weight = false;
 
+            product.created_date = new Date(product.created_date).valueOf();
             this.set(product);
 
             return this;
@@ -376,6 +378,33 @@ define(["backbone", 'childproducts'], function(Backbone) {
             if (inactive) {
                 App.Data.categories.set_inactive(id_category);
             }
+        },
+        getAttributeValues: function(type) {
+            var attrs = [],
+                key;
+
+            if(type != 1 && type != 2)
+                type = 1;
+
+            key = 'attribute_' + type + '_values';
+
+            // attrs should have only unique values
+            attrs.push = function() {
+                Array.prototype.forEach.call(arguments, function(arg) {
+                    this.indexOf(arg) == -1 && Array.prototype.push.call(this, arg);
+                }, this);
+                return this.length;
+            };
+
+            // get unique attribute values
+            this.length && this.toJSON().reduce(function(attrs, product) {
+                var values = product[key];
+                if(product.attribute_type == 1 && Array.isArray(values))
+                    attrs.push.apply(attrs, values);
+                return attrs;
+            }, attrs);
+
+            return attrs;
         }
     });
 

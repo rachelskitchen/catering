@@ -14,9 +14,9 @@
             "js" : ["jquery.contentarrow"]
         },
         "index": {
-            "css": ["categories"],
-            "views": ["categories"],
-            "templates": ["categories"],
+            "css": ["categories", "filters"],
+            "views": ["categories", "filters"],
+            "templates": ["categories", "filters"],
             "core": ["categories", "slider_view"]
         },
         "about": {

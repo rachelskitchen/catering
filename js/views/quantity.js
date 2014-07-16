@@ -39,7 +39,7 @@ define(["backbone", "factory"], function(Backbone) {
                 stock_amount = product.get('stock_amount'),
                 is_gift = product.get('is_gift');
 
-            stock_amount <= quantity && this.model.set('quantity', stock_amount);
+            stock_amount <= quantity && stock_amount > 0 && this.model.set('quantity', stock_amount);
             is_gift && this.model.set('quantity', 1);
 
             if (is_gift) {
@@ -65,7 +65,7 @@ define(["backbone", "factory"], function(Backbone) {
                 model = this.model.toJSON(),
                 product = this.model.get_product();
                 model.sold_by_weight = product.get("sold_by_weight");
-                model.weight = this.model.get('weight') ? this.model.get('weight') : '';            
+                model.weight = this.model.get('weight') ? this.model.get('weight') : '';
                 model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
 
             this.$el.html(this.template(model));
@@ -79,7 +79,7 @@ define(["backbone", "factory"], function(Backbone) {
                    reg_str = "^\\d{0,4}$";
 
                 inputTypeNumberMask(elem, new RegExp(reg_str));
-            }                           
+            }
         },
         update: function() {
 

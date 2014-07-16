@@ -34,7 +34,7 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
                 quantity = this.model.get('quantity'),
                 stock_amount = product.get('stock_amount');
 
-            select.empty();
+            stock_amount > 0 && select.empty();
             for (var i = 1; i <= stock_amount; i++) {
                 if (i === quantity) {
                     select.append('<option selected="selected" value="' + i + '">' + i + '</option>');

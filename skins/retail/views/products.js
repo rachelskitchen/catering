@@ -49,6 +49,42 @@ define(["backbone", "factory", "generator", 'products_view'], function(Backbone)
         }
     });
 
+    App.Views.ProductView.ProductListView = App.Views.CoreProductView.CoreProductListView.extend({
+        initialize: function() {
+            this.listenTo(this.options.filter, 'change', this.sortItems, this);
+            this.listenTo(this.options.filter, 'change', this.filterItems, this);
+            App.Views.CoreProductView.CoreProductListView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            App.Views.CoreProductView.CoreProductListView.prototype.render.apply(this, arguments);
+            this.sortItems(this.options.filter);
+            return this;
+        },
+        sortItems: function(model) {
+            var filter = this.options.filter,
+                attr = filter.get('sort'),
+                order = filter.get('order'),
+                changed = model.changed;
+            if('sort' in changed || 'order' in changed)
+                App.Views.CoreProductView.CoreProductListView.prototype.sortItems.call(this, attr, order);
+        },
+        filterItems: function(model) {
+            var attribute1 = model.get('attribute1'),
+                changed = model.changed;;
+            if(!attribute1 || !('attribute1' in changed))
+                return;
+            this.subViews.forEach(function(view) {
+                var values = view.model.get('attribute_1_values');
+                if(attribute1 == 1)
+                    return view.$el.removeAttr('style'); // instead of show() because show adds display:list-item
+                if(!Array.isArray(values) || values.indexOf(attribute1) == -1)
+                    view.$el.hide();
+                else
+                    view.$el.removeAttr('style');
+            });
+        }
+    });
+
     App.Views.ProductView.ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView.extend({
         render: function() {
             App.Views.CoreProductView.CoreProductModifiersView.prototype.render.apply(this, arguments);

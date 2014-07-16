@@ -62,6 +62,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Data.mainModel = new App.Models.MainModel();
                 App.Data.categories = new App.Collections.Categories();
                 App.Data.search = new App.Collections.Search();
+                App.Data.filter = new Backbone.Model();
 
                 this.listenTo(App.Data.mainModel, 'change:mod', this.createMainView);
 
@@ -216,9 +217,27 @@ define(["backbone", "main_router"], function(Backbone) {
                             className: 'subcategories'
                         },
                         {
+                            modelName: 'Filter',
+                            model: App.Data.filter,
+                            search: App.Data.search,
+                            categories: App.Data.categories,
+                            mod: 'Sort',
+                            className: 'filter sort'
+                        },
+                        {
+                            modelName: 'Filter',
+                            model: App.Data.filter,
+                            search: App.Data.search,
+                            categories: App.Data.categories,
+                            products: App.Data.products,
+                            mod: 'Attribute',
+                            className: 'filter attribute'
+                        },
+                        {
                             modelName: 'Categories',
                             collection: App.Data.categories,
                             search: App.Data.search,
+                            filter: App.Data.filter,
                             mod: 'MainProducts'
                         }
                     ]

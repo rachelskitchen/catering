@@ -56,6 +56,23 @@ define(["backbone", "factory"], function(Backbone) {
         },
         initOrderSort: function() {
             this.orderSort = [];
+        },
+        /*
+         * orders:
+         * 0 - asc
+         * 1 - desc
+         */
+        sortItems: function(attr, order) {
+            this.subViews.sort(function(x, y) {
+                x = x.model.get(attr);
+                y = y.model.get(attr);
+                var result = x < y ? -1 : x > y ? 1 : 0;
+                return order ? -1 * result : result;
+            });
+            this.subViews.reduce(function(x, y) {
+                x.$el.after(y.$el);
+                return y;
+            });
         }
     });
 });

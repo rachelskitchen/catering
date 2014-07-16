@@ -207,14 +207,14 @@
     display: none;
 }
 .content_arrow.arrow_top {
-    top: 45px;
+    top: 90px;
 }
 .content_arrow.arrow_bottom {
     bottom:15px;
 }
 .categories_products_wrapper, .products_spinner {
     position: absolute;
-    top: 65px;
+    top: 110px;
     right: 0px;
     padding-right: 75px;
     left: 75px;
