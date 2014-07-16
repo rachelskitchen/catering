@@ -53,7 +53,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
             checked_gift_cards: null,
             stock_amount: 10,
             active: true,
-            isDeliveryItem: false
+            isDeliveryItem: false,
             created_date: null
         },
         initialize: function() {
