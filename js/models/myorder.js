@@ -396,16 +396,17 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
     App.Models.DeliveryChargeItem = App.Models.Myorder.extend({
         initialize: function() {
             var charge = this.get('total').get_delivery_charge() * 1;
+            App.Models.Myorder.prototype.initialize.apply(this, arguments);
             this.set({
                 product: new App.Models.Product({
                     name: MSG.DELIVERY_ITEM,
                     price: charge,
-                    tax: this.get('total').get('prevailing_tax')
+                    tax: this.get('total').get('prevailing_tax'),
+                    isDeliveryItem: true
                 }),
                 initial_price: charge,
                 sum: charge
-            });
-            App.Models.Myorder.prototype.initialize.apply(this, arguments);
+            });            
         }
     });
 
@@ -446,15 +447,15 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 delivery_charge = this.total.get_delivery_charge() * 1;
 
             if(typeof opts !== 'object'  || !opts.avoid_delivery) {
-                if (value === 'DINING_OPTION_DELIVERY' && delivery_charge !== 0) {
+                if (value === 'DINING_OPTION_DELIVERY' && (delivery_charge !== 0 || App.skin == App.Skins.RETAIL)) {
                     if (!this.deliveryItem) {
-                        this.deliveryItem = new App.Models.DeliveryChargeItem({total: this.total});
+                        this.deliveryItem = new App.Models.DeliveryChargeItem({total: this.total});                        
                     }
                     obj = this.find(function(model) {
                         return model.get('product').id == null &&
-                               model.get('product').get('name') == MSG.DELIVERY_ITEM;
+                               model.get('product').get('isDeliveryItem') === true;
                     });
-                    if (obj == undefined)
+                    if (obj == undefined && (App.skin != App.Skins.RETAIL || App.Data.customer.get("shipping_selected") >= 0))
                        this.add(this.deliveryItem);
 
                 } else {
@@ -660,9 +661,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             // need remove bag charge / delivery charge item from storage
             var obj = data.find(function(model) {
                 return model.get('product').id == null &&
-                       model.get('product').get('name') == MSG.DELIVERY_ITEM;
+                       model.get('product').get('isDeliveryItem') === true;
             });
             data.remove(obj);
+            setData('delivery_data', {name: obj.get('product').get('name'),
+                                      price: obj.get('product').get('price') });
 
             obj = data.find(function(model) {
                 return model.get('product').id == null &&
@@ -682,8 +685,13 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.checkout.loadCheckout();
             this.total.loadTotal();
             var orders = getData('orders');
+            var delivery_data = getData('delivery_data'); 
+  
             if (orders) {
                 this.addJSON(orders);
+                
+                if (this.deliveryItem)
+                    this.deliveryItem.get("product").set(delivery_data);                
             }
         },
         recalculate_tax: function() {

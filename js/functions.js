@@ -81,7 +81,7 @@ MSG.ERROR_UNSUPPORTED_BROWSER = "The current browser version is not supported. P
 MSG.PAY_AT_STORE = "Pay at Store";
 MSG.PAY_AT_DELIVERY = "Pay at Delivery";
 MSG.ERROR_GET_CHILD_PRODUCTS = "Unable to get the information about the product from backend. Now the page is reloaded.";
-MSG.SHIPPING_SERVICES_NOT_FOUND = "No shipping services found";
+MSG.ERROR_SHIPPING_SERVICES_NOT_FOUND = "No shipping services found";
 MSG.SHIPPING_SERVICES_RETRIVE_IN_PROGRESS = "Retriving shipping services...";
 MSG.SHIPPING_SERVICES_SET_ADDRESS = "Fill required address fields above";
 
@@ -280,16 +280,19 @@ function getData(name, local) {
  * Return true if successfully saved
  */
 function setData(name, data, local) {
+    if (typeof data.toJSON == 'function')
+        data = data.toJSON();
+    
     switch (App.Data.settings.get('storage_data')) {
         case 1:
             if(local && localStorage instanceof Object)
-                localStorage[name] = JSON.stringify(data.toJSON());
+                localStorage[name] = JSON.stringify(data);
             else
                 if (sessionStorage instanceof Object)
-                    sessionStorage[name] = JSON.stringify(data.toJSON());
+                    sessionStorage[name] = JSON.stringify(data);
             break;
         case 2:
-            document.cookie += name + '=' + JSON.stringify(data.toJSON());
+            document.cookie += name + '=' + JSON.stringify(data);
             break;
     }
     return true;

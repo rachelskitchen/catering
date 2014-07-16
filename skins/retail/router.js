@@ -86,6 +86,7 @@ define(["backbone", "main_router"], function(Backbone) {
             });
 
             this.listenTo(App.Data.myorder, 'paymentResponse', function() {
+                App.Data.settings.usaepayBack = true;
                 clearQueryString(true);
                 App.Data.get_parameters = parse_get_params();
                 this.navigate('confirm',  true);
@@ -288,10 +289,13 @@ define(["backbone", "main_router"], function(Backbone) {
             });
         },
         confirm: function() {
+            if(!App.Data.settings.usaepayBack) {
+                return this.navigate('index', true);
+            }
+            
             this.prepare('confirm', function() {
                 App.Data.mainModel.set({
-                    mod: 'Confirm',
-                    DINING_OPTION_NAME: DINING_OPTION_NAME
+                    mod: 'Done'
                 });
                 this.change_page();
             });

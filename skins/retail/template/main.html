@@ -52,7 +52,7 @@
 </footer>
 </script>
 
-<script type="text/template" id="main_confirm-template">
+<script type="text/template" id="main_done-template">
 <section class="confirm">
     <header id="header">
         <div class="logo">
@@ -71,7 +71,7 @@
                 <p class="confirmed-order-txt">
                     <%=message%>
                 </p>
-                <div class="btn btn-long">Return to Order Summary</div>
+                <div class="btn btn-long btnReturn">Return to Order Summary</div>
              <% } else { %>
                 <table class="order-confirmed-detail">
                     <tr>
@@ -81,11 +81,22 @@
                         <td>Order ID:</td>
                         <td><%= order_id %></td>
                     </tr>
-                    <% if (!isOnlyGift) { %>
+                    <% if (false && !isOnlyGift && !isOrderFromSeat) { %>
                     <tr>
-                        <td><%= type %>:</td>
-                        <td><%= time %></td>
+                        <td><%= pickup_type %>:</td>
+                        <td><%= pickup_time_date %></td>
                     </tr>
+                    <% } %>
+                    <% if(false && isDeliverToSeat) { %>
+                    <tr>
+                        <td>Delivery Info:</td>
+                        <td>
+                            <% if(level) { %> Level <span><%= level %></span>,<% } %>
+                            <% if(section) { %> Section <span><%= section %></span>,<% } %>
+                            <% if(row) { %> Row <span><%= row %></span>,<% } %>
+                            <% if(seat) { %> Seat <span><%= seat %></span><% } %>
+                        </td>
+                    </tr>                       
                     <% } %>
                     <% if(reward_points) { %>
                     <tr>
@@ -98,7 +109,7 @@
                         <td class='bold'><%= symbol %><%= total %></td>
                     </tr>
                 </table>
-                <div class="btn">Return to Menu</div>
+                <div class="btn btnReturn">Return to Menu</div>
             <% } %>
         </div>
     </div>

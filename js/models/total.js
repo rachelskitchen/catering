@@ -50,6 +50,15 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             this.unset('delivery_item');
             opts = opts instanceof Object ? opts : {};
             this.set($.extend({}, this.defaults, set, opts));
+
+            this.listenTo(this.get('delivery'), 'change:price', function() {
+                var deliveryItem = App.Data.myorder.find(function(model) {
+                        return model.get('product').id == null &&
+                               model.get('product').get('isDeliveryItem') === true;
+                    });
+                if (deliveryItem)
+                    App.Data.myorder.onModelChange(deliveryItem); 
+            });
         },
         /**
          * get Total
@@ -107,6 +116,9 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             var delivery = this.get('delivery'),
                 charge = delivery.get('enable') ? delivery.get('charge') : 0;
             return round_monetary_currency(charge);
+        },
+        set_delivery_charge: function(charge) {
+            this.get('delivery').set('charge', charge);
         },
         /**
          * get bag charge

@@ -92,50 +92,46 @@ define(['backbone', 'factory'], function(Backbone) {
                 shipping_services = customer.get("shipping_services"),
                 shipping_status = customer.get("load_shipping_status");
            
-            if (this.model.isShippingServices) {
-                var shipping = this.$('.shipping-select').empty();
-                if (!shipping_status || shipping_status == "panding") {
-                    shipping_services = [];
-                }
-                for (var index in shipping_services) {
-                    
-                    if (!parseFloat(shipping_services[index].shipping_charge)) {
-                        //Dummi code for incorrect server responce
-                        var A = shipping_services[index].class_of_service;
-                        var B = shipping_services[index].shipping_charge;
-                        shipping_services[index].class_of_service = B;
-                        shipping_services[index].shipping_charge = A;
-                    }
-                    
-                    var name = shipping_services[index].class_of_service + " (" + App.Settings.currency_symbol + 
-                               parseFloat(shipping_services[index].shipping_charge).toFixed(2) +")";
-                    shipping.append('<option value="' + index + '">' + name + '</option>');
-                };
-
-                shipping.removeAttr("status");
-                if (!shipping_status || shipping_status == "pending" || shipping_services.length == 0) {
-                    shipping.attr("disabled", "disabled");
-                    shipping.attr("status", "panding");
-                }
-                else {
-                    shipping.removeAttr("disabled");    
-                }                
-                
-                if (shipping_status && shipping_status != "pending" && shipping_services.length == 0) {
-                    shipping.append('<option value="-1">' + MSG.SHIPPING_SERVICES_NOT_FOUND + '</option>');
-                    shipping.attr("status", "error");
-                }
-                
-                if (!shipping_status) {
-                    shipping.append('<option value="-1">' + MSG.SHIPPING_SERVICES_SET_ADDRESS.toLowerCase() + '</option>');
-                }
-                
-                this.$(".shipping-status").html("");
-                if (shipping_status == "pending") {
-                    shipping.append('<option value="-1">' + MSG.SHIPPING_SERVICES_RETRIVE_IN_PROGRESS.toLowerCase() + '</option>');
-                    this.$(".shipping-status").spinner();
-                }                
+            var shipping = this.$('.shipping-select').empty();
+            if (!shipping_status || shipping_status == "panding") {
+                shipping_services = [];
+                this.options.customer.set("shipping_selected", -1);
+            } else {
+                if (shipping_services.length)
+                    this.options.customer.set("shipping_selected", 0);
             }
+
+            for (var index in shipping_services) {
+                var name = shipping_services[index].class_of_service + " (" + App.Settings.currency_symbol + 
+                           parseFloat(shipping_services[index].shipping_charge).toFixed(2) +")";
+                shipping.append('<option value="' + index + '">' + name + '</option>');
+            };
+
+            shipping.removeAttr("status");
+            if (!shipping_status || shipping_status == "pending" || shipping_services.length == 0) {
+                shipping.attr("disabled", "disabled");
+                shipping.attr("status", "panding");
+            }
+            else {
+                shipping.removeAttr("disabled");    
+            }                
+            
+            if (shipping_status && shipping_status != "pending" && shipping_services.length == 0) {
+                shipping.append('<option value="-1">' + MSG.ERROR_SHIPPING_SERVICES_NOT_FOUND + '</option>');
+                shipping.attr("status", "error");
+            }
+            
+            if (!shipping_status) {
+                shipping.append('<option value="-1">' + MSG.SHIPPING_SERVICES_SET_ADDRESS + '</option>');
+            }
+            
+            this.$(".shipping-status").html("");
+            if (shipping_status == "pending") {
+                shipping.append('<option value="-1">' + MSG.SHIPPING_SERVICES_RETRIVE_IN_PROGRESS + '</option>');
+                this.$(".shipping-status").spinner();
+            }
+            
+            shipping.change();
         },
         countryChange: function(e) {
             this.otherAddress.country = e.target.value;
@@ -153,13 +149,25 @@ define(['backbone', 'factory'], function(Backbone) {
             this.trigger('update_address');
         },       
         changeShipping: function(e) {
-            var value = e.currentTarget.value,
+            var price, 
+                value = parseInt(e.currentTarget.value),
+                myorder = App.Data.myorder,
+                checkout = myorder.checkout,
                 oldValue = this.options.customer.get("shipping_selected");
 
-            if (value !== oldValue) {
-                this.options.customer.set('shipping_selected', value);
-                //App.Data.myorder.reculculate_tax();
+            this.options.customer.set('shipping_selected', value);
+            if (value >= 0) {
+                price = parseFloat(this.options.customer.get("shipping_services")[value].shipping_charge).toFixed(2) * 1;
+                name = this.options.customer.get("shipping_services")[value].class_of_service;
             }
+            else {
+                price = 0;
+                name = MSG.DELIVERY_ITEM;
+            }
+
+            myorder.change_dining_option(checkout, checkout.get("dining_option"));
+            myorder.total.set_delivery_charge(price);
+            myorder.deliveryItem.get("product").set({"price": price, "name": name});
         },
         changeState: function(e) {
             this.otherAddress.state = e.target.value;
@@ -382,7 +390,7 @@ function getCountries(){
         "RE":"Reunion",
         "RO":"Romania",
         "RU":"Russian Federation",
-        "RW":"RWANDA",
+        "RW":"Rwanda",
         "SH":"Saint Helena",
         "KN":"Saint Kitts and Nevis",
         "LC":"Saint Lucia",

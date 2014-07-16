@@ -33,7 +33,7 @@ define(["backbone"], function(Backbone) {
         initialize: function(opts) {
             var settings = App.Data.settings.get('settings_system'),
                 set = {
-                    charge: settings.delivery_charge,
+                    charge: App.skin == App.Skins.RETAIL ? 0 : settings.delivery_charge,
                     enable: settings.delivery_for_online_orders,
                     max_distance: settings.max_delivery_distance,
                     min_amount: settings.min_delivery_amount

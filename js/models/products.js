@@ -52,7 +52,8 @@ define(["backbone", 'childproducts'], function(Backbone) {
             gift_card_number: null,
             checked_gift_cards: null,
             stock_amount: 10,
-            active: true
+            active: true,
+            isDeliveryItem: false
         },
         initialize: function() {
             this.set({

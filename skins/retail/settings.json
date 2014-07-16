@@ -41,7 +41,7 @@
             "views": [],
             "templates": [],
             "model": [],
-            "core": []
+            "core": ["done_view"]
         },
         "pay": {
             "core": ["card", "customers"]
