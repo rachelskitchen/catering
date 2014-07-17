@@ -93,7 +93,6 @@ define(['backbone'], function(Backbone) {
             if(!(id in this.cache))
                 this.cache[id] = attrs;
 
-            name && this.$('option[value=1]').text(MSG.FILTER_SHOW_ALL + ' ' + name);
             this.$('option:not([value=1])').remove();
 
             // show attributes
