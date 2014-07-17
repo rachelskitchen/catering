@@ -406,7 +406,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 }),
                 initial_price: charge,
                 sum: charge
-            });            
+            });
         }
     });
 
@@ -449,7 +449,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             if(typeof opts !== 'object'  || !opts.avoid_delivery) {
                 if (value === 'DINING_OPTION_DELIVERY' && (delivery_charge !== 0 || App.skin == App.Skins.RETAIL)) {
                     if (!this.deliveryItem) {
-                        this.deliveryItem = new App.Models.DeliveryChargeItem({total: this.total});                        
+                        this.deliveryItem = new App.Models.DeliveryChargeItem({total: this.total});
                     }
                     obj = this.find(function(model) {
                         return model.get('product').id == null &&
@@ -662,7 +662,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             var obj = data.find(function(model) {
                 return model.get('product').id == null &&
                        model.get('product').get('isDeliveryItem') === true;
-            });            
+            });
             if (obj) {
                 data.remove(obj);
                 setData('delivery_data', {name: obj.get('product').get('name'),
@@ -690,13 +690,13 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.checkout.loadCheckout();
             this.total.loadTotal();
             var orders = getData('orders');
-            var delivery_data = getData('delivery_data'); 
-  
+            var delivery_data = getData('delivery_data');
+
             if (orders) {
                 this.addJSON(orders);
-                
+
                 if (this.deliveryItem)
-                    this.deliveryItem.get("product").set(delivery_data);                
+                    this.deliveryItem.get("product").set(delivery_data);
             }
         },
         recalculate_tax: function() {
