@@ -62,7 +62,7 @@ define(["backbone", "list"], function(Backbone) {
             var self = this;
             App.Views.ListView.prototype.render.apply(this, arguments);
             this.collection.each(this.addItem.bind(this));
-            this.collection.receiving.then(function() {
+            this.collection.receiving && this.collection.receiving.then(function() {
                 self.$('input').first().click();
             });
             return this;
