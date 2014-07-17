@@ -125,7 +125,8 @@ define(["backbone", "main_router"], function(Backbone) {
             // onSearchStart event occurs when 'search' form is submitted
             this.listenTo(App.Data.search, 'onSearchStart', function() {
                 App.Data.mainModel.trigger('loadStarted');
-            });
+                this.navigate('index', true);
+            }, this);
 
             // onSearchComplete event occurs when search results are ready
             this.listenTo(App.Data.search, 'onSearchComplete', function(result) {
@@ -325,7 +326,7 @@ define(["backbone", "main_router"], function(Backbone) {
             if(!App.Data.settings.usaepayBack) {
                 return this.navigate('index', true);
             }
-            
+
             this.prepare('confirm', function() {
                 App.Data.mainModel.set({
                     mod: 'Done'
