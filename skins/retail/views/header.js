@@ -109,6 +109,8 @@ define(["backbone", "factory"], function(Backbone) {
     });
 
     App.Views.HeaderView.HeaderCheckoutView = App.Views.HeaderView.HeaderMainView.extend({
+        name: 'header',
+        mod: 'checkout',
         initialize: function() {
             this.listenTo(this.options.cart, 'add remove', this.update, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
@@ -124,6 +126,6 @@ define(["backbone", "factory"], function(Backbone) {
         },
         onSearch: function() {
             return;
-        },
-    });
+        }
+    });   
 });

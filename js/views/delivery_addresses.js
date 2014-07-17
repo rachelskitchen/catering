@@ -144,7 +144,13 @@ define(['backbone', 'factory'], function(Backbone) {
             else {
                 this.otherAddress.state = undefined;
             }
-            
+
+            this.otherAddress.city = '';
+            this.otherAddress.street_1 = '';
+            this.otherAddress.street_2 = '';
+            this.otherAddress.zipcode = '';
+            this.options.customer.set('load_shipping_status', '');
+
             this.render();
             this.trigger('update_address');
         },       
