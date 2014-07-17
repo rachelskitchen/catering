@@ -59,6 +59,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model.get('tip'), 'change', this.updateAll, this);
             this.listenTo(this.model, 'change', this.updateAll, this); // not update all, because we need show or not show surcharge row, not only update sum
             this.listenTo(this.collection.checkout, 'change:dining_option', this.updateDeliveryCharge, this);
+            this.listenTo(this.model.get('delivery'), 'change', this.updateAll, this);
             this.updateDeliveryCharge(this.collection.checkout, this.collection.checkout.get('dining_option'));
         },
         render: function() {
