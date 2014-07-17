@@ -102,7 +102,7 @@
             <input type="text" id="city" name="city" class='city' value="<%= city %>">
         </div>
     </div>
-    <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
+    <% if(country == 'US' && typeof state == 'string' && states instanceof Object && Object.keys(states).length > 0) { %>
     <div class="row">
         <label class="select" for="states"><span class="required bold">State:</span></label>
         <div class="select states">

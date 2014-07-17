@@ -138,8 +138,11 @@ define(['backbone', 'factory'], function(Backbone) {
             this.model.country = this.otherAddress.country;
             
             if (this.otherAddress.country == 'US') {
-                this.otherAddress.state =  this.model.originalState;
-                this.model.state = this.model.originalState;
+                if (typeof this.model.originalState == 'string' && this.model.originalState.length > 0)
+                    this.model.state = this.otherAddress.state = this.model.originalState;
+                else {
+                    this.model.state = this.otherAddress.state = this.model.originalState = "CA";
+                }
             } 
             else {
                 this.otherAddress.state = undefined;
@@ -176,7 +179,7 @@ define(['backbone', 'factory'], function(Backbone) {
             myorder.deliveryItem.get("product").set({"price": price, "name": name});
         },
         changeState: function(e) {
-            this.otherAddress.state = e.target.value;
+            this.otherAddress.state = this.model.originalState = e.target.value;
             this.trigger('update_address');                       
         },
         focus: function(event){
