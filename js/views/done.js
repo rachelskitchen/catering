@@ -13,31 +13,29 @@ define(["backbone", "factory"], function(Backbone) {
             var model = this.model.toJSON();
             model.logo = App.Data.header.get('logo');
             model.business_name = App.Data.header.get('business_name');
-            model.isOnlyGift = dining_option === 'DINING_OPTION_ONLINE';            
+            model.isOnlyGift = dining_option === 'DINING_OPTION_ONLINE';
 
             if (get.status === "OK") {
                 this.model.success = true;
                 App.Data.myorder.order_id = get.orderId;
-                
-                if (dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_DELIVERY_SEAT') 
+
+                if (dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_DELIVERY_SEAT')
                     model.pickup_type = 'Delivery Time';
                 else
                     model.pickup_type = 'Pickup Time';
-                
+
                 model.order_id = get.orderId;
                 model.total = round_monetary_currency(get.total); // order total
                 model.pickup_time_date = checkout.get('pickupTime'); // order time
-                
-                var time_array = checkout.get('pickupTime').split(',');
-                model.pickup_time = time_array[0] + ', ';
-                model.pickup_day = time_array.slice(1).join(', ');
+
+                $.extend(model, this.getPickupTime());
 
                 model.email = App.Data.customer.get('email');
                 model.status = 'success';
-                
+
                 model.reward_points = get.reward_points || '';
                 model.symbol = App.Data.settings.get('settings_system').currency_symbol;
-                
+
                 model.isOrderFromSeat = App.Data.orderFromSeat instanceof Object;
                 model.isDeliverToSeat = checkout.get("dining_option") === 'DINING_OPTION_DELIVERY_SEAT';
                 model.level = checkout.get("level");
@@ -50,11 +48,11 @@ define(["backbone", "factory"], function(Backbone) {
                 model = $.extend(model, {
                     status: 'error',
                     /* message : 'Payment failed - try to repeat',*/
-                    message: error                    
+                    message: error
                 });
             }
             this.$el.html(this.template(model));
-            
+
             this.listenToOnce(App.Data.mainModel, 'loadCompleted', function() {
                 loadSpinner(this.$('img.logo'));
             }, this);
@@ -71,6 +69,14 @@ define(["backbone", "factory"], function(Backbone) {
             } else {
                 this.model.trigger('onCheckout');
             }
+        },
+        getPickupTime: function() {
+            var checkout = App.Data.myorder.checkout,
+                time_array = checkout.get('pickupTime').split(',');
+            return {
+                pickup_time: time_array[0] + ', ',
+                pickup_day: time_array.slice(1).join(', ')
+            };
         }
     });
 

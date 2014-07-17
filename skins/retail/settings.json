@@ -38,7 +38,7 @@
             "core": ["products", "customers", "card", "checkout", "delivery_addresses", "checkout_view", "card_view"]
         },
         "confirm": {
-            "views": [],
+            "views": ["done"],
             "templates": [],
             "model": [],
             "core": ["done_view"]
