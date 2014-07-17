@@ -131,7 +131,7 @@ define(["backbone", "async"], function(Backbone) {
                 skin = params.skin;
 
             self.set("skin", skin && self.get('supported_skins').indexOf(skin) > -1 ? skin : App.Skins.DEFAULT);
-            
+
             //set alias to current skin
             App.skin = self.get("skin");
 

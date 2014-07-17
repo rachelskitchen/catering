@@ -65,6 +65,7 @@ define(["backbone"], function(Backbone) {
 
             err = err.concat(this.checkPerson());
             !cardPattern.test(card.cardNumber) && err.push('Card Number');
+            err = err.concat(this.checkSecurityCode());
 
             if (err.length) {
                 return {
@@ -99,6 +100,13 @@ define(["backbone"], function(Backbone) {
                 !card.secondName && err.push('Last Name');
             }
 
+            return err;
+        },
+        checkSecurityCode: function() {
+            var securityPattern = /^\d{3,4}$/,
+                card = this.toJSON(),
+                err = [];
+            !securityPattern.test(card.securityCode) && err.push('Security Code');
             return err;
         }
     });

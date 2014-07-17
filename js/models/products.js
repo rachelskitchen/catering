@@ -404,7 +404,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
                 return attrs;
             }, attrs);
 
-            return attrs;
+            return attrs.sort();
         }
     });
 
