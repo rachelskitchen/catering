@@ -770,7 +770,7 @@ section.maintenance p {
 #alert.ui-visible {
     opacity: 1;
     filter: alpha(opacity=100);
-    z-index: 10000;
+    z-index: 11000;
 }
 #alert.ui-visible .alert_block {
     opacity: 1;
