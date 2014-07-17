@@ -115,71 +115,13 @@
     text-overflow: ellipsis;
     overflow: hidden;
 }
-#popup .order-items h3 {
-    position: relative;
-    font-size: inherit;
-    height: 20px;
-}
-#popup .order-items h3 .name {
-    font-weight: bold;
-}
-#popup .order-items .name {
-    display: block;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-}
-#popup .order-items .cost {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    letter-spacing: -3px;
-    text-align: right;
-}
-#popup .order-items .s4 .name {
-    right: 53px;
-}
-#popup .order-items .s4 .cost {
-    width: 52px;
-}
-#popup .order-items .s5 .name {
-    right: 62px;
-}
-#popup .order-items .s5 .cost {
-    width: 61px;
-}
-#popup .order-items .s6 .name {
-    right: 72px;
-}
-#popup .order-items .s6 .cost {
-    width: 71px;
-}
-#popup .order-items .s7 .name {
-    right: 81px;
-}
-#popup .order-items .s7 .cost {
-    width: 80px;
-}
-#popup .order-items .s8 .name {
-    right: 90px;
-}
-#popup .order-items .s8 .cost {
-    width: 89px;
-}
 #popup .order-items h3 + ul {
     margin: 5px 0;
 }
-
 #popup .order-items .btns {
     margin: 10px 0 20px;
     display: none;
 }
-
 #popup .order-items .btns:last-child {
     margin: 5px 0 0;
 }

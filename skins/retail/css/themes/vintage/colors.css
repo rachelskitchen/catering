@@ -156,9 +156,18 @@ aside:after, aside:before {
     border-color: #9e9e9e;
     background: #fff;
 }
-#cart .checkout .subtotal {
+#cart .checkout .total_block {
     border-color: #9e9e9e;
     background: #fff;
+}
+#cart .checkout .content_arrow {
+    background: #fff;
+}
+#cart .checkout .content_arrow.arrow_bottom {
+    box-shadow: 0 -10px 10px #fff;
+}
+#cart .checkout .content_arrow.arrow_top {
+    box-shadow: 0 10px 10px #fff;
 }
 #content > .checkout .shipping-select[status=error] {
     color: red;
@@ -277,7 +286,9 @@ aside:after, aside:before {
 #content .content_arrow.arrow_top {
     box-shadow: 0 10px 10px #fff;
 }
-.content_arrow:active, .arrow:active, #content .content_arrow:active {
+.content_arrow:active, .arrow:active,
+#content .content_arrow:active,
+#cart .content_arrow:active {
     background: #e6deca;
 }
 .content_arrow.arrow_bottom {
@@ -503,10 +514,10 @@ aside:after, aside:before {
     background: url('img/cart-bg.png') repeat 0 0 #e9e9e9;
 }
 .confirmPayCard .content_arrow.arrow_bottom {
-    box-shadow: 0 -10px 10px #e9e9e9;
+    box-shadow: 0 -10px 10px #dad3c5;
 }
 .confirmPayCard .content_arrow.arrow_top {
-    box-shadow: 0 10px 10px #e9e9e9;
+    box-shadow: 0 10px 10px #dad3c5;
 }
 
 /* End Order Review popup */
@@ -534,7 +545,7 @@ aside:after, aside:before {
     .product_table .product:hover {
         background-color: #e5ddca;
     }
-    .content_arrow:hover, .arrow:hover, #content .content_arrow:hover {
+    .content_arrow:hover, .arrow:hover, #content .content_arrow:hover, #cart .content_arrow:hover {
         background: #e6deca;
     }
 }
@@ -599,23 +610,23 @@ aside:after, aside:before {
 }
 
 /* scrollbar start */
-#cart .order-items::-webkit-scrollbar {
+.order-items::-webkit-scrollbar {
     width: 9px;
     background: transparent;
 }
-#cart .order-items::-webkit-scrollbar-button:start:vertical {
+.order-items::-webkit-scrollbar-button:start:vertical {
     height: 3px;
     background: url('data:image/gif;base64,R0lGODlhCQADAMIGANrRpdvSp+Pcu+Xev+rky+rlzP///////yH5BAEAAAcALAAAAAAJAAMAAAMMeDox+gVI8o6QQKgEADs=');
 }
-#cart .order-items::-webkit-scrollbar-button:end:vertical {
+.order-items::-webkit-scrollbar-button:end:vertical {
     height: 3px;
     background: url('data:image/gif;base64,R0lGODlhCQADAMIHANrRpdzTqePcu+Xev+Xfv+rky+rlzP///yH5BAEAAAcALAAAAAAJAAMAAAMMeCfQoso0UKAiYcAEADs=');
 }
-#cart .order-items::-webkit-scrollbar-track:vertical {
+.order-items::-webkit-scrollbar-track:vertical {
     height: 3px;
     background: url('data:image/gif;base64,R0lGODlhCQABAKECANrRpePcuv///////yH5BAEAAAIALAAAAAAJAAEAAAIElAIZVgA7');
 }
-#cart .order-items::-webkit-scrollbar-thumb:vertical {
+.order-items::-webkit-scrollbar-thumb:vertical {
     background-image: url('data:image/gif;base64,R0lGODlhCQAIAIQdADYrGTcsGzgtGzkuHDovHTswHkA1JEE2JUM4J0Q5KEY8K0c8LEk+LU5DMlNIOFhNPXBlWHdtX4yCdpaMgZ2TiKqhl72zq8e9tsi/t8nAuMzDu9fNx9nQyv///////////yH5BAEAAB8ALAAAAAAJAAgAAAUgICCOZGmSBdlYTels1eaMDxcBEfcAAQaNEEwAMCgRACEAOw=='), url('data:image/gif;base64,R0lGODlhCQAIAIQdADYrGTcsGzgtGzkuHDovHTswHkA1JEE2JUM4J0Q5KEY8K0c8LEk+LU5DMlNIOFhNPXBlWHdtX4yCdpaMgZ2TiKqhl72zq8e9tsi/t8nAuMzDu9fNx9nQyv///////////yH5BAEAAB8ALAAAAAAJAAgAAAUeIMAAJDkKmVRKGbloEzBpSplc2IWUpEEdvKBwSAwBADs=');
     background-position: 50% 0, 50% 100%;
     background-repeat: no-repeat;

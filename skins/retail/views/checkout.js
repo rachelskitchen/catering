@@ -158,7 +158,7 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
                 DINING_OPTION_NAME: this.options.DINING_OPTION_NAME,
                 mod: 'OrderType',
                 className: 'row'
-            }); 
+            });
 
             if (App.skin != App.Skins.RETAIL) {
                 var pickup = App.Views.GeneratorView.create('Checkout', {

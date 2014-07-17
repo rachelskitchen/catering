@@ -38,17 +38,7 @@ define(["backbone", "checkout_view"], function(Backbone) {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
-            var new_model = {},//this.collection.toJSON(),
-                pickup = this.collection.checkout.get("pickupTS"),
-                currentTime = this.options.timetable.base(),
-                time = currentTime.getTime();
-
-            new_model.isDelivery = this.collection.checkout.get("dining_option") === 'DINING_OPTION_DELIVERY';
-
-            if (pickup) pickup = new Date(time > pickup ? time : pickup);
-            new_model.pickup_time = format_date_3(pickup);
-
-            this.$el.html(this.template(new_model));
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
 
             this.subViews.push(App.Views.GeneratorView.create('Card', {
                 el: this.$('#credit-card'),
