@@ -542,9 +542,14 @@ section.maintenance p {
     max-width: 100%;
     vertical-align: middle;
 }
-#cart .order-items li li, .confirmPayCard .order-items li li {
+#cart .order-items li li {
     height: 15px;
     font-size: 12px;
+}
+#popup .confirmPayCard .order-items li li {
+    height: 7px;
+    font-size: 12px;
+    min-height: 7px;
 }
 #cart .order-items > li, .confirmPayCard .order-items > li {
     height: auto;
@@ -901,3 +906,8 @@ section.maintenance p {
     vertical-align: middle;
 }
 /** confirm page end*/
+
+/* safari fixes */
+input[type="search"] {
+    -webkit-appearance: textfield;
+}
