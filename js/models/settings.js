@@ -294,6 +294,10 @@ define(["backbone", "async"], function(Backbone) {
                                     settings_system.min_delivery_amount = 0;
                             }
 
+                            if (App.skin == App.Skins.RETAIL) {
+                                settings_system.delivery_charge = 0;
+                            }
+
                             if (settings_system.auto_bag_charge < 0)
                                 settings_system.auto_bag_charge = 0;
 
