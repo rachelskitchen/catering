@@ -443,10 +443,10 @@ define(["backbone", "main_router"], function(Backbone) {
             this.prepare('done', function() {
                 var params = App.Data.myorder.paymentResponse;
                 var isSuccess = params.status === 'OK';
- 
+
                 App.Data.header.set('page_title', isSuccess ? 'Order has been Submitted.' : 'Order has not been Submitted.');
                 App.Data.footer.set({success_payment: isSuccess});
-               
+
                 App.Data.mainModel.set({
                     header: headerModes.Done,
                     footer: footerModes.Done,
@@ -514,7 +514,7 @@ define(["backbone", "main_router"], function(Backbone) {
                     logo: settings_system.logo ? settings.get('host') + settings_system.logo : null,
                     text: settings_system.about_description || 'No information',
                     title: settings_system.about_title || '',
-                    clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\./)[1]
+                    clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1]
                 });
 
             this.prepare('store_info', function() {

@@ -60,7 +60,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 this.listenTo(App.Data.mainModel, 'change:mod', this.createMainView);
 
                 App.Data.mainModel.set({
-                    clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\./)[1],
+                    clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
                     model: App.Data.mainModel,
                     headerModel: App.Data.header,
                     cartCollection: App.Data.myorder
@@ -288,7 +288,7 @@ define(["backbone", "main_router"], function(Backbone) {
             if(!App.Data.settings.usaepayBack) {
                 return this.navigate('index', true);
             }
-            
+
             this.prepare('confirm', function() {
                 App.Data.mainModel.set({
                     mod: 'Done'
