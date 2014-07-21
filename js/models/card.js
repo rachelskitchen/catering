@@ -45,7 +45,7 @@ define(["backbone"], function(Backbone) {
             setData('card',this);
         },
         empty_card_number: function() {
-            this.set({cardNumber: '', expMonth: 0, expDate: 0});
+            this.set({cardNumber: '', expMonth: 0, expDate: 0, securityCode: ''});
         },
         /**
         * Load state model from storage (detected automatic).
