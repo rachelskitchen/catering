@@ -75,7 +75,6 @@ define(['backbone', 'factory'], function(Backbone) {
             return this;
         },
         events: {            
-            'change input[name]': 'onChangeElem',
             'change select.country': 'countryChange',
             'change select.states': 'changeState',
             'change .shipping-select': 'changeShipping',
@@ -213,6 +212,7 @@ define(['backbone', 'factory'], function(Backbone) {
             clearInterval(this['listen' + name]);
             delete this[format];
             delete this[listen];
+            this.onChangeElem(event);
         }
     });
 
