@@ -316,7 +316,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         controlTitle: function() {
             var categories = this.options.categories,
                 parentCategory = this.options.parentCategory;
-            if(categories.where({parent_name: parentCategory}).length <= 1)
+            if(categories.where({parent_name: parentCategory}).length == 1)
                 this.$('.category_description').hide();
         }
     });
