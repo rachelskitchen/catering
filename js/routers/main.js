@@ -59,6 +59,7 @@ define(["backbone"], function(Backbone) {
 
             if (App.Data.settings.get("skin") == App.Skins.RETAIL) {
                 DINING_OPTION_NAME.DINING_OPTION_TOGO = 'Pick up in store';
+                DINING_OPTION_NAME.DINING_OPTION_DELIVERY = 'Shipping';
             }
 
             // set page title
