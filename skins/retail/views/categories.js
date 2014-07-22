@@ -1,4 +1,3 @@
-
 /*
  * Revel Systems Online Ordering Application
  *
@@ -150,8 +149,6 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             model.parent_name = model.name; // it is required due to we use `tab` template
             this.$el.html(this.template(model));
             this.afterRender.call(this, this.model.get('sort'));
-            if(model.id == this.collection.selected)
-                console.log(model.id);
             return this;
         },
         events: {
@@ -243,6 +240,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         update: function(subs) {
             var cats = this.collection,
                 collect = new Backbone.Collection(subs),
+                sublist = this.$el,
                 view;
 
             collect.receiving = $.Deferred();
@@ -253,7 +251,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             }, cats.parent_selected + '_sublist');
 
             this.subViews.removeFromDOMTree();
-            this.$('.sublist').show().append(view.el);
+            sublist.append(view.el);
             this.subViews.push(view);
             this.stopListening(view);
             this.listenTo(view, 'selected', function(opts) {
@@ -261,11 +259,19 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 this.collection.trigger('change:selected', this.collection, opts.selected);
             }, this);
             collect.receiving.resolve();         // select first subcategory
-            view.model.trigger('loadCompleted'); // run view.slider_create() and view.restore() methods
+
+            // show or hide subcategories
+            if(collect.length == 1)
+                sublist.addClass('hide');
+            else
+                sublist.removeClass('hide');
+
+            // run view.slider_create() and view.restore() methods
+            view.model.trigger('loadCompleted');
         },
         hide: function(result) {
             var products = result.get('products');
-            products && products.length && this.$('.sublist').hide();
+            products && products.length && this.$el.addClass('hide');
         }
     });
 
@@ -288,7 +294,8 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             this.$el.html(this.template(this.model.toJSON()));
             this.afterRender.call(this, this.model.get('sort'));
             this.add_table();
-            this.listenTo(this.options.categories, 'change:selected', this.update_view);
+            this.listenTo(this.options.categories, 'change:selected change:parent_selected', this.update_view);
+            this.controlTitle();
             return this;
         },
         add_table: function() {
@@ -302,9 +309,15 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             this.subViews.push(view);
         },
         update_view: function(model, value) {
-            if (value === this.model.get('id')) {
-                this.$el[0].scrollIntoView();
+            if (value === this.options.selected) {
+                this.$el.scrollTop(0);
             }
+        },
+        controlTitle: function() {
+            var categories = this.options.categories,
+                parentCategory = this.options.parentCategory;
+            if(categories.where({parent_name: parentCategory}).length <= 1)
+                this.$('.category_description').hide();
         }
     });
 
@@ -315,14 +328,16 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             App.Views.ListView.prototype.initialize.apply(this, arguments);
             this.initData();
         },
-        addItem: function(products, category) {
+        addItem: function(products, category, parent, selected) {
             var view = App.Views.GeneratorView.create('Categories', {
                 el: $('<li></li>'),
                 mod: 'ProductsItem',
                 collection: products,
                 model: category,
                 categories: this.collection,
-                filter: this.options.filter
+                parentCategory: parent,
+                filter: this.options.filter,
+                selected: selected
             }, category.cid);
             App.Views.ListView.prototype.addItem.call(this, view, this.$el, category.escape('sort'));
             this.subViews.push(view);
@@ -353,7 +368,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                     }));
                 });
 
-                self.addItem(new App.Collections.Products(products), category);
+                self.addItem(new App.Collections.Products(products), category, parent, ids);
                 self.trigger('loadCompleted');
                 loadDone = true;
             });
@@ -391,6 +406,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             var isCategories = typeof value != 'undefined',
                 mod = isCategories ? 'Products' : 'SearchResults',
                 data = isCategories ? undefined : model,
+                wrapper = this.$('.categories_products_wrapper'),
                 view;
 
             value = isCategories ? value : model.get('pattern');
@@ -409,12 +425,13 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             }, 'products_' + value);
 
             this.subViews.push(view);
-            this.$('.categories_products_wrapper').append(view.el);
-            this.$(".categories_products_wrapper").scrollTop(0);
+            wrapper.append(view.el);
+            wrapper.scrollTop(0);
 
             this.stopListening(view);
             this.listenTo(view, 'loadStarted', this.showSpinner, this);
             this.listenTo(view, 'loadCompleted', this.hideSpinner, this);
+            var self = this;
         },
         showSpinner: function() {
             this.$('.products_spinner').addClass('ui-visible');

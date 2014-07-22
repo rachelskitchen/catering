@@ -62,7 +62,6 @@
                     next.click(); // fix for bug 10295 (it removes :hover state of show element)
                     next.fadeOut(200);
                 }
-                updateScrollTop();
             }, 200);
 
             var downInterval,
@@ -139,15 +138,6 @@
             function scroll_top_up() {
                 clearInterval(upInterval);
                 upInterval = 0;
-            }
-
-            function updateScrollTop() {
-                var height = parent.height();
-                if(typeof prevHeight == 'number' && prevHeight != height) {
-                    parent.get(0).scrollTop -= height - prevHeight;
-                    prevHeight = height;
-                    parent.trigger('onScroll');
-                }
             }
         });
     };

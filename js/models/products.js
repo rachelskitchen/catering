@@ -57,12 +57,13 @@ define(["backbone", 'childproducts'], function(Backbone) {
             created_date: null
         },
         initialize: function() {
-            this.addJSON(this.toJSON());
             this.set({
                 img: App.Data.settings.get("img_path"),
                 checked_gift_cards: {}
             });
             this.listenTo(this, 'change:images change:image', this.images, this);
+            this.addJSON(this.toJSON());
+            this.images();
         },
         addJSON: function(data) {
             if (!data.image || data.image === '')

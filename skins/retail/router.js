@@ -127,13 +127,14 @@ define(["backbone", "main_router"], function(Backbone) {
             this.listenTo(App.Data.categories, 'change:parent_selected', function() {
                 var categories = App.Data.categories,
                     subCategories = App.Data.subCategories,
-                    parent = App.Data.categories.parent_selected;
+                    parent = App.Data.categories.parent_selected,
+                    subs = categories.where({parent_name: parent});
                 if(!subCategories.get(parent)) {
                     subCategories.add({
                         id: parent,
-                        subs:categories.where({parent_name: parent})
+                        subs: subs
                     });
-                    subCategories.get(parent).addAllSubs();
+                    subs.length > 1 && subCategories.get(parent).addAllSubs();
                 }
                 App.Data.categories.trigger('onSubs', subCategories.getSubs(parent));
             }, this);
@@ -241,7 +242,8 @@ define(["backbone", "main_router"], function(Backbone) {
                             collection: App.Data.categories,
                             search: App.Data.search,
                             filter: App.Data.filter,
-                            mod: 'MainProducts'
+                            mod: 'MainProducts',
+                            className: 'content products'
                         }
                     ]
                 });
