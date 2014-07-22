@@ -60,9 +60,12 @@
     <div class='clear'></div>
     <% if(!hide_images) { %>
     <ul class="images">
-    <% _.each(images, function(image, i) { %>
+    <% if (images.length > 1) _.each(images, function(image, i) {%>
         <li data-index="<%= i %>"><img class="block_img img" src="<%= images[i] %>" alt="<% print('[' + i + ']' + name + ' ' + id); %>"></li>
-    <% }); %>
+    <% }); 
+       else { %>
+        <li></li>
+    <% } %>
     </ul>
     <% } %>
 </script>
