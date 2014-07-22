@@ -73,7 +73,8 @@ define({
         instructions_view: "js/views/instructions",
         done_view: "js/views/done",
         slider_view: "js/views/slider",
-        search: "js/models/search"
+        search: "js/models/search",
+        subcategories: "js/models/subcategories"
     },
     waitSeconds: 30,
     shim: {

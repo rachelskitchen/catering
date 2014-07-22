@@ -61,6 +61,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Data.header = new App.Models.HeaderModel();
                 App.Data.mainModel = new App.Models.MainModel();
                 App.Data.categories = new App.Collections.Categories();
+                App.Data.subCategories = new App.Collections.SubCategories();
                 App.Data.search = new App.Collections.Search();
                 App.Data.filter = new Backbone.Model();
 
@@ -122,6 +123,21 @@ define(["backbone", "main_router"], function(Backbone) {
             this.mainView = mainView;
         },
         navigationControl: function() {
+            // change:parent_selected event occurs when any category tab is clicked
+            this.listenTo(App.Data.categories, 'change:parent_selected', function() {
+                var categories = App.Data.categories,
+                    subCategories = App.Data.subCategories,
+                    parent = App.Data.categories.parent_selected;
+                if(!subCategories.get(parent)) {
+                    subCategories.add({
+                        id: parent,
+                        subs:categories.where({parent_name: parent})
+                    });
+                    subCategories.get(parent).addAllSubs();
+                }
+                App.Data.categories.trigger('onSubs', subCategories.getSubs(parent));
+            }, this);
+
             // onSearchStart event occurs when 'search' form is submitted
             this.listenTo(App.Data.search, 'onSearchStart', function() {
                 App.Data.mainModel.trigger('loadStarted');
@@ -174,20 +190,6 @@ define(["backbone", "main_router"], function(Backbone) {
             this.listenTo(App.Data.header, 'onCart', function() {
                 App.Data.myorder.trigger('showCart');
             });
-
-            //onBack event occurs when 'Back' buttons is clicked
-            this.listenTo(App.Data.header, 'onBack', function() {
-                switch (App.Data.header.get('menu_index')) {
-                    case 1:
-                        this.navigate('about', true);
-                        break;
-                    case 2:
-                        this.navigate('map', true);
-                        break;
-                    default:
-                        this.navigate('index', true);
-                }
-            }, this);
         },
         index: function() {
             this.prepare('index', function() {

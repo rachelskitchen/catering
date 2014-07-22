@@ -75,13 +75,22 @@ define(['backbone'], function(Backbone) {
         },
         search: function(result) {
             this.model.set('attribute1', 1);
-            var products = result.get('products');
-            this.setAttributes(products, result.pattern);
+            var products = result.get('products'),
+                pattern = result.get('pattern'),
+                count;
+            this.$('option:not([value=1])').remove();
+            count = this.setAttributes(products, pattern);
+            this.control(count);
         },
         category: function() {
-            var category = this.options.categories.selected,
-                products = this.options.products[category];
-            this.setAttributes(products, category);
+            var count = 0;
+
+            this.$('option:not([value=1])').remove();
+            this.options.categories.selected.forEach(function(category) {
+                var products = this.options.products[category];
+                count += this.setAttributes(products, category);
+            }, this);
+            this.control(count);
         },
         setAttributes: function(products, id) {
             if(!products || !products.length)
@@ -93,30 +102,34 @@ define(['backbone'], function(Backbone) {
             if(!(id in this.cache))
                 this.cache[id] = attrs;
 
-            this.$('option:not([value=1])').remove();
-
-            // show attributes
-            if(attrs.length == 0) {
-                this.disable();
-            } else {
-                this.enable();
+            if(attrs.length > 0)
                 attrs.forEach(this.addItem, this);
-            }
+
+            return attrs.length;
         },
         addItem: function(value) {
             this.$('select').append('<option value="' + value + '">' + value + '</option>');
         },
         onCategorySelected: function() {
-            var category = this.options.categories.selected;
-            this.model.set('attribute1', 1);
             this.category();
-            if(category in this.cache && this.cache[category].length)
+            this.model.set('attribute1', 1);
+            this.options.categories.selected.forEach(function(category) {
+                if(category in this.cache && this.cache[category].length)
                 this.enable();
             else
                 this.disable();
+            }, this);
+            this.category();
         },
         change: function(event) {
             this.model.set('attribute1', event.target.value);
+        },
+        control: function(count) {
+            // show attributes
+            if(count == 0)
+                this.disable();
+            else
+                this.enable();
         }
     });
 });

@@ -1,3 +1,4 @@
+
 /*
  * Revel Systems Online Ordering Application
  *
@@ -20,7 +21,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator", "list", "slider_view"], function(Backbone) {
+define(["backbone", "factory", "generator", "list", "slider_view", "categories", "products"], function(Backbone) {
     'use strict';
 
     App.Views.CategoriesView = {};
@@ -157,7 +158,8 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
             "change input": "change"
         },
         change: function() {
-            var value = this.model.get('id');
+            var model = this.model,
+                value = model.get('ids') || [model.get('id')]; // only ViewAll has `ids`
             this.trigger('selected', {selected: value});
         },
         show_hide: function() {
@@ -217,8 +219,7 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
             return App.Views.SliderView.prototype.update_slider.apply(this, arguments);
         },
         restore: function() {
-            if(typeof this.selected == 'number')
-                this.onSelected({selected: this.selected});
+            this.onSelected({selected: this.selected});
         },
         onSelected: function(opts) {
             this.trigger('selected', opts);
@@ -230,7 +231,7 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
         name: 'categories',
         mod: 'sublist',
         initialize: function() {
-            this.listenTo(this.collection, 'change:parent_selected', this.update, this);
+            this.listenTo(this.collection, 'onSubs', this.update, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.hide, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
@@ -239,9 +240,8 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
             this.collection.parent_selected && this.update();
             return this;
         },
-        update: function() {
+        update: function(subs) {
             var cats = this.collection,
-                subs = cats.where({active: true, parent_name: cats.parent_selected}),
                 collect = new Backbone.Collection(subs),
                 view;
 
@@ -329,14 +329,35 @@ define(["backbone", "factory", "generator", "list", "slider_view"], function(Bac
         },
         initData: function() {
             var self = this,
-                id = App.Data.categories.selected;
+                parent = this.collection.parent_selected,
+                ids = this.collection.selected,
+                loadDone;
 
             // Receives all products for current parent categories
-            App.Collections.Products.get_slice_products([id], this).then(function() {
-                self.addItem(App.Data.products[id], App.Data.categories.get(id));
+            App.Collections.Products.get_slice_products(ids, this).then(function() {
+                var products = [],
+                    category;
+
+                // if origin subcategory is selected need get category from App.Data.categories
+                // if selected subcategory is 'AllViews' need create new App.Models.Category instance
+                if(ids.length == 1)
+                    category = self.collection.get(ids[0]);
+                else
+                    category = new App.Models.Category({name: 'all', parent_name: parent, sort: 1, description: ''});
+
+                ids.forEach(function(id) {
+                    // add products with new sort value
+                    products.push.apply(products, App.Data.products[id].toJSON().map(function(product){
+                        product.sort = self.collection.get(id).get('sort') + '_' + product.sort;
+                        return product;
+                    }));
+                });
+
+                self.addItem(new App.Collections.Products(products), category);
                 self.trigger('loadCompleted');
+                loadDone = true;
             });
-            setTimeout(this.trigger.bind(this, 'loadStarted'), 0);
+            !loadDone && setTimeout(this.trigger.bind(this, 'loadStarted'), 0);
         }
     });
 

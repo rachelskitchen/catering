@@ -65,7 +65,7 @@ define(["backbone", 'products', 'modifiers'], function(Backbone) {
         },
         create: function(data) {
             this.set({
-                product: new App.Models.Product().create(data.product),
+                product: new App.Models.Product(data.product),
                 modifiers: new App.Collections.ModifierBlocks().addJSON(data.modifiers),
                 attributes: deepClone(data.attributes)
             });

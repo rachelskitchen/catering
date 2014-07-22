@@ -57,19 +57,21 @@ define(["backbone", 'childproducts'], function(Backbone) {
             created_date: null
         },
         initialize: function() {
+            this.addJSON(this.toJSON());
             this.set({
-                image: App.Data.settings.get_img_default(),
                 img: App.Data.settings.get("img_path"),
                 checked_gift_cards: {}
             });
             this.listenTo(this, 'change:images change:image', this.images, this);
         },
         addJSON: function(data) {
-            if (data.image === '') delete data.image;
+            if (!data.image || data.image === '')
+                data.image = App.Data.settings.get_img_default();
 
             if (data.is_gift)
                 data.sold_by_weight = false;
 
+            data.created_date = new Date(data.created_date).valueOf();
             this.set(data);
             if (data.attribute_type === 1 && data.child_products) {
                 this.set('child_products', new App.Collections.ChildProducts().addJSON(data.child_products));
@@ -219,20 +221,6 @@ define(["backbone", 'childproducts'], function(Backbone) {
             var child = this.get('child_products') || false;
             return child && this.set('active', child.check_active());
         },
-        create: function(product) {
-            if (!product.image || product.image === "") {
-                product.image = App.Data.settings.get_img_default();
-            }
-            //TBD: combine this function with the addJSON().
-
-            if (product.is_gift)
-                product.sold_by_weight = false;
-
-            product.created_date = new Date(product.created_date).valueOf();
-            this.set(product);
-
-            return this;
-        },
         check_selected: function() {
             var attr1 = this.get('attribute_1_selected'),
                 attr2 = this.get('attribute_2_selected'),
@@ -353,7 +341,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
                             data[i].stock_amount = 10;
                         }
                         if(data[i].is_gift && settings.get('skin') === 'mlb') continue; // mlb skin does not support gift cards (bug #9395)
-                        self.add(new App.Models.Product().create(data[i]));
+                        self.add(data[i]);
                     }
                     fetching.resolve();
                 },
