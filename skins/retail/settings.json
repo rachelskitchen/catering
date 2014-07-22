@@ -2,7 +2,7 @@
     "name_app": "Web application",
     "styles": [],
     "scripts" : [],
-    "img_default": ["none.png", "none2.png"],
+    "img_default": ["none.png", "none2.png", "noneMatrix.png"],
     "color_schemes": ["default", "blue_&_white", "vintage"],
     "routing": {
         "main": {

@@ -113,15 +113,21 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             'change .gift_card_price': 'gift_price_change'
         },
         render: function() {
-            var model = this.product.toJSON();
+            var model = this.product.toJSON(),
+                settings = App.Data.settings;
 
-            model.hide_images = App.Data.settings.get('settings_system').hide_images;
-            model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
+            model.hide_images = settings.get('settings_system').hide_images;
+            model.currency_symbol = settings.get('settings_system').currency_symbol;
             model.price = round_monetary_currency(this.model.get('initial_price'));
             model.price_length = model.price.length;
             model.not_size = this.modifiers && this.modifiers.getSizeModel() === undefined;
             model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
             model.images = Array.isArray(model.images) ? model.images : [];
+            
+            if (App.skin == App.Skins.RETAIL && model.images[0] == settings.get_img_default()) {
+                model.images[0] = settings.get_img_default(2); //to load noneMatrix.png
+            }
+            
             this.gift_price = model.is_gift && model.not_size;
 
             this.$el.html(this.template(model));
