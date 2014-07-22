@@ -170,6 +170,7 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
             var main = App.Views.GeneratorView.create('Checkout', {
                 model: this.collection.checkout,
                 customer: this.options.customer,
+                card: this.options.card,
                 mod: 'Main'
             }), specials = this.$('.specials'),
                 tips;

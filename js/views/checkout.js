@@ -32,6 +32,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             this.listenTo(this.model, 'change:dining_option', this.controlAddress, this);
             this.listenTo(this.model, 'change:dining_option', this.controlDeliverySeat, this);
             this.customer = this.options.customer;
+            this.card = this.options.card;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.model.get('dining_option') === 'DINING_OPTION_DELIVERY' && 
                  this.controlAddress(null, 'DINING_OPTION_DELIVERY');
@@ -75,11 +76,6 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                     return g1 ? g1.toUpperCase() : ' ' + g2.toUpperCase();
                 });
                 this.value = new_value;
-                if (this.className === 'firstName') {
-                    self.customer.set('first_name', new_value);
-                } else {
-                    self.customer.set('last_name', new_value);
-                }
                 try {
                     event.target.setSelectionRange(start, end, direction);
                 } catch(e) {}
@@ -88,17 +84,19 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             return this;
         },
         events: {
-            'change .firstName': 'changeFirstName',
-            'change .lastName': 'changeLastName',
+            'blur .firstName': 'changeFirstName',
+            'blur .lastName': 'changeLastName',
             'change .email': 'changeEmail',
             'change .phone': 'changePhone',
             'change .rewardCard' : 'changeRewardCard'
         },
         changeFirstName: function(e) {
             this.customer.set('first_name', e.target.value);
+            this.card.set('firstName', e.target.value);
         },
         changeLastName: function(e) {
             this.customer.set('last_name', e.target.value);
+            this.card.set('secondName', e.target.value);
         },
         changeEmail: function(e) {
             this.customer.set('email', e.target.value);
