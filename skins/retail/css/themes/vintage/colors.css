@@ -274,6 +274,9 @@ aside:after, aside:before {
 .product_image {
     background: #fff;
 }
+.product_image.no-photo {
+    background: #f4f4f4;
+} 
 .content_arrow {
     background: #e6decb;
 }

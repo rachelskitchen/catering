@@ -4,7 +4,7 @@
 
 <script type="text/template" id="product_list_item-template">
     <% if(!hide_images) { %>
-    <div class="product_image">
+    <div class="product_image <% if(isDefaultImage) print('no-photo'); %>">
         <img src="<%= image %>" alt="logo for <%= name %>[<%= id %>]" <% if(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent)) print('class="safari"'); %>>
     </div>
     <% } %>

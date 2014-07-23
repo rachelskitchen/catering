@@ -41,6 +41,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             model.price_length = model.price.length + model.currency_symbol.length;
             model.show_product_description = !App.Data.settings.get('settings_system').hide_products_description;
             model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
+            model.isDefaultImage = model.image == App.Data.settings.get_img_default();
             this.$el.html(this.template(model));
             this.afterRender.call(this, model.sort);
             return this;
