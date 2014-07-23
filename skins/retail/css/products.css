@@ -57,7 +57,6 @@
 
 /* styles for product list with hidden description */
 .product_table .product.short {
-    padding-top: 5px;
     padding-bottom: 5px;
     margin: 0 10px 30px;
 }
@@ -202,11 +201,22 @@
     width:75px;
 }
 #modifiers_popup .product .gift_card {
-    margin-top:5px;
+    margin-bottom: 10px;
+}
+#modifiers_popup .product .gift_card .message {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+#modifiers_popup .product .gift_card span:not([class]) {
+    display: inline-block;
+    width: 130px;
+    text-align: right;
 }
 #modifiers_popup .product .gift_card .input_beauty {
     margin-left: 12px;
-    width:196px;
+    width: 187px;
 }
 #modifiers_popup .product .gift_card input {
     font-size: 18px;

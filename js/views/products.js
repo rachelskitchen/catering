@@ -139,7 +139,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             if (this.gift_price) {
                 inputTypeNumberMask(this.$('.gift_card_price'), /^\d{0,3}(\.\d{0,2})?$/, '');
             }
-            
+
             if (App.skin == App.Skins.RETAIL)
                 this.$('.img').attr('data-default-index', 2);
             loadSpinner(this.$('.img'));

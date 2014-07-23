@@ -32,15 +32,8 @@
         <dt class='name'>
             <%= name %>
             <span class="cost">
-                <% if (is_gift && not_size) { %>
-                    <span class='currency_symbol gift_card_symbol' ><%=currency_symbol%></span>
-                    <div class="input_beauty">
-                        <input type="text" id="price" name="gift_card_price" value='<%= price %>' class="gift_card_price price" />
-                    </div>
-                <% } else { %>
-                    <span class="currency_symbol"><%= currency_symbol %></span>
-                    <span class="price"><%= price %></span>
-                <% } %>
+                <span class="currency_symbol"><%= currency_symbol %></span>
+                <span class="price"><%= price %></span>
                 <% if(sold_by_weight && uom) { %>
                 <span class="uom">/ <%= uom %></span>
                 <% } %>
@@ -51,9 +44,18 @@
 
     <% if (is_gift) { %>
     <div class='gift_card'>
+        <span class="message">Enter gift card number you want to load money to.</span>
         <span>Gift Card Number: </span>
         <div class="input_beauty">
             <input type="text" name="gift_card_number" value='<%= gift_card_number %>' class="gift_card_number" />
+        </div>
+    </div>
+    <% } %>
+    <% if (is_gift && not_size) { %>
+    <div class='gift_card'>
+        <span>Amount: </span>
+        <div class="input_beauty">
+            <input type="text" id="price" name="gift_card_price" value='<%= price %>' class="gift_card_price price" />
         </div>
     </div>
     <% } %>
@@ -62,7 +64,7 @@
     <ul class="images">
     <% if (images.length > 1) _.each(images, function(image, i) {%>
         <li data-index="<%= i %>"><img class="block_img img" src="<%= images[i] %>" alt="<% print('[' + i + ']' + name + ' ' + id); %>"></li>
-    <% }); 
+    <% });
        else { %>
         <div class='space'></div>
     <% } %>
