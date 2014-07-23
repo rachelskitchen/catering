@@ -766,10 +766,14 @@ function loadSpinner(logo, anim, cb) {
     logo.each(function() {
         var logo = $(this),
             parent = logo.parent(),
-            src = btoa(logo.attr('src') + logo.attr('alt')),
+            defImage = App.Data.settings.get_img_default(logo.attr('data-default-index')),
+            hash = btoa(logo.attr('src') + logo.attr('alt')),
             img, spinner;
-        if(src in App.Data.images)
-            return logo.replaceWith(App.Data.images[src].clone());
+        if(hash in App.Data.images) {
+            if (App.Data.images[hash].attr('src') == defImage)
+                parent.addClass('no-photo');
+            return logo.replaceWith(App.Data.images[hash].clone());
+        }
         spinner = $('<div class="img-spinner"></div>');
         spinner.spinner();
         logo.replaceWith(spinner);
@@ -782,7 +786,7 @@ function loadSpinner(logo, anim, cb) {
             App.Data.images[btoa(img.attr('src') + img.attr('alt'))] = img.clone().css('opacity', '100');
             typeof cb == 'function' && cb(img);
         }).error(function(e) {
-            logo.prop('src', App.Data.settings.get_img_default(logo.attr('data-default-index')));
+            logo.prop('src', defImage);
             spinner.replaceWith(logo);
             parent.addClass('no-photo');
             App.Data.images[btoa(img.attr('src') + img.attr('alt'))] = logo.clone();
