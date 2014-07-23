@@ -61,12 +61,16 @@ define(["backbone", 'childproducts'], function(Backbone) {
                 img: App.Data.settings.get("img_path"),
                 checked_gift_cards: {}
             });
+
+            if (!this.get('image'))
+                this.set('image', App.Data.settings.get_img_default());
+            
             this.listenTo(this, 'change:images change:image', this.images, this);
             this.addJSON(this.toJSON());
             this.images();
         },
         addJSON: function(data) {
-            if (!data.image || data.image === '')
+            if (!data.image)
                 data.image = App.Data.settings.get_img_default();
 
             if (data.is_gift)
@@ -285,7 +289,10 @@ define(["backbone", 'childproducts'], function(Backbone) {
 
             if(Array.isArray(imgs)) {
                 images = imgs.map(function(image) {
-                    return /^https?:\/\//.test(image) ? image : host + image.replace(/^([^\/])/, '/$1');
+                    if (defImg != image)
+                        return /^https?:\/\//.test(image) ? image : host + image.replace(/^([^\/])/, '/$1');
+                    else
+                        return image;
                 });
             }
 
