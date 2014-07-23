@@ -358,7 +358,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 if(ids.length == 1)
                     category = self.collection.get(ids[0]);
                 else
-                    category = new App.Models.Category({name: 'all', parent_name: parent, sort: 1, description: ''});
+                    category = new App.Models.Category({name: 'All', parent_name: parent, sort: 1, description: ''});
 
                 ids.forEach(function(id) {
                     // add products with new sort value
