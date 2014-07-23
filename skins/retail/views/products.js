@@ -106,10 +106,8 @@ define(["backbone", "factory", "generator", 'products_view'], function(Backbone)
                 image = this.$('.large');
             image.attr('src', images[index]);
             loadSpinner(image);
-            if (images.length > 1) {
-                this.$('.images > li').removeClass('active');
-                li.addClass('active');
-            }
+            this.$('.images > li').removeClass('active');
+            li.addClass('active');
         }
     });
 });

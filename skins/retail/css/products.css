@@ -119,6 +119,12 @@
     position: relative;
     font-size: 10px;
 }
+.product_info .images .space {
+    display: inline-block;
+    width: 53px;
+    height: 63px;
+    position: relative;
+}
 .product_info .images li.active:before {
     content: '';
     display: block;
