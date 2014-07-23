@@ -200,14 +200,16 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         name: 'modifiers',
         mod: 'list',
         render: function() {
-            var attributes = this.options.data.attributes;
+            var attributes = this.options.data.attributes,
+                sorts = this.options.data.attributesSort;
             this.$el.html(this.template({name: this.options.data.name})); // name for paypal
 
             for(var key in attributes) {
                 this.addItem({
                     id: key * 1,
                     name: attributes[key],
-                    data: this.options.data
+                    data: this.options.data,
+                    sort: sorts[key * 1]
                 });
             }
             return this;
@@ -338,10 +340,12 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
 
             var attr = [],
                 attribute_1_enable = this.product.get('attribute_1_enable'),
-                attribute_2_enable = this.product.get('attribute_2_enable');
+                attribute_2_enable = this.product.get('attribute_2_enable'),
+                attribute_1_name = this.product.get('attribute_1_name'),
+                attribute_2_name = this.product.get('attribute_2_name');
 
-            attribute_1_enable && attr.push(this.product.get('attribute_1_name'));
-            attribute_2_enable && attr.push(this.product.get('attribute_2_name'));
+            attribute_1_enable && attr.push(attribute_1_name);
+            attribute_2_enable && attr.push(attribute_2_name);
 
             this.$el.html(this.template({attributes: attr.join(' / ')}));
 
@@ -349,14 +353,16 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 var data1 = {
                     product: this.product,
                     attributes: this.modifiers.attribute_1_all,
+                    attributesSort: this.modifiers.attribute_1_sort,
                     attributesOther: this.modifiers.attribute_2,
-                    name: this.product.get('attribute_1_name'),
+                    name: attribute_1_name,
                     row: 1
                 }, data2 = {
                     product: this.product,
                     attributes: this.modifiers.attribute_2_all,
+                    attributesSort: this.modifiers.attribute_2_sort,
                     attributesOther: this.modifiers.attribute_1,
-                    name: this.product.get('attribute_2_name'),
+                    name: attribute_2_name,
                     row: 2
                 };
                 attribute_1_enable && this.addItem(data1);

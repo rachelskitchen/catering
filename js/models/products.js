@@ -64,7 +64,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
 
             if (!this.get('image'))
                 this.set('image', App.Data.settings.get_img_default());
-            
+
             this.listenTo(this, 'change:images change:image', this.images, this);
             this.addJSON(this.toJSON());
             this.images();

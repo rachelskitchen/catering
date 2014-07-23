@@ -49,7 +49,9 @@ define(["backbone", "factory", 'modifiers_view'], function(Backbone) {
             App.Views.CoreModifiersView.CoreModifiersMatrixesView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
+            App.Views.ListView.prototype.initOrderSort.apply(this, arguments);
             App.Views.CoreModifiersView.CoreModifiersMatrixesView.prototype.render.apply(this, arguments);
+            this.$('.modifiers-list').prepend(this.$('option[value=-1]')); // move to first
             var data = this.options.data,
                 row = data.row,
                 selected = data.product.get('attribute_' + row + '_selected');
@@ -68,8 +70,11 @@ define(["backbone", "factory", 'modifiers_view'], function(Backbone) {
                 name: data.name,
                 model: this.model
             });
-            view.$el.attr('value', data.id);
-            this.$('.modifiers-list').append(view.el);
+            view.$el.attr({
+                'value': data.id,
+                'data-sort': data.sort
+            });
+            App.Views.ListView.prototype.addItem.call(this, view, this.$('.modifiers-list'), data.sort);
             this.subViews.push(view);
         },
         change: function(e) {

@@ -162,7 +162,9 @@ define(["backbone", 'products', 'modifiers'], function(Backbone) {
                 attribute_1: {},
                 attribute_2: {},
                 attribute_1_all: {},
-                attribute_2_all: {}
+                attribute_2_all: {},
+                attribute_1_sort: {},
+                attribute_2_sort: {}
             };
             this.each(function(el) {
                 var attr = el.get_attributes();
@@ -173,6 +175,7 @@ define(["backbone", 'products', 'modifiers'], function(Backbone) {
                         }
                         typeof attr.attribute_value_2 !== 'undefined' && resp.attribute_1[attr.attribute_value_1].push(attr.attribute_value_2);
                         resp.attribute_1_all[attr.attribute_value_1] = attr.attribute_value_1_name;
+                        resp.attribute_1_sort[attr.attribute_value_1] = attr.attribute_value_1_sort;
                     }
                     if (typeof attr.attribute_value_2  !== 'undefined') {
                         if (!resp.attribute_2[attr.attribute_value_2]) {
@@ -180,6 +183,7 @@ define(["backbone", 'products', 'modifiers'], function(Backbone) {
                         }
                         typeof attr.attribute_value_1 !== 'undefined' && resp.attribute_2[attr.attribute_value_2].push(attr.attribute_value_1);
                         resp.attribute_2_all[attr.attribute_value_2] = attr.attribute_value_2_name;
+                        resp.attribute_2_sort[attr.attribute_value_2] = attr.attribute_value_2_sort;
                     }
                 }
             });
