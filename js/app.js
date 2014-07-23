@@ -132,7 +132,8 @@
             App.Data.settings = new App.Models.Settings({
                 supported_skins: app.skins.available
             });
-            App.Data.settings.load().then(function() {
+
+            App.Data.settings.once('change:settings_skin', function() {
                 load_styles_and_scripts(); // load styles and scripts
                 App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
@@ -147,6 +148,7 @@
                     app.afterInit();
                 });
             });
+            App.Data.settings.load();
         });
     }
 

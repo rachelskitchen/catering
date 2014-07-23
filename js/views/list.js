@@ -41,8 +41,8 @@ define(["backbone", "factory"], function(Backbone) {
             sortedEl = sortedEl || '';
             this.orderSort.push(sort);
             this.orderSort.sort(function(x, y) {
-                x = parseInt(x, 10);
-                y = parseInt(y, 10);
+                x = parseFloat(x, 10);
+                y = parseFloat(y, 10);
                 return x < y ? -1 : x > y ? 1 : 0;
             });
             index = this.orderSort.indexOf(sort);

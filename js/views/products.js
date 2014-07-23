@@ -124,11 +124,11 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             model.not_size = this.modifiers && this.modifiers.getSizeModel() === undefined;
             model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
             model.images = Array.isArray(model.images) ? model.images : [];
-            
+
             if (App.skin == App.Skins.RETAIL && model.images[0] == settings.get_img_default()) {
                 model.images[0] = settings.get_img_default(2); //to load noneMatrix.png
             }
-            
+
             this.gift_price = model.is_gift && model.not_size;
 
             this.$el.html(this.template(model));

@@ -291,8 +291,9 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             }
         },
         render: function() {
-            this.$el.html(this.template(this.model.toJSON()));
-            this.afterRender.call(this, this.model.get('sort'));
+            var model = this.model;
+            this.$el.html(this.template(model.toJSON()));
+            this.afterRender.call(this, model.get('sort'));
             this.add_table();
             this.listenTo(this.options.categories, 'change:selected change:parent_selected', this.update_view);
             this.controlTitle();
@@ -362,8 +363,11 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
 
                 ids.forEach(function(id) {
                     // add products with new sort value
-                    products.push.apply(products, App.Data.products[id].toJSON().map(function(product){
-                        product.sort = self.collection.get(id).get('sort') + '_' + product.sort;
+                    var items = App.Data.products[id],
+                        last = Math.max.apply(Math, items.pluck('sort')),
+                        floatNumber = Math.pow(10, String(last).length);
+                    products.push.apply(products, items.toJSON().map(function(product){
+                        product.sort = Number(self.collection.get(id).get('sort')) + product.sort / floatNumber;
                         return product;
                     }));
                 });

@@ -25,31 +25,19 @@ define(["backbone", "async"], function(Backbone) {
 
     App.Models.Settings = Backbone.Model.extend({
         initialize: function() {
-            this.set('basePath', require('app').config.baseUrl.replace(/\/$/, '') || '.');
+            var app = require('app');
+            this.set('basePath', app.config.baseUrl.replace(/\/$/, '') || '.');
+            this.set('host', app.REVEL_HOST);
         },
         load: function() {
             var self = this;
 
             this.listenTo(this, 'change:skin', this.setSkinPath, this);
+            this.listenToOnce(this, 'change:settings_system', this.get_settings_main, this);
+            this.listenToOnce(this, 'change:skinPath', this.get_settings_for_skin, this)
 
-            // listen to skin assign
-            this.listenTo(this, 'change:skin', function(model, value) {
-                // if device is Nexus 7 or smaller than weborder mobile version should be applied
-                var isMobileVersion = App.Skins.WEBORDER_MOBILE
-                    && value == App.Skins.WEBORDER && 'matchMedia' in window
-                    && (window.devicePixelRatio ? window.devicePixelRatio > 1.33 : /IEMobile/i.test(navigator.userAgent))
-                    && !/ipad|Nexus\s?10/i.test(navigator.userAgent)
-                    && cssua.userAgent.mobile
-                    && (matchMedia("(orientation:portrait)").matches || matchMedia("(orientation:landscape)").matches);
-                if(isMobileVersion) {
-                    model.set('skin', App.Skins.WEBORDER_MOBILE, {silent: true});
-                    model.setSkinPath();
-                };
-            });
-
-            self.get_data_warehouse(); // selection of the data warehouse
-            self.get_establishment();  // get ID of current establishment
-            self.get_settings_main();  // get settings from file "settings.json"
+            this.get_data_warehouse(); // selection of the data warehouse
+            this.get_establishment();  // get ID of current establishment
 
             $.ajaxSetup({
                 timeout: self.get("timeout"),
@@ -87,7 +75,7 @@ define(["backbone", "async"], function(Backbone) {
                 return App.Data.errors.alert(MSG.ERROR_CHROME_CRASH, true);
 
             // load settings system for directory app, only for maintenance page allow
-            return $.when(self.get_settings_for_skin(), self.get_settings_system());
+            return $.when(self.get_settings_system());
         },
         defaults: {
             establishment: 1,
@@ -123,21 +111,34 @@ define(["backbone", "async"], function(Backbone) {
              }
         },
         /**
-         * Get settings from file "settings.xml".
+         * resolve app's skin
          */
         get_settings_main: function() {
-            var self = this,
-                params = parse_get_params(),
-                skin = params.skin;
-
-            self.set("skin", skin && self.get('supported_skins').indexOf(skin) > -1 ? skin : App.Skins.DEFAULT);
+            var params = parse_get_params(),
+                skin = params.skin,
+                settings = this.get('settings_system'),
+                isUnknownSkin = !(skin && this.get('supported_skins').indexOf(skin) > -1),
+                defaultSkin = settings.type_of_service == ServiceType.RETAIL ? App.Skins.RETAIL : App.Skins.DEFAULT;
 
             //set alias to current skin
-            App.skin = self.get("skin");
+            App.skin = isUnknownSkin ? defaultSkin : skin;
 
-            self.set("img_path", self.get("skinPath") + "/img/");
-            self.set("host", require('app').REVEL_HOST);
+            // if device is Nexus 7 or smaller than weborder mobile version should be applied
+            var isMobileVersion = App.Skins.WEBORDER_MOBILE
+                && App.skin == App.Skins.WEBORDER && 'matchMedia' in window
+                && (window.devicePixelRatio ? window.devicePixelRatio > 1.33 : /IEMobile/i.test(navigator.userAgent))
+                && !/ipad|Nexus\s?10/i.test(navigator.userAgent)
+                && cssua.userAgent.mobile
+                && (matchMedia("(orientation:portrait)").matches || matchMedia("(orientation:landscape)").matches);
 
+            if(isMobileVersion)
+                App.skin = App.Skins.WEBORDER_MOBILE;
+
+            // if RETAIL skin set delivery_charge to 0
+            if(App.skin == App.Skins.RETAIL)
+                settings.delivery_charge = 0;
+
+            this.set('skin', App.skin);
         },
         /**
          * Get settings from file "settings.json" for current skin.
@@ -294,10 +295,6 @@ define(["backbone", "async"], function(Backbone) {
                                     settings_system.min_delivery_amount = 0;
                             }
 
-                            if (App.skin == App.Skins.RETAIL) {
-                                settings_system.delivery_charge = 0;
-                            }
-
                             if (settings_system.auto_bag_charge < 0)
                                 settings_system.auto_bag_charge = 0;
 
@@ -393,7 +390,11 @@ define(["backbone", "async"], function(Backbone) {
             this.set('settings_system', getData('settings').settings_system);
         },
         setSkinPath: function() {
-            this.set('skinPath', this.get('basePath') + '/skins/' + this.get('skin'));
+            var skinPath = this.get('basePath') + '/skins/' + this.get('skin');
+            this.set({
+                img_path: skinPath + '/img/',
+                skinPath: skinPath
+            });
         }
     });
 });
