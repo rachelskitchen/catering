@@ -51,11 +51,12 @@ define(["backbone", "factory", 'modifiers_view'], function(Backbone) {
         render: function() {
             App.Views.ListView.prototype.initOrderSort.apply(this, arguments);
             App.Views.CoreModifiersView.CoreModifiersMatrixesView.prototype.render.apply(this, arguments);
-            this.$('.modifiers-list').prepend(this.$('option[value=-1]')); // move to first
-            var data = this.options.data,
+            var select = this.$('.modifiers-list'),
+                data = this.options.data,
                 row = data.row,
                 selected = data.product.get('attribute_' + row + '_selected');
-            this.$('select').val(selected);
+            select.prepend(this.$('option[value=-1]')); // move to first
+            select.val(selected);
             return this;
         },
         events: {
