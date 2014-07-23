@@ -37,7 +37,7 @@
     width: 120px;
     height: 35px;
     text-align: center;
-    line-height: 40px;
+    line-height: 35px;
     margin: 0 3px;
     border-width: 1px 1px 0 1px;
     border-style: solid;
@@ -71,17 +71,17 @@
     text-overflow: ellipsis;
 }
 #header .categories .tabs span.first-line {
-    top: -10px;
+    top: -6px;
 }
 #header .categories .tabs input:checked + label span.first-line {
-    top: -7px;
+    top: -3px;
 }
 #header .categories .tabs span.second-line {
     left: -120px;
-    top: 3px;
+    top: 7px;
 }
 #header .categories .tabs input:checked + label span.second-line {
-    top: 6px;
+    top: 10px;
 }
 #header .categories .tabs input:checked + label {
     height: 38px;
