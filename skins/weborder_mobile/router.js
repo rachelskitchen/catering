@@ -331,6 +331,8 @@ define(["backbone", "main_router"], function(Backbone) {
         },
         checkout: function() {
             this.prepare('checkout', function() {
+                if(!App.Data.card)
+                    App.Data.card = new App.Models.Card;
 
                 if(!App.Data.customer) {
                     App.Data.customer =  new App.Models.Customer();

@@ -32,7 +32,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             this.listenTo(this.model, 'change:dining_option', this.controlAddress, this);
             this.listenTo(this.model, 'change:dining_option', this.controlDeliverySeat, this);
             this.customer = this.options.customer;
-            this.card = this.options.card;
+            this.card = App.Data.card;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.model.get('dining_option') === 'DINING_OPTION_DELIVERY' && 
                  this.controlAddress(null, 'DINING_OPTION_DELIVERY');

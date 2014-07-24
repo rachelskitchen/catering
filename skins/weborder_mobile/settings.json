@@ -40,7 +40,7 @@
             "css": ["checkout"],
             "views": ["checkout"],
             "templates": ["checkout"],
-            "core": ["checkout", "products", "delivery_addresses", "customers"]
+            "core": ["card", "checkout", "products", "delivery_addresses", "customers"]
         },
         "card": {
             "css": ["card"],

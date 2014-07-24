@@ -319,7 +319,6 @@ define(["backbone", "main_router"], function(Backbone) {
                         DINING_OPTION_NAME: DINING_OPTION_NAME,
                         timetable: App.Data.timetables,
                         customer: App.Data.customer,
-                        card: App.Data.card,
                         acceptTips: settings.accept_tips_online,
                         noteAllow:  App.Data.settings.get('settings_system').order_notes_allow
                     }
