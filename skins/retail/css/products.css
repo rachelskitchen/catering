@@ -237,17 +237,13 @@
 /* list item mod block end */
 
 /* for tablets */
-@media only screen and (max-device-width: 949px) {
+@media only screen and (min-device-width: 768px) and (max-device-width : 1024px) {
     #modifiers_popup .product .gift_card span:not([class]) {
         width: 200px !important;
-        font-align: left !important;
-    }
-}
-@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
-    #modifiers_popup .product .gift_card span:not([class]) {
-        width: 160px !important;
+        text-align: left !important;
     }
     #modifiers_popup .product .gift_card .input_beauty {
+        margin-left: 0;
         width: 137px !important;
     }
 }
