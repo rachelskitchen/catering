@@ -1,14 +1,13 @@
 <script type="text/template" id="store_info_about-template">
-        
     <div class='about_content'>
         <% if (title.length == 0 && content.length == 0 && images.length == 0) {
-                content = "No information";    
+                content = "No information";
            }
         %>
 
         <% if (title.length > 0) { %>
            <h2><%= title %></h2>
-        <% } %>   
+        <% } %>
 
         <% if (images.length > 0) { %>
             <div class='gallery'>

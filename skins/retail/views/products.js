@@ -96,7 +96,8 @@ define(["backbone", "factory", "generator", 'products_view'], function(Backbone)
         events: function() {
             var parent = App.Views.CoreProductView.CoreProductModifiersView.prototype.events;
             return $.extend(parent, {
-                'click li[data-index]': 'showImage'
+                'click li[data-index]': 'showImage',
+                'keyup .gift_card_price': 'keyup'
             });
         },
         showImage: function(event) {
@@ -108,6 +109,15 @@ define(["backbone", "factory", "generator", 'products_view'], function(Backbone)
             loadSpinner(image);
             this.$('.images > li').removeClass('active');
             li.addClass('active');
+        },
+        update_price: function() {
+            var initial_price = round_monetary_currency(this.model.get('initial_price'));
+            this.$('.price').text(initial_price);
+        },
+        keyup: function(e) {
+            var initial_price = round_monetary_currency(this.model.get('initial_price'));
+            if(e.target.value != initial_price)
+                this.gift_price_change(e);
         }
     });
 });
