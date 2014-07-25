@@ -29,7 +29,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
             id: null,
             id_category : null,
             image: null,
-            images: null,
+            images: [],
             is_cold: false,
             name: null,
             price: null,
@@ -65,9 +65,13 @@ define(["backbone", 'childproducts'], function(Backbone) {
             if (!this.get('image'))
                 this.set('image', App.Data.settings.get_img_default());
 
-            this.listenTo(this, 'change:images change:image', this.images, this);
+            if (App.skin == App.Skins.RETAIL)            
+                this.listenTo(this, 'change:images change:image', this.images, this);
+            
             this.addJSON(this.toJSON());
-            this.images();
+            
+            if (App.skin == App.Skins.RETAIL)            
+                this.images();
         },
         addJSON: function(data) {
             if (!data.image)
@@ -79,7 +83,8 @@ define(["backbone", 'childproducts'], function(Backbone) {
             data.created_date = new Date(data.created_date).valueOf();
             this.set(data);
             if (data.attribute_type === 1 && data.child_products) {
-                this.set('child_products', new App.Collections.ChildProducts().addJSON(data.child_products));
+                var children = new App.Collections.ChildProducts();
+                this.set('child_products', children.addJSON(data.child_products.toJSON()));                
             }
             return this;
         },
@@ -286,7 +291,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
                 defImg = settings.get_img_default(),
                 host = settings.get('host'),
                 images = [];
-
+            
             if(Array.isArray(imgs)) {
                 images = imgs.map(function(image) {
                     if (defImg != image)
@@ -294,15 +299,14 @@ define(["backbone", 'childproducts'], function(Backbone) {
                     else
                         return image;
                 });
-            }
-
-            if(defImg != img) {
-                images.indexOf(img) == -1 && images.unshift(img);
-            } else if(images.length == 0){
-                images.indexOf(img) == -1 && images.push(img);
-            }
+            }               
+            if(images.length == 0)
+                images.push(img);
+            else
+                img = images[0];
 
             this.set('images', images, {silent: true});
+            this.set('image', img, {silent: true});
         }
     });
 
