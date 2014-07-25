@@ -33,6 +33,8 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(this.options.cart, 'add remove', this.update, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.searchComplete, this);
             this.listenTo(this.options.search, 'onSearchStart', this.searchStart, this);
+            this.listenTo(this.collection, 'onRestoreState', this.restoreState, this);
+            this.listenTo(this.collection, 'onLoadProductsComplete', this.restoreData, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
@@ -100,6 +102,15 @@ define(["backbone", "factory"], function(Backbone) {
                 cart.text(quantity);
             else
                 cart.text('');
+        },
+        restoreState: function(state) {
+            var pattern = state.pattern,
+                input = this.$('input[name=search]');
+            pattern && input.attr('disabled', 'disabled').val(pattern);
+        },
+        restoreData: function() {
+            this.$('input[name=search]').removeAttr('disabled');
+            this.onSearch({preventDefault: new Function});
         }
     });
 
@@ -127,5 +138,5 @@ define(["backbone", "factory"], function(Backbone) {
         onSearch: function() {
             return;
         }
-    });   
+    });
 });

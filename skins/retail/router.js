@@ -38,7 +38,7 @@ define(["backbone", "main_router"], function(Backbone) {
     App.Routers.Router = App.Routers.MainRouter.extend({
         routes: {
             "": "index",
-            "index": "index",
+            "index(/:data)": "index",
             "about": "about",
             "map": "map",
             "checkout": "checkout",
@@ -140,9 +140,18 @@ define(["backbone", "main_router"], function(Backbone) {
             }, this);
 
             // onSearchStart event occurs when 'search' form is submitted
-            this.listenTo(App.Data.search, 'onSearchStart', function() {
+            this.listenTo(App.Data.search, 'onSearchStart', function(search) {
+                var state = {};
                 App.Data.mainModel.trigger('loadStarted');
-                this.navigate('index', true);
+
+                if(this.state)
+                    state = this.state;
+
+                delete state.parent_selected;
+                delete state.selected;
+                state.pattern = search.get('pattern');
+
+                this.navigate('index/' + this.encodeState(this.state), true);
             }, this);
 
             // onSearchComplete event occurs when search results are ready
@@ -192,17 +201,40 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Data.myorder.trigger('showCart');
             });
         },
-        index: function() {
+        encodeState: function(data) {
+            var enc = '';
+            try {
+                // encode data for hash and update this.state
+                enc = JSON.stringify(data);
+                this.state = data;
+            } catch(e) {
+                console.debug('Unable to encode state for object ', data);
+            }
+            return btoa(enc);
+        },
+        decodeState: function(data) {
+            this.state = null;
+            try {
+                // decode data from hash and restore
+                this.state = JSON.parse(atob(data));
+            } catch(e) {
+                console.debug('Unable to decode state for string "%s"', data);
+            }
+        },
+        index: function(data) {
+            this.decodeState(data);
             this.prepare('index', function() {
-                var dfd = $.Deferred(),
+                var categories = App.Data.categories,
+                    dfd = $.Deferred(),
                     self = this;
 
                 // load content block for categories
-                if (!App.Data.categories.receiving)
-                    App.Data.categories.receiving = App.Data.categories.get_categories();
+                if (!categories.receiving)
+                    categories.receiving = categories.get_categories();
 
-                App.Data.categories.receiving.then(function() {
+                categories.receiving.then(function() {
                     dfd.resolve();
+                    self.state && categories.trigger('onRestoreState', self.state);
                 });
 
                 App.Data.header.set('menu_index', 0);
@@ -214,7 +246,7 @@ define(["backbone", "main_router"], function(Backbone) {
                     content: [
                         {
                             modelName: 'Categories',
-                            collection: App.Data.categories,
+                            collection: categories,
                             model: App.Data.mainModel,
                             search: App.Data.search,
                             mod: 'SubList',
@@ -223,23 +255,23 @@ define(["backbone", "main_router"], function(Backbone) {
                         {
                             modelName: 'Filter',
                             model: App.Data.filter,
+                            categories: categories,
                             search: App.Data.search,
-                            categories: App.Data.categories,
                             mod: 'Sort',
                             className: 'filter sort'
                         },
                         {
                             modelName: 'Filter',
                             model: App.Data.filter,
+                            categories: categories,
                             search: App.Data.search,
-                            categories: App.Data.categories,
                             products: App.Data.products,
                             mod: 'Attribute',
                             className: 'filter attribute'
                         },
                         {
                             modelName: 'Categories',
-                            collection: App.Data.categories,
+                            collection: categories,
                             search: App.Data.search,
                             filter: App.Data.filter,
                             mod: 'MainProducts',

@@ -59,13 +59,13 @@ define(["backbone", "list"], function(Backbone) {
             App.Views.ListView.prototype.remove.apply(this, arguments);
         },
         render: function() {
-            var self = this;
             App.Views.ListView.prototype.render.apply(this, arguments);
             this.collection.each(this.addItem.bind(this));
-            this.collection.receiving && this.collection.receiving.then(function() {
-                self.$('input').first().click();
-            });
+            this.collection.receiving && this.collection.receiving.then(this.selectFirst.bind(this));
             return this;
+        },
+        selectFirst: function() {
+            this.$('input').first().click();
         },
         update_slider_render: function() {
             this.create_slider();

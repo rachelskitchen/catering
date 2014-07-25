@@ -30,9 +30,11 @@ define(['backbone'], function(Backbone) {
         mod: 'sort',
         initialize: function() {
             this.listenTo(this.options.search, 'onSearchComplete', this.search, this);
+            this.listenTo(this.options.categories, 'onSearchComplete', this.restoreData, this);
             this.listenTo(this.options.categories, 'change:selected', this.onCategorySelected, this);
-            this.listenTo(this.options.categories, 'onLoadStart', this.disable, this);
-            this.listenTo(this.options.categories, 'onLoadComplete', this.category, this);
+            this.listenTo(this.options.categories, 'onLoadProductsStarted', this.disable, this);
+            this.listenTo(this.options.categories, 'onLoadProductsComplete', this.category, this);
+            this.listenTo(this.options.categories, 'onRestoreState', this.restoreState, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         events: {
@@ -50,7 +52,11 @@ define(['backbone'], function(Backbone) {
             this.enable();
         },
         category: function() {
-            this.enable()
+            this.enable();
+            this.state && this.model.set({
+                sort: this.state.sort,
+                order: this.state.order
+            });
         },
         onCategorySelected: function() {
             this.enable();
@@ -63,6 +69,16 @@ define(['backbone'], function(Backbone) {
                 sort: attr,
                 order: order
             });
+        },
+        restoreState: function(state) {
+            var sort = state.sort,
+                order = state.order,
+                option;
+            if(sort) {
+                option = typeof order != 'undefined' ? sort + '|' + order : sort;
+                this.$('option[value="' + option + '"]').prop('selected', true);
+            }
+            this.state = state;
         }
     });
 
@@ -82,8 +98,10 @@ define(['backbone'], function(Backbone) {
             count = this.setAttributes(products, pattern);
             this.control(count);
         },
-        category: function() {
+        category: function(dontRestore) {
             var count = 0;
+
+            dontRestore = this.state && this.state.pattern ? true : dontRestore;
 
             this.$('option:not([value=1])').remove();
             this.options.categories.selected.forEach(function(category) {
@@ -91,6 +109,9 @@ define(['backbone'], function(Backbone) {
                 count += this.setAttributes(products, category);
             }, this);
             this.control(count);
+
+            // restore state
+            !dontRestore && this.state && this.restoreData();
         },
         setAttributes: function(products, id) {
             if(!products || !products.length)
@@ -119,7 +140,7 @@ define(['backbone'], function(Backbone) {
             else
                 this.disable();
             }, this);
-            this.category();
+            this.category(true);
         },
         change: function(event) {
             this.model.set('attribute1', event.target.value);
@@ -130,6 +151,16 @@ define(['backbone'], function(Backbone) {
                 this.disable();
             else
                 this.enable();
+        },
+        restoreState: function(state) {
+            this.state = state;
+        },
+        restoreData: function() {
+            var attr = this.state && this.state.attribute1;
+            if(attr) {
+                this.$('option[value="' + attr + '"]').prop('selected', true);
+                this.model.set('attribute1', attr);
+            }
         }
     });
 });

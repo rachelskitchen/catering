@@ -30,7 +30,8 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         mod: 'tab',
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.collection, 'change:active', this.show_hide);
+            this.listenTo(this.collection, 'change:active', this.show_hide, this);
+            this.listenTo(this.collection, 'onRestoreState', this.restoreState, this);
             this.show_hide();
         },
         render: function() {
@@ -42,11 +43,11 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         events: {
             "change input": "change"
         },
-        change: function(e) {
+        change: function(e, selected) {
             e.stopPropagation();
             var value = this.model.get('parent_name');
             this.collection.parent_selected = value;
-            this.collection.selected = 0;
+            this.collection.selected = selected || 0;
             this.collection.trigger('change:parent_selected', this.collection, value);
         },
         show_hide: function() {
@@ -86,6 +87,12 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
 
             function isOut() {
                 return span.outerWidth(true) >= wLabel;
+            }
+        },
+        restoreState: function(state) {
+            if(this.model.get('parent_name') == state.parent_selected){
+                this.$('input').prop('checked', true);
+                this.change({stopPropagation: new Function}, state.selected);
             }
         }
     });
@@ -133,6 +140,10 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             var products = result.get('products');
             if(products && products.length)
                 this.$('.tabs').get(0).reset();
+        },
+        selectFirst: function() {
+            if(!this.collection.parent_selected)
+                App.Views.SliderView.prototype.selectFirst.apply(this, arguments);
         }
     });
 
@@ -149,15 +160,17 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             model.parent_name = model.name; // it is required due to we use `tab` template
             this.$el.html(this.template(model));
             this.afterRender.call(this, this.model.get('sort'));
+            this.restoreState();
             return this;
         },
         events: {
             "change input": "change"
         },
         change: function() {
-            var model = this.model,
-                value = model.get('ids') || [model.get('id')]; // only ViewAll has `ids`
-            this.trigger('selected', {selected: value});
+            var categories = this.options.categories,
+                value = this.getSelected();
+            categories.selected = value;
+            categories.trigger('change:selected', this.collection, value);
         },
         show_hide: function() {
             var value = this.model.get('parent_name');
@@ -168,6 +181,19 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 this.$el.removeAttr('style');
                 this.options.self.update_slider_render();
             }
+        },
+        restoreState: function() {
+            var categories = this.options.categories,
+                value = this.getSelected();
+            if(value.toString() == categories.selected.toString()) {
+                this.$('input').prop('checked', true);
+                this.change();
+            }
+        },
+        getSelected: function() {
+            var model = this.model,
+                value = model.get('ids') || [model.get('id')]; // only ViewAll has `ids`
+            return value;
         }
     });
 
@@ -176,11 +202,9 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         mod: 'tabs',
         initialize: function() {
             App.Views.SliderView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'loadCompleted', this.restore, this);
         },
         render: function() {
             App.Views.SliderView.prototype.render.apply(this, arguments);
-            this.restore();
             this.$wrapper = this.$('.tabs');
             this.$items = this.$('.tabs > ul');
             this.$toLeft = this.$('.arrow_left');
@@ -197,12 +221,11 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 mod: 'Sub',
                 model: model,
                 collection: this.collection,
+                categories: this.options.categories,
                 self: this
             }, model.parent_name + '_sub_' + model.cid);
             App.Views.SliderView.prototype.addItem.call(this, view, this.$('.tabs > ul'), model.escape('sort'));
             this.subViews.push(view);
-            this.stopListening(view);
-            this.listenTo(view, 'selected', this.onSelected, this);
         },
         create_slider: function() {
             this.$item = this.$('li');
@@ -215,12 +238,9 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             $(lis.get(Math.min(this.slider_index + this.slider_count, this.slider_elem_count) - 1)).addClass('last');
             return App.Views.SliderView.prototype.update_slider.apply(this, arguments);
         },
-        restore: function() {
-            this.onSelected({selected: this.selected});
-        },
-        onSelected: function(opts) {
-            this.trigger('selected', opts);
-            this.selected = opts.selected; // save selected value to restore selection in future
+        selectFirst: function() {
+            if(!this.options.categories.selected)
+                App.Views.SliderView.prototype.selectFirst.apply(this, arguments);
         }
     });
 
@@ -247,17 +267,13 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             view = App.Views.GeneratorView.create('Categories', {
                 mod: 'Subs',
                 model: new Backbone.Model,
-                collection: collect
+                collection: collect,
+                categories: cats
             }, cats.parent_selected + '_sublist');
 
             this.subViews.removeFromDOMTree();
             sublist.append(view.el);
             this.subViews.push(view);
-            this.stopListening(view);
-            this.listenTo(view, 'selected', function(opts) {
-                this.collection.selected = opts.selected;
-                this.collection.trigger('change:selected', this.collection, opts.selected);
-            }, this);
             collect.receiving.resolve();         // select first subcategory
 
             // show or hide subcategories
@@ -345,7 +361,8 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         },
         initData: function() {
             var self = this,
-                parent = this.collection.parent_selected,
+                categories = this.collection,
+                parent = categories.parent_selected,
                 ids = this.collection.selected,
                 loadDone;
 
@@ -357,7 +374,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 // if origin subcategory is selected need get category from App.Data.categories
                 // if selected subcategory is 'AllViews' need create new App.Models.Category instance
                 if(ids.length == 1)
-                    category = self.collection.get(ids[0]);
+                    category = categories.get(ids[0]);
                 else
                     category = new App.Models.Category({name: 'All', parent_name: parent, sort: 1, description: ''});
 
@@ -367,16 +384,16 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                         last = Math.max.apply(Math, items.pluck('sort')),
                         floatNumber = Math.pow(10, String(last).length);
                     products.push.apply(products, items.toJSON().map(function(product){
-                        product.sort = Number(self.collection.get(id).get('sort')) + product.sort / floatNumber;
+                        product.sort = Number(categories.get(id).get('sort')) + product.sort / floatNumber;
                         return product;
                     }));
                 });
 
                 self.addItem(new App.Collections.Products(products), category, parent, ids);
-                self.trigger('loadCompleted');
+                categories.trigger('onLoadProductsComplete');
                 loadDone = true;
             });
-            !loadDone && setTimeout(this.trigger.bind(this, 'loadStarted'), 0);
+            !loadDone && setTimeout(categories.trigger.bind(categories, 'onLoadProductsStarted'), 0);
         }
     });
 
@@ -385,7 +402,8 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         mod: 'products',
         initData: function() {
             var self = this,
-                id = App.Data.categories.selected;
+                categories = App.Data.categories,
+                id = categories.selected;
 
             this.addItem(this.model.get('products'), new Backbone.Model({
                 parent_name: 'Search',
@@ -393,6 +411,8 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 description: '',
                 active: true
             }));
+
+            categories.trigger('onSearchComplete');
         }
     });
 
@@ -401,7 +421,9 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         mod: 'main_products',
         initialize: function() {
             App.Views.ListView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.collection, 'change:selected', this.update_table);
+            this.listenTo(this.collection, 'change:selected', this.update_table, this);
+            this.listenTo(this.collection, 'onLoadProductsStarted', this.showSpinner, this);
+            this.listenTo(this.collection, 'onLoadProductsComplete', this.hideSpinner, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.update_table, this);
             this.$('.categories_products_wrapper').contentarrow();
             this.$('.products_spinner').css('position', 'absolute').spinner();
@@ -439,12 +461,10 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         },
         showSpinner: function() {
             this.$('.products_spinner').addClass('ui-visible');
-            this.collection.trigger('onLoadStart');
         },
         hideSpinner: function() {
             var spinner = this.$('.products_spinner');
             setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), 500);
-            this.collection.trigger('onLoadComplete');
         },
         remove: function() {
             this.$('.categories_products_wrapper').contentarrow('destroy');
