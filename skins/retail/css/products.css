@@ -78,7 +78,7 @@
 }
 .product_image {
     width: 205px;
-    height: 270px;
+    height: 273px;
     text-align: center;
     font-size: 7px;
     line-height: 270px;
@@ -162,9 +162,9 @@
     vertical-align: middle;
 }
 #modifiers_popup .product .img_wrapper {
-    width: 340px;
-    height: 395px;
-    line-height: 395px;
+    width: 294px;
+    height: 392px;
+    line-height: 392px;
     margin-right: 50px;
     float: left;
     text-align: center;
