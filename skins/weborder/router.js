@@ -109,7 +109,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 mainView = App.Views.GeneratorView.create('Main', data, data.mod === 'Main');
 
             this.mainView && this.mainView.removeFromDOMTree() || $('body > div').empty();
-            $('body > div').append(mainView.el);
+            $('body > div:first-child').append(mainView.el);
             this.mainView = mainView;
         },
         navigationControl: function() {
