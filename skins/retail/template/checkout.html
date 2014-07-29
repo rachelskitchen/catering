@@ -121,12 +121,14 @@
             <input type="text" id="zip" name="zipcode" class='zipcode' value="<%= zipcode %>">
         </div>
     </div>
-    <label class="select"><span class="required bold">Shipping & Handling:</span></label>
+    <label class="select shipping"><span class="required bold">Shipping & Handling:</span></label>
+    <div class="select-wrap">
     <div class="select shipping">
         <div class="select_arrows"></div>
         <select class="shipping-select"></select>
     </div>
     <div class="shipping-status img-spinner"></div>
+    </div>
 </script>
 
 <script type="text/template" id="checkout_pay-template">

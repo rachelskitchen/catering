@@ -59,6 +59,9 @@
 #content > .checkout div.select_arrows {
     right: 2px;
 }
+#content > .checkout .select-wrap {
+   display: inline-block;
+}
 #content > .checkout .shipping-status {
     display: inline-block;
     width: 32px;
@@ -251,6 +254,14 @@
         width: 202px !important;
         text-indent: 50px !important;
     }
+    #content > .checkout label.shipping {
+        width: 100% !important;
+    }
+    #content > .checkout .select-wrap {
+        display: block !important;
+        margin-right: 68px;
+        left: 68px;
+    }
     #content > .checkout h2 {
         padding-left: 50px !important;
     }
@@ -273,6 +284,6 @@
         left: 0 !important;
     }
     #content div.specials > label {
-        text-indent: 20px !important;
+        text-indent: 50px !important;
     }
 }
