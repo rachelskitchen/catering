@@ -322,7 +322,7 @@ footer {
 }
 #cart .main .cancel {
     position: absolute;
-    top: 2px;
+    top: 1px;
     right: 3px;
     width: 21px;
     height: 21px;
