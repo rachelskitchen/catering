@@ -29,11 +29,11 @@ define(['backbone'], function(Backbone) {
         name: 'filter',
         mod: 'sort',
         initialize: function() {
-            this.listenTo(this.options.search, 'onSearchComplete', this.search, this);
-            this.listenTo(this.options.categories, 'onSearchComplete', this.restoreData, this);
+            this.listenTo(this.options.categories, 'onSearchComplete', this.search, this);
+            // this.listenTo(this.options.categories, 'onSearchComplete', this.restoreData, this);
             this.listenTo(this.options.categories, 'change:selected', this.onCategorySelected, this);
             this.listenTo(this.options.categories, 'onLoadProductsStarted', this.disable, this);
-            this.listenTo(this.options.categories, 'onLoadProductsComplete', this.category, this);
+            this.listenTo(this.options.categories, 'onLoadProductsComplete', this.onProductsLoaded, this);
             this.listenTo(this.options.categories, 'onRestoreState', this.restoreState, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
@@ -51,7 +51,7 @@ define(['backbone'], function(Backbone) {
         search: function(result) {
             this.enable();
         },
-        category: function() {
+        onProductsLoaded: function() {
             this.enable();
             this.state && this.model.set({
                 sort: this.state.sort,
@@ -88,30 +88,48 @@ define(['backbone'], function(Backbone) {
         initialize: function() {
             App.Views.FilterView.FilterSortView.prototype.initialize.apply(this, arguments);
             this.cache = {};
+            this.stateProps = ['attribute1', 'selected', 'pattern'];
         },
         search: function(result) {
-            this.model.set('attribute1', 1);
+            // set attribute1 to 1 if there is not restoring state
+            if(!this.isSearchRestore())
+                this.model.set('attribute1', 1);
+
             var products = result.get('products'),
                 pattern = result.get('pattern'),
                 count;
             this.$('option:not([value=1])').remove();
             count = this.setAttributes(products, pattern);
             this.control(count);
+
+            // restore filter and clear restoring state
+            if(this.isSearchRestore()) {
+                this.restoreData();
+                this.clearRestoreState();
+            }
         },
-        category: function(dontRestore) {
+        onProductsLoaded: function() {
             var count = 0;
 
-            dontRestore = this.state && this.state.pattern ? true : dontRestore;
+            // set attribute1 to 1 if there is not restoring state
+            if(!this.isCategoriesRestore())
+                this.model.set('attribute1', 1);
 
-            this.$('option:not([value=1])').remove();
-            this.options.categories.selected.forEach(function(category) {
-                var products = this.options.products[category];
-                count += this.setAttributes(products, category);
-            }, this);
-            this.control(count);
+            // add attributes to select element
+            if(Array.isArray(this.options.categories.selected)) {
+                this.$('option:not([value=1])').remove();
+                this.options.categories.selected.forEach(function(category) {
+                    var products = this.options.products[category];
+                    count += this.setAttributes(products, category);
+                }, this);
+                this.control(count);
+            }
 
-            // restore state
-            !dontRestore && this.state && this.restoreData();
+            // restore filter and clear restoring state
+            if(this.isCategoriesRestore()) {
+                this.restoreData();
+                this.clearRestoreState();
+            }
         },
         setAttributes: function(products, id) {
             if(!products || !products.length)
@@ -131,36 +149,76 @@ define(['backbone'], function(Backbone) {
         addItem: function(value) {
             this.$('select').append('<option value="' + value + '">' + value + '</option>');
         },
-        onCategorySelected: function() {
-            this.category();
-            this.model.set('attribute1', 1);
+        onCategorySelected: function(categories, selected) {
+            // if restoring state includes `pattern` and `attribute1`
+            // need reset restoring state due to user has selected any category
+            if(this.isSearchRestore())
+                return this.clearRestoreState();
+
+            // if restoring state includes `selected` and `attribute1`
+            // need reset restoring state if user has selected another category
+            if(this.isCategoriesRestore() && categories.selected.toString() != this.selected.toString())
+                return this.clearRestoreState();
+
+            // ignore any change:selected when filter is not restored
+            if(this.isCategoriesRestore())
+                return;
+
+            var count = 0;
+
+            // clear all attributes from select element
+            this.$('option:not([value=1])').remove();
+
+            // add available attributes to select element
             this.options.categories.selected.forEach(function(category) {
-                if(category in this.cache && this.cache[category].length)
-                this.enable();
-            else
-                this.disable();
+                if(category in this.cache && this.cache[category].length) {
+                    this.cache[category].forEach(this.addItem, this);
+                    count++;
+                }
             }, this);
-            this.category(true);
+
+            // reset filter of previous subcategory
+            this.model.set('attribute1', 1)
+
+            this.control(count);
         },
         change: function(event) {
             this.model.set('attribute1', event.target.value);
+            this.clearRestoreState();
         },
         control: function(count) {
-            // show attributes
             if(count == 0)
                 this.disable();
             else
                 this.enable();
         },
         restoreState: function(state) {
-            this.state = state;
+            var props = state instanceof Object ? Object.keys(state) : [];
+
+            // add pairs of properties
+            // attribute1, selected and attribute1, pattern
+            props.forEach(function(prop) {
+                if(this.stateProps.indexOf(prop) == -1)
+                    return;
+                this[prop] = state[prop];
+            }, this);
         },
         restoreData: function() {
-            var attr = this.state && this.state.attribute1;
-            if(attr) {
-                this.$('option[value="' + attr + '"]').prop('selected', true);
-                this.model.set('attribute1', attr);
-            }
+            var attr = this.attribute1;
+            this.$('option[value="' + attr + '"]').prop('selected', true);
+            this.model.set('attribute1', undefined, {silent: true});
+            this.model.set('attribute1', attr);
+        },
+        isCategoriesRestore: function() {
+            return typeof this.attribute1 != 'undefined' && typeof this.selected != 'undefined';
+        },
+        isSearchRestore: function() {
+            return typeof this.attribute1 != 'undefined' && typeof this.pattern != 'undefined';
+        },
+        clearRestoreState: function() {
+            this.stateProps.forEach(function(key) {
+                delete this[key];
+            }, this);
         }
     });
 });

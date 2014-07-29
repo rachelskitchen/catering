@@ -34,7 +34,6 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(this.options.search, 'onSearchComplete', this.searchComplete, this);
             this.listenTo(this.options.search, 'onSearchStart', this.searchStart, this);
             this.listenTo(this.collection, 'onRestoreState', this.restoreState, this);
-            this.listenTo(this.collection, 'onLoadProductsComplete', this.restoreData, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
@@ -93,6 +92,9 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT);
         },
         searchStart: function() {
+            // reset selections in App.Data.categories
+            this.collection.parent_selected = 0;
+            this.collection.selected = 0;
             this.$('input[name=search]').blur();
         },
         update: function() {
@@ -107,9 +109,7 @@ define(["backbone", "factory"], function(Backbone) {
             var pattern = state.pattern,
                 input = this.$('input[name=search]');
             pattern && input.attr('disabled', 'disabled').val(pattern);
-        },
-        restoreData: function() {
-            this.$('input[name=search]').removeAttr('disabled');
+            input.removeAttr('disabled');
             this.onSearch({preventDefault: new Function});
         }
     });

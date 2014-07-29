@@ -139,24 +139,80 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Data.categories.trigger('onSubs', subCategories.getSubs(parent));
             }, this);
 
+            // change:selected event occurs when any subcategory is clicked
+            this.listenTo(App.Data.categories, 'change:selected', function() {
+                App.Data.mainModel.trigger('loadCompleted');
+
+                var state = {};
+
+                if(this.state)
+                    state = this.state;
+
+                delete state.pattern;
+                delete state.attribute1;
+
+                state.parent_selected = App.Data.categories.parent_selected;
+                state.selected = App.Data.categories.selected;
+
+                // can't use this.navigate() due to it invokes spinner
+                Backbone.Router.prototype.navigate.call(this, 'index/' + this.encodeState(state));
+            }, this);
+
             // onSearchStart event occurs when 'search' form is submitted
             this.listenTo(App.Data.search, 'onSearchStart', function(search) {
-                var state = {};
                 App.Data.mainModel.trigger('loadStarted');
+            }, this);
+
+            // onSearchComplete event occurs when search results are ready
+            this.listenTo(App.Data.search, 'onSearchComplete', function(result) {
+                App.Data.mainModel.trigger('loadCompleted');
+
+                // ingnore cases when no products found
+                if(result.get('products').length == 0)
+                    return;
+
+                var state = {};
 
                 if(this.state)
                     state = this.state;
 
                 delete state.parent_selected;
                 delete state.selected;
-                state.pattern = search.get('pattern');
+                state.pattern = result.get('pattern');
 
-                this.navigate('index/' + this.encodeState(this.state), true);
-            }, this);
+                // can't use this.navigate() due to it invokes spinner
+                Backbone.Router.prototype.navigate.call(this, 'index/' + this.encodeState(state));
+            });
 
-            // onSearchComplete event occurs when search results are ready
-            this.listenTo(App.Data.search, 'onSearchComplete', function(result) {
-                App.Data.mainModel.trigger('loadCompleted');
+            // listen to filter changes and encode it to hash
+            this.listenTo(App.Data.filter, 'change', function(model) {
+                var state = {},
+                    noChanges = true,
+                    i;
+
+                if(this.state)
+                    state = this.state;
+
+                for(i in model.changed) {
+                    if(state[i] == model.changed[i])
+                        continue;
+                    noChanges = false;
+                }
+
+                if(noChanges)
+                    return;
+
+                Object.keys(model.changed).forEach(function(key) {
+                    delete state[key];
+                });
+
+                state = Backbone.$.extend(state, model.changed);
+
+                if(state.attribute1 == 1)
+                    delete state.attribute1;
+
+                // can't use this.navigate() due to it invokes spinner
+                Backbone.Router.prototype.navigate.call(this, 'index/' + this.encodeState(state));
             });
 
             // onCheckoutClick event occurs when 'checkout' button is clicked
@@ -228,13 +284,18 @@ define(["backbone", "main_router"], function(Backbone) {
                     dfd = $.Deferred(),
                     self = this;
 
+                categories.selected = 0;
+
                 // load content block for categories
                 if (!categories.receiving)
                     categories.receiving = categories.get_categories();
 
                 categories.receiving.then(function() {
                     dfd.resolve();
-                    self.state && categories.trigger('onRestoreState', self.state);
+                    if(self.state) {
+                        self.restore = $.Deferred();
+                        categories.trigger('onRestoreState', self.state);
+                    }
                 });
 
                 App.Data.header.set('menu_index', 0);

@@ -52,6 +52,7 @@ define(['products'], function() {
         model: App.Models.Search,
         search: function(pattern) {
             var cache = this.where({pattern: pattern});
+            this.trigger('onSearchStart', search);
             if(cache.length > 0)
                 return this.trigger('onSearchComplete', cache[0]);
 
@@ -59,7 +60,6 @@ define(['products'], function() {
                 self = this;
 
             this.add(search);
-            this.trigger('onSearchStart', search);
             search.get_products().then(function() {
                 self.trigger('onSearchComplete', search);
             });

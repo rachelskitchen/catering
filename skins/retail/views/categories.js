@@ -90,8 +90,15 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             }
         },
         restoreState: function(state) {
+            if(typeof state.pattern == 'string') {
+                // if this is search restoring
+                // need avoid default tab selection and products loading
+                return this.collection.parent_selected = -1;
+            }
+
             if(this.model.get('parent_name') == state.parent_selected){
                 this.$('input').prop('checked', true);
+                this.collection.trigger('onRestoreTab');
                 this.change({stopPropagation: new Function}, state.selected);
             }
         }
@@ -152,7 +159,9 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         mod: 'tab',
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.collection, 'change:active', this.show_hide);
+            this.listenTo(this.options.categories, 'change:active', this.show_hide, this);
+            this.listenTo(this.options.categories, 'onRestoreState', this.restoreState, this);
+            this.listenTo(this.options.self, 'onRestore', this.restore, this);
             this.show_hide();
         },
         render: function() {
@@ -169,12 +178,12 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         change: function() {
             var categories = this.options.categories,
                 value = this.getSelected();
-            categories.selected = value;
+            this.options.self.selected = categories.selected = value;
             categories.trigger('change:selected', this.collection, value);
         },
         show_hide: function() {
             var value = this.model.get('parent_name');
-            if (!this.collection.where({parent_name : value, active: true}).length) {
+            if (!this.options.categories.where({parent_name : value, active: true}).length) {
                 this.$el.addClass('hide');
                 this.options.self.update_slider_render();
             } else {
@@ -182,10 +191,18 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 this.options.self.update_slider_render();
             }
         },
-        restoreState: function() {
-            var categories = this.options.categories,
+        restoreState: function(init) {
+            var selected = this.options.categories.selected,
                 value = this.getSelected();
-            if(value.toString() == categories.selected.toString()) {
+            if(value.toString() == selected.toString()) {
+                this.options.self.selected = selected;
+                this.$('input').prop('checked', true);
+            }
+        },
+        restore: function() {
+            var selected = this.options.self.selected,
+                value = this.getSelected();
+            if(value.toString() == selected.toString()) {
                 this.$('input').prop('checked', true);
                 this.change();
             }
@@ -249,6 +266,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         mod: 'sublist',
         initialize: function() {
             this.listenTo(this.collection, 'onSubs', this.update, this);
+            this.listenTo(this.collection, 'onRestoreTab', this.skipRestore, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.hide, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
@@ -274,7 +292,13 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             this.subViews.removeFromDOMTree();
             sublist.append(view.el);
             this.subViews.push(view);
-            collect.receiving.resolve();         // select first subcategory
+
+            if(view.collection.receiving.state() == 'resolved' && !this.restoreState)
+                view.trigger('onRestore');       // restore the latest subcategory selection
+            else
+                view.collection.receiving.resolve();  // select first subcategory
+
+            delete this.restoreState;
 
             // show or hide subcategories
             if(collect.length == 1)
@@ -288,6 +312,9 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         hide: function(result) {
             var products = result.get('products');
             products && products.length && this.$el.addClass('hide');
+        },
+        skipRestore: function() {
+            this.restoreState = 1;
         }
     });
 
@@ -363,8 +390,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             var self = this,
                 categories = this.collection,
                 parent = categories.parent_selected,
-                ids = this.collection.selected,
-                loadDone;
+                ids = this.collection.selected;
 
             // Receives all products for current parent categories
             App.Collections.Products.get_slice_products(ids, this).then(function() {
@@ -391,9 +417,9 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
 
                 self.addItem(new App.Collections.Products(products), category, parent, ids);
                 categories.trigger('onLoadProductsComplete');
-                loadDone = true;
+                self.loadDone = true;
             });
-            !loadDone && setTimeout(categories.trigger.bind(categories, 'onLoadProductsStarted'), 0);
+            !self.loadDone && setTimeout(categories.trigger.bind(categories, 'onLoadProductsStarted'), 0);
         }
     });
 
@@ -412,7 +438,8 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 active: true
             }));
 
-            categories.trigger('onSearchComplete');
+            categories.trigger('onSearchComplete', this.model);
+            this.searchComplete = true;
         }
     });
 
@@ -422,6 +449,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         initialize: function() {
             App.Views.ListView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection, 'change:selected', this.update_table, this);
+            this.listenTo(this.collection, 'onRestoreState', this.restoreState, this);
             this.listenTo(this.collection, 'onLoadProductsStarted', this.showSpinner, this);
             this.listenTo(this.collection, 'onLoadProductsComplete', this.hideSpinner, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.update_table, this);
@@ -454,10 +482,16 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             wrapper.append(view.el);
             wrapper.scrollTop(0);
 
-            this.stopListening(view);
-            this.listenTo(view, 'loadStarted', this.showSpinner, this);
-            this.listenTo(view, 'loadCompleted', this.hideSpinner, this);
-            var self = this;
+            // restore filters for categories
+            view.loadDone && this.collection.trigger('onLoadProductsComplete');
+
+            // restore filters for search
+            // onSearchComplete invokes before onRestoreState if search result is received from cache
+            if(view.searchComplete)
+                this.restoreSearch = this.collection.trigger.bind(this.collection, 'onSearchComplete', data);
+
+            if(App.Data.router.restore && App.Data.router.restore.state() == 'resolved')
+                this.restoreSearchState();
         },
         showSpinner: function() {
             this.$('.products_spinner').addClass('ui-visible');
@@ -469,6 +503,25 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         remove: function() {
             this.$('.categories_products_wrapper').contentarrow('destroy');
             App.Views.ListView.prototype.remove.apply(this, arguments);
+        },
+        restoreState: function(state) {
+            var self = this;
+            if(state.selected) {
+                this.collection.receiving.then(function() {
+                    self.collection.selected = state.selected;
+                    self.update_table(self.collection, state.selected);
+                });
+            } else if(state.pattern) {
+                this.restoreSearchState();
+            }
+
+            App.Data.router.restore.resolve();
+        },
+        restoreSearchState: function() {
+            if(typeof this.restoreSearch == 'function') {
+                this.restoreSearch();
+                delete this.restoreSearch;
+            }
         }
     });
 });
