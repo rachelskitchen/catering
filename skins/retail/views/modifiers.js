@@ -56,7 +56,7 @@ define(["backbone", "factory", 'modifiers_view'], function(Backbone) {
                 row = data.row,
                 selected = data.product.get('attribute_' + row + '_selected');
             select.prepend(this.$('option[value=-1]')); // move to first
-            select.val(selected);
+            !isNaN(parseInt(selected, 10)) && select.val(selected);
             return this;
         },
         events: {
