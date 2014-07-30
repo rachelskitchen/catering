@@ -271,8 +271,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 enc = JSON.stringify(data);
                 this.state = data;
             } catch(e) {
-                // IE 10: console doesn't have debug method
-                typeof console.debug == 'function' && console.debug('Unable to encode state for object ', data);
+                log('Unable to encode state for object ', data);
             }
             return btoa(enc);
         },
@@ -282,8 +281,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 // decode data from hash and restore
                 this.state = JSON.parse(atob(data));
             } catch(e) {
-                // IE 10: console doesn't have debug method
-                typeof console.debug == 'function' && console.debug('Unable to decode state for string "%s"', data);
+                log('Unable to decode state for string "%s"', data);
             }
         },
         index: function(data) {
@@ -460,4 +458,9 @@ define(["backbone", "main_router"], function(Backbone) {
             App.Routers.MainRouter.prototype.maintenance.apply(this, arguments);
         }
     });
+
+    function log() {
+        // IE 10: console doesn't have debug method
+        typeof console.debug == 'function' && console.debug.apply(console, arguments);
+    }
 });
