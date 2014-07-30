@@ -52,7 +52,7 @@ define(['backbone'], function(Backbone) {
         },
         onProductsLoaded: function() {
             this.enable();
-            this.sort(this.state.sort, this.state.order);
+            this.state instanceof Object && this.sort(this.state.sort, this.state.order);
         },
         onCategorySelected: function() {
             this.enable();
