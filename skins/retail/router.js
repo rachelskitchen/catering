@@ -143,7 +143,8 @@ define(["backbone", "main_router"], function(Backbone) {
             this.listenTo(App.Data.categories, 'change:selected', function() {
                 App.Data.mainModel.trigger('loadCompleted');
 
-                var state = {};
+                var state = {},
+                    encoded;
 
                 if(this.state)
                     state = this.state;
@@ -153,9 +154,15 @@ define(["backbone", "main_router"], function(Backbone) {
 
                 state.parent_selected = App.Data.categories.parent_selected;
                 state.selected = App.Data.categories.selected;
+                encoded = this.encodeState(state);
 
                 // can't use this.navigate() due to it invokes spinner
-                Backbone.Router.prototype.navigate.call(this, 'index/' + this.encodeState(state));
+                Backbone.Router.prototype.navigate.call(this, 'index/' + encoded);
+
+                // save state after initialization of views.
+                // second entry in window.history (#index -> #index/<data>).
+                if(encoded && this.index.initState === null)
+                    this.index.initState = encoded;
             }, this);
 
             // onSearchStart event occurs when 'search' form is submitted
@@ -278,7 +285,17 @@ define(["backbone", "main_router"], function(Backbone) {
             }
         },
         index: function(data) {
+            // init origin state for case when page is loaded without any data (#index or hash is not assigned)
+            if(!data && typeof this.index.initState == 'undefined')
+                this.index.initState = null;
+
+            // restore state for first entry in window.history (#index/<data> -> #index)
+            if(!data && this.index.initState)
+                data = this.index.initState;
+
+            // decode data from url
             this.decodeState(data);
+
             this.prepare('index', function() {
                 var categories = App.Data.categories,
                     dfd = $.Deferred(),

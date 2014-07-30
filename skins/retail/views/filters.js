@@ -30,7 +30,6 @@ define(['backbone'], function(Backbone) {
         mod: 'sort',
         initialize: function() {
             this.listenTo(this.options.categories, 'onSearchComplete', this.search, this);
-            // this.listenTo(this.options.categories, 'onSearchComplete', this.restoreData, this);
             this.listenTo(this.options.categories, 'change:selected', this.onCategorySelected, this);
             this.listenTo(this.options.categories, 'onLoadProductsStarted', this.disable, this);
             this.listenTo(this.options.categories, 'onLoadProductsComplete', this.onProductsLoaded, this);
@@ -53,10 +52,7 @@ define(['backbone'], function(Backbone) {
         },
         onProductsLoaded: function() {
             this.enable();
-            this.state && this.model.set({
-                sort: this.state.sort,
-                order: this.state.order
-            });
+            this.sort(this.state.sort, this.state.order);
         },
         onCategorySelected: function() {
             this.enable();
@@ -65,10 +61,7 @@ define(['backbone'], function(Backbone) {
             var val = event.target.value.split('|'),
                 attr = val[0],
                 order = val[1];
-            this.model.set({
-                sort: attr,
-                order: order
-            });
+            this.sort(attr, order);
         },
         restoreState: function(state) {
             var sort = state.sort,
@@ -79,6 +72,14 @@ define(['backbone'], function(Backbone) {
                 this.$('option[value="' + option + '"]').prop('selected', true);
             }
             this.state = state;
+        },
+        sort: function(sort, order) {
+            if(typeof sort == 'undefined')
+                sort = 'sort'; // default sort parameter
+            this.model.set({
+                sort: sort,
+                order: order
+            });
         }
     });
 

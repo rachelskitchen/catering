@@ -179,7 +179,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             var categories = this.options.categories,
                 value = this.getSelected();
             this.options.self.selected = categories.selected = value;
-            categories.trigger('change:selected', this.collection, value);
+            categories.trigger('change:selected', categories, value);
         },
         show_hide: function() {
             var value = this.model.get('parent_name');
