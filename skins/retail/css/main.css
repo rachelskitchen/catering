@@ -412,8 +412,6 @@ footer {
 }
 .popup_wrapper {
     display: inline-block;
-    width: 895px;
-    height: 595px;
     vertical-align: middle;
 }
 #popup {
@@ -662,9 +660,6 @@ section.maintenance p {
 .hide {
     display: none !important;
 }
-#popup > div:last-child {
-    width: 100%;
-}
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
     body {
@@ -677,35 +672,7 @@ section.maintenance p {
         position: absolute;
         top: 0;
     }
-    .popup_wrapper {
-        width: 710px !important;
-    }
 }
-
-/* delivery info block */
-.delivery_info {
-    width: 305px;
-    left: 0;
-    position: absolute;
-    top: 20px;
-    font-size:13px;
-}
-
-.checkout .delivery_info {
-    top: 50px;
-}
-
-.delivery_info span {
-    display: block;
-    float: left;
-    width: 110px;
-    padding-left: 10px;
-}
-.delivery_info span:nth-child(2n) {
-    width: 184px;
-    padding-left: 0;
-}
-/* End delivery info block*/
 
 /* Confirm page */
 .confirm .confirmed_order_title {

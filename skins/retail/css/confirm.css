@@ -1,6 +1,7 @@
 .confirmPayCard {
     display: table;
     text-align: left;
+    width: 875px;
 }
 .confirmPayCard .panel {
     border: 0px;
@@ -156,5 +157,8 @@
     }
     .select.month {
         margin-left: 30px !important;
+    }
+    .confirmPayCard {
+        width: 690px !important;
     }
 }

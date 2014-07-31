@@ -39,7 +39,7 @@
                 <% } %>
             </span>
         </dt>
-        <dd><%= description %></dd>
+        <dd class="vertical-scrollbar"><%= description %></dd>
     </dl>
 
     <% if (is_gift) { %>
@@ -61,7 +61,7 @@
     <% } %>
     <div class='clear'></div>
     <% if(!hide_images) { %>
-    <ul class="images">
+    <ul class="images horizontal-scrollbar">
     <% if (images.length > 1) _.each(images, function(image, i) {%>
         <li data-index="<%= i %>"><img class="block_img img" src="<%= images[i] %>" alt="<% print('[' + i + ']' + name + ' ' + id); %>"></li>
     <% });

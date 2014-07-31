@@ -1,5 +1,7 @@
 #modifiers_popup {
     margin-bottom: 60px;
+    width: 875px;
+    height: 512px;
 }
 #modifiers_popup .info {
     margin: 18px;
@@ -36,7 +38,7 @@
 }
 
 @media only screen and (max-device-width: 949px) {
-    #modifiers_popup, #modifiers_popup .info {
-        min-width: 670px !important;
+    #modifiers_popup {
+        width: 690px !important;
     }
 }
