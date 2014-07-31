@@ -1,9 +1,7 @@
 #modifiers_popup {
-    min-width: 700px;
-    margin-bottom:60px;
+    margin-bottom: 60px;
 }
 #modifiers_popup .info {
-    min-width: 830px;
     margin: 18px;
     border-radius: 18px;
     border-width: 1px;
@@ -30,11 +28,11 @@
 }
 
 #modifiers_popup .modifiers_table .arrow_top {
-    top:5px;
+    top: 5px;
 }
 
 #modifiers_popup .modifiers_table .arrow_bottom {
-    bottom:5px;
+    bottom: 5px;
 }
 
 @media only screen and (max-device-width: 949px) {

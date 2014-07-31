@@ -103,8 +103,10 @@
     overflow-x: hidden;
 }
 .product_info .images {
-    width: 340px;
-    margin-right: 50px;
+    width: 100%;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 .product_info .images li {
     display: inline-block;
@@ -113,7 +115,7 @@
     height: 63px;
     line-height: 63px;
     text-align: center;
-    margin: 5px 10px 0 0;
+    margin: 5px;
     cursor: pointer;
     position: relative;
     font-size: 10px;
@@ -152,6 +154,7 @@
     position: relative;
     text-align: left;
     padding: 18px;
+    height: 474px;
 }
 
 #modifiers_popup .product .block_img {

@@ -412,25 +412,15 @@ footer {
 }
 .popup_wrapper {
     display: inline-block;
-    max-width:95%;
+    width: 895px;
+    height: 595px;
     vertical-align: middle;
-    max-height: 95%;
-    margin-right: 5px;
-    margin-left: -5px;
-    margin-top: 10px;
 }
 #popup {
     position: relative;
-    margin: 0 auto;
-    min-width: 400px;
     border-width: 10px;
     border-style: solid;
     border-radius: 20px;
-    -webkit-transition: opacity linear .5s;
-    -moz-transition: opacity linear .5s;
-    -ms-transition: opacity linear .5s;
-    -o-transition: opacity linear .5s;
-    transition: opacity linear .5s;
     opacity: 0;
     filter: alpha(opacity=0);
 }
@@ -686,6 +676,9 @@ section.maintenance p {
         height: 672px !important;
         position: absolute;
         top: 0;
+    }
+    .popup_wrapper {
+        width: 710px !important;
     }
 }
 
