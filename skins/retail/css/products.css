@@ -98,8 +98,12 @@
 .product_image .img-spinner {
     height: 100%;
 }
+.product_info dl {
+    height: 213px;
+    overflow-x: hidden;
+}
 .product_info dd {
-    height: 173px;
+    max-height: 173px;
     overflow-x: hidden;
 }
 .product_info .images {
