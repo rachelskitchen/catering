@@ -99,13 +99,15 @@
     height: 100%;
 }
 .product_info dl {
-    height: 213px;
+    height: 214px;
     overflow-x: hidden;
+    overflow-y: auto;
     margin-bottom: 20px;
 }
 .product_info dd {
     max-height: 173px;
     overflow-x: hidden;
+    overflow-y: auto;
 }
 .product_info .images {
     width: 100%;
