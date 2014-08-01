@@ -6,7 +6,7 @@
 .confirmPayCard .panel {
     border: 0px;
     border-radius: 10px;
-    height: 600px;
+    height: 570px;
     padding-top: 10px;
     padding-bottom: 10px;
 }
@@ -149,7 +149,10 @@
         max-width: 250px !important;
     }
     #credit-card label {
-        width: 150px !important;
+    width: 170px !important;
+    }
+    #credit-card div.select {
+        left: -32px !important;
     }
     #credit-card div.input_beauty,
     #credit-card div.tips {
