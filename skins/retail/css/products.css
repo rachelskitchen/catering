@@ -101,6 +101,7 @@
 .product_info dl {
     height: 213px;
     overflow-x: hidden;
+    margin-bottom: 20px;
 }
 .product_info dd {
     max-height: 173px;
