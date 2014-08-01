@@ -112,6 +112,10 @@ define(["backbone", "main_router"], function(Backbone) {
             var checkout = App.Data.myorder.checkout;
                 checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
+            this.on('route', function() {
+               App.Data.mainModel.trigger('onRoute');
+            });
+
             App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
         },
         createMainView: function() {
