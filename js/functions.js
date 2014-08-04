@@ -284,7 +284,7 @@ function getData(name, local) {
 function setData(name, data, local) {
     if (typeof data.toJSON == 'function')
         data = data.toJSON();
-    
+
     switch (App.Data.settings.get('storage_data')) {
         case 1:
             if(local && localStorage instanceof Object)
@@ -391,7 +391,7 @@ function position_alert() {
 function alert_message(options) {
 
     if (App.Data.settings.get && (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL)) {
-        tmpl_alert_message(options);
+        return tmpl_alert_message(options);
     } else {
         jq_alert_message(options);
     }
@@ -452,6 +452,8 @@ function tmpl_alert_message(options) {
         });
         confirm.cancel_hide && $(".btnCancel", alert).hide();
     }
+
+    return alert;
 }
 /**
  * Generate the random number.

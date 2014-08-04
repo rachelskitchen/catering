@@ -59,12 +59,15 @@ define(["backbone"], function(Backbone) {
         initialize: function() {
             this.on("change", function(model) {
                 // user notification
-                alert_message({
+                this.view = alert_message({
                     message: model.get("message"),
                     reload_page: model.get("reload_page"),
                     type: model.get("type")
                 });
-            });
+            }, this);
+        },
+        hide: function() {
+            this.view instanceof Backbone.$ && this.view.removeClass('ui-visible');
         }
     });
 });

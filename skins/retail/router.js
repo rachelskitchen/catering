@@ -114,6 +114,7 @@ define(["backbone", "main_router"], function(Backbone) {
 
             this.on('route', function() {
                App.Data.mainModel.trigger('onRoute');
+               App.Data.errors.hide();
             });
 
             App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
