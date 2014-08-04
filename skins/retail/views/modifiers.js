@@ -23,23 +23,48 @@
 define(["backbone", "factory", 'modifiers_view'], function(Backbone) {
     'use strict';
 
-    App.Views.ModifiersView.ModifiersMatrixView = App.Views.CoreModifiersView.CoreModifiersMatrixView.extend({
+    App.Views.ModifiersView.ModifiersMatrixView = App.Views.FactoryView.extend({
         name: 'modifiers',
         mod: 'matrix',
         initialize: function() {
-            App.Views.CoreModifiersView.CoreModifiersMatrixView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'change:option', this.change, this);
-        },
-        change: function(model, value) {
-            if(value != this.options.id)
-                return;
-
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             var data = this.options.data,
-                id = this.options.id,
                 product = data.product,
                 row = 'attribute_' + data.row +'_selected';
 
+            this.listenTo(this.model, 'change:option', this.change.bind(this, data, product, row), this);
+            this.listenTo(product, 'change:attribute_1_selected change:attribute_2_selected', this.disable_enable.bind(this, data, product), this);
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+
+            var model = {
+                name: this.options.name
+            };
+
+            this.$el.html(this.template(model));
+            return this;
+        },
+        change: function(data, product, row, model, value) {
+            var id = this.options.id;
+
+            if(value != id)
+                return;
+
             product.set(row, id);
+        },
+        disable_enable: function(data, product, model) {
+            var row = 'attribute_' + data.row +'_selected',
+                selected = product.get(row),
+                anotherRow = 'attribute_' + (data.row - 1 ? 1 : 2) +'_selected',
+                anotherSelected = product.get(anotherRow),
+                other = data.attributesOther[anotherSelected],
+                id = this.options.id;
+
+            if((selected === null && anotherSelected === null) || (Array.isArray(other) && other.indexOf(id) > -1) || selected === id)
+                this.$el.prop('disabled', false);
+            else
+                this.$el.prop('disabled', true);
         }
     });
 

@@ -34,6 +34,10 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
                 quantity = this.model.get('quantity'),
                 stock_amount = product.get('stock_amount');
 
+            // need hide quantity widget if parent product is selected
+            if(product.isParent())
+                return this.$el.hide();
+
             stock_amount > 0 && select.empty();
             for (var i = 1; i <= stock_amount; i++) {
                 if (i === quantity) {

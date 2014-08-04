@@ -65,12 +65,12 @@ define(["backbone", 'childproducts'], function(Backbone) {
             if (!this.get('image'))
                 this.set('image', App.Data.settings.get_img_default());
 
-            if (App.skin == App.Skins.RETAIL)            
+            if (App.skin == App.Skins.RETAIL)
                 this.listenTo(this, 'change:images change:image', this.images, this);
-            
+
             this.addJSON(this.toJSON());
-            
-            if (App.skin == App.Skins.RETAIL)            
+
+            if (App.skin == App.Skins.RETAIL)
                 this.images();
         },
         addJSON: function(data) {
@@ -84,7 +84,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
             this.set(data);
             if (data.attribute_type === 1 && data.child_products) {
                 var children = new App.Collections.ChildProducts();
-                this.set('child_products', children.addJSON(data.child_products.toJSON()));                
+                this.set('child_products', children.addJSON(data.child_products.toJSON()));
             }
             return this;
         },
@@ -291,7 +291,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
                 defImg = settings.get_img_default(),
                 host = settings.get('host'),
                 images = [];
-            
+
             if(Array.isArray(imgs)) {
                 images = imgs.map(function(image) {
                     if (defImg != image)
@@ -299,7 +299,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
                     else
                         return image;
                 });
-            }               
+            }
             if(images.length == 0)
                 images.push(img);
             else
@@ -307,6 +307,9 @@ define(["backbone", 'childproducts'], function(Backbone) {
 
             this.set('images', images, {silent: true});
             this.set('image', img, {silent: true});
+        },
+        isParent: function() {
+            return this.get('attribute_type') === 1;
         }
     });
 
