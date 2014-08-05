@@ -252,7 +252,12 @@
 /* list item mod block end */
 
 /* for tablets */
-@media only screen and (min-device-width: 768px) and (max-device-width : 1024px) {
+@media only screen and (min-device-width: 768px) and (max-device-width : 1024px) and (orientation: portrait) {
+    .product_attribute_info .modifiers_classes_title, .product_attribute_info select {
+        max-width: 230px !important;
+    }
+}
+@media only screen and (min-device-width: 768px) and (max-device-width : 1024px) and (orientation: landscape) {
     #modifiers_popup .product .gift_card span:not([class]) {
         width: 200px !important;
         text-align: left !important;
@@ -260,5 +265,8 @@
     #modifiers_popup .product .gift_card .input_beauty {
         margin-left: 0;
         width: 137px !important;
+    }
+    .product_attribute_info .modifiers_classes_title, .product_attribute_info select {
+        max-width: 300px !important;
     }
 }
