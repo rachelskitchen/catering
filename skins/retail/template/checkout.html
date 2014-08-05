@@ -51,15 +51,13 @@
     <div class="row">
         <label for="pickupTimeDay"><span class="pickup bold required"><%= pickupTimeLabel %></span>:</label>
         <div class="select select_day">
-            <div class="select_arrows"></div>
             <select class="day" id="pickupTimeDay"></select>
         </div>
     </div>
     <div class="row">
         <label for="pickupTimeHour"></label>
         <div class="select select_day">
-            <div class="select_arrows"></div>
-            <select class="time" id="pickupTimeHour"></select>
+            <select class="time select" id="pickupTimeHour"></select>
         </div>
     </div>
 </script>
@@ -67,8 +65,7 @@
 <script type="text/template" id="checkout_order_type-template">
     <label class="select"><span class="required bold">Order Type:</span></label>
     <div class="select">
-        <div class="select_arrows"></div>
-        <select class="order-type-select"></select>
+        <select class="order-type-select select"></select>
     </div>
 </script>
 
@@ -76,8 +73,7 @@
     <div class="row">
         <label class="select" for="countries"><span class="required bold">Country:</span></label>
         <div class="select countries">
-            <div class="select_arrows"></div>
-            <select class="country" id="countries">
+            <select class="country select" id="countries">
             <% for (var i in countries) { %>
                 <option value="<%= i %>" <% if(i.toLowerCase() == country.toLowerCase()) { %>selected="selected"<% } %>><%= countries[i] %></option>
             <% } %>
@@ -106,8 +102,7 @@
     <div class="row">
         <label class="select" for="states"><span class="required bold">State:</span></label>
         <div class="select states">
-            <div class="select_arrows"></div>
-            <select class="states" id="states">
+            <select class="states select" id="states">
             <% for(var i in states) { %>
                 <option value="<%= i %>" <% if(i.toLowerCase() == state.toLowerCase()) { %>selected="selected"<% } %>><%= states[i] %></option>
             <% } %>
@@ -124,8 +119,7 @@
     <label class="select shipping"><span class="required bold">Shipping & Handling:</span></label>
     <div class="select-wrap">
     <div class="select shipping">
-        <div class="select_arrows"></div>
-        <select class="shipping-select"></select>
+        <select class="shipping-select select"></select>
     </div>
     <div class="shipping-status img-spinner"></div>
     </div>

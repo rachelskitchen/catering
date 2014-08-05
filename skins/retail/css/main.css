@@ -59,18 +59,16 @@ textarea {
 select {
     font-size: 16px;
     outline: none;
-    background: none;
-    position: relative;
-    margin-left: 7px;
     max-width: 190px;
     cursor: pointer;
-    border-radius: 10px;
-    padding: 3px 0px 3px 3px;
+    border-radius: 20px;
+    padding: 3px 20px 3px 6px;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    text-indent: 3px;
     text-overflow: "";
+    background-repeat: no-repeat;
+    background-position: 100% 50%;
 }
 select::-ms-expand { /*Removes default IE style*/
     display: none;
@@ -507,7 +505,7 @@ section.maintenance p {
 #cart .order-items li {
     position: relative;
 }
-#cart .order-items .myorder > li, .confirmPayCard .order-items li {
+#cart .order-items .myorder > li {
     min-height: 85px;
     margin-bottom: 10px;
 }
@@ -535,9 +533,8 @@ section.maintenance p {
     font-size: 12px;
 }
 #popup .confirmPayCard .order-items li li {
-    height: 7px;
     font-size: 12px;
-    min-height: 7px;
+    min-height: 12px;
 }
 #cart .order-items > li, .confirmPayCard .order-items > li {
     height: auto;
@@ -562,7 +559,6 @@ section.maintenance p {
 }
 #cart .order-items .cost, #cart .order-items .attrs,
 .confirmPayCard .order-items .cost, .confirmPayCard .order-items .attrs {
-    height: 15px;
     font-size: 12px;
 }
 #cart .order-items .btns {
@@ -615,33 +611,6 @@ section.maintenance p {
     content: '*';
     position: relative;
     left: -5px;
-}
-.select_arrows {
-    position: absolute;
-    top: 50%;
-    right: 14px;
-    width: 8px;
-    z-index: 2;
-    margin-top: -1px;
-    height: 1px;
-    pointer-events: none;
-}
-.select_arrows:before, .select_arrows:after {
-    display: block;
-    height: 0;
-    width: 0;
-    position: absolute;
-    left: 1px;
-    border-width: 6px 3px;
-    border-style: solid;
-}
-.select_arrows:before {
-    content: '';
-    top: -13px;
-}
-.select_arrows:after {
-    content: '';
-    top: 2px;
 }
 .animation {
     -webkit-transition: all linear 0.2s;

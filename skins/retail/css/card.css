@@ -16,7 +16,7 @@
     position: absolute;
     top: 6px;
     bottom: 6px;
-    left: 230px;
+    left: 225px;
     right: 40px;
 }
 
@@ -26,7 +26,7 @@
 }
 #credit-card div.select {
     display: inline-block;
-    width: 70px;
+    width: 73px;
     position: relative;
     left: -12px;
 }
@@ -49,6 +49,9 @@
 #credit-card .select.month {
     margin-right: 10px;
     display: inline-block;
+}
+#credit-card div.select {
+    background: none;
 }
 #credit-card .select.month,
 #credit-card .select.year {

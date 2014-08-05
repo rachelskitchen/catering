@@ -6,16 +6,12 @@
 }
 
 /*.quantity select {*/
-.quantity .quantity_select, .quantity select {
+.quantity .quantity_select {
     border-width: 2px;
     border-radius: 15px;
     font-size: 15px;
     font-weight: bold;
     min-width: 52px;
-    margin-left: 5px;
-}
-.quantity select {
-    margin-left:0px;
 }
 
 .quantity .title {
@@ -23,7 +19,6 @@
 }
 
 .quantity_select {
-    position: relative;
     display: inline-block;
 }
 

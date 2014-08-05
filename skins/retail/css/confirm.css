@@ -103,9 +103,7 @@
 }
 #popup .order-items .myorder > li {
     margin-top: 10px;
-}
-#popup .order-items li li {
-    height: 20px;
+    min-height: 85px;
 }
 #popup .order-items > li {
     height: auto;
@@ -115,9 +113,6 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-}
-#popup .order-items h3 + ul {
-    margin: 5px 0;
 }
 #popup .order-items .btns {
     margin: 10px 0 20px;

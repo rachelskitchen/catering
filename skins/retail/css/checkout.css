@@ -17,6 +17,7 @@
     margin: 10px 0;
     text-indent: 100px;
     font-weight: bold;
+    background: none;
 }
 #content > .checkout h2 {
     padding-left: 100px;
@@ -27,7 +28,7 @@
 }
 #content > .checkout .input_beauty,
 #content > .checkout div.tips {
-    left: 292px;
+    left: 287px;
     right: 120px;
     position: absolute;
     top: 6px;
@@ -51,6 +52,7 @@
     width: 210px;
     position: relative;
     left: -22px;
+    background: none;
 }
 #content > .checkout div.select.shipping {
     display: inline-block;
@@ -68,7 +70,7 @@
     height: 32px;
     vertical-align: middle;
     margin-top: -4px;
-    font-size: 8px;    
+    font-size: 8px;
 }
 /*#content > .checkout div.select_day, #content > .checkout div.select.states {
     width: 210px;
