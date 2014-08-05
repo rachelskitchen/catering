@@ -116,7 +116,7 @@
             // init errors object and check browser version
             App.Data.errors = new App.Models.Errors;
             if(typeof(is_browser_unsupported) !== 'undefined' && is_browser_unsupported === true) {
-                App.Data.errors.alert(ERROR_UNSUPPORTED_BROWSER, false);
+                App.Data.errors.alert(MSG.ERROR_UNSUPPORTED_BROWSER, false);
                 $("#popup_overlay").css('height', '100%');
                 $("#loader_image").hide();
                 return;
