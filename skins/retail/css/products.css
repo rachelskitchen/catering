@@ -147,7 +147,7 @@
 }
 .product_attribute_info select {
     min-width: 200px;
-    max-width: 100%;
+    max-width: 465px;
     margin-left: 0;
     border-width: 2px;
     border-radius: 15px;
@@ -155,6 +155,10 @@
     font-weight: bold;
 }
 .product_attribute_info .modifiers_classes_title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 465px;
     font-weight: 700;
 }
 /* list item mod block start */
