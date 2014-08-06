@@ -145,6 +145,13 @@
     top: -2px;
     left: -2px;
 }
+.product_attribute_info {
+    position: absolute;
+    padding-right: 15px;
+    padding-left: 362px;
+    top: 254px;
+    text-align: left;
+}
 .product_attribute_info select {
     min-width: 200px;
     max-width: 465px;
@@ -160,6 +167,9 @@
     white-space: nowrap;
     max-width: 465px;
     font-weight: 700;
+}
+.product_attribute_info .modifier_class_list {
+    margin: 5px 0 10px;
 }
 /* list item mod block start */
 #modifiers_popup .product {

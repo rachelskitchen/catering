@@ -1,24 +1,3 @@
-<script type="text/template" id="modifiers_item-template">
-    <label for="modifier<%= id %>" class="s<%= slength %> <% if(isSpecial) { %>special_label<% } %>">
-        <% if (!isSpecial) { %>
-        <input type="<%= type %>" id="modifier<%= id %>" name="modifier<%= modifierClassName %>">
-        <span class="input <%= type %>"></span>
-        <% } else { %>
-            <span class="special_button">Add</span>
-        <% } %>
-        <span class="title <% if(isSpecial) { %>special<% } %>"><%= name %></span>
-        <% if(isSize) { %>
-            <span class="cost">
-                (<span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>)
-            </span>
-        <% } else if(!isSpecial && !isInventoryMatrix) { %>
-            <span class="cost">
-                (<span class="plus">+</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>)
-            </span>
-        <% } %>
-    </label>
-</script>
-
 <script type="text/template" id="modifiers_matrix-template">
     <%= name %>
 </script>
@@ -30,22 +9,8 @@
 </script>
 
 <script type="text/template" id="modifiers_classes_item-template">
-    <div class='modifiers_classes_title'>
-        <%= name %>
-        <% if(type != 1) { %>
-        <div class='modifiers_classes_subtitle'>
-        <% if (type === 0 && !forced) { %>
-            Choose one or more
-        <% } else if (type === 0 && forced) { %>
-            Choose one or more
-        <% } else if (type === 2) { %>
-            Optional
-        <% } %>
-        </div>
-        <% } %>
-    </div>
-    <div class="modifier_class_list">
-    </div>
+    <div class='modifiers_classes_title'><%= name %></div>
+    <div class="modifier_class_list"></div>
 </script>
 
 <script type="text/template" id="modifiers_classes_list-template">

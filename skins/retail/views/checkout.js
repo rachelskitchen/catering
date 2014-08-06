@@ -160,35 +160,15 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
                 className: 'row'
             });
 
-            if (App.skin != App.Skins.RETAIL) {
-                var pickup = App.Views.GeneratorView.create('Checkout', {
-                    model: this.collection.checkout,
-                    timetable: this.options.timetable,
-                    mod: 'Pickup'
-                });
-            }
             var main = App.Views.GeneratorView.create('Checkout', {
                 model: this.collection.checkout,
                 customer: this.options.customer,
                 mod: 'Main'
-            }), specials = this.$('.specials'),
-                tips;
+            }), specials = this.$('.specials');
 
-            this.subViews.push(order_type, pickup, main);
+            this.subViews.push(order_type, main);
             specials.before(order_type.el);
-            pickup && specials.before(pickup.el);
             specials.before(main.el);
-
-            if(this.options.acceptTips) {
-                tips = App.Views.GeneratorView.create('Tips', {
-                    model: this.collection.total.get('tip'),
-                    mod: 'Main',
-                    className: 'row tipBlock'
-                });
-                this.subViews.push(tips);
-                specials.before(tips.el);
-                tips.$el.on('touchstart', 'input', this.inputClick.bind(this));
-            }
 
             this.$('.data').contentarrow();
             main.$el.on('touchstart', 'input', this.inputClick.bind(this));

@@ -139,8 +139,7 @@ ul.categories {
     border-radius: 19px;
     box-shadow: 0 2px 0 0 #D5E4E9, 0 3px 3px 1px #C8CFD1;
 }
-.action_button, #modifiers_popup .product_instructions .add_instructions,
-#modifiers_popup .modifiers_table .special_button {
+.action_button {
     box-shadow: 0 3px 3px rgba(0,0,0,0.3);
     color: #646464;
     text-shadow: 0 0 2px #fff;
@@ -208,39 +207,6 @@ ul.categories {
 #credit-card .required:before {
     color: #fff !important;
 }
-#content > .checkout .tips .input_beauty.disabled:after {
-    background: #eee;
-}
-#content > .checkout .tips input {
-    background: transparent !important;
-}
-#content > .checkout .tips input[disabled="disabled"] {
-    color: #aaa;
-}
-#content > .checkout .tips input[disabled="disabled"].ipad {
-    color: #000;
-}
-#content > .checkout .tips .btn {
-    border-color: #ccd1d4;
-    box-shadow: 0 -3px 2px rgba(151, 181, 202, 0.3) inset;
-    background-image: linear-gradient(bottom, #d7d9db 0%, #e7e7e7 30%, #f1f1f1 40%, #ffffff 100%);
-    background-image: -o-linear-gradient(bottom, #d7d9db 0%, #e7e7e7 30%, #f1f1f1 40%, #ffffff 100%);
-    background-image: -moz-linear-gradient(bottom, #d7d9db 0%, #e7e7e7 30%, #f1f1f1 40%, #ffffff 100%);
-    background-image: -webkit-linear-gradient(bottom, #d7d9db 0%, #e7e7e7 30%, #f1f1f1 40%, #ffffff 100%);
-    background-image: -ms-linear-gradient(bottom, #d7d9db 0%, #e7e7e7 30%, #f1f1f1 40%, #ffffff 100%);
-    color: #2894c7;
-}
-#content > .checkout .tips .btn:active {
-    box-shadow: 0 -3px 2px rgba(151, 181, 202, 0.3) inset !important;
-}
-#content > .checkout .tips .btn.selected {
-    border-color: #64bae2;
-    background: #fff;
-    box-shadow: 0 0 4px #64bae2, 0 0 6px #d9e4ed inset;
-}
-#content > .checkout .tips .btn.disabled {
-    color: #aaa;
-}
 .products_spinner {
     background: rgba(231, 231, 231, 0.5);
     box-shadow: 0 0 40px rgba(231, 231, 231, 0.8);
@@ -262,71 +228,34 @@ ul.categories {
     background-size: 100%;
 }
 
-#modifiers_popup .modifier .input.radio,
-#content > .checkout .tips .pseudo-radio {
-    background: url("img/ui.png") no-repeat scroll -92px -54px transparent;
-}
-
-#modifiers_popup .modifier input:checked + .input.radio,
-#content > .checkout .tips input:checked + .pseudo-radio {
-    background-position: -92px -81px;
-}
-
-#modifiers_popup .modifier .input.checkbox {
-    background: url("img/ui.png") no-repeat scroll -91px -1px transparent;
-}
-
-#modifiers_popup .modifier input:checked + .input.checkbox {
-    background-position: -91px -26px;
-}
-
 .quantity_select > select {
     box-shadow: 0 3px 3px rgba(0,0,0,0.3);
 }
 
 /*#modifiers_popup .quantity select, */
-#modifiers_popup .quantity_select,
-#modifiers_popup .product_instructions .add_instructions,
-#modifiers_popup .modifiers_table .special_button {
+#modifiers_popup .quantity_select {
     background-image: -o-linear-gradient(bottom,rgba(235,235,235,1) 0, rgba(249,249,249,1) 100%);
     background-image: -moz-linear-gradient(bottom,rgba(235,235,235,1) 0, rgba(249,249,249,1) 100%);
     background-image: -ms-linear-gradient(bottom,rgba(235,235,235,1) 0, rgba(249,249,249,1) 100%);
     background-image: -webkit-linear-gradient(bottom,rgba(235,235,235,1) 0, rgba(249,249,249,1) 100%);
     background-image: linear-gradient(bottom,rgba(235,235,235,1) 0, rgba(249,249,249,1) 100%);
 }
-#modifiers_popup .product_instructions .add_instructions ,
-#modifiers_popup select,
-#modifiers_popup .modifiers_table .special_button {
+#modifiers_popup select {
     border-color: #a9a9a9;
 }
 
 #credit-card select:hover,
-#modifiers_popup .quantity .quantity_select:hover,
-#modifiers_popup .product_instructions .add_instructions:hover,
-#modifiers_popup .modifiers_table .modifiers-list label:hover .special_button {
+#modifiers_popup .quantity .quantity_select:hover {
     box-shadow: 0 0 5px 2px rgba(60, 167, 222, 0.3) inset, 0 0 8px 2px #fff;
     -moz-box-shadow: 0 0 5px 2px rgba(60, 167, 222, 0.3) inset, 0 0 8px 2px #fff;
     -webkit-box-shadow: 0 0 5px 2px rgba(60, 167, 222, 0.3) inset, 0 0 8px 2px #fff;
 }
 
-#modifiers_popup .modifiers_table:before {
-    box-shadow: 0 0 8px 2px rgba(252, 252, 252, 0.43);
-    -moz-box-shadow: 0 0 8px 2px rgba(252, 252, 252, 0.43);
-    -webkit-box-shadow: 0 0 8px 2px rgba(252, 252, 252, 0.43);
-    background-color: #fff;
-    border-color: #979797;
-}
-#modifiers_popup .modifiers_table .product_attribute_info h2 {
-    color: #6E6E6E;
-}
-#modifiers_popup .modifiers_table .product_attributes_selected .modifier_class_wrapper:first-child,
 #modifiers_popup .modifier_class_wrapper {
     border-top-color: #4CAEDC;
 }
 
-#modifiers_popup .modifiers_table .modifiers-list label:hover .input,
-.tipBlock label:hover .pseudo-radio
-{
+.tipBlock label:hover .pseudo-radio {
     -webkit-box-shadow: 0px 0px 3px 4px rgba(129,195,222,0.3);
     -moz-box-shadow: 0px 0px 3px 3px rgba(129,195,222,0.5);
     box-shadow: 0px 0px 3px 3px rgba(129,195,222,0.5);

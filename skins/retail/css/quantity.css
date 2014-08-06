@@ -56,8 +56,4 @@
     text-overflow: ellipsis;
     overflow: hidden;
 }
-
-.product_instructions .add_instructions.sold_by_weight {
-    left: 230px;
-}
 /* end of sold_by_weight case */

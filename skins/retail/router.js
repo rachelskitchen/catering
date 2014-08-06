@@ -54,6 +54,17 @@ define(["backbone", "main_router"], function(Backbone) {
             $('body').html('<div></div>');
             this.bodyElement = $('body');
 
+            // cancel requests to modifiers
+            App.Collections.ModifierBlocks.init = function(product) {
+                var a = $.Deferred();
+
+                if(App.Data.modifiers[product] === undefined )
+                    App.Data.modifiers[product] = new App.Collections.ModifierBlocks;
+
+                a.resolve();
+                return a;
+            };
+
             // load main, header, footer necessary files
             this.prepare('main', function() {
                 App.Views.Generator.enableCache = true;
@@ -435,7 +446,7 @@ define(["backbone", "main_router"], function(Backbone) {
                         timetable: App.Data.timetables,
                         customer: App.Data.customer,
                         acceptTips: settings.accept_tips_online,
-                        noteAllow:  App.Data.settings.get('settings_system').order_notes_allow
+                        noteAllow: settings.order_notes_allow
                     }
                 });
                 this.change_page();

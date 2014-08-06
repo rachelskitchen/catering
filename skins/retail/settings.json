@@ -6,11 +6,11 @@
     "color_schemes": ["default", "blue_&_white", "vintage"],
     "routing": {
         "main": {
-            "css": ["main", "myorder", "jquery.contentarrow", "products", "modifiers", "instructions", "quantity", "categories"],
+            "css": ["main", "myorder", "jquery.contentarrow", "products", "quantity", "categories"],
             "model": ["main", "header"],
-            "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "instructions", "quantity", "categories"],
-            "views": ["main", "header", "myorder", "cart", "products", "modifiers", "instructions", "quantity", "categories"],
-            "core": ["generator", "myorder_view", "total_view", "products", "modifiers", "jquery_numbermask", "instructions_view", "categories", "search", "subcategories"],
+            "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "quantity", "categories"],
+            "views": ["main", "header", "myorder", "cart", "products", "modifiers", "quantity", "categories"],
+            "core": ["generator", "myorder_view", "total_view", "products", "modifiers", "jquery_numbermask", "categories", "search", "subcategories"],
             "js" : ["jquery.contentarrow"]
         },
         "index": {
@@ -33,8 +33,8 @@
         },
         "checkout": {
             "css": ["checkout", "confirm", "card"],
-            "views": ["cart", "checkout", "cart", "tips", "confirm", "card"],
-            "templates": ["cart", "checkout", "cart", "tips", "confirm", "card"],
+            "views": ["cart", "checkout", "cart", "confirm", "card"],
+            "templates": ["cart", "checkout", "cart", "confirm", "card"],
             "core": ["products", "customers", "card", "checkout", "delivery_addresses", "checkout_view", "card_view"]
         },
         "confirm": {
