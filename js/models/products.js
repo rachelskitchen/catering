@@ -191,6 +191,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
         },
         get_child_products: function() {
             var type = this.get('attribute_type'),
+                settings = App.Data.settings,
                 def = $.Deferred();
 
             if (type === 1 && !this.get('child_products')) {
@@ -199,15 +200,18 @@ define(["backbone", 'childproducts'], function(Backbone) {
                     self = this;
 
                 $.ajax({
-                    url: App.Data.settings.get("host") + "/weborders/attributes/",
+                    url: settings.get("host") + "/weborders/attributes/",
                     data: {
                         product: this.get('id')
                     },
                     success: function(data) {
+                        var inventory = settings.get("settings_system").cannot_order_with_empty_inventory;
                         switch (data.status) {
                             case 'OK':
                                 self.listenTo(child, 'change:active', self.update_active);
                                 data.data.forEach(function(el) {
+                                    if(!inventory && el.product)
+                                        el.product.stock_amount = 10;
                                     child.add_child(el);
                                 });
                                 def.resolve();
