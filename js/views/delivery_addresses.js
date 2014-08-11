@@ -159,7 +159,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 }
             } 
             else {
-                this.otherAddress.province = undefined;
+                this.model.province = this.otherAddress.province = undefined;
             }            
 
             this.otherAddress.city = '';
