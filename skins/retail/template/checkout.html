@@ -110,6 +110,14 @@
         </div>
     </div>
     <% } %>
+    <% if(typeof province == 'string') { %>
+    <div class="row">
+        <label for="province"><span class="required bold">Province:</span></label>
+        <div class="input_beauty">
+            <input type="text" id="province" name="province" class='province' value="<%= province %>">
+        </div>
+    </div>
+    <% } %>
     <div class="row">
         <label for="zip"><span class="required bold">Zip Code:</span></label>
         <div class="input_beauty">

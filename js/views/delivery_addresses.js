@@ -41,7 +41,9 @@ define(['backbone', 'factory'], function(Backbone) {
 
             this.model.country = country_selected ? country_selected : (settings.address && settings.address.country);
             this.model.state = settings.address && settings.address.state ? (lastAddress ? lastAddress.state : settings.address.state) : null;
+            this.model.province = settings.address.province && this.model.country == "CA" ? (lastAddress ? lastAddress.province : "") : null;
             this.model.originalState = this.model.state;
+            this.model.originalProvince = this.model.province;
             this.model.states = getStates();
             this.model.street_1 = lastAddress ? lastAddress.street_1 : '';
             this.model.street_2 = lastAddress ? lastAddress.street_2 : '';
@@ -58,6 +60,8 @@ define(['backbone', 'factory'], function(Backbone) {
             };
             if(this.model.country === 'US')
                 this.otherAddress.state = this.model.state || undefined;
+            if(this.model.country === 'CA')
+                this.otherAddress.province = this.model.province || undefined;
 
             this.model.isShippingServices = App.skin == App.Skins.RETAIL;
 
@@ -146,6 +150,17 @@ define(['backbone', 'factory'], function(Backbone) {
             else {
                 this.otherAddress.state = undefined;
             }
+
+            if (this.otherAddress.country == 'CA') {
+                if (typeof this.model.originalProvince == 'string' && this.model.originalProvince.length > 0)
+                    this.model.province = this.otherAddress.province = this.model.originalProvince;
+                else {
+                    this.model.province = this.otherAddress.province = this.model.originalProvince = "";
+                }
+            } 
+            else {
+                this.otherAddress.province = undefined;
+            }            
 
             this.otherAddress.city = '';
             this.otherAddress.street_1 = '';

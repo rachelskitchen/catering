@@ -113,7 +113,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                 var address = new App.Views.CheckoutView.CheckoutAddressView({customer: this.customer});
                 this.subViews.push(address);
                 this.$('.delivery_address').append(address.el);
-                if(address.model.state)
+                if(address.model.state || address.model.province)
                     this.trigger('address-with-states');
                 else
                     this.trigger('address-without-states');
@@ -206,6 +206,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                 street_2: this.otherAddress.street_2,
                 city: this.otherAddress.city,
                 state: this.otherAddress.state,
+                province: this.otherAddress.province,
                 zipcode: this.otherAddress.zipcode
             };
 
@@ -222,7 +223,8 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             addresses[addresses.length - 1].address = this.options.customer.address_str();
             
             if (this.model.isShippingServices && address.street_1 && address.city && address.country && 
-                address.zipcode && (address.country == 'US' ? address.state : true)) {
+                address.zipcode && (address.country == 'US' ? address.state : true) &&
+                                   (address.country == 'CA' ? address.province : true)) {
                 this.options.customer.get_shipping_services();
             }
         }

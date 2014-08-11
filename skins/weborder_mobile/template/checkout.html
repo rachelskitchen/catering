@@ -98,6 +98,11 @@
         </select>
     </label>
     <% } %>
+    <% if(typeof province == 'string') { %>
+       <label class="input required">
+           <input type="text" placeholder="Province" name="province" value="<%= province %>">
+       </label>
+    <% } %>
     <label class="input required">
         <input type="text" placeholder="Zip Code" name="zipcode" value="<%= zipcode %>">
     </label>

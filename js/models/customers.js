@@ -84,6 +84,7 @@ define(["backbone", "geopoint"], function(Backbone) {
                 address = this.get('addresses'),
                 req = {
                     state: 'State',
+                    province: 'Province',
                     street_1: 'Address Line 1',
                     city: 'City',
                     zipcode: 'Zip Code'
@@ -94,6 +95,9 @@ define(["backbone", "geopoint"], function(Backbone) {
             // if not USA exclude state property
             if(settings.address && !settings.address.state)
                 delete req.state;
+
+            if(settings.address && address.country != 'CA')
+                delete req.province;
 
             for(var i in req) {
                 !address[i] && empty.push(req[i]);
