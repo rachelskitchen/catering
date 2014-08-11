@@ -39,7 +39,9 @@ define(["backbone"], function(Backbone) {
                 rewardCard: '',
                 dining_option: '',
                 selected_dining_option: '', // It set when dining_option has changed on DINING_OPTION_ONLINE. It is used for recovery user selection of Order Type
-                notes: ''
+                notes: '',
+                sections: [],
+                levels: []
             };
         },
         initialize: function() {
