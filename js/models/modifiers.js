@@ -27,8 +27,8 @@ define(["backbone"], function(Backbone) {
         defaults: {
             id: null,
             name: null,
-                price: null, // base modifier price
-                order_price: null, // modifier price with feature max price 6137
+            price: null, // base modifier price
+            order_price: null, // modifier price with feature max price 6137
             selected: false,
             sort: null,
             cost: null, // only for order send.
@@ -69,12 +69,12 @@ define(["backbone"], function(Backbone) {
                 return {
                     modifier: this.get('id'),
                     modifier_cost: (this.get('cost') === null) ? 0 : this.get('cost'),
-                        modifier_price: this.get('order_price') * 1,
-                        qty: 1,
-                        qty_type: 0
+                    modifier_price: this.isFree() ? this.get('free_amount') * 1 : this.get('order_price') * 1,
+                    qty: 1,
+                    qty_type: 0
                 };
             }
-            },
+        },
         /**
          * update modifiers price due to max feature
          */
@@ -82,6 +82,12 @@ define(["backbone"], function(Backbone) {
             var price = Math.min(this.get('price'), max_price);
             this.set('order_price', price, {silent: true});
             return max_price - price;
+        },
+        isFree: function() {
+            return typeof this.get('free_amount') != 'undefined';
+        },
+        removeFreeModifier: function() {
+            this.unset('free_amount');
         }
     });
 
@@ -130,7 +136,9 @@ define(["backbone"], function(Backbone) {
         get_sum: function() {
             var sum = 0;
             this.where({selected: true}).forEach(function(modifier) {
-                sum += modifier.get('order_price');
+                var free_amount = modifier.get('free_amount'),
+                    price = modifier.get('order_price');
+                sum += modifier.isFree() ? parseFloat(free_amount) : price;
             });
             return sum;
         },
@@ -153,6 +161,11 @@ define(["backbone"], function(Backbone) {
                 max_price = el.update_prices(max_price);
             });
             return max_price;
+        },
+        removeFreeModifiers: function() {
+            this.each(function(modifier) {
+                modifier.removeFreeModifier();
+            });
         }
     });
 
@@ -170,36 +183,55 @@ define(["backbone"], function(Backbone) {
                 lock_enable: false,
                 amount_free: null,
                 admin_modifier: false,
-                admin_mod_key: ""
+                admin_mod_key: "",
+                amount_free_is_dollars: false, // true - 'Price', false - 'Quantity', receive from server
+                amount_free_selected: [],
+                ignore_free_modifiers: false
             };
         },
         initialize: function() {
-            this.listenTo(this.get('modifiers'), 'change', function(model, opts) {
-                this.trigger('change', this, _.extend({modifier: model}, opts));
+            this.listenTo(this, 'change:modifiers', function(model) {
+                var prevModifiers = model.previousAttributes().modifiers;
+                prevModifiers instanceof Backbone.Collection && this.stopListening(prevModifiers);
+                this.set('amount_free_selected', []);
+                this.initFreeModifiers();
+                this.listenToModifiers();
+            }, this);
+
+            this.set({
+                amount_free_selected: []
             });
+
+            this.checkAmountFree();
         },
         addJSON: function(data) {
             this.set(data);
             var modifiers = new App.Collections.Modifiers();
             modifiers.addJSON(data.modifier || data.modifiers);
             this.set('modifiers', modifiers);
-            this.initialize(); // need add listeners to new modifiers collection
+            this.checkAmountFree();
             return this;
         },
         /**
          * clone modifier Block
          */
         clone: function() {
-            var newBlock = new App.Models.ModifierBlock();
-            newBlock.stopListening(newBlock);
+            var newBlock = new App.Models.ModifierBlock(),
+                amount_free_selected;
+
+            newBlock.stopListening(newBlock.get('modifiers'));
             for (var key in this.attributes) {
                 var value = this.get(key);
                 if (value && value.clone) { value = value.clone(); }
                 newBlock.set(key, value, {silent: true });
             }
-            newBlock.listenTo(newBlock.get('modifiers'), 'change', function(model, opts) {
-                newBlock.trigger('change', newBlock, _.extend({modifier: model}, opts));
-            });
+
+            if(newBlock.get('amount_free_selected').length == 0)
+                newBlock.initFreeModifiers();
+            else
+                newBlock.restoreFreeModifiers();
+
+            newBlock.listenToModifiers();
 
             return newBlock;
         },
@@ -252,6 +284,128 @@ define(["backbone"], function(Backbone) {
             } else {
                 return this.get('modifiers').update_prices(max_price);
             }
+        },
+        update_free: function(model) {
+            if(this.get('ignore_free_modifiers'))
+                return;
+
+            var isPrice = this.get('amount_free_is_dollars'),
+                isAdmin = this.get('admin_modifier'),
+                amount = this.get('amount_free'),
+                selected = this.get('amount_free_selected'),
+                needAdd = model.get('selected'),
+                index = selected.indexOf(model),
+                changed = false;
+
+            // if it is admin_modifier amount_free functionality should be ignored
+            if(isAdmin)
+                return;
+
+            // add modifier to free selected
+            if(amount && needAdd) {
+                selected.push(model);
+                changed = true;
+            }
+
+            // remove modifier from free selected
+            if(!needAdd && index > -1) {
+                selected.splice(index, 1);
+                model.unset('free_amount');
+                changed = true;
+            }
+
+            if(!changed)
+                return;
+
+            if(isPrice)
+                this.update_free_price(model);
+            else
+                this.update_free_quantity(model);
+
+            this.set('amount_free_selected', selected);
+        },
+        update_free_quantity: function(model) {
+            var amount = this.get('amount_free'),
+                selected = this.get('amount_free_selected');
+
+            // add modifier to free selected
+            if(amount && needAdd) {
+                selected.push(model);
+                changed = true;
+            }
+
+            selected.forEach(function(model, index) {
+                if(index > amount - 1)
+                    model.unset('free_amount');
+                else
+                    model.set('free_amount', 0);
+            });
+        },
+        update_free_price: function(model) {
+            var amount = this.get('amount_free'),
+                selected = this.get('amount_free_selected');
+
+            selected.forEach(function(model) {
+                var price = model.get('price');
+                if(amount == 0)
+                    return model.unset('free_amount');
+
+                if(amount < price) {
+                    model.set('free_amount', round_monetary_currency(price - amount));
+                    amount = 0;
+                } else {
+                    model.set('free_amount', 0);
+                    amount = round_monetary_currency(amount - price);
+                }
+            });
+        },
+        initFreeModifiers: function() {
+            if(this.get('ignore_free_modifiers'))
+                return;
+
+            var modifiers = this.get('modifiers'),
+                selected = this.get('amount_free_selected');
+
+            modifiers instanceof Backbone.Collection && modifiers.where({selected: true}).forEach(function(modifier) {
+                if(selected.indexOf(modifier) == -1)
+                    this.update_free(modifier);
+            }, this);
+        },
+        restoreFreeModifiers: function() {
+            if(this.get('ignore_free_modifiers'))
+                return;
+
+            var amount_free_selected = this.get('amount_free_selected'),
+                restored = [];
+            amount_free_selected.forEach(function(modifier, index) {
+                var copiedModifier = this.get('modifiers').where({id: modifier.get('id'), selected: true});
+                if(copiedModifier.length && copiedModifier[0])
+                    restored.push(copiedModifier[0]);
+            }, this);
+            this.set('amount_free_selected', restored);
+        },
+        listenToModifiers: function() {
+            var modifiers = this.get('modifiers');
+
+            if(!(modifiers instanceof Backbone.Collection))
+                return;
+
+            this.listenTo(modifiers, 'change:selected', cb, this);
+            this.listenTo(modifiers, 'add', this.initFreeModifiers, this);
+
+            function cb(model, opts) {
+                this.trigger('change', this, _.extend({modifier: model}, opts));
+                this.update_free(model);
+            }
+        },
+        checkAmountFree: function() {
+            if(this.get('amount_free') < 0)
+                this.set('amount_free', 0);
+        },
+        removeFreeModifiers: function() {
+            var modifiers = this.get('modifiers');
+                modifiers && modifiers.removeFreeModifiers();
+            this.set('amount_free_selected', []);
         }
     });
 
@@ -444,6 +598,11 @@ define(["backbone"], function(Backbone) {
                 modifiers = modifiers.concat(modifierBlock.modifiers_submit());
             });
             return modifiers;
+        },
+        removeFreeModifiers: function() {
+            this.each(function(modifierBlock) {
+                modifierBlock.removeFreeModifiers();
+            });
         }
     });
 

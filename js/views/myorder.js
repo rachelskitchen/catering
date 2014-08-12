@@ -31,7 +31,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         render: function() {
             var model = this.model.toJSON();
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
-            model.price = round_monetary_currency(this.model.get('order_price'));
+            model.price = round_monetary_currency(this.model.isFree() ? model.free_amount : model.order_price);
             this.$el.html(this.template(model));
             return this;
         }

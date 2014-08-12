@@ -1,6 +1,6 @@
 /* modifiers_classes item mod start */
 
-#content .modifier_class{
+#content .modifier_class {
     display: inline-block;
     width: 100%;
     text-align: center;
@@ -11,6 +11,10 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+
+#content .modifier_class .free {
+    display: block;
 }
 
 /* modifiers_classes item mod end */
@@ -112,7 +116,7 @@
     background-position: 100% 0;
 }
 
-#content .modifier .cost {
+#content .modifier .cost, #content .modifier .free {
     position: absolute;
     right: 1em;
     top: 0;
@@ -121,7 +125,7 @@
     text-align: right;
 }
 
-#content .modifier .s2 .cost {
+#content .modifier .s2 .cost, #content .modifier .s2 .free {
     width: 2.6em;
 }
 
@@ -129,7 +133,7 @@
     right: 3.7em;
 }
 
-#content .modifier .s3 .cost {
+#content .modifier .s3 .cost, #content .modifier .s3 .free {
     width: 3.1em;
 }
 
@@ -137,7 +141,7 @@
     right: 4.2em;
 }
 
-#content .modifier .s4 .cost {
+#content .modifier .s4 .cost, #content .modifier .s4 .free {
     width: 3.8em;
 }
 
@@ -145,7 +149,7 @@
     right: 4.9em;
 }
 
-#content .modifier .s5 .cost {
+#content .modifier .s5 .cost, #content .modifier .s5 .free {
     width: 4.1em;
 }
 
@@ -153,7 +157,7 @@
     right: 5.2em;
 }
 
-#content .modifier .s6 .cost {
+#content .modifier .s6 .cost, #content .modifier .s6 .free {
     width: 4.8em;
 }
 
@@ -161,7 +165,7 @@
     right: 5.9em;
 }
 
-#content .modifier .s7 .cost {
+#content .modifier .s7 .cost, #content .modifier .s7 .free {
     width: 5.1em;
 }
 
@@ -169,7 +173,7 @@
     right: 6.2em;
 }
 
-#content .modifier .s8 .cost {
+#content .modifier .s8 .cost, #content .modifier .s8 .free {
     width: 5.6em;
 }
 

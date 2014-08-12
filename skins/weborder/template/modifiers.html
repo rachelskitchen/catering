@@ -16,6 +16,7 @@
                 (<span class="plus">+</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>)
             </span>
         <% } %>
+        <span class="free">(<span class="value"></span>)</span>
     </label>
 </script>
 
@@ -29,13 +30,13 @@
         <%= name %>
         <div class='modifiers_classes_subtitle'>
         <% if (type === 0 && !forced) { %>
-            Choose one or more
+            Choose one or more <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
         <% } else if (type === 0 && forced) { %>
-            Choose one or more
+            Choose one or more <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
         <% } else if (type === 1) { %>
-            Choose one
+            Choose one <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
         <% } else if (type === 2) { %>
-            Optional
+            Optional <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
         <% } %>
         </div>
     </div>

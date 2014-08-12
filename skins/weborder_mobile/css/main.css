@@ -146,7 +146,7 @@ textarea, input {
 
 #content .modifiers-list{
     overflow:hidden;
-    margin-bottom: -0.4em;  
+    margin-bottom: -0.4em;
     padding-bottom: 1.2em;
 }
 
@@ -303,7 +303,7 @@ textarea, input {
     top: 0.6em;
     bottom: 0.6em;
 }
-.input_beauty:before, 
+.input_beauty:before,
 .input_beauty:after {
     content: '';
     position: absolute;
@@ -339,7 +339,7 @@ textarea, input {
     background-image: -webkit-linear-gradient(bottom,rgba(226,226,226,0.62) 0,rgba(29,78,60,0.22) 70%,rgba(29,78,60,0.62) 100%);
     background-image: -ms-linear-gradient(bottom,rgba(226,226,226,0.62) 0,rgba(29,78,60,0.22) 70%,rgba(29,78,60,0.62) 100%);
     background-image: linear-gradient(bottom,rgba(226,226,226,0.62) 0,rgba(29,78,60,0.22) 70%,rgba(29,78,60,0.62) 100%);
-} 
+}
 .input_beauty:after {
     background: #fff;
 }
@@ -348,6 +348,11 @@ textarea, input {
 
 .hide {
     display: none !important;
+}
+
+.free {
+    color: green;
+    text-transform: lowercase;
 }
 
 /* native scroller css used when #content { scroll-y: auto } */

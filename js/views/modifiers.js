@@ -38,6 +38,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:selected', this.update, this);
+            this.listenTo(this.model, 'change:free_amount', this.update_free, this);
         },
         render: function() {
             var model = this.model.toJSON();
@@ -58,6 +59,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             this.$el.html(this.template(model));
             this.afterRender(model.sort);
             this.update();
+            this.update_free();
 
             return this;
         },
@@ -99,6 +101,29 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                     this.$('input').removeAttr('checked');
                     this.$('.input').removeClass('checked');
                 }
+            }
+        },
+        update_free: function() {
+            var free_amount = this.model.get('free_amount'),
+                currency_symbol = App.Data.settings.get('settings_system').currency_symbol,
+                $cost = this.$('.cost'),
+                $free = this.$('.free');
+
+            if(typeof free_amount != 'undefined') {
+                hide.call($cost);
+                $free.find('.value').text(parseFloat(free_amount) ? '+' + currency_symbol + round_monetary_currency(free_amount) : 'free');
+                show.call($free);
+            } else {
+                hide.call($free);
+                show.call($cost);
+            }
+
+            function show() {
+                $(this).removeClass('hidden').addClass('visible');
+            }
+
+            function hide() {
+                $(this).removeClass('visible').addClass('hidden');
             }
         }
     });
@@ -242,8 +267,15 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             App.Views.ItemView.prototype.remove.apply(this, arguments);
         },
         render: function() {
-            var view, model = this.model.toJSON();
+            var model = this.model.toJSON(),
+                amount_free = model.amount_free,
+                isPrice = model.amount_free_is_dollars,
+                currency = App.Data.settings.get('settings_system').currency_symbol,
+                view;
+
             model.type = 0;
+            model.free_modifiers = '';
+
             if(this.model.get('admin_modifier') && this.model.get('admin_mod_key') === 'SIZE') {
                 this.type = SIZE;
                 model.type = 1;
@@ -252,6 +284,10 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 model.name = 'Select special request';
                 model.type = 2;
             }
+
+            if(amount_free)
+                model.free_modifiers = isPrice ? MSG.FREE_MODIFIERS_PRICE.replace('%s', currency + amount_free)
+                    : amount_free == 1 ? MSG.FREE_MODIFIERS_QUANTITY1 : MSG.FREE_MODIFIERS_QUANTITY.replace('%s', amount_free);
 
             this.$el.html(this.template(model));
 
@@ -289,7 +325,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         render: function() {
             var data = {
                 name: this.options.data.name,
-                type: 1
+                type: 1,
+                free_modifiers: ''
             };
 
             this.$el.html(this.template(data));

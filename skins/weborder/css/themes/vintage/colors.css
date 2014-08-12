@@ -509,3 +509,7 @@ ul.categories {
     color: #362b18 !important;
     background: transparent !important;
 }
+
+.modifiers_table .free {
+    color: green;
+}

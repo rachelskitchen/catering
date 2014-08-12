@@ -390,6 +390,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             return item_obj;
+        },
+        removeFreeModifiers: function() {
+            var modifiers = this.get_modifiers();
+            modifiers && modifiers.removeFreeModifiers();
         }
     });
 
@@ -1255,6 +1259,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             this.checkout.set('dining_option', 'DINING_OPTION_ONLINE');
             this.checkout.set('notes', '');
+        },
+        removeFreeModifiers: function() {
+            this.each(function(item) {
+                item.removeFreeModifiers();
+            });
         }
     });
 });

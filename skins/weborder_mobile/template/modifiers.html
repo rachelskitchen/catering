@@ -19,6 +19,7 @@
                 <span class="price"><%= price %></span>
             </span>
         <% } %>
+        <span class="free"><span class="value"></span></span>
     </label>
 </script>
 
@@ -27,7 +28,7 @@
 </script>
 
 <script type="text/template" id="modifiers_classes_item-template">
-    <dt class="modifier_class"><%= name %></dt>
+    <dt class="modifier_class"><%= name %><% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %></dt>
     <dd class="modifier_class_list"></dd>
 </script>
 

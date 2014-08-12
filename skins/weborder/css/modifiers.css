@@ -56,6 +56,10 @@
     white-space: nowrap;
 }
 
+.modifiers_table .free {
+    text-transform: lowercase;
+}
+
 .modifiers_table .product_attribute_info h2 {
     font-size: 18px;
 }
