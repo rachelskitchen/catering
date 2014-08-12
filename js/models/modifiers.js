@@ -328,12 +328,6 @@ define(["backbone"], function(Backbone) {
             var amount = this.get('amount_free'),
                 selected = this.get('amount_free_selected');
 
-            // add modifier to free selected
-            if(amount && needAdd) {
-                selected.push(model);
-                changed = true;
-            }
-
             selected.forEach(function(model, index) {
                 if(index > amount - 1)
                     model.unset('free_amount');
