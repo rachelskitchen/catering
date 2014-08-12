@@ -93,10 +93,10 @@ define(["backbone", "geopoint"], function(Backbone) {
             address = address[address.length -1];
 
             // if not USA exclude state property
-            if(settings.address && !settings.address.state)
+            if(address.country != 'US')
                 delete req.state;
-
-            if(settings.address && address.country != 'CA')
+            // if not Canada exclude province property
+            if(address.country != 'CA')
                 delete req.province;
 
             for(var i in req) {
