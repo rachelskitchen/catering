@@ -34,16 +34,11 @@ define(['backbone', 'factory'], function(Backbone) {
                           typeof this.model.addresses[this.model.addresses.length - 1].street_1 === 'string'
                             ? this.model.addresses[this.model.addresses.length - 1] : undefined;
 
-            this.model.addresses = this.model.addresses.filter(getInitialAddresses);
-            
-            if (this.model.addresses[0] && this.model.addresses[0].country) 
-                var country_selected = this.model.addresses[0].country;
+            this.model.country = lastAddress ? lastAddress.country : settings.address.country;
 
-            this.model.country = country_selected ? country_selected : (settings.address && settings.address.country);
-            this.model.state = settings.address && settings.address.state ? (lastAddress ? lastAddress.state : settings.address.state) : null;
-            this.model.province = settings.address.province && this.model.country == "CA" ? (lastAddress ? lastAddress.province : "") : null;
+            this.model.state = this.model.country == "US" ? (lastAddress ? lastAddress.state : settings.address.state) : null;
+            this.model.province = this.model.country == "CA" ? (lastAddress ? lastAddress.province : "") : null;
             this.model.originalState = this.model.state;
-            this.model.originalProvince = this.model.province;
             this.model.states = getStates();
             this.model.street_1 = lastAddress ? lastAddress.street_1 : '';
             this.model.street_2 = lastAddress ? lastAddress.street_2 : '';
@@ -52,12 +47,12 @@ define(['backbone', 'factory'], function(Backbone) {
             this.model.countries = getCountries();
 
             this.otherAddress = {
-                street_1: lastAddress ? lastAddress.street_1 : '',
-                street_2: lastAddress ? lastAddress.street_2 : '',
-                city: lastAddress ? lastAddress.city : '',
-                zipcode: lastAddress ? lastAddress.zipcode : '',
-                country: settings.address ? settings.address.country : undefined
-            };
+                street_1: this.model.street_1,
+                street_2: this.model.street_2,
+                city:  this.model.city,
+                zipcode: this.model.zipcode,
+                country: this.model.country
+            };            
             if(this.model.country === 'US')
                 this.otherAddress.state = this.model.state || undefined;
             if(this.model.country === 'CA')
@@ -87,7 +82,8 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         onChangeElem: function(e) {
             e.target.value = fistLetterToUpperCase(e.target.value).trim();
-            this.otherAddress[e.target.name] = e.target.value;
+            this.model[e.target.name] = this.otherAddress[e.target.name] = e.target.value;
+            
             this.trigger('update_address');
         },
         updateShippingServices: function(){
@@ -151,21 +147,12 @@ define(['backbone', 'factory'], function(Backbone) {
                 this.otherAddress.state = undefined;
             }
 
-            if (this.otherAddress.country == 'CA') {
-                if (typeof this.model.originalProvince == 'string' && this.model.originalProvince.length > 0)
-                    this.model.province = this.otherAddress.province = this.model.originalProvince;
-                else {
-                    this.model.province = this.otherAddress.province = this.model.originalProvince = "";
-                }
-            } 
-            else {
+            if (this.otherAddress.country == 'CA')
+                this.model.province = this.otherAddress.province = '';                
+            else 
                 this.model.province = this.otherAddress.province = undefined;
-            }            
-
-            this.otherAddress.city = '';
-            this.otherAddress.street_1 = '';
-            this.otherAddress.street_2 = '';
-            this.otherAddress.zipcode = '';
+            
+           
             this.options.customer.set('load_shipping_status', '');
 
             this.render();

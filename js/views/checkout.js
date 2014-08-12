@@ -207,12 +207,10 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                 city: this.otherAddress.city,
                 state: this.otherAddress.state,
                 province: this.otherAddress.province,
-                zipcode: this.otherAddress.zipcode
+                zipcode: this.otherAddress.zipcode,
+                country: this.otherAddress.country
             };
 
-            if (App.skin = App.Skins.RETAIL) {
-                address.country = this.otherAddress.country;
-            }
             var addresses = this.options.customer.get('addresses');
 
             if (addresses.length === 0 || typeof addresses[addresses.length - 1].street_1 !== 'string') {
