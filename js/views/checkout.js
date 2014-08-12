@@ -202,13 +202,13 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                 shipping_address = this.options.customer.get('shipping_address'),
                 address;
             address = {
-                street_1: this.otherAddress.street_1,
-                street_2: this.otherAddress.street_2,
-                city: this.otherAddress.city,
-                state: this.otherAddress.state,
-                province: this.otherAddress.province,
-                zipcode: this.otherAddress.zipcode,
-                country: this.otherAddress.country
+                street_1: this.model.street_1,
+                street_2: this.model.street_2,
+                city: this.model.city,
+                state: this.model.state,
+                province: this.model.province,
+                zipcode: this.model.zipcode,
+                country: this.model.country
             };
 
             var addresses = this.options.customer.get('addresses');

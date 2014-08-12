@@ -45,19 +45,7 @@ define(['backbone', 'factory'], function(Backbone) {
             this.model.city = lastAddress ? lastAddress.city : '';
             this.model.zipcode = lastAddress ? lastAddress.zipcode : '';
             this.model.countries = getCountries();
-
-            this.otherAddress = {
-                street_1: this.model.street_1,
-                street_2: this.model.street_2,
-                city:  this.model.city,
-                zipcode: this.model.zipcode,
-                country: this.model.country
-            };            
-            if(this.model.country === 'US')
-                this.otherAddress.state = this.model.state || undefined;
-            if(this.model.country === 'CA')
-                this.otherAddress.province = this.model.province || undefined;
-
+            
             this.model.isShippingServices = App.skin == App.Skins.RETAIL;
 
             if (this.model.isShippingServices)
@@ -82,7 +70,7 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         onChangeElem: function(e) {
             e.target.value = fistLetterToUpperCase(e.target.value).trim();
-            this.model[e.target.name] = this.otherAddress[e.target.name] = e.target.value;
+            this.model[e.target.name] = e.target.value;
             
             this.trigger('update_address');
         },
@@ -133,26 +121,21 @@ define(['backbone', 'factory'], function(Backbone) {
             shipping.change();
         },
         countryChange: function(e) {
-            this.otherAddress.country = e.target.value;
-            this.model.country = this.otherAddress.country;
+            this.model.country = e.target.value;
             
-            if (this.otherAddress.country == 'US') {
+            if (this.model.country == 'US') {
                 if (typeof this.model.originalState == 'string' && this.model.originalState.length > 0)
-                    this.model.state = this.otherAddress.state = this.model.originalState;
+                    this.model.state = this.model.originalState;
                 else {
-                    this.model.state = this.otherAddress.state = this.model.originalState = "CA";
+                    this.model.state = this.model.originalState = "CA";
                 }
             } 
             else {
-                this.otherAddress.state = undefined;
+                this.model.state = undefined;
             }
 
-            if (this.otherAddress.country == 'CA')
-                this.model.province = this.otherAddress.province = '';                
-            else 
-                this.model.province = this.otherAddress.province = undefined;
-            
-           
+            this.model.province = this.model.country == 'CA' ? "" : undefined;
+
             this.options.customer.set('load_shipping_status', '');
 
             this.render();
@@ -180,7 +163,7 @@ define(['backbone', 'factory'], function(Backbone) {
             myorder.deliveryItem.get("product").set({"price": price, "name": name});
         },
         changeState: function(e) {
-            this.otherAddress.state = this.model.originalState = e.target.value;
+            this.model.originalState = e.target.value;
             this.trigger('update_address');                       
         },
         focus: function(event){

@@ -62,6 +62,12 @@ define(["backbone", "geopoint"], function(Backbone) {
         },
         loadAddresses: function() {
             var data = getData('address', true);
+            if (data instanceof Object && data.addresses && data.addresses.length == 1 && App.skin != App.Skins.RETAIL) {
+                if (data.addresses[0].country != App.Settings.address.country) {
+                    //the thread come here e.g. when we navigate from 'Retail' skin with other country payment previously submitted to weborder_mobile skin
+                    data = undefined;
+                }
+            }
             this.set('addresses', data instanceof Object ? (data.addresses || []) : []);
         },
         address_str: function() {
