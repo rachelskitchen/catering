@@ -269,6 +269,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         render: function() {
             var model = this.model.toJSON(),
                 amount_free = model.amount_free,
+                isAdmin = model.admin_modifier,
                 isPrice = model.amount_free_is_dollars,
                 currency = App.Data.settings.get('settings_system').currency_symbol,
                 view;
@@ -285,7 +286,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 model.type = 2;
             }
 
-            if(amount_free)
+            if(amount_free && !isAdmin)
                 model.free_modifiers = isPrice ? MSG.FREE_MODIFIERS_PRICE.replace('%s', currency + amount_free)
                     : amount_free == 1 ? MSG.FREE_MODIFIERS_QUANTITY1 : MSG.FREE_MODIFIERS_QUANTITY.replace('%s', amount_free);
 
