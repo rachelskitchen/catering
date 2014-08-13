@@ -550,6 +550,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.each(function(order) {
                 orders.add(order.clone()) ;
             });
+            orders.checkout.set('dining_option', this.checkout.get('dining_option'));
             return orders;
         },
         /**

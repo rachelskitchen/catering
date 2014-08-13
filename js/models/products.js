@@ -87,6 +87,8 @@ define(["backbone", 'childproducts'], function(Backbone) {
                 var children_json = typeof data.child_products.toJSON == 'function' ? data.child_products.toJSON() : data.child_products;
                 this.set('child_products', children.addJSON(children_json));
             }
+
+            this.checkStockAmount();
             return this;
         },
         clone: function() {
@@ -315,6 +317,11 @@ define(["backbone", 'childproducts'], function(Backbone) {
         },
         isParent: function() {
             return this.get('attribute_type') === 1;
+        },
+        checkStockAmount: function() {
+            var inventory = App.Data.settings.get("settings_system").cannot_order_with_empty_inventory;
+            if (!inventory)
+                this.set('stock_amount', 10);
         }
     });
 
@@ -355,11 +362,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
                 },
                 dataType: "json",
                 successResp: function(data) {
-                    var inventory = settings.get("settings_system").cannot_order_with_empty_inventory;
                     for (var i = 0; i < data.length; i++) {
-                        if (!inventory) {
-                            data[i].stock_amount = 10;
-                        }
                         if(data[i].is_gift && settings.get('skin') === 'mlb') continue; // mlb skin does not support gift cards (bug #9395)
                         self.add(data[i]);
                     }
