@@ -324,7 +324,10 @@ define(["backbone", "async"], function(Backbone) {
                     }
                 },
                 error: function() {
-                    self.set('isMaintenance', true);
+                    self.set({
+                        settings_system: settings_system, // default settings
+                        isMaintenance: true
+                    });
                 },
                 complete: function() {
                     load.resolve();
