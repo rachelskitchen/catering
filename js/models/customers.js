@@ -88,11 +88,11 @@ define(["backbone", "geopoint"], function(Backbone) {
             var settings = App.Data.settings.get('settings_system'),
                 empty = [],
                 address = this.get('addresses'),
-                req = {
+                req = {                    
+                    street_1: 'Address Line 1',
+                    city: 'City',                    
                     state: 'State',
                     province: 'Province',
-                    street_1: 'Address Line 1',
-                    city: 'City',
                     zipcode: 'Zip Code'
                 };
 
