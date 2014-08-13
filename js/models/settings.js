@@ -26,6 +26,7 @@ define(["backbone", "async"], function(Backbone) {
     App.Models.Settings = Backbone.Model.extend({
         initialize: function() {
             var app = require('app');
+            this.get_data_warehouse(); // selection of the data warehouse
             this.set('basePath', app.config.baseUrl.replace(/\/$/, '') || '.');
             this.set('host', app.REVEL_HOST);
         },
@@ -36,7 +37,6 @@ define(["backbone", "async"], function(Backbone) {
             this.listenToOnce(this, 'change:settings_system', this.get_settings_main, this);
             this.listenToOnce(this, 'change:skinPath', this.get_settings_for_skin, this)
 
-            this.get_data_warehouse(); // selection of the data warehouse
             this.get_establishment();  // get ID of current establishment
 
             $.ajaxSetup({
