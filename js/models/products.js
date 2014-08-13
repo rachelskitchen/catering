@@ -84,7 +84,8 @@ define(["backbone", 'childproducts'], function(Backbone) {
             this.set(data);
             if (data.attribute_type === 1 && data.child_products) {
                 var children = new App.Collections.ChildProducts();
-                this.set('child_products', children.addJSON(data.child_products.toJSON()));
+                var children_json = typeof data.child_products.toJSON == 'function' ? data.child_products.toJSON() : data.child_products;
+                this.set('child_products', children.addJSON(children_json));
             }
             return this;
         },
