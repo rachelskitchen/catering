@@ -772,7 +772,7 @@ function loadSpinner(logo, anim, cb) {
         var logo = $(this),
             parent = logo.parent(),
             defImage = App.Data.settings.get_img_default(logo.attr('data-default-index')),
-            hash = btoa(logo.attr('src') + logo.attr('alt')),
+            hash = makeImageName(logo),
             img, spinner;
         if(hash in App.Data.images) {
             if (App.Data.images[hash].attr('src') == defImage)
@@ -788,19 +788,23 @@ function loadSpinner(logo, anim, cb) {
         img.on('load', function() { //load method - deprecated
             spinner.replaceWith(img);
             anim ? img.fadeIn() : img.show();
-            App.Data.images[btoa(img.attr('src') + img.attr('alt'))] = img.clone().css('opacity', '100');
+            App.Data.images[makeImageName(logo)] = img.clone().css('opacity', '100');
             typeof cb == 'function' && cb(img);
         }).error(function(e) {
             logo.prop('src', defImage);
             spinner.replaceWith(logo);
             parent.addClass('no-photo');
-            App.Data.images[btoa(img.attr('src') + img.attr('alt'))] = logo.clone();
+            App.Data.images[makeImageName(logo)] = logo.clone();
             img.remove();
             typeof cb == 'function' && cb(logo);
             App.Data.log && App.Data.log.pushImageError(e.target.src);
         });
         return spinner;
     });
+}
+
+function makeImageName(image) {
+	return btoa(encodeURIComponent(image.attr('src') + image.attr('alt')));
 }
 
 /**
