@@ -29,6 +29,7 @@ define(["backbone", "async"], function(Backbone) {
             this.get_data_warehouse(); // selection of the data warehouse
             this.set('basePath', app.config.baseUrl.replace(/\/$/, '') || '.');
             this.set('host', app.REVEL_HOST);
+            this.set('hostname', /^http[s]*:\/\/(.+)/.exec(app.REVEL_HOST)[1]); //it's the host w/o "http[s]://" substring
         },
         load: function() {
             var self = this;
