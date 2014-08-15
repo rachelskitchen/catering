@@ -172,6 +172,7 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
 
             this.$('.data').contentarrow();
             main.$el.on('touchstart', 'input', this.inputClick.bind(this));
+            this.iOSSafariCaretFix();
             return this;
         },
         update_note: function(e) {
@@ -192,6 +193,22 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
                 $(event.target).focus();
                 cont.off('onScroll', restoreFocus);
             }
+        },
+        iOSSafariCaretFix: function() {
+            this.$('.data').on('scroll', function() {
+                var data = $(this),
+                    dataTop = data.offset().top,
+                    dataHeight = data.height();
+                $('input', data).each(function() {
+                    var field = $(this),
+                        fieldTop = field.offset().top,
+                        fieldHeight = field.height();
+                    if(dataTop > fieldTop + fieldHeight || dataTop + dataHeight < fieldTop)
+                        field.hide();
+                    else
+                        field.show();
+                });
+            });
         }
     });
 });
