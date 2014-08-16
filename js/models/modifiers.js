@@ -486,7 +486,8 @@ define(["backbone"], function(Backbone) {
             $.ajax({
                 url: App.Data.settings.get("host") + "/weborders/modifiers/",
                 data: {
-                    product: id_product
+                    product: id_product,
+                    quick: true
                 },
                 dataType: "json",
                 successResp: function(modifierBlocks) {
