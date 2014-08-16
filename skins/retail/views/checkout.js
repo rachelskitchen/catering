@@ -218,12 +218,12 @@ console.log(this.id, 'blur show');
                 });
 
                 // if input is in focus and outside of visible area it should be hidden
-                $('input:focus', data).each(function() {
+                $('input:focus:visible', data).each(function() {
                     var field = $(this),
                         fieldTop = field.parent().offset().top,
                         fieldHeight = field.height();
 
-                    if(dataTop > fieldTop + fieldHeight || dataTop + dataHeight < fieldTop)
+                    if(dataTop > fieldTop + fieldHeight / 2 || dataTop + dataHeight < fieldTop)
                         (field.hide(), console.log(field.attr('id'), 'outside of visible area:', 'hide'));
                 });
             });
