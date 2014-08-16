@@ -195,18 +195,36 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
             }
         },
         iOSSafariCaretFix: function() {
-            this.$('.data').on('scroll', function() {
-                var data = $(this),
-                    dataTop = data.offset().top,
+            var data = this.$('.data');
+
+            // show input if user clicks on another input
+            $('input', data).on('blur', function() {
+console.log(this.id, 'blur show');
+                $(this).show();
+            });
+
+            data.on('scroll', function() {
+                var dataTop = data.offset().top,
                     dataHeight = data.height();
-                $('input', data).each(function() {
+
+                // show hidden inputs if they are inside of visible area
+                $('input:hidden', data).each(function() {
                     var field = $(this),
-                        fieldTop = field.offset().top,
+                        fieldTop = field.parent().offset().top,
                         fieldHeight = field.height();
+
+                    if(dataTop < fieldTop + fieldHeight && dataTop + dataHeight > fieldTop)
+                        (field.show(), console.log(field.attr('id'), 'inside of visible area:', 'show'));
+                });
+
+                // if input is in focus and outside of visible area it should be hidden
+                $('input:focus', data).each(function() {
+                    var field = $(this),
+                        fieldTop = field.parent().offset().top,
+                        fieldHeight = field.height();
+
                     if(dataTop > fieldTop + fieldHeight || dataTop + dataHeight < fieldTop)
-                        field.hide();
-                    else
-                        field.show();
+                        (field.hide(), console.log(field.attr('id'), 'outside of visible area:', 'hide'));
                 });
             });
         }
