@@ -59,7 +59,7 @@ define(['backbone'], function(Backbone) {
          * caret is visible over all layouts on the page in ios safari
          */
         iOSSafariCaretFix: function() {
-            if(!(cssua.ua.ios && cssua.ua.safari))
+            if(!(cssua.ua.ios && cssua.ua.webkit))
                 return;
 
             var data = this.$('.ios-safari-caret-fix');
