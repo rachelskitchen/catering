@@ -113,7 +113,7 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
                     timetable: App.Data.timetables,
                     card: App.Data.card
             });
-            }            
+            }
         },
         pay: function(payment_type) {
             saveAllData();
@@ -185,6 +185,8 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
 
             this.$('.data').contentarrow();
             main.$el.on('touchstart', 'input', this.inputClick.bind(this));
+            this.iOSSafariCaretFix();
+
             return this;
         },
         update_note: function(e) {

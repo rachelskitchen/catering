@@ -193,40 +193,6 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
                 $(event.target).focus();
                 cont.off('onScroll', restoreFocus);
             }
-        },
-        iOSSafariCaretFix: function() {
-            var data = this.$('.data');
-
-            // show input if user clicks on another input
-            $('input', data).on('blur', function() {
-console.log(this.id, 'blur show');
-                $(this).show();
-            });
-
-            data.on('scroll', function() {
-                var dataTop = data.offset().top,
-                    dataHeight = data.height();
-
-                // show hidden inputs if they are inside of visible area
-                $('input:hidden', data).each(function() {
-                    var field = $(this),
-                        fieldTop = field.parent().offset().top,
-                        fieldHeight = field.height();
-
-                    if(dataTop < fieldTop + fieldHeight && dataTop + dataHeight > fieldTop)
-                        (field.show(), console.log(field.attr('id'), 'inside of visible area:', 'show'));
-                });
-
-                // if input is in focus and outside of visible area it should be hidden
-                $('input:focus:visible', data).each(function() {
-                    var field = $(this),
-                        fieldTop = field.parent().offset().top,
-                        fieldHeight = field.height();
-
-                    if(dataTop > fieldTop + fieldHeight / 2 || dataTop + dataHeight < fieldTop)
-                        (field.hide(), console.log(field.attr('id'), 'outside of visible area:', 'hide'));
-                });
-            });
         }
     });
 });
