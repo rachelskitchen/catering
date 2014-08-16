@@ -66,7 +66,6 @@ define(['backbone'], function(Backbone) {
 
             // show input if user clicks on another input
             data.on('blur', '.ios-safari-caret:hidden', function() {
-console.log(this.id, ' blur: show');
                 $(this).show();
             });
 
@@ -81,7 +80,7 @@ console.log(this.id, ' blur: show');
                         fieldHeight = field.height();
 
                     if(dataTop < fieldTop + fieldHeight && dataTop + dataHeight > fieldTop)
-                        (field.show(), console.log(this.id, ' is inside of visible area: show'));
+                        field.show();
                 });
 
                 // if input is in focus and outside of visible area it should be hidden
@@ -91,7 +90,7 @@ console.log(this.id, ' blur: show');
                         fieldHeight = field.height();
 
                     if(dataTop > fieldTop + fieldHeight / 2 || dataTop + dataHeight < fieldTop)
-                        (field.hide(), console.log(this.id, ' is outside of visible area: hide'));
+                        field.hide();
                 });
             });
         }
