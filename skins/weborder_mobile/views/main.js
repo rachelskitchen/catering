@@ -54,6 +54,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 e.stopPropagation();
                 $(this).focus();
             });
+            this.iOSSafariCaretFix();
             return this;
         },
         content_change: function() {

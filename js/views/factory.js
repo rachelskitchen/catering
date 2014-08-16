@@ -65,7 +65,8 @@ define(['backbone'], function(Backbone) {
             var data = this.$('.ios-safari-caret-fix');
 
             // show input if user clicks on another input
-            $('input:hidden, textarea:hidden', data).on('blur', function() {
+            data.on('blur', '.ios-safari-caret:hidden', function() {
+console.log(this.id, ' blur: show');
                 $(this).show();
             });
 
@@ -74,23 +75,23 @@ define(['backbone'], function(Backbone) {
                     dataHeight = data.height();
 
                 // show hidden inputs if they are inside of visible area
-                $('input:hidden, textarea:hidden', data).each(function() {
+                $('.ios-safari-caret:hidden', data).each(function() {
                     var field = $(this),
                         fieldTop = field.parent().offset().top,
                         fieldHeight = field.height();
 
                     if(dataTop < fieldTop + fieldHeight && dataTop + dataHeight > fieldTop)
-                        field.show();
+                        (field.show(), console.log(this.id, ' is inside of visible area: show'));
                 });
 
                 // if input is in focus and outside of visible area it should be hidden
-                $('input:focus:visible, textarea:focus:visible', data).each(function() {
+                $('.ios-safari-caret:focus:visible', data).each(function() {
                     var field = $(this),
                         fieldTop = field.parent().offset().top,
                         fieldHeight = field.height();
 
                     if(dataTop > fieldTop + fieldHeight / 2 || dataTop + dataHeight < fieldTop)
-                        field.hide();
+                        (field.hide(), console.log(this.id, ' is outside of visible area: hide'));
                 });
             });
         }

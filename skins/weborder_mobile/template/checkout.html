@@ -3,16 +3,16 @@
         <dt>Contact Information</dt>
         <dd class="contact_info">
             <label class="input required">
-                <input type="text" placeholder="First Name" class="firstName" value="<%= firstName %>">
+                <input type="text" placeholder="First Name" class="firstName ios-safari-caret" value="<%= firstName %>">
             </label>
             <label class="input required">
-                <input type="text" placeholder="Last Name" class="lastName" value="<%= lastName %>">
+                <input type="text" placeholder="Last Name" class="lastName ios-safari-caret" value="<%= lastName %>">
             </label>
             <label class="input required">
-                <input type="text" placeholder="Email" class="email" value="<%= email %>" autocapitalize="none">
+                <input type="text" placeholder="Email" class="email ios-safari-caret" value="<%= email %>" autocapitalize="none">
             </label>
             <label class="input required">
-                <input type="tel" placeholder="Phone #" class="phone" value="<%=phone%>" min="0" />
+                <input type="tel" placeholder="Phone #" class="phone ios-safari-caret" value="<%=phone%>" min="0" />
             </label>
             <div class="delivery_address">
             </div>
@@ -23,7 +23,7 @@
         <dt>Reward Card</dt>
         <dd class="rewardCard">
             <label class="input rewardCard">
-                <input type="<%= rewardCardType %>" placeholder="Reward Card #" class="rewardCard" value="<%= rewardCard %>">
+                <input type="<%= rewardCardType %>" placeholder="Reward Card #" class="rewardCard ios-safari-caret" value="<%= rewardCard %>">
             </label>
         </dd>
         <% } %>
@@ -34,27 +34,27 @@
     <% if(isDeliverToSeat) { %>
         <% if(orderFromSeat.enable_level) { %>
             <label class="input required">
-                <input type="text" placeholder="Level" name="level" class="level" maxlength="4" value="<%= level %>">
+                <input type="text" placeholder="Level" name="level" class="level ios-safari-caret" maxlength="4" value="<%= level %>">
             </label>
         <% } %>
         <% if(orderFromSeat.enable_sector) { %>
             <label class="input required">
-                <input type="text" placeholder="Section" name="section" class="section" maxlength="4" value="<%= section %>">
+                <input type="text" placeholder="Section" name="section" class="section ios-safari-caret" maxlength="4" value="<%= section %>">
             </label>
         <% } %>
         <% if(orderFromSeat.enable_row) { %>
             <label class="input required">
-                <input type="text" placeholder="Row" name="row" class="row" maxlength="4" value="<%= row %>">
+                <input type="text" placeholder="Row" name="row" class="row ios-safari-caret" maxlength="4" value="<%= row %>">
             </label>
         <% } %>
             <label class="input required">
-                <input type="text" placeholder="Seat" name="seat" class="seat" maxlength="4" value="<%= seat %>">
+                <input type="text" placeholder="Seat" name="seat" class="seat ios-safari-caret" maxlength="4" value="<%= seat %>">
             </label>
     <% } %>
 </script>
 
 <script type="text/template" id="checkout_pickup-template">
-    <dl class="checkout <% if(isFirefox) { %>firefox<% } %> <% if (isOrderFromSeat) { print('hidden'); } %>">   
+    <dl class="checkout <% if(isFirefox) { %>firefox<% } %> <% if (isOrderFromSeat) { print('hidden'); } %>">
         <dt class="pickup"><%= pickupTimeLabel %></dt>
         <dd>
             <label class="select required">
@@ -81,13 +81,13 @@
 
 <script type="text/template" id="checkout_address-template">
     <label class="input required">
-        <input type="text" placeholder="Address Line 1" name="street_1" value="<%= street_1 %>">
+        <input type="text" placeholder="Address Line 1" name="street_1 ios-safari-caret" value="<%= street_1 %>">
     </label>
     <label class="input">
-        <input type="text" placeholder="Address Line 2" name="street_2" value="<%= street_2 %>">
+        <input type="text" placeholder="Address Line 2" name="street_2 ios-safari-caret" value="<%= street_2 %>">
     </label>
     <label class="input required">
-        <input type="text" placeholder="City" name="city" value="<%= city %>">
+        <input type="text" placeholder="City" name="city" value="<%= city %>" class="ios-safari-caret">
     </label>
     <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
     <label class="select">
@@ -100,10 +100,10 @@
     <% } %>
     <% if(typeof province == 'string') { %>
        <label class="input required">
-           <input type="text" placeholder="Province" name="province" value="<%= province %>">
+           <input type="text" placeholder="Province" name="province" value="<%= province %>" class="ios-safari-caret">
        </label>
     <% } %>
     <label class="input required">
-        <input type="text" placeholder="Zip Code" name="zipcode" value="<%= zipcode %>">
+        <input type="text" placeholder="Zip Code" name="zipcode" value="<%= zipcode %>" class="ios-safari-caret">
     </label>
 </script>
