@@ -54,7 +54,8 @@ define(["backbone", 'childproducts'], function(Backbone) {
             stock_amount: 10,
             active: true,
             isDeliveryItem: false,
-            created_date: null
+            created_date: null,
+            original_tax: 0 // used to save origin tax rate to restore in Retail mode
         },
         initialize: function() {
             this.set({
@@ -79,6 +80,8 @@ define(["backbone", 'childproducts'], function(Backbone) {
 
             if (data.is_gift)
                 data.sold_by_weight = false;
+
+            data.original_tax = data.tax;
 
             data.created_date = new Date(data.created_date).valueOf();
             this.set(data);
@@ -322,6 +325,9 @@ define(["backbone", 'childproducts'], function(Backbone) {
             var inventory = App.Data.settings.get("settings_system").cannot_order_with_empty_inventory;
             if (!inventory)
                 this.set('stock_amount', 10);
+        },
+        restoreTax: function() {
+            this.set('tax', this.get('original_tax'));
         }
     });
 

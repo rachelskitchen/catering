@@ -804,7 +804,11 @@ function loadSpinner(logo, anim, cb) {
 }
 
 function makeImageName(image) {
-	return btoa(encodeURIComponent(image.attr('src') + image.attr('alt')));
+	return encodeStr(image.attr('src') + image.attr('alt'));
+}
+
+function encodeStr(str) {
+    return btoa(encodeURIComponent(str));
 }
 
 /**

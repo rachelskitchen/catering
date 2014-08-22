@@ -34,10 +34,10 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             this.customer = this.options.customer;
             this.card = App.Data.card;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.model.get('dining_option') === 'DINING_OPTION_DELIVERY' && 
+            this.model.get('dining_option') === 'DINING_OPTION_DELIVERY' &&
                  this.controlAddress(null, 'DINING_OPTION_DELIVERY');
-            
-            this.model.get('dining_option') === 'DINING_OPTION_DELIVERY_SEAT' && 
+
+            this.model.get('dining_option') === 'DINING_OPTION_DELIVERY_SEAT' &&
                  this.controlDeliverySeat(null, 'DINING_OPTION_DELIVERY_SEAT');
         },
         render: function() {
@@ -125,13 +125,13 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             }
         },
         controlDeliverySeat: function(model, value) {
-            if(value === 'DINING_OPTION_DELIVERY_SEAT') {              
+            if(value === 'DINING_OPTION_DELIVERY_SEAT') {
                 if (!this.seatView) {
                     this.seatView = new App.Views.CoreCheckoutView.CoreCheckoutSeatView({model: this.model});
                     this.$('.delivery_seat').append(this.seatView.el);
                 }
-                this.trigger('delivery-to-seat'); 
-                this.$('.delivery_seat').show(); 
+                this.trigger('delivery-to-seat');
+                this.$('.delivery_seat').show();
             } else {
                 this.$('.delivery_seat').hide();
             }
@@ -219,8 +219,8 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                 addresses[addresses.length - 1] = address;
             }
             addresses[addresses.length - 1].address = this.options.customer.address_str();
-            
-            if (this.model.isShippingServices && address.street_1 && address.city && address.country && 
+
+            if (this.model.isShippingServices && address.street_1 && address.city && address.country &&
                 address.zipcode && (address.country == 'US' ? address.state : true) &&
                                    (address.country == 'CA' ? address.province : true)) {
                 this.options.customer.get_shipping_services();
@@ -240,7 +240,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             data.isDeliverToSeat = this.model.get('dining_option') === 'DINING_OPTION_DELIVERY_SEAT';
             data.orderFromSeat = App.Data.orderFromSeat || {};
             this.$el.html(this.template(data));
-            
+
             inputTypeNumberMask(this.$('input[name=level], input[name=section], input[name=row], input[name=seat]'), /^[\d\w]{0,4}$/);
         },
         events: {

@@ -428,6 +428,7 @@ define(["backbone", "main_router"], function(Backbone) {
 
                 if (!App.Data.customer) {
                     App.Data.customer = new App.Models.Customer();
+                    App.Data.myorder.listenTo(App.Data.customer, 'change:shipping_services', App.Data.myorder.addDestinationBasedTaxes, App.Data.myorder);
                 }
 
                 var settings = App.Data.settings.get('settings_system');

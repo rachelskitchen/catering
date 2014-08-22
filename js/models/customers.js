@@ -88,9 +88,9 @@ define(["backbone", "geopoint"], function(Backbone) {
             var settings = App.Data.settings.get('settings_system'),
                 empty = [],
                 address = this.get('addresses'),
-                req = {                    
+                req = {
                     street_1: 'Address Line 1',
-                    city: 'City',                    
+                    city: 'City',
                     state: 'State',
                     province: 'Province',
                     zipcode: 'Zip Code'
@@ -172,11 +172,11 @@ define(["backbone", "geopoint"], function(Backbone) {
             }
         },
         get_shipping_services: function() {
-            var self = this,       
-                data = {}, 
-                address = this.get('addresses'), 
+            var self = this,
+                data = {},
+                address = this.get('addresses'),
                 shipping_addr_index = this.get('shipping_address') === -1 ? address.length - 1 : this.get('shipping_address');
-            
+
             if (!address.length)
                 return;
 
@@ -189,7 +189,7 @@ define(["backbone", "geopoint"], function(Backbone) {
 
             this.set("shipping_services", [], {silent: true});
             this.set("load_shipping_status", "pending", {silent: true});
-            this.trigger("change:shipping_services");                               
+            this.trigger("change:shipping_services");
 
            var data_json = JSON.stringify(data);
             $.ajax({
@@ -202,23 +202,23 @@ define(["backbone", "geopoint"], function(Backbone) {
                         case "OK":
                             self.set("shipping_services", response.data, {silent: true});
                             self.set("load_shipping_status", "resolved", {silent: true});
-                            self.trigger("change:shipping_services");                            
+                            self.trigger("change:shipping_services");
                             break;
-                        default: 
-                            onError(self);                           
+                        default:
+                            onError(self);
                     }
                 },
                 error: function() {
                     onError(self);
                 },
-                complete: function() {                                   
+                complete: function() {
                 }
             });
 
             function onError(self) {
                 setTimeout(function() {
                     self.set("load_shipping_status", "resolved", {silent: true});
-                    self.trigger("change:shipping_services"); 
+                    self.trigger("change:shipping_services");
                 }, 300);
             }
         }
