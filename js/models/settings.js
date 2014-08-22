@@ -368,12 +368,24 @@ define(["backbone", "async"], function(Backbone) {
 
             var skin = this.get("skin");
 
-            if ((skin === 'weborder' || skin === 'weborder_mobile') && !processor.usaepay && !processor.paypal && !settings_system.accept_cash_online) {
+            if ((skin === 'weborder' || skin === 'weborder_mobile') && !processor.usaepay && !processor.mercury && !processor.paypal && !settings_system.accept_cash_online) {
                 return undefined;
             }
 
+            var credit_card_button = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury;
+            var credit_card_dialog = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay;
+            var payment_count = 0;
+            processor.paypal && payment_count++;
+            if((processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury) {
+                payment_count++;
+            }
+            processor.cash && payment_count++;
+
             return Backbone.$.extend(processor, {
-                cash: settings_system.accept_cash_online
+                cash: settings_system.accept_cash_online,
+                payment_count: payment_count,
+                credit_card_button: credit_card_button,
+                credit_card_dialog: credit_card_dialog
             });
         },
         get_img_default: function(index) {

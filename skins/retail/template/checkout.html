@@ -147,7 +147,7 @@
             <% if(paypal) { %>
         <div class='btn paypal'>Checkout with PayPal</div>
             <% } %>
-            <% if((paypal && paypal_direct_credit_card) || usaepay) { %>
+            <% if(credit_card_button) { %>
         <div class='btn credit-card'>Pay with Credit Card</div>
             <% } %>
             <% if(cash) { %>
@@ -159,7 +159,7 @@
         <% if(paypal) { %>
         <div class='btn paypal'></div>
         <% } %>
-        <% if((paypal && paypal_direct_credit_card) || usaepay) { %>
+        <% if(credit_card_button) { %>
         <div class='btn credit-card'>Credit Card</div>
         <% } %>
         <% if(cash) { %>

@@ -122,7 +122,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         render: function() {
             //App.Views.FactoryView.prototype.render.apply(this, arguments);
             var payment = App.Data.settings.get_payment_process(),
-                rows = payment.paypal + ((payment.paypal && payment.paypal_direct_credit_card) || payment.usaepay) + payment.cash,
+                rows = payment.payment_count,
                 isDelivery = App.Data.myorder.checkout.get("dining_option") === 'DINING_OPTION_DELIVERY';
 
             payment.cashBtnText = isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE;
@@ -142,14 +142,30 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             $('#section').removeClass('doubleFooter_section').removeClass('tripleFooter_section');
         },
         creditCard: function() {
-            App.Data.router.navigate('card', true);
+           var payment = App.Data.settings.get_payment_process();
+           if (payment.credit_card_dialog) {
+               App.Data.router.navigate('card', true);
+           } else {
+               var self = this;
+               App.Data.myorder.check_order({
+                   order: true,
+                   tip: true,
+                   customer: true,
+                   checkout: true,
+                   card: false
+               }, function() {
+                   App.Data.myorder.pay_order_and_create_order_backend(2);
+                   !self.canceled && App.Data.mainModel.trigger('loadStarted');
+                   delete self.canceled;
+                   saveAllData();
+                   App.Data.router.navigate('confirm', true);
+               });
+            }
         },
         pay: function(e) {
             var creditCard = $(e.currentTarget).attr('id') === 'pay' ? true : false,
                 myorder = App.Data.myorder,
                 self = this; // check with tips
-
-            var self = this;
             App.Data.myorder.check_order({
                 order: true,
                 tip: true,

@@ -132,7 +132,9 @@ function msgFrm(msg_format) {
  */
 function parse_get_params() {
     var $_GET = {};
-    var __GET = window.location.search.substring(1).split("&");
+    // Mercury return url is not xml-decoded
+    var search = window.location.search.replace(/&amp;/g, '&');
+    var __GET = search.substring(1).split("&");
     for (var i = 0; i < __GET.length; i++) {
         var get_var = __GET[i].split("=");
         $_GET[get_var[0]] = typeof(get_var[1]) == "undefined" ? "" : get_var[1];

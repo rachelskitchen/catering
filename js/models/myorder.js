@@ -1119,6 +1119,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     '$cardNumber': card.cardNumber,
                     '$expMonth': card.expMonth,
                     '$expDate': card.expDate,
+                    '$expYYYY': card.expDate,
+                    '$expYY': card.expDate ? card.expDate.substring(2) : undefined,
                     '$securityCode': card.securityCode
                 };
 
@@ -1166,12 +1168,16 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                 payment_info.payment_id = checkout.payment_id;
                             } else if (payment.usaepay) {
                                 payment_info.transaction_id = get_parameters.UMrefNum;
+                            } else if (payment.mercury) {
+                                payment_info.transaction_id = get_parameters.PaymentID;
                             }
                         } else {
                             if (payment.paypal_direct_credit_card) {
                                 myorder.paymentResponse = {status: 'error', errorMsg: 'Payment Canceled'};
                             } else if (payment.usaepay) {
                                 myorder.paymentResponse = {status: 'error', errorMsg: get_parameters.UMerror};
+                            } else if (payment.mercury) {
+                                myorder.paymentResponse = {status: 'error', errorMsg: get_parameters.ReturnCode};
                             }
                             myorder.trigger('paymentResponse');
                             return;

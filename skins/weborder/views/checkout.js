@@ -65,10 +65,6 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
         render: function() {
             var payment = App.Data.settings.get_payment_process();
             payment.flag = this.options.flag === 'checkout';
-            payment.payment_count = 0,
-            payment.paypal && payment.payment_count++;
-            if((payment.paypal && payment.paypal_direct_credit_card) || payment.usaepay) payment.payment_count++;
-            payment.cash && payment.payment_count++;
 
             this.$el.html(this.template(payment));
             this.change_cash_text();
@@ -90,7 +86,19 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
         credit_card: function() {
             var self = this;
             $('#popup .cancel').trigger('click');
-            if (this.options.flag) {
+
+            var payment = App.Data.settings.get_payment_process();
+            if (!payment.credit_card_dialog) {
+                App.Data.myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                    validation: false
+                }, function() {
+                    self.pay(2);
+                });
+            } else if (this.options.flag) {
                 App.Data.myorder.check_order({
                     order: true,
                     tip: true,
