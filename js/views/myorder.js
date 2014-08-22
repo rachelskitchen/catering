@@ -149,7 +149,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.label_manual_weights = App.Data.settings.get("settings_system").scales.label_for_manual_weights;
             model.image = product.get_product().get('image');
             model.id = product.get_product().get('id');
-
             if (model.sold_by_weight) {
                 num_digits = App.Data.settings.get("settings_system").scales.number_of_digits_to_right_of_decimal;
                 model.weight = model.weight.toFixed(num_digits);

@@ -55,7 +55,7 @@ define(["backbone", 'childproducts'], function(Backbone) {
             active: true,
             isDeliveryItem: false,
             created_date: null,
-            original_tax: 0 // used to save origin tax rate to restore in Retail mode
+            original_tax: null // used to save origin tax rate to restore in Retail mode
         },
         initialize: function() {
             this.set({
@@ -81,7 +81,8 @@ define(["backbone", 'childproducts'], function(Backbone) {
             if (data.is_gift)
                 data.sold_by_weight = false;
 
-            data.original_tax = data.tax;
+            if(isNaN(parseInt(data.original_tax, 10)))
+                data.original_tax = data.tax;
 
             data.created_date = new Date(data.created_date).valueOf();
             this.set(data);
@@ -298,13 +299,13 @@ define(["backbone", 'childproducts'], function(Backbone) {
             var img = this.get('image'),
                 imgs = this.get('images'),
                 settings = App.Data.settings,
-                defImg = settings.get_img_default(),
+                defImg = settings.get('settings_skin').img_default,
                 host = settings.get('host'),
                 images = [];
 
             if(Array.isArray(imgs)) {
                 images = imgs.map(function(image) {
-                    if (defImg != image)
+                    if (Array.isArray(defImg) ? defImg.indexOf(image) == -1 : defImg != image)
                         return /^https?:\/\//.test(image) ? image : host + image.replace(/^([^\/])/, '/$1');
                     else
                         return image;

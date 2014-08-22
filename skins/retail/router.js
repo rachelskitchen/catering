@@ -428,6 +428,10 @@ define(["backbone", "main_router"], function(Backbone) {
 
                 if (!App.Data.customer) {
                     App.Data.customer = new App.Models.Customer();
+                }
+
+                if(typeof App.Data.customer.shipping_serives == 'undefined') {
+                    App.Data.customer.shipping_serives = true;
                     App.Data.myorder.listenTo(App.Data.customer, 'change:shipping_services', App.Data.myorder.addDestinationBasedTaxes, App.Data.myorder);
                 }
 

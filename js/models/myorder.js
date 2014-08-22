@@ -487,7 +487,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             // if RETAIl mode and dining option was 'Shipping' need restore original taxes for products
-            if(App.Skins.RETAIL == App.skin && model.previousAttributes().dining_option == 'DINING_OPTION_DELIVERY')
+            if(App.Skins.RETAIL == App.skin && model.previousAttributes().dining_option == 'DINING_OPTION_DELIVERY'
+                && model.previousAttributes().dining_option != value)
                 this.restoreTaxes();
 
             this.recalculate_tax();
