@@ -47,7 +47,7 @@ define(["backbone", "main_router"], function(Backbone) {
         initialize: function() {
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
             clearQueryString();
-            $('body').html('<div></div>');
+            $('body').html('<div class="main-container"></div>');
             this.bodyElement = $('body');
 
             // load main, header, footer necessary files
@@ -109,7 +109,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 mainView = App.Views.GeneratorView.create('Main', data, data.mod === 'Main');
 
             this.mainView && this.mainView.removeFromDOMTree() || $('body > div').empty();
-            $('body > div:first-child').append(mainView.el);
+            $('body > div.main-container').append(mainView.el);
             this.mainView = mainView;
         },
         navigationControl: function() {
