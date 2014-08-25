@@ -61,7 +61,7 @@ define(["backbone", "factory", 'modifiers_view'], function(Backbone) {
                 other = data.attributesOther[anotherSelected],
                 id = this.options.id;
 
-            if((selected === null && anotherSelected === null) || (Array.isArray(other) && other.indexOf(id) > -1) || selected === id)
+            if(anotherSelected === null || (Array.isArray(other) && other.indexOf(id) > -1) || selected === id)
                 this.$el.prop('disabled', false);
             else
                 this.$el.prop('disabled', true);
