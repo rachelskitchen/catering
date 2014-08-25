@@ -47,7 +47,7 @@ define(["backbone", "factory"], function(Backbone) {
             });
             index = this.orderSort.indexOf(sort);
             if(index == 0) {
-                parent.prepend(view.el);
+                parent.append(view.el);
             } else if(index == this.orderSort.length - 1) {
                 parent.append(view.el);
             } else {
