@@ -40,9 +40,9 @@ define(["backbone", "factory", "generator", "products_view"], function(Backbone)
         },
         onChangeOrder: function() {
             if (this.collection.get_only_product_quantity() > 0)
-                this.$(".order-items-wrapper, .subtotal, .checkout").show();
+                this.$(".order-items-wrapper, .checkout").show();
             else
-                this.$(".order-items-wrapper, .subtotal, .checkout").hide();
+                this.$(".order-items-wrapper, .checkout").hide();
         },
         resize: function() {
             var self = this;
