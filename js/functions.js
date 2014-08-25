@@ -768,8 +768,15 @@ function isAndroidWebKit() {
 /**
  * Loading img spinner
  */
-function loadSpinner(logo, anim, cb) {
-    anim = typeof anim == 'undefined' ? true : anim;
+function loadSpinner(logo, anim_params, cb) {
+    var show_spinner = true, 
+        anim = typeof anim_params == 'undefined' ? true : anim_params;
+    if (anim_params instanceof Object) {
+        //anim_params is params like {spinner: false, anim: false}        
+        anim = typeof anim_params.anim == 'undefined' ? true : anim_params.anim;
+        show_spinner = typeof anim_params.spinner == 'undefined' ? true : anim_params.spinner;
+    }
+
     logo.each(function() {
         var logo = $(this),
             parent = logo.parent(),
@@ -782,7 +789,10 @@ function loadSpinner(logo, anim, cb) {
             return logo.replaceWith(App.Data.images[hash].clone());
         }
         spinner = $('<div class="img-spinner"></div>');
-        spinner.spinner();
+
+        if (show_spinner) 
+            spinner.spinner();
+
         logo.replaceWith(spinner);
         img = logo.clone();
         img.css('display','none');
