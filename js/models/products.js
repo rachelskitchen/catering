@@ -217,8 +217,21 @@ define(["backbone", 'childproducts'], function(Backbone) {
                             case 'OK':
                                 self.listenTo(child, 'change:active', self.update_active);
                                 data.data.forEach(function(el) {
+                                    var image = true;
+
                                     if(!inventory && el.product)
                                         el.product.stock_amount = 10;
+
+                                    // copy image url from parent if it is not present for child product
+                                    if(el.product && !el.product.image) {
+                                        el.product.image = self.get('image');
+                                        image = false;
+                                    }
+
+                                    // copy images if they are not present and `image` property is not assigned originally for child product
+                                    if(el.product && !image && Array.isArray(el.product.images) && el.product.images.length == 0)
+                                        el.product.images = self.get('images').slice();
+
                                     child.add_child(el);
                                 });
                                 def.resolve();
