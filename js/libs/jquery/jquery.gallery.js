@@ -41,8 +41,7 @@
             function onImageLoaded(image){
 
                 var li = $('<li style="font-size:' + App.Data.getSpinnerSize() + 'px"></li>'),
-                    helper = $('<span class="helper"></span>'),
-                    image;
+                    helper = $('<span class="helper"></span>');
 
                 li.append(helper);
                 li.append(image);
@@ -232,5 +231,5 @@
             }
 
         });
-    }
+    };
 })($);

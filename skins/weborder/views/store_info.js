@@ -35,7 +35,6 @@ define(["backbone", "factory", "generator", "store_info_view"], function(Backbon
                 animate: true,
                 circle: true
             });
-            loadSpinner(this.$('.about-image'));
             this.$('.about_content').contentarrow();
             return this;
         },

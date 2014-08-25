@@ -776,7 +776,7 @@ function loadSpinner(logo, anim_params, cb) {
         anim = typeof anim_params.anim == 'undefined' ? true : anim_params.anim;
         show_spinner = typeof anim_params.spinner == 'undefined' ? true : anim_params.spinner;
     }
-
+    var s;
     logo.each(function() {
         var logo = $(this),
             parent = logo.parent(),
@@ -811,8 +811,13 @@ function loadSpinner(logo, anim_params, cb) {
             typeof cb == 'function' && cb(logo);
             App.Data.log && App.Data.log.pushImageError(e.target.src);
         });
-        return spinner;
+        if (s == undefined) {
+            s = $(spinner);
+        } else {
+            s.add(spinner);
+        }
     });
+    return s;
 }
 
 function makeImageName(image) {
