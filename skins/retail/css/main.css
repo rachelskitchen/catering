@@ -188,7 +188,11 @@ footer {
     top: 0;
     text-align: left;
     line-height: 62px;
-    font-size: 12px;
+    font-size: 8px;
+}
+#header div.logo .ui-spinner {
+    left: 25px;
+    top: 32px;
 }
 #header .main ul.menu {
     width: 340px;
