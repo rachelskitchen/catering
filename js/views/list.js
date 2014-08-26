@@ -51,7 +51,7 @@ define(["backbone", "factory"], function(Backbone) {
             } else if(index == this.orderSort.length - 1) {
                 parent.append(view.el);
             } else {
-                this.$(parent).children(sortedEl + '[data-sort=' + this.orderSort[index + 1] + ']').first().before(view.el);
+                this.$(parent).children(sortedEl + '[data-sort="' + this.orderSort[index + 1] + '"]').first().before(view.el);
             }
         },
         initOrderSort: function() {

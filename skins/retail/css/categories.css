@@ -2,7 +2,7 @@
     position: relative;
     white-space: nowrap;
     height: 45px;
-    top: 70px;
+    top: 73px;
     z-index: 1;
     border-bottom-width: 1px;
     border-bottom-style: solid;
@@ -19,6 +19,7 @@
     right: 70px;
     overflow: hidden;
     top: 1px;
+    padding: 0 4px 0 3px;
 }
 #header .categories.hidden {
     opacity: 0;
@@ -51,6 +52,7 @@
 }
 #header .categories .tabs label {
     margin: 0;
+    border: none;
 }
 #header .categories .tabs span {
     display: inline-block;
@@ -60,8 +62,8 @@
     position: relative;
     overflow: hidden;
 }
-#header .categories .tabs input:checked + label span {
-    bottom: -3px;
+#header .categories .tabs input:checked:not(.slider-hidden) + label span {
+    bottom: -2px;
 }
 #header .categories .tabs span.first-line,
 #header .categories .tabs span.second-line,
@@ -71,25 +73,25 @@
     text-overflow: ellipsis;
 }
 #header .categories .tabs span.first-line {
-    top: -6px;
+    top: -7px;
 }
-#header .categories .tabs input:checked + label span.first-line {
-    top: -3px;
+#header .categories .tabs input:checked:not(.slider-hidden) + label span.first-line {
+    top: -5px;
 }
 #header .categories .tabs span.second-line {
     left: -120px;
-    top: 7px;
+    top: 6px;
 }
-#header .categories .tabs input:checked + label span.second-line {
-    top: 10px;
+#header .categories .tabs input:checked:not(.slider-hidden) + label span.second-line {
+    top: 8px;
 }
-#header .categories .tabs input:checked + label {
+#header .categories .tabs input:checked:not(.slider-hidden) + label {
     height: 38px;
     border-width: 0;
     z-index: 2;
-    bottom: 3px;
+    bottom: 2px;
 }
-#header .categories .tabs input:checked + label:before {
+#header .categories .tabs input:checked:not(.slider-hidden) + label:before {
     content: '';
     display: block;
     position: absolute;
@@ -102,7 +104,7 @@
     border-top-left-radius: 13px;
     border-top-right-radius: 13px;
 }
-#header .categories .tabs input:checked + label:after {
+#header .categories .tabs input:checked:not(.slider-hidden) + label:after {
     content: '';
     display: block;
     position: absolute;

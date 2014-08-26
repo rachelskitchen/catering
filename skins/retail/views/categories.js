@@ -151,6 +151,19 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         selectFirst: function() {
             if(!this.collection.parent_selected)
                 App.Views.SliderView.prototype.selectFirst.apply(this, arguments);
+        },
+        update_slider: function() {
+            App.Views.SliderView.prototype.update_slider.apply(this, arguments);
+            this.check_selected(this.slider_index, this.slider_index + this.slider_count - 1);
+        },
+        check_selected: function(start, end) {
+            var checked = this.$(':checked'),
+                index = this.$('input').toArray().indexOf(checked.get(0));
+            if((index < start || index > end) && index > -1) {
+                checked.addClass('slider-hidden');
+            } else {
+                checked.removeClass('slider-hidden');
+            }
         }
     });
 
