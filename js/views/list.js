@@ -39,6 +39,12 @@ define(["backbone", "factory"], function(Backbone) {
         addItem: function(view, parent, sort, sortedEl) {
             var index;
             sortedEl = sortedEl || '';
+            
+            if (sort == undefined) {
+                parent.append(view.el);
+                return;
+            } 
+            
             this.orderSort.push(sort);
             this.orderSort.sort(function(x, y) {
                 x = parseFloat(x, 10);
@@ -47,7 +53,7 @@ define(["backbone", "factory"], function(Backbone) {
             });
             index = this.orderSort.indexOf(sort);
             if(index == 0) {
-                parent.append(view.el);
+                parent.prepend(view.el);
             } else if(index == this.orderSort.length - 1) {
                 parent.append(view.el);
             } else {

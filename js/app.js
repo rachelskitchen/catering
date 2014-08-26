@@ -202,11 +202,5 @@
         $.fn.spinner = function() {
             this.each(addSpinner);
         };
-
-        $.fn.stopSpinner = function() {
-            this.each(function(){
-                $(".ui-spinner", $(this)).remove();
-            });
-        };
     }
 })();
