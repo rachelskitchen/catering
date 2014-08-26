@@ -163,7 +163,7 @@ define(['backbone', 'factory'], function(Backbone) {
             myorder.deliveryItem.get("product").set({"price": price, "name": name});
         },
         changeState: function(e) {
-            this.model.originalState = e.target.value;
+            this.model.state = this.model.originalState = e.target.value;
             this.trigger('update_address');                       
         },
         focus: function(event){
