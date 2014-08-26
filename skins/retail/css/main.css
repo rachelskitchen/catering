@@ -330,7 +330,7 @@ footer {
     height: 21px;
     cursor: pointer;
 }
-#cart .main .total, #cart .main .currency_symbol {
+#cart .main .total, #cart .subtotal .currency_symbol {
     font-size: 14px;
     font-weight: 700;
 }
@@ -564,6 +564,9 @@ section.maintenance p {
 #cart .order-items .cost, #cart .order-items .attrs,
 .confirmPayCard .order-items .cost, .confirmPayCard .order-items .attrs {
     font-size: 12px;
+}
+.order-items .currency_symbol {
+    margin-right: -3px;
 }
 #cart .order-items .btns {
     width: 56px;
