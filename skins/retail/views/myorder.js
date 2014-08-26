@@ -124,6 +124,12 @@ define(["backbone", "myorder_view"], function(Backbone) {
     });
 
     App.Views.MyOrderView.MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
+        render: function() {
+            App.Views.CoreMyOrderView.CoreMyOrderItemView.prototype.render.apply(this, arguments);
+            // need hide logo for bag charge (bug Bug 12073)
+            this.options.collection.bagChargeItem === this.model && this.$('img.logo').hide();
+            return this;
+        },
         editItem: function(e) {
             e.preventDefault();
             var model = this.model;
