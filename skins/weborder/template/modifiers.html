@@ -16,7 +16,9 @@
                 (<span class="plus">+</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>)
             </span>
         <% } %>
+        <% if (!isInventoryMatrix) { %>
         <span class="free">(<span class="value"></span>)</span>
+        <% } %>
     </label>
 </script>
 
