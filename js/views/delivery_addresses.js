@@ -21,6 +21,8 @@
  */
 
 define(['backbone', 'factory'], function(Backbone) {
+    'use strict';
+
 
     App.Views.DeliveryAddressesView = App.Views.FactoryView.extend({
         initialize: function() {
@@ -142,7 +144,7 @@ define(['backbone', 'factory'], function(Backbone) {
             this.trigger('update_address');
         },
         changeShipping: function(e) {
-            var price,
+            var price, name,
                 value = parseInt(e.currentTarget.value),
                 myorder = App.Data.myorder,
                 checkout = myorder.checkout,

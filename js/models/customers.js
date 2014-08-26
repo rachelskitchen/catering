@@ -191,7 +191,7 @@ define(["backbone", "geopoint"], function(Backbone) {
             this.set("load_shipping_status", "pending", {silent: true});
             this.trigger("change:shipping_services");
 
-           var data_json = JSON.stringify(data);
+            var data_json = JSON.stringify(data);
             $.ajax({
                 type: "POST",
                 url: App.Data.settings.get("host") + "/weborders/shipping_options/",
