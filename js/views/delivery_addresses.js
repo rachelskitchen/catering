@@ -210,7 +210,7 @@ function getCountries(){
         "AL":"Albania",
         "DZ":"Algeria",
         "AS":"American Samoa",
-        "AD":"AndorrA",
+        "AD":"Andorra",
         "AO":"Angola",
         "AI":"Anguilla",
         "AQ":"Antarctica",
@@ -307,7 +307,7 @@ function getCountries(){
         "IS":"Iceland",
         "IN":"India",
         "ID":"Indonesia",
-        "IR":"Iran, Islamic Republic Of",
+        "IR":"Iran, Islamic Republic of",
         "IQ":"Iraq",
         "IE":"Ireland",
         "IM":"Isle of Man",
@@ -320,11 +320,11 @@ function getCountries(){
         "KZ":"Kazakhstan",
         "KE":"Kenya",
         "KI":"Kiribati",
-        "KP":"Korea, Democratic People'S Republic of",
+        "KP":"Korea, Democratic People's Republic of",
         "KR":"Korea, Republic of",
         "KW":"Kuwait",
         "KG":"Kyrgyzstan",
-        "LA":"Lao People'S Democratic Republic",
+        "LA":"Lao People's Democratic Republic",
         "LV":"Latvia",
         "LB":"Lebanon",
         "LS":"Lesotho",
@@ -448,7 +448,7 @@ function getCountries(){
         "YE":"Yemen",
         "ZM":"Zambia",
         "ZW":"Zimbabwe"
-    }
+    };
 }
 
     function getStates() {
