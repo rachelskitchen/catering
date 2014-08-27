@@ -81,7 +81,7 @@
     width: 204px;
     height: 272px;
     text-align: center;
-    font-size: 7px;
+    font-size: 0px;
     line-height: 272px;
     overflow: hidden;
 }
@@ -91,12 +91,12 @@
     max-width: 100%;
     max-height: 100%;
     vertical-align: middle;
-    margin-top: -2px;
 }
 .product_image img.safari {
     margin-top: -3px;
 }
 .product_image .img-spinner {
+    font-size: 7px;
     height: 100%;
 }
 .product_info dl {
@@ -126,6 +126,9 @@
     margin: 5px;
     cursor: pointer;
     position: relative;
+    font-size: 0px;
+}
+.product_info .images .img-spinner {
     font-size: 10px;
 }
 .product_info .images .space {
