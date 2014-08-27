@@ -78,11 +78,11 @@
     font-size: 3px;
 }
 .product_image {
-    width: 205px;
-    height: 273px;
+    width: 204px;
+    height: 272px;
     text-align: center;
     font-size: 7px;
-    line-height: 270px;
+    line-height: 272px;
     overflow: hidden;
 }
 .product_image img {
