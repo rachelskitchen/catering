@@ -119,9 +119,9 @@
 .product_info .images li {
     display: inline-block;
     vertical-align: top;
-    width: 53px;
-    height: 63px;
-    line-height: 63px;
+    width: 48px;
+    height: 64px;
+    line-height: 64px;
     text-align: center;
     margin: 5px;
     cursor: pointer;
