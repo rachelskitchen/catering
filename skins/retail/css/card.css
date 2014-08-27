@@ -61,6 +61,6 @@
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
     #credit-card select.month {
-        margin-right: 0 0 0 7px !important;
+        margin: 0 0 0 7px !important;
     }
 }
