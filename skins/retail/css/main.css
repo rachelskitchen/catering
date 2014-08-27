@@ -551,11 +551,15 @@ section.maintenance p {
 }
 #cart .order-items h3, .confirmPayCard .order-items h3 {
     font-size: inherit;
-    width: 245px;
+    width: 170px;
     line-height: 15px;
+    margin-left: 75px;
 }
-#cart .checkout .order-items h3, .confirmPayCard .order-items h3 {
-    width: 100%;
+#cart .checkout .order-items h3 {
+    width: 308px;
+}
+.confirmPayCard .order-items h3 {
+    width: 270px;
 }
 #cart .order-items h3 .name, .confirmPayCard .order-items h3 .name {
     text-transform: uppercase;
@@ -564,6 +568,7 @@ section.maintenance p {
 #cart .order-items .cost, #cart .order-items .attrs,
 .confirmPayCard .order-items .cost, .confirmPayCard .order-items .attrs {
     font-size: 12px;
+    margin-left: 75px;
 }
 .order-items .currency_symbol {
     margin-right: -3px;
@@ -578,6 +583,7 @@ section.maintenance p {
     width: auto;
     position: static;
     margin-top: 5px;
+    margin-left: 75px;
 }
 #cart .order-items .btns > span, .confirmPayCard .order-items .btns > span {
     display: inline-block;
