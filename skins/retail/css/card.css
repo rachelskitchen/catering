@@ -58,4 +58,9 @@
     margin-right: 10px;
     display: inline-block;
 }
-
+/* for tablets */
+@media only screen and (max-device-width: 949px) {
+    #credit-card select.month {
+        margin-right: 0!important;
+    }
+}

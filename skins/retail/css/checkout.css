@@ -180,4 +180,7 @@
     #content div.specials > label {
         text-indent: 50px !important;
     }
+    #content > .checkout div.select {
+        left: -15px !important;
+    }
 }
