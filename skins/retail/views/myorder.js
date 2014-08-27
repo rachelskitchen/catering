@@ -71,9 +71,9 @@ define(["backbone", "myorder_view"], function(Backbone) {
                     if (self.options.action === 'add') {
                         App.Data.myorder.add(self.model);
                     } else {
-                        var index = App.Data.myorder.indexOf(self.model) - 1;
-                        App.Data.myorder.remove(self.options.real);
+                        var index = App.Data.myorder.indexOf(self.options.real) - 1;
                         App.Data.myorder.add(self.model, {at: index});
+                        App.Data.myorder.remove(self.options.real);
                     }
 
                     $('#popup .cancel').trigger('click');
