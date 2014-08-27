@@ -39,6 +39,7 @@
 #content > .checkout select {
     width: 100%;
     max-width: 100%;
+    height: 31px;
 }
 #content > .checkout div.select {
     display: inline-block;
@@ -46,6 +47,7 @@
     position: relative;
     left: -22px;
     background: none;
+    top: -1px;
 }
 #content > .checkout div.select.shipping {
     display: inline-block;
@@ -120,10 +122,6 @@
     bottom: 0;
     left: 0;
     right: 0;
-}
-#content > .checkout .delivery_address {
-    margin-bottom: 10px;
-    margin-top: 12px;
 }
 /* Pay card / PayPal selection popup */
 #pay_popup {
