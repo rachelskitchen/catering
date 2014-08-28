@@ -105,6 +105,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         mod: 'confirm',
         events: {
             "click #creditCard": "creditCard",
+            "click #creditCardRedirect": "creditCard",
             "click #pay": "pay",
             "click #payPaypal": "pay",
             "click #cash": "cash"
