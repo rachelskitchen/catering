@@ -555,8 +555,8 @@ section.maintenance p {
     line-height: 15px;
     margin-left: 75px;
 }
-#cart .checkout .order-items h3 {
-   width: 308px;
+#cart .main .order-items h3 {
+   width: 170px;
 }
 #cart .order-items h3 .name, .confirmPayCard .order-items h3 .name {
     text-transform: uppercase;
@@ -644,18 +644,12 @@ section.maintenance p {
     body {
         min-width: 748px;
     }
-    #cart .checkout .order-items h3 {
-        width: 134px !important;
-    }
 }
 @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
     html.ipad {
         height: 672px !important;
         position: absolute;
         top: 0;
-    }
-    #cart .checkout .order-items h3 {
-        width: 224px !important;
     }
 }
 
