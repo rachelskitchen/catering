@@ -37,10 +37,18 @@ define(["backbone", "factory", "instructions_view"], function(Backbone) {
             'change .instructions': 'change_special'
         },
         position: function() {
-            if (this.model.get_product().get('is_gift')) {
+            var product = this.model.get_product(),
+                addBtn = this.$('.add_instructions');
+            if (product.get('is_gift')) {
                 this.$el.addClass('is_gift');
             } else {
                 this.$el.removeClass('is_gift');
+            }
+
+            if(product.isParent()) {
+                addBtn.addClass('parent-product');
+            } else {
+                addBtn.removeClass('parent-product');
             }
         },
         update_show: function() {

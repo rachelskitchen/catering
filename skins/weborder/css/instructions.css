@@ -35,6 +35,10 @@
     cursor: pointer;
 }
 
+.product_instructions .add_instructions.parent-product {
+    left: 22px;
+}
+
 .product_instructions.is_gift .add_instructions {
     left: 20px;
 }

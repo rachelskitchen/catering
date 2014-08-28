@@ -50,6 +50,12 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
                 select.removeClass('disabled');
                 select.prop('disabled', false);
             }
+
+            if(product.isParent()) {
+                this.$el.hide();
+            } else {
+                this.$el.show();
+            }
         },
         change: function(e) {
             this.model.set('quantity', e.target.value * 1);
