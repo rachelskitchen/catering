@@ -246,7 +246,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 order.set(key, value, {silent: true });
             }
             order.trigger('change', order, {clone: true});
-            order.total = this.total.clone();
             return order;
         },
         update: function(newModel) {
@@ -562,6 +561,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 orders.add(order.clone()) ;
             });
             orders.checkout.set('dining_option', this.checkout.get('dining_option'));
+            orders.total = this.total.clone();
             return orders;
         },
         /**
