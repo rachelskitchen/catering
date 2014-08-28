@@ -6,16 +6,16 @@
     <h3 class="s<%= price_length %>">
         <% if(sold_by_weight) { %>
             <span class="name"><%= sizeModifier %> <%= name %></span>
-        <% } else { %>       
+        <% } else { %>
             <span class="name"><%= quantity %>x <%= sizeModifier %> <%= name %></span>
         <% } %>
             <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
-            <span class="price"><%= price_sum %></span>
+            <span class="price"><%= initial_price %></span>
         </span>
     </h3>
     <ul>
-        <% if(sold_by_weight) { %> 
+        <% if(sold_by_weight) { %>
         <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
         <% } %>
         <% if(is_gift) { %>
