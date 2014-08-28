@@ -930,6 +930,9 @@ function clearQueryString(isNotHash) {
     qStr = qStr.replace(/&?PayerID=[^&]*/, '');
     //Remove USAePay params
     qStr = qStr.replace(/&?UM[^=]*=[^&]*/g, '');
+    //Remove Mercury params
+    qStr = qStr.replace(/(&amp;&)?PaymentID=[^&]*/, '');
+    qStr = qStr.replace(/&?ReturnCode=[^&]*/, '');
 
     var url = host + path + qStr + hash;
     window.history.replaceState('Return','', url);
