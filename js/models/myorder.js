@@ -246,6 +246,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 order.set(key, value, {silent: true });
             }
             order.trigger('change', order, {clone: true});
+            orders.total = this.total.clone();
             return order;
         },
         update: function(newModel) {

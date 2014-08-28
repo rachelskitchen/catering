@@ -57,7 +57,7 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
                                model.get('product').get('isDeliveryItem') === true;
                     });
                 if (deliveryItem)
-                    App.Data.myorder.onModelChange(deliveryItem); 
+                    App.Data.myorder.onModelChange(deliveryItem);
             });
         },
         /**
@@ -174,6 +174,16 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
                 tax: parseFloat(this.get_tax()),
                 tip: parseFloat(this.get_tip())
             };
+        },
+        clone: function() {
+            var total = new App.Models.Total();
+            for (var key in this.attributes) {
+                var value = this.get(key);
+                if (value && value.clone) { value = value.clone(); }
+                total.set(key, value, {silent : true });
+            }
+            total.trigger('change', total, {clone: true});
+            return total;
         }
     });
 });
