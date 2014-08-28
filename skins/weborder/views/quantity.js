@@ -43,7 +43,7 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
                 }
             }
 
-            if (stock_amount === 1) {
+            if (stock_amount === 1 || product.isParent()) {
                 select.addClass('disabled');
                 select.prop('disabled', true);
             } else {

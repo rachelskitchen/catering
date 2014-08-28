@@ -30,7 +30,8 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
         },
         hide_show: function() {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.hide_show.apply(this, arguments);
-            if (this.model.get_product().get('stock_amount') === 1) {
+            var product = this.model.get_product();
+            if (product.get('stock_amount') === 1 || product.isParent()) {
                 this.$('.decrease').addClass('disabled');
                 this.$('.increase').addClass('disabled');
             } else {
@@ -38,12 +39,16 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
                 this.$('.increase').removeClass('disabled');
             }
         },
-        increase: function() {
+        increase: function(event) {
+            if($(event.target).hasClass('disabled'))
+                return;
             var q = this.model.get('quantity'),
                 stock_amount = this.model.get_product().get('stock_amount');
             this.model.set('quantity', ++q <= stock_amount ? q : stock_amount);
         },
-        decrease: function() {
+        decrease: function(event) {
+            if($(event.target).hasClass('disabled'))
+                return;
             var q = this.model.get('quantity');
             this.model.set('quantity', --q >= 1 ? q : 1);
         },
