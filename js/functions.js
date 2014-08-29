@@ -140,6 +140,15 @@ MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.PROCESS_CARD_INFO_FAIL] = "Process Ca
 MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_CC_FAIL] = "Credit Card failed Mod10 check multiple times";
 MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_SERVER_SIDE_FAILURE] = "Possible tampering suspected";
 MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATE_NAME_FAIL] = "Invalid data entered in cardholder name field";
+MERCURY_RETURN_MESSAGE_DEFAULT = "Unknown error";
+
+function getMercuryErrorMessage(returnCode) {
+	var msg = MERCURY_RETURN_MESSAGE[returnCode];
+	if (!msg) {
+		msg = MERCURY_RETURN_MESSAGE_DEFAULT;
+	}
+	return msg;
+}
 
 
 /**

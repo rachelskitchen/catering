@@ -1172,7 +1172,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                             } else if (payment.mercury) {
                                 var returnCode = Number(get_parameters.ReturnCode);
                                 if (returnCode != MERCURY_RETURN_CODE.SUCCESS) {
-                                    myorder.paymentResponse = {status: 'error', errorMsg: MERCURY_RETURN_MESSAGE[returnCode]};
+                                    myorder.paymentResponse = {status: 'error', errorMsg: getMercuryErrorMessage(returnCode)};
                                     myorder.trigger('paymentResponse');
                                     return;
                                 }
@@ -1184,7 +1184,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                             } else if (payment.usaepay) {
                                 myorder.paymentResponse = {status: 'error', errorMsg: get_parameters.UMerror};
                             } else if (payment.mercury) {
-                                myorder.paymentResponse = {status: 'error', errorMsg: MERCURY_RETURN_MESSAGE[Number(get_parameters.ReturnCode)]};
+                                myorder.paymentResponse = {status: 'error', errorMsg: getMercuryErrorMessage(Number(get_parameters.ReturnCode))};
                             }
                             myorder.trigger('paymentResponse');
                             return;
