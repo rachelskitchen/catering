@@ -30,10 +30,12 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
         },
         hide_show: function() {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.hide_show.apply(this, arguments);
-            var product = this.model.get_product();
+            var product = this.model.get_product(),
+                disallowNegativeInventory = App.Data.settings.get('settings_system').cannot_order_with_empty_inventory;
             if (product.get('stock_amount') === 1 || product.isParent()) {
                 this.$('.decrease').addClass('disabled');
                 this.$('.increase').addClass('disabled');
+                disallowNegativeInventory && this.model.set('quantity', 1); // bug 13494
             } else {
                 this.$('.decrease').removeClass('disabled');
                 this.$('.increase').removeClass('disabled');
