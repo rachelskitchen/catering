@@ -81,7 +81,7 @@ define(["backbone"], function(Backbone) {
         update_prices: function(max_price) {
             var price = Math.min(this.get('price'), max_price);
             this.set('order_price', price, {silent: true});
-            return max_price - price;
+            return max_price > price ? max_price - price : 0;
         },
         isFree: function() {
             return typeof this.get('free_amount') != 'undefined';
@@ -275,11 +275,14 @@ define(["backbone"], function(Backbone) {
         isSpecial: function() {
             return this.get('admin_modifier') && this.get('admin_mod_key') === 'SPECIAL';
         },
+        isSize: function() {
+            return this.get('admin_modifier') && this.get('admin_mod_key') === 'SIZE';
+        },
         /**
          * update modifiers price due to max feature
          */
         update_prices: function(max_price) {
-            if (this.isSpecial()) {
+            if (this.isSpecial() || this.isSize()) {
                 return max_price;
             } else {
                 return this.get('modifiers').update_prices(max_price);

@@ -113,9 +113,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          * update modifiers price due to max feature
          */
         update_prices: function() {
-            var max_price = this.get_product().get('max_price');
+            var max_price = this.get_product().get('max_price'),
+                initial_price = this.get_initial_price();
             if (max_price) {
-                this.get_modifiers().update_prices(max_price-this.get_initial_price());
+                this.get_modifiers().update_prices(max_price > initial_price ? max_price - initial_price : 0);
             }
         },
         /**
