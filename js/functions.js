@@ -961,7 +961,10 @@ function clearQueryString(isNotHash) {
     //Remove USAePay params
     qStr = qStr.replace(/&?UM[^=]*=[^&]*/g, '');
     //Remove Mercury params
-    qStr = qStr.replace(/(&amp;&)?PaymentID=[^&]*/, '');
+    //Mercury replaces "&" in original url with "&amp;"
+    qStr = qStr.replace(/&amp;/g, '&');
+    qStr = qStr.replace(/&&/g, '&');
+    qStr = qStr.replace(/&?PaymentID=[^&]*/, '');
     qStr = qStr.replace(/&?ReturnCode=[^&]*/, '');
 
     var url = host + path + qStr + hash;
