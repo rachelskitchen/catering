@@ -218,16 +218,25 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         get_modelsum: function() {
             var sold_by_weight = this.get("product") ?  this.get("product").get('sold_by_weight') : false,
                 weight = this.get('weight'),
-                productSum = this.get_initial_price();
+                productSum = this.get_initial_price(),
+                product = this.get_product(),
+                max_price = product && product.get('max_price'),
+                totalItem;
 
                 if (sold_by_weight && weight) {
                     productSum *= weight;
                 }
 
             var modifiers = this.get_modifiers(),
-                modifiersSum = modifiers ? modifiers.get_sum() : 0;
+                modifiersSum = modifiers ? modifiers.get_sum() : 0,
+                hasModifiers = !!modifiers && modifiers.some(function(modifier) {
+                    return !modifier.isSpecial() && !modifier.isSize();
+                });
 
-            return (productSum + modifiersSum) * this.get('quantity');
+            totalItem = productSum + modifiersSum;
+
+            // subtotal should be less or equal max_price if any not admin modifier is attached to product
+            return (hasModifiers && typeof max_price == 'number' && max_price < totalItem ? max_price : totalItem) * this.get('quantity');
         },
         get_special: function() {
             var settings = App.Data.settings.get('settings_system');
