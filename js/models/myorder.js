@@ -235,7 +235,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             totalItem = productSum + modifiersSum;
 
-            // subtotal should be less or equal max_price if any not admin modifier is attached to product
+            // subtotal should be less or equal max_price if any no admin modifier is attached to product
+            // Test Case 7047
             return (hasModifiers && typeof max_price == 'number' && max_price < totalItem ? max_price : totalItem) * this.get('quantity');
         },
         get_special: function() {
