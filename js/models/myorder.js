@@ -229,8 +229,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             var modifiers = this.get_modifiers(),
                 modifiersSum = modifiers ? modifiers.get_sum() : 0,
-                hasModifiers = !!modifiers && modifiers.some(function(modifier) {
-                    return !modifier.isSpecial() && !modifier.isSize();
+                hasModifiers = !!modifiers && modifiers.get_modifierList().some(function(modifier) {
+                    return modifier.get('selected');
                 });
 
             totalItem = productSum + modifiersSum;
