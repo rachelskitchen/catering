@@ -235,8 +235,12 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                     self.addItem(App.Data.products[id], App.Data.categories.get(id));
                 });
                 self.trigger('loadCompleted');
+                self.status = 'loadCompleted';
             });
-            setTimeout(this.trigger.bind(this, 'loadStarted'), 0);
+            setTimeout(function() {
+                self.trigger('loadStarted');
+                self.status = 'loadStarted';
+            }, 0);
         },
         addItem: function(products, category) {
             var view = App.Views.GeneratorView.create('Categories', {
@@ -261,6 +265,9 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             this.$('.products_spinner').css('position', 'absolute').spinner();
         },
         update_table: function(model, value) {
+            this.subViews.forEach(function(view) {
+                this.stopListening(view);
+            }, this);
             this.subViews.removeFromDOMTree();
             var view = App.Views.GeneratorView.create('Categories', {
                 el: $("<ul class='categories_table'></ul>"),
@@ -272,13 +279,18 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             this.$(".categories_products_wrapper").scrollTop(0);
             this.listenTo(view, 'loadStarted', this.showSpinner, this);
             this.listenTo(view, 'loadCompleted', this.hideSpinner, this);
+            if(view.status == 'loadCompleted') {
+                this.hideSpinner(0);
+            } else if(view.status == 'loadStarted') {
+                this.showSpinner();
+            }
         },
-        showSpinner: function() {console.log('started');
+        showSpinner: function() {
             this.$('.products_spinner').addClass('ui-visible');
         },
-        hideSpinner: function() {console.log('completed');
+        hideSpinner: function(delay) {
             var spinner = this.$('.products_spinner');
-            setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), 500);
+            setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), delay >= 0 ? delay : 500);
         },
         remove: function() {
             this.$('.categories_products_wrapper').contentarrow('destroy');

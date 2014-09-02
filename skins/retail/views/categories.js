@@ -429,10 +429,14 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 });
 
                 self.addItem(new App.Collections.Products(products), category, parent, ids);
-                categories.trigger('onLoadProductsComplete');
+                categories.trigger('onLoadProductsComplete', ids);
                 self.loadDone = true;
+                self.status = 'onLoadProductsComplete';
             });
-            !self.loadDone && setTimeout(categories.trigger.bind(categories, 'onLoadProductsStarted'), 0);
+            !self.loadDone && setTimeout(function() {
+                categories.trigger('onLoadProductsStarted');
+                self.status = 'onLoadProductsStarted';
+            }, 0);
         }
     });
 
@@ -505,13 +509,20 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
 
             if(App.Data.router.restore && App.Data.router.restore.state() == 'resolved')
                 this.restoreSearchState();
+
+            if(view.status == 'onLoadProductsComplete')
+                this.hideSpinner(this.collection.selected, 0);
+            else if(view.status == 'onLoadProductsStarted')
+                this.showSpinner();
         },
         showSpinner: function() {
             this.$('.products_spinner').addClass('ui-visible');
         },
-        hideSpinner: function() {
+        hideSpinner: function(ids, delay) {
+            if(Array.isArray(ids) && Array.isArray(this.collection.selected) && ids.join() != this.collection.selected.join())
+                return;
             var spinner = this.$('.products_spinner');
-            setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), 500);
+            setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), delay >= 0 ? delay : 500);
         },
         remove: function() {
             this.$('.categories_products_wrapper').contentarrow('destroy');
