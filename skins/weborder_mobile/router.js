@@ -126,11 +126,15 @@ define(["backbone", "main_router"], function(Backbone) {
                 return window.location.href = getData('directoryReferrer').referrer;
         },
         index: function() {
+            var self = this;
             this.prepare('index', function() {
                 // load content block for categories
                 if (!App.Data.categories) {
                     App.Data.categories = new App.Collections.Categories();
-                    App.Data.categories.get_categories();
+                    App.Data.categories.loadData = App.Data.categories.get_categories();
+                    App.Data.categories.loadData.then(function() {
+                        self.change_page();
+                    });
                 }
 
                 var header = {page_title: 'Menu'};
@@ -158,7 +162,9 @@ define(["backbone", "main_router"], function(Backbone) {
                     ]
                 });
 
-                this.change_page();
+                if(App.Data.categories.loadData.state() == 'resolved')
+                    this.change_page();
+
                 App.Data.settings.load_geoloc();
             });
         },
