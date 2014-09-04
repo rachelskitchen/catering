@@ -221,6 +221,7 @@
     width: 245px;
     overflow: hidden;
     text-indent: 300px;
+    height: 46px !important;
 }
 .btn.paypal:before {
     display: none;
