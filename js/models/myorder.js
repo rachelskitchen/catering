@@ -862,7 +862,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if (check_customer.status === 'ERROR') {
                     errorMsg = check_customer.errorMsg;
                 } else if (check_customer.status === 'ERROR_EMPTY_FIELDS') {
-                    fields = fields.concat(check_customer.errorList);
+                    fields.splice.apply(fields, [0, 0].concat(check_customer.errorList));
                 }
             }
 
