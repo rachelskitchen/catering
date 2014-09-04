@@ -30,7 +30,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         mod: 'item',
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.collection, 'change:active', this.show_hide);
+            this.listenTo(this.collection, 'change:active', this.show_hide, this);
             this.show_hide();
         },
         render: function() {
@@ -68,11 +68,14 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             this.listenTo(this.collection, 'add', this.addItem, this);
             $(window).resize(this.create_slider.bind(this));
             this.listenTo(this.model, "loadCompleted", this.create_slider.bind(this));
+            this.listenTo(this.model, 'onMenu', selectFirstItem, this);
 
             var self = this;
-            this.options.loaded.then(function() {
+            this.options.loaded.then(selectFirstItem);
+
+            function selectFirstItem() {
                 self.$('input').first().trigger('change');
-            });
+            }
         },
         events: {
             "change input": "change",
