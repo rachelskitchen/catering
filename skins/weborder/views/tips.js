@@ -36,8 +36,9 @@ define(['tips_view'], function() {
                 model = this.model.toJSON();
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
             
-            this.$el.html(this.template(model));
+            this.$el.html(this.template(model));            
             inputTypeNumberMask(this.$('.tipAmount'), /^\d{0,5}\.{0,1}\d{0,2}$/, '0.00');
+            this.setBtnSelected(model.type ? (model.amount ? model.percent : "Other") : "None");
             return this;
         },
         events: {
@@ -52,16 +53,25 @@ define(['tips_view'], function() {
                             'amount': isNaN(amount) || amount_str == "None" ? false : true });            
             if (amount) {
                 this.model.set('percent', amount);
-            }                        
+            }                       
             this.setSum();
+            this.setBtnSelected(amount_str);           
+        },
+        setBtnSelected: function(amount_str) {
+            //this is for animation works after template rendering
+            setTimeout( (function() {
+                this.$('.btn').removeClass('selected');
+                $('[data-amount='+amount_str+']').addClass('selected');
+            }).bind(this), 0);
         },
         setSum: function() {
             var amount = this.$('.tipAmount');
             if (amount.attr('disabled')) {
                 var tip = round_monetary_currency(App.Data.myorder.total.get_tip());
-                this.model.set('sum', tip*1);
+                amount.val(tip);
+                this.model.set('sum', tip*1, {silent: true});
             } else {
-                this.model.set('sum', amount.val()*1);
+                this.model.set('sum', amount.val()*1, {silent: true});
             }
         }
     });
