@@ -862,7 +862,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if (check_customer.status === 'ERROR') {
                     errorMsg = check_customer.errorMsg;
                 } else if (check_customer.status === 'ERROR_EMPTY_FIELDS') {
-                    fields.splice.apply(fields, [0, 0].concat(check_customer.errorList));
+                    if(App.Skins.WEBORDER == App.skin || App.Skins.WEBORDER_MOBILE == App.skin) {
+                        fields.splice.apply(fields, [0, 0].concat(check_customer.errorList));
+                    } else {
+                        fields = fields.concat(check_customer.errorList);
+                    }
                 }
             }
 
