@@ -332,6 +332,10 @@ footer {
     right: 0;
     height: 40px;
 }
+#cart .btn.paypal {
+    left: 50%;
+    margin-left: -122px;
+}
 .btn:before {
     content: '';
     display: block;

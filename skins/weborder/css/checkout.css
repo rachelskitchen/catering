@@ -215,12 +215,14 @@
     border-radius: 25px;
     margin: 0 auto 20px;
 }
-#pay_popup .btn.paypal {
+.btn.paypal {
     border: none;
     height: 48px;
     width: 245px;
+    overflow: hidden;
+    text-indent: 300px;
 }
-#pay_popup .btn.paypal:before {
+.btn.paypal:before {
     display: none;
 }
 /* for tablets */
