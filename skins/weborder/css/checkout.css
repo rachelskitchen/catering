@@ -120,6 +120,9 @@
     cursor: pointer;
     margin-right: 10px;
 }
+#content > .checkout .tips .btn.disabled {
+    cursor: default;
+}
 #content > .checkout .tips .btn:after, #content > .checkout .tips .btn:before {
     display: none;
 }
