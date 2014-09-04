@@ -27,7 +27,7 @@
     top: 10px;
 }
 #content > .checkout .tipBlock {
-    height: 145px;
+    height: 65px;
 }
 #content > .checkout select {
     width: 100%;
@@ -72,24 +72,28 @@
     float: left;
 }
 #content > .checkout div.tips .number {
+    display: inline-block;
+    position: absolute;
     height: 50px;
-    width: 110px;
-    position: relative;
-    top: -10px;
-    left: 25px;
+    top: 1px;
+    left: 300px;
+    right: 2px;
     text-indent: 0 !important;
+}
+#content > .checkout  .tip-label {
+    margin-top: 20px;
 }
 #content > .checkout div.tips .currency_sym {
     display: inline-block;
     position: relative;
-    top: 6px;
+    top: 2px;
 }
 #content > .checkout div.tips .input_beauty {
-    position: relative;
+    position: absolute;
     height: 28px;
-    width: 45px;
     display: inline-block;
-    left: 2px;
+    left: 0px;
+    right: 0px;
     text-indent: 0;
 }
 #content > .checkout ul.tips > li:nth-child(1) {

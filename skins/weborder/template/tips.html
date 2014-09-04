@@ -1,35 +1,16 @@
 <script type="text/template" id="tips_main-template">
-    <div>
-        <label><span class="bold">Tip:</span></label>
+        <label class="tip-label"><span class="bold">Add a Tip:</span></label>
         <div class="tips">
-            <ul class="tips <% if(isFirefox) { %>firefox<% } %>">
-                <li>
-                    <label class="radio">
-                        <input type="radio" name="tips" class="tipCash"  value="0">
-                        <span class="pseudo-radio"></span>
-                        <span>Tip in Cash</span>
-                    </label>
-                </li>
-                <li>
-                    <label class="radio on-credit-card">
-                        <input type="radio" name="tips" class="tipCreditCard" value="1">
-                        <span class="pseudo-radio"></span>
-                        <span class="credit">Tip on Credit Card <span class="line">or choose an amount...</span></span>
-                    </label>
-                    <label class="number">
-                        <div class="currency_sym"> <span> <%=currency_symbol%> </span> </div>
-                        <div class="input_beauty animation">
-                            <input type="text" class="amount tipAmount animation <% if(iPad) print('ipad') %>" value="0.00">
-                        </div>
-                    </label>
-                </li>
-                <li>
-                    <span class="btn animation unselectable" data-amount="10">10%</span>
-                    <span class="btn animation unselectable" data-amount="15">15%</span>
-                    <span class="btn animation unselectable" data-amount="20">20%</span>
-                    <span class="btn animation unselectable" data-amount="other">Other</span>
-                </li>
-            </ul>
-        </div>
+            <span class="btn animation <% if (!type) print('selected') %>" data-amount="None">None</span>
+            <span class="btn animation <% if (type && amount && percent == 10) print('selected') %>" data-amount="10">10%</span>
+            <span class="btn animation <% if (type && amount && percent == 15) print('selected') %>" data-amount="15">15%</span>
+            <span class="btn animation <% if (type && amount && percent == 20) print('selected') %>" data-amount="20">20%</span>
+            <span class="btn animation <% if (type && !amount) print('selected') %>" data-amount="other">Other</span>
+            <span class="currency_sym"> <span> <%=currency_symbol%> </span> </span>
+            <div class="number">
+                <div class="input_beauty animation <% if (!type || amount) print('disabled')%>">
+                    <input type="text" <% if (!type || amount) print('disabled') %> class="amount tipAmount animation <% if(iPad) print('ipad') %>" value='<% print(sum.toFixed(2)) %>'>
+                </div>
+            </div>
     </div>
 </script>

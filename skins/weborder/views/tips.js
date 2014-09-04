@@ -23,22 +23,46 @@
 define(['tips_view'], function() {
     'use strict';
 
-    App.Views.TipsView.TipsMainView = App.Views.CoreTipsView.CoreTipsMainView.extend({
-        render: function() {
+    App.Views.TipsView.TipsMainView = App.Views.FactoryView.extend({  
+        name: 'tips',
+        mod: 'main',
+        initialize: function() {
             this.model.set('iPad', /ipad/i.test(window.navigator.userAgent));
-            return App.Views.CoreTipsView.CoreTipsMainView.prototype.render.apply(this, arguments);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);          
+            this.listenTo(this.model, 'change', this.render, this);
         },
-        setType: function(e) {
-            App.Views.CoreTipsView.CoreTipsMainView.prototype.setType.apply(this, arguments);
-            this.$('.input_beauty').addClass('disabled');
+        render: function() {
+            var self = this,
+                model = this.model.toJSON();
+            model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
+            
+            this.$el.html(this.template(model));
+            inputTypeNumberMask(this.$('.tipAmount'), /^\d{0,5}\.{0,1}\d{0,2}$/, '0.00');
+            return this;
+        },
+        events: {
+            'click .btn': 'setAmount',
+            'change .tipAmount': 'setSum'
         },
         setAmount: function(e) {
-            var input = this.$('.input_beauty');
-            App.Views.CoreTipsView.CoreTipsMainView.prototype.setAmount.apply(this, arguments);
-            if(isNaN(parseInt($(e.target).attr('data-amount'), 10)) && this.model.get('type'))
-                input.removeClass('disabled');
-            else
-                input.addClass('disabled');
+            var amount_str = $(e.target).attr('data-amount'),
+                amount = amount_str*1;
+
+            this.model.set({'type' : amount_str != "None",
+                            'amount': isNaN(amount) || amount_str == "None" ? false : true });            
+            if (amount) {
+                this.model.set('percent', amount);
+            }                        
+            this.setSum();
+        },
+        setSum: function() {
+            var amount = this.$('.tipAmount');
+            if (amount.attr('disabled')) {
+                var tip = round_monetary_currency(App.Data.myorder.total.get_tip());
+                this.model.set('sum', tip*1);
+            } else {
+                this.model.set('sum', amount.val()*1);
+            }
         }
     });
 });
