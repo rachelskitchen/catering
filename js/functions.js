@@ -39,7 +39,7 @@ var ERROR = {},
 //write errors here
 ERROR.STORE_IS_CLOSED = "Error: Store is closed";
 ERROR.BLOCK_STORE_IS_CLOSED = "We're sorry, your order cannot be processed because the store is closed";
-ERROR.FORCED_MODIFIER = "Please select at least one modifier in: ";
+ERROR.FORCED_MODIFIER = "Please select at least | %d modifier(s) in %s";
 ERROR.SELECT_SIZE_MODIFIER = "Select a size please";
 ERROR.SELECT_PRODUCT_ATTRIBUTES = "Please select all attributes";
 ERROR.BLOCK_WEIGHT_IS_NOT_VALID = "The product weight is not set or zero";

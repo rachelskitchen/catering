@@ -306,9 +306,15 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if(Array.isArray(forced)) {
                     return {
                         status: 'ERROR',
-                        errorMsg: ERROR.FORCED_MODIFIER + forced.map(function(modifier) {
-                            return modifier.get('name');
-                        }).join(', ')
+                        errorMsg: function() {
+                            var tmpl = ERROR.FORCED_MODIFIER.split('|');
+                            return tmpl[0].trim() + ' ' + forced.map(function(modifier) {
+                                var minAmount = modifier.get('minimum_amount'),
+                                    modifierClass = modifier.get('name'),
+                                    msg = tmpl[1].replace('%d', minAmount).replace('%s', '&lsquo;' + modifierClass + '&rsquo;');
+                                return msg;
+                            }).join(', ')
+                        }()
                     };
                 }
             } else if (size === null) {

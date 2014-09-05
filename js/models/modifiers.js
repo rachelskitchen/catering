@@ -561,8 +561,9 @@ define(["backbone"], function(Backbone) {
          */
         checkForced: function() {
             var unselected = this.where({forced: true}).filter(function(modifierBlock) {
-                var selected = modifierBlock.get('modifiers').where({selected: true});
-                return selected.length > 0 ? false : true;
+                var selected = modifierBlock.get('modifiers').where({selected: true}),
+                    minimumAmount = modifierBlock.get('minimum_amount');
+                return selected.length >= minimumAmount ? false : true;
             });
 
             return unselected.length > 0 ? unselected : true;

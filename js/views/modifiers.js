@@ -69,7 +69,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         change: function(e, stat) {
             var modifierBlock = this.options.modifierClass;
             var el = $(e.currentTarget),
-                checked = el.prop('checked');
+                checked = el.prop('checked'),
+                maximumAmount = modifierBlock.get('maximum_amount');
             if (el.attr('type') !== 'checkbox') {
                 if (stat !== undefined) {
                     this.model.set('selected', stat);
@@ -78,7 +79,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                     this.model.set('selected', checked);
                 }
             } else {
-                if(checked && modifierBlock.get('lock_amount') > 0 && modifierBlock.get('modifiers').where({selected: true}).length >= modifierBlock.get('lock_amount')) {
+                if(checked && maximumAmount > 0 && modifierBlock.get('modifiers').where({selected: true}).length >= maximumAmount) {
                     return el.prop('checked', false);
                 }
                 this.model.set('selected', checked);
@@ -309,8 +310,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             if(!this.subViews[0])
                 return;
             var checked = this.subViews[0].$el.find('input:checked').parent(),
-                unchecked = this.subViews[0].$el.find('input:not(:checked)').parent();
-            if(!this.type && this.model.get('lock_amount') > 0 && this.model.get('modifiers').where({selected: true}).length >= this.model.get('lock_amount')) {
+                unchecked = this.subViews[0].$el.find('input:not(:checked)').parent(),
+                maximumAmount = this.model.get('maximum_amount');
+            if(!this.type && maximumAmount > 0 && this.model.get('modifiers').where({selected: true}).length >= maximumAmount) {
                 checked.fadeTo(100, 1);
                 unchecked.fadeTo(100, 0.5);
             } else {
