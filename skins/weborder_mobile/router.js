@@ -172,17 +172,17 @@ define(["backbone", "main_router"], function(Backbone) {
             var self = this;
 
             this.prepare('products', function() {
+                App.Data.header.set('page_title', '');
 
                 // load content block for categories
-                var categoriesDfd = $.Deferred();
                 if (!App.Data.categories) {
                     App.Data.categories = new App.Collections.Categories();
-                    categoriesDfd = App.Data.categories.get_categories();
+                    App.Data.categories.loadData = App.Data.categories.get_categories();
                 } else {
-                    categoriesDfd.resolve();
+                    App.Data.categories.loadData.resolve();
                 }
 
-                $.when(categoriesDfd, App.Collections.Products.init(id_category)).then(function() {
+                $.when(App.Data.categories.loadData, App.Collections.Products.init(id_category)).then(function() {
                     App.Data.header.set({
                         page_title: App.Data.categories.get(id_category).get('name'),
                         back_title: 'Categories',

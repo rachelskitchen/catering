@@ -57,6 +57,9 @@
 #header .one_button .leftBtn:active {
     background-position: 100%;
 }
+.leftBtn, .rightBtn {
+    display: none;
+}
 
 #header .one_button h1 {
     position: absolute;

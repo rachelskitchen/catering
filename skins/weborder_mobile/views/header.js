@@ -43,6 +43,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         initialize: function() {
             App.Views.HeaderView.HeaderMainView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:back_title', this.updateBackTitle, this);
+            this.listenTo(this.model, 'change:page_title', this.showBtn, this);
+        },
+        render: function() {
+            App.Views.HeaderView.HeaderMainView.prototype.render.apply(this, arguments);
+            this.showBtn();
+            return this;
         },
         events: {
             "click .leftBtn": "back"
@@ -53,6 +59,10 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         back: function() {
             var back = this.model.get('back');
             typeof back == 'function' && back();
+        },
+        showBtn: function() {
+            // bug 13280
+            this.model.get('page_title') && this.$('.leftBtn').show();
         }
     });
 
@@ -75,6 +85,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 var forward = this.model.get('forward');
                 typeof forward == 'function' && forward();
             }
+        },
+        showBtn: function() {
+            if(!this.model.get('page_title'))
+                return;
+            App.Views.HeaderView.HeaderOneButtonView.prototype.showBtn.apply(this, arguments);
+            this.$('.rightBtn').show();
         }
     });
 
