@@ -21,6 +21,10 @@
  */
 
 require(['app'], function() {
+    if (is_browser_unsupported) {
+        return;
+    }
+
     var app = require('app'),
         skins = app.skins;
 

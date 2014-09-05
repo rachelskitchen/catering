@@ -10,6 +10,7 @@
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <script type="text/javascript">
             "use strict";
+            var is_browser_unsupported = false;
             window.initErrors = [];
             window.onerror = function(m, f, l){
                 if(window.initErrors)
@@ -55,7 +56,7 @@
         <script type="text/javascript" language="javascript">
             "use strict";
             (function() {
-                if(typeof(is_browser_unsupported) === 'undefined' || is_browser_unsupported === false) {
+                if(!is_browser_unsupported) {
                     var deviceDpi = '<meta name="viewport" content="user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, width=device-width, target-densitydpi=device-dpi" />';
                     document.head.innerHTML += deviceDpi;
                 }
@@ -89,6 +90,9 @@
             var oldOpera = (navigator.userAgent.match(/Opera\//) ? true : false);
             if ( oldOpera ) {
                var is_browser_unsupported = true;
+            }
+            if (is_browser_unsupported) {
+                alert("The current browser version is not supported. Please update it to the latest release.");
             }
         </script>
         <script>
