@@ -324,7 +324,7 @@ ul.categories {
     border-top-color: #4CAEDC;
 }
 
-#modifiers_popup .modifiers_table .modifiers-list label:hover .input,
+#modifiers_popup .modifiers_table .modifiers-list label:not(.fade-out):hover .input,
 .tipBlock label:hover .pseudo-radio
 {
     -webkit-box-shadow: 0px 0px 3px 4px rgba(129,195,222,0.3);

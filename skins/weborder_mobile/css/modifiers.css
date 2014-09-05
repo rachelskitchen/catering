@@ -51,7 +51,7 @@
     cursor: pointer;
 }
 
-#content .modifier label:active {
+#content .modifier label:not(.fade-out):active {
     box-shadow: 0 0 3em rgba(0, 170, 234, 0.1) inset;
 }
 

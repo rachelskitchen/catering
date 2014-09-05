@@ -184,16 +184,19 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 product = data.product,
                 row = 'attribute_' + data.row +'_selected',
                 other = 'attribute_' + (data.row === 1 ? 2 : 1) +'_selected',
-                select = product.get(row);
+                select = product.get(row),
+                parent = this.$('input').parent();
 
             if (select && select !== id || product.get(other) && data.attributesOther[product.get(other)].indexOf(id) === -1) {
-                this.$('input').parent().fadeTo(100, 0.5);
+                parent.fadeTo(100, 0.5);
+                parent.addClass('fade-out');
             } else {
                 if (select) {
                     this.$('input').attr('checked', 'checked');
                     this.$('.input').addClass('checked');
                 }
-                this.$('input').parent().fadeTo(100, 1);
+                parent.fadeTo(100, 1);
+                parent.removeClass('fade-out');
             }
         }
     });
@@ -314,10 +317,14 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 maximumAmount = this.model.get('maximum_amount');
             if(!this.type && maximumAmount > 0 && this.model.get('modifiers').where({selected: true}).length >= maximumAmount) {
                 checked.fadeTo(100, 1);
+                checked.removeClass('fade-out');
                 unchecked.fadeTo(100, 0.5);
+                unchecked.addClass('fade-out');
             } else {
                 checked.fadeTo(100, 1);
                 unchecked.fadeTo(100, 1);
+                checked.removeClass('fade-out');
+                unchecked.removeClass('fade-out');
             }
         }
     });
