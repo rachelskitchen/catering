@@ -184,7 +184,8 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
                 tips = App.Views.GeneratorView.create('Tips', {
                     model: this.collection.total.get('tip'),
                     mod: 'Main',
-                    className: 'row tipBlock'
+                    className: 'row tipBlock',
+                    total: this.collection.total
                 });
                 this.subViews.push(tips);
                 specials.before(tips.el);

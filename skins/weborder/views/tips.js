@@ -32,6 +32,7 @@ define(['tips_view'], function() {
             this.listenTo(this.model, 'change:amount', this.render, this);
             this.listenTo(this.model, 'change:percent', this.render, this);
             this.listenTo(this.model, 'change:type', this.render, this);
+            this.listenTo(this.options.total, 'change:total', this.setSum, this);
         },
         render: function() {
             var self = this,
