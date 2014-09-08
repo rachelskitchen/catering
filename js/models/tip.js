@@ -52,6 +52,12 @@ define(["backbone"], function(Backbone) {
             }
         },
         /**
+         * empty: set default values for the tip obj
+         */
+        empty: function() {
+            this.set(this.defaults());
+        },
+        /**
          *
          */
         saveTip : function() {

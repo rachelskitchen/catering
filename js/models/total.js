@@ -147,9 +147,9 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             this.set({
                 tax : 0,
                 total : 0,
-                surcharge: 0,
-                tip : new App.Models.Tip()
+                surcharge: 0
             });
+            this.get('tip').empty();
         },
         /**
          * save information from total model to local storage

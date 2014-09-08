@@ -29,7 +29,9 @@ define(['tips_view'], function() {
         initialize: function() {
             this.model.set('iPad', /ipad/i.test(window.navigator.userAgent));
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);          
-            this.listenTo(this.model, 'change', this.render, this);
+            this.listenTo(this.model, 'change:amount', this.render, this);
+            this.listenTo(this.model, 'change:percent', this.render, this);
+            this.listenTo(this.model, 'change:type', this.render, this);
         },
         render: function() {
             var self = this,
@@ -61,7 +63,7 @@ define(['tips_view'], function() {
             //this is for animation works after template rendering
             setTimeout( (function() {
                 this.$('.btn').removeClass('selected');
-                $('[data-amount='+amount_str+']').addClass('selected');
+                this.$('[data-amount='+amount_str+']').addClass('selected');
             }).bind(this), 0);
         },
         setSum: function() {
@@ -69,9 +71,9 @@ define(['tips_view'], function() {
             if (amount.attr('disabled')) {
                 var tip = round_monetary_currency(App.Data.myorder.total.get_tip());
                 amount.val(tip);
-                this.model.set('sum', tip*1, {silent: true});
+                this.model.set('sum', tip*1);
             } else {
-                this.model.set('sum', amount.val()*1, {silent: true});
+                this.model.set('sum', amount.val()*1);
             }
         }
     });
