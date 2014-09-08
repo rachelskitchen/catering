@@ -7,10 +7,12 @@
             <span class="btn animation " data-amount="20">20%</span>
             <span class="btn animation " data-amount="other">Other</span>
             <span class="currency_sym"> <span> <%=currency_symbol%> </span> </span>
-            <div class="number">
-                <div class="input_beauty animation <% if (!type || amount) print('disabled')%>">
-                    <input type="text" <% if (!type || amount) print('disabled') %> class="amount tipAmount animation <% if(iPad) print('ipad') %>" value='<% print(sum.toFixed(2)) %>'>
+            <span class="number-wrap">
+                <div class="number">
+                    <div class="input_beauty animation <% if (!type || amount) print('disabled')%>">
+                        <input type="text" <% if (!type || amount) print('disabled') %> class="amount tipAmount animation <% if(iPad) print('ipad') %>" value='<% print(sum.toFixed(2)) %>'>
+                    </div>
                 </div>
-            </div>
+            </span>
     </div>
 </script>
