@@ -89,23 +89,23 @@
     /*height: 38em;*/
 }
 
-#content .checkout div > label:nth-child(2) {
+#content .checkout div > .label:nth-child(2) {
     top: 3.5em;
 }
 
-#content .checkout div > label:nth-child(3) {
+#content .checkout div > .label:nth-child(3) {
     top: 7em;
 }
 
-#content .checkout div > label:nth-child(4) {
-    top: 10.5em;
+#content .checkout div > .label:nth-child(4) {
+    top: 31.5em;
 }
 
-#content .checkout div > label:nth-child(5) {
+#content .checkout div > .label:nth-child(5) {
     top: 14em;
 }
 
-#content .checkout .firstName, 
+#content .checkout .firstName,
 #content .checkout .lastName {
     text-transform: capitalize;
 }
@@ -157,8 +157,11 @@
     border-radius: 1em;
     box-shadow: 0 0 0.5em #bddbea;
     background: #f8f8f8;
-    position: relative;
     overflow: hidden;
+}
+/* wrapper is used to resolve problem with android platforms (bug 11036) */
+#content .select-wrapper {
+    position: relative;
 }
 
 #content .checkout label.select:before {
@@ -171,7 +174,9 @@
     z-index: 0;
     font-family: FontAwesome;
     color: #299bd0;
+    pointer-events: none;
 }
+
 #content .checkout label.select[disabled="disabled"] > * {
     border-color: #ccc;
     box-shadow: 0 0 0.5em #ccc;
@@ -267,7 +272,7 @@
     height: 3.5em;
     font-size: 2.4em;
     margin: 0.2em auto;
-    position:relative;    
+    position:relative;
 }
 
 #content .myorderNote .note_field:before {

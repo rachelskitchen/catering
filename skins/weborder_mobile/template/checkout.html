@@ -57,12 +57,16 @@
     <dl class="checkout <% if(isFirefox) { %>firefox<% } %> <% if (isOrderFromSeat) { print('hidden'); } %>">
         <dt class="pickup"><%= pickupTimeLabel %></dt>
         <dd>
-            <label class="select required">
-                <select class="day"></select>
-            </label>
-            <label class="select required">
-                <select class="time"></select>
-            </label>
+            <div class="select-wrapper">
+                <label class="select required">
+                    <select class="day"></select>
+                </label>
+            </div>
+            <div class="select-wrapper">
+                <label class="select required">
+                    <select class="time"></select>
+                </label>
+            </div>
         </dd>
     </dl>
 </script>
@@ -80,30 +84,32 @@
 </script>
 
 <script type="text/template" id="checkout_address-template">
-    <label class="input required">
+    <label class="input label required">
         <input type="text" placeholder="Address Line 1" name="street_1 ios-safari-caret" value="<%= street_1 %>">
     </label>
-    <label class="input">
+    <label class="input label">
         <input type="text" placeholder="Address Line 2" name="street_2 ios-safari-caret" value="<%= street_2 %>">
     </label>
-    <label class="input required">
+    <label class="input label required">
         <input type="text" placeholder="City" name="city" value="<%= city %>" class="ios-safari-caret">
     </label>
     <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
-    <label class="select">
-        <select class="states">
-        <% for(var i in states) { %>
-            <option value="<%= i %>" <% if(i.toLowerCase() == state.toLowerCase()) { %>selected="selected"<% } %>><%= states[i] %></option>
-        <% } %>
-        </select>
-    </label>
+    <div class="label select-wrapper">
+        <label class="select">
+            <select class="states">
+            <% for(var i in states) { %>
+                <option value="<%= i %>" <% if(i.toLowerCase() == state.toLowerCase()) { %>selected="selected"<% } %>><%= states[i] %></option>
+            <% } %>
+            </select>
+        </label>
+    </div>
     <% } %>
     <% if(typeof province == 'string') { %>
-       <label class="input required">
+       <label class="input label required">
            <input type="text" placeholder="Province" name="province" value="<%= province %>" class="ios-safari-caret">
        </label>
     <% } %>
-    <label class="input required">
+    <label class="input label required">
         <input type="text" placeholder="Zip Code" name="zipcode" value="<%= zipcode %>" class="ios-safari-caret">
     </label>
 </script>
