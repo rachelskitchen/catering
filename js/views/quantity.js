@@ -78,7 +78,9 @@ define(["backbone", "factory"], function(Backbone) {
                 else
                    reg_str = "^\\d{0,4}$";
 
-                inputTypeNumberMask(elem, new RegExp(reg_str));
+                // shoudn't change type attribute for android platforms
+                // because some devices have problem with numeric keypad - don't have '.', ',' symbols (bug 11032)
+                inputTypeNumberMask(elem, new RegExp(reg_str), null, cssua.ua.android);
             }
         },
         update: function() {

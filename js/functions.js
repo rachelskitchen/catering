@@ -936,9 +936,9 @@ function replaceAll(find, replace, str) {
 /**
  * use mask for input field type=number
  */
-function inputTypeNumberMask(el, pattern, initial) {
+function inputTypeNumberMask(el, pattern, initial, dontChangeType) {
     if (cssua.userAgent.mobile) {
-        el.attr("type", "number");
+        !dontChangeType && el.attr("type", "number");
         el.numberMask({pattern: pattern });
     } else {
         var prev = initial && initial.toString() || '';
