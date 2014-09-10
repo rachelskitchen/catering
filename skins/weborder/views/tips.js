@@ -23,12 +23,12 @@
 define(['tips_view'], function() {
     'use strict';
 
-    App.Views.TipsView.TipsMainView = App.Views.FactoryView.extend({  
+    App.Views.TipsView.TipsMainView = App.Views.FactoryView.extend({
         name: 'tips',
         mod: 'main',
         initialize: function() {
             this.model.set('iPad', /ipad/i.test(window.navigator.userAgent));
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);          
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:amount', this.render, this);
             this.listenTo(this.model, 'change:percent', this.render, this);
             this.listenTo(this.model, 'change:type', this.render, this);
@@ -38,9 +38,11 @@ define(['tips_view'], function() {
             var self = this,
                 model = this.model.toJSON();
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
-            
-            this.$el.html(this.template(model));            
-            inputTypeNumberMask(this.$('.tipAmount'), /^\d{0,5}\.{0,1}\d{0,2}$/, '0.00');
+
+            this.$el.html(this.template(model));
+            // shoudn't change type attribute for android platforms
+            // because some devices have problem with numeric keypad - don't have '.', ',' symbols (bug 11032)
+            inputTypeNumberMask(this.$('.tipAmount'), /^\d{0,5}\.{0,1}\d{0,2}$/, '0.00', cssua.ua.android);
             this.setBtnSelected(model.type ? (model.amount ? model.percent : "Other") : "None");
             return this;
         },
@@ -53,12 +55,12 @@ define(['tips_view'], function() {
                 amount = amount_str*1;
 
             this.model.set({'type' : amount_str != "None",
-                            'amount': isNaN(amount) || amount_str == "None" ? false : true });            
+                            'amount': isNaN(amount) || amount_str == "None" ? false : true });
             if (amount) {
                 this.model.set('percent', amount);
-            }                       
+            }
             this.setSum();
-            this.setBtnSelected(amount_str);           
+            this.setBtnSelected(amount_str);
         },
         setBtnSelected: function(amount_str) {
             //this is for animation works after template rendering
