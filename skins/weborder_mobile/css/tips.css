@@ -73,8 +73,12 @@
     top: -2px;
     z-index: 1;
 }
+#content ul.tips .amount:disabled {
+    color: #999;
+    background: #eee;
+}
 #content ul.tips .amount::-webkit-inner-spin-button, #content ul.tips .amount::-webkit-outer-spin-button {
-    -webkit-appearance: none; 
+    -webkit-appearance: none;
     margin: 0;
 }
 #content ul.tips label.radio {
@@ -176,6 +180,7 @@
 #content ul.tips .btn.disabled {
     color: #cecece;
     box-shadow: 0 -0.1em 0.2em #cecece inset;
+    cursor: default;
 }
 
 #content ul.tips .line {
