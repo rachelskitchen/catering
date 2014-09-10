@@ -97,14 +97,14 @@
 
 #content .store_info_main_data dt {
     font-size: 2.4em;
-    width: 32%;
+    width: 35%;
     float: left;
     padding-left: 8%;
     margin-bottom: 0.2em;
 }
 #content .store_info_main_data dd {
     font-size: 2.4em;
-    width: 60%;
+    width: 55%;
     float: right;
     margin-bottom: 0.2em;
     white-space: nowrap;
