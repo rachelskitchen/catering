@@ -36,7 +36,9 @@ define(["backbone", "factory"], function(Backbone) {
             model.tip_allow = App.Data.settings.get('settings_system').accept_tips_online === true;
 
             this.$el.html(this.template(model));
-            inputTypeNumberMask(this.$('.tipAmount'), /^\d{0,5}\.{0,1}\d{0,2}$/, '0.00');
+            // shoudn't change type attribute for android platforms
+            // because some devices have problem with numeric keypad - don't have '.', ',' symbols (bug 11032)
+            inputTypeNumberMask(this.$('.tipAmount'), /^\d{0,5}\.{0,1}\d{0,2}$/, '0.00', cssua.ua.android);
 
             // execute after render
             setTimeout(function() {
