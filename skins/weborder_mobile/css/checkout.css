@@ -98,6 +98,10 @@
 }
 
 #content .checkout div > .label:nth-child(4) {
+    top: 10.5em;
+}
+
+#content .checkout div > div.label:nth-child(4) {
     top: 31.5em;
 }
 
