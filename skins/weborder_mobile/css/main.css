@@ -57,6 +57,10 @@ textarea, input {
     -o-user-select: text;
 }
 
+.fl_left {float: left;}
+.fl_right {float: right;}
+.clear_both {clear: both;}
+
 /* header block start */
 
 #header, #section, #footer {

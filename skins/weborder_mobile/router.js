@@ -436,7 +436,8 @@ define(["backbone", "main_router"], function(Backbone) {
                         {
                             modelName: 'Tips',
                             model: App.Data.myorder.total.get('tip'),
-                            mod: 'Main'
+                            mod: 'Line',
+                            total: App.Data.myorder.total
                         }
                     ]
                 });

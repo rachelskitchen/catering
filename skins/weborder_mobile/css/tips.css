@@ -1,17 +1,23 @@
 /* main mod start */
 
 #content ul.tips {
-    margin: 1.5em;
+    margin: 3em;
+    margin-top: 2.3em;
     list-style: none;
 }
 
 #content ul.tips li {
     font-size: 2.8em;
+    height: 3.2em;
     position: relative;
 }
 
 #content ul.tips li:last-child {
     text-align: center;
+}
+#content ul.tips .tip_label {
+    margin-top: 0.5em;
+    margin-left: 0.4em;
 }
 #content ul.tips .currency_sym {
     display: table;
@@ -19,6 +25,7 @@
     height: 2.5em;
     margin-left: 1em;
     width: 1em;
+    margin-right: 0.2em;
 }
 #content ul.tips .currency_sym span {
     display: table-cell;
@@ -159,7 +166,7 @@
     font-weight: bold;
     cursor: pointer;
     letter-spacing: 0.04em;
-    margin-left: 1em;
+    margin-left: 0.6em;
 }
 
 #content ul.tips.firefox .btn {

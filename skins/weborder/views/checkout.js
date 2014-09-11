@@ -183,7 +183,7 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
             if(this.options.acceptTips) {
                 tips = App.Views.GeneratorView.create('Tips', {
                     model: this.collection.total.get('tip'),
-                    mod: 'Main',
+                    mod: 'Line',
                     className: 'row tipBlock',
                     total: this.collection.total
                 });
