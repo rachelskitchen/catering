@@ -423,6 +423,7 @@ define(["backbone", "main_router"], function(Backbone) {
                     back: this.navigate.bind(this, 'checkout', true)
                 });
 
+                App.Views.Generator.enableCache = true;
                 App.Data.mainModel.set({
                     header: headerModes.Confirm,
                     footer: footerModes.Confirm,
@@ -437,10 +438,12 @@ define(["backbone", "main_router"], function(Backbone) {
                             modelName: 'Tips',
                             model: App.Data.myorder.total.get('tip'),
                             mod: 'Line',
-                            total: App.Data.myorder.total
+                            total: App.Data.myorder.total,
+                            cache: true
                         }
                     ]
                 });
+                App.Views.Generator.enableCache = false;
 
                 this.change_page();
             }, [load]);

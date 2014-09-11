@@ -58,12 +58,17 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             return this;
         },
         content_change: function() {
-            var content = this.$('#content'),
+            var view, content = this.$('#content'),
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
 
-            while(this.subViews.length > 2)
-                this.subViews.pop().remove();
+            while(this.subViews.length > 2) {
+                view = this.subViews.pop();
+                if (view.options.cache)
+                    view.removeFromDOMTree();
+                else
+                    view.remove();
+            }
 
             if(Array.isArray(data))
                 data.forEach(function(data) {
@@ -109,12 +114,13 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             };
         },
         addContent: function(data, removeClass) {
+            var id = 'content_' + data.modelName + '_' + data.mod;
             data = _.defaults(data, this.content_defaults());
-
+            
             if(removeClass)
                 delete data.className;
 
-            var subView = App.Views.GeneratorView.create(data.modelName, data);
+            var subView = App.Views.GeneratorView.create(data.modelName, data, data.cache ? id : undefined);
             if(this.subViews.length > 2)
                 this.subViews.push(subView);
             else
