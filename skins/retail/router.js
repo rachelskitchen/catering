@@ -204,7 +204,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 state.pattern = result.get('pattern');
 
                 // can't use this.navigate() due to it invokes spinner
-                Backbone.Router.prototype.navigate.call(this, 'index/' + this.encodeState(state));
+                Backbone.Router.prototype.navigate.call(this, 'index/' + this.encodeState(state), true);
             });
 
             // listen to filter changes and encode it to hash
