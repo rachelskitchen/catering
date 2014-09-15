@@ -169,8 +169,11 @@ function msgFrm(msg_format) {
 /**
  * Get GET-parameters from address line.
  */
-function parse_get_params() {
-    var $_GET = {};
+function parse_get_params() {    
+    if (window.$_GET) {
+        return window.$_GET;
+    }
+    $_GET = {};
     // Mercury return url is not xml-decoded
     var search = window.location.search.replace(/&amp;/g, '&');
     var __GET = search.substring(1).split("&");
