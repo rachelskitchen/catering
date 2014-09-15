@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone"], function(Backbone) {
+define(["backbone", "collection_sort"], function(Backbone) {
     'use strict';
 
     App.Models.Category = Backbone.Model.extend({
@@ -32,19 +32,20 @@ define(["backbone"], function(Backbone) {
             parent_name: null,
             parent_sort: null,
             sort: null,
+            sort_val: null,
             img: App.Data.settings.get("img_path"),
             active: true
         }
     });
 
-    App.Collections.Categories = Backbone.Collection.extend({
+    App.Collections.Categories = App.Collections.CollectionSort.extend({
         model: App.Models.Category,
         selected: null,
         parent_selected: null,
+        sortStrategy: "sortNumbers",
+        sortKey: "sort_val",
+        sortOrder: "asc", //or "desc"
         img: App.Data.settings.get("img_path"),
-        comparator: function(model) {
-            return parseInt(model.get("parent_sort")) * 1000 + parseInt(model.get("sort"));
-        },
         /**
         * Get categories from backend.
         */
@@ -67,7 +68,8 @@ define(["backbone"], function(Backbone) {
                         if (!category.image || category.image === "") {
                             category.image = App.Data.settings.get_img_default();
                         }
-                        self.add(category);
+                        category.sort_val = parseInt(category.parent_sort || 0) * 1000 + parseInt(category.sort || 0);
+                        self.add(category);                       
                     }
                     dfd.resolve();
                 },

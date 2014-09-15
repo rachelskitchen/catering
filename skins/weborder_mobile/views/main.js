@@ -64,10 +64,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
             while(this.subViews.length > 2) {
                 view = this.subViews.pop();
-                if (view.options.cache)
-                    view.removeFromDOMTree();
-                else
-                    view.remove();
+                view.removeFromDOMTree();
             }
 
             if(Array.isArray(data))
@@ -120,7 +117,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             if(removeClass)
                 delete data.className;
 
-            var subView = App.Views.GeneratorView.create(data.modelName, data, data.cache ? id : undefined);
+            var subView = App.Views.GeneratorView.create(data.modelName, data, data.cacheIt ? id : undefined);
             if(this.subViews.length > 2)
                 this.subViews.push(subView);
             else

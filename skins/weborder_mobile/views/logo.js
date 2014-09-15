@@ -52,6 +52,10 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
         remove: function() {
             $(window).off('resize', this.resize);
             return App.Views.FactoryView.prototype.remove.apply(this, arguments);
+        },
+        removeFromDOMTree: function() {
+            $(window).off('resize', this.resize);
+            return App.Views.FactoryView.prototype.removeFromDOMTree.apply(this, arguments);
         }
     });
 

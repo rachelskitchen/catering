@@ -997,3 +997,10 @@ function fistLetterToUpperCase(text) {
         return g1 ? g1.toUpperCase() : ' ' + g2.toUpperCase();
     });
 }
+
+/*
+*  trace function: 
+*/
+function trace() {
+    return console.log.apply(console, arguments);
+}

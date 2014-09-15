@@ -81,4 +81,84 @@ define(["backbone", "factory"], function(Backbone) {
             });
         }
     });
+
+    App.Views.LazyItemView = App.Views.FactoryView.extend({
+    });
+
+    App.Views.LazyListView = App.Views.FactoryView.extend({
+        initialize: function() {
+            this.content_elem = this.options.content_elem || "#content";
+            this.parent_elem = this.options.parent_elem || "#content ul";
+            this.list_elem = this.options.list_elem || "#content li";
+            this.image_url_key = this.options.image_url_key || "image";
+            this.sortedModels = this.options.sortedModels ? this.options.sortedModels : this.collection.models;    
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);        
+            
+            $(this.content_elem).on('scroll', this.onScroll.bind(this));            
+        },        
+        render: function() {
+            this.resetScroll();
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            setTimeout((function() { 
+                this.collection.each(this.addItem.bind(this));
+                this.onScroll();
+                //setTimeout(this.onScroll.bind(this),0);
+            }).bind(this), 0);
+            return this;
+        },
+        addItem: function(view) {
+            $(this.parent_elem).append(view.el);
+            this.sortedSpinnersIndexById[view.model.cid] = this.index++;
+            view.$el.addClass('lazy_item_' + view.model.cid);
+        },
+        resetScroll: function() {
+            this.sortedSpinnersIndexById = {};
+            this.index = 0;
+        },
+        onScroll: function() {
+            var scrollTop = $(this.content_elem).scrollTop(),
+                rowHeight = $(this.list_elem).outerHeight(),
+                contentHeight = $(this.content_elem).outerHeight();
+
+            var startIndex = Math.round(scrollTop/rowHeight);
+            var endIndex = startIndex + Math.round(contentHeight/rowHeight);
+
+            if (isNaN(startIndex) || isNaN(endIndex))
+                return;
+            
+            startIndex > 0 && startIndex--; //expand the upper bound of showed spinners (it's for reliability)
+            //expand the low bound of showed spinners
+            if (endIndex + 6 > this.sortedModels.length-1)
+                endIndex = this.sortedModels.length-1;
+            else
+                endIndex += 6;
+
+            //trace("startIndex=", startIndex, "endIndex = ", endIndex);
+            for (var i = 0; i < this.sortedModels.length; i++) {
+
+                var listElem = this.$('.lazy_item_' + this.sortedModels[i].cid);
+                
+                if (i >= startIndex && i <= endIndex && !$('img', listElem).attr('src')) {
+                    
+                    var model = this.sortedModels[i];                   
+                    
+                    $('img', listElem).attr('src', model.get(this.image_url_key));
+                    
+                    loadSpinner($('img', listElem), {spinner: true, anim: false});
+                }
+            }
+        },
+        sort: function() {
+            var list = [];
+            this.resetScroll();
+            this.sortedModels.forEach((function(model) {
+                list.push($('.lazy_item_' + model.cid, $(this.parent_elem)));
+                this.sortedSpinnersIndexById[model.cid] = this.index++;
+            }).bind(this));
+
+            $(this.parent_elem).append(list);
+
+            this.onScroll();
+        }
+    });
 });

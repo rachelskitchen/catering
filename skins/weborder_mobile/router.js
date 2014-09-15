@@ -91,6 +91,7 @@ define(["backbone", "main_router"], function(Backbone) {
 
             // load main, header, footer necessary files
             this.prepare('main', function() {
+                App.Views.Generator.enableCache = true;
                 // set header, footer, main models
                 App.Data.header = new App.Models.HeaderModel();
                 App.Data.footer = new App.Models.FooterModel({
@@ -133,6 +134,8 @@ define(["backbone", "main_router"], function(Backbone) {
                     App.Data.categories = new App.Collections.Categories();
                     App.Data.categories.loadData = App.Data.categories.get_categories();
                     App.Data.categories.loadData.then(function() {
+                        App.Data.categories.sortEx();
+                        App.Data.categories.trigger("load_complete");
                         self.change_page();
                     });
                 }
@@ -423,7 +426,6 @@ define(["backbone", "main_router"], function(Backbone) {
                     back: this.navigate.bind(this, 'checkout', true)
                 });
 
-                App.Views.Generator.enableCache = true;
                 App.Data.mainModel.set({
                     header: headerModes.Confirm,
                     footer: footerModes.Confirm,
@@ -439,12 +441,11 @@ define(["backbone", "main_router"], function(Backbone) {
                             model: App.Data.myorder.total.get('tip'),
                             mod: 'Line',
                             total: App.Data.myorder.total,
-                            cache: true
+                            cacheIt: true
                         }
                     ]
                 });
-                App.Views.Generator.enableCache = false;
-
+               
                 this.change_page();
             }, [load]);
         },

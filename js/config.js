@@ -74,7 +74,8 @@ define({
         done_view: "js/views/done",
         slider_view: "js/views/slider",
         search: "js/models/search",
-        subcategories: "js/models/subcategories"
+        subcategories: "js/models/subcategories",
+        collection_sort: "js/models/collection_sort",
     },
     waitSeconds: 30,
     shim: {
@@ -184,7 +185,10 @@ define({
         },
         "search": {
             deps: ["products"]
-        }
+        },
+        "collection_sort" : {
+            deps: ["backbone"]
+        } 
     },
     map: {
         "*": {}
