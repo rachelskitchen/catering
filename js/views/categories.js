@@ -23,7 +23,7 @@
 define(["backbone", 'factory', 'generator', 'list'], function(Backbone) {
     App.Views.CoreCategoriesView = {};
 
-    App.Views.CoreCategoriesView.CoreCategoriesItemView = App.Views.LazyItemView.extend({
+       App.Views.CoreCategoriesView.CoreCategoriesItemView = App.Views.ItemView.extend({
         name: 'categories',
         mod: 'item',
         initialize: function() {
@@ -36,6 +36,7 @@ define(["backbone", 'factory', 'generator', 'list'], function(Backbone) {
             var model = self.model.toJSON();
             model.hide_images = App.Data.settings.get('settings_system').hide_images;
             self.$el.html(self.template(model));
+            self.afterRender.call(self, model.parent_sort + model.sort.toString());
             return this;
         },
         events: {
@@ -55,15 +56,16 @@ define(["backbone", 'factory', 'generator', 'list'], function(Backbone) {
         }
     });
 
-    App.Views.CoreCategoriesView.CoreCategoriesMainView = App.Views.LazyListView.extend({
+    App.Views.CoreCategoriesView.CoreCategoriesMainView = App.Views.ListView.extend({
         name: 'categories',
         mod: 'main',
         initialize: function() {
-            App.Views.LazyListView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.collection, 'load_complete', this.render, this);
+            App.Views.ListView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.collection, 'add', this.addItem, this);
         },
         render: function() {
-            App.Views.LazyListView.prototype.render.apply(this, arguments);           
+            App.Views.ListView.prototype.render.apply(this, arguments);
+            this.collection.each(this.addItem.bind(this));
             return this;
         },
         addItem: function(model) {
@@ -71,9 +73,8 @@ define(["backbone", 'factory', 'generator', 'list'], function(Backbone) {
                 el: $('<li></li>'),
                 mod: 'Item',
                 model: model
-            }, model.cid);
-            //trace("AddItem=>",model.get('name'),model.cid, model.escape('parent_sort'), model.escape('sort'), model.get("sort_val"));
-            App.Views.LazyListView.prototype.addItem.call(this, view, this.$('.categories'));
+            });
+            App.Views.ListView.prototype.addItem.call(this, view, this.$('.categories'), model.escape('parent_sort') + model.escape('sort').toString());
             this.subViews.push(view);
         }
     });

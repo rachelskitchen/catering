@@ -14,7 +14,7 @@
         },
         "index": {
             "css": ["store_info", "categories"],
-            "views": ["store_info"],
+            "views": ["store_info", "categories"],
             "templates": ["store_info", "categories"],
             "core": ["categories", "categories_view"]
         },
