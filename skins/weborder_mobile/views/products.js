@@ -29,4 +29,75 @@ define(["backbone", "factory", "generator", "list", 'products_view'], function(B
            this.product.get('is_gift') && this.$el.addClass('is_gift');
         }
     });
+
+    App.Views.ProductView.ProductListItemView = App.Views.LazyItemView.extend({
+        name: 'product',
+        mod: 'list_item',
+        initialize: function() {
+            App.Views.LazyItemView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'change:active', this.show_hide);
+            this.show_hide();
+        },
+        render: function() {
+            var model = this.model.toJSON();
+            model.hide_images = App.Data.settings.get('settings_system').hide_images;
+            model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
+            model.price = round_monetary_currency(model.price);
+            model.price_length = model.price.length + model.currency_symbol.length;
+            model.show_product_description = !App.Data.settings.get('settings_system').hide_products_description;
+            model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
+            model.isDefaultImage = model.image == App.Data.settings.get_img_default();
+            this.$el.html(this.template(model));
+            return this;
+        },
+        events: {
+            "click": "showModifiers"
+        },
+        showModifiers: function(e) {
+            e.preventDefault();
+            var id_category = this.model.get('id_category'),
+                id = this.model.get('id');
+            App.Data.router.navigate("modifiers/" + id_category + "/" + id, true);
+        },
+        show_hide: function() {
+            if (!this.model.get('active')) {
+                this.$el.addClass('hide');
+            } else {
+                this.$el.removeClass('hide');
+            }
+        }
+    });
+
+    App.Views.ProductView.ProductListView = App.Views.LazyListView.extend({
+        name: 'product',
+        mod: 'list',
+        initialize: function() {
+            App.Views.LazyListView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.collection, 'load_complete', this.render, this);
+        },
+        render: function() {
+            App.Views.LazyListView.prototype.render.apply(this, arguments);
+            return this;
+        },
+        addItem: function(model) {
+            if (model.get("attribute_type") == 2) { // to hide child products
+                return;
+            }
+            var settings = App.Data.settings.get('settings_system'),
+                noImg = settings.hide_images,
+                noDesc = settings.hide_products_description,
+                view;
+            view = App.Views.GeneratorView.create('Product', {
+                el: $('<li class="product"></li>'),
+                mod: 'ListItem',
+                model: model
+            }, 'product_' + model.cid);
+            noDesc && view.$el.addClass('short');
+            noImg && view.$el.addClass('no-image');
+
+            App.Views.LazyListView.prototype.addItem.call(this, view, this.$('.products'));
+            this.subViews.push(view);
+            $(window).resize();
+        }
+    });
 });

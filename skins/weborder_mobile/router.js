@@ -191,6 +191,10 @@ define(["backbone", "main_router"], function(Backbone) {
                         back_title: 'Categories',
                         back: self.navigate.bind(self, 'index', true)
                     });
+
+                    App.Data.products[id_category].sortEx();
+                    App.Data.products[id_category].trigger("load_complete");
+
                     self.change_page();
                 });
 

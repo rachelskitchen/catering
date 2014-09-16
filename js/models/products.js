@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", 'childproducts'], function(Backbone) {
+define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
     'use strict';
 
     App.Models.Product = Backbone.Model.extend({
@@ -345,13 +345,13 @@ define(["backbone", 'childproducts'], function(Backbone) {
         }
     });
 
-    App.Collections.Products = Backbone.Collection.extend({
+    App.Collections.Products =  App.Collections.CollectionSort.extend({
+        sortStrategy: "sortNumbers",
+        sortKey: "sort",
+        sortOrder: "asc", //or "desc"
         model: App.Models.Product,
         initialize: function() {
             this.listenTo(this, 'change:active', this.check_active);
-        },
-        comparator: function(model) {
-            return model.get("sort");
         },
         /**
          * get product by id

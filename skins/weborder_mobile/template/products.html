@@ -4,7 +4,11 @@
 
 <script type="text/template" id="product_list_item-template">
     <% if(!hide_images) { %>
-        <div class="block_img"> <div> <img src="<%=image%>" alt="<%= name %> <%= id %>"/> </div> </div>
+        <div class="block_img"> 
+            <div class="img">
+                <img alt="<%= name %> <%= id %>"/> 
+            </div>
+        </div>
     <% } %>
     <dl <% if(hide_images){ %>class="noimage"<% } %>>
         <dt class="s<%= price_length %>">

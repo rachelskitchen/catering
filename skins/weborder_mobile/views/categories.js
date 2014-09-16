@@ -26,7 +26,7 @@ define(['backbone', 'categories_view'], function(Backbone) {
         name: 'categories',
         mod: 'item',
         initialize: function() {
-            App.Views.ItemView.prototype.initialize.apply(this, arguments);
+            App.Views.LazyItemView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:active', this.show_hide);
             this.show_hide();
         },
