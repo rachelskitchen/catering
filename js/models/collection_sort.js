@@ -2,6 +2,7 @@ define(["backbone"], function(Backbone) {
     'use strict';
 
 App.Collections.CollectionSort = Backbone.Collection.extend({
+        sortedModelsKey: "models",
         sortStrategy: "sortStrings",
         sortKey: "name",
         sortOrder: "asc", //or "desc"
@@ -41,8 +42,9 @@ App.Collections.CollectionSort = Backbone.Collection.extend({
             this.sortStrategy = this.strategies[strategy] && strategy || this.sortStrategy; // return last expression. so need return strategy, not this.strategies[strategy]
             this.sortKey = this.model.prototype.defaults[modelKey] !== undefined && modelKey || this.sortKey;
             this.sortOrderEx = (this.sortOrder == "asc") * 2 - 1; // true/false change to 1/-1.
+
             //var t1 = (new Date).getTime();
-            var collection = this.models.sort(this.strategies[this.sortStrategy].bind(this));
+            var collection = this[this.sortedModelsKey].sort(this.strategies[this.sortStrategy].bind(this));
             //var t2 = (new Date).getTime();
             //trace("profile sorting: delta=", t2 - t1);
             return collection; 
