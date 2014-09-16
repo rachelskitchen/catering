@@ -91,18 +91,17 @@ define(["backbone", "factory"], function(Backbone) {
             this.parent_elem = this.options.parent_elem || "#content ul";
             this.list_elem = this.options.list_elem || "#content li";
             this.image_url_key = this.options.image_url_key || "image";
-            this.sortedModels = this.options.sortedModels ? this.options.sortedModels : this.collection.models;    
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);        
-            
+            this.listenTo(this.collection, 'sort', this.sort);
             $(this.content_elem).on('scroll', this.onScroll.bind(this));            
         },        
-        render: function() {
+        render: function(sortedModels) {
+            this.sortedModels = sortedModels ? sortedModels : this.collection.models; 
             this.resetScroll();
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             setTimeout((function() { 
-                this.collection.each(this.addItem.bind(this));
+                this.sortedModels.forEach(this.addItem.bind(this));
                 this.onScroll();
-                //setTimeout(this.onScroll.bind(this),0);
             }).bind(this), 0);
             return this;
         },
