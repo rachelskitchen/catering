@@ -39,12 +39,12 @@ define(["backbone", "factory"], function(Backbone) {
         addItem: function(view, parent, sort, sortedEl) {
             var index;
             sortedEl = sortedEl || '';
-            
+
             if (sort == undefined) {
                 parent.append(view.el);
                 return;
-            } 
-            
+            }
+
             this.orderSort.push(sort);
             this.orderSort.sort(function(x, y) {
                 x = parseFloat(x, 10);
@@ -57,7 +57,7 @@ define(["backbone", "factory"], function(Backbone) {
             } else if(index == this.orderSort.length - 1) {
                 parent.append(view.el);
             } else {
-                this.$(parent).children(sortedEl + '[data-sort="' + this.orderSort[index + 1] + '"]').first().before(view.el);
+                parent.children(sortedEl + '[data-sort="' + this.orderSort[index + 1] + '"]').first().before(view.el);
             }
         },
         initOrderSort: function() {
@@ -90,16 +90,16 @@ define(["backbone", "factory"], function(Backbone) {
             this.content_elem = this.options.content_elem || "#content";
             this.parent_elem = this.options.parent_elem || "#content ul";
             this.list_elem = this.options.list_elem || "#content li";
-            this.image_url_key = this.options.image_url_key || "image"; //it's name of image property in a model   
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);        
+            this.image_url_key = this.options.image_url_key || "image"; //it's name of image property in a model
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection, 'sort', this.sort);
-            $(this.content_elem).on('scroll', this.onScroll.bind(this));            
-        },        
+            $(this.content_elem).on('scroll', this.onScroll.bind(this));
+        },
         render: function(sortedModels) {
-            this.sortedModels = sortedModels ? sortedModels : this.collection.models; 
+            this.sortedModels = sortedModels ? sortedModels : this.collection.models;
             this.resetScroll();
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            setTimeout((function() { 
+            setTimeout((function() {
                 this.sortedModels.forEach(this.addItem.bind(this));
                 this.onScroll();
             }).bind(this), 0);
@@ -124,7 +124,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             if (isNaN(startIndex) || isNaN(endIndex))
                 return;
-            
+
             startIndex > 0 && startIndex--; //expand the upper bound of showed spinners (it's for reliability)
             //expand the low bound of showed spinners
             if (endIndex + 6 > this.sortedModels.length-1)
@@ -136,13 +136,12 @@ define(["backbone", "factory"], function(Backbone) {
             for (var i = 0; i < this.sortedModels.length; i++) {
 
                 var listElem = this.$('.lazy_item_' + this.sortedModels[i].cid);
-                
+
                 if (i >= startIndex && i <= endIndex && !$('img', listElem).attr('src')) {
-                    
-                    var model = this.sortedModels[i];                   
-                    
+
+                    var model = this.sortedModels[i];
+
                     $('img', listElem).attr('src', model.get("logo_url_final") ? model.get("logo_url_final") : model.get(this.image_url_key));
-                    
                     loadSpinner($('img', listElem), {spinner: true, anim: false});
                 }
             }
@@ -164,7 +163,7 @@ define(["backbone", "factory"], function(Backbone) {
                 this.preferWidth = Math.round($("#content .img").width());
                 this.preferHeight = Math.round($("#content .img").height());
             }
-            
+
             var logo_url = model.get(this.image_url_key);
             var options = '?options={"size":[' + this.preferWidth + "," +  this.preferHeight + "]}";
             var logo_url_sized = logo_url + options;
