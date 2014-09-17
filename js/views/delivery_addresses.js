@@ -81,8 +81,9 @@ define(['backbone', 'factory'], function(Backbone) {
                 shipping_services = customer.get("shipping_services"),
                 shipping_status = customer.get("load_shipping_status");
 
-            var shipping = this.$('.shipping-select').empty();
-            if (!shipping_status || shipping_status == "panding") {
+            var shipping = this.$('.shipping-select').empty(),
+                selectWrapper = shipping.parents('.select-wrapper');
+            if (!shipping_status || shipping_status == "pending") {
                 shipping_services = [];
                 customer.set("shipping_selected", -1);
             } else {
@@ -96,18 +97,20 @@ define(['backbone', 'factory'], function(Backbone) {
                 shipping.append('<option value="' + index + '" ' + (customer.get('shipping_selected') == index ? 'selected="selected"' : '') + '>' + name + '</option>');
             };
 
-            shipping.removeAttr("status");
+            shipping.removeAttr("data-status");
             if (!shipping_status || shipping_status == "pending" || shipping_services.length == 0) {
                 shipping.attr("disabled", "disabled");
-                shipping.attr("status", "panding");
+                shipping.attr("data-status", "pending");
+                selectWrapper.addClass('disabled');
             }
             else {
                 shipping.removeAttr("disabled");
+                selectWrapper.removeClass('disabled');
             }
 
             if (shipping_status && shipping_status != "pending" && shipping_services.length == 0) {
                 shipping.append('<option value="-1">' + MSG.ERROR_SHIPPING_SERVICES_NOT_FOUND + '</option>');
-                shipping.attr("status", "error");
+                shipping.attr("data-status", "error");
             }
 
             if (!shipping_status) {

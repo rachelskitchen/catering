@@ -352,7 +352,7 @@ define(["backbone", "main_router"], function(Backbone) {
                             categories: categories,
                             search: App.Data.search,
                             mod: 'Sort',
-                            className: 'filter sort'
+                            className: 'filter sort select-wrapper'
                         },
                         {
                             modelName: 'Filter',
@@ -361,7 +361,7 @@ define(["backbone", "main_router"], function(Backbone) {
                             search: App.Data.search,
                             products: App.Data.products,
                             mod: 'Attribute',
-                            className: 'filter attribute'
+                            className: 'filter attribute select-wrapper'
                         },
                         {
                             modelName: 'Categories',

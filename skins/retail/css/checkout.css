@@ -10,14 +10,16 @@
     font-size: 1.2em;
     font-weight: bold;
 }
-
 #content > .checkout label {
     display: inline-block;
     width: 302px;
-    margin: 10px 0;
+    /*margin: 10px 0;*/
     text-indent: 100px;
     font-weight: bold;
     background: none;
+    height: 39px;
+    line-height: 39px;
+    vertical-align: top;
 }
 #content > .checkout h2 {
     padding-left: 100px;
@@ -25,6 +27,10 @@
 }
 #content > .checkout div.row, #content > .checkout div.delivery_address > div > div {
     position: relative;
+    height: 39px;
+}
+#content > .checkout div.row.specials {
+    height: 128px;
 }
 #content > .checkout .input_beauty {
     left: 287px;
@@ -36,36 +42,37 @@
 #content > .checkout .tipBlock {
     height: 145px;
 }
-#content > .checkout select {
-    width: 100%;
-    max-width: 100%;
-    height: 31px;
-}
 #content > .checkout div.select {
     display: inline-block;
     width: 210px;
     position: relative;
     left: -22px;
-    background: none;
-    top: -1px;
+    top: 4px;
+    vertical-align: top;
+    height: 29px;
+}
+.select-row {
+    height: 39px;
 }
 #content > .checkout div.select.shipping {
     display: inline-block;
     width: 320px;
 }
-#content > .checkout div.select_arrows {
-    right: 2px;
-}
 #content > .checkout .select-wrap {
    display: inline-block;
+   height: 37px;
 }
 #content > .checkout .shipping-status {
     display: inline-block;
     width: 32px;
     height: 32px;
     vertical-align: middle;
-    margin-top: -4px;
+    margin-top: -12px;
     font-size: 8px;
+}
+#content > .checkout .shipping-select {
+    width: 395px;
+    background-position: 300px 50%;
 }
 #content > .checkout div.select_day:last-child {
     margin-bottom: 10px;

@@ -2,9 +2,10 @@
 #credit-card label {
     display: inline-block;
     width: 230px;
-    margin: 10px 0;
     text-indent: 30px;
     font-weight: bold;
+    line-height: 39px;
+    vertical-align: top;
 }
 
 #credit-card > div {
@@ -21,8 +22,7 @@
 }
 
 #credit-card select {
-    width: 100%;
-    max-width: 100%;
+    background-position: 56px 50%;
 }
 #credit-card div.select {
     display: inline-block;
@@ -33,9 +33,9 @@
 #credit-card div.select_arrows {
     right: -2px;
 }
-#credit-card div.select:last-child {
+/*#credit-card div.select:last-child {
     margin-bottom: 10px;
-}
+}*/
 #credit-card div.select[disabled="disabled"] {
     opacity: .5;
     opacity: filter(50);
@@ -51,7 +51,9 @@
     display: inline-block;
 }
 #credit-card div.select {
-    background: none;
+    position: relative;
+    top: 6px;
+    vertical-align: top;
 }
 #credit-card .select.month,
 #credit-card .select.year {
@@ -60,7 +62,15 @@
 }
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
-    #credit-card select.month {
-        margin: 0 0 0 7px !important;
+    #credit-card label {
+        width: 170px !important;
+    }
+    #credit-card div.select {
+        left: 4px !important;
+        margin-right: 10px !important;
+    }
+    #credit-card div.input_beauty,
+    #credit-card div.tips {
+        left: 180px !important;
     }
 }

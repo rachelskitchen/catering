@@ -40,12 +40,12 @@ define(['backbone'], function(Backbone) {
             'change select': 'change'
         },
         disable: function() {
-            this.$('.select_arrows').addClass('disabled');
             this.$('select').attr('disabled', 'disabled');
+            this.$el.addClass('disabled');
         },
         enable: function() {
-            this.$('.select_arrows').removeClass('disabled');
             this.$('select').removeAttr('disabled');
+            this.$el.removeClass('disabled');
         },
         search: function(result) {
             this.enable();

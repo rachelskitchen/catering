@@ -196,7 +196,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                 this.$el.show();
             }
         },
-        render: function() {
+        render: function() {debugger
             this.$el.html(this.template(this.model.toJSON()));
             this.afterRender.call(this, this.model.get('sort'));
             this.add_table();

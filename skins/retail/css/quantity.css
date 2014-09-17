@@ -6,20 +6,52 @@
 }
 
 /*.quantity select {*/
-.quantity .quantity_select {
+.quantity .select-wrapper {
     border-width: 2px;
     border-radius: 15px;
-    font-size: 15px;
-    font-weight: bold;
-    min-width: 52px;
+    min-width: 30px;
+    vertical-align: top;
+    height: 24px;
 }
 
 .quantity .title {
     font-weight: bold;
+    vertical-align: top;
+    line-height: 28px;
 }
 
 .quantity_select {
     display: inline-block;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.quantity .select-wrapper.l1 {
+    width: 49px;
+}
+
+.quantity .select-wrapper.l2 {
+    width: 57px;
+}
+
+.quantity .select-wrapper.l3 {
+    width: 67px;
+}
+
+.quantity .select-wrapper.l4 {
+    width: 74px;
+}
+
+.quantity .select-wrapper.l5 {
+    width: 81px;
+}
+
+.quantity .select-wrapper.l6 {
+    width: 90px;
+}
+
+.quantity .select-wrapper.l7 {
+    width: 100px;
 }
 
 .quantity_select .select_arrows {

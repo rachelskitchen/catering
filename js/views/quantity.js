@@ -46,6 +46,8 @@ define(["backbone", "factory"], function(Backbone) {
             } else {
                 this.$el.show();
             }
+
+            this.$('.select-wrapper').addClass('l' + (stock_amount ? stock_amount.toString().length : '1'));
         },
         update: function() {
 

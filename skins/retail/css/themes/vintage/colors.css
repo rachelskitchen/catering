@@ -8,32 +8,44 @@ select, textarea, input {
 }
 select {
     color: #352a18;
+    background-color: transparent;
+}
+/* remove dotted outline in firefox */
+select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #000;
+}
+select[disabled] {
+    color: rgba(0, 0, 0, 0.2);
+}
+.select-wrapper {
     border-color: #cecece;
     box-shadow: 0 3px 2px rgba(233, 233, 233, 0.6);
     background-color: #fcfcfc;
 }
-select:hover {
+.select-wrapper:hover {
     border-color: #66ccff;
 }
-select[disabled] {
+.select-wrapper.disabled, .select-wrapper.disabled:hover {
     border-color: rgba(204, 204, 204, 0.3);
-    color: rgba(0, 0, 0, 0.2);
 }
-.select {
+/*.select-wrapper:after {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxNS4yIj48Zz48cGF0aCBkPSJtNCwwTDEsNkw3LDZaIiBmaWxsPSIjMzUyYTE4Ij48L3BhdGg+PHJlY3QgaGVpZ2h0PSIxIiB3aWR0aD0iOCIgeT0iNyIgeD0iMCIgZmlsbD0iIzM1MmExOCI+PC9yZWN0PjxwYXRoIGQ9Im00LDE1LjJMMSw5LjJMNyw5LjJaIiBmaWxsPSIjMzUyYTE4Ij48L3BhdGg+PC9nPjwvc3ZnPg==');
+}*/
+.select-wrapper:after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjE1LjIiPjxnPjxwYXRoIGQ9Im00LDBMMSw2TDcsNloiIGZpbGw9IiMzNTJhMTgiLz48cmVjdCBoZWlnaHQ9IjEiIHdpZHRoPSI4IiB5PSI3IiB4PSIwIiBmaWxsPSIjMzUyYTE4Ii8+PHBhdGggZD0ibTQsMTUuMkwxLDkuMkw3LDkuMloiIGZpbGw9IiMzNTJhMTgiLz48L2c+PC9zdmc+');
 }
-.select[disabled] {
+/*.select-wrapper.disabled:after {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxNS4yIj48Zz48cGF0aCBkPSJtNCwwTDEsNkw3LDZaIiBmaWxsPSIjY2NjIj48L3BhdGg+PHJlY3QgaGVpZ2h0PSIxIiB3aWR0aD0iOCIgeT0iNyIgeD0iMCIgZmlsbD0iI2NjYyI+PC9yZWN0PjxwYXRoIGQ9Im00LDE1LjJMMSw5LjJMNyw5LjJaIiBmaWxsPSIjY2NjIj48L3BhdGg+PC9nPjwvc3ZnPg==');
+}*/
+.select-wrapper.disabled:after  {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjE1LjIiPjxnPjxwYXRoIGQ9Im00LDBMMSw2TDcsNloiIGZpbGw9IiNjY2MiLz48cmVjdCBoZWlnaHQ9IjEiIHdpZHRoPSI4IiB5PSI3IiB4PSIwIiBmaWxsPSIjY2NjIi8+PHBhdGggZD0ibTQsMTUuMkwxLDkuMkw3LDkuMloiIGZpbGw9IiNjY2MiLz48L2c+PC9zdmc+');
 }
 #content, .subcategories {
     background: #fff;
 }
 .subcategories {
     box-shadow: -5px 5px 5px #fff;
-}
-.subcategories select {
-    box-shadow: 0 2px 6px 0px #d7d7d7;
-    background: #fafafa;
 }
 #content {
     border-color: #bebebe;
@@ -172,10 +184,10 @@ aside:after, aside:before {
 #cart .checkout .content_arrow.arrow_top {
     box-shadow: 0 10px 10px #fff;
 }
-#content > .checkout .shipping-select[status=error] {
+#content > .checkout .shipping-select[data-status=error] {
     color: red;
 }
-#content > .checkout .shipping-select[status=panding] {
+#content > .checkout .shipping-select[data-status=pending] {
     color: #838383;
 }
 .btn {
@@ -329,21 +341,20 @@ aside:after, aside:before {
     background-size: 100%;
 }
 
-#modifiers_popup .quantity_select,
-.product_attribute_info select {
+#modifiers_popup .select-wrapper {
     background-color: #f9f9f9;
 }
-#modifiers_popup select {
+#modifiers_popup .select-wrapper {
     border-color: #716e68;
     box-shadow: 1px 3px 3px 1px #CAC9C9;
 }
-#modifiers_popup select[disabled] {
+#modifiers_popup .select-wrapper.disabled {
     border-color: #cac9c9 !important;
     color: #cac9c9 !important;
     cursor: default !important;
     box-shadow: none !important;
 }
-select:not([disabled]):active {
+.select-wrapper:not(.disabled):active {
     box-shadow: 0 0 1px 2px #fff inset, 0 0 8px 2px rgba(60, 167, 222, 0.33) !important;
     -moz-box-shadow: 0 0 1px 2px #fff inset, 0 0 8px 2px rgba(60, 167, 222, 0.33) !important;
     -webkit-box-shadow: 0 0 1px 2px #fff inset, 0 0 8px 2px rgba(60, 167, 222, 0.33) !important;
@@ -378,8 +389,8 @@ select:not([disabled]):active {
 .confirmPayCard .total_block {
     border-color: transparent; /* #c9c9c9; transparent;*/
 }
-#credit-card select {
-    background-color: rgba(241, 241, 241, 0.5);
+#credit-card .select-wrapper {
+    background-color: rgba(241, 241, 241, 1);
     box-shadow: 0px 2px 4px 1px rgba(31,31,31,0.2), 0 0 2px #fff inset;
 }
 #credit-card ul.card li.required:before {
@@ -401,6 +412,10 @@ select:not([disabled]):active {
     background-image: -webkit-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
     background-image: -ms-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
     background-image: linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
+}
+
+#content > .checkout div.select {
+    background: #fff;
 }
 
 .confirmPayCard .content_arrow {
@@ -427,7 +442,7 @@ select:not([disabled]):active {
 
 /* Desktops and laptops ----------- */
 @media only screen and (min-device-width : 1224px) {
-    select:not([disabled]):hover {
+    .select-wrapper:not(.disabled):hover {
         box-shadow: 0 0 1px 2px #fff inset, 0 0 8px 2px rgba(60, 167, 222, 0.33) !important;
         -moz-box-shadow: 0 0 1px 2px #fff inset, 0 0 8px 2px rgba(60, 167, 222, 0.33) !important;
         -webkit-box-shadow: 0 0 1px 2px #fff inset, 0 0 8px 2px rgba(60, 167, 222, 0.33) !important;
