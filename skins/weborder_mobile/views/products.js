@@ -76,6 +76,7 @@ define(["backbone", "factory", "generator", "list", 'products_view'], function(B
             this.listenTo(this.collection, 'load_complete', this.render, this);
         },
         render: function() {
+            this.collection.sortEx();
             App.Views.LazyListView.prototype.render.apply(this, arguments);
             return this;
         },

@@ -62,6 +62,7 @@ define(['backbone', 'categories_view'], function(Backbone) {
             this.listenTo(this.collection, 'load_complete', this.render, this);
         },
         render: function() {
+            this.collection.sortEx();
             App.Views.LazyListView.prototype.render.apply(this, arguments);
             return this;
         },

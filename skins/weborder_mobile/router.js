@@ -134,7 +134,6 @@ define(["backbone", "main_router"], function(Backbone) {
                     App.Data.categories = new App.Collections.Categories();
                     App.Data.categories.loadData = App.Data.categories.get_categories();
                     App.Data.categories.loadData.then(function() {
-                        App.Data.categories.sortEx();
                         App.Data.categories.trigger("load_complete");
                         self.change_page();
                     });
@@ -192,9 +191,7 @@ define(["backbone", "main_router"], function(Backbone) {
                         back: self.navigate.bind(self, 'index', true)
                     });
 
-                    App.Data.products[id_category].sortEx();
                     App.Data.products[id_category].trigger("load_complete");
-
                     self.change_page();
                 });
 
