@@ -1161,7 +1161,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 customer = App.Data.customer.toJSON(),
                 get_parameters = App.Data.get_parameters,
                 payment_info = {},
-                myorder = this;
+                myorder = this,
+                pay_get_parameter = get_parameters.pay;
+
+            // Clear pay flag, it should not affect next payments
+            delete get_parameters.pay;
 
             switch(payment_type) {
                 case 2: // pay with card
@@ -1184,8 +1188,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                         address: address
                     };
                     var payment = App.Data.settings.get_payment_process();
-                    if (get_parameters.pay) {
-                        if(get_parameters.pay === 'true') {
+                    if (pay_get_parameter) {
+                        if(pay_get_parameter === 'true') {
                             if (payment.paypal_direct_credit_card) {
                                 payment_info.payment_id = checkout.payment_id;
                             } else if (payment.usaepay) {
@@ -1220,8 +1224,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     }
                     break;
                 case 3: // pay with paypal account
-                    if (get_parameters.pay) {
-                        if(get_parameters.pay === 'true') {
+                    if (pay_get_parameter) {
+                        if(pay_get_parameter === 'true') {
                             payment_info.payer_id = get_parameters.PayerID;
                             payment_info.payment_id = checkout.payment_id;
                         }  else {
