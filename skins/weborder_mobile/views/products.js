@@ -96,8 +96,25 @@ define(["backbone", "factory", "generator", "list", 'products_view'], function(B
             noImg && view.$el.addClass('no-image');
 
             App.Views.LazyListView.prototype.addItem.call(this, view, this.$('.products'));
+            this.culcImageSize(model);
             this.subViews.push(view);
             $(window).resize();
+        },
+        culcImageSize: function(model) {
+            if (!this.preferWidth || !this.preferHeight) {
+                this.preferWidth = Math.round($("#content .img").width());
+                this.preferHeight = Math.round($("#content .img").height());
+            }
+            
+            var logo_url = model.get(this.image_url_key);
+            var options = '?options={"size":[' + this.preferWidth + "," +  this.preferHeight + "]}";
+            var logo_url_sized = logo_url + options;
+
+            if (App.Data.settings.get_img_default() != logo_url) {
+                logo_url = logo_url_sized;
+            }
+            //model.set("logo_url_final", logo_url);
+            model.set("image", logo_url);
         }
     });
 });
