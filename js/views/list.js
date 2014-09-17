@@ -90,7 +90,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.content_elem = this.options.content_elem || "#content";
             this.parent_elem = this.options.parent_elem || "#content ul";
             this.list_elem = this.options.list_elem || "#content li";
-            this.image_url_key = this.options.image_url_key || "image";
+            this.image_url_key = this.options.image_url_key || "image"; //it's name of image property in a model   
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);        
             this.listenTo(this.collection, 'sort', this.sort);
             $(this.content_elem).on('scroll', this.onScroll.bind(this));            
@@ -141,7 +141,7 @@ define(["backbone", "factory"], function(Backbone) {
                     
                     var model = this.sortedModels[i];                   
                     
-                    $('img', listElem).attr('src', model.get(this.image_url_key));
+                    $('img', listElem).attr('src', model.get("logo_url_final") ? model.get("logo_url_final") : model.get(this.image_url_key));
                     
                     loadSpinner($('img', listElem), {spinner: true, anim: false});
                 }
@@ -158,6 +158,21 @@ define(["backbone", "factory"], function(Backbone) {
             $(this.parent_elem).append(list);
 
             this.onScroll();
+        },
+        culcImageSize: function(model) {
+            if (!this.preferWidth || !this.preferHeight) {
+                this.preferWidth = Math.round($("#content .img").width());
+                this.preferHeight = Math.round($("#content .img").height());
+            }
+            
+            var logo_url = model.get(this.image_url_key);
+            var options = '?options={"size":[' + this.preferWidth + "," +  this.preferHeight + "]}";
+            var logo_url_sized = logo_url + options;
+
+            if (App.Data.settings.get_img_default() != logo_url) {
+                logo_url = logo_url_sized;
+            }
+            model.set("logo_url_final", logo_url);
         }
     });
 });

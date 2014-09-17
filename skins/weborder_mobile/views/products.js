@@ -76,6 +76,7 @@ define(["backbone", "factory", "generator", "list", 'products_view'], function(B
             this.listenTo(this.collection, 'load_complete', this.render, this);
         },
         render: function() {
+            this.subViews.removeFromDOMTree();
             this.collection.sortEx();
             App.Views.LazyListView.prototype.render.apply(this, arguments);
             return this;
@@ -88,6 +89,7 @@ define(["backbone", "factory", "generator", "list", 'products_view'], function(B
                 noImg = settings.hide_images,
                 noDesc = settings.hide_products_description,
                 view;
+
             view = App.Views.GeneratorView.create('Product', {
                 el: $('<li class="product"></li>'),
                 mod: 'ListItem',
@@ -100,22 +102,6 @@ define(["backbone", "factory", "generator", "list", 'products_view'], function(B
             this.culcImageSize(model);
             this.subViews.push(view);
             $(window).resize();
-        },
-        culcImageSize: function(model) {
-            if (!this.preferWidth || !this.preferHeight) {
-                this.preferWidth = Math.round($("#content .img").width());
-                this.preferHeight = Math.round($("#content .img").height());
-            }
-            
-            var logo_url = model.get(this.image_url_key);
-            var options = '?options={"size":[' + this.preferWidth + "," +  this.preferHeight + "]}";
-            var logo_url_sized = logo_url + options;
-
-            if (App.Data.settings.get_img_default() != logo_url) {
-                logo_url = logo_url_sized;
-            }
-            //model.set("logo_url_final", logo_url);
-            model.set("image", logo_url);
         }
     });
 });

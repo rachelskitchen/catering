@@ -77,25 +77,9 @@ define(['backbone', 'categories_view'], function(Backbone) {
             App.Views.LazyListView.prototype.addItem.call(this, view, this.$('.categories'));
             
             // Right now culcImageSize() is useless because category images can't be download to Revel servers, 
-            // images accessed via external url only 
+            // images are accessed via external url only 
             //this.culcImageSize(model);
             this.subViews.push(view);
-        },
-        culcImageSize: function(model) {
-            if (!this.preferWidth || !this.preferHeight) {
-                this.preferWidth = Math.round($("#content .img").width());
-                this.preferHeight = Math.round($("#content .img").height());
-            }
-            
-            var logo_url = model.get(this.image_url_key);
-            var options = '?options={"size":[' + this.preferWidth + "," +  this.preferHeight + "]}";
-            var logo_url_sized = logo_url + options;
-
-            if (App.Data.settings.get_img_default() != logo_url) {
-                logo_url = logo_url_sized;
-            }
-            //model.set("logo_url_final", logo_url);
-            model.set("image", logo_url);
         }
     });
 });
