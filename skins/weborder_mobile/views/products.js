@@ -24,9 +24,10 @@ define(["backbone", "factory", "generator", "list", 'products_view'], function(B
     'use strict';
 
     App.Views.ProductView.ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView.extend({
-        render: function() {
-           App.Views.CoreProductView.CoreProductModifiersView.prototype.render.apply(this, arguments);
-           this.product.get('is_gift') && this.$el.addClass('is_gift');
+        render: function() {        
+            App.Views.CoreProductView.CoreProductModifiersView.prototype.render.apply(this, arguments);
+            $('img', this.$el).attr('src', this.product.get("logo_url_final") ? this.product.get("logo_url_final") : this.product.get("image"));
+            this.product.get('is_gift') && this.$el.addClass('is_gift');
         }
     });
 
