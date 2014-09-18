@@ -81,9 +81,12 @@
     z-index: 1;
 }
 #content ul.tips .amount:disabled {
-    color: #999;
+    color: #454545;    
     background: #eee;
+    -webkit-opacity: 1;
+    -webkit-text-fill-color: rgba(0, 0, 0, 0.8);
 }
+
 #content ul.tips .amount::-webkit-inner-spin-button, #content ul.tips .amount::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
