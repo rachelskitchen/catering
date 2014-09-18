@@ -37,7 +37,8 @@ define(["backbone", "factory"], function(Backbone) {
             var product = this.model.get_product(),
                 quantity = this.model.get('quantity'),
                 stock_amount = product.get('stock_amount'),
-                is_gift = product.get('is_gift');
+                is_gift = product.get('is_gift'),
+                disallowEmptyInventory = App.Data.settings.get('settings_system').cannot_order_with_empty_inventory;
 
             is_gift && this.model.set('quantity', 1);
 
@@ -48,6 +49,12 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             this.$('.select-wrapper').addClass('l' + (stock_amount ? stock_amount.toString().length : '1'));
+
+            // if "cannot order with empty inventory" is checked on
+            // need reset the quantity each time when user changes an attribute selection
+            if(arguments.length > 0 && disallowEmptyInventory) {
+                this.model.set('quantity', 1);
+            }
         },
         update: function() {
 

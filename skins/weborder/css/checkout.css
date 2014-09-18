@@ -34,7 +34,7 @@
     margin-bottom: 12px;
 }
 #content > .checkout div.select_day, #content > .checkout div.select.states {
-    width: 245px;
+    width: 250px;
 }
 #content > .checkout div.select_day[disabled="disabled"] {
     opacity: .5;
@@ -254,9 +254,6 @@
     }
     #content > .checkout div.tips .input_beauty {
         left: 0 !important;
-    }
-    #content div.specials > label {
-        text-indent: 20px !important;
     }
 }
 

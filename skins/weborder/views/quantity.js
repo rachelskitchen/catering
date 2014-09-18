@@ -59,9 +59,6 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
         },
         change: function(e) {
             this.model.set('quantity', e.target.value * 1);
-        },
-        update: function() {
-            this.$('span.quantity').text(this.model.get('quantity'));
         }
     });
 
