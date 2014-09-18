@@ -23,28 +23,27 @@
 #content > .checkout .tipBlock {
     height: 70px;
 }
-#content > .checkout select {
-    width: 100%;
-    max-width: 100%;
-}
 #content > .checkout div.select {
     display: inline-block;
-    width: 140px;
+    width: 175px;
     position: relative;
-    left: -22px;
-}
-#content > .checkout div.select_arrows {
-    right: 2px;
+    left: -17px;
+    top: 6px;
+    vertical-align: top;
+    height: 24px;
+    margin-bottom: 12px;
 }
 #content > .checkout div.select_day, #content > .checkout div.select.states {
-    width: 210px;
-}
-#content > .checkout div.select {
-    margin-bottom: 10px;
+    width: 245px;
 }
 #content > .checkout div.select_day[disabled="disabled"] {
     opacity: .5;
     filter: alpha(opacity=50);
+}
+#content > .checkout label.select {
+    line-height: 42px;
+    vertical-align: top;
+    margin: 0;
 }
 #content > .checkout div.tips label {
     margin: 0;
@@ -258,13 +257,13 @@
     }
     #content div.specials > label {
         text-indent: 20px !important;
-    } 
-}    
+    }
+}
 
 @media only screen and (max-device-width: 949px) and (orientation: portrait) {
     #content > .checkout .tipBlock {
       height: 116px !important;
-    }  
+    }
 }
 
 

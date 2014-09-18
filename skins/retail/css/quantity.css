@@ -26,6 +26,10 @@
     font-size: 15px;
 }
 
+.quantity_select select {
+    font-weight: bold;
+}
+
 .quantity .select-wrapper.l1 {
     width: 49px;
 }

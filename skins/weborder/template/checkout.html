@@ -55,15 +55,13 @@
   <div class="<% if (isOrderFromSeat) { print('hidden'); }%>">
     <div class="row">
         <label for="pickupTimeDay"><span class="pickup bold required"><%= pickupTimeLabel %></span>:</label>
-        <div class="select select_day">
-            <div class="select_arrows"></div>
+        <div class="select select_day select-wrapper">
             <select class="day" id="pickupTimeDay"></select>
         </div>
     </div>
     <div class="row">
         <label for="pickupTimeHour"></label>
-        <div class="select select_day">
-            <div class="select_arrows"></div>
+        <div class="select select_day select-wrapper">
             <select class="time" id="pickupTimeHour"></select>
         </div>
     </div>
@@ -72,8 +70,7 @@
 
 <script type="text/template" id="checkout_order_type-template">
     <label class="select"><span class="required bold">Order Type:</span></label>
-    <div class="select">
-        <div class="select_arrows"></div>
+    <div class="select select-wrapper">
         <select class="order-type-select"></select>
     </div>
 </script>
@@ -100,8 +97,7 @@
     <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
     <div class="row">
         <label class="select" for="states"><span class="required bold">State:</span></label>
-        <div class="select states">
-            <div class="select_arrows"></div>
+        <div class="select states select-wrapper">
             <select class="states" id="states">
             <% for(var i in states) { %>
                 <option value="<%= i %>" <% if(i.toLowerCase() == state.toLowerCase()) { %>selected="selected"<% } %>><%= states[i] %></option>

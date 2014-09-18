@@ -7,21 +7,18 @@
 }
 .subcategories > span {
     font-weight: bold;
+    line-height: 26px;
+    vertical-align: top;
 }
 .subcategories select {
     font-size:16px;
-    outline: none;
-    background: none;
-    position: relative;
+}
+.subcategories .select-wrapper {
     margin-left: 7px;
     max-width: 190px;
-    min-width:145px;
+    min-width: 145px;
     cursor: pointer;
     border-radius: 15px;
-    padding: 3px 15px 3px 0px;
-    appearance:none;
-    -webkit-appearance: none;            /*Removes default chrome and safari style*/
-    -moz-appearance: none;             /* Removes Default Firefox style*/
-    text-indent: 5px;          /* Removes default arrow from firefox*/
-    text-overflow: "";               /*Removes default arrow from firefox*/
+    height: 24px;
+    vertical-align: top;
 }

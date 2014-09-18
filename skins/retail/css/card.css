@@ -21,21 +21,12 @@
     right: 40px;
 }
 
-#credit-card select {
-    background-position: 56px 50%;
-}
 #credit-card div.select {
     display: inline-block;
     width: 73px;
     position: relative;
     left: -12px;
 }
-#credit-card div.select_arrows {
-    right: -2px;
-}
-/*#credit-card div.select:last-child {
-    margin-bottom: 10px;
-}*/
 #credit-card div.select[disabled="disabled"] {
     opacity: .5;
     opacity: filter(50);
