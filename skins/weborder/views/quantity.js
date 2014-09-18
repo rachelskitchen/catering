@@ -32,7 +32,8 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
             var select = this.$('select'),
                 product = this.model.get_product(),
                 quantity = this.model.get('quantity'),
-                stock_amount = product.get('stock_amount');
+                stock_amount = product.get('stock_amount'),
+                selectWrapper = this.$('.select-wrapper');
 
             select.empty();
             for (var i = 1; i <= stock_amount; i++) {
@@ -46,9 +47,11 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
             if (stock_amount === 1 || product.isParent()) {
                 select.addClass('disabled');
                 select.prop('disabled', true);
+                selectWrapper.addClass('disabled');
             } else {
                 select.removeClass('disabled');
                 select.prop('disabled', false);
+                selectWrapper.removeClass('disabled');
             }
 
             if(product.isParent())

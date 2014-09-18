@@ -326,13 +326,13 @@ ul.categories {
     border-color: #716e68;
     box-shadow: 1px 3px 3px 1px #CAC9C9;
 }
-#modifiers_popup .quantity_select .select-wrapper.disabled {
+#modifiers_popup .quantity_select.select-wrapper.disabled {
     border-color: #CAC9C9;
     color: #CAC9C9;
-    cursor:default;
+    cursor: default;
 }
 
-#modifiers_popup .quantity .quantity_select .select-wrapper:not(.disabled):hover,
+#modifiers_popup .quantity .quantity_select.select-wrapper:not(.disabled):hover,
 #modifiers_popup .product_instructions .add_instructions:hover,
 #modifiers_popup .modifiers_table .modifiers-list label:hover .special_button {
     box-shadow: 0 0 1px 2px #fff inset, 0 0 8px 2px rgba(60, 167, 222, 0.33);
