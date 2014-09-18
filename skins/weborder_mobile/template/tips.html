@@ -1,5 +1,5 @@
 <script type="text/template" id="tips_line-template">
-    <ul class="tips">
+    <ul class="tips <% if(isFirefox) print('firefox') %> <% if (!tip_allow) print('hidden'); %>">
         <li>
             <div class="fl_left tip_label">Add a Tip:</div>
             <div class="fl_right">
