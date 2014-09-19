@@ -36,7 +36,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
             var self = this;
             $(window).resize(function() {
-                if (!isIEMobile() && !isAndroidWebKit()) {
+                if (!isIEMobile() && !isAndroidWebKit() && self.model.get('no_perfect_scroll') !== true) { //no_perfect_scroll #14024 
                    self.$('#content').perfectScrollbar('update');
                 }
             })
@@ -133,9 +133,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             $(window).trigger('loadCompleted');
             clearTimeout(this.spinner);
             delete this.spinner;
-            if (!isIEMobile() && !isAndroidWebKit()) {
+            if (!isIEMobile() && !isAndroidWebKit() && this.model.get('no_perfect_scroll') !== true) { //no_perfect_scroll #14024 
                 $("#content").css("overflow-y", "hidden");
                 setTimeout($.fn.perfectScrollbar.bind(this.$('#content')), 0);
+            }
+            if (this.model.get('no_perfect_scroll') === true) {
+                $("#content").css("overflow-y", "auto");
             }
             this.hideSpinner();
         },

@@ -381,11 +381,12 @@ define(["backbone", "main_router"], function(Backbone) {
                             mod: 'Pickup',
                             className: 'checkout'
                         }
-                    ]
+                    ],
+                    no_perfect_scroll: true
                 });
 
                 this.change_page();
-            });
+            });    
         },
         card: function() {
             this.prepare('card', function() {

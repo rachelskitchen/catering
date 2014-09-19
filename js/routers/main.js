@@ -108,6 +108,7 @@ define(["backbone"], function(Backbone) {
         },
         change_page: function(cb) {
             App.Data.mainModel.trigger('loadCompleted');
+            App.Data.mainModel.set('no_perfect_scroll', false, {silent: true}); // this is for #14024            
         },
         maintenance : function() {
             if (!App.Data.settings.get('isMaintenance')) {
