@@ -1202,6 +1202,14 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                     return;
                                 }
                                 payment_info.transaction_id = get_parameters.PaymentID;
+                            } else if (payment.moneris) {
+                                var returnCode = Number(get_parameters.response_code);
+                                if (returnCode >= MONERIS_RETURN_CODE.DECLINE) {
+                                    myorder.paymentResponse = {status: 'error', errorMsg: getMonerisErrorMessage(returnCode)};
+                                    myorder.trigger('paymentResponse');
+                                    return;
+                                }
+                                payment_info.transaction_id = get_parameters.bank_transaction_id;
                             }
                         } else {
                             if (payment.paypal_direct_credit_card) {
@@ -1210,6 +1218,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                 myorder.paymentResponse = {status: 'error', errorMsg: get_parameters.UMerror};
                             } else if (payment.mercury) {
                                 myorder.paymentResponse = {status: 'error', errorMsg: getMercuryErrorMessage(Number(get_parameters.ReturnCode))};
+                            } else if (payment.moneris) {
+                                myorder.paymentResponse = {status: 'error', errorMsg: getMonerisErrorMessage(Number(get_parameters.response_code))};
                             }
                             myorder.trigger('paymentResponse');
                             return;

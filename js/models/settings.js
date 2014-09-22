@@ -116,7 +116,7 @@ define(["backbone", "async"], function(Backbone) {
          */
         get_settings_main: function() {
             var params = parse_get_params(),
-                skin = params.skin,
+                skin = params.skin || params.rvarSkin,
                 settings = this.get('settings_system'),
                 isUnknownSkin = !(skin && this.get('supported_skins').indexOf(skin) > -1),
                 defaultSkin = settings.type_of_service == ServiceType.RETAIL ? App.Skins.RETAIL : App.Skins.DEFAULT;
@@ -185,7 +185,7 @@ define(["backbone", "async"], function(Backbone) {
          */
         get_establishment: function() {
             var get_parameters = parse_get_params(), // get GET-parameters from address line
-                establishment = get_parameters.establishment;
+                establishment = get_parameters.establishment || get_parameters.rvarEstablishment;
             if (!isNaN(establishment))
                 this.set("establishment", establishment);
         },
@@ -368,15 +368,15 @@ define(["backbone", "async"], function(Backbone) {
 
             var skin = this.get("skin");
 
-            if ((skin === 'weborder' || skin === 'weborder_mobile') && !processor.usaepay && !processor.mercury && !processor.paypal && !settings_system.accept_cash_online) {
+            if ((skin === 'weborder' || skin === 'weborder_mobile') && !processor.usaepay && !processor.mercury && !processor.moneris && !processor.paypal && !settings_system.accept_cash_online) {
                 return undefined;
             }
 
-            var credit_card_button = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury;
+            var credit_card_button = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury || processor.moneris;
             var credit_card_dialog = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay;
             var payment_count = 0;
             processor.paypal && payment_count++;
-            if((processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury) {
+            if((processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury || processor.moneris) {
                 payment_count++;
             }
             processor.cash && payment_count++;
