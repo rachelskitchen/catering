@@ -378,7 +378,7 @@ define(["backbone", "async"], function(Backbone) {
             }
 
             var credit_card_button = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury || processor.moneris;
-            var credit_card_dialog = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay;
+            var credit_card_dialog = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.moneris;
             var payment_count = 0;
             processor.paypal && payment_count++;
             if((processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury || processor.moneris) {
