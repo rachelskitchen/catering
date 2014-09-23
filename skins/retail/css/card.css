@@ -37,19 +37,13 @@
 #credit-card ul.card.firefox label:before {
     top: 0;
 }
-#credit-card .select.month {
-    margin-right: 10px;
-    display: inline-block;
-}
 #credit-card div.select {
     position: relative;
     top: 6px;
     vertical-align: top;
 }
-#credit-card .select.month,
-#credit-card .select.year {
+#credit-card .select-wrapper {
     margin-right: 10px;
-    display: inline-block;
 }
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
