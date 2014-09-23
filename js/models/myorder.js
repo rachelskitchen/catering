@@ -1209,7 +1209,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                     myorder.trigger('paymentResponse');
                                     return;
                                 }
-                                payment_info.transaction_id = get_parameters.bank_transaction_id;
+                                payment_info.transaction_id = get_parameters.txn_num;
                             }
                         } else {
                             if (payment.paypal_direct_credit_card) {
