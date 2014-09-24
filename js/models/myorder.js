@@ -799,7 +799,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          *     card: true - test card model
          *     order: true - test myorders collection
          *     tip: true - test add flag isTip to order test,
-         *     validation: true - test whole order on backend
+         *     validationOnly: true - test whole order on backend
          * }
          * success - callback if checked is OK
          * error - callback or alert if checked is ERROR
@@ -816,6 +816,17 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     check_card = card.check();
 
                 if (check_card.status === 'ERROR') {
+                    errorMsg = check_card.errorMsg;
+                } else if (check_card.status === 'ERROR_EMPTY_FIELDS') {
+                    fields = fields.concat(check_card.errorList);
+                }
+            }
+
+            if (options.giftcard) {
+                var giftcard = App.Data.giftcard,
+                    check_card = giftcard.check();
+
+                if (giftcard.status === 'ERROR') {
                     errorMsg = check_card.errorMsg;
                 } else if (check_card.status === 'ERROR_EMPTY_FIELDS') {
                     fields = fields.concat(check_card.errorList);
@@ -883,7 +894,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             } else if (options.customer && dining_option === 'DINING_OPTION_DELIVERY') {
                 customer.validate_address(success, error);
             } else {
-                if (options.validation) {
+                if (options.validationOnly) {
                     var tmp_model = new Backbone.View();
                     tmp_model.listenTo(this, 'paymentResponseValid', function() {
                         success();
@@ -895,7 +906,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                         tmp_model.remove();
                         self.trigger('paymentInProcessValid');
                     });
-                    this.pay_order_and_create_order_backend(4, true);
+                    this.create_order_and_pay(PAYMENT_TYPE.NO_PAYMENT, true);
                 } else {
                     success();
                 }
@@ -904,14 +915,14 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         /**
          * Pay order and create order to backend.
          */
-        pay_order_and_create_order_backend: function(type_payment, validation) {
+        create_order_and_pay: function(payment_type, validationOnly) {
             if(this.paymentInProgress)
                 return;
             this.paymentInProgress = true;
             if(this.preparePickupTime() === 0)
                 return;
             this.trigger('paymentInProcess');
-            this.submit_order_and_pay(type_payment, validation);
+            this.submit_order_and_pay(payment_type, validationOnly);
         },
         preparePickupTime: function() {
             var only_gift = this.checkout.get('dining_option') === 'DINING_OPTION_ONLINE';
@@ -953,7 +964,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 });
             }
         },
-        submit_order_and_pay: function(payment_type, validation) {
+        submit_order_and_pay: function(payment_type, validationOnly) {
             var myorder = this,
                 get_parameters = App.Data.get_parameters,
                 skin = App.Data.settings.get('skin'),
@@ -1022,7 +1033,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             var myorder_json = JSON.stringify(order);
             $.ajax({
                 type: "POST",
-                url: App.Data.settings.get("host") + "/weborders/" + (validation ? "pre_validate/" : "create_order_and_pay/"),
+                url: App.Data.settings.get("host") + "/weborders/" + (validationOnly ? "pre_validate/" : "create_order_and_pay/"),
                 data: myorder_json,
                 dataType: "json",
                 success: function(data) {
@@ -1034,7 +1045,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
                     switch(data.status) {
                         case "OK":
-                            if (validation) {
+                            if (validationOnly) {
                                 myorder.trigger('paymentResponseValid');
                             } else {
                                 myorder.trigger('paymentResponse');
@@ -1107,13 +1118,13 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     reportErrorFrm(MSG.ERROR_SUBMIT_ORDER);
                 },
                 complete: function(xhr, result) {
-                    payment_type === 1 && $.mobile.loading("hide");
+                    payment_type === PAYMENT_TYPE.PAYPAL_MOBILE && $.mobile.loading("hide");
                     delete myorder.paymentInProgress;
                 }
             });
 
             function reportErrorFrm(message) {
-                if (validation) {
+                if (validationOnly) {
                     myorder.trigger('paymentFailedValid', [message]);
                 } else {
                     myorder.trigger('paymentFailed');
@@ -1122,7 +1133,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             function reportError(message) {
-                if (validation) {
+                if (validationOnly) {
                     myorder.trigger('paymentFailedValid', [message]);
                 } else {
                     myorder.trigger('paymentFailed', [message]);
@@ -1168,6 +1179,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         processPaymentType: function(payment_type) {
             var checkout = this.checkout.toJSON(),
                 card = App.Data.card && App.Data.card.toJSON(),
+                giftcard = App.Data.giftcard && App.Data.giftcard.toJSON(),
                 customer = App.Data.customer.toJSON(),
                 get_parameters = App.Data.get_parameters,
                 payment_info = {},
@@ -1178,7 +1190,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             delete get_parameters.pay;
 
             switch(payment_type) {
-                case 2: // pay with card
+                case PAYMENT_TYPE.CREDIT: // pay with card
                     var address = null;
                     if (card.street) {
                         address = {
@@ -1233,7 +1245,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                         }
                     }
                     break;
-                case 3: // pay with paypal account
+                case PAYMENT_TYPE.PAYPAL: // pay with paypal account
                     if (pay_get_parameter) {
                         if(pay_get_parameter === 'true') {
                             payment_info.payer_id = get_parameters.PayerID;
@@ -1245,7 +1257,14 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                         }
                     }
                     break;
-                case 4: // pay with cash
+                case PAYMENT_TYPE.NO_PAYMENT: // pay with cash
+                    break;
+                case PAYMENT_TYPE.GIFT: // pay with gift card
+                    payment_info.cardInfo = {
+                        cardNumber: $.trim(giftcard.cardNumber),
+                        captchaKey: giftcard.captchaKey,
+                        captchaValue: giftcard.captchaValue
+                    };
                     break;
             }
 

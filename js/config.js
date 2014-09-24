@@ -53,6 +53,7 @@ define({
         modifiers: "js/models/modifiers",
         tip: "js/models/tip",
         card: "js/models/card",
+        giftcard: "js/models/giftcard",
         checkout: "js/models/checkout",
         geopoint: "js/common/geopoint",
         main_router: "js/routers/main",
@@ -70,6 +71,7 @@ define({
         total_view: "js/views/total",
         tips_view: "js/views/tips",
         card_view: "js/views/card",
+        giftcard_view: "js/views/giftcard",
         instructions_view: "js/views/instructions",
         done_view: "js/views/done",
         slider_view: "js/views/slider",
@@ -148,6 +150,9 @@ define({
             deps: ["backbone"]
         },
         "card": {
+            deps: ["backbone"]
+        },
+        "giftcard": {
             deps: ["backbone"]
         },
         "checkout": {

@@ -140,4 +140,22 @@
     top: 0;
 }
 
+
+#content ul.card .btn-reload {
+    font-size: 2.8em;
+    font-weight: bold;
+    color: #3F7CA4;
+    border: solid 0.32em #c3dce9;
+    box-shadow: 0.10em 0.25em 0.5em #a09d9d, inset 0em 0em 0.5em #e8e8e8;
+    border-radius: 3em;
+    cursor: pointer;
+    background-image: -webkit-linear-gradient(top, #ffffff 0%, #eeeeee 100%);
+    background-color: #ffffff;
+    text-align: center;
+    height: 80%;
+    display: inline-block;
+    position: relative;
+}
+
+
 /* main mod end */

@@ -198,6 +198,8 @@ define(["backbone"], function(Backbone) {
             this.prepare('pay', function() {
                 App.Data.card = new App.Models.Card();
                 App.Data.card.loadCard();
+                App.Data.giftcard = new App.Models.GiftCard();
+                App.Data.giftcard.loadCard();
                 App.Data.customer = new App.Models.Customer();
                 App.Data.customer.loadCustomer();
                 App.Data.customer.loadAddresses();

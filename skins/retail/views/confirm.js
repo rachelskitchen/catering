@@ -40,7 +40,7 @@ define(["backbone", "checkout_view"], function(Backbone) {
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
 
-            this.subViews.push(App.Views.GeneratorView.create('Card', {
+            this.subViews.push(App.Views.GeneratorView.create(this.options.submode == 'Gift' ? 'GiftCard' : 'Card', {
                 el: this.$('#credit-card'),
                 mod: 'Main',
                 model: this.options.card
@@ -69,13 +69,15 @@ define(["backbone", "checkout_view"], function(Backbone) {
             saveAllData();
 
             self.collection.check_order({
-                card: true,
+                card: self.options.submode == 'Credit',
+                giftcard: self.options.submode == 'Gift',
                 order: true,
                 tip: true,
                 customer: true,
                 checkout: true
             }, function() {
-                self.collection.pay_order_and_create_order_backend(2);
+                self.collection.create_order_and_pay(self.options.submode == 'Gift' ?
+                                                     PAYMENT_TYPE.GIFT : PAYMENT_TYPE.CREDIT);
                 !self.canceled && self.collection.trigger('showSpinner');
                 $('#popup .cancel').trigger('click');
             });

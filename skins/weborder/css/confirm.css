@@ -62,6 +62,22 @@
 .confirmPayCard .content_arrow.arrow_bottom {
     bottom: 0px;
 }
+.confirmPayCard .captcha_container {
+    position: relative;
+    left: 230px;
+}
+.confirmPayCard .captcha {
+    display: inline-block;
+    vertical-align: middle;
+}
+.confirmPayCard .btn-reload {
+    display: inline-block;
+    vertical-align: middle;
+    height: 20px;
+    font-size: 15px;
+    line-height: 20px;
+    width: 70px;
+}
 
 #popup .order-items {
     max-height: 335px;

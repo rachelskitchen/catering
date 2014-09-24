@@ -1,0 +1,20 @@
+<script type="text/template" id="giftcard_main-template">
+    <div class="card_title">Enter your Gift Card Information</div>
+    <div>
+        <label for="cardNumber"><span class="bold required">Card Number:</span></label>
+        <div class="input_beauty">
+            <input type="text" id="cardNumber" class="number" value="<%= cardNumber %>" min="0">
+        </div>
+    </div>
+    <div class="captcha_container">
+        <img alt="captcha" class="captcha">
+        <div class="btn btn-reload">Reload</div>
+    </div>
+    <div>
+        <label for="cardNumber"><span class="bold required">Captcha:</span></label>
+        <div class="input_beauty">
+            <input autocomplete="off" id="id_captcha_key" name="captcha_key" type="hidden">
+            <input autocomplete="off" id="id_captcha_value" name="captcha_value" type="text">
+        </div>
+    </div>
+</script>

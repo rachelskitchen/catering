@@ -34,6 +34,7 @@ define(["backbone", "main_router"], function(Backbone) {
     headerModes.Myorder = {mod: 'TwoButton', className: 'two_button myorder'};
     headerModes.Checkout = headerModes.OneButton;
     headerModes.Card = headerModes.Main;
+    headerModes.GiftCard = headerModes.Main;
     headerModes.Confirm = headerModes.OneButton;
     headerModes.Done = headerModes.Main;
     headerModes.Location = {mod: 'Location', className: 'two_button location'};
@@ -49,6 +50,7 @@ define(["backbone", "main_router"], function(Backbone) {
     footerModes.Myorder = footerModes.Main;
     footerModes.Checkout = {mod: 'Checkout'};
     footerModes.Card = {mod: 'Card'};
+    footerModes.GiftCard = {mod: 'GiftCard'};
     footerModes.Confirm = {mod: 'Confirm'};
     footerModes.Done = {mod: 'Done'};
     footerModes.Location = footerModes.Main;
@@ -68,6 +70,7 @@ define(["backbone", "main_router"], function(Backbone) {
             "myorder": "myorder",
             "checkout" : "checkout",
             "card" : "card",
+            "giftcard" : "gift_card",
             "confirm": "confirm",
             "done": "done",
             "location": "location",
@@ -344,6 +347,9 @@ define(["backbone", "main_router"], function(Backbone) {
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card;
 
+                if(!App.Data.giftcard)
+                    App.Data.giftcard = new App.Models.GiftCard;
+
                 if(!App.Data.customer) {
                     App.Data.customer =  new App.Models.Customer();
                     App.Data.customer.loadAddresses();
@@ -403,6 +409,28 @@ define(["backbone", "main_router"], function(Backbone) {
                     content: {
                         modelName: 'Card',
                         model: App.Data.card,
+                        mod: 'Main'
+                    }
+                });
+
+                this.change_page();
+            });
+        },
+        gift_card: function() {
+            this.prepare('giftcard', function() {
+                if(!App.Data.giftcard)
+                    App.Data.giftcard = new App.Models.GiftCard;
+
+                App.Data.header.set({
+                    page_title: 'Gift Card Information'
+                });
+
+                App.Data.mainModel.set({
+                    header: headerModes.GiftCard,
+                    footer: footerModes.GiftCard,
+                    content: {
+                        modelName: 'GiftCard',
+                        model: App.Data.giftcard,
                         mod: 'Main'
                     }
                 });

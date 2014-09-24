@@ -259,6 +259,10 @@ define(["backbone", "main_router"], function(Backbone) {
                     App.Data.card = new App.Models.Card;
                 }
 
+                if(!App.Data.giftcard) {
+                    App.Data.giftcard = new App.Models.GiftCard;
+                }
+
                 if (!App.Data.customer) {
                     App.Data.customer = new App.Models.Customer();
                 }
