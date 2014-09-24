@@ -1049,6 +1049,16 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                             myorder.checkout.set('payment_type', payment_type);
                             myorder.checkout.saveCheckout();
 
+                            var qStr = location.search;
+                            if (qStr) {
+                                qStr += "&";
+                            } else {
+                                qStr = "?";
+                            }
+                            qStr += "pay=false";
+                            var url = window.location.origin + window.location.pathname + qStr;
+                            window.history.replaceState('Return','', url);
+
                             if (data.data.url) {
                                 window.location = data.data.url;
                             } else if (data.data.action && data.data.query) {
