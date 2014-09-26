@@ -1188,6 +1188,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             // Clear pay flag, it should not affect next payments
             delete get_parameters.pay;
+            delete get_parameters[MONERIS_PARAMS.PAY];
 
             switch(payment_type) {
                 case PAYMENT_TYPE.CREDIT: // pay with card
