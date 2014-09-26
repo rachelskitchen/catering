@@ -24,6 +24,8 @@ define(["backbone", "main_router"], function(Backbone) {
     'use strict';
 
     delete DINING_OPTION_NAME.DINING_OPTION_EATIN;
+    delete DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH;
+    delete DINING_OPTION_NAME.DINING_OPTION_OTHER;
     delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
 
     var headers = {},

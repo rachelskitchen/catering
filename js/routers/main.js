@@ -29,6 +29,8 @@ define(["backbone"], function(Backbone) {
     window.DINING_OPTION_NAME = {
         DINING_OPTION_TOGO: 'Take Out',
         DINING_OPTION_EATIN: 'Eat In',
+        DINING_OPTION_DRIVETHROUGH: 'Drive Through',
+        DINING_OPTION_OTHER: 'Other',
         DINING_OPTION_DELIVERY: 'Delivery',
         DINING_OPTION_DELIVERY_SEAT: 'Deliver to Seat'
     };
@@ -43,6 +45,19 @@ define(["backbone"], function(Backbone) {
 
             if (!App.Settings.eat_in_for_online_orders) {
                 delete DINING_OPTION_NAME.DINING_OPTION_EATIN;
+            }
+
+            if(App.Settings.editable_dining_options[0]) {
+                DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH = App.Settings.editable_dining_options[1];
+                DINING_OPTION_NAME.DINING_OPTION_OTHER = App.Settings.editable_dining_options[2];
+            }
+
+            if (!App.Settings.drive_through_online_orders) {
+                delete DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH;
+            }
+
+            if (!App.Settings.other_dining_option_for_online_orders) {
+                delete DINING_OPTION_NAME.DINING_OPTION_OTHER;
             }
 
             var orderFromSeat = App.Settings.order_from_seat || [];
@@ -108,7 +123,7 @@ define(["backbone"], function(Backbone) {
         },
         change_page: function(cb) {
             App.Data.mainModel.trigger('loadCompleted');
-            App.Data.mainModel.set('no_perfect_scroll', false, {silent: true}); // this is for #14024            
+            App.Data.mainModel.set('no_perfect_scroll', false, {silent: true}); // this is for #14024
         },
         maintenance : function() {
             if (!App.Data.settings.get('isMaintenance')) {
