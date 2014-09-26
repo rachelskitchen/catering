@@ -1019,6 +1019,28 @@ function clearQueryString(isNotHash) {
     qStr = qStr.replace(/&&/g, '&');
     qStr = qStr.replace(/&?PaymentID=[^&]*/, '');
     qStr = qStr.replace(/&?ReturnCode=[^&]*/, '');
+    //Remove Moneris params
+    qStr = qStr.replace(/&?response_order_id=[^&]*/, '');
+    qStr = qStr.replace(/&?date_stamp=[^&]*/, '');
+    qStr = qStr.replace(/&?time_stamp=[^&]*/, '');
+    qStr = qStr.replace(/&?bank_transaction_id=[^&]*/, '');
+    qStr = qStr.replace(/&?charge_total=[^&]*/, '');
+    qStr = qStr.replace(/&?bank_approval_code=[^&]*/, '');
+    qStr = qStr.replace(/&?response_code=[^&]*/, '');
+    qStr = qStr.replace(/&?iso_code=[^&]*/, '');
+    qStr = qStr.replace(/&?txn_num=[^&]*/, '');
+    qStr = qStr.replace(/&?message=[^&]*/, '');
+    qStr = qStr.replace(/&?trans_name=[^&]*/, '');
+    qStr = qStr.replace(/&?cardholder=[^&]*/, '');
+    qStr = qStr.replace(/&?f4l4=[^&]*/, '');
+    qStr = qStr.replace(/&?card=[^&]*/, '');
+    qStr = qStr.replace(/&?expiry_date=[^&]*/, '');
+    qStr = qStr.replace(/&?result=[^&]*/, '');
+    qStr = qStr.replace(/&?rvarPay=[^&]*/, '');
+    qStr = qStr.replace(/rvarSkin=/, 'skin=');
+    qStr = qStr.replace(/rvarEstablishment=/, 'establishment=');
+    qStr = qStr.replace(/\?&/, '?');
+
 
     var url = host + path + qStr + hash;
     window.history.replaceState('Return','', url);
