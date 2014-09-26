@@ -1184,7 +1184,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 get_parameters = App.Data.get_parameters,
                 payment_info = {},
                 myorder = this,
-                pay_get_parameter = get_parameters.pay;
+                pay_get_parameter = typeof get_parameters.pay != 'undefined' ? get_parameters.pay : get_parameters[MONERIS_PARAMS.PAY];
 
             // Clear pay flag, it should not affect next payments
             delete get_parameters.pay;

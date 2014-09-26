@@ -171,6 +171,10 @@ var MONERIS_RETURN_MESSAGE = {
 };
 MONERIS_RETURN_MESSAGE_DEFAULT = "Unknown error";
 
+var MONERIS_PARAMS = {
+    PAY: 'rvarPay'
+};
+
 function getMercuryErrorMessage(returnCode) {
 	var msg = MERCURY_RETURN_MESSAGE[returnCode];
 	if (!msg) {
