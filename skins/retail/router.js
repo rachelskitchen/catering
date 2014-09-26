@@ -24,6 +24,8 @@ define(["backbone", "main_router"], function(Backbone) {
     'use strict';
 
     delete DINING_OPTION_NAME.DINING_OPTION_EATIN;
+    delete DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH;
+    delete DINING_OPTION_NAME.DINING_OPTION_OTHER;
     delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
 
     var headers = {},
@@ -424,6 +426,10 @@ define(["backbone", "main_router"], function(Backbone) {
             this.prepare('checkout', function() {
                 if(!App.Data.card) {
                     App.Data.card = new App.Models.Card;
+                }
+
+                if(!App.Data.giftcard) {
+                    App.Data.giftcard = new App.Models.GiftCard;
                 }
 
                 if (!App.Data.customer) {

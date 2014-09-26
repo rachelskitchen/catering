@@ -90,6 +90,14 @@ MSG.FREE_MODIFIERS_PRICE = "Modifiers for less than %s will be free";
 MSG.FREE_MODIFIERS_QUANTITY = "First %s modifiers selected will be free";
 MSG.FREE_MODIFIERS_QUANTITY1 = "First modifier selected will be free";
 
+var PAYMENT_TYPE = {
+    PAYPAL_MOBILE: 1,
+    CREDIT: 2,
+    PAYPAL: 3,
+    NO_PAYMENT: 4,
+    GIFT: 5
+};
+
 // Dining options
 var DINING_OPTION = {
         DINING_OPTION_TOGO : 0,

@@ -101,6 +101,13 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
+    App.Views.FooterView.FooterGiftCardView = App.Views.FooterView.FooterCardView.extend({
+        proceed: function() {
+            var model = App.Data.giftcard;
+            model && model.trigger('add_card');
+        }
+    });
+
     App.Views.FooterView.FooterConfirmView = App.Views.FactoryView.extend({
         name: 'footer',
         mod: 'confirm',
@@ -109,6 +116,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             "click #creditCardRedirect": "creditCard",
             "click #pay": "pay",
             "click #payPaypal": "pay",
+            "click #giftcard": "giftCard",
             "click #cash": "cash"
         },
         initialize: function() {
@@ -156,13 +164,16 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                    checkout: true,
                    card: false
                }, function() {
-                   App.Data.myorder.pay_order_and_create_order_backend(2);
+                   App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
                    !self.canceled && App.Data.mainModel.trigger('loadStarted');
                    delete self.canceled;
                    saveAllData();
                    App.Data.router.navigate('confirm', true);
                });
             }
+        },
+        giftCard: function() {
+           App.Data.router.navigate('giftcard', true);
         },
         pay: function(e) {
             var creditCard = $(e.currentTarget).attr('id') === 'pay' ? true : false,
@@ -175,7 +186,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 checkout: true,
                 card: creditCard
             }, function() {
-                myorder.pay_order_and_create_order_backend(creditCard ? 2 : 3);
+                myorder.create_order_and_pay(creditCard ? PAYMENT_TYPE.CREDIT : PAYMENT_TYPE.PAYPAL);
                 !self.canceled && App.Data.mainModel.trigger('loadStarted');
                 delete self.canceled;
                 saveAllData();
@@ -193,7 +204,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 customer: true,
                 checkout: true,
             }, function() {
-                myorder.pay_order_and_create_order_backend(4);
+                myorder.create_order_and_pay(PAYMENT_TYPE.NO_PAYMENT);
                 !self.canceled && App.Data.mainModel.trigger('loadStarted');
                 delete self.canceled;
                 saveAllData();

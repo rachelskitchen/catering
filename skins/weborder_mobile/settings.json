@@ -40,7 +40,7 @@
             "css": ["checkout"],
             "views": ["checkout"],
             "templates": ["checkout"],
-            "core": ["card", "checkout", "products", "delivery_addresses", "customers"]
+            "core": ["card", "giftcard", "checkout", "products", "delivery_addresses", "customers"]
         },
         "card": {
             "css": ["card"],
@@ -48,17 +48,23 @@
             "templates": ["card"],
             "core": ["card", "jquery_numbermask", "card_view"]
         },
+        "giftcard": {
+            "css": ["card"],
+            "views": ["giftcard"],
+            "templates": ["giftcard"],
+            "core": ["giftcard", "jquery_numbermask", "giftcard_view"]
+        },
         "confirm": {
             "css": ["total", "checkout", "card", "tips"],
-            "views": ["checkout", "card"],
-            "templates": ["total", "checkout", "card", "tips"],
-            "core": ["tip", "checkout", "card", "jquery_numbermask", "total_view", "tips_view"]
+            "views": ["checkout", "card", "giftcard"],
+            "templates": ["total", "checkout", "card", "giftcard", "tips"],
+            "core": ["tip", "checkout", "card", "giftcard", "jquery_numbermask", "total_view", "tips_view"]
         },
         "done": {
             "css": ["done"],
             "views": ["done"],
             "templates": ["done"],
-            "core": ["products", "modifiers", "tip", "checkout", "card", "done_view"]
+            "core": ["products", "modifiers", "tip", "checkout", "card", "giftcard", "done_view"]
         },
         "store_info": {
             "css": ["store_info"],
@@ -68,7 +74,7 @@
             "cssCore": ["libs/jquery/jquery.gallery/jquery.gallery"]
         },
         "pay": {
-            "core": ["checkout", "products", "modifiers", "card", "tip", "customers"]
+            "core": ["checkout", "products", "modifiers", "card", "giftcard", "tip", "customers"]
         },
         "maintenance": {
             "css": ["maintenance"],

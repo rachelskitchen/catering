@@ -373,7 +373,8 @@ define(["backbone", "async"], function(Backbone) {
 
             var skin = this.get("skin");
 
-            if ((skin === 'weborder' || skin === 'weborder_mobile') && !processor.usaepay && !processor.mercury && !processor.moneris && !processor.paypal && !settings_system.accept_cash_online) {
+            if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
+                && !processor.usaepay && !processor.mercury && !processor.paypal && !settings_system.accept_cash_online && !processor.gift_card && !processor.moneris) {
                 return undefined;
             }
 

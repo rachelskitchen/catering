@@ -72,16 +72,30 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
         },
         events: {
             'click .credit-card': 'credit_card',
+            'click .gift-card': 'gift_card',
             'click .paypal': function() {
-                this.pay(3);
+                this.pay(PAYMENT_TYPE.PAYPAL);
         },
             'click .cash': function(){
-                this.pay(4);
+                this.pay(PAYMENT_TYPE.NO_PAYMENT);
             }
         },
         change_cash_text: function() {
             var isDelivery = this.collection.checkout.get("dining_option") === 'DINING_OPTION_DELIVERY';
             this.$('.cash').html(isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE);
+        },
+        gift_card: function() {
+            var self = this;
+            $('#popup .cancel').trigger('click');
+            App.Data.mainModel.set('popup', {
+                modelName: 'Confirm',
+                mod: 'PayCard',
+                submode: 'Gift',
+                collection: self.collection,
+                className: 'confirmPayCard',
+                timetable: App.Data.timetables,
+                card: App.Data.giftcard
+            });
         },
         credit_card: function() {
             var self = this;
@@ -95,7 +109,7 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
                     checkout: true,
                     validation: false
                 }, function() {
-                    self.pay(2);
+                    self.pay(PAYMENT_TYPE.CREDIT);
                 });
             } else if (this.options.flag) {
                 App.Data.myorder.check_order({
@@ -115,10 +129,11 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
             App.Data.mainModel.set('popup', {
                 modelName: 'Confirm',
                 mod: 'PayCard',
-                    collection: self.collection,
+                submode: 'Card',
+                collection: self.collection,
                 className: 'confirmPayCard',
-                    timetable: App.Data.timetables,
-                    card: App.Data.card
+                timetable: App.Data.timetables,
+                card: App.Data.card
             });
             }
             //remove the background from popup
@@ -134,7 +149,7 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
                 customer: true,
                 checkout: true
             }, function() {
-                self.collection.pay_order_and_create_order_backend(payment_type);
+                self.collection.create_order_and_pay(payment_type);
                 !self.canceled && self.collection.trigger('showSpinner');
             $('#popup .cancel').trigger('click');
             });
