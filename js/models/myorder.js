@@ -1001,6 +1001,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             order_info.surcharge = total.surcharge;
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.notes = checkout.notes;
+            order_info.order_id = get_parameters[MONERIS_PARAMS.ORDER_ID];
 
             if (checkout.pickupTimeToServer === 'ASAP') {
                 checkout.pickupTime = 'ASAP (' + checkout.pickupTime + ')';
