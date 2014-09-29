@@ -75,7 +75,7 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
             'click .gift-card': 'gift_card',
             'click .paypal': function() {
                 this.pay(PAYMENT_TYPE.PAYPAL);
-        },
+            },
             'click .cash': function(){
                 this.pay(PAYMENT_TYPE.NO_PAYMENT);
             }

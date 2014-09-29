@@ -65,7 +65,7 @@ define(["backbone"], function(Backbone) {
         },
         loadCaptcha: function() {
             var self = this;
-            $.getJSON('/weborders/captcha/?establishment=1', {}, function(json) {
+            $.getJSON(App.Data.settings.get("host") + '/weborders/captcha/?establishment=1', {}, function(json) {
                 self.set('captchaImage', json.captcha_image)
                 self.set('captchaKey', json.captcha_key)
             });

@@ -77,12 +77,8 @@ define(["backbone", "factory"], function(Backbone) {
                     }
                 }
             }
-            if (!this.model.get('captchaImage') || !this.model.get('captchaKey')) {
-                this.model.loadCaptcha();
-            } else {
-                this.updateCaptureImage();
-                this.updateCaptureKey();
-            }
+
+            this.model.loadCaptcha();
         },
         setData: function() {
             var data = {
@@ -92,7 +88,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.model.set(data);
         },
         updateCaptureImage: function() {
-            this.$('.captcha').attr("src", this.model.get('captchaImage'));
+            this.$('.captcha').attr("src", App.Data.settings.get('host') + this.model.get('captchaImage'));
         },
         updateCaptureKey: function() {
             this.$('#id_captcha_key').attr("src", this.model.get('captchaKey'));
