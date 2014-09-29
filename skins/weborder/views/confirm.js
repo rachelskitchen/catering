@@ -20,24 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "checkout_view"], function(Backbone) {
+define(["backbone", "confirm_view"], function(Backbone) {
     'use strict';
 
-    App.Views.ConfirmView = {};
-
-    App.Views.ConfirmView.ConfirmPayCardView = App.Views.FactoryView.extend({
-        name: 'confirm',
-        mod: 'card_order',
-        initialize: function() {
-            this.listenTo(this.collection, 'cancelPayment', function() {
-                this.canceled = true;
-            }, this);
-            this.listenTo(this.collection, "paymentFailed", function(message) {
-                this.collection.trigger('hideSpinner');
-            }, this);
-
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-        },
+    App.Views.ConfirmView.ConfirmPayCardView = App.Views.CoreConfirmView.CoreConfirmPayCardView.extend({
         render: function() {
             var new_model = {},//this.collection.toJSON(),
                 pickup = this.collection.checkout.get("pickupTS"),
@@ -54,47 +40,9 @@ define(["backbone", "checkout_view"], function(Backbone) {
              //remove the background from popup
             $('#popup').removeClass("popup-background");
 
-            this.subViews.push(App.Views.GeneratorView.create(this.options.submode == 'Gift' ? 'GiftCard' : 'Card', {
-                el: this.$('#credit-card'),
-                mod: 'Main',
-                model: this.options.card
-            }));
+            this.afterRender();
 
-            this.subViews.push(App.Views.GeneratorView.create('MyOrder', {
-                el: this.$('.order-items'),
-                mod: 'List',
-                collection: this.collection
-            }));
-            this.$('.order-items').contentarrow();
-
-            this.subViews.push(App.Views.GeneratorView.create('Total', {
-                el: this.$('.total_block'),
-                mod: 'Checkout',
-                model: this.collection.total,
-                collection: this.collection
-            }));
-        },
-        events: {
-            'click .btn-submit': 'submit_payment'
-        },
-        submit_payment: function() {
-            var self = this;
-            this.options.card.trigger('add_card');
-            saveAllData();
-
-            self.collection.check_order({
-                card: self.options.submode == 'Credit',
-                giftcard: self.options.submode == 'Gift',
-                order: true,
-                tip: true,
-                customer: true,
-                checkout: true
-            }, function() {
-                self.collection.create_order_and_pay(self.options.submode == 'Gift' ?
-                                                     PAYMENT_TYPE.GIFT : PAYMENT_TYPE.CREDIT);
-                !self.canceled && self.collection.trigger('showSpinner');
-                $('#popup .cancel').trigger('click');
-            });
+            return this;
         }
     });
 });

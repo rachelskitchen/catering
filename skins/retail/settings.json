@@ -33,9 +33,9 @@
         },
         "checkout": {
             "css": ["checkout", "confirm", "card"],
-            "views": ["cart", "checkout", "cart", "confirm", "card", "giftcard"],
+            "views": ["cart", "checkout", "cart", "card", "giftcard"],
             "templates": ["cart", "checkout", "cart", "confirm", "card", "giftcard"],
-            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "checkout_view", "card_view", "giftcard_view"]
+            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "checkout_view", "card_view", "giftcard_view", "confirm_view"]
         },
         "confirm": {
             "views": ["done"],

@@ -386,6 +386,7 @@ define(["backbone", "async"], function(Backbone) {
                 payment_count++;
             }
             processor.cash && payment_count++;
+            processor.gift_card && payment_count++;
 
             return Backbone.$.extend(processor, {
                 cash: settings_system.accept_cash_online,

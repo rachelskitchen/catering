@@ -78,6 +78,7 @@ define({
         search: "js/models/search",
         subcategories: "js/models/subcategories",
         collection_sort: "js/models/collection_sort",
+        confirm_view: "js/views/confirm"
     },
     waitSeconds: 30,
     shim: {
@@ -193,7 +194,7 @@ define({
         },
         "collection_sort" : {
             deps: ["backbone"]
-        } 
+        }
     },
     map: {
         "*": {}

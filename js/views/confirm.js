@@ -23,9 +23,9 @@
 define(["backbone", "checkout_view"], function(Backbone) {
     'use strict';
 
-    App.Views.ConfirmView = {};
+    App.Views.CoreConfirmView = {};
 
-    App.Views.ConfirmView.ConfirmPayCardView = App.Views.FactoryView.extend({
+    App.Views.CoreConfirmView.CoreConfirmPayCardView = App.Views.FactoryView.extend({
         name: 'confirm',
         mod: 'card_order',
         initialize: function() {
@@ -35,11 +35,15 @@ define(["backbone", "checkout_view"], function(Backbone) {
             this.listenTo(this.collection, "paymentFailed", function(message) {
                 this.collection.trigger('hideSpinner');
             }, this);
+
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-
+            this.afterRender();
+            return this;
+        },
+        afterRender: function() {
             this.subViews.push(App.Views.GeneratorView.create(this.options.submode == 'Gift' ? 'GiftCard' : 'Card', {
                 el: this.$('#credit-card'),
                 mod: 'Main',
@@ -83,4 +87,8 @@ define(["backbone", "checkout_view"], function(Backbone) {
             });
         }
     });
+
+    App.Views.ConfirmView = {}
+
+    App.Views.ConfirmView.ConfirmPayCardView = App.Views.CoreConfirmView.CoreConfirmPayCardView;
 });
