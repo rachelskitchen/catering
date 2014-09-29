@@ -24,6 +24,7 @@
     display: inline-block;
     font-weight: bold;
     font-size: 15px;
+    padding-right: 22px;
 }
 
 .quantity_select select {
