@@ -69,7 +69,7 @@ define(["backbone", "collection_sort"], function(Backbone) {
                             category.image = App.Data.settings.get_img_default();
                         }
                         category.sort_val = parseInt(category.parent_sort || 0) * 1000 + parseInt(category.sort || 0);
-                        self.add(category);                       
+                        self.add(category);
                     }
                     dfd.resolve();
                 },

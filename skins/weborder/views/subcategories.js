@@ -62,7 +62,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
 
             this.subViews.removeFromDOMTree();
             //self.$('select option').not(':first').remove();
-            this.collection.each(function(el) {
+            this.collection.sortEx('sortNumbers', 'sort').forEach(function(el) {
                 view = App.Views.GeneratorView.create('SubCategory', {
                     mod: 'Select',
                     model: el,
