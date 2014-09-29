@@ -1,7 +1,7 @@
 define(["backbone"], function(Backbone) {
     'use strict';
 
-App.Collections.CollectionSort = Backbone.Collection.extend({
+    App.Collections.CollectionSort = Backbone.Collection.extend({
         sortedModelsKey: "models",
         sortStrategy: "sortStrings",
         sortKey: "name",
@@ -29,11 +29,11 @@ App.Collections.CollectionSort = Backbone.Collection.extend({
                 if (a == null) return 1 * asc;
                 if (b == null) return -1 * asc;
                 return (asc === -1 && a < b || asc === 1 && a > b) * 2 - 1; // true/false change to 1/-1.
-            }                
+            }
         },
         /**
          * Set sort parameters and sort
-         * 
+         *
          * @param {String} strategy sortNumbers or sortStrings
          * @param {String} modelKey Store model attribute
          * @returns {undefined}
@@ -47,7 +47,7 @@ App.Collections.CollectionSort = Backbone.Collection.extend({
             var collection = this[this.sortedModelsKey].sort(this.strategies[this.sortStrategy].bind(this));
             //var t2 = (new Date).getTime();
             //trace("profile sorting: delta=", t2 - t1);
-            return collection; 
+            return collection;
         }
     });
 });
