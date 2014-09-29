@@ -48,8 +48,8 @@ define(["backbone"], function(Backbone) {
             }
 
             if(App.Settings.editable_dining_options[0]) {
-                DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH = App.Settings.editable_dining_options[1];
-                DINING_OPTION_NAME.DINING_OPTION_OTHER = App.Settings.editable_dining_options[2];
+                DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH = _.escape(App.Settings.editable_dining_options[1]);
+                DINING_OPTION_NAME.DINING_OPTION_OTHER = _.escape(App.Settings.editable_dining_options[2]);
             }
 
             if (!App.Settings.drive_through_online_orders) {
