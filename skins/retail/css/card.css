@@ -45,6 +45,9 @@
 #credit-card .select-wrapper {
     margin-right: 10px;
 }
+#exp-year {
+    padding-right: 22px;
+}
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
     #credit-card label {
