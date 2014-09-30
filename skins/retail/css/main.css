@@ -323,9 +323,9 @@ footer {
 #cart .main .subtotal {
     border-top-width: 1px;
     border-top-style: solid;
-    height: 258px;
-    padding-top: 10px;
+    height: 38px;
     margin: 10px 10px 0;
+    line-height: 38px;
 }
 #cart .main .subtotal span:first-child {
     text-transform: uppercase;
