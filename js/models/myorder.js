@@ -1031,7 +1031,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 payment_info.reward_card = checkout.rewardCard ? checkout.rewardCard.toString() : '';
             }
 
-            var myorder_json = JSON.stringify(order);
+            var myorder_json = JSON.stringify(order),
+                successValidation;
             $.ajax({
                 type: "POST",
                 url: App.Data.settings.get("host") + "/weborders/" + (validationOnly ? "pre_validate/" : "create_order_and_pay/"),
@@ -1047,7 +1048,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     switch(data.status) {
                         case "OK":
                             if (validationOnly) {
-                                myorder.trigger('paymentResponseValid');
+                                successValidation = Backbone.$.Deferred();
+                                successValidation.then(myorder.trigger.bind(myorder, 'paymentResponseValid'));
                             } else {
                                 myorder.trigger('paymentResponse');
                             }
@@ -1121,6 +1123,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 complete: function(xhr, result) {
                     payment_type === PAYMENT_TYPE.PAYPAL_MOBILE && $.mobile.loading("hide");
                     delete myorder.paymentInProgress;
+                    successValidation && successValidation.resolve();
                 }
             });
 
