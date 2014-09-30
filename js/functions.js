@@ -120,6 +120,12 @@ var ServiceType = {
     DONATION : 6
 };
 
+
+var MONERIS_RETURN_CODE = {
+    DECLINE: 50
+};
+
+
 var MERCURY_RETURN_CODE = {
     SUCCESS : 0,
     AUTH_FAIL : 100,
@@ -150,6 +156,26 @@ MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_SERVER_SIDE_FAILURE] = "Po
 MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATE_NAME_FAIL] = "Invalid data entered in cardholder name field";
 MERCURY_RETURN_MESSAGE_DEFAULT = "Unknown error";
 
+var MONERIS_RETURN_MESSAGE = {
+    50: "Decline",
+    51: "Expired Card",
+    52: "PIN retries exceeded",
+    53: "No sharing",
+    54: "No security module",
+    55: "Invalid transaction",
+    56: "Card not supported",
+    57: "Lost or stolen card",
+    58: "Card use limited",
+    59: "Restricted Card",
+    60: "No Chequing account"
+};
+MONERIS_RETURN_MESSAGE_DEFAULT = "Unknown error";
+
+var MONERIS_PARAMS = {
+    PAY: 'rvarPay',
+    ORDER_ID: 'response_order_id'
+};
+
 function getMercuryErrorMessage(returnCode) {
 	var msg = MERCURY_RETURN_MESSAGE[returnCode];
 	if (!msg) {
@@ -158,6 +184,13 @@ function getMercuryErrorMessage(returnCode) {
 	return msg;
 }
 
+function getMonerisErrorMessage(returnCode) {
+	var msg = MONERIS_RETURN_MESSAGE[returnCode];
+	if (!msg) {
+		msg = MONERIS_RETURN_MESSAGE_DEFAULT;
+	}
+	return msg;
+}
 
 /**
 *  format message by formatting string and params.
@@ -177,7 +210,7 @@ function msgFrm(msg_format) {
 /**
  * Get GET-parameters from address line.
  */
-function parse_get_params() {    
+function parse_get_params() {
     if (window.$_GET) {
         return window.$_GET;
     }
@@ -986,6 +1019,28 @@ function clearQueryString(isNotHash) {
     qStr = qStr.replace(/&&/g, '&');
     qStr = qStr.replace(/&?PaymentID=[^&]*/, '');
     qStr = qStr.replace(/&?ReturnCode=[^&]*/, '');
+    //Remove Moneris params
+    qStr = qStr.replace(/&?response_order_id=[^&]*/, '');
+    qStr = qStr.replace(/&?date_stamp=[^&]*/, '');
+    qStr = qStr.replace(/&?time_stamp=[^&]*/, '');
+    qStr = qStr.replace(/&?bank_transaction_id=[^&]*/, '');
+    qStr = qStr.replace(/&?charge_total=[^&]*/, '');
+    qStr = qStr.replace(/&?bank_approval_code=[^&]*/, '');
+    qStr = qStr.replace(/&?response_code=[^&]*/, '');
+    qStr = qStr.replace(/&?iso_code=[^&]*/, '');
+    qStr = qStr.replace(/&?txn_num=[^&]*/, '');
+    qStr = qStr.replace(/&?message=[^&]*/, '');
+    qStr = qStr.replace(/&?trans_name=[^&]*/, '');
+    qStr = qStr.replace(/&?cardholder=[^&]*/, '');
+    qStr = qStr.replace(/&?f4l4=[^&]*/, '');
+    qStr = qStr.replace(/&?card=[^&]*/, '');
+    qStr = qStr.replace(/&?expiry_date=[^&]*/, '');
+    qStr = qStr.replace(/&?result=[^&]*/, '');
+    qStr = qStr.replace(/&?rvarPay=[^&]*/, '');
+    qStr = qStr.replace(/rvarSkin=/, 'skin=');
+    qStr = qStr.replace(/rvarEstablishment=/, 'establishment=');
+    qStr = qStr.replace(/\?&/, '?');
+
 
     var url = host + path + qStr + hash;
     window.history.replaceState('Return','', url);
@@ -1010,7 +1065,7 @@ function fistLetterToUpperCase(text) {
 }
 
 /*
-*  trace function: 
+*  trace function:
 */
 function trace() {
     return console.log.apply(console, arguments);

@@ -1001,6 +1001,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             order_info.surcharge = total.surcharge;
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.notes = checkout.notes;
+            order_info.local_id = get_parameters[MONERIS_PARAMS.ORDER_ID];
 
             if (checkout.pickupTimeToServer === 'ASAP') {
                 checkout.pickupTime = 'ASAP (' + checkout.pickupTime + ')';
@@ -1184,10 +1185,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 get_parameters = App.Data.get_parameters,
                 payment_info = {},
                 myorder = this,
-                pay_get_parameter = get_parameters.pay;
+                pay_get_parameter = typeof get_parameters.pay != 'undefined' ? get_parameters.pay : get_parameters[MONERIS_PARAMS.PAY];
 
             // Clear pay flag, it should not affect next payments
             delete get_parameters.pay;
+            delete get_parameters[MONERIS_PARAMS.PAY];
 
             switch(payment_type) {
                 case PAYMENT_TYPE.CREDIT: // pay with card
@@ -1224,6 +1226,14 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                     return;
                                 }
                                 payment_info.transaction_id = get_parameters.PaymentID;
+                            } else if (payment.moneris) {
+                                var returnCode = Number(get_parameters.response_code);
+                                if (returnCode >= MONERIS_RETURN_CODE.DECLINE) {
+                                    myorder.paymentResponse = {status: 'error', errorMsg: getMonerisErrorMessage(returnCode)};
+                                    myorder.trigger('paymentResponse');
+                                    return;
+                                }
+                                payment_info.transaction_id = get_parameters.txn_num;
                             }
                         } else {
                             if (payment.paypal_direct_credit_card) {
@@ -1232,6 +1242,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                 myorder.paymentResponse = {status: 'error', errorMsg: get_parameters.UMerror};
                             } else if (payment.mercury) {
                                 myorder.paymentResponse = {status: 'error', errorMsg: getMercuryErrorMessage(Number(get_parameters.ReturnCode))};
+                            } else if (payment.moneris) {
+                                myorder.paymentResponse = {status: 'error', errorMsg: getMonerisErrorMessage(Number(get_parameters.response_code))};
                             }
                             myorder.trigger('paymentResponse');
                             return;
