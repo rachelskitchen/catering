@@ -122,21 +122,6 @@ define(["backbone", "factory", "generator", "products_view"], function(Backbone)
                 collection: this.collection,
                 checkout: this.collection.checkout
             }));
-        },
-        events: {
-            'click .pay': 'pay_event'
-        },
-        pay_event: function() {
-            var self = this;
-            App.Data.myorder.check_order({
-                order: true,
-                tip: true,
-                customer: true,
-                checkout: true,
-                validation: true
-            }, function() {
-                self.collection.trigger('onPay');
-            });
         }
     });
 });

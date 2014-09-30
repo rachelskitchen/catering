@@ -386,24 +386,29 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         name: 'checkout',
         mod: 'pay_button',
         initialize: function() {
+            var payment = App.Data.settings.get_payment_process();
             this.listenTo(this.collection, 'cancelPayment', function() {
                 this.canceled = true;
             }, this);
             this.listenTo(this.collection, "paymentFailed", function(message) {
                 this.collection.trigger('hideSpinner');
             }, this);
+            this.flag = this.options.flag === 'checkout',
+            this.needPreValidate = payment.payment_count == 1 && this.flag;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection.checkout, 'change:dining_option', this.change_cash_text);
         },
         render: function() {
-            var payment = App.Data.settings.get_payment_process();
-            payment.flag = this.options.flag === 'checkout';
+            var payment = Backbone.$.extend(App.Data.settings.get_payment_process(), {
+                flag: this.flag
+            });
 
             this.$el.html(this.template(payment));
             this.change_cash_text();
             return this;
         },
         events: {
+            'click .pay': 'pay_event',
             'click .credit-card': 'credit_card',
             'click .gift-card': 'gift_card',
             'click .paypal': function() {
@@ -421,22 +426,22 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             var self = this;
             $('#popup .cancel').trigger('click');
             App.Data.myorder.check_order({
-                    order: true,
-                    tip: true,
-                    customer: true,
-                    checkout: true,
-                    validation: false
-                }, function() {
-                    App.Data.mainModel.set('popup', {
-                        modelName: 'Confirm',
-                        mod: 'PayCard',
-                        submode: 'Gift',
-                        collection: self.collection,
-                        className: 'confirmPayCard',
-                        timetable: App.Data.timetables,
-                        card: App.Data.giftcard
-                    });
+                order: true,
+                tip: true,
+                customer: true,
+                checkout: true,
+                validationOnly: this.needPreValidate
+            }, function() {
+                App.Data.mainModel.set('popup', {
+                    modelName: 'Confirm',
+                    mod: 'PayCard',
+                    submode: 'Gift',
+                    collection: self.collection,
+                    className: 'confirmPayCard',
+                    timetable: App.Data.timetables,
+                    card: App.Data.giftcard
                 });
+            });
         },
         credit_card: function() {
             var self = this;
@@ -449,7 +454,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                     tip: true,
                     customer: true,
                     checkout: true,
-                    validation: false
+                    validationOnly: this.needPreValidate
                 }, function() {
                     self.pay(PAYMENT_TYPE.CREDIT);
                 });
@@ -459,7 +464,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                     tip: true,
                     customer: true,
                     checkout: true,
-                    validation: true
+                    validationOnly: this.needPreValidate
                 }, function() {
                     card_popup();
                 });
@@ -468,15 +473,15 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             }
 
             function card_popup() {
-            App.Data.mainModel.set('popup', {
-                modelName: 'Confirm',
-                mod: 'PayCard',
-                submode: 'Credit',
-                collection: self.collection,
-                className: 'confirmPayCard',
-                timetable: App.Data.timetables,
-                card: App.Data.card
-            });
+                App.Data.mainModel.set('popup', {
+                    modelName: 'Confirm',
+                    mod: 'PayCard',
+                    submode: 'Credit',
+                    collection: self.collection,
+                    className: 'confirmPayCard',
+                    timetable: App.Data.timetables,
+                    card: App.Data.card
+                });
             }
         },
         pay: function(payment_type) {
@@ -487,11 +492,24 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                 order: true,
                 tip: true,
                 customer: true,
-                checkout: true
+                checkout: true,
+                validationOnly: this.needPreValidate
             }, function() {
                 self.collection.create_order_and_pay(payment_type);
                 !self.canceled && self.collection.trigger('showSpinner');
             $('#popup .cancel').trigger('click');
+            });
+        },
+        pay_event: function() {
+            var self = this;
+            App.Data.myorder.check_order({
+                order: true,
+                tip: true,
+                customer: true,
+                checkout: true,
+                validationOnly: true
+            }, function() {
+                self.collection.trigger('onPay');
             });
         }
     });

@@ -78,7 +78,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 order: true,
                 customer: true,
                 checkout: true,
-                validation: true
+                validationOnly: true
             }, function() {
                 App.Data.router.navigate('confirm', true);
             });
