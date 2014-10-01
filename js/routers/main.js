@@ -32,7 +32,7 @@ define(["backbone"], function(Backbone) {
         DINING_OPTION_DELIVERY: 'Delivery',
         DINING_OPTION_CATERING : 'Catering',
         DINING_OPTION_DRIVETHROUGH: 'Drive Through',
-        DINING_OPTION_ONLINE : 'Online',
+        DINING_OPTION_ONLINE : 'Online Ordering',
         DINING_OPTION_OTHER: 'Other',
         DINING_OPTION_DELIVERY_SEAT: 'Deliver to Seat'
     };
