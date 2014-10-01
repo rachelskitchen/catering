@@ -892,8 +892,12 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             } else if (errorMsg) {
                 return error(errorMsg);
             } else if (options.customer && dining_option === 'DINING_OPTION_DELIVERY') {
-                customer.validate_address(success, error);
+                customer.validate_address(_success, error);
             } else {
+                _success();
+            }
+
+            function _success() {
                 if (options.validationOnly) {
                     var tmp_model = new Backbone.View();
                     tmp_model.listenTo(this, 'paymentResponseValid', function() {
