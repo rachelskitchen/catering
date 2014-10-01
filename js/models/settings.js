@@ -320,8 +320,7 @@ define(["backbone", "async"], function(Backbone) {
 
                             self.set("settings_system", settings_system);
                             App.Settings = App.Data.settings.get("settings_system");
-                            if (!self.get_payment_process()) {
-                                console.log("payment processor not found");
+                            if (!self.get_payment_process() || !Array.isArray(settings_system.dining_options) || settings_system.dining_options.length == 0) {
                                 self.set('isMaintenance', true);
                             }
                             break;
