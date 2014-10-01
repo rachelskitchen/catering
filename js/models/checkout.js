@@ -74,7 +74,7 @@ define(["backbone"], function(Backbone) {
          * revert dining option to previous value (return from only gift situation)
          */
         revert_dining_option: function() {
-            this.set('dining_option', this.get('selected_dining_option') || 'DINING_OPTION_TOGO');
+            this.set('dining_option', this.get('selected_dining_option') || App.Settings.default_dining_option);
         },
         check: function() {
             var isStoreClosed = this.isStoreClosed(),

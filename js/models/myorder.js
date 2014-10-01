@@ -459,7 +459,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         initialize: function( ) {
             this.total = new App.Models.Total();
             this.checkout = new App.Models.Checkout();
-            this.checkout.set('dining_option', 'DINING_OPTION_TOGO');
+            this.checkout.set('dining_option', App.Settings.default_dining_option);
 
             this.listenTo(this.checkout, 'change:dining_option', this.change_dining_option, this);
 

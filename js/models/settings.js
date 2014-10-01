@@ -220,7 +220,8 @@ define(["backbone", "async"], function(Backbone) {
                         label_for_manual_weights: "",
                         number_of_digits_to_right_of_decimal: 0
                     },
-                    type_of_service: ServiceType.TABLE_SERVICE
+                    type_of_service: ServiceType.TABLE_SERVICE,
+                    default_dining_option: 'DINING_OPTION_TOGO'
                 },
                 load = $.Deferred();
 
@@ -307,6 +308,15 @@ define(["backbone", "async"], function(Backbone) {
                             setData(color_scheme_key, new Backbone.Model({color_scheme: settings_system.color_scheme}), true);
 
                             settings_system.scales.number_of_digits_to_right_of_decimal = Math.abs((settings_system.scales.number_of_digits_to_right_of_decimal).toFixed(0) * 1);
+
+                            // Set default dining option.
+                            // It's key of DINING_OPTION object property with value corresponding the first element of settings_system.dining_options array
+                            (function() {
+                                var defaltOption;
+                                if(Array.isArray(settings_system.dining_options) && settings_system.dining_options.length > 0) {
+                                    settings_system.default_dining_option = _.invert(DINING_OPTION)[settings_system.dining_options[0]];
+                                }
+                            })();
 
                             self.set("settings_system", settings_system);
                             App.Settings = App.Data.settings.get("settings_system");

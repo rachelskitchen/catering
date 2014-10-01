@@ -173,7 +173,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             }
         },
         set_type : function() {
-            var dining_option = this.model.get('dining_option') || 'DINING_OPTION_TOGO',
+            var dining_option = this.model.get('dining_option') || App.Settings.default_dining_option,
                 type = this.$('.order-type-select');
 
             type.val(dining_option);
