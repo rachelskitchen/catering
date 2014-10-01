@@ -23,10 +23,10 @@
 define(["backbone", "main_router"], function(Backbone) {
     'use strict';
 
-    delete DINING_OPTION_NAME.DINING_OPTION_EATIN;
-    delete DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH;
-    delete DINING_OPTION_NAME.DINING_OPTION_OTHER;
-    delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
+    window.DINING_OPTION_NAME = {
+        DINING_OPTION_TOGO: 'Pick up in store',
+        DINING_OPTION_DELIVERY: 'Shipping'
+    };
 
     var headers = {},
         carts = {};
