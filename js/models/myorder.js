@@ -892,9 +892,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             } else if (errorMsg) {
                 return error(errorMsg);
             } else if (options.customer && dining_option === 'DINING_OPTION_DELIVERY') {
-                customer.validate_address(_success, error);
+                customer.validate_address(_success.bind(this), error);
             } else {
-                _success();
+                _success.call(this);
             }
 
             function _success() {
