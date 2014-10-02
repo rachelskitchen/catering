@@ -132,13 +132,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             var surcharge = this.get_myorder_surcharge_rate() || 0,
                 prevailingTax = this.collection.total.get('prevailing_tax'),
                 is_tax_included = App.TaxCodes.is_tax_included(this.collection.total.get('tax_country')),
-                dining_option = this.collection.checkout.get('dining_option'),
-                delivery_cold_untaxed = App.Data.settings.get('settings_system').delivery_cold_untaxed,
-                isEatin = dining_option === 'DINING_OPTION_EATIN',
-                isDelivery = dining_option === 'DINING_OPTION_DELIVERY',
                 tax;
 
-            if (!(isEatin || isDelivery && !delivery_cold_untaxed) && product.get('is_cold') || product.get('is_gift')){
+            if (this.isUntaxable()){
                 return 0;
             } else {
                 if (!is_tax_included) {
@@ -148,6 +144,12 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     return tax / (100 + tax);
                 }
             }
+        },
+        isUntaxable: function() {
+            var product = this.get_product(),
+                checkout = this.collection && this.collection.checkout;
+
+            return product.get('is_gift') || product.get('is_cold') && checkout && checkout.isColdUntaxable();
         },
         get_myorder_surcharge_rate: function() {
             var product = this.get_product(),
@@ -487,7 +489,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     this.remove(this.deliveryItem);
                 }
 
-                if ((value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_TOGO') &&  bag_charge !== 0) {
+                if (this.isBagChargeAvailable() && bag_charge !== 0) {
                     if (!this.bagChargeItem) {
                         this.bagChargeItem = new App.Models.BagChargeItem({total: this.total});
                     }
@@ -541,8 +543,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             return null;
         },
         get_bag_charge: function() {
-            if (this.checkout.get('dining_option') === 'DINING_OPTION_DELIVERY' ||
-                this.checkout.get('dining_option') === 'DINING_OPTION_TOGO' ) {
+            if (this.isBagChargeAvailable()) {
                 return this.total.get_bag_charge();
             }
             return null;
@@ -1466,6 +1467,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.each(function(item) {
                 item.restoreTax();
             });
+        },
+        isBagChargeAvailable: function() {
+            return this.checkout.isBagChargeAvailable();
         }
     });
 });
