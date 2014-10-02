@@ -135,6 +135,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 rows = payment.payment_count,
                 isDelivery = App.Data.myorder.checkout.get("dining_option") === 'DINING_OPTION_DELIVERY';
 
+            payment.credit_card_button && payment.gift_card && rows--;
+
             payment.cashBtnText = isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE;
 
             this.$el.html(this.template(payment));
