@@ -45,7 +45,7 @@ define(["backbone"], function(Backbone) {
             if (!App.Data.myorder.total.get('delivery').get('enable'))
                 delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
 
-            if(App.Settings.editable_dining_options[0]) {
+            if(App.Settings.editable_dining_options && App.Settings.editable_dining_options[0]) {
                 if (DINING_OPTION_NAME['DINING_OPTION_DRIVETHROUGH']) {
                     DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH = _.escape(App.Settings.editable_dining_options[1]);
                 }
@@ -55,7 +55,7 @@ define(["backbone"], function(Backbone) {
             }
 
             for (var dining_ontion_name in DINING_OPTION) {
-                if (App.Settings.dining_options.indexOf(DINING_OPTION[dining_ontion_name]) == -1) {
+                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_ontion_name]) == -1) {
                     delete DINING_OPTION_NAME[dining_ontion_name];
                 }
             }
