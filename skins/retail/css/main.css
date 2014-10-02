@@ -503,6 +503,9 @@ section.maintenance p {
 #main-spinner.ui-visible, .products_spinner.ui-visible {
     opacity: 1;
     filter: alpha(opacity=100);
+    z-index: 10003;
+}
+.products_spinner.ui-visible {
     z-index: 10000;
 }
 #cart .checkout .order-items {

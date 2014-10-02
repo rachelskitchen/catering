@@ -83,7 +83,6 @@ define(["backbone", "checkout_view"], function(Backbone) {
                 self.collection.create_order_and_pay(self.options.submode == 'Gift' ?
                                                      PAYMENT_TYPE.GIFT : PAYMENT_TYPE.CREDIT);
                 !self.canceled && self.collection.trigger('showSpinner');
-                $('#popup .cancel').trigger('click');
             });
         }
     });
