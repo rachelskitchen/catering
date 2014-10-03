@@ -57,15 +57,15 @@ define(["backbone", "factory", "generator", 'products_view'], function(Backbone)
         },
         render: function() {
             App.Views.CoreProductView.CoreProductListView.prototype.render.apply(this, arguments);
-            this.sortItems(this.options.filter);
+            this.sortItems(this.options.filter, 1);
             return this;
         },
-        sortItems: function(model) {
+        sortItems: function(model, force) {
             var filter = this.options.filter,
                 attr = filter.get('sort'),
                 order = filter.get('order'),
                 changed = model.changed;
-            if('sort' in changed || 'order' in changed)
+            if('sort' in changed || 'order' in changed || force)
                 App.Views.CoreProductView.CoreProductListView.prototype.sortItems.call(this, attr, order);
         },
         filterItems: function(model) {

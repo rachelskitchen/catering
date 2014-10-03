@@ -11,7 +11,7 @@
             "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "quantity", "categories"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "quantity", "categories"],
             "core": ["generator", "myorder_view", "total_view", "products", "modifiers", "jquery_numbermask", "categories", "search", "subcategories"],
-            "js" : ["jquery.contentarrow"]
+            "js" : ["jquery.contentarrow", "filter"]
         },
         "index": {
             "css": ["categories", "filters"],

@@ -76,7 +76,18 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Data.categories = new App.Collections.Categories();
                 App.Data.subCategories = new App.Collections.SubCategories();
                 App.Data.search = new App.Collections.Search();
-                App.Data.filter = new Backbone.Model();
+                App.Data.filter = new App.Models.Filter();
+
+                // sync sort saving and loading with myorder saving and loading
+                App.Data.myorder.saveOrders = function() {
+                    this.constructor.prototype.saveOrders.apply(this, arguments);
+                    App.Data.filter.saveSort();
+                }
+
+                App.Data.myorder.loadOrders = function() {
+                    this.constructor.prototype.loadOrders.apply(this, arguments);
+                    App.Data.filter.loadSort();
+                }
 
                 this.listenTo(App.Data.mainModel, 'change:mod', this.createMainView);
 
