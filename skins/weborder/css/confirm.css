@@ -66,17 +66,24 @@
     position: relative;
     left: 230px;
 }
-.confirmPayCard .captcha {
+.confirmPayCard .captcha_wrap {
     display: inline-block;
-    vertical-align: middle;
+    vertical-align: top;
+    text-align: center;
+    width: 100px;
+}
+.confirmPayCard .captcha {
+    margin-top: 4px;
+    height: 30px;
 }
 .confirmPayCard .btn-reload {
     display: inline-block;
-    vertical-align: middle;
+    vertical-align: top;
     height: 20px;
     font-size: 15px;
     line-height: 20px;
     width: 70px;
+    margin-top: 4px;
 }
 
 #popup .order-items {

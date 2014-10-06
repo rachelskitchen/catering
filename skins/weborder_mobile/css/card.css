@@ -159,3 +159,16 @@
 
 
 /* main mod end */
+
+/* gift card start  */
+#content .card .captcha_wrap {
+    float: left;
+    width: 20em;   
+    margin: 1em;
+    text-align: center;
+}
+
+#content .card .captcha {
+    height: 5.5em;
+}
+/* gift card end */
