@@ -152,10 +152,10 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         },
         gift_price_change: function(e) {
             var newPrice = e.currentTarget.value,
-                formatPrice = round_monetary_currency(newPrice),
+                formatPrice = parseFloat(newPrice),
                 pattern = new RegExp(this.giftCardPriceRegStr.replace(/(.*)0(.*)0(.*)/, '$11$22$3').replace(/[\(\)\?]/g, ''));
 
-            if(!isNaN(parseFloat(formatPrice))) {
+            if(!isNaN(formatPrice)) {
                 this.model.set('initial_price', formatPrice);
                 this.product.set('price', formatPrice);
             }

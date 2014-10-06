@@ -119,8 +119,8 @@ define(["backbone", "factory", "generator", 'products_view'], function(Backbone)
                 formatPrice = round_monetary_currency(e.target.value),
                 floatValue = parseFloat(e.target.value);
             if(formatPrice != initial_price && !isNaN(floatValue)) {
-                this.model.set('initial_price', formatPrice);
-                this.product.set('price', formatPrice);
+                this.model.set('initial_price', floatValue);
+                this.product.set('price', floatValue);
             }
         }
     });
