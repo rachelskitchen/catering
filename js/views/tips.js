@@ -76,14 +76,14 @@ define(["backbone", "factory"], function(Backbone) {
         setSum: function() {
             var amount = this.$('.tipAmount'),
                 newAmount = amount.val(),
-                formatAmount = round_monetary_currency(newAmount),
+                formatAmount = parseFloat(newAmount),
                 pattern = new RegExp(this.tipAmountRegStr.replace(/(.*)0(.*)0(.*)/, '$11$22$3').replace(/[\(\)\?]/g, ''));
 
             if(amount.attr('disabled')) {
                 var tip = round_monetary_currency(App.Data.myorder.total.get_tip());
                 amount.val(tip);
                 this.model.set('sum', tip*1);
-            } else if(!isNaN(parseFloat(formatAmount))) {
+            } else if(!isNaN(formatAmount)) {
                 this.model.set('sum', formatAmount);
             }
 
