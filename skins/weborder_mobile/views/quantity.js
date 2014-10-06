@@ -60,18 +60,8 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
     });
 
     App.Views.QuantityView.QuantityWeightView = App.Views.CoreQuantityView.CoreQuantityWeightView.extend({
-        initialize: function() {
-            App.Views.CoreQuantityView.CoreQuantityWeightView.prototype.initialize.apply(this, arguments);
-            this.num_digits = Math.abs((App.Data.settings.get("settings_system").scales.number_of_digits_to_right_of_decimal).toFixed(0)*1);
-        },
-        events: {
-            'change .weight_edit_input': 'change_weight'
-        },
-        change_weight: function(e) {
-            this.model.set('weight', e.target.value * 1);
-        },
         update: function() {
-            this.$('.weight_edit_input').val(this.model.get('weight').toFixed(this.num_digits));
+            this.$('.weight_edit_input').val(this.model.get('weight').toFixed(this.number_decimal_digits));
         }
     });
 });

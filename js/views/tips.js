@@ -25,107 +25,13 @@ define(["backbone", "factory"], function(Backbone) {
 
     App.Views.CoreTipsView = {};
 
-    App.Views.CoreTipsView.CoreTipsMainView = App.Views.FactoryView.extend({
-        name: 'tips',
-        mod: 'main',
-        render: function() {
-            var self = this,
-                model = this.model.toJSON();
-            model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
-            model.isFirefox = /firefox/i.test(navigator.userAgent);
-            model.tip_allow = App.Data.settings.get('settings_system').accept_tips_online === true;
-
-            this.$el.html(this.template(model));
-            // shoudn't change type attribute for android platforms
-            // because some devices have problem with numeric keypad - don't have '.', ',' symbols (bug 11032)
-            inputTypeNumberMask(this.$('.tipAmount'), /^\d{0,5}\.{0,1}\d{0,2}$/, '0.00', cssua.ua.android);
-
-            // execute after render
-            setTimeout(function() {
-                var type = self.model.get('type') ? 1 : 0,
-                    amount = self.model.get('amount'),
-                    percent = self.model.get('percent'),
-                    sum = self.model.get('sum');
-
-                self.$('input[name="tips"][value="' + type + '"]').change();
-                if(type)
-                    if(amount && percent)
-                        self.$('.btn[data-amount="' + percent + '"]').click();
-                    else if(!amount) {
-                        self.$('.btn[data-amount="other"]').click();
-                        self.$('.tipAmount').val(sum || '0.00');
-                    }
-            }, 0);
-
-            this.listenSum = setInterval(this.setSum.bind(this), 200);
-
-            return this;
-        },
-        remove: function() {
-            clearInterval(this.listenSum);
-            return App.Views.FactoryView.prototype.remove.apply(this, arguments);
-        },
-        events: {
-            'change input[name="tips"]': 'setType',
-            'click .btn': 'setAmount',
-            'change .tipAmount': 'setSum'
-        },
-        setType: function(e) {
-            var val = Boolean(parseInt(e.target.value, 10));
-
-            this.$('.tipAmount').attr('disabled', 'disabled');
-            this.$('input[name="tips"]').removeAttr('checked');
-            this.$(e.target).attr('checked', 'checked');
-
-            this.model.set('type', val);
-
-            if(!val) {
-                this.$('.btn').removeClass('selected');
-                this.$('.btn').addClass('disabled');
-            } else {
-                this.$('.btn').removeClass('disabled');
-            }
-
-            this.$('[type="radio"]').next('.radio').removeClass('checked');
-            this.$(e.target).next('.radio').addClass('checked');
-        },
-        setAmount: function(e) {
-            if(this.$(e.target).hasClass('disabled'))
-                return;
-
-            var amount = $(e.target).attr('data-amount') * 1;
-
-            this.$('.btn').removeClass('selected');
-            this.$(e.target).addClass('selected');
-
-            this.model.set('amount', isNaN(amount) ? false : true);
-
-            if(amount) {
-                this.$('.tipAmount').attr('disabled', 'disabled');
-                this.model.set('percent', amount);
-            } else {
-                this.$('.tipAmount').removeAttr('disabled');
-            }
-        },
-        setSum: function() {
-            var amount = this.$('.tipAmount');
-
-            if(amount.attr('disabled') === 'disabled') {
-                amount.val(round_monetary_currency(App.Data.myorder.total.get_tip()));
-            } else {
-                this.model.set('sum', amount.val());
-            }
-
-        }
-    });
-
-
-    App.Views.CoreTipsView.CoreTipsLineView = App.Views.FactoryView.extend({  
+    App.Views.CoreTipsView.CoreTipsLineView = App.Views.FactoryView.extend({
         name: 'tips',
         mod: 'line',
         initialize: function() {
+            this.tipAmountRegStr = "^\\d{0,5}(\\.\\d{0,2})?$";
             this.model.set('iPad', /ipad/i.test(window.navigator.userAgent));
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);          
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:amount', this.render, this);
             this.listenTo(this.model, 'change:percent', this.render, this);
             this.listenTo(this.model, 'change:type', this.render, this);
@@ -140,7 +46,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.$el.html(this.template(model));
             // shoudn't change type attribute for android platforms
             // because some devices have problem with numeric keypad - don't have '.', ',' symbols (bug 11032)
-            inputTypeNumberMask(this.$('.tipAmount'), /^\d{0,5}\.{0,1}\d{0,2}$/, '0.00', cssua.ua.android);
+            inputTypeNumberMask(this.$('.tipAmount'), new RegExp(this.tipAmountRegStr), '0.00', cssua.ua.android);
             this.setBtnSelected(model.type ? (model.amount ? model.percent : "Other") : "None");
             return this;
         },
@@ -158,23 +64,33 @@ define(["backbone", "factory"], function(Backbone) {
             }
             this.model.set(obj_set);
             this.setSum();
-            this.setBtnSelected(amount_str);           
+            this.setBtnSelected(amount_str);
         },
         setBtnSelected: function(amount_str) {
             //this is for animation works after template rendering
             setTimeout( (function() {
                 this.$('.btn').removeClass('selected');
-                this.$('[data-amount='+amount_str+']').addClass('selected');
+                this.$('[data-amount=' + amount_str + ']').addClass('selected');
             }).bind(this), 0);
         },
         setSum: function() {
-            var amount = this.$('.tipAmount');
-            if (amount.attr('disabled')) {
+            var amount = this.$('.tipAmount'),
+                newAmount = amount.val(),
+                formatAmount = round_monetary_currency(newAmount),
+                pattern = new RegExp(this.tipAmountRegStr.replace(/(.*)0(.*)0(.*)/, '$11$22$3').replace(/[\(\)\?]/g, ''));
+
+            if(amount.attr('disabled')) {
                 var tip = round_monetary_currency(App.Data.myorder.total.get_tip());
                 amount.val(tip);
                 this.model.set('sum', tip*1);
-            } else {
-                this.model.set('sum', amount.val()*1);
+            } else if(!isNaN(parseFloat(formatAmount))) {
+                this.model.set('sum', formatAmount);
+            }
+
+            // If input field value does not match "XX.XX" need format it.
+            // Also need restore previos (or 0.00 if it was unset) value if new value is '.'.
+            if(!pattern.test(newAmount)) {
+                amount.val(round_monetary_currency(this.model.get('sum')));
             }
         }
     });
@@ -182,6 +98,6 @@ define(["backbone", "factory"], function(Backbone) {
     App.Views.TipsView = {};
 
     App.Views.TipsView.TipsMainView = App.Views.CoreTipsView.CoreTipsMainView;
-    
+
     App.Views.TipsView.TipsLineView = App.Views.CoreTipsView.CoreTipsLineView;
 });

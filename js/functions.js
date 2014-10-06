@@ -989,6 +989,8 @@ function inputTypeNumberMask(el, pattern, initial, dontChangeType) {
         el.on('input', function(a) {
             if (!pattern.test(a.target.value) || !a.target.value && !this.validity.valid) {
                 a.target.value = prev;
+                el.off('blur', change); // `change` event is not emitted after this case
+                el.one('blur', change); // need reproduce it
             } else {
                 prev = a.target.value;
             }
@@ -996,6 +998,9 @@ function inputTypeNumberMask(el, pattern, initial, dontChangeType) {
         el.on('change', function(a) {
             prev = a.target.value;
         });
+    }
+    function change() {
+        el.trigger('change');
     }
 }
 /**

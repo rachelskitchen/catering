@@ -115,9 +115,13 @@ define(["backbone", "factory", "generator", 'products_view'], function(Backbone)
             this.$('.price').text(initial_price);
         },
         keyup: function(e) {
-            var initial_price = round_monetary_currency(this.model.get('initial_price'));
-            if(e.target.value != initial_price)
-                this.gift_price_change(e);
+            var initial_price = round_monetary_currency(this.model.get('initial_price')),
+                formatPrice = round_monetary_currency(e.target.value),
+                floatValue = parseFloat(e.target.value);
+            if(formatPrice != initial_price && !isNaN(floatValue)) {
+                this.model.set('initial_price', formatPrice);
+                this.product.set('price', formatPrice);
+            }
         }
     });
 });

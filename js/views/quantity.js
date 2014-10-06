@@ -65,6 +65,14 @@ define(["backbone", "factory"], function(Backbone) {
         name: 'quantity',
         mod: 'weight',
         initialize: function() {
+            var product = this.model.get_product();
+            if (product && product.get('sold_by_weight')) {
+                this.number_decimal_digits = App.Settings.scales.number_of_digits_to_right_of_decimal;
+                if (this.number_decimal_digits)
+                   this.reg_str = "^\\d{0,4}\\.{0,1}\\d{0," + this.number_decimal_digits + "}$";
+                else
+                   this.reg_str = "^\\d{0,4}$";
+            }
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:weight', this.update, this);
         },
@@ -74,22 +82,35 @@ define(["backbone", "factory"], function(Backbone) {
                 product = this.model.get_product();
 
             model.sold_by_weight = product.get("sold_by_weight");
-            model.weight = this.model.get('weight') ? this.model.get('weight') : '';
+            model.weight = this.model.get('weight') ? this.model.get('weight').toFixed(this.number_decimal_digits) : '';
             model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
 
             this.$el.html(this.template(model));
 
             if (model.sold_by_weight) {
-                var reg_str, elem = self.$('.weight_edit_input');
-                var number_decimal_digits = App.Data.settings.get("settings_system").scales.number_of_digits_to_right_of_decimal;
-                if (number_decimal_digits)
-                   reg_str = "^\\d{0,4}\\.{0,1}\\d{0," + number_decimal_digits + "}$";
-                else
-                   reg_str = "^\\d{0,4}$";
+                var elem = self.$('.weight_edit_input');
 
                 // shoudn't change type attribute for android platforms
                 // because some devices have problem with numeric keypad - don't have '.', ',' symbols (bug 11032)
-                inputTypeNumberMask(elem, new RegExp(reg_str), null, cssua.ua.android);
+                inputTypeNumberMask(elem, new RegExp(this.reg_str), null, cssua.ua.android);
+            }
+        },
+        events: {
+            'change .weight_edit_input': 'change_weight'
+        },
+        change_weight: function(e) {
+            var newWeight = e.target.value,
+                floatWeight = parseFloat(newWeight),
+                pattern = new RegExp(this.reg_str.replace(/(0,)(\d+)/g, '$2,$2').replace(/(\d+,)/, '1,'));
+
+            if(!isNaN(floatWeight)) {
+                this.model.set('weight', floatWeight);
+            }
+
+            // If input field value does not match "XX.XX" need format it.
+            // Also need restore previos (or 0.00 if it was unset) value if new value is '.'.
+            if(!pattern.test(newWeight)) {
+                e.target.value = this.model.get('weight').toFixed(this.number_decimal_digits);
             }
         },
         update: function() {

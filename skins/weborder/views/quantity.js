@@ -61,13 +61,4 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
             this.model.set('quantity', e.target.value * 1);
         }
     });
-
-    App.Views.QuantityView.QuantityWeightView = App.Views.CoreQuantityView.CoreQuantityWeightView.extend({
-        events: {
-            'change .weight_edit_input': 'change_weight'
-        },
-        change_weight: function(e) {
-            this.model.set('weight', e.target.value * 1);
-        }
-    });
 });
