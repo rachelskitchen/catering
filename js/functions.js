@@ -71,6 +71,7 @@ MSG.BAG_CHARGE_ITEM = 'Bag Charge';
 MSG.REPEAT_ORDER_NOTIFICATION = "Some items have changed or no longer available. Please review items before placing your order.";
 MSG.REWARD_CARD_UNDEFINED = "Invalid Reward Card Number.";
 MSG.ADD_MORE_FOR_DELIVERY = "Please add %s more for delivery";
+MSG.ADD_MORE_FOR_SHIPPING = "Please add %s more for shipping";
 MSG.ERROR_PRODUCT_NOT_SELECTED = "You have not selected any product";
 MSG.ERROR_EMPTY_NOT_VALID_DATA = "Following required fields are blank or contain incorrect data: %s";
 MSG.ERROR_GRATUITY_EXCEEDS = "Gratuity amount can't exceed the receipt amount";

@@ -773,7 +773,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if (remain > 0 ) {
                     return {
                         status: 'ERROR',
-                        errorMsg: MSG.ADD_MORE_FOR_DELIVERY.replace('%s', App.Data.settings.get('settings_system').currency_symbol + remain)
+                        errorMsg: (App.skin == App.Skins.RETAIL ? MSG.ADD_MORE_FOR_SHIPPING : MSG.ADD_MORE_FOR_DELIVERY).replace('%s', App.Data.settings.get('settings_system').currency_symbol + remain)
                     };
                 }
             }
