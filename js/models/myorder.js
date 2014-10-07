@@ -1006,7 +1006,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             order_info.surcharge = total.surcharge;
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.notes = checkout.notes;
-            order_info.local_id = get_parameters[MONERIS_PARAMS.ORDER_ID];
 
             if (checkout.pickupTimeToServer === 'ASAP') {
                 checkout.pickupTime = 'ASAP (' + checkout.pickupTime + ')';
@@ -1241,7 +1240,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                     myorder.trigger('paymentResponse');
                                     return;
                                 }
-                                payment_info.transaction_id = get_parameters.txn_num;
+                                payment_info.transaction_id = get_parameters[MONERIS_PARAMS.TRANSACTION_ID];
+                                payment_info.response_order_id = get_parameters[MONERIS_PARAMS.RESPONSE_ORDER_ID];
                             }
                         } else {
                             if (payment.paypal_direct_credit_card) {

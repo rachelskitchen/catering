@@ -174,7 +174,8 @@ MONERIS_RETURN_MESSAGE_DEFAULT = "Unknown error";
 
 var MONERIS_PARAMS = {
     PAY: 'rvarPay',
-    ORDER_ID: 'response_order_id'
+    RESPONSE_ORDER_ID: 'response_order_id',
+    TRANSACTION_ID: 'txn_num'
 };
 
 function getMercuryErrorMessage(returnCode) {
