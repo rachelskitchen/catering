@@ -46,8 +46,10 @@ define(["backbone", "factory"], function(Backbone) {
             model.isFirefox = /firefox/i.test(navigator.userAgent);
             this.$el.html(this.template(model));
 
-            cardNumber = this.$('.number');
+            var captcha = this.$('#id_captcha_value');
+            inputTypeNumberMask(captcha, /^\w{0,4}$/, '', true); //#14495 bug
 
+            cardNumber = this.$('.number');
             inputTypeNumberMask(cardNumber, /^\d{0,19}$/);
             if (cssua.userAgent.mobile) {
                 var ios_version_old = false;
