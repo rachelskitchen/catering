@@ -138,7 +138,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                 inputTypeNumberMask(this.$('.gift_card_number'), /^(\d|-){0,255}$/, '');
             }
             if (this.gift_price) {
-                inputTypeNumberMask(this.$('.gift_card_price'), new RegExp(this.giftCardPriceRegStr), '');
+                inputTypeNumberMask(this.$('.gift_card_price'), new RegExp(this.giftCardPriceRegStr), '', cssua.ua.android);
             }
 
             if (App.skin == App.Skins.RETAIL)
