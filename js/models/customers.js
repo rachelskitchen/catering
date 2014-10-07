@@ -141,9 +141,14 @@ define(["backbone", "geopoint"], function(Backbone) {
                     settings = App.Data.settings.get('settings_system'),
                     lat, lon,
                     address = this.get('addresses'),
-                    shipping_address = this.get('shipping_address') === -1 ? address.length - 1 : this.get('shipping_address');
+                    shipping_address = this.get('shipping_address') === -1 ? address.length - 1 : this.get('shipping_address'),
+                    street2 = address[shipping_address].street_2;
 
                 address = address[shipping_address].address;
+
+                if(street2) {
+                    address = address.replace(', ' + street2, '');
+                }
 
                 geocoder.geocode({"address": address}, function(results, status) {
                     if (status === google.maps.GeocoderStatus.OK) {
