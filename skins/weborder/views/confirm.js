@@ -37,9 +37,6 @@ define(["backbone", "confirm_view"], function(Backbone) {
 
             this.$el.html(this.template(new_model));
 
-             //remove the background from popup
-            $('#popup').removeClass("popup-background");
-
             this.afterRender();
 
             return this;

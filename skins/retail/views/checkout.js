@@ -35,14 +35,6 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.CheckoutView.CheckoutPayButtonView = App.Views.CoreCheckoutView.CoreCheckoutPayButtonView.extend({
-        credit_card: function() {
-            App.Views.CoreCheckoutView.CoreCheckoutPayButtonView.prototype.credit_card.apply(this, arguments);
-            //remove the background from popup
-            $('#popup').removeClass("popup-background");
-        }
-    });
-
     App.Views.CheckoutView.CheckoutPageView = App.Views.CoreCheckoutView.CoreCheckoutPageView.extend({
         render: function() {
             var data = {

@@ -439,7 +439,8 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                     collection: self.collection,
                     className: 'confirmPayCard',
                     timetable: App.Data.timetables,
-                    card: App.Data.giftcard
+                    card: App.Data.giftcard,
+                    two_columns_view: true
                 });
             });
         },
@@ -480,7 +481,8 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                     collection: self.collection,
                     className: 'confirmPayCard',
                     timetable: App.Data.timetables,
-                    card: App.Data.card
+                    card: App.Data.card,
+                    two_columns_view: true
                 });
             }
         },

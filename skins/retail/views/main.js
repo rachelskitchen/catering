@@ -106,12 +106,17 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             if (typeof value == 'undefined')
                 return popup.removeClass('ui-visible');
 
-            $('#popup').addClass("popup-background");
-
             data = _.defaults(this.model.get('popup'), this.popup_defaults());
             id = 'popup_' + data.modelName + '_' + data.mod;
             this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data);
             this.$('#popup').append(this.subViews[2].el);
+
+            if (data.two_columns_view === true) {
+                $('#popup').removeClass("popup-background");
+            } else {
+                $('#popup').addClass("popup-background");
+            }
+             
             popup.addClass('ui-visible');
         },
         hide_popup: function() {
