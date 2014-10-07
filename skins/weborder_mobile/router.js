@@ -88,7 +88,7 @@ define(["backbone", "main_router"], function(Backbone) {
             var self = this;
 
             // check if we here from paypal payment page
-            if (App.Data.get_parameters.pay) {
+            if (App.Data.get_parameters.pay || App.Data.get_parameters[MONERIS_PARAMS.PAY]) {
                 window.location.hash = "#pay";
             }
 
@@ -392,7 +392,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 });
 
                 this.change_page();
-            });    
+            });
         },
         card: function() {
             this.prepare('card', function() {
@@ -475,7 +475,7 @@ define(["backbone", "main_router"], function(Backbone) {
                         }
                     ]
                 });
-               
+
                 this.change_page();
             }, [load]);
         },
