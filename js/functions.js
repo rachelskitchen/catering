@@ -29,13 +29,13 @@ var array_day_of_week = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "T
 var array_month = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
 
 var TIMETABLE_WEEK_DAYS = {
-    "sunday": "Sun",
     "monday": "Mon",
     "tuesday": "Tue",
     "wednesday": "Wed",
     "thursday": "Thu",
     "friday": "Fri",
-    "saturday": "Sat"
+    "saturday": "Sat",
+    "sunday": "Sun"
 };
 
 var MonthByStr = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12};
