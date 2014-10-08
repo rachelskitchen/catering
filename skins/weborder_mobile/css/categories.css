@@ -95,4 +95,8 @@
     box-shadow: 0 0 6em rgba(0, 170, 234, 0.3) inset;
 }
 
+#content ul.categories .timetables {
+    font-style: italic;
+}
+
 /* item mod end */

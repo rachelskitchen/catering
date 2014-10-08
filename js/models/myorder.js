@@ -1112,6 +1112,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                         case "REWARD CARD UNDEFINED":
                             reportErrorFrm(MSG.REWARD_CARD_UNDEFINED);
                             break;
+                        case "PRODUCTS_NOT_AVAILABLE_FOR_SELECTED_TIME":
+                            reportErrorFrm(data.errorMsg + " " + MSG.PRODUCTS_VALID_TIME + "<br/>" + format_timetables(data.responseJSON["timetables"], ",<br/>"));
+                            break;
                         default:
                             data.errorMsg = MSG.ERROR_OCCURRED + data.errorMsg;
                             reportErrorFrm(data.errorMsg);

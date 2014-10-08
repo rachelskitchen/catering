@@ -70,11 +70,14 @@
 #content .product dd {
     font-size: 2.2em;
     margin-right: 4em;
-    height: 3.9em;
     overflow: hidden;
     text-align: justify;
     clear: both;
     line-height: 1.3em;
+}
+
+#content .product .timetables {
+    font-style: italic;
 }
 
 #content .product .name {

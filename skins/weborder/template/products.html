@@ -2,7 +2,7 @@
     <ul class="products"></ul>
 </script>
 
-<script type="text/template" id="product_list_item-template">    
+<script type="text/template" id="product_list_item-template">
     <dl class="s<%= price_length %>">
         <dt class="name">
             <% if(!show_product_description && !hide_images) { %>
@@ -60,8 +60,11 @@
             </span>
         </dt>
         <dd><%= description %></dd>
+        <% if (timetables) { %>
+        <dd class="vertical-scrollbar timetables">Available: <%= timetables %></dd>
+        <% } %>
     </dl>
-    
+
     <% if (is_gift) { %>
     <div class='gift_card'>
         <span>Gift Card Number: </span>

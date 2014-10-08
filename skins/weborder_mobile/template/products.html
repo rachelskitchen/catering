@@ -4,9 +4,9 @@
 
 <script type="text/template" id="product_list_item-template">
     <% if(!hide_images) { %>
-        <div class="block_img"> 
+        <div class="block_img">
             <div class="img">
-                <img alt="<%= name %> <%= id %>"/> 
+                <img alt="<%= name %> <%= id %>"/>
             </div>
         </div>
     <% } %>
@@ -25,7 +25,6 @@
             <span class="uom">/ <%= uom %></span>
             <% } %>
         </dt>
-        <dd><% if(show_product_description) print(description); %></dd>
     </dl>
 </script>
 
@@ -57,7 +56,10 @@
             <span class="uom">/ <%= uom %></span>
             <% } %>
         </dt>
-        <dd><%= description %></dd>
+        <dd><%= description %> </dd>
+        <% if (timetables) { %>
+        <dd class="timetables"> Available: <%=timetables%></dd>
+        <% } %>
     </dl>
     <% if (is_gift) { %>
     <div class='gift_card <%if (hide_images) print('noimage');%>'>
@@ -81,6 +83,5 @@
                 <span class="price"><%= price %></span>
             </span>
         </dt>
-        <dd><%= description %></dd>
     </dl>
 </script>

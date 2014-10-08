@@ -28,6 +28,16 @@ var array_day_of_week = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "T
 
 var array_month = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
 
+var TIMETABLE_WEEK_DAYS = {
+    "sunday": "Sun",
+    "monday": "Mon",
+    "tuesday": "Tue",
+    "wednesday": "Wed",
+    "thursday": "Thu",
+    "friday": "Fri",
+    "saturday": "Sat"
+};
+
 var MonthByStr = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12};
 
 // http://www.w3.org/TR/html5/forms.html#valid-e-mail-address
@@ -90,6 +100,7 @@ MSG.FILTER_SHOW_ALL = "Show All";
 MSG.FREE_MODIFIERS_PRICE = "Modifiers for less than %s will be free";
 MSG.FREE_MODIFIERS_QUANTITY = "First %s modifiers selected will be free";
 MSG.FREE_MODIFIERS_QUANTITY1 = "First modifier selected will be free";
+MSG.PRODUCTS_VALID_TIME = "Available: ";
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
@@ -1076,4 +1087,59 @@ function fistLetterToUpperCase(text) {
 */
 function trace() {
     return console.log.apply(console, arguments);
+}
+
+function format_time(time) {
+    time = time.split(":")
+    return new TimeFrm(time[0] * 1, time[1] * 1, "usa").toString();
+}
+
+function format_days(days, from_time, to_time) {
+    var str = "";
+    if (days.length > 1 && days.length < 7) {
+        str = TIMETABLE_WEEK_DAYS[days[0]] + ' - ' + TIMETABLE_WEEK_DAYS[days[days.length - 1]] + ' ';
+    } else if (days.length == 1) {
+        str = TIMETABLE_WEEK_DAYS[days[0]] + ' ';
+    }
+    str += format_time(from_time) + ' - ' + format_time(to_time);
+    return str;
+}
+
+function format_timetables(timetables, separator) {
+    if (!timetables) {
+        return null;
+    }
+    var res = [];
+    var always = false;
+
+    timetables.forEach(function (timetable) {
+        var timetable_data = timetable.timetable_data
+        if (!timetable_data || $.isEmptyObject(timetable_data)) {
+            always = true;
+            return;
+        }
+        var from_time = null;
+        var to_time = null;
+        var days = [];
+
+        for(day in TIMETABLE_WEEK_DAYS) {
+            if (from_time && to_time &&
+                (from_time != timetable_data[day][0]['from'] || to_time != timetable_data[day][0]['to'])) {
+                res.push(format_days(days, from_time, to_time));
+                days = [];
+            }
+            from_time = timetable_data[day][0]['from'];
+            to_time = timetable_data[day][0]['to'];
+            days.push(day);
+        }
+
+        res.push(format_days(days, from_time, to_time));
+    });
+    if (always) {
+        return null;
+    }
+    if (separator == undefined) {
+        separator = ', ';
+    }
+    return res.join(separator);
 }

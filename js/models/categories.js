@@ -34,7 +34,8 @@ define(["backbone", "collection_sort"], function(Backbone) {
             sort: null,
             sort_val: null,
             img: App.Data.settings.get("img_path"),
-            active: true
+            active: true,
+            timetables: null
         }
     });
 
@@ -69,6 +70,7 @@ define(["backbone", "collection_sort"], function(Backbone) {
                             category.image = App.Data.settings.get_img_default();
                         }
                         category.sort_val = parseInt(category.parent_sort || 0) * 1000 + parseInt(category.sort || 0);
+                        category.timetables = format_timetables(category.timetables);
                         self.add(category);
                     }
                     dfd.resolve();

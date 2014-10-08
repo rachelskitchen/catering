@@ -55,7 +55,8 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             active: true,
             isDeliveryItem: false,
             created_date: null,
-            original_tax: null // used to save origin tax rate to restore in Retail mode
+            original_tax: null, // used to save origin tax rate to restore in Retail mode
+            timetables: null
         },
         initialize: function() {
             this.set({
@@ -384,6 +385,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                 successResp: function(data) {
                     for (var i = 0; i < data.length; i++) {
                         if(data[i].is_gift && settings.get('skin') === 'mlb') continue; // mlb skin does not support gift cards (bug #9395)
+                        data[i].timetables = format_timetables(data[i].timetables);
                         self.add(data[i]);
                     }
                     fetching.resolve();
