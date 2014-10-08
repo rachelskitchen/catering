@@ -140,11 +140,6 @@ define(["backbone", "async"], function(Backbone) {
                 settings.delivery_charge = 0;
 
             this.set('skin', App.skin);
-
-            // temp solution for RETAIL color scheme
-            // has to be removed when enhancement 12227 will be resolved
-            if(App.Skins.RETAIL == App.skin)
-                settings.color_scheme = 'Vintage';
         },
         /**
          * Get settings from file "settings.json" for current skin.

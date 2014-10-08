@@ -45,6 +45,9 @@
 #credit-card .select-wrapper {
     margin-right: 10px;
 }
+#credit-card select {
+    font-size: 15px;
+}
 #exp-year {
     padding-right: 22px;
 }

@@ -73,17 +73,17 @@
     text-overflow: ellipsis;
 }
 #header .categories .tabs span.first-line {
-    top: -7px;
+    top: -6px;
 }
 #header .categories .tabs input:checked:not(.slider-hidden) + label span.first-line {
-    top: -5px;
+    top: -4px;
 }
 #header .categories .tabs span.second-line {
     left: -120px;
-    top: 6px;
+    top: 7px;
 }
 #header .categories .tabs input:checked:not(.slider-hidden) + label span.second-line {
-    top: 8px;
+    top: 9px;
 }
 #header .categories .tabs input:checked:not(.slider-hidden) + label {
     height: 38px;

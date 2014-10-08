@@ -244,11 +244,11 @@ footer {
 }
 #header .main ul.menu li.cart {
     position: absolute;
-    top: -14px;
+    top: -16px;
     right: 55px;
     width: 32px;
     height: 30px;
-    padding-top: 13px;
+    padding-top: 15px;
     text-align: center;
     text-shadow: none;
     font-weight: bold;
