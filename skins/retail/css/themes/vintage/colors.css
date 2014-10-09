@@ -560,3 +560,6 @@ aside:after, aside:before {
     border-radius: 5px;
 }
 /* scrollbar end */
+.confirmPayCard {
+    background: #e6decb;
+}

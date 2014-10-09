@@ -107,11 +107,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 return popup.removeClass('ui-visible');
 
             data = _.defaults(this.model.get('popup'), this.popup_defaults());
-            // if (data.two_columns_view === true) {
-            //     $('#popup').removeClass("popup-background");
-            // } else {
-                $('#popup').addClass("popup-background");
-            // }
+
+            $('#popup').addClass("popup-background");
 
             id = 'popup_' + data.modelName + '_' + data.mod;
             this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data);
