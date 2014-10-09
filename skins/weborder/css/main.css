@@ -76,7 +76,7 @@ select {
 @-moz-document url-prefix() {
     /* due to firefox does not hide select element arrows need change padding */
     select {
-        padding: 0 10px 0 6px;
+        padding: 0 10px 0 6px !important;
     }
 }
 .select-wrapper {
