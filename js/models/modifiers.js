@@ -497,6 +497,78 @@ define(["backbone"], function(Backbone) {
                     modifierBlocks.forEach(function(modifierBlock) {
                         self.add(new App.Models.ModifierBlock().addJSON(modifierBlock));
                     });
+                    self.create_quick_modifiers_section(App.Data.quickModifiers);                                        
+                    fetching.resolve();
+                },
+                error: function() {
+                    App.Data.errors.alert(MSG.ERROR_MODIFIERS_LOAD, true);
+                }
+            });
+
+            return fetching;
+        },
+         /**
+         * It creates a dummi modifierBlock to group all quick modifiers together which are not included in the product's modifiers blocks 
+         */
+        create_quick_modifiers_section: function(quickModifiers) {
+            var modifierBlock = {
+                "sort": 10000, //set to the end of the modifiers list
+                //"amount_free_is_dollars": null,
+                "active":true,
+                "modifier_class_id":-1, //useless for Quick Modifiers
+                "name": "Quick Modifiers"
+            };
+            
+            var self = this, 
+                qmBlock = new App.Models.ModifierBlock().addJSON(modifierBlock);
+            self.add(qmBlock);
+
+            quickModifiers.forEach(function(modifierBlock) {
+                var modifiers = modifierBlock.get("modifiers");
+               
+                modifiers.forEach(function(modifier) {
+                    if (!self.find_modifier(modifier.id)) {
+                        var m = modifier.clone();
+                        qmBlock.get('modifiers').add(m);
+                    }
+                });
+            });
+        },
+         /**
+         * Find modifier by id, it looks through the all modifier blocks
+         */
+        find_modifier: function(modifier_id) {
+            var obj;
+            this.find(function(modifierBlock) {
+                var modifiers = modifierBlock.get("modifiers");
+                obj = modifiers.get(modifier_id);
+                return obj ? true : false;
+            });
+            return obj;
+        },
+         /**
+         * Get quick modifiers from backend.
+         */
+        get_quick_modifiers: function() {
+            var self = this,
+                fetching = new $.Deferred(); // Pointer that all data loaded
+       
+
+            $.ajax({
+                url: App.Data.settings.get("host") + "/weborders/modifiers/",
+                data: {
+                    establishment: App.Data.settings.get("establishment")
+                },
+                dataType: "json",
+                successResp: function(modifierBlocks) {
+                    trace("QM: successResp =>");
+                    modifierBlocks.forEach(function(modifierBlock) {
+                        self.add(new App.Models.ModifierBlock().addJSON(modifierBlock));
+                    });
+                    
+                    //trace("after ", self);
+                    //trace("App.Data.quickModifiers=", App.Data.quickModifiers)
+
                     fetching.resolve();
                 },
                 error: function() {
@@ -616,5 +688,18 @@ define(["backbone"], function(Backbone) {
         }
 
         return modifier_load;
+    };
+
+    App.Collections.ModifierBlocks.init_quick_modifiers = function() {
+        var fetching = $.Deferred();
+
+        if (App.Data.quickModifiers === undefined) {
+            App.Data.quickModifiers = new App.Collections.ModifierBlocks;
+            fetching = App.Data.quickModifiers.get_quick_modifiers();
+        } else {
+            fetching.resolve();
+        }
+
+        return fetching;
     };
 });

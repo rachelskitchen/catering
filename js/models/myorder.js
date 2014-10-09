@@ -169,15 +169,19 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         add_empty: function (id_product, id_category) {
             var self = this,
                 product_load = App.Collections.Products.init(id_category), // load product
-                modifier_load = App.Collections.ModifierBlocks.init(id_product), // load product modifiers
+                quick_modifier_load = App.Collections.ModifierBlocks.init_quick_modifiers(),
+                modifier_load = $.Deferred(),
                 product_child_load = $.Deferred(), // load child products
                 loadOrder = $.Deferred(),
                 product;
 
-
             product_load.then(function() {
                 product = App.Data.products[id_category].get(id_product);
                 product.get_child_products().then(product_child_load.resolve);
+            });
+
+            quick_modifier_load.then(function() { 
+                App.Collections.ModifierBlocks.init(id_product).then(modifier_load.resolve); // load product modifiers
             });
 
             $.when(product_child_load, modifier_load).then(function() {
