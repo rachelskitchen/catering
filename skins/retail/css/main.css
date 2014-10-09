@@ -73,7 +73,7 @@ select {
 @-moz-document url-prefix() {
     /* due to firefox does not hide select element arrows need change padding */
     select {
-        padding: 0 0 0 10px;
+        padding: 0 0 0 10px !important;
     }
 }
 .select-wrapper {
@@ -244,11 +244,11 @@ footer {
 }
 #header .main ul.menu li.cart {
     position: absolute;
-    top: -16px;
+    top: -18px;
     right: 55px;
     width: 32px;
-    height: 30px;
-    padding-top: 15px;
+    height: 27px;
+    padding-top: 18px;
     text-align: center;
     text-shadow: none;
     font-weight: bold;
@@ -291,8 +291,8 @@ footer {
 }
 #header .main .search input {
     border: none;
-    padding: 5px 0;
     width: 100%;
+    line-height: 25px;
 }
 #header .checkout .search {
     display: none;
@@ -326,7 +326,7 @@ footer {
     border-top-style: solid;
     height: 38px;
     margin: 10px 10px 0;
-    line-height: 38px;
+    line-height: 37px;
 }
 #cart .main .subtotal span:first-child {
     text-transform: uppercase;
