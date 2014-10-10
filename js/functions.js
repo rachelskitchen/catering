@@ -1123,17 +1123,30 @@ function format_timetables(timetables, separator) {
         var days = [];
 
         for(day in TIMETABLE_WEEK_DAYS) {
+            var day_data = null;
+            if (timetable_data[day] && timetable_data[day][0]) {
+                day_data = timetable_data[day][0];
+            }
+
             if (from_time && to_time &&
-                (from_time != timetable_data[day][0]['from'] || to_time != timetable_data[day][0]['to'])) {
+                (!day_data || from_time != day_data['from'] || to_time != day_data['to'])) {
                 res.push(format_days(days, from_time, to_time));
                 days = [];
             }
-            from_time = timetable_data[day][0]['from'];
-            to_time = timetable_data[day][0]['to'];
-            days.push(day);
+            if (day_data) {
+                from_time = day_data['from'];
+                to_time = day_data['to'];
+                days.push(day);
+            } else {
+                from_time = null;
+                to_time = null;
+                days = [];
+            }
         }
 
-        res.push(format_days(days, from_time, to_time));
+        if (from_time && to_time) {
+            res.push(format_days(days, from_time, to_time));
+        }
     });
     if (always) {
         return null;
