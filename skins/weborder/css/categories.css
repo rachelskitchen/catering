@@ -111,7 +111,6 @@
 }
 
 .category_description {
-    height:30px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -124,6 +123,10 @@
     display: inline;
     font-weight: bold;
     font-size: 20px;
+}
+.category_description .timetables{
+    white-space: pre-wrap;
+    margin-top: 0.2em;
 }
 .categories_table li {
     margin-top:10px;
