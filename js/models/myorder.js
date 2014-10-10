@@ -180,7 +180,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 product.get_child_products().then(product_child_load.resolve);
             });
 
-            quick_modifier_load.then(function() { 
+            quick_modifier_load.then(function() {
                 App.Collections.ModifierBlocks.init(id_product).then(modifier_load.resolve); // load product modifiers
             });
 
@@ -486,7 +486,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                         return model.get('product').id == null &&
                                model.get('product').get('isDeliveryItem') === true;
                     });
-                    if (obj == undefined && (App.skin != App.Skins.RETAIL || App.Data.customer.get("shipping_selected") >= 0))
+                    if (obj == undefined && (App.skin != App.Skins.RETAIL || (App.Data.customer && App.Data.customer.get("shipping_selected") >= 0)))
                        this.add(this.deliveryItem);
 
                 } else {
@@ -1379,6 +1379,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          * Bag charge should not be processed by Avalara
          */
         getDestinationBasedTaxes: function(item) {
+            if(!App.Data.customer) {
+                return;
+            }
+
             var self = this,
                 addresses = App.Data.customer.get('addresses'),
                 post = {
