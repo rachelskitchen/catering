@@ -54,12 +54,6 @@ define(["backbone"], function(Backbone) {
                 }
             }
 
-            for (var dining_ontion_name in DINING_OPTION) {
-                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_ontion_name]) == -1) {
-                    delete DINING_OPTION_NAME[dining_ontion_name];
-                }
-            }
-
             var orderFromSeat = App.Settings.order_from_seat || [];
             if(orderFromSeat[0]) {
                 App.Data.orderFromSeat = {
@@ -69,6 +63,12 @@ define(["backbone"], function(Backbone) {
                 };
             } else {
                 delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
+            }
+
+            for (var dining_ontion_name in DINING_OPTION) {
+                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_ontion_name]) == -1 || (App.Data.orderFromSeat && dining_ontion_name == 'DINING_OPTION_OTHER')) {
+                    delete DINING_OPTION_NAME[dining_ontion_name];
+                }
             }
 
             // set page title

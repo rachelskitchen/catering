@@ -56,6 +56,11 @@ define(["backbone", "main_router"], function(Backbone) {
             $('body').html('<div class="main-container"></div>');
             this.bodyElement = $('body');
 
+            // check available dining options
+            if(App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) == -1 && App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_DELIVERY) == -1) {
+                App.Data.settings.set('isMaintenance', true);
+            }
+
             // cancel requests to modifiers
             App.Collections.ModifierBlocks.init = function(product) {
                 var a = $.Deferred();

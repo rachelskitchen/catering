@@ -304,18 +304,34 @@ define(["backbone", "async"], function(Backbone) {
 
                             settings_system.scales.number_of_digits_to_right_of_decimal = Math.abs((settings_system.scales.number_of_digits_to_right_of_decimal).toFixed(0) * 1);
 
+                            // init dining_options if it doesn't exist
+                            if(!Array.isArray(settings_system.dining_options)) {
+                                settings_system.dining_options = [];
+                            }
+
+                            // add DELIVER_TO_SEAT if 'order_from_seat' is checked on
+                            if(settings_system.order_from_seat[0] && settings_system.dining_options.indexOf(DINING_OPTION.DINING_OPTION_DELIVERY_SEAT) == -1) {
+                                settings_system.dining_options.push(DINING_OPTION.DINING_OPTION_DELIVERY_SEAT);
+                            }
+
                             // Set default dining option.
                             // It's key of DINING_OPTION object property with value corresponding the first element of settings_system.dining_options array
                             (function() {
-                                var defaltOption;
-                                if(Array.isArray(settings_system.dining_options) && settings_system.dining_options.length > 0) {
-                                    settings_system.default_dining_option = _.invert(DINING_OPTION)[settings_system.dining_options[0]];
+                                var dining_options = settings_system.dining_options;
+                                if(dining_options.length > 0) {
+                                    for(var dining_option in DINING_OPTION) {
+                                        // if order_from_seat is checked on 'Delivery to seat' overrides 'Other' (rules in bug 14657)
+                                        if(dining_options[0] == DINING_OPTION[dining_option] && (!settings_system.order_from_seat[0] || dining_option != 'DINING_OPTION_OTHER')) {
+                                            settings_system.default_dining_option = dining_option;
+                                            break;
+                                        }
+                                    }
                                 }
                             })();
 
                             self.set("settings_system", settings_system);
                             App.Settings = App.Data.settings.get("settings_system");
-                            if (!self.get_payment_process() || !Array.isArray(settings_system.dining_options) || settings_system.dining_options.length == 0) {
+                            if (!self.get_payment_process() || settings_system.dining_options.length == 0) {
                                 self.set('isMaintenance', true);
                             }
                             break;
