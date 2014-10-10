@@ -37,6 +37,7 @@ define(["backbone", "card_view"], function(Backbone) {
                 checkout: true,
                 card: true
             }, function() {
+                saveAllData();
                 App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
             });
         }
