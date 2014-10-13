@@ -1094,15 +1094,33 @@ function format_time(time) {
     return new TimeFrm(time[0] * 1, time[1] * 1, "usa").toString();
 }
 
-function format_days(days, from_time, to_time) {
+function format_days(days, day_time) {
     var str = "";
     if (days.length > 1 && days.length < 7) {
         str = TIMETABLE_WEEK_DAYS[days[0]] + ' - ' + TIMETABLE_WEEK_DAYS[days[days.length - 1]] + ' ';
     } else if (days.length == 1) {
         str = TIMETABLE_WEEK_DAYS[days[0]] + ' ';
     }
-    str += format_time(from_time) + ' - ' + format_time(to_time);
+    str += day_time;
     return str;
+}
+
+function format_times(times, separator) {
+    if (!times) {
+        return null;
+    }
+
+    var res = []
+
+    times.forEach(function (time) {
+        res.push(format_time(time['from']) + ' - ' + format_time(time['to']));
+    });
+
+    if (separator == undefined) {
+        separator = ', ';
+    }
+
+    return res.join(separator);
 }
 
 function format_timetables(timetables, separator) {
@@ -1118,34 +1136,31 @@ function format_timetables(timetables, separator) {
             always = true;
             return;
         }
-        var from_time = null;
-        var to_time = null;
+        var prev_day_time = null;
         var days = [];
 
         for(day in TIMETABLE_WEEK_DAYS) {
-            var day_data = null;
-            if (timetable_data[day] && timetable_data[day][0]) {
-                day_data = timetable_data[day][0];
+            var day_time = null;
+            if (timetable_data[day] && timetable_data[day].length > 0) {
+                day_time = format_times(timetable_data[day])
             }
 
-            if (from_time && to_time &&
-                (!day_data || from_time != day_data['from'] || to_time != day_data['to'])) {
-                res.push(format_days(days, from_time, to_time));
+            if (prev_day_time &&
+                (!day_time || prev_day_time != day_time)) {
+                res.push(format_days(days, prev_day_time));
                 days = [];
             }
-            if (day_data) {
-                from_time = day_data['from'];
-                to_time = day_data['to'];
+            if (day_time) {
+                prev_day_time = day_time;
                 days.push(day);
             } else {
-                from_time = null;
-                to_time = null;
+                prev_day_time = null;
                 days = [];
             }
         }
 
-        if (from_time && to_time) {
-            res.push(format_days(days, from_time, to_time));
+        if (prev_day_time) {
+            res.push(format_days(days, prev_day_time));
         }
     });
     if (always) {
