@@ -56,6 +56,10 @@ define(["backbone", "geopoint"], function(Backbone) {
         },
         loadCustomer: function() {
             this.set(getData('customer'));
+            var shipping_services = this.get("shipping_services");
+            if(Array.isArray(shipping_services) && shipping_services.length && this.get("shipping_selected") > -1) {
+                this.set("load_shipping_status", "restoring", {silent: true});
+            }
         },
         saveAddresses: function() {
             setData('address', new Backbone.Model({addresses: this.get('addresses')}), true);
@@ -185,6 +189,11 @@ define(["backbone", "geopoint"], function(Backbone) {
             if (!address.length)
                 return;
 
+            // restore saved values
+            if(this.get("load_shipping_status") == "restoring") {
+                return complete();
+            }
+
             data.address = address[shipping_addr_index];
             data.items = [];
             data.establishment = App.Data.settings.get("establishment");
@@ -206,25 +215,26 @@ define(["backbone", "geopoint"], function(Backbone) {
                     switch (response.status) {
                         case "OK":
                             self.set("shipping_services", response.data, {silent: true});
-                            self.set("load_shipping_status", "resolved", {silent: true});
-                            self.trigger("change:shipping_services");
+                            complete();
                             break;
                         default:
-                            onError(self);
+                            onError();
                     }
                 },
                 error: function() {
-                    onError(self);
+                    onError();
                 },
                 complete: function() {
                 }
             });
 
-            function onError(self) {
-                setTimeout(function() {
-                    self.set("load_shipping_status", "resolved", {silent: true});
-                    self.trigger("change:shipping_services");
-                }, 300);
+            function onError() {
+                setTimeout(complete, 300);
+            }
+
+            function complete() {
+                self.set("load_shipping_status", "resolved", {silent: true});
+                self.trigger("change:shipping_services");
             }
         }
     });

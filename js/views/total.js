@@ -89,6 +89,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     model.grandTotal = round_monetary_currency(model.tip * 1);
                 }
             }
+
             return model;
         },
         updateAll: function() {

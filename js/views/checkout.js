@@ -200,15 +200,17 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         updateAddress: function() {
             var settings = App.Data.settings.get('settings_system'),
                 shipping_address = this.options.customer.get('shipping_address'),
+                model = this.model,
                 address;
+
             address = {
-                street_1: this.model.street_1,
-                street_2: this.model.street_2,
-                city: this.model.city,
-                state: this.model.state,
-                province: this.model.province,
-                zipcode: this.model.zipcode,
-                country: this.model.country
+                street_1: model.street_1,
+                street_2: model.street_2,
+                city: model.city,
+                state: model.state,
+                province: model.province,
+                zipcode: model.zipcode,
+                country: model.country
             };
 
             var addresses = this.options.customer.get('addresses');
@@ -220,7 +222,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             }
             addresses[addresses.length - 1].address = this.options.customer.address_str();
 
-            if (this.model.isShippingServices && address.street_1 && address.city && address.country &&
+            if (model.isShippingServices && address.street_1 && address.city && address.country &&
                 address.zipcode && (address.country == 'US' ? address.state : true) &&
                                    (address.country == 'CA' ? address.province : true)) {
                 this.options.customer.get_shipping_services();
