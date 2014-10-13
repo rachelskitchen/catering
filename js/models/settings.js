@@ -268,7 +268,6 @@ define(["backbone", "async"], function(Backbone) {
 
                             settings_system.address.full_address = $.trim(full_address);
 
-                            settings_system.address.coordinates = {};
                             settings_system.address.getRegion = function() {
                                 return $.inArray(settings_system.address.country, country) !== -1
                                     ? settings_system.address.province
@@ -362,8 +361,15 @@ define(["backbone", "async"], function(Backbone) {
             return load;
         },
         load_geoloc: function() {
+            var set_sys = App.Data.settings.get("settings_system");
+
+            // if coordinates are set in server then return
+            if (set_sys.address.coordinates.lat != null && set_sys.address.coordinates.lng != null) {
+                set_sys.geolocation_load.resolve();
+                return;
+            }
+
             var self = this,
-                set_sys = App.Data.settings.get("settings_system"),
                 address_google = set_sys.address.city +  ", " +
                                  set_sys.address.state_province + " " +
                                  set_sys.address.postal_code + ", " +
