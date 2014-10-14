@@ -4,17 +4,17 @@
 
 <script type="text/template" id="categories_item-template">
     <% if(!hide_images) { %>
-        <div class="block_img">
-            <div class="img">
-                <img alt="<%= name %> <%= id %>"/>
-            </div>
+        <div class="block_img img">
+            <img alt="<%= name %> <%= id %>"/>
         </div>
     <% } %>
     <dl <% if(hide_images){ %>class="noimage"<% } %>>
         <dt><%= name %></dt>
-        <dd><%= parent_name %></dd>
-        <% if (timetables) {%>
-        <dd class="timetables"><%= timetables %></dd>
-        <% } %>
+        <dd>
+            <%= parent_name %>
+            <% if (timetables) {%>
+            <span class="timetables"><%= timetables %></span>
+            <% } %>
+        </dd>
     </dl>
 </script>
