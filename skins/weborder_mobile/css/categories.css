@@ -25,6 +25,8 @@
     position: absolute;
     width: 11.8em;
     border-collapse: collapse;
+    top: 50%;
+    margin-top: -5.9em;
 }
 #content ul.categories .block_img > div {
     background: #fff;
