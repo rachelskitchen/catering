@@ -943,7 +943,7 @@ function isIEMobile() {
 function pickupToString(date) {
     var skin = App.Data.settings.get('skin'),
         result,
-        d = new Date(date),
+        d = new Date(date.getTime() + App.Data.settings.get('settings_system').time_zone_offset * 1000 + (new Date()).getTimezoneOffset() * 60 * 1000),
         time = new TimeFrm(d.getHours(), d.getMinutes(), 'usa');
     //"Mon Dec 30 2013 10:30:00 GMT+0400 (Russian Standard Time)"
     switch (skin) {

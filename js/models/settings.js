@@ -279,9 +279,8 @@ define(["backbone", "async"], function(Backbone) {
 
                             //create the delta in ms. between server and client by time_zone shift:
                             if (!settings_system.time_zone_offset) settings_system.time_zone_offset = -(new Date()).getTimezoneOffset() * 60 * 1000;
-                            settings_system.server_time = settings_system.time_zone_offset * 1000 + (new Date()).getTimezoneOffset() * 60 * 1000;
-                            //add the delta in ms. between server and client times set:
-                            settings_system.server_time +=  srvDate.getTime() - clientDate.getTime();
+                            //delta in ms. between server and client times:
+                            settings_system.server_time =  srvDate.getTime() - clientDate.getTime();
                             settings_system.geolocation_load = $.Deferred();
 
                             // fix for bug 7233
