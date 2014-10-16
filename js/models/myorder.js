@@ -947,7 +947,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
                 if (pickup) pickup = new Date(time > pickup ? time : pickup);
 
-                if (App.skin != App.Skins.RETAIL && (!pickup || !App.Data.timetables.checking_work_shop(pickup, delivery)) ) { //pickup may by null or string
+                if (App.skin != App.Skins.RETAIL && (!pickup || !App.Data.timetables.checking_work_shop(pickup, delivery)) ) { //pickup may be null or string
                     this.trigger('cancelPayment');
                     delete this.paymentInProgress;
                     App.Data.errors.alert(MSG.ERROR_STORE_IS_CLOSED);
@@ -957,7 +957,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if (isASAP) {
                     lastPT = App.Data.timetables.getLastPTforWorkPeriod(currentTime);
                     if (lastPT instanceof Date){
-                        lastPickupTime = format_date_1(lastPT);
+                        lastPickupTime = format_date_1(lastPT.getTime() - App.Settings.server_time);
                     }
                     if (lastPT === 'not-found') {
                        //TODO: test this case by unit tests and remove this trace:
@@ -966,9 +966,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 }
 
                 this.checkout.set({
-                    'pickupTime': pickupToString(pickup),
-                    'createDate': format_date_1(currentTime),
-                    'pickupTimeToServer': isASAP ? 'ASAP' : format_date_1(pickup),
+                    'pickupTime': isASAP ? 'ASAP (' + pickupToString(pickup) + ')' : pickupToString(pickup),
+                    'createDate': format_date_1(Date.now()),
+                    'pickupTimeToServer': format_date_1(pickup.getTime() - App.Settings.server_time),
                     'lastPickupTime': lastPickupTime
                 });
             }
@@ -1010,10 +1010,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             order_info.surcharge = total.surcharge;
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.notes = checkout.notes;
-
-            if (checkout.pickupTimeToServer === 'ASAP') {
-                checkout.pickupTime = 'ASAP (' + checkout.pickupTime + ')';
-            }
 
             var customerData = this.getCustomerData();
             call_name = call_name.concat(customerData.call_name);
