@@ -1010,6 +1010,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             order_info.surcharge = total.surcharge;
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.notes = checkout.notes;
+            order_info.asap = checkout.isPickupASAP;
 
             var customerData = this.getCustomerData();
             call_name = call_name.concat(customerData.call_name);
