@@ -234,7 +234,7 @@ define(["backbone"], function(Backbone) {
 
             if (isToday && times.length !== 0) {
                 var curdate = new Date(this.get('curTime').getTime() + this.get_dining_offset(isDelivery)),
-                    cur_min = ((curdate.getUTCHours() + App.Data.settings.get('settings_system').time_zone_offset/60/60) % 24) * 60 + curdate.getMinutes(),
+                    cur_min = curdate.getHours() * 60 + curdate.getMinutes(),
                     i, j;
 
                 while (times[0] <= cur_min) {
