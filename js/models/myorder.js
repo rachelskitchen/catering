@@ -968,7 +968,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 this.checkout.set({
                     'pickupTime': pickupToString(pickup),
                     'createDate': format_date_1(currentTime),
-                    'pickupTimeToServer': format_date_1(pickup),
+                    'pickupTimeToServer': isASAP ? 'ASAP' : format_date_1(pickup),
                     'lastPickupTime': lastPickupTime
                 });
             }
@@ -1010,10 +1010,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             order_info.surcharge = total.surcharge;
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.notes = checkout.notes;
-            order_info.asap = checkout.isPickupASAP;
 
-            if (checkout.isPickupASAP) {
-                this.checkout.set('pickupTime', 'ASAP (' + checkout.pickupTime + ')');
+            if (checkout.pickupTimeToServer === 'ASAP') {
+                checkout.pickupTime = 'ASAP (' + checkout.pickupTime + ')';
             }
 
             var customerData = this.getCustomerData();

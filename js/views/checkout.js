@@ -318,7 +318,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
 
             this.model.set('pickupTimeReview',index);
 
-            if(time && time.indexOf('ASAP')!= -1) {
+            if(time === 'ASAP') {
                 pickupTS = App.Data.timetables.base().getTime();
                 isPickupASAP = true;
             } else if (time === 'closed') {
