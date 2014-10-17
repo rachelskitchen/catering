@@ -116,7 +116,9 @@ define(["backbone", "factory", "generator", "products_view"], function(Backbone)
             var self = this;
             this.collection.check_order({
                 order: true,
-                first_page: true
+                first_page: true,
+                skipQuantity: true,
+                skipDeliveryAmount: true
             }, function() {
                 self.$el.addClass('visible');
             });

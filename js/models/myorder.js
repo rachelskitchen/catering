@@ -752,11 +752,13 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          *
          * check collection myorders
          */
-        _check_cart: function(isTip) {
+        _check_cart: function(opts) {
             var subtotal = this.total.get_subtotal() * 1,
                 tip = this.total.get_tip() * 1,
                 isDelivery = this.checkout.get('dining_option') === 'DINING_OPTION_DELIVERY',
                 isOnlyGift = this.checkout.get('dining_option') === 'DINING_OPTION_ONLINE';
+
+            opts = opts || {};
 
             if (this.get_only_product_quantity() === 0) {
                 return {
@@ -765,14 +767,14 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 };
             }
 
-            if (isTip && tip > subtotal) {
+            if (opts.tip && tip > subtotal) {
                 return {
                     status: 'ERROR',
                     errorMsg: MSG.ERROR_GRATUITY_EXCEEDS
                 };
             }
 
-            if (isDelivery) {
+            if (!opts.skipDeliveryAmount && isDelivery) {
                 var remain = this.total.get_remaining_delivery_amount();
                 if (remain > 0 ) {
                     return {
@@ -785,7 +787,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             var sum_quantity = this.not_gift_product_quantity(),
                 min_items = App.Data.settings.get("settings_system").min_items;
 
-            if (sum_quantity < min_items && !isOnlyGift) {
+            if (!opts.skipQuantity && sum_quantity < min_items && !isOnlyGift) {
                 return {
                     status: 'ERROR_QUANTITY',
                     errorMsg: msgFrm(MSG.ERROR_MIN_ITEMS_LIMIT, min_items)
@@ -803,7 +805,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          *     customer: true - test customer model
          *     card: true - test card model
          *     order: true - test myorders collection
-         *     tip: true - test add flag isTip to order test,
+         *     tip: true - test add flag tip to order test,
          *     validationOnly: true - test whole order on backend
          * }
          * success - callback if checked is OK
@@ -850,7 +852,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             if (options.order) {
-                var check_order = this._check_cart(options.tip);
+                var check_order = this._check_cart(options);
 
                 if (check_order.status === 'ERROR_QUANTITY') {
                     if (!arguments[2]) { // if we don't set error callback, use usuall two button alert message or if we on the first page
@@ -968,7 +970,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 this.checkout.set({
                     'pickupTime': isASAP ? 'ASAP (' + pickupToString(pickup) + ')' : pickupToString(pickup),
                     'createDate': format_date_1(Date.now()),
-                    'pickupTimeToServer': format_date_1(pickup.getTime() - App.Settings.server_time),
+                    'pickupTimeToServer': pickup ? format_date_1(pickup.getTime() - App.Settings.server_time) : undefined,
                     'lastPickupTime': lastPickupTime
                 });
             }
