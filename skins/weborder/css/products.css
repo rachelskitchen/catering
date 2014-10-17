@@ -287,4 +287,7 @@
 #modifiers_popup .product .currency_symbol {
     margin-right: -5px;
 }
+#modifiers_popup .product .timetables {
+    font-style: italic;
+}
 /* list item mod block end */

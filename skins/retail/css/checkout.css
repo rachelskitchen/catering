@@ -70,10 +70,6 @@
     margin-top: 4px;
     font-size: 8px;
 }
-#content > .checkout .shipping-select {
-    width: 395px;
-    background-position: 300px 50%;
-}
 #content > .checkout div.select_day:last-child {
     margin-bottom: 10px;
 }

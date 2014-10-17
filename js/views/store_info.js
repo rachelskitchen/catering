@@ -32,7 +32,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
             self.$(".view_larger_map").hide();
             self.$("#mapBox").hide();
-            settings.geolocation_load.done(function() {
+            settings.geolocation_load.done(function() {require(["async!https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"], function() {
                 self.$("#mapBox").show();
                 var address = settings.address,
                     title = settings.business_name || '',
@@ -98,7 +98,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                         clearInterval(mapurl);
                     }
                 }, 50);
-            });
+            });});
+
         },
         infoDetailed: function() {
             var settings = App.Data.settings,

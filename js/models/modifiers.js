@@ -452,6 +452,7 @@ define(["backbone"], function(Backbone) {
                 modifierBlock.addJSON(element);
                 self.add(modifierBlock);
             });
+            this.create_quick_modifiers_section(App.Data.quickModifiers);
             return this;
         },
         /**
@@ -489,14 +490,88 @@ define(["backbone"], function(Backbone) {
             $.ajax({
                 url: App.Data.settings.get("host") + "/weborders/modifiers/",
                 data: {
-                    product: id_product,
-                    quick: true
+                    product: id_product
                 },
                 dataType: "json",
                 successResp: function(modifierBlocks) {
                     modifierBlocks.forEach(function(modifierBlock) {
                         self.add(new App.Models.ModifierBlock().addJSON(modifierBlock));
                     });
+                    //add the new block 'Quick Modifiers' (will be contain all quick modifiers):
+                    self.create_quick_modifiers_section(App.Data.quickModifiers);
+                    fetching.resolve();
+                },
+                error: function() {
+                    App.Data.errors.alert(MSG.ERROR_MODIFIERS_LOAD, true);
+                }
+            });
+
+            return fetching;
+        },
+         /**
+         * It creates a dummi modifierBlock to group all quick modifiers together which are not included in the product's modifiers blocks
+         */
+        create_quick_modifiers_section: function(quickModifiers) {
+            if(!(quickModifiers instanceof App.Collections.ModifierBlocks)) {
+                return;
+            }
+
+            var modifierBlock = {
+                sort: 10000, //set to the end of the modifiers list
+                active: true,
+                modifier_class_id: -1, //useless for Quick Modifiers
+                name: "Quick Modifiers"
+            };
+
+            var self = this,
+                is_quick_modifiers = false,
+                qmBlock = new App.Models.ModifierBlock().addJSON(modifierBlock);
+
+            quickModifiers.forEach(function(modifierBlock) {
+                var modifiers = modifierBlock.get("modifiers");
+
+                modifiers.forEach(function(modifier) {
+                    if (!self.find_modifier(modifier.id)) {
+                        var m = modifier.clone();
+                        qmBlock.get('modifiers').add(m);
+                        is_quick_modifiers = true;
+                    }
+                });
+            });
+
+            if (is_quick_modifiers)
+                self.add(qmBlock);
+        },
+         /**
+         * Find modifier by id, it looks through the all modifier blocks
+         */
+        find_modifier: function(modifier_id) {
+            var obj;
+            this.find(function(modifierBlock) {
+                var modifiers = modifierBlock.get("modifiers");
+                obj = modifiers.get(modifier_id);
+                return obj ? true : false;
+            });
+            return obj;
+        },
+         /**
+         * Get quick modifiers from backend.
+         */
+        get_quick_modifiers: function() {
+            var self = this,
+                fetching = new $.Deferred(); // Pointer that all data loaded
+
+            $.ajax({
+                url: App.Data.settings.get("host") + "/weborders/modifiers/",
+                data: {
+                    establishment: App.Data.settings.get("establishment")
+                },
+                dataType: "json",
+                successResp: function(modifierBlocks) {
+                    modifierBlocks.forEach(function(modifierBlock) {
+                        self.add(new App.Models.ModifierBlock().addJSON(modifierBlock));
+                    });
+
                     fetching.resolve();
                 },
                 error: function() {
@@ -616,5 +691,18 @@ define(["backbone"], function(Backbone) {
         }
 
         return modifier_load;
+    };
+
+    App.Collections.ModifierBlocks.init_quick_modifiers = function() {
+        var fetching = $.Deferred();
+
+        if (App.Data.quickModifiers === undefined) {
+            App.Data.quickModifiers = new App.Collections.ModifierBlocks;
+            fetching = App.Data.quickModifiers.get_quick_modifiers();
+        } else {
+            fetching.resolve();
+        }
+
+        return fetching;
     };
 });

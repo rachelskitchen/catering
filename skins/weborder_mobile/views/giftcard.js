@@ -20,12 +20,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "card_view"], function(Backbone) {
+define(["backbone", "giftcard_view"], function(Backbone) {
     'use strict';
 
-    App.Views.CardView.CardMainView = App.Views.CoreCardView.CoreCardMainView.extend({
+    App.Views.GiftCardView.GiftCardMainView = App.Views.CoreGiftCardView.CoreGiftCardMainView.extend({
         initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            App.Views.CoreGiftCardView.CoreGiftCardMainView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'add_card', this.onProceed, this);
         },
         onProceed: function() {
@@ -35,10 +35,9 @@ define(["backbone", "card_view"], function(Backbone) {
                 tip: true,
                 customer: true,
                 checkout: true,
-                card: true
+                giftcard: true
             }, function() {
-                saveAllData();
-                App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
+                App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.GIFT);
             });
         }
     });

@@ -20,10 +20,21 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(['tips_view'], function() {
+define(["backbone"], function(Backbone) {
     'use strict';
 
-    App.Views.TipsView.TipsLineView = App.Views.CoreTipsView.CoreTipsLineView.extend({  
-        
+    App.Models.Filter = Backbone.Model.extend({
+        saveSort: function() {
+            // save only `sort` and `order` properties
+            setData('filter', {
+                sort: this.get('sort'),
+                order: this.get('order')
+            });
+        },
+        loadSort: function() {
+            var data = getData('filter');
+            data = data instanceof Object ? data : {};
+            this.set(data);
+        }
     });
 });

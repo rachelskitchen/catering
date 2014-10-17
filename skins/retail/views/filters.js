@@ -34,10 +34,15 @@ define(['backbone'], function(Backbone) {
             this.listenTo(this.options.categories, 'onLoadProductsStarted', this.disable, this);
             this.listenTo(this.options.categories, 'onLoadProductsComplete', this.onProductsLoaded, this);
             this.listenTo(this.options.categories, 'onRestoreState', this.restoreState, this);
+            this.listenTo(this.model, 'change:sort', this.update, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         events: {
             'change select': 'change'
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.update();
         },
         disable: function() {
             this.$('select').attr('disabled', 'disabled');
@@ -51,8 +56,14 @@ define(['backbone'], function(Backbone) {
             this.enable();
         },
         onProductsLoaded: function() {
+            var sort = this.model.get('sort'),
+                order = this.model.get('order');
             this.enable();
-            this.state instanceof Object && this.sort(this.state.sort, this.state.order);
+            if(this.state instanceof Object) {
+                this.sort(this.state.sort || sort, this.state.order || order);
+            } else {
+                this.sort(sort, order);
+            }
         },
         onCategorySelected: function() {
             this.enable();
@@ -80,6 +91,20 @@ define(['backbone'], function(Backbone) {
                 sort: sort,
                 order: order
             });
+        },
+        update: function() {
+            var sort = this.model.get('sort'),
+                order = parseInt(this.model.get('order'), 10),
+                value = '';
+            if(sort) {
+                value += sort;
+            }
+            if(order == 1) {
+                value += '|1';
+            }
+            if(value) {
+                this.$('select').prop('value', value);
+            }
         }
     });
 
@@ -220,6 +245,9 @@ define(['backbone'], function(Backbone) {
             this.stateProps.forEach(function(key) {
                 delete this[key];
             }, this);
+        },
+        update: function() {
+
         }
     });
 });

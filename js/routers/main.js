@@ -30,6 +30,10 @@ define(["backbone"], function(Backbone) {
         DINING_OPTION_TOGO: 'Take Out',
         DINING_OPTION_EATIN: 'Eat In',
         DINING_OPTION_DELIVERY: 'Delivery',
+        DINING_OPTION_CATERING : 'Catering',
+        DINING_OPTION_DRIVETHROUGH: 'Drive Through',
+        DINING_OPTION_ONLINE : 'Online Ordering',
+        DINING_OPTION_OTHER: 'Other',
         DINING_OPTION_DELIVERY_SEAT: 'Deliver to Seat'
     };
 
@@ -41,8 +45,13 @@ define(["backbone"], function(Backbone) {
             if (!App.Data.myorder.total.get('delivery').get('enable'))
                 delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
 
-            if (!App.Settings.eat_in_for_online_orders) {
-                delete DINING_OPTION_NAME.DINING_OPTION_EATIN;
+            if(App.Settings.editable_dining_options && App.Settings.editable_dining_options[0]) {
+                if (DINING_OPTION_NAME['DINING_OPTION_DRIVETHROUGH']) {
+                    DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH = _.escape(App.Settings.editable_dining_options[1]);
+                }
+                if (DINING_OPTION_NAME['DINING_OPTION_OTHER']) {
+                    DINING_OPTION_NAME.DINING_OPTION_OTHER = _.escape(App.Settings.editable_dining_options[2]);
+                }
             }
 
             var orderFromSeat = App.Settings.order_from_seat || [];
@@ -52,14 +61,14 @@ define(["backbone"], function(Backbone) {
                     enable_sector: orderFromSeat[2],
                     enable_row: orderFromSeat[3]
                 };
-                //DINING_OPTION_NAME.DINING_OPTION_TOGO = 'Pickup';
             } else {
                 delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
             }
 
-            if (App.Data.settings.get("skin") == App.Skins.RETAIL) {
-                DINING_OPTION_NAME.DINING_OPTION_TOGO = 'Pick up in store';
-                DINING_OPTION_NAME.DINING_OPTION_DELIVERY = 'Shipping';
+            for (var dining_ontion_name in DINING_OPTION) {
+                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_ontion_name]) == -1 || (App.Data.orderFromSeat && dining_ontion_name == 'DINING_OPTION_OTHER')) {
+                    delete DINING_OPTION_NAME[dining_ontion_name];
+                }
             }
 
             // set page title
@@ -108,7 +117,7 @@ define(["backbone"], function(Backbone) {
         },
         change_page: function(cb) {
             App.Data.mainModel.trigger('loadCompleted');
-            App.Data.mainModel.set('no_perfect_scroll', false, {silent: true}); // this is for #14024            
+            App.Data.mainModel.set('no_perfect_scroll', false, {silent: true}); // this is for #14024
         },
         maintenance : function() {
             if (!App.Data.settings.get('isMaintenance')) {
@@ -189,7 +198,7 @@ define(["backbone"], function(Backbone) {
         },
         pay: function() {
             this.loadData().then(function() {
-                App.Data.myorder.submit_order_and_pay(App.Data.myorder.checkout.get('payment_type'));
+                App.Data.myorder.submit_order_and_pay(App.Data.myorder.checkout.get('payment_type'), undefined, true);
             });
         },
         loadData: function() {
@@ -198,6 +207,8 @@ define(["backbone"], function(Backbone) {
             this.prepare('pay', function() {
                 App.Data.card = new App.Models.Card();
                 App.Data.card.loadCard();
+                App.Data.giftcard = new App.Models.GiftCard();
+                App.Data.giftcard.loadCard();
                 App.Data.customer = new App.Models.Customer();
                 App.Data.customer.loadCustomer();
                 App.Data.customer.loadAddresses();

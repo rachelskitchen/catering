@@ -62,6 +62,37 @@
 .confirmPayCard .content_arrow.arrow_bottom {
     bottom: 0px;
 }
+.confirmPayCard .captcha_container {
+    position: relative;
+    left: 230px;
+}
+/* for tablets */
+@media only screen and (max-device-width: 949px) {
+    .confirmPayCard .captcha_container {
+        left: 180px !important;
+    }  
+}
+
+.confirmPayCard .captcha_wrap {
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+    margin-right: 5px;
+}
+.confirmPayCard .captcha {
+    margin-top: 4px;
+    height: 30px;
+    width: 70px;
+}
+.confirmPayCard .btn-reload {
+    display: inline-block;
+    vertical-align: top;
+    height: 20px;
+    font-size: 15px;
+    line-height: 20px;
+    width: 70px;
+    margin-top: 4px;
+}
 
 #popup .order-items {
     max-height: 335px;

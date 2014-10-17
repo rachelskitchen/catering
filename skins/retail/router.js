@@ -23,8 +23,10 @@
 define(["backbone", "main_router"], function(Backbone) {
     'use strict';
 
-    delete DINING_OPTION_NAME.DINING_OPTION_EATIN;
-    delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
+    window.DINING_OPTION_NAME = {
+        DINING_OPTION_TOGO: 'Pick up in store',
+        DINING_OPTION_DELIVERY: 'Shipping'
+    };
 
     var headers = {},
         carts = {};
@@ -54,6 +56,14 @@ define(["backbone", "main_router"], function(Backbone) {
             $('body').html('<div class="main-container"></div>');
             this.bodyElement = $('body');
 
+            // check available dining options and set default
+            if(App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) == -1 && App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_DELIVERY) == -1) {
+                App.Data.settings.set('isMaintenance', true);
+            } else {
+                App.Settings.default_dining_option = App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) > -1 ? 'DINING_OPTION_TOGO' : 'DINING_OPTION_DELIVERY';
+                App.Data.myorder.checkout.set('dining_option', App.Settings.default_dining_option);
+            }
+
             // cancel requests to modifiers
             App.Collections.ModifierBlocks.init = function(product) {
                 var a = $.Deferred();
@@ -74,7 +84,18 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Data.categories = new App.Collections.Categories();
                 App.Data.subCategories = new App.Collections.SubCategories();
                 App.Data.search = new App.Collections.Search();
-                App.Data.filter = new Backbone.Model();
+                App.Data.filter = new App.Models.Filter();
+
+                // sync sort saving and loading with myorder saving and loading
+                App.Data.myorder.saveOrders = function() {
+                    this.constructor.prototype.saveOrders.apply(this, arguments);
+                    App.Data.filter.saveSort();
+                }
+
+                App.Data.myorder.loadOrders = function() {
+                    this.constructor.prototype.loadOrders.apply(this, arguments);
+                    App.Data.filter.loadSort();
+                }
 
                 this.listenTo(App.Data.mainModel, 'change:mod', this.createMainView);
 
@@ -91,7 +112,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 this.navigationControl();
 
                 // check if we here from paypal payment page
-                if (App.Data.get_parameters.pay) {
+                if (App.Data.get_parameters.pay || App.Data.get_parameters[MONERIS_PARAMS.PAY]) {
                     window.location.hash = "#pay";
                 }
 
@@ -424,6 +445,10 @@ define(["backbone", "main_router"], function(Backbone) {
             this.prepare('checkout', function() {
                 if(!App.Data.card) {
                     App.Data.card = new App.Models.Card;
+                }
+
+                if(!App.Data.giftcard) {
+                    App.Data.giftcard = new App.Models.GiftCard;
                 }
 
                 if (!App.Data.customer) {

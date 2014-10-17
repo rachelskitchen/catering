@@ -106,6 +106,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         initialize: function() {
             this.product = this.model.get_product();
             this.modifiers = this.model.get_modifiers();
+            this.giftCardPriceRegStr = '^\\d{0,3}(\\.\\d{0,2})?$';
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:initial_price', this.update_price, this);
         },
@@ -137,7 +138,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                 inputTypeNumberMask(this.$('.gift_card_number'), /^(\d|-){0,255}$/, '');
             }
             if (this.gift_price) {
-                inputTypeNumberMask(this.$('.gift_card_price'), /^\d{0,3}(\.\d{0,2})?$/, '');
+                inputTypeNumberMask(this.$('.gift_card_price'), new RegExp(this.giftCardPriceRegStr), '', cssua.ua.android);
             }
 
             if (App.skin == App.Skins.RETAIL)
@@ -147,11 +148,23 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             return this;
         },
         gift_change: function(e) {
-           this.product.set('gift_card_number', e.currentTarget.value);
+            this.product.set('gift_card_number', e.currentTarget.value);
         },
         gift_price_change: function(e) {
-           this.model.set('initial_price', e.currentTarget.value * 1);
-           this.product.set('price', e.currentTarget.value * 1);
+            var newPrice = e.currentTarget.value,
+                formatPrice = parseFloat(newPrice),
+                pattern = new RegExp(this.giftCardPriceRegStr.replace(/(.*)0(.*)0(.*)/, '$11$22$3').replace(/[\(\)\?]/g, ''));
+
+            if(!isNaN(formatPrice)) {
+                this.model.set('initial_price', formatPrice);
+                this.product.set('price', formatPrice);
+            }
+
+            // If input field value does not match "XX.XX" need format it.
+            // Also need restore previos (or 0.00 if it was unset) value if new value is '.'.
+            if(!pattern.test(newPrice)) {
+                e.currentTarget.value = round_monetary_currency(this.model.get('initial_price'));
+            }
         },
         update_price: function() {
             var dt = this.$('dt'),

@@ -28,6 +28,16 @@ var array_day_of_week = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "T
 
 var array_month = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
 
+var TIMETABLE_WEEK_DAYS = {
+    "monday": "Mon",
+    "tuesday": "Tue",
+    "wednesday": "Wed",
+    "thursday": "Thu",
+    "friday": "Fri",
+    "saturday": "Sat",
+    "sunday": "Sun"
+};
+
 var MonthByStr = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12};
 
 // http://www.w3.org/TR/html5/forms.html#valid-e-mail-address
@@ -71,6 +81,7 @@ MSG.BAG_CHARGE_ITEM = 'Bag Charge';
 MSG.REPEAT_ORDER_NOTIFICATION = "Some items have changed or no longer available. Please review items before placing your order.";
 MSG.REWARD_CARD_UNDEFINED = "Invalid Reward Card Number.";
 MSG.ADD_MORE_FOR_DELIVERY = "Please add %s more for delivery";
+MSG.ADD_MORE_FOR_SHIPPING = "Please add %s more for shipping";
 MSG.ERROR_PRODUCT_NOT_SELECTED = "You have not selected any product";
 MSG.ERROR_EMPTY_NOT_VALID_DATA = "Following required fields are blank or contain incorrect data: %s";
 MSG.ERROR_GRATUITY_EXCEEDS = "Gratuity amount can't exceed the receipt amount";
@@ -89,6 +100,15 @@ MSG.FILTER_SHOW_ALL = "Show All";
 MSG.FREE_MODIFIERS_PRICE = "Modifiers for less than %s will be free";
 MSG.FREE_MODIFIERS_QUANTITY = "First %s modifiers selected will be free";
 MSG.FREE_MODIFIERS_QUANTITY1 = "First modifier selected will be free";
+MSG.PRODUCTS_VALID_TIME = "Available: ";
+
+var PAYMENT_TYPE = {
+    PAYPAL_MOBILE: 1,
+    CREDIT: 2,
+    PAYPAL: 3,
+    NO_PAYMENT: 4,
+    GIFT: 5
+};
 
 // Dining options
 var DINING_OPTION = {
@@ -111,6 +131,12 @@ var ServiceType = {
     REVELLITE_RETAIL : 5,
     DONATION : 6
 };
+
+
+var MONERIS_RETURN_CODE = {
+    DECLINE: 50
+};
+
 
 var MERCURY_RETURN_CODE = {
     SUCCESS : 0,
@@ -142,6 +168,27 @@ MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_SERVER_SIDE_FAILURE] = "Po
 MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATE_NAME_FAIL] = "Invalid data entered in cardholder name field";
 MERCURY_RETURN_MESSAGE_DEFAULT = "Unknown error";
 
+var MONERIS_RETURN_MESSAGE = {
+    50: "Decline",
+    51: "Expired Card",
+    52: "PIN retries exceeded",
+    53: "No sharing",
+    54: "No security module",
+    55: "Invalid transaction",
+    56: "Card not supported",
+    57: "Lost or stolen card",
+    58: "Card use limited",
+    59: "Restricted Card",
+    60: "No Chequing account"
+};
+MONERIS_RETURN_MESSAGE_DEFAULT = "Unknown error";
+
+var MONERIS_PARAMS = {
+    PAY: 'rvarPay',
+    RESPONSE_ORDER_ID: 'response_order_id',
+    TRANSACTION_ID: 'txn_num'
+};
+
 function getMercuryErrorMessage(returnCode) {
 	var msg = MERCURY_RETURN_MESSAGE[returnCode];
 	if (!msg) {
@@ -150,6 +197,13 @@ function getMercuryErrorMessage(returnCode) {
 	return msg;
 }
 
+function getMonerisErrorMessage(returnCode) {
+	var msg = MONERIS_RETURN_MESSAGE[returnCode];
+	if (!msg) {
+		msg = MONERIS_RETURN_MESSAGE_DEFAULT;
+	}
+	return msg;
+}
 
 /**
 *  format message by formatting string and params.
@@ -169,7 +223,7 @@ function msgFrm(msg_format) {
 /**
  * Get GET-parameters from address line.
  */
-function parse_get_params() {    
+function parse_get_params() {
     if (window.$_GET) {
         return window.$_GET;
     }
@@ -948,6 +1002,8 @@ function inputTypeNumberMask(el, pattern, initial, dontChangeType) {
         el.on('input', function(a) {
             if (!pattern.test(a.target.value) || !a.target.value && !this.validity.valid) {
                 a.target.value = prev;
+                el.off('blur', change); // `change` event is not emitted after this case
+                el.one('blur', change); // need reproduce it
             } else {
                 prev = a.target.value;
             }
@@ -955,6 +1011,9 @@ function inputTypeNumberMask(el, pattern, initial, dontChangeType) {
         el.on('change', function(a) {
             prev = a.target.value;
         });
+    }
+    function change() {
+        el.trigger('change');
     }
 }
 /**
@@ -978,6 +1037,28 @@ function clearQueryString(isNotHash) {
     qStr = qStr.replace(/&&/g, '&');
     qStr = qStr.replace(/&?PaymentID=[^&]*/, '');
     qStr = qStr.replace(/&?ReturnCode=[^&]*/, '');
+    //Remove Moneris params
+    qStr = qStr.replace(/&?response_order_id=[^&]*/, '');
+    qStr = qStr.replace(/&?date_stamp=[^&]*/, '');
+    qStr = qStr.replace(/&?time_stamp=[^&]*/, '');
+    qStr = qStr.replace(/&?bank_transaction_id=[^&]*/, '');
+    qStr = qStr.replace(/&?charge_total=[^&]*/, '');
+    qStr = qStr.replace(/&?bank_approval_code=[^&]*/, '');
+    qStr = qStr.replace(/&?response_code=[^&]*/, '');
+    qStr = qStr.replace(/&?iso_code=[^&]*/, '');
+    qStr = qStr.replace(/&?txn_num=[^&]*/, '');
+    qStr = qStr.replace(/&?message=[^&]*/, '');
+    qStr = qStr.replace(/&?trans_name=[^&]*/, '');
+    qStr = qStr.replace(/&?cardholder=[^&]*/, '');
+    qStr = qStr.replace(/&?f4l4=[^&]*/, '');
+    qStr = qStr.replace(/&?card=[^&]*/, '');
+    qStr = qStr.replace(/&?expiry_date=[^&]*/, '');
+    qStr = qStr.replace(/&?result=[^&]*/, '');
+    qStr = qStr.replace(/&?rvarPay=[^&]*/, '');
+    qStr = qStr.replace(/rvarSkin=/, 'skin=');
+    qStr = qStr.replace(/rvarEstablishment=/, 'establishment=');
+    qStr = qStr.replace(/\?&/, '?');
+
 
     var url = host + path + qStr + hash;
     window.history.replaceState('Return','', url);
@@ -1002,8 +1083,91 @@ function fistLetterToUpperCase(text) {
 }
 
 /*
-*  trace function: 
+*  trace function:
 */
 function trace() {
     return console.log.apply(console, arguments);
+}
+
+function format_time(time) {
+    time = time.split(":")
+    return new TimeFrm(time[0] * 1, time[1] * 1, "usa").toString();
+}
+
+function format_days(days, day_time) {
+    var str = "";
+    if (days.length > 1 && days.length < 7) {
+        str = TIMETABLE_WEEK_DAYS[days[0]] + ' - ' + TIMETABLE_WEEK_DAYS[days[days.length - 1]] + ' ';
+    } else if (days.length == 1) {
+        str = TIMETABLE_WEEK_DAYS[days[0]] + ' ';
+    }
+    str += day_time;
+    return str;
+}
+
+function format_times(times, separator) {
+    if (!times) {
+        return null;
+    }
+
+    var res = []
+
+    times.forEach(function (time) {
+        res.push(format_time(time['from']) + ' - ' + format_time(time['to']));
+    });
+
+    if (separator == undefined) {
+        separator = ', ';
+    }
+
+    return res.join(separator);
+}
+
+function format_timetables(timetables, separator) {
+    if (!timetables) {
+        return null;
+    }
+    var res = [];
+    var always = false;
+
+    timetables.forEach(function (timetable) {
+        var timetable_data = timetable.timetable_data
+        if (!timetable_data || $.isEmptyObject(timetable_data)) {
+            always = true;
+            return;
+        }
+        var prev_day_time = null;
+        var days = [];
+
+        for(day in TIMETABLE_WEEK_DAYS) {
+            var day_time = null;
+            if (timetable_data[day] && timetable_data[day].length > 0) {
+                day_time = format_times(timetable_data[day])
+            }
+
+            if (prev_day_time &&
+                (!day_time || prev_day_time != day_time)) {
+                res.push(format_days(days, prev_day_time));
+                days = [];
+            }
+            if (day_time) {
+                prev_day_time = day_time;
+                days.push(day);
+            } else {
+                prev_day_time = null;
+                days = [];
+            }
+        }
+
+        if (prev_day_time) {
+            res.push(format_days(days, prev_day_time));
+        }
+    });
+    if (always) {
+        return null;
+    }
+    if (separator == undefined) {
+        separator = ', ';
+    }
+    return res.join(separator);
 }

@@ -74,7 +74,7 @@ define(["backbone"], function(Backbone) {
          * revert dining option to previous value (return from only gift situation)
          */
         revert_dining_option: function() {
-            this.set('dining_option', this.get('selected_dining_option') || 'DINING_OPTION_TOGO');
+            this.set('dining_option', this.get('selected_dining_option') || App.Settings.default_dining_option);
         },
         check: function() {
             var isStoreClosed = this.isStoreClosed(),
@@ -120,6 +120,19 @@ define(["backbone"], function(Backbone) {
                     errorList: err
                 };
             }
+        },
+        isColdUntaxable: function() {
+            var delivery_cold_untaxed = App.Settings.delivery_cold_untaxed,
+                dining_option = this.get('dining_option'),
+                isToGo = dining_option === 'DINING_OPTION_TOGO',
+                isDelivery = dining_option === 'DINING_OPTION_DELIVERY',
+                isCatering = dining_option === 'DINING_OPTION_CATERING';
+
+            return isToGo || isCatering || isDelivery && delivery_cold_untaxed;
+        },
+        isBagChargeAvailable: function() {
+            var dining_option = this.get('dining_option');
+            return dining_option != 'DINING_OPTION_EATIN' && dining_option != 'DINING_OPTION_ONLINE';
         }
     });
 });

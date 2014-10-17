@@ -9,11 +9,13 @@
 /* item mod start */
 
 #content ul.categories li {
-    height: 14.2em;
+    min-height: 14.2em;
     width: 100%;
+    height: auto;
     border-bottom: 1px solid #a8c4d8;
     position: relative;
     cursor: pointer;
+    line-height: 14.2em;
 }
 #content ul.categories .block_img {
     display: table;
@@ -23,9 +25,11 @@
     position: absolute;
     width: 11.8em;
     border-collapse: collapse;
+    top: 50%;
+    margin-top: -5.9em;
 }
 #content ul.categories .block_img > div {
-    background: white;
+    background: #fff;
     display: table-cell;
     height: 11.8em;
     margin: 0em;
@@ -35,23 +39,22 @@
     vertical-align: middle;
     width: 11.8em;
 }
-#content ul.categories .block_img div img {
+#content ul.categories .block_img img {
     border: none;
     display: block;
+    width: auto;
     height: auto;
     margin-left: auto;
     margin-right: auto;
     max-height: 11.8em;
     max-width: 11.8em;
     padding: 0em;
-    width: auto;
 }
 #content ul.categories dl {
-    position: absolute;
-    left: 15.4em;
-    right: 7em;
-    bottom: 0;
-    top: 0;
+    display: inline-block;
+    padding: 2em 7em 2em 15.4em;
+    line-height: normal;
+    vertical-align: middle;
 }
 #content ul.categories dl.noimage {
     left: 1.8em;
@@ -59,19 +62,12 @@
 
 #content ul.categories dt {
     font-size: 2.4em;
-    margin-top: 2em;
     font-weight: bold;
 }
 
 #content ul.categories dd {
     font-size: 1.8em;
     margin-top: 0.1em;
-}
-
-#content ul.categories dt, #content ul.categories dd {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
 }
 
 #content ul.categories li:after {
@@ -93,6 +89,12 @@
 
 #content ul.categories li:active {
     box-shadow: 0 0 6em rgba(0, 170, 234, 0.3) inset;
+}
+
+#content ul.categories .timetables {
+    display: block;
+    font-style: italic;
+    padding-top: 5px;
 }
 
 /* item mod end */

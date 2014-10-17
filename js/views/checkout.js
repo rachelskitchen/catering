@@ -173,7 +173,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             }
         },
         set_type : function() {
-            var dining_option = this.model.get('dining_option') || 'DINING_OPTION_TOGO',
+            var dining_option = this.model.get('dining_option') || App.Settings.default_dining_option,
                 type = this.$('.order-type-select');
 
             type.val(dining_option);
@@ -200,15 +200,17 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         updateAddress: function() {
             var settings = App.Data.settings.get('settings_system'),
                 shipping_address = this.options.customer.get('shipping_address'),
+                model = this.model,
                 address;
+
             address = {
-                street_1: this.model.street_1,
-                street_2: this.model.street_2,
-                city: this.model.city,
-                state: this.model.state,
-                province: this.model.province,
-                zipcode: this.model.zipcode,
-                country: this.model.country
+                street_1: model.street_1,
+                street_2: model.street_2,
+                city: model.city,
+                state: model.state,
+                province: model.province,
+                zipcode: model.zipcode,
+                country: model.country
             };
 
             var addresses = this.options.customer.get('addresses');
@@ -220,7 +222,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             }
             addresses[addresses.length - 1].address = this.options.customer.address_str();
 
-            if (this.model.isShippingServices && address.street_1 && address.city && address.country &&
+            if (model.isShippingServices && address.street_1 && address.city && address.country &&
                 address.zipcode && (address.country == 'US' ? address.state : true) &&
                                    (address.country == 'CA' ? address.province : true)) {
                 this.options.customer.get_shipping_services();
@@ -316,7 +318,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
 
             this.model.set('pickupTimeReview',index);
 
-            if(time === 'ASAP') {
+            if(time && time.indexOf('ASAP') != -1) {
                 pickupTS = App.Data.timetables.base().getTime();
                 isPickupASAP = true;
             } else if (time === 'closed') {
@@ -368,6 +370,186 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         }
     });
 
+    App.Views.CoreCheckoutView.CoreCheckoutPayView = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'pay',
+        render: function() {
+            this.$el.html(this.template());
+            this.subViews.push(App.Views.GeneratorView.create('Checkout', {
+                el: this.$('.btn_wrapper'),
+                mod: 'PayButton',
+                collection: this.collection
+            }));
+            return this;
+        }
+    });
+
+    App.Views.CoreCheckoutView.CoreCheckoutPayButtonView = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'pay_button',
+        initialize: function() {
+            var payment = App.Data.settings.get_payment_process();
+            this.listenTo(this.collection, 'cancelPayment', function() {
+                this.canceled = true;
+            }, this);
+            this.listenTo(this.collection, "paymentFailed", function(message) {
+                this.collection.trigger('hideSpinner');
+            }, this);
+            this.flag = this.options.flag === 'checkout',
+            this.needPreValidate = payment.payment_count == 1 && this.flag;
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.collection.checkout, 'change:dining_option', this.change_cash_text);
+        },
+        render: function() {
+            var payment = Backbone.$.extend(App.Data.settings.get_payment_process(), {
+                flag: this.flag
+            });
+
+            this.$el.html(this.template(payment));
+            this.change_cash_text();
+            return this;
+        },
+        events: {
+            'click .pay': 'pay_event',
+            'click .credit-card': 'credit_card',
+            'click .gift-card': 'gift_card',
+            'click .paypal': function() {
+                this.pay(PAYMENT_TYPE.PAYPAL);
+            },
+            'click .cash': function(){
+                this.pay(PAYMENT_TYPE.NO_PAYMENT);
+            }
+        },
+        change_cash_text: function() {
+            var isDelivery = this.collection.checkout.get("dining_option") === 'DINING_OPTION_DELIVERY';
+            this.$('.cash').html(isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE);
+        },
+        gift_card: function() {
+            var self = this;
+            $('#popup .cancel').trigger('click');
+            App.Data.myorder.check_order({
+                order: true,
+                tip: true,
+                customer: true,
+                checkout: true,
+                validationOnly: this.needPreValidate
+            }, function() {
+                App.Data.mainModel.set('popup', {
+                    modelName: 'Confirm',
+                    mod: 'PayCard',
+                    submode: 'Gift',
+                    collection: self.collection,
+                    className: 'confirmPayCard',
+                    timetable: App.Data.timetables,
+                    card: App.Data.giftcard,
+                    two_columns_view: true
+                });
+            });
+        },
+        credit_card: function() {
+            var self = this;
+            $('#popup .cancel').trigger('click');
+
+            var payment = App.Data.settings.get_payment_process();
+            if (!payment.credit_card_dialog) {
+                App.Data.myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                    validationOnly: this.needPreValidate
+                }, function() {
+                    self.pay(PAYMENT_TYPE.CREDIT);
+                });
+            } else if (this.options.flag) {
+                App.Data.myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                    validationOnly: this.needPreValidate
+                }, function() {
+                    card_popup();
+                });
+            } else {
+                card_popup();
+            }
+
+            function card_popup() {
+                App.Data.mainModel.set('popup', {
+                    modelName: 'Confirm',
+                    mod: 'PayCard',
+                    submode: 'Credit',
+                    collection: self.collection,
+                    className: 'confirmPayCard',
+                    timetable: App.Data.timetables,
+                    card: App.Data.card,
+                    two_columns_view: true
+                });
+            }
+        },
+        pay: function(payment_type) {
+            saveAllData();
+            var self = this;
+
+            self.collection.check_order({
+                order: true,
+                tip: true,
+                customer: true,
+                checkout: true,
+                validationOnly: this.needPreValidate
+            }, function() {
+                self.collection.create_order_and_pay(payment_type);
+                !self.canceled && self.collection.trigger('showSpinner');
+            $('#popup .cancel').trigger('click');
+            });
+        },
+        pay_event: function() {
+            var self = this;
+            App.Data.myorder.check_order({
+                order: true,
+                tip: true,
+                customer: true,
+                checkout: true,
+                validationOnly: true
+            }, function() {
+                self.collection.trigger('onPay');
+            });
+        }
+    });
+
+    App.Views.CoreCheckoutView.CoreCheckoutPageView = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'page',
+        initialize: function() {
+            this.collection.checkout.on('change:notes', this.update_note, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        events: {
+            'click input': 'inputClick',
+            'change .input_beauty.special' : 'change_note'
+        },
+        update_note: function(e) {
+            this.$('.input_beauty.special textarea').val(this.collection.checkout.get('notes'));
+        },
+        change_note: function(e) {
+            this.collection.checkout.set('notes', e.target.value);
+        },
+        remove: function() {
+            this.$('.data').contentarrow('destroy');
+            App.Views.FactoryView.prototype.remove.apply(this, arguments);
+        },
+        inputClick: function(event) {
+            var self = this,
+                cont = this.$('.data');
+            cont.on('onScroll', restoreFocus);
+            function restoreFocus() {
+                $(event.target).focus();
+                cont.off('onScroll', restoreFocus);
+            }
+        }
+    });
+
     App.Views.CheckoutView = {};
 
     App.Views.CheckoutView.CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView;
@@ -377,4 +559,10 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
     App.Views.CheckoutView.CheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView;
 
     App.Views.CheckoutView.CheckoutPickupView = App.Views.CoreCheckoutView.CoreCheckoutPickupView;
+
+    App.Views.CheckoutView.CheckoutPayView = App.Views.CoreCheckoutView.CoreCheckoutPayView;
+
+    App.Views.CheckoutView.CheckoutPayButtonView = App.Views.CoreCheckoutView.CoreCheckoutPayButtonView;
+
+    App.Views.CheckoutView.CheckoutPageView = App.Views.CoreCheckoutView.CoreCheckoutPageView;
 });

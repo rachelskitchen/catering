@@ -4,28 +4,27 @@
 
 <script type="text/template" id="product_list_item-template">
     <% if(!hide_images) { %>
-        <div class="block_img"> 
+        <div class="block_img">
             <div class="img">
-                <img alt="<%= name %> <%= id %>"/> 
+                <img alt="<%= name %> <%= id %>"/>
             </div>
         </div>
     <% } %>
     <dl <% if(hide_images){ %>class="noimage"<% } %>>
         <dt class="s<%= price_length %>">
+            <span class="cost">
+                <span class="currency_symbol"><%= currency_symbol %></span>
+                <span class="price"><%= price %></span>
+                <% if(sold_by_weight && uom) { %>
+                    <span class="uom">/ <%= uom %></span>
+                <% } %>
+            </span>
             <span class="name_title">
                 <span class="name">
                     <%= name %>
                 </span>
             </span>
-            <span class="cost">
-                <span class="currency_symbol"><%= currency_symbol %></span>
-                <span class="price"><%= price %></span>
-            </span>
-            <% if(sold_by_weight && uom) { %>
-            <span class="uom">/ <%= uom %></span>
-            <% } %>
         </dt>
-        <dd><% if(show_product_description) print(description); %></dd>
     </dl>
 </script>
 
@@ -37,11 +36,6 @@
             if (hide_images) print('noimage');
         %>">
         <dt class="s<%= price_length %>">
-            <span class="name_title <% if (is_gift && not_size) print('gift_name') ; %>">
-                <span class="name">
-                    <%= name %>
-                </span>
-            </span>
             <span class="cost">
                 <% if (is_gift && not_size) { %>
                     <span class='currency_symbol gift_card_symbol' ><%=currency_symbol%></span>
@@ -52,12 +46,22 @@
                     <span class="currency_symbol"><%= currency_symbol %></span>
                     <span class="price"><%= price %></span>
                 <% } %>
+                <% if(sold_by_weight && uom) { %>
+                    <span class="uom">/ <%= uom %></span>
+                <% } %>
             </span>
-            <% if(sold_by_weight && uom) { %>
-            <span class="uom">/ <%= uom %></span>
-            <% } %>
+            <span class="name_title <% if (is_gift && not_size) print('gift_name') ; %>">
+                <span class="name">
+                    <%= name %>
+                </span>
+            </span>
         </dt>
-        <dd><%= description %></dd>
+        <dd>
+            <%= description %>
+            <% if (timetables) { %>
+            <span class="timetables"> Available: <%=timetables%></span>
+            <% } %>
+        </dd>
     </dl>
     <% if (is_gift) { %>
     <div class='gift_card <%if (hide_images) print('noimage');%>'>
@@ -81,6 +85,5 @@
                 <span class="price"><%= price %></span>
             </span>
         </dt>
-        <dd><%= description %></dd>
     </dl>
 </script>

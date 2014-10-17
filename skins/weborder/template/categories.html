@@ -28,6 +28,9 @@
     <div class='category_description'>
         <h2><%=name%></h2>
         <%=description%>
+        <% if(timetables) { %>
+        <div class="timetables"><%=timetables%></div>
+        <% } %>
     </div>
     <div class='product_table'>
         <div class='clear'></div>

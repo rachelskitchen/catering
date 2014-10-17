@@ -123,7 +123,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 this.$(".shipping-status").spinner();
             }
 
-            shipping.change();
+            this.changeShipping({currentTarget: shipping.get(0)});
         },
         countryChange: function(e) {
             this.model.country = e.target.value;

@@ -70,7 +70,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 this.navigationControl();
 
                 // check if we here from paypal payment page
-                if (App.Data.get_parameters.pay) {
+                if (App.Data.get_parameters.pay || App.Data.get_parameters[MONERIS_PARAMS.PAY]) {
                     window.location.hash = "#pay";
                 }
 
@@ -257,6 +257,10 @@ define(["backbone", "main_router"], function(Backbone) {
             this.prepare('checkout', function() {
                 if(!App.Data.card) {
                     App.Data.card = new App.Models.Card;
+                }
+
+                if(!App.Data.giftcard) {
+                    App.Data.giftcard = new App.Models.GiftCard;
                 }
 
                 if (!App.Data.customer) {

@@ -53,6 +53,7 @@ define({
         modifiers: "js/models/modifiers",
         tip: "js/models/tip",
         card: "js/models/card",
+        giftcard: "js/models/giftcard",
         checkout: "js/models/checkout",
         geopoint: "js/common/geopoint",
         main_router: "js/routers/main",
@@ -70,12 +71,14 @@ define({
         total_view: "js/views/total",
         tips_view: "js/views/tips",
         card_view: "js/views/card",
+        giftcard_view: "js/views/giftcard",
         instructions_view: "js/views/instructions",
         done_view: "js/views/done",
         slider_view: "js/views/slider",
         search: "js/models/search",
         subcategories: "js/models/subcategories",
         collection_sort: "js/models/collection_sort",
+        confirm_view: "js/views/confirm"
     },
     waitSeconds: 30,
     shim: {
@@ -150,6 +153,9 @@ define({
         "card": {
             deps: ["backbone"]
         },
+        "giftcard": {
+            deps: ["backbone"]
+        },
         "checkout": {
             deps: ["backbone"]
         },
@@ -188,7 +194,7 @@ define({
         },
         "collection_sort" : {
             deps: ["backbone"]
-        } 
+        }
     },
     map: {
         "*": {}

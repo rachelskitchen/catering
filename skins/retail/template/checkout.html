@@ -144,15 +144,18 @@
 
 <script type="text/template" id="checkout_pay_button-template">
     <% if (payment_count === 1 && flag) {%>
-            <% if(paypal) { %>
+        <% if(paypal) { %>
         <div class='btn paypal'>Checkout with PayPal</div>
-            <% } %>
-            <% if(credit_card_button) { %>
+        <% } %>
+        <% if(credit_card_button) { %>
         <div class='btn credit-card'>Pay with Credit Card</div>
-            <% } %>
-            <% if(cash) { %>
+        <% } %>
+        <% if(cash) { %>
         <div class='btn cash'></div>
-            <% } %>
+        <% } %>
+        <% if(gift_card) { %>
+        <div class='btn gift-card'>Pay with Gift Card</div>
+        <% } %>
     <% } else if (flag) { %>
         <div class="btn pay unselectable">Pay</div>
     <% } else { %>
@@ -161,6 +164,9 @@
         <% } %>
         <% if(credit_card_button) { %>
         <div class='btn credit-card'>Credit Card</div>
+        <% } %>
+        <% if(gift_card) { %>
+        <div class='btn gift-card'>Gift Card</div>
         <% } %>
         <% if(cash) { %>
         <div class='btn cash'></div>

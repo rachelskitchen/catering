@@ -20,26 +20,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "card_view"], function(Backbone) {
-    'use strict';
+define(['done_view'], function() {
 
-    App.Views.CardView.CardMainView = App.Views.CoreCardView.CoreCardMainView.extend({
-        initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'add_card', this.onProceed, this);
-        },
-        onProceed: function() {
-            this.setData();
-            App.Data.myorder.check_order({
-                order: true,
-                tip: true,
-                customer: true,
-                checkout: true,
-                card: true
-            }, function() {
-                saveAllData();
-                App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
-            });
+    App.Views.MainView.MainDoneView = App.Views.CoreMainView.CoreMainDoneView.extend({
+        return_menu: function() {
+            this.model.unset('popup');
+            App.Views.CoreMainView.CoreMainDoneView.prototype.return_menu.apply(this, arguments);
         }
     });
 });

@@ -116,7 +116,7 @@ define(["backbone", "async"], function(Backbone) {
          */
         get_settings_main: function() {
             var params = parse_get_params(),
-                skin = params.skin,
+                skin = params.skin || params.rvarSkin,
                 settings = this.get('settings_system'),
                 isUnknownSkin = !(skin && this.get('supported_skins').indexOf(skin) > -1),
                 defaultSkin = settings.type_of_service == ServiceType.RETAIL ? App.Skins.RETAIL : App.Skins.DEFAULT;
@@ -140,11 +140,6 @@ define(["backbone", "async"], function(Backbone) {
                 settings.delivery_charge = 0;
 
             this.set('skin', App.skin);
-
-            // temp solution for RETAIL color scheme
-            // has to be removed when enhancement 12227 will be resolved
-            if(App.Skins.RETAIL == App.skin)
-                settings.color_scheme = 'Vintage';
         },
         /**
          * Get settings from file "settings.json" for current skin.
@@ -190,7 +185,7 @@ define(["backbone", "async"], function(Backbone) {
          */
         get_establishment: function() {
             var get_parameters = parse_get_params(), // get GET-parameters from address line
-                establishment = get_parameters.establishment;
+                establishment = get_parameters.establishment || get_parameters.rvarEstablishment;
             if (!isNaN(establishment))
                 this.set("establishment", establishment);
         },
@@ -220,7 +215,8 @@ define(["backbone", "async"], function(Backbone) {
                         label_for_manual_weights: "",
                         number_of_digits_to_right_of_decimal: 0
                     },
-                    type_of_service: ServiceType.TABLE_SERVICE
+                    type_of_service: ServiceType.TABLE_SERVICE,
+                    default_dining_option: 'DINING_OPTION_TOGO'
                 },
                 load = $.Deferred();
 
@@ -272,7 +268,6 @@ define(["backbone", "async"], function(Backbone) {
 
                             settings_system.address.full_address = $.trim(full_address);
 
-                            settings_system.address.coordinates = {};
                             settings_system.address.getRegion = function() {
                                 return $.inArray(settings_system.address.country, country) !== -1
                                     ? settings_system.address.province
@@ -282,10 +277,11 @@ define(["backbone", "async"], function(Backbone) {
                             var srvDate = new Date(settings_system.server_time);
                             var clientDate = new Date();
 
-                            //create the delta in ms. between server and client by time_zone shift:
-                            if (!settings_system.time_zone_offset) settings_system.time_zone_offset = -(new Date()).getTimezoneOffset() * 60 * 1000;
-                            settings_system.server_time = settings_system.time_zone_offset * 1000 + (new Date()).getTimezoneOffset() * 60 * 1000;
-                            //add the delta in ms. between server and client times set:
+                            settings_system.time_zone_offset = settings_system.time_zone_offset * 1000 || 0;
+
+                            // create the delta in ms. between server and client by time_zone offset:
+                            settings_system.server_time = settings_system.time_zone_offset + (new Date()).getTimezoneOffset() * 60 * 1000;
+                            // add the delta in ms. between server and client times set:
                             settings_system.server_time +=  srvDate.getTime() - clientDate.getTime();
                             settings_system.geolocation_load = $.Deferred();
 
@@ -308,10 +304,34 @@ define(["backbone", "async"], function(Backbone) {
 
                             settings_system.scales.number_of_digits_to_right_of_decimal = Math.abs((settings_system.scales.number_of_digits_to_right_of_decimal).toFixed(0) * 1);
 
+                            // init dining_options if it doesn't exist
+                            if(!Array.isArray(settings_system.dining_options)) {
+                                settings_system.dining_options = [];
+                            }
+
+                            // add DELIVER_TO_SEAT if 'order_from_seat' is checked on
+                            if(settings_system.order_from_seat[0] && settings_system.dining_options.indexOf(DINING_OPTION.DINING_OPTION_DELIVERY_SEAT) == -1) {
+                                settings_system.dining_options.push(DINING_OPTION.DINING_OPTION_DELIVERY_SEAT);
+                            }
+
+                            // Set default dining option.
+                            // It's key of DINING_OPTION object property with value corresponding the first element of settings_system.dining_options array
+                            (function() {
+                                var dining_options = settings_system.dining_options;
+                                if(dining_options.length > 0) {
+                                    for(var dining_option in DINING_OPTION) {
+                                        // if order_from_seat is checked on 'Delivery to seat' overrides 'Other' (rules in bug 14657)
+                                        if(dining_options[0] == DINING_OPTION[dining_option] && (!settings_system.order_from_seat[0] || dining_option != 'DINING_OPTION_OTHER')) {
+                                            settings_system.default_dining_option = dining_option;
+                                            break;
+                                        }
+                                    }
+                                }
+                            })();
+
                             self.set("settings_system", settings_system);
                             App.Settings = App.Data.settings.get("settings_system");
-                            if (!self.get_payment_process()) {
-                                console.log("payment processor not found");
+                            if (!self.get_payment_process() || settings_system.dining_options.length == 0) {
                                 self.set('isMaintenance', true);
                             }
                             break;
@@ -342,8 +362,15 @@ define(["backbone", "async"], function(Backbone) {
             return load;
         },
         load_geoloc: function() {
+            var set_sys = App.Data.settings.get("settings_system");
+
+            // if coordinates are set in server then return
+            if (set_sys.address.coordinates.lat != null && set_sys.address.coordinates.lng != null) {
+                set_sys.geolocation_load.resolve();
+                return;
+            }
+
             var self = this,
-                set_sys = App.Data.settings.get("settings_system"),
                 address_google = set_sys.address.city +  ", " +
                                  set_sys.address.state_province + " " +
                                  set_sys.address.postal_code + ", " +
@@ -373,18 +400,20 @@ define(["backbone", "async"], function(Backbone) {
 
             var skin = this.get("skin");
 
-            if ((skin === 'weborder' || skin === 'weborder_mobile') && !processor.usaepay && !processor.mercury && !processor.paypal && !settings_system.accept_cash_online) {
+            if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
+                && !processor.usaepay && !processor.mercury && !processor.paypal && !settings_system.accept_cash_online && !processor.gift_card && !processor.moneris) {
                 return undefined;
             }
 
-            var credit_card_button = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury;
-            var credit_card_dialog = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay;
+            var credit_card_button = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury || processor.moneris || false;
+            var credit_card_dialog = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.moneris || false;
             var payment_count = 0;
             processor.paypal && payment_count++;
-            if((processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury) {
+            if((processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury || processor.moneris) {
                 payment_count++;
             }
             processor.cash && payment_count++;
+            processor.gift_card && payment_count++;
 
             return Backbone.$.extend(processor, {
                 cash: settings_system.accept_cash_online,
