@@ -975,7 +975,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 });
             }
         },
-        submit_order_and_pay: function(payment_type, validationOnly) {
+        submit_order_and_pay: function(payment_type, validationOnly, capturePhase) {
             var myorder = this,
                 get_parameters = App.Data.get_parameters,
                 skin = App.Data.settings.get('skin'),
@@ -1140,6 +1140,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             function reportErrorFrm(message) {
                 if (validationOnly) {
                     myorder.trigger('paymentFailedValid', [message]);
+                } else if (capturePhase) {
+                    myorder.paymentResponse = {status: 'error', errorMsg: message};
+                    myorder.trigger('paymentResponse');
                 } else {
                     myorder.trigger('paymentFailed');
                     App.Data.errors.alert_red(message);

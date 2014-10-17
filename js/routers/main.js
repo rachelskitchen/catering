@@ -198,7 +198,7 @@ define(["backbone"], function(Backbone) {
         },
         pay: function() {
             this.loadData().then(function() {
-                App.Data.myorder.submit_order_and_pay(App.Data.myorder.checkout.get('payment_type'));
+                App.Data.myorder.submit_order_and_pay(App.Data.myorder.checkout.get('payment_type'), undefined, true);
             });
         },
         loadData: function() {
