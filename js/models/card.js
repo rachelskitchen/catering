@@ -108,6 +108,10 @@ define(["backbone"], function(Backbone) {
                 err = [];
             !securityPattern.test(card.securityCode) && err.push('Security Code');
             return err;
+        },
+        clearData: function() {
+            this.empty_card_number();
+            this.saveCard();
         }
     });
 });
