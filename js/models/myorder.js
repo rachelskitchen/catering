@@ -1059,6 +1059,12 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                 successValidation.then(myorder.trigger.bind(myorder, 'paymentResponseValid'));
                             } else {
                                 myorder.trigger('paymentResponse');
+                                myorder.empty_myorder();
+                                myorder.saveOrders();
+                                if(App.Data.card) {
+                                    App.Data.card.empty_card_number();
+                                    App.Data.card.saveCard();
+                                }
                             }
 
                             break;
