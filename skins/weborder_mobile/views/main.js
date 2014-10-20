@@ -36,7 +36,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
             var self = this;
             $(window).resize(function() {
-                if (!isIEMobile() && !isAndroidWebKit() && self.model.get('no_perfect_scroll') !== true) { //no_perfect_scroll #14024 
+                if (!isIEMobile() && !isAndroidWebKit() && self.model.get('no_perfect_scroll') !== true) { //no_perfect_scroll #14024
                    self.$('#content').perfectScrollbar('update');
                 }
             })
@@ -113,7 +113,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         addContent: function(data, removeClass) {
             var id = 'content_' + data.modelName + '_' + data.mod;
             data = _.defaults(data, this.content_defaults());
-            
+
             if(removeClass)
                 delete data.className;
 
@@ -133,7 +133,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             $(window).trigger('loadCompleted');
             clearTimeout(this.spinner);
             delete this.spinner;
-            if (!isIEMobile() && !isAndroidWebKit() && this.model.get('no_perfect_scroll') !== true) { //no_perfect_scroll #14024 
+            if (!isIEMobile() && !isAndroidWebKit() && this.model.get('no_perfect_scroll') !== true) { //no_perfect_scroll #14024
                 $("#content").css("overflow-y", "hidden");
                 setTimeout($.fn.perfectScrollbar.bind(this.$('#content')), 0);
             }

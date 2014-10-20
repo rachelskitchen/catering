@@ -108,9 +108,13 @@ define(["backbone"], function(Backbone) {
                 if (needGoogleMaps)
                     App.Data.settings.load_geoloc();
             });
+
+            this.once('started', function() {
+                self.started = true;
+            });
         },
         navigate: function() {
-            arguments[0] != location.hash.slice(1) && App.Data.mainModel.trigger('loadStarted');
+            this.started && arguments[0] != location.hash.slice(1) && App.Data.mainModel.trigger('loadStarted');
             if(App.Data.settings.get('isMaintenance') && arguments[0] != 'maintenance')
                 arguments[0] = 'maintenance';
             return Backbone.Router.prototype.navigate.apply(this, arguments);
@@ -118,6 +122,7 @@ define(["backbone"], function(Backbone) {
         change_page: function(cb) {
             App.Data.mainModel.trigger('loadCompleted');
             App.Data.mainModel.set('no_perfect_scroll', false, {silent: true}); // this is for #14024
+            !this.started && this.trigger('started');
         },
         maintenance : function() {
             if (!App.Data.settings.get('isMaintenance')) {
