@@ -222,6 +222,23 @@ define(["backbone"], function(Backbone) {
             });
 
             return load;
+        },
+        initPaymentResponseHandler: function(cb) {
+            var myorder = App.Data.myorder;
+            this.listenTo(myorder, 'paymentResponse', function() {
+                var card = App.Data.card;
+
+                App.Data.settings.usaepayBack = true;
+                clearQueryString(true);
+                App.Data.get_parameters = parse_get_params();
+
+                if(myorder.paymentResponse.status.toLowerCase() == 'ok') {
+                    myorder.clearData();
+                    card && card.clearData();
+                }
+
+                typeof cb == 'function' && cb();
+            }, this);
         }
     });
 });

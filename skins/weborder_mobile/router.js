@@ -116,12 +116,7 @@ define(["backbone", "main_router"], function(Backbone) {
             var checkout = App.Data.myorder.checkout;
                 checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
-            this.listenTo(App.Data.myorder, 'paymentResponse', function() {
-                App.Data.settings.usaepayBack = true;
-                clearQueryString(true);
-                App.Data.get_parameters = parse_get_params();
-                return this.navigate("done", true);
-            }, this);
+            this.initPaymentResponseHandler(this.navigate.bind(this, "done", true));
 
             App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
         },
