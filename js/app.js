@@ -114,7 +114,7 @@
             app.beforeInit();
 
             // init spinner
-            app.initSpinner(app.addSpinner, app.getFontSize);
+            var spinner = app.initSpinner(app.addSpinner, app.getFontSize);
 
             // init errors object and check browser version
             App.Data.errors = new App.Models.Errors;
@@ -136,6 +136,13 @@
                 App.Data.timetables = new App.Models.Timetable;
                 require([App.Data.settings.get("skin") + "/router"], function() {
                     App.Data.router = new App.Routers.Router;
+                    // remove launch spinner
+                    App.Data.router.once('started', function() {
+                        var body = document.querySelector('body');
+                        if(body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
+                            document.querySelector('body').removeChild(spinner);
+                        }
+                    });
                     if(App.Data.settings.get('isMaintenance')) {
                         window.location.hash = "#maintenance";
                     }
@@ -199,5 +206,7 @@
         $.fn.spinner = function() {
             this.each(addSpinner);
         };
+
+        return loader;
     }
 })();

@@ -44,6 +44,9 @@ body {
     font-size: 16px;
     cursor: default;
 }
+#loader {
+    z-index: 1001;
+}
 *:focus {
     outline: none;
 }

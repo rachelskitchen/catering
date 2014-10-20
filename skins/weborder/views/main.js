@@ -49,7 +49,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             var spinner = this.$('#main-spinner');
             spinner.spinner();
             spinner.css('position', 'fixed');
-            this.showSpinner();
 
             return this;
         },
