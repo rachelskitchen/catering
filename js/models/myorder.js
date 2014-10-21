@@ -1325,7 +1325,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             contactName && call_name.push(contactName);
 
             if(App.Data.orderFromSeat instanceof Object) {
-                call_name = call_name.concat(this.getOrderSeatCallName(customer.phone));
+                call_name = checkout.dining_option == 'DINING_OPTION_DELIVERY_SEAT' ? call_name.push.apply(call_name,  this.getOrderSeatCallName(customer.phone)) : call_name.push(customer.phone);
             } else {
                 checkout.pickupTime && call_name.push(checkout.pickupTime);
                 if (customer.phone) {
