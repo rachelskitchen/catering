@@ -492,8 +492,13 @@ define(["backbone"], function(Backbone) {
         getPickupList: function(isDelivery) {
             var self = this,
                 now = this.base(),
-                day = now.getDay(),
-                days = weekDays.slice(day).concat(weekDays.slice(0, day));
+                day = now.getDay();
+
+            var days = [];
+            var date_range = App.Data.settings.get('settings_system').online_order_date_range;
+            for (var i = 0; i < date_range; i++) {
+                days.push(weekDays[(day + i) % 7]);
+            }
 
             return days.map(function(day, i) {
                 var date = new Date(now.getTime() + i * MILLISECONDS_A_DAY),
