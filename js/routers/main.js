@@ -41,6 +41,11 @@ define(["backbone"], function(Backbone) {
         initialize: function() {
             var self = this;
 
+            // create lockedRoutes array if it hasn't been created
+            if(!Array.isArray(this.lockedRoutes)) {
+                this.lockedRoutes = [];
+            }
+
              // remove Delivery option if it is necessary
             if (!App.Data.myorder.total.get('delivery').get('enable'))
                 delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
@@ -73,6 +78,18 @@ define(["backbone"], function(Backbone) {
 
             // set page title
             pageTitle(App.Data.settings.get("settings_skin").name_app);
+
+            // extend Backbone.history.loadUrl method to add validation of route handler availability
+            // loadUrl() is responsible to call a handler for current route
+            // link to raw: https://github.com/jashkenas/backbone/blob/master/backbone.js#L1575
+            Backbone.history.loadUrl = function(fragment) {
+                fragment = this.getFragment(fragment);  // used Backbone.History.prototype.getFragment() method
+                // check if current route is locked and replace it on 'index' when it is true
+                if(self.lockedRoutes.indexOf(fragment) > -1) {
+                    fragment = 'index';
+                }
+                return Backbone.History.prototype.loadUrl.call(this, fragment);
+            }
 
             // override Backbone.history.start listen to 'initialized' event
             var start = Backbone.history.start;
@@ -222,6 +239,23 @@ define(["backbone"], function(Backbone) {
             });
 
             return load;
+        },
+        initPaymentResponseHandler: function(cb) {
+            var myorder = App.Data.myorder;
+            this.listenTo(myorder, 'paymentResponse', function() {
+                var card = App.Data.card;
+
+                App.Data.settings.usaepayBack = true;
+                clearQueryString(true);
+                App.Data.get_parameters = parse_get_params();
+
+                if(myorder.paymentResponse.status.toLowerCase() == 'ok') {
+                    myorder.clearData();
+                    card && card.clearData();
+                }
+
+                typeof cb == 'function' && cb();
+            }, this);
         }
     });
 });

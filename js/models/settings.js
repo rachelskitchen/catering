@@ -401,7 +401,7 @@ define(["backbone", "async"], function(Backbone) {
             var skin = this.get("skin");
 
             if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
-                && !processor.usaepay && !processor.mercury && !processor.paypal && !settings_system.accept_cash_online && !processor.gift_card && !processor.moneris) {
+                && !processor.usaepay && !processor.mercury && !processor.paypal && !processor.cash && !processor.gift_card && !processor.moneris) {
                 return undefined;
             }
 
@@ -416,7 +416,6 @@ define(["backbone", "async"], function(Backbone) {
             processor.gift_card && payment_count++;
 
             return Backbone.$.extend(processor, {
-                cash: settings_system.accept_cash_online,
                 payment_count: payment_count,
                 credit_card_button: credit_card_button,
                 credit_card_dialog: credit_card_dialog

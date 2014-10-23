@@ -896,3 +896,7 @@ section.maintenance p {
 input[type="search"] {
     -webkit-appearance: textfield;
 }
+
+.cursor-default {
+    cursor: default !important;
+}

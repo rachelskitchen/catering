@@ -4,10 +4,12 @@
             <div id="about" class="btn1"><span>About</span></div>
         </li>
         <li class="center">
+            <% if(_settings.online_orders) { %>
             <div id="myorder" class="btn2">
                 <span>My Order</span>
                 <span class="count"></span>
             </div>
+            <% } %>
         </li>
         <li class="right">
             <div id="location" class="btn1"><span>Location</span></div>

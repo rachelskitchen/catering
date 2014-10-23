@@ -50,6 +50,11 @@ define(["backbone", "main_router"], function(Backbone) {
             this.bodyElement = Backbone.$('body');
             this.bodyElement.append('<div class="main-container"></div>');
 
+            // set locked routes if online orders are disabled
+            if(!App.Settings.online_orders) {
+                this.lockedRoutes = ['checkout', 'pay', 'confirm'];
+            }
+
             // load main, header, footer necessary files
             this.prepare('main', function() {
                 App.Views.Generator.enableCache = true;

@@ -26,6 +26,7 @@ define(["backbone", "myorder_view"], function(Backbone) {
     App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView.extend({
         render: function() {
             App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.render.apply(this, arguments);
+
             var model = this.model,
                 view;
 
@@ -39,7 +40,7 @@ define(["backbone", "myorder_view"], function(Backbone) {
             });
             this.subViews.push(view);
 
-            if(App.Data.settings.get('settings_system').special_requests_online) {
+            if(App.Settings.special_requests_online) {
                 view = App.Views.GeneratorView.create('Instructions', {
                     el: this.$('.product_instructions'),
                     model: model,

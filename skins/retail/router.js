@@ -56,6 +56,11 @@ define(["backbone", "main_router"], function(Backbone) {
             this.bodyElement = Backbone.$('body');
             this.bodyElement.append('<div class="main-container"></div>');
 
+            // set locked routes if online orders are disabled
+            if(!App.Settings.online_orders) {
+                this.lockedRoutes = ['checkout', 'pay', 'confirm'];
+            }
+
             // check available dining options and set default
             if(App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) == -1 && App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_DELIVERY) == -1) {
                 App.Data.settings.set('isMaintenance', true);
@@ -299,7 +304,9 @@ define(["backbone", "main_router"], function(Backbone) {
 
             // onCart event occurs when 'cart' item is clicked
             this.listenTo(App.Data.header, 'onCart', function() {
-                App.Data.myorder.trigger('showCart');
+                if(App.Settings.online_orders) {
+                    App.Data.myorder.trigger('showCart');
+                }
             });
         },
         encodeState: function(data) {
