@@ -4,7 +4,9 @@
         <div class="order-items"></div>
     </div>
     <ul class="total_block"></ul>
+    <% if(_settings.online_orders) { %>
     <div class="btn unselectable">Checkout</div>
+    <% } %>
 </script>
 
 <script type="text/template" id="cart_checkout-template">

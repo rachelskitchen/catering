@@ -47,8 +47,13 @@ define(["backbone", "main_router"], function(Backbone) {
         initialize: function() {
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
             clearQueryString();
-            $('body').html('<div class="main-container"></div>');
-            this.bodyElement = $('body');
+            this.bodyElement = Backbone.$('body');
+            this.bodyElement.append('<div class="main-container"></div>');
+
+            // set locked routes if online orders are disabled
+            if(!App.Settings.online_orders) {
+                this.lockedRoutes = ['checkout', 'pay', 'confirm'];
+            }
 
             // load main, header, footer necessary files
             this.prepare('main', function() {
@@ -106,10 +111,11 @@ define(["backbone", "main_router"], function(Backbone) {
         },
         createMainView: function() {
             var data = App.Data.mainModel.toJSON(),
-                mainView = App.Views.GeneratorView.create('Main', data, data.mod === 'Main');
+                mainView = App.Views.GeneratorView.create('Main', data, data.mod === 'Main'),
+                container = Backbone.$('body > div.main-container');
 
-            this.mainView && this.mainView.removeFromDOMTree() || $('body > div').empty();
-            $('body > div.main-container').append(mainView.el);
+            this.mainView && this.mainView.removeFromDOMTree() || container.empty();
+            container.append(mainView.el);
             this.mainView = mainView;
         },
         navigationControl: function() {

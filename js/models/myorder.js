@@ -752,11 +752,13 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          *
          * check collection myorders
          */
-        _check_cart: function(isTip) {
+        _check_cart: function(opts) {
             var subtotal = this.total.get_subtotal() * 1,
                 tip = this.total.get_tip() * 1,
                 isDelivery = this.checkout.get('dining_option') === 'DINING_OPTION_DELIVERY',
                 isOnlyGift = this.checkout.get('dining_option') === 'DINING_OPTION_ONLINE';
+
+            opts = opts || {};
 
             if (this.get_only_product_quantity() === 0) {
                 return {
@@ -765,14 +767,14 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 };
             }
 
-            if (isTip && tip > subtotal) {
+            if (opts.tip && tip > subtotal) {
                 return {
                     status: 'ERROR',
                     errorMsg: MSG.ERROR_GRATUITY_EXCEEDS
                 };
             }
 
-            if (isDelivery) {
+            if (!opts.skipDeliveryAmount && isDelivery) {
                 var remain = this.total.get_remaining_delivery_amount();
                 if (remain > 0 ) {
                     return {
@@ -785,7 +787,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             var sum_quantity = this.not_gift_product_quantity(),
                 min_items = App.Data.settings.get("settings_system").min_items;
 
-            if (sum_quantity < min_items && !isOnlyGift) {
+            if (!opts.skipQuantity && sum_quantity < min_items && !isOnlyGift) {
                 return {
                     status: 'ERROR_QUANTITY',
                     errorMsg: msgFrm(MSG.ERROR_MIN_ITEMS_LIMIT, min_items)
@@ -803,7 +805,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          *     customer: true - test customer model
          *     card: true - test card model
          *     order: true - test myorders collection
-         *     tip: true - test add flag isTip to order test,
+         *     tip: true - test add flag tip to order test,
          *     validationOnly: true - test whole order on backend
          * }
          * success - callback if checked is OK
@@ -850,7 +852,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             if (options.order) {
-                var check_order = this._check_cart(options.tip);
+                var check_order = this._check_cart(options);
 
                 if (check_order.status === 'ERROR_QUANTITY') {
                     if (!arguments[2]) { // if we don't set error callback, use usuall two button alert message or if we on the first page
@@ -947,7 +949,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
                 if (pickup) pickup = new Date(time > pickup ? time : pickup);
 
-                if (App.skin != App.Skins.RETAIL && (!pickup || !App.Data.timetables.checking_work_shop(pickup, delivery)) ) { //pickup may by null or string
+                if (App.skin != App.Skins.RETAIL && (!pickup || !App.Data.timetables.checking_work_shop(pickup, delivery)) ) { //pickup may be null or string
                     this.trigger('cancelPayment');
                     delete this.paymentInProgress;
                     App.Data.errors.alert(MSG.ERROR_STORE_IS_CLOSED);
@@ -957,7 +959,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if (isASAP) {
                     lastPT = App.Data.timetables.getLastPTforWorkPeriod(currentTime);
                     if (lastPT instanceof Date){
-                        lastPickupTime = format_date_1(lastPT);
+                        lastPickupTime = format_date_1(lastPT.getTime() - App.Settings.server_time);
                     }
                     if (lastPT === 'not-found') {
                        //TODO: test this case by unit tests and remove this trace:
@@ -966,14 +968,14 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 }
 
                 this.checkout.set({
-                    'pickupTime': pickupToString(pickup),
-                    'createDate': format_date_1(currentTime),
-                    'pickupTimeToServer': isASAP ? 'ASAP' : format_date_1(pickup),
+                    'pickupTime': isASAP ? 'ASAP (' + pickupToString(pickup) + ')' : pickupToString(pickup),
+                    'createDate': format_date_1(Date.now()),
+                    'pickupTimeToServer': pickup ? format_date_1(pickup.getTime() - App.Settings.server_time) : undefined,
                     'lastPickupTime': lastPickupTime
                 });
             }
         },
-        submit_order_and_pay: function(payment_type, validationOnly) {
+        submit_order_and_pay: function(payment_type, validationOnly, capturePhase) {
             var myorder = this,
                 get_parameters = App.Data.get_parameters,
                 skin = App.Data.settings.get('skin'),
@@ -1010,10 +1012,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             order_info.surcharge = total.surcharge;
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.notes = checkout.notes;
-
-            if (checkout.pickupTimeToServer === 'ASAP') {
-                checkout.pickupTime = 'ASAP (' + checkout.pickupTime + ')';
-            }
+            order_info.asap = checkout.isPickupASAP;
 
             var customerData = this.getCustomerData();
             call_name = call_name.concat(customerData.call_name);
@@ -1141,6 +1140,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             function reportErrorFrm(message) {
                 if (validationOnly) {
                     myorder.trigger('paymentFailedValid', [message]);
+                } else if (capturePhase) {
+                    myorder.paymentResponse = {status: 'error', errorMsg: message};
+                    myorder.trigger('paymentResponse');
                 } else {
                     myorder.trigger('paymentFailed');
                     App.Data.errors.alert_red(message);

@@ -41,6 +41,11 @@ define(["backbone"], function(Backbone) {
         initialize: function() {
             var self = this;
 
+            // create lockedRoutes array if it hasn't been created
+            if(!Array.isArray(this.lockedRoutes)) {
+                this.lockedRoutes = [];
+            }
+
              // remove Delivery option if it is necessary
             if (!App.Data.myorder.total.get('delivery').get('enable'))
                 delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
@@ -73,6 +78,18 @@ define(["backbone"], function(Backbone) {
 
             // set page title
             pageTitle(App.Data.settings.get("settings_skin").name_app);
+
+            // extend Backbone.history.loadUrl method to add validation of route handler availability
+            // loadUrl() is responsible to call a handler for current route
+            // link to raw: https://github.com/jashkenas/backbone/blob/master/backbone.js#L1575
+            Backbone.history.loadUrl = function(fragment) {
+                fragment = this.getFragment(fragment);  // used Backbone.History.prototype.getFragment() method
+                // check if current route is locked and replace it on 'index' when it is true
+                if(self.lockedRoutes.indexOf(fragment) > -1) {
+                    fragment = 'index';
+                }
+                return Backbone.History.prototype.loadUrl.call(this, fragment);
+            }
 
             // override Backbone.history.start listen to 'initialized' event
             var start = Backbone.history.start;
@@ -108,9 +125,13 @@ define(["backbone"], function(Backbone) {
                 if (needGoogleMaps)
                     App.Data.settings.load_geoloc();
             });
+
+            this.once('started', function() {
+                self.started = true;
+            });
         },
         navigate: function() {
-            arguments[0] != location.hash.slice(1) && App.Data.mainModel.trigger('loadStarted');
+            this.started && arguments[0] != location.hash.slice(1) && App.Data.mainModel.trigger('loadStarted');
             if(App.Data.settings.get('isMaintenance') && arguments[0] != 'maintenance')
                 arguments[0] = 'maintenance';
             return Backbone.Router.prototype.navigate.apply(this, arguments);
@@ -118,6 +139,7 @@ define(["backbone"], function(Backbone) {
         change_page: function(cb) {
             App.Data.mainModel.trigger('loadCompleted');
             App.Data.mainModel.set('no_perfect_scroll', false, {silent: true}); // this is for #14024
+            !this.started && this.trigger('started');
         },
         maintenance : function() {
             if (!App.Data.settings.get('isMaintenance')) {
@@ -198,7 +220,7 @@ define(["backbone"], function(Backbone) {
         },
         pay: function() {
             this.loadData().then(function() {
-                App.Data.myorder.submit_order_and_pay(App.Data.myorder.checkout.get('payment_type'));
+                App.Data.myorder.submit_order_and_pay(App.Data.myorder.checkout.get('payment_type'), undefined, true);
             });
         },
         loadData: function() {
@@ -217,6 +239,23 @@ define(["backbone"], function(Backbone) {
             });
 
             return load;
+        },
+        initPaymentResponseHandler: function(cb) {
+            var myorder = App.Data.myorder;
+            this.listenTo(myorder, 'paymentResponse', function() {
+                var card = App.Data.card;
+
+                App.Data.settings.usaepayBack = true;
+                clearQueryString(true);
+                App.Data.get_parameters = parse_get_params();
+
+                if(myorder.paymentResponse.status.toLowerCase() == 'ok') {
+                    myorder.clearData();
+                    card && card.clearData();
+                }
+
+                typeof cb == 'function' && cb();
+            }, this);
         }
     });
 });

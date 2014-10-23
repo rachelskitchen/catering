@@ -277,10 +277,11 @@ define(["backbone", "async"], function(Backbone) {
                             var srvDate = new Date(settings_system.server_time);
                             var clientDate = new Date();
 
-                            //create the delta in ms. between server and client by time_zone shift:
-                            if (!settings_system.time_zone_offset) settings_system.time_zone_offset = -(new Date()).getTimezoneOffset() * 60 * 1000;
-                            settings_system.server_time = settings_system.time_zone_offset * 1000 + (new Date()).getTimezoneOffset() * 60 * 1000;
-                            //add the delta in ms. between server and client times set:
+                            settings_system.time_zone_offset = settings_system.time_zone_offset * 1000 || 0;
+
+                            // create the delta in ms. between server and client by time_zone offset:
+                            settings_system.server_time = settings_system.time_zone_offset + (new Date()).getTimezoneOffset() * 60 * 1000;
+                            // add the delta in ms. between server and client times set:
                             settings_system.server_time +=  srvDate.getTime() - clientDate.getTime();
                             settings_system.geolocation_load = $.Deferred();
 
@@ -400,7 +401,7 @@ define(["backbone", "async"], function(Backbone) {
             var skin = this.get("skin");
 
             if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
-                && !processor.usaepay && !processor.mercury && !processor.paypal && !settings_system.accept_cash_online && !processor.gift_card && !processor.moneris) {
+                && !processor.usaepay && !processor.mercury && !processor.paypal && !processor.cash && !processor.gift_card && !processor.moneris) {
                 return undefined;
             }
 
@@ -415,7 +416,6 @@ define(["backbone", "async"], function(Backbone) {
             processor.gift_card && payment_count++;
 
             return Backbone.$.extend(processor, {
-                cash: settings_system.accept_cash_online,
                 payment_count: payment_count,
                 credit_card_button: credit_card_button,
                 credit_card_dialog: credit_card_dialog

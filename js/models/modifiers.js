@@ -452,6 +452,7 @@ define(["backbone"], function(Backbone) {
                 modifierBlock.addJSON(element);
                 self.add(modifierBlock);
             });
+            this.create_quick_modifiers_section(App.Data.quickModifiers);
             return this;
         },
         /**
@@ -489,8 +490,7 @@ define(["backbone"], function(Backbone) {
             $.ajax({
                 url: App.Data.settings.get("host") + "/weborders/modifiers/",
                 data: {
-                    product: id_product,
-                    quick: true
+                    product: id_product
                 },
                 dataType: "json",
                 successResp: function(modifierBlocks) {
@@ -498,7 +498,7 @@ define(["backbone"], function(Backbone) {
                         self.add(new App.Models.ModifierBlock().addJSON(modifierBlock));
                     });
                     //add the new block 'Quick Modifiers' (will be contain all quick modifiers):
-                    self.create_quick_modifiers_section(App.Data.quickModifiers);                                        
+                    self.create_quick_modifiers_section(App.Data.quickModifiers);
                     fetching.resolve();
                 },
                 error: function() {
@@ -509,23 +509,27 @@ define(["backbone"], function(Backbone) {
             return fetching;
         },
          /**
-         * It creates a dummi modifierBlock to group all quick modifiers together which are not included in the product's modifiers blocks 
+         * It creates a dummi modifierBlock to group all quick modifiers together which are not included in the product's modifiers blocks
          */
         create_quick_modifiers_section: function(quickModifiers) {
+            if(!(quickModifiers instanceof App.Collections.ModifierBlocks)) {
+                return;
+            }
+
             var modifierBlock = {
                 sort: 10000, //set to the end of the modifiers list
                 active: true,
                 modifier_class_id: -1, //useless for Quick Modifiers
-                name: "Quick Modifiers"                
+                name: "Quick Modifiers"
             };
-            
+
             var self = this,
-                is_quick_modifiers = false, 
-                qmBlock = new App.Models.ModifierBlock().addJSON(modifierBlock);            
+                is_quick_modifiers = false,
+                qmBlock = new App.Models.ModifierBlock().addJSON(modifierBlock);
 
             quickModifiers.forEach(function(modifierBlock) {
                 var modifiers = modifierBlock.get("modifiers");
-               
+
                 modifiers.forEach(function(modifier) {
                     if (!self.find_modifier(modifier.id)) {
                         var m = modifier.clone();
@@ -555,7 +559,7 @@ define(["backbone"], function(Backbone) {
          */
         get_quick_modifiers: function() {
             var self = this,
-                fetching = new $.Deferred(); // Pointer that all data loaded       
+                fetching = new $.Deferred(); // Pointer that all data loaded
 
             $.ajax({
                 url: App.Data.settings.get("host") + "/weborders/modifiers/",
@@ -567,7 +571,7 @@ define(["backbone"], function(Backbone) {
                     modifierBlocks.forEach(function(modifierBlock) {
                         self.add(new App.Models.ModifierBlock().addJSON(modifierBlock));
                     });
-                    
+
                     fetching.resolve();
                 },
                 error: function() {

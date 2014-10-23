@@ -10,7 +10,7 @@
         <li class="shop <% if(menu_index === 0) { %> active <% } %>">Shop</li>
         <li class="about <% if(menu_index === 1) { %> active <% } %>">About</li>
         <li class="locations <% if(menu_index === 2) { %> active <% } %>">Locations</li>
-        <li class="cart"></li>
+        <li class="cart <% if(!_settings.online_orders) {print('cursor-default');} %>"></li>
     </ul>
 </script>
 
