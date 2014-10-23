@@ -111,7 +111,7 @@ define([], function() {
             });
 
             it("Accept cash online", function() {
-                expect(typeof(sys.accept_cash_online)).toBe("boolean");
+                expect(typeof(sys.payment_processor.cash)).toBe("boolean");
             });
 
             it("Accept online orders when store is closed", function() {
