@@ -31,20 +31,17 @@ define(['card'], function() {
             expect(model.toJSON()).toEqual(def);
         });
 
-        // App.Models.Customer function saveCard
-        it('Function saveCard', function() {
+        it("SaveCard Function", function() {
             model.saveCard(); // save current state model in storage (detected automatic)
             expect(setData).toHaveBeenCalledWith('card', model);
         });
 
-        // App.Models.Customer function loadCard
-        it('Function loadCard', function() {
+        it("LoadCard Function", function() {
             model.loadCard(); // load state model from storage (detected automatic)
             expect(getData).toHaveBeenCalledWith('card');
         });
 
-        // App.Models.Customer function check
-        describe('Function check.', function() {
+        describe("Functions check", function() {
 
             var payment = {};
 
@@ -54,7 +51,7 @@ define(['card'], function() {
                 payment.paypal_direct_credit_card = false;
             });
 
-            it('test card number', function() {
+            it("Card number", function() {
                 // empty card number
                 expect(model.check().errorMsg.indexOf('Card Number')).not.toBe(-1);
                 expect(model.check().status).toBe('ERROR_EMPTY_FIELDS');
@@ -77,7 +74,7 @@ define(['card'], function() {
                 expect(model.check().errorMsg.indexOf('Card Number')).not.toBe(-1);
             });
 
-            it('test security code', function() {
+            it("Security code", function() {
                 // valid card number
                 model.set('cardNumber', '5555555555555555');
                 model.set('securityCode', '123');
@@ -94,16 +91,7 @@ define(['card'], function() {
                 expect(model.check().errorMsg.indexOf('Security Code')).not.toBe(-1);
             });
 
-            it('test mlb empty fields', function() {
-                this.skin = App.Data.settings.get('skin');
-                App.Data.settings.set('skin', 'mlb');
-                expect(model.check().errorMsg.indexOf('Card Holder Name')).not.toBe(-1);
-
-                model.set('firstName', 'first name test');
-                App.Data.settings.set('skin', this.skin);
-            });
-
-            it('test credit card payments', function() {
+            it('Credit card payments', function() {
                 this.skin = App.Data.settings.get('skin');
                 App.Data.settings.set('skin', 'notmlb');
                 // not paypal direct credit card
@@ -127,7 +115,7 @@ define(['card'], function() {
                 App.Data.settings.set('skin', this.skin);
             });
 
-            it('test exp date', function() {
+            it("Exp date", function() {
                 model.set('cardNumber', '5555555555555555');
                 model.set('securityCode', '444');
 
@@ -152,6 +140,8 @@ define(['card'], function() {
                 model.set('expDate', new Date().getFullYear());
                 expect(model.check().status).toBe('OK');
             });
+
         });
+
     });
 });

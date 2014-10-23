@@ -1,8 +1,7 @@
 var tests_list = [
     "../core/js/utest/test_Settings",
+    "../core/js/utest/test_Card"
     /*
-    "../core/js/utest/test_Store",
-    "../core/js/utest/test_Card",
     "../core/js/utest/test_Categories",
     "../core/js/utest/test_Checkout",
     "../core/js/utest/test_ChildProducts",
