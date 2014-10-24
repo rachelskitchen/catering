@@ -331,7 +331,14 @@ define(["backbone", "async"], function(Backbone) {
 
                             self.set("settings_system", settings_system);
                             App.Settings = App.Data.settings.get("settings_system");
-                            if (!self.get_payment_process() || settings_system.dining_options.length == 0) {
+
+                            // if all payment processors are disabled this case looks like 'online_orders' is checked off because
+                            // 'online_orders' affects only order creating functionality
+                            if(!self.get_payment_process()) {
+                                settings_system.online_orders = false;
+                            }
+
+                            if (settings_system.online_orders && settings_system.dining_options.length == 0) {
                                 self.set('isMaintenance', true);
                             }
                             break;
