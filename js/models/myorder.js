@@ -377,7 +377,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             var currency_symbol = App.Data.settings.get('settings_system').currency_symbol,
                 uom = App.Data.settings.get("settings_system").scales.default_weighing_unit,
                 product = this.get_product().toJSON(),
-                price = this.get('initial_price') || product.price,//model.get('sum');
+                price = Number(this.get('initial_price')) >= 0 ? this.get('initial_price') : product.price,//model.get('sum');
                 item_tax = this.get_myorder_tax_rate() * this.get('sum'),
                 item_obj = {
                     modifier_amount: modifiers_price,
