@@ -1,5 +1,9 @@
 <script type="text/template" id="main_main-template">
 <section>
+    <% if(_settings.ads_message) { %>
+        <div id="ads_message"> <span> <%= _settings.ads_message %> </span> </div>
+    <% } %>
+    <div id="ads_message"> <span> Test </span> </div>
     <header id="header"></header>
     <div id="content">
        

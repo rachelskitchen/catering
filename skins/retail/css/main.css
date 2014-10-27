@@ -900,3 +900,14 @@ input[type="search"] {
 .cursor-default {
     cursor: default !important;
 }
+
+#ads_message {
+    text-align: center;
+    font-weight: regular;
+    font-family: helvetica neue;
+    font-size: 20pt;
+    color: #373b40;
+    padding-top: 0.15em;
+    float: right;
+    width: 80%;
+}

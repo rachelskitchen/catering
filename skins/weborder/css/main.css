@@ -901,3 +901,14 @@ section.maintenance p {
     vertical-align: middle;
 }
 /** confirm page end*/
+
+#ads_message {
+    text-align: center;
+    font-weight: regular;
+    font-family: helvetica neue;
+    font-size: 20pt;
+    color: #373b40;
+    padding-top: 0.15em;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+}
