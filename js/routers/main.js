@@ -173,8 +173,7 @@ define(["backbone"], function(Backbone) {
 
             dependencies = Array.isArray(dependencies) ? dependencies : [];
 
-            skin == App.Skins.WEBORDER && !this.prepare.initialized && initTheme.call(this);
-            skin == App.Skins.RETAIL && !this.prepare.initialized && initTheme.call(this);
+            color_schemes.length > 0 && !this.prepare.initialized && initTheme.call(this);
 
             for(i = 0, j = scripts.length; i < j; i++)
                 js.push(skin + "/js/" + scripts[i]);
