@@ -86,9 +86,9 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         events: {
             'blur .firstName': 'changeFirstName',
             'blur .lastName': 'changeLastName',
-            'change .email': 'changeEmail',
-            'change .phone': 'changePhone',
-            'change .rewardCard' : 'changeRewardCard'
+            'blur .email': 'changeEmail',
+            'blur .phone': 'changePhone',
+            'blur .rewardCard' : 'changeRewardCard'
         },
         changeFirstName: function(e) {
             this.customer.set('first_name', e.target.value);
