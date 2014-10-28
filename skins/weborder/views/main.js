@@ -170,15 +170,15 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             }
         },
         loadCompleted: function() {
-            // ads message (begin)
-            var ads_message_container = $("#ads_message");
-            var ads_message_height = ads_message_container.height();
-            if (ads_message_height > 33) {
-                var ads_message_html = ads_message_container.html();
-                ads_message_container.empty();
-                ads_message_container.append('<marquee behavior="scroll" direction="left" scrollamount="6" loop="-1">'+ads_message_html+'</marquee>');
+            // promo message (begin)
+            var promo_message_container = $("#promo_message");
+            var promo_message_height = promo_message_container.height();
+            if (promo_message_height > 33) {
+                var promo_message_html = promo_message_container.html();
+                promo_message_container.empty();
+                promo_message_container.append('<marquee behavior="scroll" direction="left" scrollamount="6" loop="-1">'+promo_message_html+'</marquee>');
             }
-            // ads message (end)
+            // promo message (end)
             $(window).trigger('loadCompleted');
             clearTimeout(this.spinner);
             delete this.spinner;

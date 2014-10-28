@@ -902,13 +902,13 @@ section.maintenance p {
 }
 /** confirm page end*/
 
-#ads_message {
-    text-align: center;
-    font-weight: regular;
+#promo_message {
+    color: #373b40;
     font-family: helvetica neue;
     font-size: 20pt;
-    color: #373b40;
-    padding-top: 0.15em;
+    font-weight: regular;
     padding-left: 0.4em;
     padding-right: 0.4em;
+    padding-top: 0.15em;
+    text-align: center;
 }
