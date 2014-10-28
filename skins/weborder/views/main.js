@@ -194,7 +194,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             if (promo_message_height > 33) {
                 var promo_message_html = promo_message_container.find("span").html();
                 promo_message_container.empty();
-                promo_message_container.append('<marquee behavior="scroll" direction="left" scrollamount="6" loop="-1">'+promo_message_html+'</marquee>');
+                promo_message_container.append('<marquee behavior="scroll" direction="left" scrollamount="6" loop="-1"> <span>'+promo_message_html+'</span> </marquee>');
             }
         }
     });
