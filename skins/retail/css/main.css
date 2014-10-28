@@ -901,13 +901,13 @@ input[type="search"] {
     cursor: default !important;
 }
 
-#ads_message {
-    text-align: center;
-    font-weight: regular;
+#promo_message {
+    color: #373b40;
+    float: right;
     font-family: helvetica neue;
     font-size: 20pt;
-    color: #373b40;
+    font-weight: regular;
     padding-top: 0.15em;
-    float: right;
+    text-align: center;
     width: 80%;
 }

@@ -2,10 +2,9 @@
     <div class='categories'></div>
     <div class="logo">
         <img src="<%= logo %>" alt="<%= business_name %> logo" class="logo" data-default-index="1">
-        <% if(_settings.ads_message) { %>
-            <div id="ads_message"> <span> <%= _settings.ads_message %> </span> </div>
+        <% if(_settings.promo_message) { %>
+            <div id="promo_message"> <span> <%= _settings.promo_message %> </span> </div>
         <% } %>
-        <div id="ads_message"> <span> Test </span> </div>
     </div>
     <form class="search">
         <input type="search" placeholder="Search" name="search" autocomplete="off">

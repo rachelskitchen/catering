@@ -170,15 +170,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             }
         },
         loadCompleted: function() {
-            // promo message (begin)
-            var promo_message_container = $("#promo_message");
-            var promo_message_height = promo_message_container.height();
-            if (promo_message_height > 33) {
-                var promo_message_html = promo_message_container.html();
-                promo_message_container.empty();
-                promo_message_container.append('<marquee behavior="scroll" direction="left" scrollamount="6" loop="-1">'+promo_message_html+'</marquee>');
-            }
-            // promo message (end)
+            this.addPromoMessage(); // add promo message
             $(window).trigger('loadCompleted');
             clearTimeout(this.spinner);
             delete this.spinner;
@@ -192,6 +184,18 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         hideSpinner: function() {
             this.$('#main-spinner').addClass('ui-visible').removeClass('ui-visible');
+        },
+        /**
+         * Add promo message.
+         */
+        addPromoMessage: function() {
+            var promo_message_container = $("#promo_message");
+            var promo_message_height = promo_message_container.height();
+            if (promo_message_height > 33) {
+                var promo_message_html = promo_message_container.html();
+                promo_message_container.empty();
+                promo_message_container.append('<marquee behavior="scroll" direction="left" scrollamount="6" loop="-1">'+promo_message_html+'</marquee>');
+            }
         }
     });
 
