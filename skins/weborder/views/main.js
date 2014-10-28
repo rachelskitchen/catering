@@ -56,6 +56,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             'click #popup .cancel': 'hide_popup'
         },
         content_change: function() {
+            this.addPromoMessage(); // add promo message
             var content = this.$('#content'),
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
@@ -170,7 +171,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             }
         },
         loadCompleted: function() {
-            this.addPromoMessage(); // add promo message
             $(window).trigger('loadCompleted');
             clearTimeout(this.spinner);
             delete this.spinner;
@@ -192,9 +192,9 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             var promo_message_container = $("#promo_message");
             var promo_message_height = promo_message_container.height();
             if (promo_message_height > 33) {
-                var promo_message_html = promo_message_container.html();
+                var promo_message_html = promo_message_container.find("span").html();
                 promo_message_container.empty();
-                promo_message_container.append('<marquee behavior="scroll" direction="left" scrollamount="6" loop="-1">'+promo_message_html+'</marquee>');
+                promo_message_container.append('<marquee behavior="scroll" direction="left" scrollamount="6" loop="-1"> <span>'+promo_message_html+' </span> </marquee>');
             }
         }
     });
