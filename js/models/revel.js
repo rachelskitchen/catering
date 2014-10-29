@@ -27,6 +27,10 @@ define(["backbone"], function(Backbone) {
         RevelAPI;
 
     App.Models.RevelAPI = Backbone.Model.extend({
+        defaults: {
+            firstTime: null,
+            gObj: 'App.Data.RevelAPI'
+        },
         initialize: function() {
             App.Settings.RevelAPI = this.isAvailable();
         },
@@ -43,7 +47,7 @@ define(["backbone"], function(Backbone) {
                         method = arguments[0],
                         obj = window[REVEL_INTERFACE_NAME],
                         args = Array.prototype.slice.call(arguments, 1, -1);
-                    cb(obj[method].apply(obj, args));
+                    window[cb](obj[method].apply(obj, args));
                 } else if(cssua.ua.ios) {
                     window.location = Array.prototype.join.call(arguments, '/');
                 }
