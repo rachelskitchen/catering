@@ -3,6 +3,10 @@
     <section id="section">
         <div id="content" class="ios-safari-caret-fix"></div>
     </section>
-    <footer id="footer"></footer>
+    <footer id="footer">
+        <% if (_settings.promo_message) { %>
+            <div id="promo_message"> <span> <%= _settings.promo_message %> </span> </div>
+        <% } %>
+    </footer>
     <div id="main-spinner"></div>
 </script>
