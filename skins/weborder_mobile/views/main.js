@@ -173,37 +173,31 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 $("#promo_message").hide();
             }
             if ($("#promo_message").length === 1) {
-                var count_call = 0;
-                var add_message = function(resize) {
+                var add_message = function() {
                     var valid_pages = new Array("", "index", "products", "modifiers", "modifiers_edit", "myorder", "done", "location", "map", "about", "gallery");
                     var exec = /[a-z_]+/;
                     var current_page = (Backbone.history.fragment === "") ? "" : exec.exec(Backbone.history.fragment)[0];
                     if (valid_pages.indexOf(current_page) != -1) {
                         promo_message_show(); // show promo message
-                        count_call++;
-                        var resize = (resize === false) ? false : true;
-                        if (resize === false || (resize === true && count_call == 2)) {
-                            var promo_message_container = $("#promo_message");
-                            var promo_message_html = promo_message_container.find("span").html();
+                        var promo_message_container = $("#promo_message");
+                        var promo_message_html = promo_message_container.find("span").html();
+                        promo_message_container.empty();
+                        promo_message_container.append('<span>'+promo_message_html+'</span>');
+                        var promo_message_height = promo_message_container.height();
+                        if (promo_message_height > 32) {
+                            promo_message_container.empty();
+                            promo_message_container.append('<marquee behavior="scroll" direction="left" scrollamount="6" loop="-1"> <span>'+promo_message_html+'</span> </marquee>');
+                        }
+                        else {
                             promo_message_container.empty();
                             promo_message_container.append('<span>'+promo_message_html+'</span>');
-                            var promo_message_height = promo_message_container.height();
-                            if (promo_message_height > 32) {
-                                promo_message_container.empty();
-                                promo_message_container.append('<marquee behavior="scroll" direction="left" scrollamount="6" loop="-1"> <span>'+promo_message_html+'</span> </marquee>');
-                            }
-                            else {
-                                promo_message_container.empty();
-                                promo_message_container.append('<span>'+promo_message_html+'</span>');
-                            }
-                            count_call = 0;
                         }
                     }
                     else {
                         promo_message_hide(); // hide promo message
                     }
                 }
-                add_message(false);
+                add_message();
                 $(window).resize(add_message);
             }
             else {

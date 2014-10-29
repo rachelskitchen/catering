@@ -263,6 +263,10 @@ footer {
 .confirm #header .img-spinner {
     height: 100%;
 }
+#header .main img.logo {
+    float: left;
+    margin-top: 1.1em;
+}
 #header .main img.logo,
 .confirm #header {
     height: auto;
@@ -909,5 +913,5 @@ input[type="search"] {
     font-weight: regular;
     padding-top: 0.15em;
     text-align: center;
-    width: 80%;
+    width: 70%;
 }
