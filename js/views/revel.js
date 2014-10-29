@@ -33,7 +33,6 @@ define(["backbone", "factory"], function(Backbone) {
         },
         clickOnBtn: function() {
             this.model.trigger('onWelcomeReviewed');
-            this.removeFromDOMTree();
         }
     });
 

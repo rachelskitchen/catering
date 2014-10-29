@@ -255,6 +255,32 @@ define(["backbone"], function(Backbone) {
 
                 typeof cb == 'function' && cb();
             }, this);
+        },
+        initRevelAPI: function() {
+            App.Data.RevelAPI = new App.Models.RevelAPI();
+
+            var RevelAPI = App.Data.RevelAPI,
+                mainModel = App.Data.mainModel;
+
+            if(!RevelAPI.isAvailable()) {
+                return;
+            }
+
+            this.once('started', RevelAPI.run.bind(RevelAPI));
+
+            this.listenTo(RevelAPI, 'onWelcomeShow', function() {
+                mainModel.trigger('showRevelPopup', {
+                    modelName: 'Revel',
+                    mod: 'Welcome',
+                    model: RevelAPI,
+                    cacheId: 'RevelWelcomeView'
+                });
+            });
+
+            this.listenTo(RevelAPI, 'onWelcomeReviewed', function() {
+                mainModel.trigger('hideRevelPopup', RevelAPI);
+                RevelAPI.set('firstTime', false);
+            });
         }
     });
 });

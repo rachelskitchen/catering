@@ -24,37 +24,182 @@ define(["backbone"], function(Backbone) {
     'use strict';
 
     var REVEL_INTERFACE_NAME = 'RevelAPI',
-        RevelAPI;
+        REVEL_API_ERROR_CODES, RevelAPI;
+
+    REVEL_API_ERROR_CODES = {
+        SUCCESS: 0,
+        AUTHENTICATION_FAILED: 1,
+        SESSION_EXPIRED: 2,
+        USER_EXISTS: 3,
+        CRASH: 1000
+    };
 
     App.Models.RevelAPI = Backbone.Model.extend({
         defaults: {
             firstTime: null,
-            gObj: 'App.Data.RevelAPI'
+            errorCode: null,
+            token: null,
+            profile: null,
+            appName: 'Revel Directory',
+            gObj: 'App.Data.RevelAPI',
         },
         initialize: function() {
+            this.listenTo(this, 'change:firstTime', this.onFirstTime, this);
+            this.listenTo(this, 'change:token', this.saveToken, this);
+
+            // queue of requests
+            this.pendingRequests = [];
+
+            // restore token
+            this.getToken();
+
+            //TODO appName from interface
             App.Settings.RevelAPI = this.isAvailable();
+        },
+        run: function() {
+            this.initFirstTime();
         },
         isAvailable: function() {
             return (cssua.ua.android && REVEL_INTERFACE_NAME in window) || (cssua.ua.ios && cssua.ua.webview);
         },
-        performRequest: function() {
+        request: function() {
+            // should have at least two params: first - API method, last - callback
             if(arguments.length < 2) {
                 return;
             }
+
+            // add request to queue
+            this.pendingRequests.push(arguments);
+console.log('Send request', arguments[0]);
+            // if any request is being processed need defer a request performing
+            if(this.pendingRequests.length > 1) {
+                return;
+            }
+
+            this.performRequest.apply(this, arguments);
+        },
+        performRequest: function() {
+            var args = Array.prototype.slice.call(arguments, 1, -1);
+
             try {
                 if(cssua.ua.android) {
-                    var cb = arguments[arguments.length - 1],
-                        method = arguments[0],
-                        obj = window[REVEL_INTERFACE_NAME],
-                        args = Array.prototype.slice.call(arguments, 1, -1);
-                    window[cb](obj[method].apply(obj, args));
+                    var method = arguments[0],
+                        obj = window[REVEL_INTERFACE_NAME];
+                    this.handleResponse(obj[method].apply(obj, args));
                 } else if(cssua.ua.ios) {
-                    window.location = Array.prototype.join.call(arguments, '/');
+                    args.push(this.get(gObj) + '.handleResponse');
+                    window.location = args.join('/');
+                } else {
+                    setTimeout(this.handleResponse.bind(this, {message: 'result string', errorCode: 0, data: arguments[0]}), 10000 - arguments[0] * 1000);
                 }
             } catch(e) {
+                this.set('errorCode', REVEL_API_ERROR_CODES.CRASH);
                 console.error(e);
             }
+        },
+        handleResponse: function(response) {
+            // response is object which has following format:
+            // {"message": "<result string>", "errorCode”: <error code>, “data”: "<result string>"}.
+            // If errorCode > 0 there is an error occurred
+            var args = this.pendingRequests.shift();
+
+            // if any request is not being processed currently need abord function performing
+            if(!args) {
+                return;
+            }
+
+            try {
+                // convert response to object if it isn't
+                if(!(response instanceof Object)) {
+                    response = JSON.parse(response);
+                }
+
+                // set response errorCode
+                this.set('errorCode', response.errorCode);
+
+                if(!response.errorCode) {
+                    args[args.length - 1](response.data);
+                    this.pendingRequests.length > 0 && this.performRequest.apply(this, this.pendingRequests[0]);
+                    console.log('Request to', args[0], 'performed');
+                } else {
+                    console.log('Request to', args[0], 'failed.', response.message);
+                }
+            } catch(e) {
+                this.set('errorCode', REVEL_API_ERROR_CODES.CRASH);
+                console.log('Unable handle a response', response, 'for request', args, '\n', e);
+            }
+        },
+        listenToErrorCode: function() {
+            var errorCode = this.get('errorCode');
+
+            switch(this.get('errorCode')) {
+                case REVEL_API_ERROR_CODES.AUTHENTICATION_FAILED:
+                case REVEL_API_ERROR_CODES.SESSION_EXPIRED:
+                    this.trigger('onAuthenticate');
+                    break;
+
+                case REVEL_API_ERROR_CODES.USER_EXISTS:
+                    break;
+
+                case REVEL_API_ERROR_CODES.CRASH:
+                    break;
+
+                default:
+                    break;
+            }
+        },
+        getToken: function() {
+            var obj = getData('token');
+            obj instanceof Object && this.set('token', obj.token);
+        },
+        saveToken: function() {
+            setData('token', {token: this.get('token')});
+        },
+        authenticate: function(user, pwd, cb) {
+            this.request('authenticate', String(user), String(pwd), this.set.bind(this, 'token'));
+        },
+        saveProfile: function() {
+            try {
+                this.request('setData', 'profile', JSON.stringify(this.get('profile')), String(this.get('token')), this.trigger.bind(this, 'onProfileSaved'));
+            } catch(e) {
+                this.set('errorCode', REVEL_API_ERROR_CODES.CRASH);
+                console.log('Unable save user profile', '\n', e);
+            }
+        },
+        getProfile: function(cb) {
+            this.request('getData', 'profile', String(this.get('token')), function(data) {
+                try {
+                    this.set('profile', JSON.parse(data));
+                } catch(e) {
+                    this.set('errorCode', REVEL_API_ERROR_CODES.CRASH);
+                    console.log('Unable receive user profile', '\n', e);
+                }
+            });
+        },
+        checkProfile: function(cb) {
+            cb = typeof cb == 'function' ? cb : new Function();
+            if(this.get('profile') instanceof Object) {
+                cb();
+            } else {
+                this.getProfile(cb);
+            }
+        },
+        initFirstTime: function() {
+            var firstTime = getData('firstTime', true);
+            if(firstTime) {
+                this.set(firstTime);
+            } else {
+                this.set('firstTime', true);
+            }
+        },
+        onFirstTime: function() {
+            var firstTime = this.get('firstTime');
+            if(firstTime) {
+                this.trigger('onWelcomeShow');
+            } else {
+                this.trigger('onWelcomeReviewed');
+            }
+            setData('firstTime', {firstTime: Boolean(firstTime)}, true);
         }
     });
-
 });
