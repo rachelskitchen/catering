@@ -383,6 +383,8 @@ textarea, input {
     font-family: helvetica neue;
     font-size: 20pt;
     font-weight: italic;
+    height: 25pt;
     margin-top: 0.2em;
     text-align: center;
+    white-space: nowrap;
 }

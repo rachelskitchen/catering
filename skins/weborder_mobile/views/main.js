@@ -183,8 +183,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                         var promo_message_html = promo_message_container.find("span").html();
                         promo_message_container.empty();
                         promo_message_container.append('<span>'+promo_message_html+'</span>');
-                        var promo_message_height = promo_message_container.height();
-                        if (promo_message_height > 32) {
+                        var promo_message_width = $("#promo_message > *").width();
+                        if (promo_message_width >= $(window).width()) {
                             promo_message_container.empty();
                             promo_message_container.append('<marquee behavior="scroll" direction="left" scrollamount="6" loop="-1"> <span>'+promo_message_html+'</span> </marquee>');
                         }
