@@ -911,7 +911,9 @@ input[type="search"] {
     font-family: helvetica neue;
     font-size: 20pt;
     font-weight: regular;
+    height: 59pt;
     padding-top: 0.15em;
     text-align: center;
+    white-space: nowrap;
     width: 70%;
 }
