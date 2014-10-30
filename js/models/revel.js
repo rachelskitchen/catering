@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone"], function(Backbone) {
+define(["backbone", "card", "customers"], function(Backbone) {
     'use strict';
 
     var REVEL_INTERFACE_NAME = 'RevelAPI',
@@ -39,13 +39,18 @@ define(["backbone"], function(Backbone) {
             firstTime: null,
             errorCode: null,
             token: null,
-            profile: null,
+            customer: null,
+            card: null,
+            profileExists: null,
             appName: 'Revel Directory',
             gObj: 'App.Data.RevelAPI',
         },
         initialize: function() {
             this.listenTo(this, 'change:firstTime', this.onFirstTime, this);
             this.listenTo(this, 'change:token', this.saveToken, this);
+
+            this.set('card', new App.Models.Card());
+            this.set('customer', new App.Models.Customer());
 
             // queue of requests
             this.pendingRequests = [];
@@ -70,7 +75,8 @@ define(["backbone"], function(Backbone) {
 
             // add request to queue
             this.pendingRequests.push(arguments);
-console.log('Send request', arguments[0]);
+            console.log('Perform request "%s"', arguments[0]);
+
             // if any request is being processed need defer a request performing
             if(this.pendingRequests.length > 1) {
                 return;
@@ -120,9 +126,9 @@ console.log('Send request', arguments[0]);
                 if(!response.errorCode) {
                     args[args.length - 1](response.data);
                     this.pendingRequests.length > 0 && this.performRequest.apply(this, this.pendingRequests[0]);
-                    console.log('Request to', args[0], 'performed');
+                    console.log('Request "%s" performed', args[0]);
                 } else {
-                    console.log('Request to', args[0], 'failed.', response.message);
+                    console.log('Request "%s" failed. %s', args[0], response.message);
                 }
             } catch(e) {
                 this.set('errorCode', REVEL_API_ERROR_CODES.CRASH);
@@ -167,21 +173,23 @@ console.log('Send request', arguments[0]);
             }
         },
         getProfile: function(cb) {
+            cb = typeof cb == 'function' ? cb : new Function();
             this.request('getData', 'profile', String(this.get('token')), function(data) {
                 try {
                     this.set('profile', JSON.parse(data));
+                    cb();
                 } catch(e) {
                     this.set('errorCode', REVEL_API_ERROR_CODES.CRASH);
-                    console.log('Unable receive user profile', '\n', e);
+                    console.log('Unable receive user\'s profile', '\n', e);
                 }
             });
         },
         checkProfile: function(cb) {
             cb = typeof cb == 'function' ? cb : new Function();
-            if(this.get('profile') instanceof Object) {
-                cb();
-            } else {
+            if(this.get('profileExists')) {
                 this.getProfile(cb);
+            } else {
+                this.trigger('onProfileCreate', cb);
             }
         },
         initFirstTime: function() {

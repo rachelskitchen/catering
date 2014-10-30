@@ -275,11 +275,71 @@ define(["backbone"], function(Backbone) {
                     model: RevelAPI,
                     cacheId: 'RevelWelcomeView'
                 });
-            });
+            }, this);
 
             this.listenTo(RevelAPI, 'onWelcomeReviewed', function() {
                 mainModel.trigger('hideRevelPopup', RevelAPI);
                 RevelAPI.set('firstTime', false);
+            }, this);
+
+            this.listenTo(RevelAPI, 'onProfileCreate', function() {
+                mainModel.trigger('showRevelPopup', {
+                    modelName: 'Revel',
+                    mod: 'ProfileNotification',
+                    model: RevelAPI,
+                    cacheId: 'ProfileNotification'
+                });
+            }, this);
+
+            this.listenTo(RevelAPI, 'onProfileCreateAccepted', function() {
+                mainModel.trigger('hideRevelPopup', RevelAPI);
+            }, this);
+
+            this.listenTo(RevelAPI, 'onProfileCreateDeclined', function() {
+                mainModel.trigger('hideRevelPopup', RevelAPI);
+            }, this);
+
+            this.listenTo(this, 'navigateToLoyalty', function() {
+                RevelAPI.checkProfile(console.log('go to loyalty')/*this.navigate.bind(this, 'loyalty', true)*/);
+            }, this);
+        }
+    });
+
+    App.Routers.MobileRouter = App.Routers.MainRouter.extend({
+        profile: function(step, header, footer) {
+            step = step <= 2 && step >= 0 ? Math.ceil(step) : 0;
+
+            var next = this.navigate.bind(this, 'profile/' + (step + 1), true),
+                prev = this.navigate.bind(this, 'profile/' + (step - 1), true),
+                save = function() {},
+                views;
+
+            views = [{
+                header: 'Personal Info',
+                footer: {next: next, prev: null, save: null},
+                content: {mod: 'ProfilePersonal'}
+            }, {
+                header: 'Payment Info',
+                footer: {next: next, prev: prev, save: null},
+                content: {mod: 'ProfilePayment'}
+            }, {
+                title: 'Security',
+                footer: {next: null, prev: prev, save: save},
+                content: {mod: 'ProfileSecurity'}
+            }];
+
+            this.prepare('profile', function() {
+                var view = views[step];
+
+                App.Data.header.set('page_title', 'Profile: ' + view.header);
+                App.Data.footer.set(view.footer);
+                App.Data.mainModel.set({
+                    header: header,
+                    footer: footer,
+                    content: _.extend({modelName: 'Revel', className: 'revel-profile', model: App.Data.RevelAPI}, view.content)
+                });
+
+                this.change_page();
             });
         }
     });

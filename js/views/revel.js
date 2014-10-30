@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory"], function(Backbone) {
+define(["backbone", "factory", "checkout_view"], function(Backbone) {
     'use strict';
 
     App.Views.CoreRevelView = {};
@@ -36,9 +36,34 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
-    App.Views.CoreRevelView.CoreRevelProfileView = App.Views.FactoryView.extend({
+    App.Views.CoreRevelView.CoreRevelProfilePersonalView = App.Views.CoreCheckoutView.CoreCheckoutMainView.extend({
         name: 'revel',
-        mod: 'profile'
+        mod: 'profile_personal',
+        initialize: function() {
+            this.customer = this.model.get('customer');
+            this.card = this.model.get('card');
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            // this.controlAddress();
+        },
+        controlAddress: function() {
+            var address = new App.Views.CheckoutView.CheckoutAddressView({
+                customer: this.customer,
+                name: 'revel',
+                mod: 'profile_personal_address'
+            });
+            this.subViews.push(address);
+            this.$('.delivery_address').append(address.el);
+        }
+    });
+
+    App.Views.CoreRevelView.CoreRevelProfilePaymentView = App.Views.FactoryView.extend({
+        name: 'revel',
+        mod: 'profile_payment'
+    });
+
+    App.Views.CoreRevelView.CoreRevelProfileSecurityView = App.Views.FactoryView.extend({
+        name: 'revel',
+        mod: 'profile_security'
     });
 
     App.Views.CoreRevelView.CoreRevelProfileNotificationView = App.Views.FactoryView.extend({
@@ -49,10 +74,10 @@ define(["backbone", "factory"], function(Backbone) {
             'click .cancel': 'cancel'
         },
         ok: function() {
-            this.model.trigger('onProfileAccepted');
+            this.model.trigger('onProfileCreateAccepted');
         },
         cancel: function() {
-            this.model.trigger('onProfileDeclined');
+            this.model.trigger('onProfileCreateDeclined');
         }
     });
 
@@ -63,7 +88,9 @@ define(["backbone", "factory"], function(Backbone) {
 
     App.Views.RevelView = {};
     App.Views.RevelView.RevelWelcomeView = App.Views.CoreRevelView.CoreRevelWelcomeView;
-    App.Views.RevelView.RevelProfileView = App.Views.CoreRevelView.CoreRevelProfileView;
+    App.Views.RevelView.RevelProfilePersonalView = App.Views.CoreRevelView.CoreRevelProfilePersonalView;
+    App.Views.RevelView.RevelProfilePaymentView = App.Views.CoreRevelView.CoreRevelProfilePaymentView;
+    App.Views.RevelView.RevelProfileSecurityView = App.Views.CoreRevelView.CoreRevelProfileSecurityView;
     App.Views.RevelView.RevelProfileNotificationView = App.Views.CoreRevelView.CoreRevelProfileNotificationView;
-    App.Views.RevelView.RevelProfileView = App.Views.CoreRevelView.CoreRevelProfileView;
+    App.Views.RevelView.RevelLoyaltyView = App.Views.CoreRevelView.CoreRevelLoyaltyView;
 });
