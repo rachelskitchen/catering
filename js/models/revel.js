@@ -85,16 +85,17 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.performRequest.apply(this, arguments);
         },
         performRequest: function() {
-            var args = Array.prototype.slice.call(arguments, 1, -1);
+            var args = Array.prototype.slice.call(arguments, 1, -1),
+                method = arguments[0];
 
             try {
                 if(cssua.ua.android) {
-                    var method = arguments[0],
-                        obj = window[REVEL_INTERFACE_NAME];
+                    var obj = window[REVEL_INTERFACE_NAME];
                     this.handleResponse(obj[method].apply(obj, args));
                 } else if(cssua.ua.ios) {
                     args.push(this.get('gObj') + '.handleResponse');
-                    window.location = args.join('/');
+                    args.unshift(method);
+                    window.location.href = '/' + args.join('/');
                 } else {
                     setTimeout(this.handleResponse.bind(this, {message: 'result string', errorCode: 0, data: arguments[0]}), 10000 - arguments[0] * 1000);
                 }
