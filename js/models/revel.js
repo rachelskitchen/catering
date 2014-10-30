@@ -93,7 +93,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
                         obj = window[REVEL_INTERFACE_NAME];
                     this.handleResponse(obj[method].apply(obj, args));
                 } else if(cssua.ua.ios) {
-                    args.push(this.get(gObj) + '.handleResponse');
+                    args.push(this.get('gObj') + '.handleResponse');
                     window.location = args.join('/');
                 } else {
                     setTimeout(this.handleResponse.bind(this, {message: 'result string', errorCode: 0, data: arguments[0]}), 10000 - arguments[0] * 1000);
