@@ -117,6 +117,7 @@ define(['backbone', 'factory'], function(Backbone) {
             }
 
             this.model.province = this.model.country == 'CA' ? "" : undefined;
+            this.render(); // need to hide state if this is neccessary
             this.updateAddress();
         },
         changeState: function(e) {

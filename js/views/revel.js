@@ -36,6 +36,11 @@ define(["backbone", "factory", "checkout_view"], function(Backbone) {
         }
     });
 
+    App.Views.CoreRevelView.CoreRevelProfileAddressView = App.Views.AddressView.extend({
+        name: 'revel',
+        mod: 'profile_address'
+    });
+
     App.Views.CoreRevelView.CoreRevelProfilePersonalView = App.Views.CoreCheckoutView.CoreCheckoutMainView.extend({
         name: 'revel',
         mod: 'profile_personal',
@@ -43,13 +48,11 @@ define(["backbone", "factory", "checkout_view"], function(Backbone) {
             this.customer = this.model.get('customer');
             this.card = this.model.get('card');
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            // this.controlAddress();
+            this.controlAddress();
         },
         controlAddress: function() {
-            var address = new App.Views.CheckoutView.CheckoutAddressView({
-                customer: this.customer,
-                name: 'revel',
-                mod: 'profile_personal_address'
+            var address = new App.Views.RevelView.RevelProfileAddressView({
+                customer: this.customer
             });
             this.subViews.push(address);
             this.$('.address').append(address.el);
@@ -91,6 +94,7 @@ define(["backbone", "factory", "checkout_view"], function(Backbone) {
     App.Views.RevelView.RevelProfilePersonalView = App.Views.CoreRevelView.CoreRevelProfilePersonalView;
     App.Views.RevelView.RevelProfilePaymentView = App.Views.CoreRevelView.CoreRevelProfilePaymentView;
     App.Views.RevelView.RevelProfileSecurityView = App.Views.CoreRevelView.CoreRevelProfileSecurityView;
+    App.Views.RevelView.RevelProfileAddressView = App.Views.CoreRevelView.CoreRevelProfileAddressView;
     App.Views.RevelView.RevelProfileNotificationView = App.Views.CoreRevelView.CoreRevelProfileNotificationView;
     App.Views.RevelView.RevelLoyaltyView = App.Views.CoreRevelView.CoreRevelLoyaltyView;
 });
