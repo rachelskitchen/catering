@@ -907,8 +907,10 @@ section.maintenance p {
     font-family: helvetica neue;
     font-size: 20pt;
     font-weight: regular;
+    height: 25pt;
     padding-left: 0.4em;
     padding-right: 0.4em;
     padding-top: 0.15em;
     text-align: center;
+    white-space: nowrap;
 }
