@@ -45,25 +45,6 @@
     vertical-align: top;
     margin: 0;
 }
-#content > .checkout div.tips label {
-    margin: 0;
-    text-indent: 30px;
-    position: relative;
-    width: 170px;
-}
-#content > .checkout div.tips input[type="radio"] {
-    position: absolute;
-    left: 0;
-    top: 3px;
-}
-#content > .checkout div.tips .line {
-    white-space: nowrap;
-    position: relative;
-    left: 0;
-}
-#content > .checkout div.tips .on-credit-card {
-    float: left;
-}
 #content > .checkout div.tips .number-wrap {
     display:  inline-block;
     position:  relative;
@@ -94,20 +75,6 @@
     left: 0px;
     right: 0px;
     text-indent: 0;
-}
-#content > .checkout ul.tips > li:nth-child(1) {
-    margin-bottom: 7px;
-}
-#content > .checkout ul.tips > li:nth-child(2) {
-    width: 284px;
-}
-#content > .checkout ul.tips > li:nth-child(3) {
-    width: 270px;
-    position: relative;
-    left: 0;
-}
-#content > .checkout .tips .radio {
-    cursor: pointer;
 }
 #content > .checkout .tips .btn {
     display: inline-block;
@@ -227,6 +194,62 @@
     display: none;
 }
 
+/* discount css */
+#content > .checkout div.discount {
+    left: 292px;
+    right: 120px;
+    position: absolute;
+    top: 2px;  
+}
+#content > .checkout div.discount .number-wrap {
+    display:  inline-block;
+    position:  relative;
+    vertical-align: top;
+    margin-top: 5px;
+    width: 70%;
+    height: 35px;
+}
+#content > .checkout div.discount .number {
+    display: inline-block;
+    position: absolute;
+    height: 50px;
+    top: 5px;
+    left: 2px;
+    right: 40px;
+    text-indent: 0 !important;
+}
+#content > .checkout  .discount-label {
+    margin-top: 22px;
+}
+#content > .checkout div.discount .input_beauty {
+    position: absolute;
+    height: 28px;
+    display: inline-block;
+    left: 0px;
+    right: 0px;
+    text-indent: 0;
+}
+#content > .checkout .discount .btn {
+    display: inline-block;
+    width: 60px;
+    height: 32px;
+    border-width: 1px;
+    border-style: solid;
+    text-align: center;
+    line-height: 30px;
+    font-weight: normal;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+#content > .checkout .discount .btn.disabled {
+    cursor: default;
+    color: #aaa;
+}
+#content > .checkout .discount .btn:after, #content > .checkout .discount .btn:before {
+    display: none;
+}
+
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
     #content > .checkout label {
@@ -260,6 +283,9 @@
 @media only screen and (max-device-width: 949px) and (orientation: portrait) {
     #content > .checkout .tipBlock {
       height: 116px !important;
+    }
+    #content > .checkout .discountBlock {
+      height: 85px !important;
     }
 }
 

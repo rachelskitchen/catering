@@ -216,7 +216,8 @@ define(["backbone", "async"], function(Backbone) {
                         number_of_digits_to_right_of_decimal: 0
                     },
                     type_of_service: ServiceType.TABLE_SERVICE,
-                    default_dining_option: 'DINING_OPTION_TOGO'
+                    default_dining_option: 'DINING_OPTION_TOGO',
+                    accept_discount_code: false
                 },
                 load = $.Deferred();
 
@@ -337,6 +338,11 @@ define(["backbone", "async"], function(Backbone) {
                             if(!self.get_payment_process()) {
                                 settings_system.online_orders = false;
                             }
+
+//for debug:
+                            settings_system.online_orders = true;
+                            settings_system.order_from_seat[0] = false;
+                            settings_system.accept_discount_code = true;
 
                             if (settings_system.online_orders && settings_system.dining_options.length == 0) {
                                 self.set('isMaintenance', true);

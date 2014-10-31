@@ -101,6 +101,8 @@ MSG.FREE_MODIFIERS_PRICE = "Modifiers for less than %s will be free";
 MSG.FREE_MODIFIERS_QUANTITY = "First %s modifiers selected will be free";
 MSG.FREE_MODIFIERS_QUANTITY1 = "First modifier selected will be free";
 MSG.PRODUCTS_VALID_TIME = "Available: ";
+MSG.ERROR_NO_MSG_FROM_SERVER = "No message about the error";
+MSG.ERROR_GET_DISCOUNTS = "Failed request to get discounts";
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
@@ -934,6 +936,19 @@ function isIEMobile() {
     else {
         isIEMobile.retval = (navigator.userAgent.match(/IEMobile/) ? true : false);
         return isIEMobile.retval;
+    }
+}
+
+/**
+ * Check if iPad device
+ */
+function iPad() {
+    if (iPad.retval) {
+        return iPad.retval;
+    }
+    else {
+        iPad.retval = /ipad/i.test(window.navigator.userAgent) ? true : false;
+        return iPad.retval;
     }
 }
 

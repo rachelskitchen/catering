@@ -537,6 +537,9 @@ section.maintenance p {
     bottom: 0;
     left: 0;
 }
+#cart .order-items .name.discount {
+    font-style: italic;    
+}
 #cart .order-items .cost {
     position: absolute;
     top: 0;

@@ -550,6 +550,39 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         }
     });
 
+    App.Views.CoreCheckoutView.CoreCheckoutDiscountCodeView = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'discount_code',
+        initialize: function() {
+            this.listenTo(this.model, 'change', this.render, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            var data = this.model.toJSON();
+            data.iPad = iPad();
+            this.$el.html(this.template(data));
+
+            inputTypeNumberMask(this.$('input'), /^[\d\w]{0,14}$/);
+        },
+        events: {
+            'change input': 'onChangeDiscountCode',
+            'click .btnApply': 'onApplyCode'
+        },
+        onChangeDiscountCode: function(e) {
+            e.target.value = e.target.value.toUpperCase();
+            this.model.set(e.target.name, e.target.value);
+        },
+        onApplyCode: function() {
+            var self = this, myorder = this.options.myorder;
+            this.$('.btnApply').attr('disabled', 'disabled');
+            
+            myorder.get_discounts()
+                .always(function() { 
+                    self.$('.btnApply').removeAttr('disabled');
+                });
+        }
+    });
+
     App.Views.CheckoutView = {};
 
     App.Views.CheckoutView.CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView;
@@ -559,6 +592,8 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
     App.Views.CheckoutView.CheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView;
 
     App.Views.CheckoutView.CheckoutPickupView = App.Views.CoreCheckoutView.CoreCheckoutPickupView;
+
+    App.Views.CheckoutView.CheckoutDiscountCodeView = App.Views.CoreCheckoutView.CoreCheckoutDiscountCodeView;
 
     App.Views.CheckoutView.CheckoutPayView = App.Views.CoreCheckoutView.CoreCheckoutPayView;
 

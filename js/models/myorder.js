@@ -33,7 +33,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             weight : 0,
             quantity_prev : 1,
             special : '',
-            initial_price: null // product price including modifier "size",
+            initial_price: null, // product price including modifier "size",
+            discount: null
         },
         product_listener: false, // check if listeners for product is present
         modifier_listener: false, // check if listeners for modifiers is preset
@@ -374,6 +375,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 modifiers = modifiersModel.modifiers_submit();
             }
 
+//for debug:
+            if (!window.temp_count) window.temp_count = 1;
+
             var currency_symbol = App.Data.settings.get('settings_system').currency_symbol,
                 uom = App.Data.settings.get("settings_system").scales.default_weighing_unit,
                 product = this.get_product().toJSON(),
@@ -387,6 +391,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     price: price,
                     product: product.id,
                     product_name_override: product.name,
+                    //discount: null,
+//for debug:
+                    discount: {name: 'Test Discount' + temp_count, sum: temp_count++, taxed: false},
                     quantity: this.get('quantity'),
                     tax_amount: item_tax,
                     tax_rate: product.tax,//model.get_product_tax_rate(),
@@ -421,7 +428,13 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         restoreTax: function() {
             var product = this.get_product();
             product && product.restoreTax();
-        }
+        },
+         /**
+         * get discount format string
+         */
+        get_discount_frm: function() {
+            return round_monetary_currency(this.get('discount') ? this.get('discount').sum : 0);
+        },
     });
 
     App.Models.DeliveryChargeItem = App.Models.Myorder.extend({
@@ -457,10 +470,19 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         }
     });
 
+//TBD: 
+ /*  App.Models.DiscountItem = Backbone.Model.extend({
+        initialize: function(attr) {
+            this.set(attr);
+        },
+
+    });*/
+
     App.Collections.Myorders = Backbone.Collection.extend({
         model: App.Models.Myorder,
         quantity: 0,
         total: null, // total model
+        discount: null, // discount for the order
         paymentResponse: null, // contains payment response
         initialize: function( ) {
             this.total = new App.Models.Total();
@@ -472,6 +494,17 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.listenTo(this, 'add', this.onModelAdded);
             this.listenTo(this, 'remove', this.onModelRemoved);
             this.listenTo(this, 'change', this.onModelChange);
+            this.listenTo(this, 'change:discount', this.onDiscountChange);
+        },
+        onDiscountChange: function() {
+            //TBD: delete it after App.Models.DiscountItem will be used
+            trace ("discount = ", this.discount);
+        },
+        /**
+         * get discount format string
+         */
+        get_discount_frm: function() {
+            return round_monetary_currency(this.discount ? this.discount.sum : 0);
         },
         change_dining_option: function(model, value, opts) {
             var obj, bag_charge = this.total.get_bag_charge() * 1,
@@ -974,6 +1007,116 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     'lastPickupTime': lastPickupTime
                 });
             }
+        },
+        get_discounts: function() {
+            var myorder = this,
+                total = myorder.total.get_all(),
+                items = [],
+                order_info = {},
+                checkout = this.checkout.toJSON(),              
+                order = {
+                    establishmentId: App.Data.settings.get("establishment"),
+                    discount_code : checkout.discount_code,
+                    items: items,
+                    orderInfo: order_info,
+                //    discount: null
+                // for debug:
+                discount: {name: 'Order Discount', sum: 1.0, taxed: false},
+
+                };
+            
+            myorder.each(function(model) {
+                items.push(model.item_submit());
+            });            
+
+            order_info.created_date = checkout.createDate;
+            order_info.pickup_time = checkout.pickupTimeToServer;
+            order_info.lastPickupTime = checkout.lastPickupTime;
+            order_info.tax = total.tax;
+            order_info.subtotal = total.subtotal;
+            order_info.discount = total.discount;
+            order_info.final_total = total.final_total;
+            order_info.surcharge = total.surcharge;
+            order_info.dining_option = DINING_OPTION[checkout.dining_option];
+            order_info.asap = checkout.isPickupASAP;
+            
+            var myorder_json = JSON.stringify(order);
+            return $.ajax({
+                type: "POST",
+                url: App.Data.settings.get("host") + "/weborders/get_discounts/",
+                data: myorder_json,
+                dataType: "json",
+                success: function(data) {
+                    if (!data || !data.status) {
+                        reportErrorFrm(MSG.ERROR_OCCURRED + MSG.ERROR_INCORRECT_AJAX_DATA);
+                        return;
+                    }
+                    switch(data.status) {
+                        case "OK":
+                            myorder.set_discounts(data.data);
+                            break;
+                        default:
+                            if (!data.errorMsg) data.errorMsg = MSG.ERROR_NO_MSG_FROM_SERVER;
+                            data.errorMsg = MSG.ERROR_OCCURRED + data.errorMsg;
+                            reportErrorFrm(data.errorMsg);
+                    }//end of switch
+                },
+                error: function(xhr) {
+                    reportErrorFrm(MSG.ERROR_GET_DISCOUNTS);
+                },
+                complete: function(xhr, result) {
+                    //for debug:
+                    myorder.set_discounts(order);                    
+                }
+            });
+
+            function reportErrorFrm(message) {
+                App.Data.errors.alert_red(message);
+            }
+        },
+        set_discounts: function(json) {
+            if (!(json instanceof Object)) return;
+            
+            var myorder = this;
+            json.items.forEach(function(product) {
+                if (product.product === null || product.discount === null) {
+                    return;
+                }
+                var model = myorder.findWhere({ "id_product": product.product });
+                model.set("discount", { name: product.discount.name, 
+                                        sum: product.discount.sum * 1,
+                                        taxed: product.discount.taxed }, {silent: true});
+                model.trigger('change:discount');
+            });
+
+            if (json.discount instanceof Object) {
+                myorder.discount = { name: json.discount.name, 
+                                     sum: json.discount.sum * 1,
+                                     taxed: json.discount.taxed };
+                myorder.trigger('change:discount');                     
+            }
+
+            myorder.recalc_discounts();
+           // myorder.reculc_subtotal(); for every model : OnModelChanged(model);
+           // myorder.recalculate_tax();
+        },
+        recalc_discounts: function() {
+            var myorder = this,
+                discount,
+                total_discounts = 0;
+
+            myorder.each(function(model) {
+                discount = model.get("discount");
+                if (!(discount instanceof Object))
+                    return;
+                total_discounts += discount.sum;
+            });
+
+            if (myorder.discount instanceof Object) {
+                total_discounts += myorder.discount.sum;
+            }
+
+            myorder.total.set("discount", total_discounts);
         },
         submit_order_and_pay: function(payment_type, validationOnly, capturePhase) {
             var myorder = this,

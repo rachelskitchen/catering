@@ -34,12 +34,31 @@
     <% } %>
 </script>
 
+<script type="text/template" id="myorder_discount-template">
+    <h3 class="s<%= price_length %>">
+        <span class="name"><%= discount_name %></span>
+        <span class="cost">
+            <span class="currency_symbol">-<%= currency_symbol %></span>
+            <span class="price"><%= discount_sum %></span>
+        </span>
+    </h3>
+</script>
+
 <script type="text/template" id="myorder_modifier-template">
     <span class="name">w/ <%= name %></span>
     <span class="cost">
         <span class="plus">+</span>
         <span class="currency_symbol"><%= currency_symbol %></span>
         <span class="price"><%= price %></span>
+    </span>
+</script>
+
+<script type="text/template" id="myorder_product_discount-template">
+    <span class="name discount"><%= discount_name %></span>
+    <span class="cost">
+        <span class="plus">-</span>
+        <span class="currency_symbol"><%= currency_symbol %></span>
+        <span class="price"><%= discount_sum %></span>
     </span>
 </script>
 

@@ -41,7 +41,8 @@ define(["backbone"], function(Backbone) {
                 selected_dining_option: '', // It set when dining_option has changed on DINING_OPTION_ONLINE. It is used for recovery user selection of Order Type
                 notes: '',
                 sections: [],
-                levels: []
+                levels: [],
+                discount_code: '123456789'
             };
         },
         initialize: function() {
