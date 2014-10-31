@@ -52,7 +52,7 @@ define(["backbone", "factory", "checkout_view"], function(Backbone) {
                 mod: 'profile_personal_address'
             });
             this.subViews.push(address);
-            this.$('.delivery_address').append(address.el);
+            this.$('.address').append(address.el);
         }
     });
 

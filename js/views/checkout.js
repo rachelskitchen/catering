@@ -191,43 +191,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
 
     App.Views.CoreCheckoutView.CoreCheckoutAddressView = App.Views.DeliveryAddressesView.extend({
         name: 'checkout',
-        mod: 'address',
-        initialize: function() {
-            this.listenTo(this, 'update_address', this.updateAddress, this);
-            App.Views.DeliveryAddressesView.prototype.initialize.apply(this, arguments);
-            this.updateAddress();
-        },
-        updateAddress: function() {
-            var settings = App.Data.settings.get('settings_system'),
-                shipping_address = this.options.customer.get('shipping_address'),
-                model = this.model,
-                address;
-
-            address = {
-                street_1: model.street_1,
-                street_2: model.street_2,
-                city: model.city,
-                state: model.state,
-                province: model.province,
-                zipcode: model.zipcode,
-                country: model.country
-            };
-
-            var addresses = this.options.customer.get('addresses');
-
-            if (addresses.length === 0 || typeof addresses[addresses.length - 1].street_1 !== 'string') {
-                addresses.push(address);
-            } else if (shipping_address === -1) {
-                addresses[addresses.length - 1] = address;
-            }
-            addresses[addresses.length - 1].address = this.options.customer.address_str();
-
-            if (model.isShippingServices && address.street_1 && address.city && address.country &&
-                address.zipcode && (address.country == 'US' ? address.state : true) &&
-                                   (address.country == 'CA' ? address.province : true)) {
-                this.options.customer.get_shipping_services();
-            }
-        }
+        mod: 'address'
     });
 
     App.Views.CoreCheckoutView.CoreCheckoutSeatView = App.Views.FactoryView.extend({

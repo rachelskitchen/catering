@@ -115,12 +115,12 @@ define(["backbone"], function(Backbone) {
                     cur_hash = location.hash.slice(1);
 
                 if (this.hashForGoogleMaps)
-                this.hashForGoogleMaps.some( function(hash) {
-                    if (cur_hash == hash) {
-                        needGoogleMaps = true;
-                        return true;
-                    }
-                });
+                    this.hashForGoogleMaps.some( function(hash) {
+                        if (cur_hash == hash) {
+                            needGoogleMaps = true;
+                            return true;
+                        }
+                    });
 
                 if (needGoogleMaps)
                     App.Data.settings.load_geoloc();
@@ -317,15 +317,15 @@ define(["backbone"], function(Backbone) {
             views = [{
                 header: 'Personal Info',
                 footer: {next: next, prev: null, save: null},
-                content: {mod: 'ProfilePersonal'}
+                content: {mod: 'ProfilePersonal', cache_id: 'ProfilePersonal'}
             }, {
                 header: 'Payment Info',
                 footer: {next: next, prev: prev, save: null},
-                content: {mod: 'ProfilePayment'}
+                content: {mod: 'ProfilePayment', cache_id: 'ProfilePayment'}
             }, {
                 title: 'Security',
                 footer: {next: null, prev: prev, save: save},
-                content: {mod: 'ProfileSecurity'}
+                content: {mod: 'ProfileSecurity', cache_id: 'ProfileSecurity'}
             }];
 
             this.prepare('profile', function() {
