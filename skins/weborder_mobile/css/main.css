@@ -383,7 +383,7 @@ textarea, input {
     font-family: helvetica neue;
     font-size: 2.5em;
     font-weight: italic;
-    height: 25pt;
+    height: auto;
     margin-top: 0.2em;
     text-align: center;
     white-space: nowrap;
