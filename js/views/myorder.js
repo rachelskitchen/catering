@@ -41,12 +41,24 @@ define(["backbone", "factory", "generator"], function(Backbone) {
     App.Views.CoreMyOrderView.CoreMyOrderProductDiscountView = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'product_discount',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model.get("discount"), 'change', this.render, this);
+        },
         render: function() {
-            var model = {};
+            // this.model is the instance of App.Models.Myorder 
+            var model = {},
+                discount = this.model.get("discount");
             model.currency_symbol = App.Settings.currency_symbol;
-            model.discount_name = this.model.get("discount").name;
-            model.discount_sum = this.model.get_discount_frm();
+            model.discount_name = discount.get('name');
+            model.discount_sum = discount.toString();
             this.$el.html(this.template(model));
+            if (discount.get("sum") <= 0) {
+                this.$el.hide();
+            }
+            else {
+                this.$el.show();
+            }
             return this;
         }
     });
@@ -117,7 +129,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change', this.update);
-            this.listenTo(this.model, 'change:discount', this.update);
             this.listenTo(this.model.get_product(), 'change', this.update);
         },
         render: function() {
@@ -150,7 +161,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     model: this.model
                 });
                 self.subViews.push(view);
-                view.$el.addClass('s' + (round_monetary_currency(this.model.get("discount").sum).length + 1));
+                view.$el.addClass('s' + (round_monetary_currency(this.model.get("discount").toString()).length + 1));
                 self.$('ul').append(view.el);           
             }
 
@@ -205,17 +216,22 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         mod: 'discount',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.collection, 'change:discount', this.render);
+            this.listenTo(this.model, 'change', this.render, this);
         },
         render: function() {
             var model = {};
-            if (!this.collection)
-                return this;
-            model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
-            model.discount_sum = this.collection.get_discount_frm();
-            model.discount_name = this.collection.discount.name;          
+            // this.model is the instance of App.Models.DiscountItem 
+            model.currency_symbol = App.Settings.currency_symbol;
+            model.discount_sum = this.model.toString();
+            model.discount_name = this.model.get('name');          
             model.price_length = model.discount_sum.length;
             this.$el.html(this.template(model));
+            if (this.model.get("sum") <= 0) {
+                this.$el.hide();
+            }
+            else {
+                this.$el.show();
+            }        
             return this;
         }        
     });
@@ -227,7 +243,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection, 'add', this.addItem, this);
             this.listenTo(this.collection, 'remove', this.removeItem, this);
-            this.listenTo(this.collection, 'change:discount', this.discountChanged, this);
         },
         render: function() {
             this.$el.html(this.template());
@@ -265,6 +280,17 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     this.$('.myorder').append(this.bagChargeItemView.el);
                 }
             }
+
+            if (this.subViews.indexOf(this.discountItemView) == -1 && this.collection.discount ) {
+                var view = App.Views.GeneratorView.create('MyOrder', {
+                    mod: 'Discount',
+                    model: this.collection.discount,
+                    el: $('<li></li>')
+                });
+                this.subViews.push(view);
+                this.discountItemView = view;
+                this.$('.discount').append(this.discountItemView.el);
+            }
         },
         removeItem: function(model) {
             var self = this;
@@ -279,24 +305,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     return true;
                 }
             });
-        },
-        discountChanged: function() {
-            var self = this;
-            if (this.subViews.indexOf(this.discountItemView) == -1 &&
-                this.collection.discount && this.collection.discount.sum > 0) {
-                var view = App.Views.GeneratorView.create('MyOrder', {
-                    mod: 'Discount',
-                    collection: this.collection,
-                    el: $('<li></li>')
-                });
-                this.subViews.push(view);
-                this.discountItemView = view;
-                this.$('.myorder').append(this.discountItemView.el);
-            } else if (this.subViews.indexOf(this.discountItemView) != -1 &&
-                this.collection.discount && this.collection.discount.sum <= 0) {
-                this.discountItemView.remove();
-                self.subViews.splice(self.subViews.indexOf(this.discountItemView), 1);
-            }
         }
     });
 

@@ -504,7 +504,8 @@ section.maintenance p {
 #cart .order-items li {
     position: relative;
 }
-#cart .order-items .myorder > li {
+#cart .order-items .myorder > li,
+#cart .order-items .discount > li {
     margin-top: 10px;
 }
 #cart .order-items li li {
