@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "checkout_view"], function(Backbone) {
+define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone) {
     'use strict';
 
     App.Views.CoreRevelView = {};
@@ -59,7 +59,7 @@ define(["backbone", "factory", "checkout_view"], function(Backbone) {
         }
     });
 
-    App.Views.CoreRevelView.CoreRevelProfilePaymentView = App.Views.FactoryView.extend({
+    App.Views.CoreRevelView.CoreRevelProfilePaymentView = App.Views.CoreCardView.CoreCardMainView.extend({
         name: 'revel',
         mod: 'profile_payment'
     });

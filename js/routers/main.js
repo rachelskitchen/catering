@@ -315,15 +315,12 @@ define(["backbone"], function(Backbone) {
                 views;
 
             views = [{
-                header: 'Personal Info',
                 footer: {next: next, prev: null, save: null},
                 content: {mod: 'ProfilePersonal', cache_id: 'ProfilePersonal'}
             }, {
-                header: 'Payment Info',
                 footer: {next: next, prev: prev, save: null},
                 content: {mod: 'ProfilePayment', cache_id: 'ProfilePayment'}
             }, {
-                title: 'Security',
                 footer: {next: null, prev: prev, save: save},
                 content: {mod: 'ProfileSecurity', cache_id: 'ProfileSecurity'}
             }];
@@ -331,7 +328,7 @@ define(["backbone"], function(Backbone) {
             this.prepare('profile', function() {
                 var view = views[step];
 
-                App.Data.header.set('page_title', 'Profile: ' + view.header);
+                App.Data.header.set('page_title', 'Profile');
                 App.Data.footer.set(view.footer);
                 App.Data.mainModel.set({
                     header: header,
