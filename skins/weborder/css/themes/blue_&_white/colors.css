@@ -496,3 +496,7 @@ ul.categories {
 .modifiers_table .free {
     color: green;
 }
+
+#promo_message {
+    color: #373b40;
+}
