@@ -42,6 +42,8 @@ define(["backbone", "card", "customers"], function(Backbone) {
             customer: null,
             card: null,
             profileExists: null,
+            oldPassword: null,
+            newPassword: null,
             appName: 'Revel Directory',
             gObj: 'App.Data.RevelAPI',
         },
@@ -209,6 +211,33 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 this.trigger('onWelcomeReviewed');
             }
             setData('firstTime', {firstTime: Boolean(firstTime)}, true);
+        },
+        processPersonalInfo: function(cb) {
+            var customer = this.get('customer'),
+                result = customer && customer.check();
+            if(result && /ok/i.test(result.status)) {
+                typeof cb == 'function' && cb();
+            } else {
+                App.Data.errors.alert(result.errorMsg);
+            }
+        },
+        processPaymentInfo: function(cb) {
+            var card = this.get('card'),
+                needCheck, result;
+
+            // CardView listens to this event to set data
+            card.trigger('add_card');
+            needCheck = card.get('cardNumber');
+
+            if(needCheck) {
+                result = card.check({ignorePersonal: true, ignoreExpDate: true, ignoreSecurityCode: true});
+            }
+
+            if(!needCheck || /ok/i.test(result.status)) {
+                typeof cb == 'function' && cb();
+            } else {
+                App.Data.errors.alert(result.errorMsg);
+            }
         }
     });
 });

@@ -57,15 +57,20 @@ define(["backbone"], function(Backbone) {
             this.set(data);
             return this;
         },
-        check: function() {
-            var cardPattern = /^[3-6]\d{12,18}$/,
-                skin = App.Data.settings.get('skin'),
-                card = this.toJSON(),
+        check: function(opts) {
+            var card = this.toJSON(),
                 err = [];
 
-            err = err.concat(this.checkPerson());
-            !cardPattern.test(card.cardNumber) && err.push('Card Number');
-            err = err.concat(this.checkSecurityCode());
+            //`opts` object may have following properties:
+            //  `ignorePerson` (if it's true person data isn't validated),
+            //  `ignoreCardNumber` (if it's true card number isn't validated)
+            //  `ignoreSecurityCode` (if it's true security code isn't validated)
+            //  `ignoreExpDate` (if it's true expiration date isn't validated)
+            opts = opts instanceof Object ? opts : {};
+
+            !opts.ignorePerson && err.push.apply(err, this.checkPerson());
+            !opts.ignoreCardNumber && err.push.apply(err, this.checkCardNumber());
+            !opts.ignoreSecurityCode && err.push.apply(err, this.checkSecurityCode());
 
             if (err.length) {
                 return {
@@ -79,7 +84,7 @@ define(["backbone"], function(Backbone) {
                 date = new Date(year, month),
                 dateCur = new Date();
 
-            if (date < dateCur) {
+            if (!opts.ignoreExpDate && date < dateCur) {
                 return {
                     status: "ERROR",
                     errorMsg: MSG.ERROR_CARD_EXP
@@ -107,6 +112,13 @@ define(["backbone"], function(Backbone) {
                 card = this.toJSON(),
                 err = [];
             !securityPattern.test(card.securityCode) && err.push('Security Code');
+            return err;
+        },
+        checkCardNumber: function() {
+            var cardPattern = /^[3-6]\d{12,18}$/,
+                card = this.toJSON(),
+                err = [];
+            !cardPattern.test(card.cardNumber) && err.push('Card Number');
             return err;
         }
     });

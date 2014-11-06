@@ -61,12 +61,52 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
 
     App.Views.CoreRevelView.CoreRevelProfilePaymentView = App.Views.CoreCardView.CoreCardMainView.extend({
         name: 'revel',
-        mod: 'profile_payment'
+        mod: 'profile_payment',
+        initialize: function() {
+            this.model = this.model.get('card');
+            return App.Views.CoreCardView.CoreCardMainView.prototype.initialize.apply(this, arguments);
+        }
     });
 
     App.Views.CoreRevelView.CoreRevelProfileSecurityView = App.Views.FactoryView.extend({
         name: 'revel',
-        mod: 'profile_security'
+        mod: 'profile_security',
+        events: {
+            'blur .password': 'setPassword',
+            'change .checkbox': 'changeCheckbox'
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            if(!this.model.get('profileExists')) {
+                this.$(':checkbox').prop({
+                    checked: true,
+                    disabled: true
+                });
+            }
+            this.changeCheckbox();
+            return this;
+        },
+        changeCheckbox: function() {
+            var isChecked = this.$(':checkbox').prop('checked'),
+                password = this.$('.password'),
+                self = this;
+            if(isChecked) {
+                password.prop('disabled', false);
+                password.parent().removeClass('disabled');
+            } else {
+                password.val('').prop('disabled', true);
+                password.parent().addClass('disabled');
+            }
+            password.each(function() {
+                self.setPassword({target: this});
+            });
+        },
+        setPassword: function(e) {
+            var el = e.target,
+                prop = el.dataset.prop,
+                value = el.value;
+            this.model.set(prop, value);
+        }
     });
 
     App.Views.CoreRevelView.CoreRevelProfileNotificationView = App.Views.FactoryView.extend({

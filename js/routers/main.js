@@ -312,13 +312,14 @@ define(["backbone"], function(Backbone) {
             var next = this.navigate.bind(this, 'profile/' + (step + 1), true),
                 prev = this.navigate.bind(this, 'profile/' + (step - 1), true),
                 save = function() {},
+                RevelAPI = App.Data.RevelAPI,
                 views;
 
             views = [{
-                footer: {next: next, prev: null, save: null},
+                footer: {next: RevelAPI.processPersonalInfo.bind(RevelAPI, next), prev: null, save: null},
                 content: {mod: 'ProfilePersonal', cache_id: 'ProfilePersonal'}
             }, {
-                footer: {next: next, prev: prev, save: null},
+                footer: {next: RevelAPI.processPaymentInfo.bind(RevelAPI, next), prev: prev, save: null},
                 content: {mod: 'ProfilePayment', cache_id: 'ProfilePayment'}
             }, {
                 footer: {next: null, prev: prev, save: save},
@@ -333,7 +334,7 @@ define(["backbone"], function(Backbone) {
                 App.Data.mainModel.set({
                     header: header,
                     footer: footer,
-                    content: _.extend({modelName: 'Revel', className: 'revel-profile', model: App.Data.RevelAPI}, view.content)
+                    content: _.extend({modelName: 'Revel', className: 'revel-profile', model: RevelAPI}, view.content)
                 });
 
                 this.change_page();
