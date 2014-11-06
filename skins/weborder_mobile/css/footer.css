@@ -282,3 +282,15 @@
 }
 
 /* done, maintenance mod end */
+
+.promo_message {
+    display: none;
+    color: white;
+    font-family: helvetica neue;
+    font-size: 2.5em;
+    font-weight: italic;
+    height: 2.5em;
+    margin-top: -2.5em;
+    text-align: center;
+    white-space: nowrap;
+}

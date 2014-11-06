@@ -29,6 +29,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         name: 'footer',
         mod: 'main',
         initialize: function() {
+            $(window).on("contentChange", this.addPromoMessage);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change', this.render);
             this.listenTo(App.Data.myorder, 'add', this.updateCount, this);
@@ -64,6 +65,41 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 quantity.show();
             else
                 quantity.hide();
+        },
+        /**
+         * Add promo message.
+         */
+        addPromoMessage: function() {
+            var check_valid_page = function() {
+                var valid_pages = new Array("", "index");
+                var current_page = (Backbone.history.fragment === "") ? "" : /[a-z_]+/.exec(Backbone.history.fragment)[0];
+                return (valid_pages.indexOf(current_page) !== -1) ? true : false;
+            }
+            if (check_valid_page()) {
+                $("section").css({bottom: "17em"});
+                $("footer").css({height: "17em"});
+                $("#promo_text").show();
+                var change_container_message = function() {
+                    if (check_valid_page()) {
+                        $("#promo_text").show();
+                        if ($("#promo_text").find("span").width() >= $(window).width()) {
+                            $("#promo_text").hide();
+                            $("#promo_marquee").show();
+                        }
+                        else {
+                            $("#promo_text").show();
+                            $("#promo_marquee").hide();
+                        }
+                    }
+                };
+                change_container_message();
+                $(window).resize(change_container_message);
+            }
+            else {
+                $(".promo_message").hide();
+                $("section").css({bottom: "10.2em"});
+                $("footer").css({height: "10.2em"});
+            }
         }
     });
 
