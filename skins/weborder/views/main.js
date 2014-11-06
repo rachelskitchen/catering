@@ -189,23 +189,24 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          * Add promo message.
          */
         addPromoMessage: function() {
-            var add_message = function() {
-                var promo_message_container = $("#promo_message");
-                var promo_message_html = promo_message_container.find("span").html();
-                promo_message_container.empty();
-                promo_message_container.append('<span>'+promo_message_html+'</span>');
-                var promo_message_width = $("#promo_message > *").width();
-                if (promo_message_width >= promo_message_container.parent().width()-20) {
-                    promo_message_container.empty();
-                    promo_message_container.append('<marquee behavior="scroll" direction="left" scrollamount="6" loop="-1"> <span>'+promo_message_html+'</span> </marquee>');
-                }
-                else {
-                    promo_message_container.empty();
-                    promo_message_container.append('<span>'+promo_message_html+'</span>');
-                }
+            if (Backbone.history.fragment === "" || Backbone.history.fragment === "index") {
+                var change_container_message = function() {
+                    if ($("#promo_text").width() >= $("#promo_text").parent().width()-20) {
+                        $("#promo_text").hide();
+                        $("#promo_marquee").show();
+                    }
+                    else {
+                        $("#promo_text").show();
+                        $("#promo_marquee").hide();
+                    }
+                };
+                change_container_message();
+                $(window).resize(change_container_message);
             }
-            add_message();
-            $(window).resize(add_message);
+            else {
+                $("#promo_text").hide();
+                $("#promo_marquee").hide();
+            }
         }
     });
 
