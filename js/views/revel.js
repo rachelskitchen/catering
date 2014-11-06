@@ -117,10 +117,10 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
             'click .cancel': 'cancel'
         },
         ok: function() {
-            this.model.trigger('onProfileCreateAccepted');
+            this.model.trigger('onProfileShow');
         },
         cancel: function() {
-            this.model.trigger('onProfileCreateDeclined');
+            this.model.trigger('onProfileCancel');
         }
     });
 

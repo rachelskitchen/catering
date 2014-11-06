@@ -101,6 +101,12 @@ MSG.FREE_MODIFIERS_PRICE = "Modifiers for less than %s will be free";
 MSG.FREE_MODIFIERS_QUANTITY = "First %s modifiers selected will be free";
 MSG.FREE_MODIFIERS_QUANTITY1 = "First modifier selected will be free";
 MSG.PRODUCTS_VALID_TIME = "Available: ";
+MSG.ERROR_REVEL_EMPTY_NEW_PASSWORD = 'Please input new password.';
+MSG.ERROR_REVEL_EMPTY_OLD_PASSWORD = 'Please input old password.';
+MSG.ERROR_REVEL_MISMATCHED_PASSWORDS = 'New and old passwords are mismatched.';
+MSG.ERROR_REVEL_USER_EXISTS = 'User %s already exists.';
+MSG.ERROR_REVEL_UNABLE_TO_PERFORM = 'Unable to perform action. Please ask about this problem at ask.revelsystems.com.';
+MSG.ERROR_REVEL_ATTEMPTS_EXCEEDED = 'Max number of authentication attempts exceeded. Account deleted.';
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
