@@ -71,7 +71,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.initFirstTime();
         },
         isAvailable: function() {
-            return (cssua.ua.android && REVEL_INTERFACE_NAME in window) || (cssua.ua.ios && cssua.ua.webview);
+            return cssua.ua.revelsystemswebview;
         },
         request: function() {
             // should have at least two params: first - API method, last - callback
@@ -224,7 +224,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             }
 
             // save with password changing
-            if(!profileExists || (newPassword == oldPassword && newPassword)) {
+            if((!profileExists && newPassword) || (newPassword == oldPassword && newPassword)) {
                 return this.change_password(newPassword, oldPassword, saveData);
             }
 
