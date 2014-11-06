@@ -29,6 +29,7 @@ define(["backbone", "factory"], function(Backbone) {
         name: 'header',
         mod: 'main',
         initialize: function() {
+            $(window).on("contentChange", this.addPromoMessage);
             this.listenTo(this.model, 'change:menu_index', this.menu, this);
             this.listenTo(this.options.cart, 'add remove', this.update, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.searchComplete, this);
@@ -111,6 +112,45 @@ define(["backbone", "factory"], function(Backbone) {
             pattern && input.attr('disabled', 'disabled').val(pattern);
             input.removeAttr('disabled');
             this.onSearch({preventDefault: new Function});
+        },
+        /**
+         * Add promo message.
+         */
+        addPromoMessage: function() {
+            var valid_pages = new Array("", "index");
+            var current_page = (Backbone.history.fragment === "") ? "" : /[a-z_]+/.exec(Backbone.history.fragment)[0];
+            if (valid_pages.indexOf(current_page) !== -1) {
+                var change_container_message = function() {
+                    $("#promo_text").show();
+                    if ($("#promo_text").find("span").width() >= $("#promo_text").width()) {
+                        $("#promo_text").hide();
+                        $("#promo_marquee").show();
+                    }
+                    else {
+                        $("#promo_text").show();
+                        $("#promo_marquee").hide();
+                    }
+                    var interval = window.setInterval(function() {
+                        if ($("img.logo").length !== 0) {
+                            var percent_img = $("img.logo").width()/$("div.logo").width();
+                            var percent_promo = 100-(percent_img*100)-1.5;
+                            if (percent_promo <= 0) {
+                                $(".promo_message").hide();
+                            }
+                            else {
+                                $(".promo_message").css({"width": percent_promo+"%"});
+                            }
+                            clearInterval(interval);
+                        }
+                    });
+                };
+                change_container_message();
+                $(window).resize(change_container_message);
+            }
+            else {
+                $("#promo_text").hide();
+                $("#promo_marquee").hide();
+            }
         }
     });
 

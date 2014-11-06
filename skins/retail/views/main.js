@@ -57,7 +57,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             'click #popup .cancel': 'hide_popup'
         },
         content_change: function() {
-            this.addPromoMessage(); // add promo message
+            $(window).trigger("contentChange");
             var content = this.$('#content'),
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
@@ -195,28 +195,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         hideSpinner: function() {
             this.$('#main-spinner').addClass('ui-visible').removeClass('ui-visible');
-        },
-        /**
-         * Add promo message.
-         */
-        addPromoMessage: function() {
-            var add_message = function() {
-                var promo_message_container = $("#promo_message");
-                var promo_message_html = promo_message_container.find("span").html();
-                promo_message_container.empty();
-                promo_message_container.append('<span>'+promo_message_html+'</span>');
-                var promo_message_width = $("#promo_message > *").width();
-                if (promo_message_width >= promo_message_container.width()) {
-                    promo_message_container.empty();
-                    promo_message_container.append('<marquee behavior="scroll" direction="left" scrollamount="6" loop="-1"> <span>'+promo_message_html+'</span> </marquee>');
-                }
-                else {
-                    promo_message_container.empty();
-                    promo_message_container.append('<span>'+promo_message_html+'</span>');
-                }
-            }
-            add_message();
-            $(window).resize(add_message);
         }
     });
 

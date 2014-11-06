@@ -189,9 +189,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          * Add promo message.
          */
         addPromoMessage: function() {
-            if (Backbone.history.fragment === "" || Backbone.history.fragment === "index") {
+            var valid_pages = new Array("", "index");
+            var current_page = (Backbone.history.fragment === "") ? "" : /[a-z_]+/.exec(Backbone.history.fragment)[0];
+            if (valid_pages.indexOf(current_page) !== -1) {
                 var change_container_message = function() {
-                    if ($("#promo_text").width() >= $("#promo_text").parent().width()-20) {
+                    $("#promo_text").show();
+                    if ($("#promo_text").find("span").width() >= $("#promo_text").parent().width()-20) {
                         $("#promo_text").hide();
                         $("#promo_marquee").show();
                     }

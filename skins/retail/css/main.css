@@ -905,15 +905,13 @@ input[type="search"] {
     cursor: default !important;
 }
 
-#promo_message {
-    color: #373b40;
+.promo_message {
+    display: none;
     float: right;
     font-family: helvetica neue;
-    font-size: 20pt;
+    font-size: 3.3em;
     font-weight: regular;
-    height: 59pt;
     padding-top: 0.15em;
     text-align: center;
     white-space: nowrap;
-    width: 70%;
 }
