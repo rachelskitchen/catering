@@ -35,6 +35,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'change:popup', this.popup_change, this);
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
+            this.listenTo(this.model, 'change:isShowPromoMessage', this.addPromoMessage, this);
+            this.listenToOnce(this.model, 'loadCompleted', this.addPromoMessage, this);
 
             this.iOSFeatures();
 
@@ -56,7 +58,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             'click #popup .cancel': 'hide_popup'
         },
         content_change: function() {
-            this.addPromoMessage(); // add promo message
             var content = this.$('#content'),
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
@@ -189,26 +190,27 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          * Add promo message.
          */
         addPromoMessage: function() {
-            var valid_pages = new Array("", "index");
-            var current_page = (Backbone.history.fragment === "") ? "" : /[a-z_]+/.exec(Backbone.history.fragment)[0];
-            if (valid_pages.indexOf(current_page) !== -1) {
+            var self = this;
+            var promo_text = $("#promo_text");
+            var promo_marquee = $("#promo_marquee");
+            if (self.model.get("isShowPromoMessage")) {
                 var change_container_message = function() {
-                    $("#promo_text").show();
-                    if ($("#promo_text").find("span").width() >= $("#promo_text").parent().width()-20) {
-                        $("#promo_text").hide();
-                        $("#promo_marquee").show();
+                    self.$el.find(promo_text).show();
+                    if (self.$el.find(promo_text).find("span").width() >= self.$el.find(promo_text).parent().width()-20) {
+                        self.$el.find(promo_text).hide();
+                        self.$el.find(promo_marquee).show();
                     }
                     else {
-                        $("#promo_text").show();
-                        $("#promo_marquee").hide();
+                        self.$el.find(promo_text).show();
+                        self.$el.find(promo_marquee).hide();
                     }
                 };
                 change_container_message();
                 $(window).resize(change_container_message);
             }
             else {
-                $("#promo_text").hide();
-                $("#promo_marquee").hide();
+                self.$el.find(promo_text).hide();
+                self.$el.find(promo_marquee).hide();
             }
         }
     });

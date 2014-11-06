@@ -88,6 +88,11 @@ define(["backbone"], function(Backbone) {
                 if(self.lockedRoutes.indexOf(fragment) > -1) {
                     fragment = 'index';
                 }
+                if (/^(index.*)?$/i.test(fragment)) {
+                    self.trigger('showPromoMessage');
+                } else {
+                    self.trigger('hidePromoMessage');
+                }
                 return Backbone.History.prototype.loadUrl.call(this, fragment);
             }
 
