@@ -29,8 +29,8 @@ define(["backbone", "card", "customers"], function(Backbone) {
     REVEL_API_ERROR_CODES = {
         SUCCESS: 0,
         AUTHENTICATION_FAILED: 1,
-        SESSION_EXPIRED: 2,
-        USER_ALREADY_EXISTS: 3,
+        USER_ALREADY_EXISTS: 2,
+        SESSION_EXPIRED: 3,
         INTERNAL_ERROR: 4,
         MAX_NUM_AUTH_ATTEMPTS_EXCEDEED: 5
     };
