@@ -57,7 +57,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             'click #popup .cancel': 'hide_popup'
         },
         content_change: function() {
-            $(window).trigger("contentChange");
             var content = this.$('#content'),
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();

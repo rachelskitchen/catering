@@ -103,6 +103,8 @@ define(["backbone", "main_router"], function(Backbone) {
                 }
 
                 this.listenTo(App.Data.mainModel, 'change:mod', this.createMainView);
+                this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
+                this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
 
                 App.Data.mainModel.set({
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
@@ -328,6 +330,12 @@ define(["backbone", "main_router"], function(Backbone) {
             } catch(e) {
                 log('Unable to decode state for string "%s"', data);
             }
+        },
+        showPromoMessage: function() {
+            App.Data.header.set('isShowPromoMessage', true);
+        },
+        hidePromoMessage: function() {
+            App.Data.header.set('isShowPromoMessage', false);
         },
         index: function(data) {
             // init origin state for case when page is loaded without any data (#index or hash is not assigned)

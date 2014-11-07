@@ -29,12 +29,13 @@ define(["backbone", "factory"], function(Backbone) {
         name: 'header',
         mod: 'main',
         initialize: function() {
-            $(window).on("contentChange", this.addPromoMessage);
             this.listenTo(this.model, 'change:menu_index', this.menu, this);
             this.listenTo(this.options.cart, 'add remove', this.update, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.searchComplete, this);
             this.listenTo(this.options.search, 'onSearchStart', this.searchStart, this);
             this.listenTo(this.collection, 'onRestoreState', this.restoreState, this);
+            this.listenTo(this.model, 'change:isShowPromoMessage', this.addPromoMessage, this);
+            this.listenToOnce(App.Data.mainModel, 'loadCompleted', this.addPromoMessage, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
@@ -117,28 +118,32 @@ define(["backbone", "factory"], function(Backbone) {
          * Add promo message.
          */
         addPromoMessage: function() {
-            var valid_pages = new Array("", "index");
-            var current_page = (Backbone.history.fragment === "") ? "" : /[a-z_]+/.exec(Backbone.history.fragment)[0];
-            if (valid_pages.indexOf(current_page) !== -1) {
+            var self = this;
+            var promo_text = $("#promo_text");
+            var promo_marquee = $("#promo_marquee");
+            if (self.model.get("isShowPromoMessage")) {
                 var change_container_message = function() {
-                    $("#promo_text").show();
-                    if ($("#promo_text").find("span").width() >= $("#promo_text").width()) {
-                        $("#promo_text").hide();
-                        $("#promo_marquee").show();
+                    self.$el.find(promo_text).show();
+                    if (self.$el.find(promo_text).find("span").width() >= self.$el.find(promo_text).width()) {
+                        self.$el.find(promo_text).hide();
+                        self.$el.find(promo_marquee).show();
                     }
                     else {
-                        $("#promo_text").show();
-                        $("#promo_marquee").hide();
+                        self.$el.find(promo_text).show();
+                        self.$el.find(promo_marquee).hide();
                     }
                     var interval = window.setInterval(function() {
-                        if ($("img.logo").length !== 0) {
-                            var percent_img = $("img.logo").width()/$("div.logo").width();
+                        var img_logo = $("img.logo");
+                        var div_logo = $("div.logo");
+                        var promo_message = $(".promo_message");
+                        if (self.$el.find(img_logo).length !== 0) {
+                            var percent_img = self.$el.find(img_logo).width()/self.$el.find(div_logo).width();
                             var percent_promo = 100-(percent_img*100)-1.5;
                             if (percent_promo <= 0) {
-                                $(".promo_message").hide();
+                                self.$el.find(promo_message).hide();
                             }
                             else {
-                                $(".promo_message").css({"width": percent_promo+"%"});
+                                self.$el.find(promo_message).css({"width": percent_promo+"%"});
                             }
                             clearInterval(interval);
                         }
@@ -148,8 +153,8 @@ define(["backbone", "factory"], function(Backbone) {
                 $(window).resize(change_container_message);
             }
             else {
-                $("#promo_text").hide();
-                $("#promo_marquee").hide();
+                self.$el.find(promo_text).hide();
+                self.$el.find(promo_marquee).hide();
             }
         }
     });
