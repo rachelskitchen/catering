@@ -33,8 +33,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'change', this.render);
             this.listenTo(App.Data.myorder, 'add', this.updateCount, this);
             this.listenTo(App.Data.myorder, 'remove', this.updateCount, this);
-            this.listenTo(this.model, 'change:isShowPromoMessage', this.addPromoMessage, this);
-            this.listenToOnce(App.Data.mainModel, 'loadCompleted', this.addPromoMessage, this);
+            this.listenTo(App.Data.mainModel, 'loadCompleted', this.addPromoMessage, this);
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -71,56 +70,22 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          * Add promo message.
          */
         addPromoMessage: function() {
-            /*
-            var check_valid_page = function() {
-                var valid_pages = new Array("", "index");
-                var current_page = (Backbone.history.fragment === "") ? "" : /[a-z_]+/.exec(Backbone.history.fragment)[0];
-                return (valid_pages.indexOf(current_page) !== -1) ? true : false;
-            }
-            if (check_valid_page()) {
-                $("section").css({bottom: "17em"});
-                $("footer").css({height: "17em"});
-                $("#promo_text").show();
-                var change_container_message = function() {
-                    if (check_valid_page()) {
-                        $("#promo_text").show();
-                        if ($("#promo_text").find("span").width() >= $(window).width()) {
-                            $("#promo_text").hide();
-                            $("#promo_marquee").show();
-                        }
-                        else {
-                            $("#promo_text").show();
-                            $("#promo_marquee").hide();
-                        }
-                    }
-                };
-                change_container_message();
-                $(window).resize(change_container_message);
-            }
-            else {
-                $(".promo_message").hide();
-                $("section").css({bottom: "10.2em"});
-                $("footer").css({height: "10.2em"});
-            }
-            */
             var self = this;
+            var promo_text = $("#promo_text");
+            var promo_marquee = $("#promo_marquee");
             if (self.model.get("isShowPromoMessage")) {
-                console.log("SHOW");
-                var promo_text = $("#promo_text");
-                var promo_marquee = $("#promo_marquee");
+                self.$el.find(promo_text).hide();
+                self.$el.find(promo_marquee).hide();
                 $("section").css({bottom: "17em"});
                 $("footer").css({height: "17em"});
                 var change_container_message = function() {
                     if (self.model.get("isShowPromoMessage")) {
-                        console.log("FUNC");
                         self.$el.find(promo_text).show();
                         if (self.$el.find(promo_text).find("span").width() >= $(window).width()) {
-                            console.log("FUNC MARQUEE");
                             self.$el.find(promo_text).hide();
                             self.$el.find(promo_marquee).show();
                         }
                         else {
-                            console.log("FUNC TEXT");
                             self.$el.find(promo_text).show();
                             self.$el.find(promo_marquee).hide();
                         }
@@ -130,9 +95,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 $(window).resize(change_container_message);
             }
             else {
-                console.log("HIDE");
-                var promo_message = $(".promo_message");
-                self.$el.find(promo_message).hide();
+                self.$el.find(promo_text).hide();
+                self.$el.find(promo_marquee).hide();
                 $("section").css({bottom: "10.2em"});
                 $("footer").css({height: "10.2em"});
             }
