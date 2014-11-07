@@ -72,11 +72,13 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.surcharge = this.model.get_surcharge();
             model.grandTotal = this.model.get_grand();
             model.tax = this.model.get_tax();
-            model.tip = this.model.get_tip(); //this.model.get('tip') ? this.model.get_tip() : '0.00';
-            model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
+            model.tip = this.model.get_tip();
+            model.currency_symbol = App.Settings.currency_symbol;
             model.deliveryCharge = this.model.get_delivery_charge();
-            model.tip_allow = App.Data.settings.get('settings_system').accept_tips_online === true;
-
+            model.tip_allow = App.Settings.accept_tips_online === true;
+            model.discount_allow = App.Settings.accept_discount_code === true;
+            model.discount_total = this.model.get_discount_total();
+            
             if (this.collection.get_only_product_quantity() == 0) {
                 model.surcharge = round_monetary_currency(0);
                 model.tax = round_monetary_currency(0);
@@ -107,8 +109,9 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.$('.subtotal').text(data.subTotal);
             this.$('.surcharge').text(data.surcharge);
             this.$('.tax').text(data.tax);
+            this.$('.discount').text(data.discount_total);
             this.$('.tip').text(data.tip);
-            this.$('.grandtotal').text(data.grandTotal);
+            this.$('.grandtotal').text(data.grandTotal);            
         },
         updateDeliveryCharge: function(model, value) {
             var delivery = this.model.get_delivery_charge();

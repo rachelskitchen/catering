@@ -565,20 +565,27 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             inputTypeNumberMask(this.$('input'), /^[\d\w]{0,14}$/);
         },
         events: {
-            'change input': 'onChangeDiscountCode',
+            'change input[name=discount_code]': 'onChangeDiscountCode',
             'click .btnApply': 'onApplyCode'
         },
         onChangeDiscountCode: function(e) {
             e.target.value = e.target.value.toUpperCase();
-            this.model.set(e.target.name, e.target.value);
+            this.model.set("discount_code", e.target.value);
+            this.model.set("discount_code_applied", false);          
         },
         onApplyCode: function() {
-            var self = this, myorder = this.options.myorder;
-            this.$('.btnApply').attr('disabled', 'disabled');
+            var self = this, 
+                myorder = this.options.myorder;
             
+            if (!/^[\d\w]{7,14}$/.test(this.model.get("discount_code")) ) {
+                App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
+                return;
+            } 
             myorder.get_discounts()
-                .always(function() { 
-                    self.$('.btnApply').removeAttr('disabled');
+                .success(function(data) {
+                    if (data.status == "OK") {
+                        self.model.set("discount_code_applied", true);
+                    }
                 });
         }
     });

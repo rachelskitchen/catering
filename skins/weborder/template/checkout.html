@@ -218,10 +218,14 @@
         <span class="number-wrap">
             <div class="number">
                 <div class="input_beauty">
-                    <input type="text" class="<% if(iPad) print('ipad') %>" value='<% print(discount_code) %>'>
+                    <input type="text" name="discount_code" class="<% if(iPad) print('ipad') %>" value='<% print(discount_code) %>'>
                 </div>
             </div>
         </span>
-        <button class="btn btnApply">Apply</button>
+        <% if (discount_code_applied) { %>
+            <button class="btn btnApply" disabled>Applied</button>
+        <% } else { %>
+            <button class="btn btnApply">Apply</button>
+        <% } %>
     </div>
 </script>

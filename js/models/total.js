@@ -31,7 +31,7 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             tip: null,
             delivery: null,
             bag_charge: null,
-            discount: 0, //sum of all discounts
+            discount_total: 0, //sum of all discounts
             tax_country: '',
             prevailing_surcharge: null,
             prevailing_tax: null
@@ -97,8 +97,8 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
         /**
          * get total discount
          */
-        get_discount_frm: function() {
-            return round_monetary_currency(this.get('discount'));
+        get_discount_total: function() {
+            return round_monetary_currency(this.get('discount_total'));
         },
         /*
          * Get tip.

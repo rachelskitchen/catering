@@ -42,7 +42,8 @@ define(["backbone"], function(Backbone) {
                 notes: '',
                 sections: [],
                 levels: [],
-                discount_code: '123456789'
+                discount_code: '',
+                discount_code_applied: false
             };
         },
         initialize: function() {

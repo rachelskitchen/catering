@@ -147,6 +147,21 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 }
             }
         },
+        get_myorder_tax: function() {
+            var model_sum = this.get('sum'),
+                tax_rate = this.get_myorder_tax_rate(),
+                discount = this.get("discount").get("sum"),
+                is_discount_taxed = this.get("discount").get("is_taxed");
+            
+            if (is_discount_taxed) {
+                if (discount > model_sum)
+                    discount = model_sum;
+                return (model_sum - discount) * tax_rate;
+            }
+            else { 
+                return model_sum * tax_rate;
+            }      
+        },
         isUntaxable: function() {
             var product = this.get_product(),
                 checkout = this.collection && this.collection.checkout;
@@ -376,14 +391,13 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 modifiers = modifiersModel.modifiers_submit();
             }
 
-//for debug:
-            if (!window.temp_count) window.temp_count = 1;
+
 
             var currency_symbol = App.Data.settings.get('settings_system').currency_symbol,
                 uom = App.Data.settings.get("settings_system").scales.default_weighing_unit,
                 product = this.get_product().toJSON(),
                 price = this.get('initial_price') || product.price,//model.get('sum');
-                item_tax = this.get_myorder_tax_rate() * this.get('sum'),
+                item_tax = this.get_myorder_tax(),
                 item_obj = {
                     modifier_amount: modifiers_price,
                     modifieritems: modifiers,
@@ -392,9 +406,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     price: price,
                     product: product.id,
                     product_name_override: product.name,
-                    //discount: null,
-//for debug:
-                    discount: {name: 'Test Discount' + temp_count, sum: temp_count++, taxed: false},
+                    discount: null,
                     quantity: this.get('quantity'),
                     tax_amount: item_tax,
                     tax_rate: product.tax,//model.get_product_tax_rate(),
@@ -496,6 +508,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.listenTo(this, 'add', this.onModelAdded);
             this.listenTo(this, 'remove', this.onModelRemoved);
             this.listenTo(this, 'change', this.onModelChange);
+            this.listenTo(this.discount, 'change', this.orderDiscountChanged);
+        },
+        orderDiscountChanged: function() {
+            trace("orderDiscountChanged =>", this.discount.get("sum"));
         },
         change_dining_option: function(model, value, opts) {
             var obj, bag_charge = this.total.get_bag_charge() * 1,
@@ -646,8 +662,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             var sum = model.get_modelsum(),
                 total = this.total.get('total'),
                 countProd = model.get('quantity'),
-                taxNew = this.total.get('tax') + model.get_myorder_tax_rate() * sum,
+                taxNew = this.total.get('tax') + model.get_myorder_tax(),
                 surchargeNew = this.total.get('surcharge') + model.get_myorder_surcharge_rate() * sum;
+
+            this.listenTo(model.get("discount"), 'change', this.onModelChange.bind(this, model)); 
 
             total += sum;
             this.quantity += countProd;
@@ -665,6 +683,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             this.change_only_gift_dining_option();
             this.isShippingOrderType() && this.getDestinationBasedTaxes(model);
+
+            if (App.Settings.accept_discount_code)
+                this.get_discounts();
         },
         /**
          *  Recalculate total when model remove
@@ -672,7 +693,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         onModelRemoved: function(model) {
             var sum = model.get('sum'),
                 total = this.total.get('total') - sum,
-                taxNew = this.total.get('tax') - model.get_myorder_tax_rate() * sum,
+                taxNew = this.total.get('tax') - model.get_myorder_tax(),
                 surchargeNew = this.total.get('surcharge') - model.get_myorder_surcharge_rate() * sum;
 
             this.quantity -= model.get('quantity');
@@ -684,12 +705,15 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             });
 
             this.change_only_gift_dining_option();
+
+            if (App.Settings.accept_discount_code)
+                this.get_discounts();
         },
         /**
          *  Recalculate total when model change
          */
         onModelChange: function(model) {
-            var sum = model.get('sum'),
+            var taxNew, sum = model.get('sum'),
                 countProdPrev = model.get('quantity_prev'),
 
                 sumNew = model.get_modelsum(),
@@ -698,7 +722,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 total = this.total.get('total'),
                 totalNew = total + sumNew - sum,
 
-                taxNew = this.total.get('tax') + model.get_myorder_tax_rate() * (sumNew - sum),
+                taxBefore = model.get_myorder_tax(),
+               
                 surchargeNew = this.total.get('surcharge') + model.get_myorder_surcharge_rate() * (sumNew - sum);
 
             this.quantity = this.quantity + countProdNew - countProdPrev;
@@ -708,12 +733,19 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 'quantity_prev': countProdNew
             }, {silent: true});
 
+            trace("onModelChange=>", model.cid, model.get("product").get("name"), model.get("discount").get("sum"));
+
+            taxNew = this.total.get('tax') + model.get_myorder_tax() - taxBefore,
+
             this.total.set({
                 total: totalNew,
                 tax: taxNew,
                 surcharge: surchargeNew
             });
             model.changedAttributes() && model.changedAttributes().sum && model.trigger('update:sum', model);
+
+            if (App.Settings.accept_discount_code)
+                this.get_discounts();
         },
         /**
          * save order to localstorage
@@ -768,7 +800,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         recalculate_tax: function() {
             var tax = 0;
             this.each(function(model) {
-                tax += model.get_myorder_tax_rate() * model.get('sum');
+                tax += model.get_myorder_tax();
             });
             this.total.set('tax', tax);
         },
@@ -1000,6 +1032,20 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
         },
         get_discounts: function() {
+            var self = this;
+
+            if (this.get_discount_xhr) {
+                this.get_discount_xhr.abort();
+            }
+
+            this.get_discount_xhr = this._get_discounts();            
+            this.get_discount_xhr.always(function() {              
+                delete self.get_discount_xhr;               
+            });
+
+            return this.get_discount_xhr;
+        },
+        _get_discounts: function() {
             var myorder = this,
                 total = myorder.total.get_all(),
                 items = [],
@@ -1010,10 +1056,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     discount_code : checkout.discount_code,
                     items: items,
                     orderInfo: order_info,
-                //    discount: null
-                // for debug:
-                discount: {name: 'Order Discount', sum: 1.0, taxed: false},
-
+                   // discount: null
+  // for debug:
+                discount: {name: 'Order Discount', discount_sum: 1.0, taxed: false}
                 };
             
             myorder.each(function(model) {
@@ -1023,18 +1068,13 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             order_info.created_date = checkout.createDate;
             order_info.pickup_time = checkout.pickupTimeToServer;
             order_info.lastPickupTime = checkout.lastPickupTime;
-            order_info.tax = total.tax;
-            order_info.subtotal = total.subtotal;
-            order_info.discount = total.discount;
-            order_info.final_total = total.final_total;
-            order_info.surcharge = total.surcharge;
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.asap = checkout.isPickupASAP;
             
             var myorder_json = JSON.stringify(order);
             return $.ajax({
                 type: "POST",
-                url: App.Data.settings.get("host") + "/weborders/get_discounts/",
+                url: App.Data.settings.get("host") + "/weborders/discounts/",
                 data: myorder_json,
                 dataType: "json",
                 success: function(data) {
@@ -1047,6 +1087,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                             myorder.set_discounts(data.data);
                             break;
                         default:
+                            myorder.zero_discounts();
                             if (!data.errorMsg) data.errorMsg = MSG.ERROR_NO_MSG_FROM_SERVER;
                             data.errorMsg = MSG.ERROR_OCCURRED + data.errorMsg;
                             reportErrorFrm(data.errorMsg);
@@ -1054,10 +1095,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 },
                 error: function(xhr) {
                     reportErrorFrm(MSG.ERROR_GET_DISCOUNTS);
-                },
-                complete: function(xhr, result) {
-                    //for debug:
-                    myorder.set_discounts(order);                    
                 }
             });
 
@@ -1075,18 +1112,20 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 }
                 var model = myorder.findWhere({ "id_product": product.product });
                 model.get("discount").set({ name: product.discount.name, 
-                                        sum: product.discount.sum * 1,
-                                        taxed: product.discount.taxed });
+                                        sum: product.discount.discount_sum.toFixed(2) * 1,
+                                        taxed: product.discount.taxed});
             });
 
             if (json.discount instanceof Object) {
                 myorder.discount.set({ name: json.discount.name, 
-                                     sum: json.discount.sum * 1,
+                                     sum: json.discount.discount_sum.toFixed(2) * 1,
                                      taxed: json.discount.taxed });
             }
             myorder.recalc_discounts();
-           // myorder.reculc_subtotal(); for every model : OnModelChanged(model);
-           // myorder.recalculate_tax();
+           // myorder.recalc_subtotal(); for every model : OnModelChanged(model);           
+        },
+        zero_discounts: function() {
+            //TBD: zero all discounts
         },
         recalc_discounts: function() {
             var myorder = this,
@@ -1104,7 +1143,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 total_discounts += myorder.discount.get("sum");
             }
 
-            myorder.total.set("discount", total_discounts);
+            myorder.total.set("discount_total", total_discounts);
         },
         submit_order_and_pay: function(payment_type, validationOnly, capturePhase) {
             var myorder = this,

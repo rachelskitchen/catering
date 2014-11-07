@@ -35,7 +35,18 @@
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="surcharge"><%= surcharge %></span>
         </span>
+    </li>    
+    
+    <% if(discount_allow) { %>
+    <li>
+        <span class="title">Discount:</span>
+        <span class="cost">
+            <span class="currency_symbol">-<%= currency_symbol %></span>
+            <span class="discount"><%= discount_total %></span>
+        </span>
     </li>
+    <% } %>
+    
     <li>
         <span class="title">Tax:</span>
         <span class="cost">
