@@ -58,7 +58,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             return this;
         },
         content_change: function() {
-            $(window).trigger("contentChange");
             var view, content = this.$('#content'),
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();

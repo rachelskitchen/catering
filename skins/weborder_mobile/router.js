@@ -112,6 +112,8 @@ define(["backbone", "main_router"], function(Backbone) {
                     model: App.Data.mainModel,
                     el: 'body'
                 });
+                this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
+                this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
 
                 // emit 'initialized' event
                 this.trigger('initialized');
@@ -133,6 +135,12 @@ define(["backbone", "main_router"], function(Backbone) {
         navigateDirectory: function() {
             if(App.Data.dirMode)
                 return window.location.href = getData('directoryReferrer').referrer;
+        },
+        showPromoMessage: function() {
+            App.Data.footer.set('isShowPromoMessage', true);
+        },
+        hidePromoMessage: function() {
+            App.Data.footer.set('isShowPromoMessage', false);
         },
         index: function() {
             var self = this;

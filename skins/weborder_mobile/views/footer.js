@@ -29,11 +29,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         name: 'footer',
         mod: 'main',
         initialize: function() {
-            $(window).on("contentChange", this.addPromoMessage);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change', this.render);
             this.listenTo(App.Data.myorder, 'add', this.updateCount, this);
             this.listenTo(App.Data.myorder, 'remove', this.updateCount, this);
+            this.listenTo(this.model, 'change:isShowPromoMessage', this.addPromoMessage, this);
+            this.listenToOnce(App.Data.mainModel, 'loadCompleted', this.addPromoMessage, this);
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -70,6 +71,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          * Add promo message.
          */
         addPromoMessage: function() {
+            /*
             var check_valid_page = function() {
                 var valid_pages = new Array("", "index");
                 var current_page = (Backbone.history.fragment === "") ? "" : /[a-z_]+/.exec(Backbone.history.fragment)[0];
@@ -97,6 +99,40 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             }
             else {
                 $(".promo_message").hide();
+                $("section").css({bottom: "10.2em"});
+                $("footer").css({height: "10.2em"});
+            }
+            */
+            var self = this;
+            if (self.model.get("isShowPromoMessage")) {
+                console.log("SHOW");
+                var promo_text = $("#promo_text");
+                var promo_marquee = $("#promo_marquee");
+                $("section").css({bottom: "17em"});
+                $("footer").css({height: "17em"});
+                var change_container_message = function() {
+                    if (self.model.get("isShowPromoMessage")) {
+                        console.log("FUNC");
+                        self.$el.find(promo_text).show();
+                        if (self.$el.find(promo_text).find("span").width() >= $(window).width()) {
+                            console.log("FUNC MARQUEE");
+                            self.$el.find(promo_text).hide();
+                            self.$el.find(promo_marquee).show();
+                        }
+                        else {
+                            console.log("FUNC TEXT");
+                            self.$el.find(promo_text).show();
+                            self.$el.find(promo_marquee).hide();
+                        }
+                    }
+                };
+                change_container_message();
+                $(window).resize(change_container_message);
+            }
+            else {
+                console.log("HIDE");
+                var promo_message = $(".promo_message");
+                self.$el.find(promo_message).hide();
                 $("section").css({bottom: "10.2em"});
                 $("footer").css({height: "10.2em"});
             }
