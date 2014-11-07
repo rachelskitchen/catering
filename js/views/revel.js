@@ -38,7 +38,11 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
 
     App.Views.CoreRevelView.CoreRevelProfileAddressView = App.Views.AddressView.extend({
         name: 'revel',
-        mod: 'profile_address'
+        mod: 'profile_address',
+        fillValues: function() {
+            var model = this.model;
+            model.country && this.$('.country').val(model.country);
+        }
     });
 
     App.Views.CoreRevelView.CoreRevelProfilePersonalView = App.Views.CoreCheckoutView.CoreCheckoutMainView.extend({
@@ -71,6 +75,10 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
     App.Views.CoreRevelView.CoreRevelProfileSecurityView = App.Views.FactoryView.extend({
         name: 'revel',
         mod: 'profile_security',
+        initialize: function() {
+            this.listenTo(this.model, 'onAuthenticationCancel onProfileCancel onProfileSaved', this.render, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
         events: {
             'blur .password': 'setPassword',
             'change .checkbox': 'changeCheckbox'
@@ -126,7 +134,27 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
 
     App.Views.CoreRevelView.CoreRevelAuthenticationView = App.Views.FactoryView.extend({
         name: 'revel',
-        mod: 'authentication'
+        mod: 'authentication',
+        initialize: function() {
+            this.listenTo(this.model, 'onAuthenticationCancel onAuthenticated', this.resetPassword, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        events: {
+            'click .ok': 'authenticate',
+            'click .cancel': 'cancel'
+        },
+        authenticate: function() {
+            var email = this.$('.email').val(),
+                pwd = this.$('.password').val();
+
+            this.model.authenticate(email, pwd);
+        },
+        cancel: function() {
+            this.model.trigger('onAuthenticationCancel');
+        },
+        resetPassword: function() {
+            this.$('.password').val('');
+        }
     });
 
     App.Views.CoreRevelView.CoreRevelLoyaltyView = App.Views.FactoryView.extend({

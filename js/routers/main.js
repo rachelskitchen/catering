@@ -346,7 +346,7 @@ define(["backbone"], function(Backbone) {
                 this.navigate('profile', true);
             }, this);
 
-            this.listenTo(RevelAPI, 'onProfileCancel', function() {
+            this.listenTo(RevelAPI, 'onProfileCancel onAuthenticationCancel', function() {
                 mainModel.trigger('hideRevelPopup', RevelAPI);
                 profileCancelCallback && this.navigate(profileCancelCallback, true);
                 profileCancelCallback = undefined;

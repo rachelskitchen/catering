@@ -32,7 +32,8 @@ define(["backbone", "card", "customers"], function(Backbone) {
         USER_ALREADY_EXISTS: 2,
         SESSION_EXPIRED: 3,
         INTERNAL_ERROR: 4,
-        MAX_NUM_AUTH_ATTEMPTS_EXCEDEED: 5
+        MAX_NUM_AUTH_ATTEMPTS_EXCEDEED: 5,
+        PASSWORD_UPDATE_FAILED: 6
     };
 
     App.Models.RevelAPI = Backbone.Model.extend({
@@ -53,9 +54,10 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.listenTo(this, 'change:token', this.saveToken, this);
             this.listenTo(this, 'change:profileExists', this.saveProfileExists, this);
             this.listenTo(this, 'change:errorCode', this.listenToErrorCode, this);
+            this.listenTo(this, 'onAuthenticationCancel', this.clearRequests, this);
 
             this.set('card', new App.Models.Card());
-            this.set('customer', new App.Models.Customer());
+            this.set('customer', new App.Models.Customer({shipping_address: -1}));
 
             // Queue of requests. Used if middleware action is required.
             // For instance, if `getData` request responds the error 'Session expired' need automatically get a new token and continue `getData` performing.
@@ -84,16 +86,16 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.pendingRequests.unshift(arguments);
             console.log('Perform request "%s"', arguments[0]);
 
-            // // if any request is being processed need defer a request performing
-            // if(this.pendingRequests.length > 1) {
-            //     return;
-            // }
-
             this.performRequest.apply(this, arguments);
         },
         performRequest: function() {
             var args = Array.prototype.slice.call(arguments, 1, -1),
                 method = arguments[0];
+
+            // if any argument is function need override it by its result. Used for token.
+            args = args.map(function(arg) {
+                return typeof arg == 'function' ? arg() : arg;
+            });
 
             try {
                 if(cssua.ua.android) {
@@ -115,12 +117,15 @@ define(["backbone", "card", "customers"], function(Backbone) {
             // response is object which has following format:
             // {"message": "<result string>", "errorCode”: <error code>, “data”: "<result string>"}.
             // If errorCode > 0 there is an error occurred
-            var args = this.pendingRequests.shift();
+            var args = this.pendingRequests[0];
 
             // if any request is not being processed currently need abord function performing
             if(!args) {
                 return;
             }
+
+            // to provide broadcast listeners about any errorCode change
+            this.set('errorCode', null, {silent: true});
 
             try {
                 // convert response to object if it isn't
@@ -133,6 +138,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
 
                 if(!response.errorCode) {
                     args[args.length - 1](response.data);
+                    this.pendingRequests.shift();
                     this.pendingRequests.length > 0 && this.performRequest.apply(this, this.pendingRequests[0]);
                     console.log('Request "%s" performed', args[0]);
                 } else {
@@ -148,33 +154,41 @@ define(["backbone", "card", "customers"], function(Backbone) {
 
             switch(this.get('errorCode')) {
                 case REVEL_API_ERROR_CODES.AUTHENTICATION_FAILED:
+                    this.pendingRequests.shift(); // remove authentication request from pending
+                    this.trigger('onAuthenticate');
+                    break;
+
                 case REVEL_API_ERROR_CODES.SESSION_EXPIRED:
                     this.trigger('onAuthenticate');
                     break;
 
                 case REVEL_API_ERROR_CODES.USER_ALREADY_EXISTS:
-                    clearPendingRequests();
+                    this.clearRequests();
                     App.Data.errors.alert(MSG.ERROR_REVEL_USER_EXISTS.replace('%s', this.getUsername() || ''));
                     break;
 
                 case REVEL_API_ERROR_CODES.INTERNAL_ERROR:
                     App.Data.errors.alert(MSG.ERROR_REVEL_UNABLE_TO_PERFORM);
-                    clearPendingRequests();
+                    this.clearRequests();
                     break;
 
                 case REVEL_API_ERROR_CODES.MAX_NUM_AUTH_ATTEMPTS_EXCEDEED:
-                    App.Data.errors.alert(MSG.ERROR_REVEL_ATTEMPTS_EXCEEDED);
                     this.set('profileExists', null);
-                    clearPendingRequests();
+                    this.trigger('onAuthenticationCancel');
+                    App.Data.errors.alert(MSG.ERROR_REVEL_ATTEMPTS_EXCEEDED);
+                    break;
+
+                case REVEL_API_ERROR_CODES.PASSWORD_UPDATE_FAILED:
+                    App.Data.errors.alert(MSG.ERROR_REVEL_PASSWORD_UPDATE_FAILED);
+                    this.clearRequests();
                     break;
 
                 default:
                     break;
             }
-
-            function clearPendingRequests() {
-                this.pendingRequests.length = 0;
-            }
+        },
+        clearRequests: function() {
+            this.pendingRequests.length = 0;
         },
         getToken: function() {
             var obj = getData('token');
@@ -191,7 +205,13 @@ define(["backbone", "card", "customers"], function(Backbone) {
             setData('profileExists', {profileExists: this.get('profileExists')}, true);
         },
         authenticate: function(user, pwd, cb) {
-            this.request('authenticate', String(user), String(pwd), this.set.bind(this, 'token'));
+            var self = this;
+            this.request('authenticate', String(user), String(pwd), saveToken);
+            function saveToken(data) {
+                self.set('token', data);
+                self.trigger('onAuthenticated');
+                typeof cb == 'function' && cb();
+            }
         },
         change_password: function(newPwd, oldPwd, cb) {
             var profileExists = this.get('profileExists'),
@@ -204,7 +224,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             }
 
             // if profile exists need update credentials
-            if(newPwd && newPwd == oldPwd && email) {
+            if(newPwd && oldPwd && email) {
                 return this.request('updatePassword', email, String(oldPwd), String(newPwd), updateToken);
             }
 
@@ -221,22 +241,20 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 self = this;
 
             // save without password changing
-            if(newPassword == oldPassword && !newPassword) {
+            if(!newPassword && !oldPassword && profileExists) {
                 return saveData();
             }
 
             // save with password changing
-            if((!profileExists && newPassword) || (newPassword == oldPassword && newPassword)) {
+            if((!profileExists && newPassword) || (oldPassword && newPassword && profileExists)) {
                 return this.change_password(newPassword, oldPassword, saveData);
             }
 
             // alerts regarding to password validation
-            if((!profileExists && !newPassword) || (!newPassword && oldPassword)) {
+            if((!profileExists && !newPassword) || (!newPassword && oldPassword && profileExists)) {
                 App.Data.errors.alert(MSG.ERROR_REVEL_EMPTY_NEW_PASSWORD);
-            } else if(newPassword && !oldPassword) {
+            } else if(newPassword && !oldPassword && profileExists) {
                 App.Data.errors.alert(MSG.ERROR_REVEL_EMPTY_OLD_PASSWORD);
-            } else {
-                App.Data.errors.alert(MSG.ERROR_REVEL_MISMATCHED_PASSWORDS);
             }
 
             function saveData() {
@@ -245,7 +263,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
                         customer: self.get('customer').toJSON(),
                         card: self.get('card').toJSON()
                     }
-                    self.request('setData', 'profile', JSON.stringify(data), String(self.get('token')), cb);
+                    self.request('setData', 'profile', JSON.stringify(data), self.getTokenString.bind(self), cb);
                 } catch(e) {
                     self.set('errorCode', REVEL_API_ERROR_CODES.INTERNAL_ERROR);
                     console.log('Unable to save user\'s profile', '\n', e);
@@ -255,7 +273,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
         },
         getProfile: function(cb) {
             var self = this;
-            this.request('getData', 'profile', String(this.get('token')), function(data) {
+            this.request('getData', 'profile', this.getTokenString.bind(this), function(data) {
                 try {
                     data = JSON.parse(data);
                     self.get('customer').set(data.customer);
@@ -321,6 +339,9 @@ define(["backbone", "card", "customers"], function(Backbone) {
         getUsername: function() {
             var customer = this.get('customer');
             return customer ? customer.get('email') : null;
+        },
+        getTokenString: function() {
+            return String(this.get('token'));
         }
     });
 });
