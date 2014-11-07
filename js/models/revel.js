@@ -52,6 +52,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.listenTo(this, 'change:firstTime', this.onFirstTime, this);
             this.listenTo(this, 'change:token', this.saveToken, this);
             this.listenTo(this, 'change:profileExists', this.saveProfileExists, this);
+            this.listenTo(this, 'change:errorCode', this.listenToErrorCode, this);
 
             this.set('card', new App.Models.Card());
             this.set('customer', new App.Models.Customer());
@@ -83,10 +84,10 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.pendingRequests.unshift(arguments);
             console.log('Perform request "%s"', arguments[0]);
 
-            // if any request is being processed need defer a request performing
-            if(this.pendingRequests.length > 1) {
-                return;
-            }
+            // // if any request is being processed need defer a request performing
+            // if(this.pendingRequests.length > 1) {
+            //     return;
+            // }
 
             this.performRequest.apply(this, arguments);
         },
@@ -103,7 +104,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
                     args.unshift(method);
                     window.location.href = '/' + args.join('/');
                 } else {
-                    setTimeout(this.handleResponse.bind(this, {message: 'result string', errorCode: 0, data: arguments[0]}), 10000 - arguments[0] * 1000);
+                    this.handleResponse({message: 'result string', errorCode: REVEL_API_ERROR_CODES.INTERNAL_ERROR, data: arguments[0]});
                 }
             } catch(e) {
                 this.set('errorCode', REVEL_API_ERROR_CODES.INTERNAL_ERROR);
@@ -183,11 +184,11 @@ define(["backbone", "card", "customers"], function(Backbone) {
             setData('token', {token: this.get('token')});
         },
         getProfileExists: function() {
-            var obj = getData('profileExists');
+            var obj = getData('profileExists', true);
             obj instanceof Object && this.set('profileExists', obj.profileExists);
         },
         saveProfileExists: function() {
-            setData('profileExists', {profileExists: this.get('profileExists')});
+            setData('profileExists', {profileExists: this.get('profileExists')}, true);
         },
         authenticate: function(user, pwd, cb) {
             this.request('authenticate', String(user), String(pwd), this.set.bind(this, 'token'));
@@ -216,7 +217,8 @@ define(["backbone", "card", "customers"], function(Backbone) {
         saveProfile: function(cb) {
             var profileExists = this.get('profileExists'),
                 newPassword = this.get('newPassword'),
-                oldPassword = this.get('oldPassword');
+                oldPassword = this.get('oldPassword'),
+                self = this;
 
             // save without password changing
             if(newPassword == oldPassword && !newPassword) {
@@ -240,12 +242,12 @@ define(["backbone", "card", "customers"], function(Backbone) {
             function saveData() {
                 try {
                     var data = {
-                        customer: this.get('customer').toJSON(),
-                        card: this.get('card').toJSON()
+                        customer: self.get('customer').toJSON(),
+                        card: self.get('card').toJSON()
                     }
-                    this.request('setData', 'profile', JSON.stringify(data), String(this.get('token')), cb);
+                    self.request('setData', 'profile', JSON.stringify(data), String(self.get('token')), cb);
                 } catch(e) {
-                    this.set('errorCode', REVEL_API_ERROR_CODES.INTERNAL_ERROR);
+                    self.set('errorCode', REVEL_API_ERROR_CODES.INTERNAL_ERROR);
                     console.log('Unable to save user\'s profile', '\n', e);
                 }
             }

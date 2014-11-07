@@ -124,6 +124,11 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
         }
     });
 
+    App.Views.CoreRevelView.CoreRevelAuthenticationView = App.Views.FactoryView.extend({
+        name: 'revel',
+        mod: 'authentication'
+    });
+
     App.Views.CoreRevelView.CoreRevelLoyaltyView = App.Views.FactoryView.extend({
         name: 'revel',
         mod: 'loyalty'
@@ -137,4 +142,5 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
     App.Views.RevelView.RevelProfileAddressView = App.Views.CoreRevelView.CoreRevelProfileAddressView;
     App.Views.RevelView.RevelProfileNotificationView = App.Views.CoreRevelView.CoreRevelProfileNotificationView;
     App.Views.RevelView.RevelLoyaltyView = App.Views.CoreRevelView.CoreRevelLoyaltyView;
+    App.Views.RevelView.RevelAuthenticationView = App.Views.CoreRevelView.CoreRevelAuthenticationView;
 });

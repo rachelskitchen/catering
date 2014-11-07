@@ -321,6 +321,16 @@ define(["backbone"], function(Backbone) {
                 RevelAPI.set('firstTime', false);
             }, this);
 
+
+            this.listenTo(RevelAPI, 'onAuthenticate', function() {
+                mainModel.trigger('showRevelPopup', {
+                    modelName: 'Revel',
+                    mod: 'Authentication',
+                    model: RevelAPI,
+                    cacheId: 'Authentication'
+                });
+            }, this);
+
             this.listenTo(RevelAPI, 'onProfileCreate', function() {
                 mainModel.trigger('showRevelPopup', {
                     modelName: 'Revel',
