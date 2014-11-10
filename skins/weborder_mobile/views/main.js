@@ -31,6 +31,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'change:footer', this.footer_change, this);
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
+            this.listenTo(this.model, 'showPromoMessage', this.showPromoMessage, this);
+            this.listenTo(this.model, 'hidePromoMessage', this.hidePromoMessage, this);
 
             this.iOSFeatures();
 
@@ -150,6 +152,20 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         hideSpinner: function() {
             this.$('#main-spinner').hide();
+        },
+        /**
+         * Styles for a visible promo message.
+         */
+        showPromoMessage: function() {
+            this.$('section').addClass('section_promo_show');
+            this.$('footer').addClass('footer_promo_show');
+        },
+        /**
+         * Styles for a invisible promo message.
+         */
+        hidePromoMessage: function() {
+            this.$('section').removeClass('section_promo_show');
+            this.$('footer').removeClass('footer_promo_show');
         }
     });
 

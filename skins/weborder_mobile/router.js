@@ -137,10 +137,16 @@ define(["backbone", "main_router"], function(Backbone) {
                 return window.location.href = getData('directoryReferrer').referrer;
         },
         showPromoMessage: function() {
-            App.Data.footer.set('isShowPromoMessage', true);
+            if (App.Settings.promo_message) {
+                App.Data.footer.set('isShowPromoMessage', true);
+                App.Data.mainModel.trigger('showPromoMessage');
+            }
         },
         hidePromoMessage: function() {
-            App.Data.footer.set('isShowPromoMessage', false);
+            if (App.Settings.promo_message) {
+                App.Data.footer.set('isShowPromoMessage', false);
+                App.Data.mainModel.trigger('hidePromoMessage');
+            }
         },
         index: function() {
             var self = this;

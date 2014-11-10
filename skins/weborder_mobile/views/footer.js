@@ -33,9 +33,9 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'change', this.render);
             this.listenTo(App.Data.myorder, 'add', this.updateCount, this);
             this.listenTo(App.Data.myorder, 'remove', this.updateCount, this);
-            this.listenTo(App.Data.mainModel, 'loadCompleted', this.addPromoMessage, this);
         },
         render: function() {
+            if (App.Settings.promo_message) this.calculatePromoMessageWidth(); // calculate a promo message width
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.updateCount(undefined, App.Data.myorder);
             return this;
@@ -67,39 +67,46 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 quantity.hide();
         },
         /**
-         * Add promo message.
+         * Calculate a promo message width.
+         */
+        calculatePromoMessageWidth: function() {
+            if (this.model.get('isShowPromoMessage')) {
+                var promo_message = Backbone.$('<div class="promo_message promo_message_internal">' + App.Settings.promo_message + '</div>');
+                $('body').append(promo_message);
+                this.model.set('widthPromoMessage', promo_message.width());
+                promo_message.remove();
+                this.model.set('widthWindow', $(window).width());
+                $(window).resize(this.resizePromoMessage);
+                this.addPromoMessage(); // add a promo message
+            } else {
+                this.$('.promo_message').hide();
+            }
+        },
+        /**
+         * Resize of a promo message.
+         */
+        resizePromoMessage: function() {
+            if (App.Data.footer.get('widthWindow') !== $(window).width()) {
+                App.Data.footer.set('widthWindow', $(window).width());
+            }
+        },
+        /**
+         * Add a promo message.
          */
         addPromoMessage: function() {
             var self = this;
-            var promo_text = $("#promo_text");
-            var promo_marquee = $("#promo_marquee");
-            if (self.model.get("isShowPromoMessage")) {
-                self.$el.find(promo_text).hide();
-                self.$el.find(promo_marquee).hide();
-                $("section").css({bottom: "17em"});
-                $("footer").css({height: "17em"});
-                var change_container_message = function() {
-                    if (self.model.get("isShowPromoMessage")) {
-                        self.$el.find(promo_text).show();
-                        if (self.$el.find(promo_text).find("span").width() >= $(window).width()) {
-                            self.$el.find(promo_text).hide();
-                            self.$el.find(promo_marquee).show();
-                        }
-                        else {
-                            self.$el.find(promo_text).show();
-                            self.$el.find(promo_marquee).hide();
-                        }
-                    }
-                };
-                change_container_message();
-                $(window).resize(change_container_message);
-            }
-            else {
-                self.$el.find(promo_text).hide();
-                self.$el.find(promo_marquee).hide();
-                $("section").css({bottom: "10.2em"});
-                $("footer").css({height: "10.2em"});
-            }
+            window.setTimeout(function() {
+                var promo_message = self.$('.promo_message');
+                var promo_text = self.$('.promo_text');
+                var promo_marquee = self.$('.promo_marquee');
+                if (self.model.get('widthPromoMessage') >= App.Data.footer.get('widthWindow')) {
+                    promo_text.hide();
+                    promo_marquee.show();
+                } else {
+                    promo_text.show();
+                    promo_marquee.hide();
+                }
+            }, 0);
         }
     });
 
@@ -186,6 +193,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             return this;
         },
         remove: function() {
+            $(window).off("resize", this.resizePromoMessage);
             App.Views.FactoryView.prototype.remove.apply(this, arguments);
             $('#section').removeClass('doubleFooter_section').removeClass('tripleFooter_section');
         },

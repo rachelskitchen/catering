@@ -283,6 +283,13 @@
 
 /* done, maintenance mod end */
 
+.promo_message_internal {
+    display: block;
+    position: absolute;
+    top: 1000em;
+    white-space: nowrap;
+}
+
 .promo_message {
     color: white;
     display: none;
@@ -292,5 +299,4 @@
     height: 2.5em;
     margin-top: -2.5em;
     text-align: center;
-    white-space: nowrap;
 }
