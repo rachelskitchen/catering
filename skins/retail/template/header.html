@@ -3,8 +3,8 @@
     <div class="logo">
         <img src="<%= logo %>" alt="<%= business_name %> logo" class="logo" data-default-index="1">
         <% if (_settings.promo_message) { %>
-            <div class="promo_message" id="promo_text"> <span> <%= _settings.promo_message %> </span> </div>
-            <div class="promo_message" id="promo_marquee"> <marquee behavior="scroll" direction="left" scrollamount="6" loop="-1"> <%= _settings.promo_message %> </marquee> </div>
+            <div class='promo_message promo_text'> <span> <%= _settings.promo_message %> </span> </div>
+            <div class='promo_message promo_marquee'> <marquee behavior='scroll' direction='left' scrollamount='6' loop='-1'> <%= _settings.promo_message %> </marquee> </div>
         <% } %>
     </div>
     <form class="search">

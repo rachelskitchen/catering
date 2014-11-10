@@ -98,7 +98,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             window.setTimeout(function() {
                 var promo_text = self.$('.promo_text');
                 var promo_marquee = self.$('.promo_marquee');
-                if (self.model.get('widthPromoMessage') >= App.Data.footer.get('widthWindow')) {
+                if (self.model.get('widthPromoMessage') >= self.model.get('widthWindow')) {
                     promo_text.hide();
                     promo_marquee.show();
                 } else {

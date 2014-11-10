@@ -34,11 +34,11 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(this.options.search, 'onSearchComplete', this.searchComplete, this);
             this.listenTo(this.options.search, 'onSearchStart', this.searchStart, this);
             this.listenTo(this.collection, 'onRestoreState', this.restoreState, this);
-            this.listenTo(this.model, 'change:isShowPromoMessage', this.addPromoMessage, this);
-            this.listenToOnce(App.Data.mainModel, 'loadCompleted', this.addPromoMessage, this);
+            this.listenTo(this.model, 'change:isShowPromoMessage', this.calculatePromoMessageWidth, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
+            if (App.Settings.promo_message) this.calculatePromoMessageWidth(); // calculate a promo message width
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             var view = new App.Views.GeneratorView.create('Categories', {
                 collection: this.collection,
@@ -115,47 +115,74 @@ define(["backbone", "factory"], function(Backbone) {
             this.onSearch({preventDefault: new Function});
         },
         /**
-         * Add promo message.
+         * Calculate a promo message width.
+         */
+        calculatePromoMessageWidth: function() {
+            if (this.model.get('isShowPromoMessage')) {
+                var promo_message = Backbone.$('<div class="promo_message promo_message_internal"> <span>' + App.Settings.promo_message + '</span> </div>');
+                $('body').append(promo_message);
+                this.model.set('widthPromoMessage', promo_message.find('span').width());
+                promo_message.remove();
+                this.model.set('widthWindow', $(window).width());
+                var self = this;
+                var interval = window.setInterval(function() {
+                    var img_logo = self.$('img.logo');
+                    if (img_logo.length !== 0) {
+                        self.resizeLogoPromoMessage(); // resize a logo & a promo message
+                        self.addPromoMessage(); // add a promo message
+                        $(window).resize(self, self.resizePromoMessage);
+                        clearInterval(interval);
+                    }
+                }, 100);
+            } else {
+                this.$('.promo_message').hide();
+            }
+        },
+        /**
+         * Resize of a promo message.
+         */
+        resizePromoMessage: function() {
+            if (arguments[0].data.model.get('widthWindow') !== $(window).width()) {
+                arguments[0].data.model.set('widthWindow', $(window).width());
+                arguments[0].data.resizeLogoPromoMessage(); // resize a logo & a promo message
+                arguments[0].data.addPromoMessage(); // add a promo message
+            }
+        },
+        /**
+         * Resize a logo & a promo message.
+         */
+        resizeLogoPromoMessage: function() {
+            var div_logo = this.$('div.logo');
+            var img_logo = this.$('img.logo');
+            var promo_message = this.$('.promo_message');
+            var percent_img = img_logo.width() / div_logo.width();
+            var percent_promo = 100 - (percent_img * 100) - 1.5;
+            if (percent_promo <= 0) {
+                promo_message.hide();
+            } else {
+                promo_message.css({'width': percent_promo + '%'});
+            }
+        },
+        /**
+         * Add a promo message.
          */
         addPromoMessage: function() {
             var self = this;
-            var promo_text = $("#promo_text");
-            var promo_marquee = $("#promo_marquee");
-            if (self.model.get("isShowPromoMessage")) {
-                var change_container_message = function() {
-                    self.$el.find(promo_text).show();
-                    if (self.$el.find(promo_text).find("span").width() >= self.$el.find(promo_text).width()) {
-                        self.$el.find(promo_text).hide();
-                        self.$el.find(promo_marquee).show();
-                    }
-                    else {
-                        self.$el.find(promo_text).show();
-                        self.$el.find(promo_marquee).hide();
-                    }
-                    var interval = window.setInterval(function() {
-                        var img_logo = $("img.logo");
-                        var div_logo = $("div.logo");
-                        var promo_message = $(".promo_message");
-                        if (self.$el.find(img_logo).length !== 0) {
-                            var percent_img = self.$el.find(img_logo).width()/self.$el.find(div_logo).width();
-                            var percent_promo = 100-(percent_img*100)-1.5;
-                            if (percent_promo <= 0) {
-                                self.$el.find(promo_message).hide();
-                            }
-                            else {
-                                self.$el.find(promo_message).css({"width": percent_promo+"%"});
-                            }
-                            clearInterval(interval);
-                        }
-                    });
-                };
-                change_container_message();
-                $(window).resize(change_container_message);
-            }
-            else {
-                self.$el.find(promo_text).hide();
-                self.$el.find(promo_marquee).hide();
-            }
+            window.setTimeout(function() {
+                var promo_text = self.$('.promo_text');
+                var promo_marquee = self.$('.promo_marquee');
+                var div_logo = self.$('div.logo');
+                var img_logo = self.$('img.logo');
+                var percent_img = img_logo.width() / div_logo.width();
+                var percent_promo = 100 - (percent_img * 100) - 1.5;
+                if (self.model.get('widthPromoMessage') >= div_logo.width() * (percent_promo / 100)) {
+                    promo_text.hide();
+                    promo_marquee.show();
+                } else {
+                    promo_text.show();
+                    promo_marquee.hide();
+                }
+            }, 0);
         }
     });
 

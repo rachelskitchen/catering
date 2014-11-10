@@ -905,6 +905,14 @@ input[type="search"] {
     cursor: default !important;
 }
 
+.promo_message_internal {
+    display: block !important;
+    font-size: 1.65em !important;
+    position: absolute;
+    top: 1000em;
+    white-space: nowrap;
+}
+
 .promo_message {
     display: none;
     float: right;
@@ -913,5 +921,4 @@ input[type="search"] {
     font-weight: regular;
     padding-top: 0.15em;
     text-align: center;
-    white-space: nowrap;
 }
