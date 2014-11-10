@@ -127,17 +127,39 @@
         <% if(orderFromSeat.enable_level) { %>
             <div class="row">
             <label for="deliveryLevel"><span class="required bold">Level:</span></label>
+             <% if(levels.length) { %>
+             <div class="select select-wrapper">
+                <select class="level-select" name="level">
+                    <option value="" selected="selected">Levels</option>
+                    <% _.each(levels, function(level) { %>
+                    <option value="<%= level %>"><%= level %></option>
+                    <% }); %>
+                 </select>
+                </div>
+            <% } else { %>
             <div class="input_beauty">
                 <input type="text" id="deliveryLevel" name="level" value="<%= level %>" maxlength="4" class="ios-safari-caret">
             </div>
+            <% } %>
         </div>
         <% } %>
         <% if(orderFromSeat.enable_sector) { %>
         <div class="row">
             <label for="deliverySection"><span class="required bold">Section:</span></label>
+            <% if(sections.length) { %>
+            <div class="select select-wrapper">
+                <select class="section-select" name="section">
+                    <option value="" selected="selected">Section</option>
+                    <% _.each(sections, function(section) { %>
+                    <option value="<%= section %>"><%= section %></option>
+                    <% }); %>
+                </select>
+            </div>
+            <% } else { %>
             <div class="input_beauty">
                 <input type="text" id="deliverySection" name="section" value="<%= section %>" maxlength="4" class="ios-safari-caret">
             </div>
+            <% } %>
         </div>
         <% } %>
         <% if(orderFromSeat.enable_row) { %>
