@@ -82,11 +82,22 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 return;
             }
 
-            // add request to queue
-            this.pendingRequests.unshift(arguments);
+            var errorCode = this.get('errorCode'),
+                isAuthentication = errorCode == REVEL_API_ERROR_CODES.AUTHENTICATION_FAILED || errorCode == REVEL_API_ERROR_CODES.SESSION_EXPIRED;
             console.log('Perform request "%s"', arguments[0]);
 
-            this.performRequest.apply(this, arguments);
+            // add request to queue
+            if(isAuthentication) {
+                this.pendingRequests.unshift(arguments);
+            } else {
+                this.pendingRequests.push(arguments);
+            }
+
+            // If request is the first in pendingRequest queue need perform it.
+            // Otherwise it will be performed automatically after successful first request performing.
+            if(isAuthentication || this.pendingRequests.length == 1) {
+                this.performRequest.apply(this, arguments);
+            }
         },
         performRequest: function() {
             var args = Array.prototype.slice.call(arguments, 1, -1),
@@ -138,9 +149,9 @@ define(["backbone", "card", "customers"], function(Backbone) {
 
                 if(!response.errorCode) {
                     args[args.length - 1](response.data);
+                    console.log('Request "%s" performed', args[0]);
                     this.pendingRequests.shift();
                     this.pendingRequests.length > 0 && this.performRequest.apply(this, this.pendingRequests[0]);
-                    console.log('Request "%s" performed', args[0]);
                 } else {
                     console.log('Request "%s" failed. %s', args[0], response.message);
                 }
@@ -154,6 +165,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
 
             switch(this.get('errorCode')) {
                 case REVEL_API_ERROR_CODES.AUTHENTICATION_FAILED:
+                    App.Data.errors.alert(MSG.ERROR_REVEL_AUTHENTICATION_FAILED);
                     this.pendingRequests.shift(); // remove authentication request from pending
                     this.trigger('onAuthenticate');
                     break;
@@ -342,6 +354,19 @@ define(["backbone", "card", "customers"], function(Backbone) {
         },
         getTokenString: function() {
             return String(this.get('token'));
+        },
+        getQRCode: function() {
+            var customer = this.get('customer').toJSON(),
+                data = [];
+
+            data.push('number=' + encodeURIComponent(customer.phone));
+            data.push('firstName=' + encodeURIComponent(customer.first_name));
+            data.push('lastName=' + encodeURIComponent(customer.last_name));
+            data.push('phone_number=' + encodeURIComponent(customer.phone));
+            data.push('email=' + encodeURIComponent(customer.email));
+            data.push('address=' + encodeURIComponent(JSON.stringify(customer.addresses[0])));
+
+            return App.Data.settings.get("host") + "/weborders/qrcode/?" + data.join('&');
         }
     });
 });
