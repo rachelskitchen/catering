@@ -78,13 +78,17 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 promo_message.remove();
                 this.model.set('widthWindow', $(window).width());
                 this.addPromoMessage(); // add a promo message
-                $(window).resize(function() {
-                    if (self.model.get('widthWindow') !== $(window).width()) {
-                        self.model.set('widthWindow', $(window).width());
-                    }
-                });
+                $(window).resize(this, this.resizePromoMessage);
             } else {
                 this.$('.promo_message').hide();
+            }
+        },
+        /**
+         * Resize of a promo message.
+         */
+        resizePromoMessage: function() {
+            if (arguments[0].data.model.get('widthWindow') !== $(window).width()) {
+                arguments[0].data.model.set('widthWindow', $(window).width());
             }
         },
         /**
