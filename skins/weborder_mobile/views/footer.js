@@ -70,24 +70,21 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          * Calculate a promo message width.
          */
         calculatePromoMessageWidth: function() {
+            var self = this;
             if (this.model.get('isShowPromoMessage')) {
                 var promo_message = Backbone.$('<div class="promo_message promo_message_internal">' + App.Settings.promo_message + '</div>');
                 $('body').append(promo_message);
                 this.model.set('widthPromoMessage', promo_message.width());
                 promo_message.remove();
                 this.model.set('widthWindow', $(window).width());
-                $(window).resize(this.resizePromoMessage);
                 this.addPromoMessage(); // add a promo message
+                $(window).resize(function() {
+                    if (self.model.get('widthWindow') !== $(window).width()) {
+                        self.model.set('widthWindow', $(window).width());
+                    }
+                });
             } else {
                 this.$('.promo_message').hide();
-            }
-        },
-        /**
-         * Resize of a promo message.
-         */
-        resizePromoMessage: function() {
-            if (App.Data.footer.get('widthWindow') !== $(window).width()) {
-                App.Data.footer.set('widthWindow', $(window).width());
             }
         },
         /**
