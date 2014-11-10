@@ -366,14 +366,14 @@ define(["backbone"], function(Backbone) {
             }, this);
 
             this.listenTo(RevelAPI, 'onProfileCancel onAuthenticationCancel', function() {
-                profileCancelCallback && this.navigate(profileCancelCallback, true);
+                typeof profileCancelCallback == 'string' && this.navigate(profileCancelCallback, true);
                 profileCancelCallback = undefined;
                 profileSaveCallback = undefined;
                 mainModel.trigger('hideRevelPopup', RevelAPI);
             }, this);
 
             this.listenTo(RevelAPI, 'onProfileSaved', function() {
-                profileSaveCallback && this.navigate(profileCancelCallback, true);
+                typeof profileSaveCallback == 'string' && this.navigate(profileSaveCallback, true);
                 profileCancelCallback = undefined;
                 profileSaveCallback = undefined;
             }, this);
