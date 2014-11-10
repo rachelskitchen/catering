@@ -210,10 +210,14 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             inputTypeNumberMask(this.$('input[name=level], input[name=section], input[name=row], input[name=seat]'), /^[\d\w]{0,4}$/);
         },
         events: {
-            'change input': 'onChangeElem'
+            'change input': 'onChangeElem',
+            'change select': 'onChangeSelect'
         },
         onChangeElem: function(e) {
             e.target.value = e.target.value.toUpperCase();
+            this.model.set(e.target.name, e.target.value);
+        },
+        onChangeSelect: function(e) {
             this.model.set(e.target.name, e.target.value);
         }
     });

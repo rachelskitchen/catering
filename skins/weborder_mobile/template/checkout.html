@@ -33,14 +33,40 @@
 <script type="text/template" id="checkout_seat-template">
     <% if(isDeliverToSeat) { %>
         <% if(orderFromSeat.enable_level) { %>
+            <% if(levels.length) { %>
+            <div class="select-wrapper">
+                <label class="select required">
+                    <select class="level" name="level">
+                        <option value="" selected="selected">Level</option>
+                        <% _.each(levels, function(level) { %>
+                        <option value="<%= level %>"><%= level %></option>
+                        <% }); %>
+                    </select>
+                </label>
+            </div>
+            <% } else { %>
             <label class="input label required">
                 <input type="text" placeholder="Level" name="level" class="level ios-safari-caret" maxlength="4" value="<%= level %>">
             </label>
+            <% } %>
         <% } %>
         <% if(orderFromSeat.enable_sector) { %>
+            <% if(sections.length) { %>
+            <div class="select-wrapper">
+                <label class="select required">
+                    <select class="section" name="section">
+                        <option value="" selected="selected">Section</option>
+                        <% _.each(sections, function(section) { %>
+                        <option value="<%= section %>"><%= section %></option>
+                        <% }); %>
+                    </select>
+                </label>
+            </div>
+            <% } else { %>
             <label class="input label required">
                 <input type="text" placeholder="Section" name="section" class="section ios-safari-caret" maxlength="4" value="<%= section %>">
             </label>
+            <% } %>
         <% } %>
         <% if(orderFromSeat.enable_row) { %>
             <label class="input label required">
