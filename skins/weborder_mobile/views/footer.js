@@ -70,7 +70,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          * Calculate a promo message width.
          */
         calculatePromoMessageWidth: function() {
-            var self = this;
             if (this.model.get('isShowPromoMessage')) {
                 var promo_message = Backbone.$('<div class="promo_message promo_message_internal">' + App.Settings.promo_message + '</div>');
                 $('body').append(promo_message);
@@ -97,7 +96,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         addPromoMessage: function() {
             var self = this;
             window.setTimeout(function() {
-                var promo_message = self.$('.promo_message');
                 var promo_text = self.$('.promo_text');
                 var promo_marquee = self.$('.promo_marquee');
                 if (self.model.get('widthPromoMessage') >= App.Data.footer.get('widthWindow')) {

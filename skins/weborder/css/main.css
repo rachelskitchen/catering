@@ -902,6 +902,13 @@ section.maintenance p {
 }
 /** confirm page end*/
 
+.promo_message_internal {
+    display: block !important;
+    position: absolute;
+    top: 1000em;
+    white-space: nowrap;
+}
+
 .promo_message {
     display: none;
     font-family: helvetica neue;
@@ -909,5 +916,4 @@ section.maintenance p {
     font-weight: regular;
     padding: 0.15em 0.4em 0em 0.4em;
     text-align: center;
-    white-space: nowrap;
 }
