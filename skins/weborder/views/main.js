@@ -36,7 +36,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
             this.listenTo(this.model, 'change:isShowPromoMessage', this.addPromoMessage, this);
-            this.listenToOnce(this.model, 'loadCompleted', this.addPromoMessage, this);
 
             this.iOSFeatures();
 
@@ -45,6 +44,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
+            this.addPromoMessage(); // add promo message
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             !this.iPad7Feature.init && this.iPad7Feature();
 
@@ -186,17 +186,21 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         hideSpinner: function() {
             this.$('#main-spinner').addClass('ui-visible').removeClass('ui-visible');
         },
+        remove: function() {
+            $(window).off('resize', this.resizePromoMessage);
+            App.Views.FactoryView.prototype.remove.apply(this, arguments);
+        },
         /**
          * Add promo message.
          */
         addPromoMessage: function() {
             var self = this;
-            var promo_text = $("#promo_text");
-            var promo_marquee = $("#promo_marquee");
-            if (self.model.get("isShowPromoMessage")) {
+            var promo_text = $('#promo_text');
+            var promo_marquee = $('#promo_marquee');
+            if (self.model.get('isShowPromoMessage')) {
                 var change_container_message = function() {
                     self.$el.find(promo_text).show();
-                    if (self.$el.find(promo_text).find("span").width() >= self.$el.find(promo_text).parent().width()-20) {
+                    if (self.$el.find(promo_text).find('span').width() >= self.$el.find(promo_text).parent().width()-20) {
                         self.$el.find(promo_text).hide();
                         self.$el.find(promo_marquee).show();
                     }
