@@ -122,12 +122,12 @@ define(["backbone"], function(Backbone) {
                     cur_hash = location.hash.slice(1);
 
                 if (this.hashForGoogleMaps)
-                this.hashForGoogleMaps.some( function(hash) {
-                    if (cur_hash == hash) {
-                        needGoogleMaps = true;
-                        return true;
-                    }
-                });
+                    this.hashForGoogleMaps.some( function(hash) {
+                        if (cur_hash == hash) {
+                            needGoogleMaps = true;
+                            return true;
+                        }
+                    });
 
                 if (needGoogleMaps)
                     App.Data.settings.load_geoloc();
@@ -180,8 +180,7 @@ define(["backbone"], function(Backbone) {
 
             dependencies = Array.isArray(dependencies) ? dependencies : [];
 
-            skin == App.Skins.WEBORDER && !this.prepare.initialized && initTheme.call(this);
-            skin == App.Skins.RETAIL && !this.prepare.initialized && initTheme.call(this);
+            color_schemes.length > 0 && !this.prepare.initialized && initTheme.call(this);
 
             for(i = 0, j = scripts.length; i < j; i++)
                 js.push(skin + "/js/" + scripts[i]);
@@ -263,6 +262,123 @@ define(["backbone"], function(Backbone) {
 
                 typeof cb == 'function' && cb();
             }, this);
+        }
+    });
+
+    App.Routers.MobileRouter = App.Routers.MainRouter.extend({
+        profile: function(step, header, footer) {
+            step = step <= 2 && step >= 0 ? Math.ceil(step) : 0;
+
+            var RevelAPI = App.Data.RevelAPI,
+                next = this.navigate.bind(this, 'profile/' + (step + 1), true),
+                prev = this.navigate.bind(this, 'profile/' + (step - 1), true),
+                save = RevelAPI.trigger.bind(RevelAPI, 'onProfileSaved'),
+                views;
+
+            views = [{
+                footer: {next: RevelAPI.processPersonalInfo.bind(RevelAPI, next), prev: null, save: null},
+                content: {mod: 'ProfilePersonal', cache_id: 'ProfilePersonal'}
+            }, {
+                footer: {next: RevelAPI.processPaymentInfo.bind(RevelAPI, next), prev: prev, save: null},
+                content: {mod: 'ProfilePayment', cache_id: 'ProfilePayment'}
+            }, {
+                footer: {next: null, prev: prev, save: RevelAPI.saveProfile.bind(RevelAPI, save)},
+                content: {mod: 'ProfileSecurity', cache_id: 'ProfileSecurity'}
+            }];
+
+            this.prepare('profile', function() {
+                var view = views[step];
+
+                App.Data.header.set('page_title', 'Profile');
+                App.Data.footer.set(view.footer);
+                App.Data.mainModel.set({
+                    header: header,
+                    footer: footer,
+                    content: _.extend({modelName: 'Revel', className: 'revel-profile', model: RevelAPI}, view.content)
+                });
+
+                this.change_page();
+            });
+        },
+        initRevelAPI: function() {
+            App.Data.RevelAPI = new App.Models.RevelAPI();
+
+            var RevelAPI = App.Data.RevelAPI,
+                mainModel = App.Data.mainModel,
+                profileCancelCallback,
+                profileSaveCallback;
+
+            if(!RevelAPI.isAvailable()) {
+                return;
+            }
+
+            this.once('started', RevelAPI.run.bind(RevelAPI));
+
+            this.listenTo(RevelAPI, 'onWelcomeShow', function() {
+                mainModel.trigger('showRevelPopup', {
+                    modelName: 'Revel',
+                    mod: 'Welcome',
+                    model: RevelAPI,
+                    cacheId: 'RevelWelcomeView'
+                });
+            }, this);
+
+            this.listenTo(RevelAPI, 'onWelcomeReviewed', function() {
+                mainModel.trigger('hideRevelPopup', RevelAPI);
+                RevelAPI.set('firstTime', false);
+            }, this);
+
+
+            this.listenTo(RevelAPI, 'onAuthenticate', function() {
+                mainModel.trigger('showRevelPopup', {
+                    modelName: 'Revel',
+                    mod: 'Authentication',
+                    model: RevelAPI,
+                    cacheId: 'Authentication'
+                });
+            }, this);
+
+            this.listenTo(RevelAPI, 'onProfileCreate', function() {
+                mainModel.trigger('showRevelPopup', {
+                    modelName: 'Revel',
+                    mod: 'ProfileNotification',
+                    model: RevelAPI,
+                    cacheId: 'ProfileNotification'
+                });
+            }, this);
+
+            this.listenTo(RevelAPI, 'onProfileShow', function() {
+                mainModel.trigger('hideRevelPopup', RevelAPI);
+                profileCancelCallback = Backbone.history.fragment;
+                this.navigate('profile', true);
+            }, this);
+
+            this.listenTo(RevelAPI, 'onProfileCancel onAuthenticationCancel', function() {
+                mainModel.trigger('hideRevelPopup', RevelAPI);
+                profileCancelCallback && this.navigate(profileCancelCallback, true);
+                profileCancelCallback = undefined;
+                profileSaveCallback = undefined;
+            }, this);
+
+            this.listenTo(RevelAPI, 'onProfileSaved', function() {
+                profileSaveCallback && this.navigate(profileCancelCallback, true);
+                profileCancelCallback = undefined;
+                profileSaveCallback = undefined;
+            }, this);
+
+            this.listenTo(this, 'navigateToLoyalty', function() {
+                profileSaveCallback = 'loyalty';
+                RevelAPI.checkProfile(this.navigate.bind(this, profileSaveCallback, true));
+            }, this);
+
+            this.listenTo(this, 'navigateToProfile', function() {
+                profileSaveCallback = Backbone.history.fragment;
+                RevelAPI.checkProfile(RevelAPI.trigger.bind(RevelAPI, 'onProfileShow'));
+            }, this);
+
+            this.listenTo(App.Data.header, 'onProfileCancel', function() {
+                RevelAPI.trigger('onProfileCancel');
+            });
         }
     });
 });
