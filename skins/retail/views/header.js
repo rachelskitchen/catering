@@ -152,16 +152,13 @@ define(["backbone", "factory"], function(Backbone) {
          * Resize a logo & a promo message.
          */
         resizeLogoPromoMessage: function() {
-            var div_logo = this.$('div.logo');
-            var img_logo = this.$('img.logo');
-            var promo_message = this.$('.promo_message');
-            var percent_img = img_logo.width() / div_logo.width();
-            var percent_promo = 100 - (percent_img * 100) - 1.5;
-            if (percent_promo <= 0) {
-                promo_message.hide();
-            } else {
-                promo_message.css({'width': percent_promo + '%'});
-            }
+            var header_left = this.$('div.header_left')
+            var logo_container = this.$('div.logo');
+            var promo_container = this.$('div.promo');
+            var percent_logo = logo_container.width() / header_left.width();
+            if (percent_logo > 0.6) logo_container.css({'max-width': '60%'});
+            var width_logo = logo_container.width();
+            promo_container.css({'left': width_logo + 15 + 'px'});
         },
         /**
          * Add a promo message.
@@ -169,13 +166,10 @@ define(["backbone", "factory"], function(Backbone) {
         addPromoMessage: function() {
             var self = this;
             window.setTimeout(function() {
+                var promo_container = self.$('.promo');
                 var promo_text = self.$('.promo_text');
                 var promo_marquee = self.$('.promo_marquee');
-                var div_logo = self.$('div.logo');
-                var img_logo = self.$('img.logo');
-                var percent_img = img_logo.width() / div_logo.width();
-                var percent_promo = 100 - (percent_img * 100) - 1.5;
-                if (self.model.get('widthPromoMessage') >= div_logo.width() * (percent_promo / 100)) {
+                if (self.model.get('widthPromoMessage') >= promo_container.width()) {
                     promo_text.hide();
                     promo_marquee.show();
                 } else {

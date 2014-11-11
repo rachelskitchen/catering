@@ -216,15 +216,28 @@ footer {
 #header .main {
     position: relative;
 }
-#header .main div.logo {
+#header .main div.header_left {
     height: 100%;
-    position: absolute;
     left: 0;
+    line-height: 62px;
+    position: absolute;
     right: 550px;
     top: 0;
-    text-align: left;
-    line-height: 62px;
+}
+#header .main div.header_left div.logo {
+    float: left;
     font-size: 8px;
+    height: 100%;
+    max-width: 100%;
+    position: relative;
+    text-align: left;
+    width: auto;
+}
+#header .main div.header_left div.promo {
+    float: left;
+    height: 100%;
+    position: absolute;
+    right: 0px;
 }
 #header .main div.logo .ui-spinner {
     left: 25px;
@@ -907,7 +920,6 @@ input[type="search"] {
 
 .promo_message_internal {
     display: block !important;
-    font-size: 1.65em !important;
     position: absolute;
     top: 1000em;
     white-space: nowrap;
@@ -915,9 +927,8 @@ input[type="search"] {
 
 .promo_message {
     display: none;
-    float: right;
     font-family: helvetica neue;
-    font-size: 3.3em;
+    font-size: 1.65em;
     font-weight: regular;
     padding-top: 0.15em;
     text-align: center;
