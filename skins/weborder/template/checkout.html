@@ -130,9 +130,9 @@
              <% if(levels.length) { %>
              <div class="select select-wrapper">
                 <select class="level-select" name="level">
-                    <option value="" selected="selected">Levels</option>
-                    <% _.each(levels, function(level) { %>
-                    <option value="<%= level %>"><%= level %></option>
+                    <option value="" <% if (level == "") { %>selected="selected"<% }; %>>Level</option>
+                    <% _.each(levels, function(l) { %>
+                    <option value="<%= l %>" <% if (level == l) { %>selected="selected"<% }; %>><%= l %></option>
                     <% }); %>
                  </select>
                 </div>
@@ -149,9 +149,9 @@
             <% if(sections.length) { %>
             <div class="select select-wrapper">
                 <select class="section-select" name="section">
-                    <option value="" selected="selected">Section</option>
-                    <% _.each(sections, function(section) { %>
-                    <option value="<%= section %>"><%= section %></option>
+                    <option value="" <% if (section == "") { %>selected="selected"<% }; %>>Section</option>
+                    <% _.each(sections, function(s) { %>
+                    <option value="<%= s %>" <% if (section == s) { %>selected="selected"<% }; %>><%= s %></option>
                     <% }); %>
                 </select>
             </div>
