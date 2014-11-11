@@ -106,7 +106,8 @@ MSG.ERROR_REVEL_EMPTY_OLD_PASSWORD = 'Please enter old password.';
 MSG.ERROR_REVEL_USER_EXISTS = 'User %s already exists.';
 MSG.ERROR_REVEL_UNABLE_TO_PERFORM = 'Unable to perform action. Please ask about this problem at ask.revelsystems.com.';
 MSG.ERROR_REVEL_ATTEMPTS_EXCEEDED = 'Max number of authentication attempts exceeded. Account deleted.';
-MSG.ERROR_REVEL_PASSWORD_UPDATE_FAILED = 'Password update failed. Old password is invalid.'
+MSG.ERROR_REVEL_PASSWORD_UPDATE_FAILED = 'Password update failed. Old password is invalid.';
+MSG.ERROR_REVEL_AUTHENTICATION_FAILED = 'Authentication failed. Please enter valid email & password.';
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,

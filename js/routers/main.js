@@ -300,6 +300,25 @@ define(["backbone"], function(Backbone) {
                 this.change_page();
             });
         },
+        loyalty: function(header, footer) {
+            this.prepare('loyalty', function() {
+                App.Data.header.set('page_title', 'Loyalty');
+
+                App.Data.mainModel.set({
+                    header: header,
+                    footer: footer,
+                    content: {
+                        modelName: 'Revel',
+                        className: 'revel-loyalty',
+                        model: App.Data.RevelAPI,
+                        mod: 'Loyalty',
+                        cache_id: 'Loyalty'
+                    }
+                });
+
+                this.change_page();
+            });
+        },
         initRevelAPI: function() {
             App.Data.RevelAPI = new App.Models.RevelAPI();
 
@@ -348,20 +367,20 @@ define(["backbone"], function(Backbone) {
             }, this);
 
             this.listenTo(RevelAPI, 'onProfileShow', function() {
-                mainModel.trigger('hideRevelPopup', RevelAPI);
                 profileCancelCallback = Backbone.history.fragment;
                 this.navigate('profile', true);
+                mainModel.trigger('hideRevelPopup', RevelAPI);
             }, this);
 
             this.listenTo(RevelAPI, 'onProfileCancel onAuthenticationCancel', function() {
-                mainModel.trigger('hideRevelPopup', RevelAPI);
-                profileCancelCallback && this.navigate(profileCancelCallback, true);
+                typeof profileCancelCallback == 'string' && this.navigate(profileCancelCallback, true);
                 profileCancelCallback = undefined;
                 profileSaveCallback = undefined;
+                mainModel.trigger('hideRevelPopup', RevelAPI);
             }, this);
 
             this.listenTo(RevelAPI, 'onProfileSaved', function() {
-                profileSaveCallback && this.navigate(profileCancelCallback, true);
+                typeof profileSaveCallback == 'string' && this.navigate(profileSaveCallback, true);
                 profileCancelCallback = undefined;
                 profileSaveCallback = undefined;
             }, this);
