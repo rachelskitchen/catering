@@ -3,12 +3,16 @@
         <div class='promo_message promo_text'> <span> <%= _settings.promo_message %> </span> </div>
         <div class='promo_message promo_marquee'> <marquee behavior='scroll' direction='left' scrollamount='6' loop='-1'> <%= _settings.promo_message %> </marquee> </div>
     <% } %>
-    <ul>
+    <ul class="<% if(_settings.isRetailMode) {print('retail-mode');} %>">
         <li class="left">
             <div id="about" class="btn1"><span>About</span></div>
         </li>
         <li class="center">
-            <% if(_settings.online_orders) { %>
+            <% if(_settings.isRetailMode && _settings.RevelAPI) { %>
+            <div class="btn1 loyalty"><span>Loyalty</span></div>
+            <% } else if(_settings.isRetailMode && _settings.online_orders) { %>
+            <div id="location" class="btn1"><span>Location</span></div>
+            <% } else if(_settings.online_orders) { %>
             <div id="myorder" class="btn2">
                 <span>My Order</span>
                 <span class="count"></span>
@@ -16,7 +20,16 @@
             <% } %>
         </li>
         <li class="right">
+            <% if(_settings.isRetailMode && _settings.online_orders) { %>
+            <div id="myorder" class="btn1">
+                <span>My Order</span>
+                <span class="count"></span>
+            </div>
+            <% } else if(_settings.RevelAPI) { %>
+            <div class="btn1 loyalty"><span>Loyalty</span></div>
+            <% } else { %>
             <div id="location" class="btn1"><span>Location</span></div>
+            <% } %>
         </li>
     </ul>
 </script>

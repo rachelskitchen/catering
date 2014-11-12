@@ -84,6 +84,7 @@ textarea, input {
 #header::after {
     height: 2.5em;
     bottom: -2.5em;
+    pointer-events: none;
 }
 
 #header h1 {

@@ -87,6 +87,9 @@ define(["backbone", "main_router"], function(Backbone) {
             clearQueryString();
             var self = this;
 
+            // used for footer view
+            App.Settings.isRetailMode = ServiceType.RETAIL == App.Settings.type_of_service;
+
             // set locked routes if online orders are disabled
             if(!App.Settings.online_orders) {
                 this.lockedRoutes = ['modifiers_edit', 'myorder', 'checkout', 'card', 'giftcard', 'confirm', 'done', 'pay'];

@@ -15,29 +15,41 @@
 #footer li {
     float: left;
     height: 100%;
-}
-
-#footer li.left, #footer li.right {
-    width: 38%;
-}
-
-#footer li.center {
-    width: 24%;
     position: relative;
 }
 
-#about, #location, #myorder {
+#footer .left, #footer .right {
+    width: 38%;
+}
+
+#footer .center {
+    width: 24%;
+}
+
+#footer .retail-mode .left, #footer .retail-mode .right {
+    width: 33%;
+}
+
+#footer .retail-mode .center {
+    width: 34%;
+}
+
+
+#about, #location, #myorder, .loyalty {
     display: block;
-    height: 100%;
     margin: 0 auto;
     cursor: pointer;
+    text-align: center;
 }
 
-#about, #location {
+.btn1 {
     width: 19.1em;
+    height: 80%;
+    position: relative;
+    top: 10%;
 }
 
-#myorder {
+#myorder.btn2 {
     height: 115%;
     width: 15.5em;
     margin-left: -7.75em;
@@ -46,24 +58,25 @@
     left: 50%;
 }
 
-#about span, #location span, #myorder span {
+#footer span {
     font-size: 2.2em;
     position: relative;
     top: 2.3em;
 }
 
-#myorder span {
+#myorder.btn2 span {
     top: 3.9em;
 }
 
-#about, #location, #myorder {
-    text-align: center;
-}
-
-#about {
-    height: 80%;
-    position: relative;
-    top: 10%;
+#myorder.btn1:before {
+    content: '\f07a';
+    display: block;
+    font-family: FontAwesome;
+    position: absolute;
+    top: -0.1em;
+    left: 50%;
+    font-size: 6em;
+    margin-left: -0.55em;
 }
 
 #about:before {
@@ -75,12 +88,6 @@
     left: 50%;
     font-size: 4.5em;
     margin-left: -0.4em;
-}
-
-#location {
-    height: 80%;
-    position: relative;
-    top: 10%;
 }
 
 #location:before {
@@ -96,7 +103,18 @@
     text-align: center;
 }
 
-#myorder .count {
+#myorder.btn1 .count {
+    position: absolute;
+    top: 10%;
+    width: 100%;
+    border-radius: 2.3em;
+    font-size: 2em;
+    display: block;
+    font-weight: bold;
+    text-align: center;
+}
+
+#myorder.btn2 .count {
     position: absolute;
     padding: 0.1em 0.45em;
     top: 15%;

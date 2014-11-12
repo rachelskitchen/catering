@@ -191,12 +191,15 @@ select {
 .btn1, .btn2 {
     color: #fff;
 }
-#myorder {
+#myorder.btn2 {
     background: url('img/myorder.png') no-repeat 50% 30% #444 !important;
     background-size: 50% !important;
 }
-#myorder .count {
+#myorder.btn2 .count {
     background: #00aaea;
+}
+#myorder.btn1 .count {
+    color: #444;
 }
 #footer ul.confirm.double li:not(:last-child),
 #footer ul.confirm.triple li:not(:last-child) {
