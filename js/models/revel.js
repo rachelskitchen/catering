@@ -142,7 +142,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             try {
                 // convert response to object if it isn't
                 if(!(response instanceof Object)) {
-                    response = JSON.parse(decodeURIComponent(response));
+                    response = JSON.parse(decodeURIComponent(response.replace(/(%22)/g, '\\$1'))); // %22 is symbol " encoded
                 }
 
                 // set response errorCode
