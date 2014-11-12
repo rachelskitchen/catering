@@ -525,30 +525,39 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             var data = this.model.toJSON();
             data.iPad = iPad();
             this.$el.html(this.template(data));
-
             inputTypeNumberMask(this.$('input'), /^[\d\w]{0,14}$/);
+
+            return this;
         },
-        events: {
-            'change input[name=discount_code]': 'onChangeDiscountCode',
-            'click .btnApply': 'onApplyCode'
+        events: {            
+            'click .btnApply': 'onApplyCode',
+            'keyup input[name=discount_code]': 'onChangeDiscountCode'
         },
         onChangeDiscountCode: function(e) {
-            e.target.value = e.target.value.toUpperCase();
-            this.model.set("discount_code", e.target.value);
-            this.model.set("discount_code_applied", false);          
+            var newValue = e.target.value,
+                oldValue = this.model.get("discount_code");
+
+            if (newValue == oldValue)
+                return;
+           
+            this.model.set({"discount_code":newValue}, {silent: true});
+
+            setTimeout( (function() { 
+                   this.model.set("discount_to_apply", true); 
+                }).bind(this), 0);
         },
         onApplyCode: function() {
             var self = this, 
                 myorder = this.options.myorder;
-            
+ 
             if (!/^[\d\w]{7,14}$/.test(this.model.get("discount_code")) ) {
                 App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
                 return;
             } 
-            myorder.get_discounts()
+            myorder.get_discounts({ apply_discound: true})
                 .success(function(data) {
                     if (data.status == "OK") {
-                        self.model.set("discount_code_applied", true);
+                        self.model.set("discount_to_apply", false);
                     }
                 });
         }

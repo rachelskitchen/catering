@@ -104,6 +104,7 @@ MSG.PRODUCTS_VALID_TIME = "Available: ";
 MSG.ERROR_NO_MSG_FROM_SERVER = "No message about the error";
 MSG.ERROR_GET_DISCOUNTS = "Failed request to get discounts";
 MSG.ERROR_INCORRECT_DISCOUNT_CODE = "Type correct discount code from 7 to 14 symbols";
+MSG.DISCOUNT_CODE_NOT_FOUND = "The typed discount code hasn't been found. Only automatic discounts can be applied.";
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,

@@ -161,7 +161,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     model: this.model
                 });
                 self.subViews.push(view);
-                view.$el.addClass('s' + (round_monetary_currency(this.model.get("discount").toString()).length + 1));
+                view.$el.addClass('s' + (round_monetary_currency(this.model.get("discount").toString()).length + 2));
                 self.$('ul').append(view.el);           
             }
 
@@ -224,7 +224,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.currency_symbol = App.Settings.currency_symbol;
             model.discount_sum = this.model.toString();
             model.discount_name = this.model.get('name');          
-            model.price_length = model.discount_sum.length;
+            model.price_length = model.discount_sum.length + 1;
             this.$el.html(this.template(model));
             if (this.model.get("sum") <= 0) {
                 this.$el.hide();

@@ -26,12 +26,13 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
     App.Models.Total = Backbone.Model.extend({
         defaults: {
             total: 0,
+            total_final: 0, //total minus all discounts
             tax: 0,
             surcharge: 0,
             tip: null,
             delivery: null,
             bag_charge: null,
-            discount_total: 0, //sum of all discounts
+            discounts: 0, //sum of all discounts
             tax_country: '',
             prevailing_surcharge: null,
             prevailing_tax: null
@@ -97,8 +98,8 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
         /**
          * get total discount
          */
-        get_discount_total: function() {
-            return round_monetary_currency(this.get('discount_total'));
+        get_discounts_str: function() {
+            return round_monetary_currency(this.get('discounts'));
         },
         /*
          * Get tip.

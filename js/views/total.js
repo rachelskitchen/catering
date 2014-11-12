@@ -77,7 +77,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.deliveryCharge = this.model.get_delivery_charge();
             model.tip_allow = App.Settings.accept_tips_online === true;
             model.discount_allow = App.Settings.accept_discount_code === true;
-            model.discount_total = this.model.get_discount_total();
+            model.discounts = this.model.get_discounts_str();
             
             if (this.collection.get_only_product_quantity() == 0) {
                 model.surcharge = round_monetary_currency(0);
@@ -109,7 +109,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.$('.subtotal').text(data.subTotal);
             this.$('.surcharge').text(data.surcharge);
             this.$('.tax').text(data.tax);
-            this.$('.discount').text(data.discount_total);
+            this.$('.discount').text(data.discounts);
             this.$('.tip').text(data.tip);
             this.$('.grandtotal').text(data.grandTotal);            
         },

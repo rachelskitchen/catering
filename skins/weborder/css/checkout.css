@@ -231,7 +231,7 @@
 }
 #content > .checkout .discount .btn {
     display: inline-block;
-    width: 60px;
+    width: 65px;
     height: 32px;
     border-width: 1px;
     border-style: solid;
@@ -241,6 +241,9 @@
     font-size: 14px;
     cursor: pointer;
     margin-top: 8px;
+}
+#content > .checkout .discount .btn.applied {
+   color: rgb(30, 30, 30);
 }
 #content > .checkout .discount .btn.disabled {
     cursor: default;
