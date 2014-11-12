@@ -43,9 +43,9 @@
 </script>
 
 <script type="text/template" id="myorder_matrix-template">
-    <div class='product modifiers-list product_info'>
+    <div class='product modifiers-list product_info modifiers-bottom-line'>
     </div>
-    <div class='quantity modifiers-list quantity_info'>
+    <div class='quantity modifiers-list quantity_info modifiers-bottom-line'>
     </div>
     <div class='product_attribute_info modifiers'>
     </div>
@@ -53,11 +53,13 @@
     </div>
     <div class='product_instructions'>
     </div>
-</script><script type="text/template" id="myorder_note-template">
+</script>
+
+<script type="text/template" id="myorder_note-template">
     <% if(noteAllow) {%>
-      <div class='note_text'>Order Notes</div>
-      <div class='note_field'>
-          <textarea class="instructions" placeholder='Order notes'><%=note%></textarea>
+      <div class='note_text color-style1'>Order Notes</div>
+      <div class='note_field border2'>
+          <textarea class="instructions bg-style1" placeholder='Order notes'><%=note%></textarea>
       </div>
     <% } %>
 </script>

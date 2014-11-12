@@ -2,6 +2,7 @@
     "name_app": "Web Ordering App",
     "styles": [],
     "scripts": [],
+    "color_schemes": ["default", "revel"],
     "img_default": "none.png",
     "routing": {
         "main": {

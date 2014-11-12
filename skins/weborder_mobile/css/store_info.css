@@ -1,33 +1,27 @@
 /* main mod start */
-
 #content .logo {
     height: 16.9em;
     width: 100%;
     text-align: center;
 }
 
-#content #logo {
+#logo {
     display: none;
 }
 
 #content .store_info_main_logo {
     height: 20.2em;
     position: relative;
-    background: #585858;
 }
 
 #content .store_info_main_logo .divider {
     width: 100%;
     height: 3.3em;
-    border-top: 1px solid #a0a0a0;
+    border-top-width: 1px;
+    border-top-style: solid;
     position: absolute;
     bottom: 0;
     left: 0;
-    background-image: linear-gradient(bottom, #545454 0%, #585858 50%, #696969 100%);
-    background-image: -o-linear-gradient(bottom, #545454 0%, #585858 50%, #696969 100%);
-    background-image: -moz-linear-gradient(bottom, #545454 0%, #585858 50%, #696969 100%);
-    background-image: -webkit-linear-gradient(bottom, #545454 0%, #585858 50%, #696969 100%);
-    background-image: -ms-linear-gradient(bottom, #545454 0%, #585858 50%, #696969 100%);
 }
 
 #content .store_info_main_logo .divider:before, #content .store_info_main_logo .divider:after {
@@ -41,21 +35,18 @@
 #content .store_info_main_logo .divider:before {
     height: 1.3em;
     top: -1.3em;
-    background: url('../img/store_info_divider_top.png') repeat-x 0 0 transparent;
-    background-size: 1px 100%;
 }
 
 #content .store_info_main_logo .divider:after {
     height: 2.4em;
     bottom: -2.4em;
-    background: url('../img/store_info_divider_bottom.png') repeat-x 0 0 transparent;
-    background-size: 1px 100%;
 }
 
 #content .store_info_main_data {
     width: 100%;
     height: 17.7em;
-    border-bottom: 1px solid #a8c4d8;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
     position: relative;
     cursor: pointer;
 }
@@ -73,16 +64,6 @@
     position: absolute;
     top: 50%;
     right: 2em;
-    background: url('../img/menu_choice_arrow.png') no-repeat 0 0 transparent;
-    background-size: 200% 100%;
-}
-
-#content .store_info_main_data:active:after {
-    background-position: 100% 0;
-}
-
-#content .store_info_main_data:active {
-    box-shadow: 0 0 6em rgba(0, 170, 234, 0.3) inset;
 }
 
 #content .store_info_main_data h2 {
@@ -113,7 +94,6 @@
 }
 
 #content a.phone, #content a.phone:link, #content a.phone:visited, #content a.phone:hover, #content a.phone:active {
-    color: #2699ca;
     text-decoration: none;
 }
 
@@ -129,7 +109,8 @@
     position: relative;
     margin-bottom: 1em;
     font-size: 2.8em;
-    border-bottom: 1px solid #a8c4d8;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
     padding-bottom: 1em;
 }
 
@@ -182,17 +163,8 @@
 
 #content ul.location ul.desc li:not(.info) {
     border-width: 1px 1px 0 1px;
-    border-color: #a8c4d8;
     border-style: solid;
     padding: 0.5em;
-}
-
-#content ul.location ul.desc li.row:nth-child(2n) {
-    background: rgba(168, 196, 216, 0.09);
-}
-
-#content ul.location ul.desc li.row:nth-child(2n + 1) {
-    background: rgba(255, 255, 255, 0.58);
 }
 
 #content ul.location ul.desc li.row.first {
@@ -201,13 +173,10 @@
 }
 
 #content ul.location ul.desc li.row.last {
-    border-bottom: 1px solid #a8c4d8;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
     border-bottom-right-radius: 0.5em;
     border-bottom-left-radius: 0.5em;
-}
-
-#content ul.location .closed {
-    color: red;
 }
 
 /* location mod end */
@@ -272,8 +241,6 @@
 }
 
 #content .about h2 > a {
-    background: url("../img/poweredBy.png") no-repeat 1em 0.5em transparent;
-    background-size: 6.5em;
     height: 1.7em;
     width: 8em;
     display: block;
@@ -293,7 +260,7 @@
 
 #content .app-gallery {
     height: 92%;
-    top:4%;
+    top: 4%;
 }
 
 /* gallery mod end */

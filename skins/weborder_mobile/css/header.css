@@ -1,28 +1,14 @@
 /* buttons (begin) */
 .header_block_buttons {
-    -moz-box-shadow: 0.10em 0.25em 0.5em #a09d9d, inset 0em 0em 0.5em #e8e8e8;
-    -webkit-box-shadow: 0.10em 0.25em 0.5em #a09d9d, inset 0em 0em 0.5em #e8e8e8;
-    background-color: #ffffff;
-    background-image: linear-gradient(top, #ffffff 0%, #eeeeee 100%);
-    background-image: -moz-linear-gradient(top, #ffffff 0%, #eeeeee 100%);
-    background-image: -webkit-linear-gradient(top, #ffffff 0%, #eeeeee 100%);
-    background-image: -o-linear-gradient(top, #ffffff 0%, #eeeeee 100%);
-    background-image: -ms-linear-gradient(top, #ffffff 0%, #eeeeee 100%);
-    border: solid 0.32em #c3dce9;
-    box-shadow: 0.10em 0.25em 0.5em #a09d9d, inset 0em 0em 0.5em #e8e8e8;
+    border-style: solid;
+    border-width: 0.32em;
     border-radius: 3em;
     cursor: pointer;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#eeeeee", endColorstr="#eeeeee", GradientType=0);
     height: 4em;
     margin-top: 1.5em;
     padding-top: 0.6em;
     position: absolute;
     text-align: center;
-}
-.header_block_buttons:active {
-    -moz-box-shadow: 0em -0.13em 0.19em #a09d9d, inset 0em 0em 0.5em #f2f2f2;
-    -webkit-box-shadow: 0em -0.13em 0.19em #a09d9d, inset 0em 0em 0.5em #f2f2f2;
-    box-shadow: 0em -0.13em 0.19em #a09d9d, inset 0em 0em 0.5em #f2f2f2;
 }
 .header_block_button_left {
     left: 0;
@@ -43,9 +29,7 @@
 #header .one_button .leftBtn{
     width: 17.4em;
 }
-#header .one_button .leftBtn:active {
-    background-position: 100%;
-}
+
 .leftBtn, .rightBtn {
     display: none;
 }
@@ -58,10 +42,9 @@
     left: 5.21em;
 }
 
-#header .one_button span {
+#header .one_button span, #header .two_button span {
     font-size: 2.8em;
     font-weight: bold;
-    color: #3F7CA4;
 }
 
 /* products mod end */
@@ -90,30 +73,24 @@
     right: 0;
 }
 
-#header .two_button span {
-    font-size: 2.8em;
-    font-weight: bold;
-    color: #3F7CA4;
-}
-
 #header .myorder h1 {
     right: 5.4em;
 }
+
 #header .myorder .rightBtn {
     width: 18.3em;
 }
+
 #header .location h1 {
     right: 3.7em;
 }
+
 #header .location .rightBtn {
     width: 11.3em;
 }
 
 #header .rightBtn.disabled {
-    border: solid 0.32em grey;
-}
-
-#header .rightBtn.disabled span{
-    color: grey;
+    border-style: solid;
+    border-width: 0.32em;
 }
 /* modifiers mod end */

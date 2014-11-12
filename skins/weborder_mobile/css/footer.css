@@ -26,18 +26,18 @@
     position: relative;
 }
 
-#footer #about, #footer #location, #footer #myorder {
+#about, #location, #myorder {
     display: block;
     height: 100%;
     margin: 0 auto;
     cursor: pointer;
 }
 
-#footer #about, #footer #location {
+#about, #location {
     width: 19.1em;
 }
 
-#footer #myorder {
+#myorder {
     height: 115%;
     width: 15.5em;
     margin-left: -7.75em;
@@ -46,79 +46,70 @@
     left: 50%;
 }
 
-#footer #about span, #footer #location span, #footer #myorder span {
+#about span, #location span, #myorder span {
     font-size: 2.2em;
-    color: #fff;
     position: relative;
     top: 2.3em;
 }
 
-#footer #myorder span {
+#myorder span {
     top: 3.9em;
 }
 
-#footer #about, #footer #location, #footer #myorder {
+#about, #location, #myorder {
     text-align: center;
 }
 
-#footer #about {
+#about {
     height: 80%;
     position: relative;
     top: 10%;
 }
 
-#footer #about:before {
+#about:before {
     content: '\f02d';
     display: block;
     font-family: FontAwesome;
     position: absolute;
     top: 0.05em;
     left: 50%;
-    color: #fff;
     font-size: 4.5em;
     margin-left: -0.4em;
 }
 
-#footer #location {
+#location {
     height: 80%;
     position: relative;
     top: 10%;
 }
 
-#footer #location:before {
+#location:before {
     content: '\f041';
     display: block;
     font-family: FontAwesome;
     position: absolute;
     top: 0.05em;
     left: 50%;
-    color: #fff;
     font-size: 4.5em;
     margin-left: -0.5em;
     width: 1em;
     text-align: center;
 }
 
-#footer #myorder {
-    background: url('../img/myorder.png') no-repeat 50% 30% #444;
-    background-size: 50%;
-}
-
-#footer #myorder .count {
+#myorder .count {
     position: absolute;
     padding: 0.1em 0.45em;
     top: 15%;
     right: 10%;
     border-radius: 2.3em;
     display: none;
-    background: #00aaea;
 }
 
 /* main mod end */
 /* checkout mod start */
 
 #footer ul.checkout li{
-    width:100%;
+    width: 100%;
     position: relative;
 }
 
@@ -134,7 +125,6 @@
 
 #footer ul.checkout span {
     font-size: 3em;
-    color: #fff;
 }
 
 #footer #placeOrder {
@@ -165,7 +155,6 @@
 
 #footer ul.card span {
     font-size: 3em;
-    color: #fff;
 }
 
 #footer ul.card #cancel {
@@ -203,31 +192,23 @@
     bottom: 200%;
 }
 
-/*#footer ul.confirm.double li:not(:last-child):not(.half),
-#footer ul.confirm.double li.half + li.half:not(:last-child),,*/
-#footer ul.confirm.double li:not(:last-child),
-#footer ul.confirm.triple li:not(:last-child) {
-    background: #545454;
-}
-
 #footer ul.confirm.double li:last-child:before,
 #footer ul.confirm.triple li:last-child:before {
     content: '';
     display: block;
     width: 100%;
     height: 1px;
-    background: #000;
     position: absolute;
     top: -1px;
 }
 
-#footer ul.confirm li{
+#footer ul.confirm li {
     width: 100%;
     position: relative;
 }
 
 #footer ul.confirm .half {
-    width:50%;
+    width: 50%;
     height: 100%;
     position: relative;
     float: left;
@@ -239,21 +220,20 @@
     bottom: 1em;
     line-height: 8em;
     text-align: center;
-    left:4em;
-    right:4em;
+    left: 4em;
+    right: 4em;
 }
 
 #footer ul.confirm div span {
     font-size: 3em;
-    color: #fff;
 }
 
-#footer #pay {
+#pay {
     right: 4em;
     left: 2em;
 }
 
-#footer #creditCard {
+#creditCard {
     right: 2em;
     left: 4em;
 }
@@ -266,7 +246,7 @@
 /* confirm mod end */
 /* done, maintenance mod start */
 
-#footer #returnToMenu, #footer #reload {
+#returnToMenu, #reload {
     position: absolute;
     top: 1em;
     bottom: 1em;
@@ -276,8 +256,7 @@
     line-height: 8em;
 }
 
-#footer #returnToMenu span, #footer #reload span {
-    color: #fff;
+#returnToMenu span, #reload span {
     font-size: 3em;
 }
 

@@ -1,5 +1,4 @@
 /* checkout main mod start */
-
 #content .checkout dd {
     width: 90%;
     height: 42em;
@@ -52,7 +51,6 @@
 #content .checkout .input.required:before {
     content: '*';
     position: absolute;
-    color: #f00;
     font-size: 1em;
     left: -0.8em;
     z-index: 1;
@@ -65,7 +63,6 @@
     border: none;
     font-size: inherit;
     text-indent: 0.2em;
-    background: #fff;
     position: relative;
     z-index: 1;
     border-radius: 0;
@@ -86,7 +83,6 @@
 #content .checkout .contact_info > div {
     position: relative;
     top: 42em;
-    /*height: 38em;*/
 }
 
 #content .checkout div > .label:nth-child(2) {
@@ -122,11 +118,6 @@
     bottom: -2px;
     left: -2px;
     right: -2px;
-    background-image: -o-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -moz-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -webkit-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -ms-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
 }
 
 #content .checkout select {
@@ -136,8 +127,6 @@
     padding: 0.2em 2em 0.2em 0.5em;
     font-size: inherit;
     font-family: inherit;
-    color: inherit;
-    background: transparent;
     border: none;
     -webkit-appearance: none;
     -o-appearance: none;
@@ -156,11 +145,9 @@
     margin-bottom: 1em;
     font-size: 3em;
     font-family: inherit;
-    color: inherit;
-    border: 1px solid #c8cbcd;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 1em;
-    box-shadow: 0 0 0.5em #bddbea;
-    background: #f8f8f8;
     overflow: hidden;
 }
 /* wrapper is used to resolve problem with android platforms (bug 11036) */
@@ -177,19 +164,8 @@
     top: 0.1em;
     z-index: 0;
     font-family: FontAwesome;
-    color: #299bd0;
     pointer-events: none;
 }
-
-#content .checkout label.select[disabled="disabled"] > * {
-    border-color: #ccc;
-    box-shadow: 0 0 0.5em #ccc;
-    color: #ccc;
-}
-#content .checkout label.select[disabled='disabled']:before {
-    color: #ccc;
-}
-
 
 #content .checkout dt {
     display: inline-block;
@@ -198,7 +174,6 @@
     font-size: 2.8em;
     font-weight: bold;
     padding: 0.8em 0;
-    color: #2ba1d8;
 }
 
 #content .checkout .pickup {
@@ -213,16 +188,6 @@
     bottom: -2px;
     left: -2px;
     right: -2px;
-    background-image: -o-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -moz-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -webkit-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -ms-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-}
-
-#content .checkout.firefox select {
-    color: transparent;
-    text-shadow: 0 0 #464646;
 }
 
 #content .checkout.firefox label.select:before {
@@ -254,7 +219,8 @@
 #content .checkout .email {
     text-transform: none;
 }
-/* chekcout order type mod end */#content .myorderNote {
+/* chekcout order type mod end */
+#content .myorderNote {
     position: absolute;
     bottom: 0;
     left: 1.5em;
@@ -264,7 +230,6 @@
 }
 
 #content .myorderNote .note_text {
-    color: #2BA1D8;
     text-align: center;
     font-size: 2.8em;
     font-weight: bold;
@@ -276,7 +241,7 @@
     height: 3.5em;
     font-size: 2.4em;
     margin: 0.2em auto;
-    position:relative;
+    position: relative;
 }
 
 #content .myorderNote .note_field:before {
@@ -287,11 +252,6 @@
     bottom: -2px;
     left: -2px;
     right: -2px;
-    background-image: -o-linear-gradient(to top, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -moz-linear-gradient(to top, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -webkit-linear-gradient(to top, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -ms-linear-gradient(to top, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: linear-gradient(to top, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
     z-index: 0;
 }
 
@@ -304,7 +264,6 @@
     border-radius: 0;
     font-size: inherit;
     font-family: inherit;
-    background: #fff;
     position: relative;
     z-index: 1;
 }

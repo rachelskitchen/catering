@@ -105,7 +105,8 @@ define(["backbone", "card", "customers"], function(Backbone) {
 
             // if any argument is function need override it by its result. Used for token.
             args = args.map(function(arg) {
-                return typeof arg == 'function' ? arg() : arg;
+                arg = typeof arg == 'function' ? arg() : arg;
+                return encodeURIComponent(arg);
             });
 
             try {
@@ -141,7 +142,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             try {
                 // convert response to object if it isn't
                 if(!(response instanceof Object)) {
-                    response = JSON.parse(response);
+                    response = JSON.parse(decodeURIComponent(response));
                 }
 
                 // set response errorCode

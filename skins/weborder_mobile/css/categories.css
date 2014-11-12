@@ -9,10 +9,11 @@
 /* item mod start */
 
 #content ul.categories li {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
     min-height: 14.2em;
     width: 100%;
     height: auto;
-    border-bottom: 1px solid #a8c4d8;
     position: relative;
     cursor: pointer;
     line-height: 14.2em;
@@ -29,7 +30,6 @@
     margin-top: -5.9em;
 }
 #content ul.categories .block_img > div {
-    background: #fff;
     display: table-cell;
     height: 11.8em;
     margin: 0em;
@@ -79,16 +79,6 @@
     position: absolute;
     top: 50%;
     right: 2em;
-    background: url('../img/menu_choice_arrow.png') no-repeat 0 0 transparent;
-    background-size: 200% 100%;
-}
-
-#content ul.categories li:active:after {
-    background-position: 100% 0;
-}
-
-#content ul.categories li:active {
-    box-shadow: 0 0 6em rgba(0, 170, 234, 0.3) inset;
 }
 
 #content ul.categories .timetables {

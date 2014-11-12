@@ -1,5 +1,4 @@
 /* myorder mod list start */
-
 #content .myorderList {
     position: absolute;
     top: 0;
@@ -20,9 +19,9 @@
 /* myorder mod list end */
 
 /* myorder mod item start */
-
 #content ul.myorder > li {
-    border-top: 1px solid #a8c4d8;
+    border-top-width: 1px;
+    border-top-style: solid;
     padding: 1.5em 0;
     margin: 0 1.5em;
 }
@@ -112,19 +111,18 @@
 #content ul.myorder .btns span {
     display: inline-block;
     font-size: 2.4em;
-    color: #f0f0f0;
     cursor: pointer;
     float: right;
     padding: 0.1em 0.5em 0.1em 1.5em;
-    background: #3f7ca4;
     border-radius: 1.2em;
-    border: 1px solid transparent;
+    border-width: 1px;
+    border-style: solid;
     position: relative;
 }
 
 #content ul.myorder .btns span:active {
-    box-shadow: 0 0 1em rgba(230, 230, 230, 0.7) inset;
-    border: 1px solid #3f7ca4;
+    border-width: 1px;
+    border-style: solid;
 }
 
 #content ul.myorder .btns span:first-child {

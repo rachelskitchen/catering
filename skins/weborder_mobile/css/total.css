@@ -8,7 +8,8 @@
     height: 4em;
     text-align: right;
     padding: 0.5em 0 0.8em;
-    border-top: 1px solid #a8c4d8;
+    border-top-width: 1px;
+    border-top-style: solid;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -33,15 +34,14 @@
 #content ul.confirm {
     list-style: none;
     margin: 1.5em;
-    /*height: 18em;*/
-    border-bottom: 1px solid #a8c4d8;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
     padding-bottom: 3em;
 }
 
 #content ul.confirm.has-delivery {
     height: 23em;
 }
-
 
 #content ul.confirm li {
     font-size: 2.8em;

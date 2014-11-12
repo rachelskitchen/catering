@@ -4,7 +4,7 @@
             <div class="fl_left tip_label">Add a Tip:</div>
             <div class="fl_right">
                 <div class="currency_sym"> <span> <%=currency_symbol%> </span> </div>
-                <div class="input <% if (!type || amount) print('disabled')%>">
+                <div class="input border <% if (!type || amount) print('disabled')%>">
                     <input type="text" <% if (!type || amount) print('disabled') %> class="amount tipAmount ios-safari-caret" value='<% print(sum.toFixed(2)) %>'>
                 </div>
             </div>

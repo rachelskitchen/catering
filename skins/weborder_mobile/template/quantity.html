@@ -1,5 +1,5 @@
 <script type="text/template" id="quantity_main-template">
-    <span class="title">Quantity</span>
+    <span class="title color-style1">Quantity</span>
     <div>
         <span class="quantity"><%= quantity %></span>
         <div class="increase"></div>
@@ -8,13 +8,13 @@
 </script>
 
 <script type="text/template" id="quantity_weight-template">
-    <span class="title">Weight <% if(uom) print("/ " + uom); %></span>
+    <span class="title color-style1">Weight <% if(uom) print("/ " + uom); %></span>
     <div>
         <div class='weight_edit_center'>
-                <div class='weight_edit_inner input_beauty'>
+                <div class='weight_edit_inner input_beauty border2'>
                     <input class="weight_edit_input" value="<%= weight %>">
                     </input>
                 </div>
             </div>
-    </div>    
+    </div>
 </script>

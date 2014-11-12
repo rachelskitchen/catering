@@ -4,7 +4,7 @@
         <input type="<%= type %>" id="modifier<%= id %>" name="modifier<%= modifierClassName %>">
         <span class="input <%= type %>"></span>
         <% } else { %>
-            <div class="input special_button">Add</div>
+            <div class="input special_button btn">Add</div>
         <% } %>
         <span class="title <% if(isSpecial) { %>special<% } %>"><%= name %></span>
         <% if(isSize) { %>
@@ -28,8 +28,8 @@
 </script>
 
 <script type="text/template" id="modifiers_classes_item-template">
-    <dt class="modifier_class"><%= name %><% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %></dt>
-    <dd class="modifier_class_list"></dd>
+    <dt class="modifier_class color-style1"><%= name %><% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %></dt>
+    <dd class="modifier_class_list modifiers-bottom-line"></dd>
 </script>
 
 <script type="text/template" id="modifiers_classes_list-template">
@@ -38,5 +38,5 @@
 
 <script type="text/template" id="modifiers_classes_matrix-template">
     <h2> Please select: <%= attributes %> </h2>
-    <dl class="modifier_classes"></dl>
+    <dl class="modifier_classes modifiers-bottom-line"></dl>
 </script>
