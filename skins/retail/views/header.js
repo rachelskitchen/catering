@@ -170,8 +170,17 @@ define(["backbone", "factory"], function(Backbone) {
                 var promo_text = self.$('.promo_text');
                 var promo_marquee = self.$('.promo_marquee');
                 if (self.model.get('widthPromoMessage') >= promo_container.width()) {
-                    promo_text.hide();
-                    promo_marquee.show();
+                    var isFirefox = /firefox/g.test(navigator.userAgent.toLowerCase());
+                    if (isFirefox) {
+                        // bug #15981: "First Firefox displays long promo message completely then erases it and starts scrolling"
+                        $(document).ready(function() {
+                            promo_text.hide();
+                            promo_marquee.show();
+                        });
+                    } else {
+                        promo_text.hide();
+                        promo_marquee.show();
+                    }
                 } else {
                     promo_text.show();
                     promo_marquee.hide();
