@@ -6,11 +6,11 @@
     "img_default": "none.png",
     "routing": {
         "main": {
-            "css": [ "main", "header", "footer", "perfect-scrollbar"],
+            "css": [ "main", "header", "footer", "perfect-scrollbar", "revel"],
             "model": ["main","header", "footer"],
-            "templates": ["main", "header", "footer"],
+            "templates": ["main", "header", "footer", "revel"],
             "views": ["main", "header", "footer", "logo"],
-            "core": ["geopoint", "jquery_numbermask"],
+            "core": ["geopoint", "jquery_numbermask", "revel_view", "revel_api"],
             "js": ["perfect-scrollbar-0.4.5.with-mousewheel.min"]
         },
         "index": {
@@ -81,6 +81,18 @@
             "css": ["maintenance"],
             "views": ["maintenance"],
             "templates": ["maintenance"]
+        },
+        "profile": {
+            "css": [],
+            "views": [],
+            "templates": [],
+            "core": []
+        },
+        "loyalty": {
+            "css": [],
+            "views": [],
+            "templates": [],
+            "core": []
         }
     }
 }

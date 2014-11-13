@@ -159,17 +159,18 @@
 }
 
 #content .special_label .special_button {
-    font-weight: bold;
+    /*font-weight: bold;
     border-style: solid;
     border-width: 0.2em;
     border-radius: 0.8em;
     cursor: pointer;
-    text-align: center;
+    text-align: center;*/
     height: 1.5em;
     line-height: 1.5em;
     left: 0.1em;
     top: 0.4em;
     width: 2.3em;
+    padding: 0.1em 0.2em;
 }
 
 /* modifiers item mod end */

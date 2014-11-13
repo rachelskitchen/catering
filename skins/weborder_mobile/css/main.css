@@ -299,3 +299,44 @@ textarea, input {
 
 .section_promo_show { bottom: 17em !important; }
 .footer_promo_show { height: 17em !important; }
+
+.blur {
+    -webkit-filter: blur(5px);
+    -moz-filter: blur(5px);
+    -ms-filter: blur(5px);
+    filter: blur(5px);
+}
+
+.btn {
+    display: inline-block;
+    font-weight: bold;
+    border-radius: 2em;
+    padding: 0.3em 0.5em;
+    cursor: pointer;
+    position: relative;
+    text-decoration: none;
+    text-align: center;
+}
+
+.btn:link, .btn:visited, .btn:hover, .btn:active {
+    text-decoration: none;
+}
+
+.btn:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0.1em;
+    bottom: 0.1em;
+    left: 0.1em;
+    right: 0.1em;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 0.9em;
+}
+
+.btn.btn-disabled, .btn.btn-disabled:link, .btn.btn-disabled:visited, .btn.btn-disabled:hover,
+.btn.btn-disabled:active, .btn.btn-disabled:before, .btn.btn-disabled:before {
+    cursor: default;
+    z-index: -1;
+}

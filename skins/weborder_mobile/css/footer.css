@@ -43,7 +43,7 @@
 }
 
 .btn1 {
-    width: 19.1em;
+    width: 17.1em;
     height: 80%;
     position: relative;
     top: 10%;
@@ -139,18 +139,22 @@
     text-align: center;
     left:4em;
     right:4em;
+    width: auto;
+}
+#footer ul.checkout div span {
+    top: 0;
 }
 
 #footer ul.checkout span {
     font-size: 3em;
 }
 
-#footer #placeOrder {
+#placeOrder {
     left: 2em;
     right: 4em;
 }
 
-#footer #creditCard {
+#creditCard {
     left: 4em;
     right: 2em;
 }
@@ -173,14 +177,15 @@
 
 #footer ul.card span {
     font-size: 3em;
+    top: 0;
 }
 
-#footer ul.card #cancel {
+#cancel {
     left: 8em;
     right: 4em;
 }
 
-#footer ul.card #proceed {
+#proceed {
     left: 4em;
     right: 8em;
 }
@@ -230,6 +235,8 @@
     height: 100%;
     position: relative;
     float: left;
+    top: 0;
+    font-size: inherit;
 }
 
 #footer ul.confirm div {
@@ -240,6 +247,11 @@
     text-align: center;
     left: 4em;
     right: 4em;
+    width: auto;
+}
+
+#footer ul.confirm div span {
+    top: 0;
 }
 
 #footer ul.confirm div span {
@@ -296,4 +308,14 @@
     height: 2.5em;
     margin-top: -2.5em;
     text-align: center;
+}
+
+.loyalty:before {
+    content: '';
+    font-size: 4.5em;
+    width: 1.4em;
+    height: 1em;
+    margin-left: .1em;
+    margin-top: .1em;
+    position: absolute;
 }

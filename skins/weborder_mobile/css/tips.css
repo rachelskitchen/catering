@@ -22,7 +22,7 @@
 #content ul.tips .currency_sym {
     display: table;
     float: left;
-    height: 2.5em;
+    height: 2.35em;
     margin-left: 1em;
     width: 1em;
     margin-right: 0.2em;
@@ -40,7 +40,7 @@
     float: right;
     height: 1.1em;
     margin-right: 0.2em;
-    padding: 0.63em;
+    padding: 0.6em 0.55em 0.55em;
     position: relative;
 }
 #content ul.tips .input:after {
@@ -144,6 +144,11 @@
     cursor: pointer;
     letter-spacing: 0.04em;
     margin-left: 0.6em;
+    padding: 0;
+}
+
+#content ul.tips .btn:before {
+    display: none;
 }
 
 #content ul.tips.firefox .btn {
