@@ -167,6 +167,17 @@
     pointer-events: none;
 }
 
+#content .checkout label.select.required:after {
+    content: '*';
+    display: block;
+    position: absolute;
+    font-size: 1em;
+    left: -0.8em;
+    top: 0.1em;
+    z-index: 1;
+    font-weight: bold;
+}
+
 #content .checkout dt {
     display: inline-block;
     width: 100%;

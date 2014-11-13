@@ -159,7 +159,8 @@ select {
 #content ul.categories li:active {
     box-shadow: 0 0 6em rgba(0, 170, 234, 0.3) inset;
 }
-#content .checkout .input.required:before {
+#content .checkout .input.required:before,
+#content .checkout .select.required:after {
     color: #f00;
 }
 #content .checkout label.select {
