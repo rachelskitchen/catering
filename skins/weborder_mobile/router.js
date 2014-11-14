@@ -61,7 +61,7 @@ define(["backbone", "main_router"], function(Backbone) {
     footerModes.Maintenance = {mod: 'Maintenance'};
     footerModes.MaintenanceDirectory = {mod: 'MaintenanceDirectory'};
     footerModes.Profile = {mod: 'Profile'};
-    footerModes.Loaylty = {mod: 'Loyalty'};
+    footerModes.Loyalty = {mod: 'Loyalty'};
 
     App.Routers.Router = App.Routers.MobileRouter.extend({
         routes: {
@@ -114,7 +114,8 @@ define(["backbone", "main_router"], function(Backbone) {
                     myorder: this.navigate.bind(this, 'myorder', true),
                     location: this.navigate.bind(this, 'location', true),
                     about: this.navigate.bind(this, 'about', true),
-                    loyalty: this.trigger.bind(this, 'navigateToLoyalty')
+                    loyalty: this.trigger.bind(this, 'navigateToLoyalty'),
+                    menu: this.navigate.bind(this, 'menu', true)
                 });
                 App.Data.mainModel = new App.Models.MainModel();
                 new App.Views.MainView({

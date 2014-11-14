@@ -35,7 +35,7 @@
 }
 
 
-#about, #location, #myorder, .loyalty {
+#about, #location, #myorder, .loyalty, .menu {
     display: block;
     margin: 0 auto;
     cursor: pointer;
@@ -347,4 +347,14 @@
 
 .save:before {
     content: '\f0c7';
+}
+.menu:before {
+    content: '\f03a';
+    display: block;
+    font-family: FontAwesome;
+    position: absolute;
+    top: 0.15em;
+    left: 50%;
+    font-size: 4em;
+    margin-left: -0.52em;
 }

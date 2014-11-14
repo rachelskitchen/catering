@@ -214,7 +214,7 @@ define(["backbone"], function(Backbone) {
             });
 
             function initTheme() {
-                var color_scheme = "revel";//typeof system_settings.color_scheme == 'string' ? system_settings.color_scheme.toLowerCase().replace(/\s/g, '_') : null;
+                var color_scheme = typeof system_settings.color_scheme == 'string' ? system_settings.color_scheme.toLowerCase().replace(/\s/g, '_') : null;
                 if(color_schemes.indexOf(color_scheme) > -1) {
                     css.push('themes/' + color_scheme + '/colors');
                 } else {

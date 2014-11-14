@@ -41,15 +41,17 @@ define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
             return this;
         },
         events: {
-            "click #myorder": "myorder",
-            "click #location": "location",
-            "click #about": "about",
-            "click .loyalty": "loyalty"
+            'click #myorder': 'myorder',
+            'click #location': 'location',
+            'click #about': 'about',
+            'click .loyalty': 'loyalty',
+            'click .menu': 'menu'
         },
         myorder: setCallback('myorder'),
         location: setCallback('location'),
         about: setCallback('about'),
         loyalty: setCallback('loyalty'),
+        menu: setCallback('menu'),
         updateCount: function(model, collection) {
             var quantity = this.$('.count'),
                 amount = collection.get_only_product_quantity();
@@ -300,7 +302,7 @@ define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
 
     App.Views.FooterView.FooterProfileView = App.Views.RevelView.RevelProfileFooterView;
 
-    App.Views.FooterView.FooterLoyaltyView = App.Views.FactoryView.extend({
+    App.Views.FooterView.FooterLoyaltyView = App.Views.FooterView.FooterMainView.extend({
         name: 'footer',
         mod: 'loyalty'
     });
