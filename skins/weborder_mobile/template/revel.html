@@ -15,24 +15,24 @@
 <script type="text/template" id="revel_authentication-template">
     <h1 class="title">Revel Loyalty Rewards</h1>
     <p>Please enter your email &amp; password to view your Loyalty Reward Points.</p>
-    <label class="input"><input type="text" placeholder="Email Address" class="email"></label>
-    <label class="input"><input type="password" placeholder="Password" class="password"></label>
+    <label class="input border"><input type="text" placeholder="Email Address" class="email"></label>
+    <label class="input border"><input type="password" placeholder="Password" class="password"></label>
     <a href="javascript:void(0)" class="btn cancel">Back</a>
     <a href="javascript:void(0)" class="btn ok">Ok!</a>
 </script>
 
 <script type="text/template" id="revel_profile_personal-template">
     Personal Info (Used for Reward Points)
-    <label class="input required">
+    <label class="input required border">
         <input type="text" placeholder="First Name" class="firstName ios-safari-caret" value="<%= firstName %>">
     </label>
-    <label class="input required">
+    <label class="input required border">
         <input type="text" placeholder="Last Name" class="lastName ios-safari-caret" value="<%= lastName %>">
     </label>
-    <label class="input required">
+    <label class="input required border">
         <input type="text" placeholder="Email" class="email ios-safari-caret" value="<%= email %>" autocapitalize="none">
     </label>
-    <label class="input required">
+    <label class="input required border">
         <input type="tel" placeholder="Phone #" class="phone ios-safari-caret" value="<%=phone%>" min="0" />
     </label>
     <div class="address"></div>
@@ -48,13 +48,13 @@
             </select>
         </label>
     </div>
-    <label class="input">
+    <label class="input border">
         <input type="text" placeholder="Address Line 1" name="street_1" value="<%= street_1 %>" class="ios-safari-caret">
     </label>
-    <label class="input">
+    <label class="input border">
         <input type="text" placeholder="Address Line 2" name="street_2" value="<%= street_2 %>" class="ios-safari-caret">
     </label>
-    <label class="input">
+    <label class="input border">
         <input type="text" placeholder="City" name="city" value="<%= city %>" class="ios-safari-caret">
     </label>
     <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
@@ -69,21 +69,21 @@
     </div>
     <% } %>
     <% if(typeof province == 'string') { %>
-       <label class="input">
+       <label class="input border">
            <input type="text" placeholder="Province" name="province" value="<%= province %>" class="ios-safari-caret">
        </label>
     <% } %>
-    <label class="input">
+    <label class="input border">
         <input type="text" placeholder="Zip Code" name="zipcode" value="<%= zipcode %>" class="ios-safari-caret">
     </label>
 </script>
 
 <script type="text/template" id="revel_profile_payment-template">
     Payment Info (Can be used for payments)
-    <label class="input">
+    <label class="input border">
         <input type="text" placeholder="Card Number" class="number ios-safari-caret" value="<%=cardNumber%>" min="0" />
     </label>
-    <label class="input">
+    <label class="input border">
         <input type="text" placeholder="Security Code" class="secure ios-safari-caret" value="<%=securityCode%>" min="0" />
     </label>
     <div>
@@ -118,11 +118,11 @@
 <script type="text/template" id="revel_profile_security-template">
     Security Info (Used for authentication at Revel Loyalty program)
     <% if(profileExists) { %>
-    <label class="input">
+    <label class="input border">
         <input type="password" placeholder="Old Password" data-prop="oldPassword" class="password ios-safari-caret" />
     </label>
     <% } %>
-    <label class="input">
+    <label class="input border">
         <input type="password" placeholder="New Password" data-prop="newPassword" class="password ios-safari-caret" />
     </label>
     <label class="checkbox-wrapper">

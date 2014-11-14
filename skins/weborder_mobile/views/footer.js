@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator"], function(Backbone) {
+define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
     'use strict';
 
     App.Views.FooterView = {};
@@ -296,6 +296,13 @@ define(["backbone", "factory", "generator"], function(Backbone) {
     App.Views.FooterView.FooterMaintenanceDirectoryView = App.Views.FactoryView.extend({
         name: 'footer',
         mod: 'maintenance_directory'
+    });
+
+    App.Views.FooterView.FooterProfileView = App.Views.RevelView.RevelProfileFooterView;
+
+    App.Views.FooterView.FooterLoyaltyView = App.Views.FactoryView.extend({
+        name: 'footer',
+        mod: 'loyalty'
     });
 
     function setCallback(prop) {

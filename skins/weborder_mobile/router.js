@@ -43,6 +43,7 @@ define(["backbone", "main_router"], function(Backbone) {
     headerModes.About = {mod: 'TwoButton', className: 'two_button'};
     headerModes.Gallery = headerModes.Map;
     headerModes.Maintenance = {mod: 'Maintenance', className: 'maintenance'};
+    headerModes.Profile = {mod: 'OneButton', className: 'one_button profile'};
 
     footerModes.Main = {mod: 'Main'};
     footerModes.Products = footerModes.Main;
@@ -59,6 +60,8 @@ define(["backbone", "main_router"], function(Backbone) {
     footerModes.Gallery = footerModes.Main;
     footerModes.Maintenance = {mod: 'Maintenance'};
     footerModes.MaintenanceDirectory = {mod: 'MaintenanceDirectory'};
+    footerModes.Profile = {mod: 'Profile'};
+    footerModes.Loaylty = {mod: 'Loyalty'};
 
     App.Routers.Router = App.Routers.MobileRouter.extend({
         routes: {
@@ -666,6 +669,11 @@ define(["backbone", "main_router"], function(Backbone) {
             });
         },
         profile: function(step) {
+            App.Data.header.set({
+                page_title: 'Profile',
+                back_title: 'Cancel',
+                back: App.Data.RevelAPI.trigger.bind( App.Data.RevelAPI, 'onProfileCancel')
+            });
             return App.Routers.MobileRouter.prototype.profile.call(this, step, headerModes.Profile, footerModes.Profile);
         },
         loyalty: function() {

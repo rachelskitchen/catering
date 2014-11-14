@@ -47,6 +47,7 @@
     height: 80%;
     position: relative;
     top: 10%;
+    text-align: center;
 }
 
 #myorder.btn2 {
@@ -323,4 +324,27 @@
     margin-left: .1em;
     margin-top: .1em;
     position: absolute;
+}
+
+.next:before, .prev:before, .save:before {
+    display: block;
+    font-family: FontAwesome;
+    position: absolute;
+    font-size: 6em;
+    top: 0.05em;
+    left: 50%;
+    margin-left: -0.45em;
+    font-size: 4.5em;
+}
+
+.next:before {
+    content: '\f0a9';
+}
+
+.prev:before {
+    content: '\f0a8';
+}
+
+.save:before {
+    content: '\f0c7';
 }

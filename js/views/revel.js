@@ -169,6 +169,49 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
         }
     });
 
+    App.Views.CoreRevelView.CoreRevelProfileFooterView = App.Views.FactoryView.extend({
+        name: 'footer',
+        mod: 'profile',
+        initialize: function() {
+            this.listenTo(this.model, 'change:next change:prev change:save', this.update, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.update();
+            return this;
+        },
+        events: {
+            "click .next": "next",
+            "click .prev": "prev",
+            "click .save": "save"
+        },
+        next: setCallback('next'),
+        prev: setCallback('prev'),
+        save: setCallback('save'),
+        update: function() {
+            var model = this.model;
+            update(model.get('prev'), this.$('.prev'));
+            update(model.get('next'), this.$('.next'));
+            update(model.get('save'), this.$('.save'));
+
+            function update(data, el) {
+                if(data) {
+                    el.show();
+                } else {
+                    el.hide();
+                }
+            }
+        }
+    });
+
+    function setCallback(prop) {
+        return function() {
+            var tab = this.model.get(prop);
+            typeof tab == 'function' && tab();
+        };
+    }
+
     App.Views.RevelView = {};
     App.Views.RevelView.RevelWelcomeView = App.Views.CoreRevelView.CoreRevelWelcomeView;
     App.Views.RevelView.RevelProfilePersonalView = App.Views.CoreRevelView.CoreRevelProfilePersonalView;
@@ -178,4 +221,5 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
     App.Views.RevelView.RevelProfileNotificationView = App.Views.CoreRevelView.CoreRevelProfileNotificationView;
     App.Views.RevelView.RevelLoyaltyView = App.Views.CoreRevelView.CoreRevelLoyaltyView;
     App.Views.RevelView.RevelAuthenticationView = App.Views.CoreRevelView.CoreRevelAuthenticationView;
+    App.Views.RevelView.RevelProfileFooterView = App.Views.CoreRevelView.CoreRevelProfileFooterView
 });
