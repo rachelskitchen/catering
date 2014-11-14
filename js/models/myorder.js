@@ -542,7 +542,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.checkout.set('dining_option', App.Settings.default_dining_option);
 
             this.listenTo(this.checkout, 'change:dining_option', this.change_dining_option, this);
-
+            this.listenTo(this.checkout, 'change:pickupTS', this.get_discounts, this);
+            this.listenTo(this.checkout, 'change:isPickupASAP', this.get_discounts, this);
+            
             this.listenTo(this, 'add', this.onModelAdded);
             this.listenTo(this, 'remove', this.onModelRemoved);
             this.listenTo(this, 'change', this.onModelChange);
@@ -588,7 +590,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 && model.previousAttributes().dining_option != value)
                 this.restoreTaxes();
 
-            this.recalculate_tax();
+            //this.recalculate_tax();
+            //this.get_discounts();
+            this.recalculate_all();
         },
         // check if user get maintenance after payment
         check_maintenance: function() {

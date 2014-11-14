@@ -545,10 +545,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                 return;
            
             this.model.set({"discount_code":newValue}, {silent: true});
-
-            setTimeout( (function() { 
-                   this.model.set("discount_to_apply", true); 
-                }).bind(this), 0);
+            this.enableApplyBtn();
         },
         onApplyCode: function() {
             var self = this, 
@@ -561,9 +558,15 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             myorder.get_discounts({ apply_discound: true})
                 .success(function(data) {
                     if (data.status == "OK") {
-                        self.model.set("discount_to_apply", false);
+                        self.disableApplyBtn();
                     }
                 });
+        },
+        enableApplyBtn: function() {
+            this.$(".btnApply").removeAttr("disabled").removeClass("applied").text("Apply");
+        },
+        disableApplyBtn: function() {
+            this.$(".btnApply").attr("disabled", "disabled").addClass("applied").text("Applied");
         }
     });
 

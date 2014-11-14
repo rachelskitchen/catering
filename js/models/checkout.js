@@ -43,8 +43,7 @@ define(["backbone"], function(Backbone) {
                 sections: [],
                 levels: [],
                 discount_code: '',
-                last_discound_code: '', 
-                discount_to_apply: true               
+                last_discound_code: ''                
             };
         },
         initialize: function() {
