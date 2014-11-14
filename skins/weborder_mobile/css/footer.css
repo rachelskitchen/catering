@@ -310,6 +310,11 @@
     text-align: center;
 }
 
+.promo_message span {
+    font-size: inherit !important;
+    top: 0 !important;
+}
+
 .loyalty:before {
     content: '';
     font-size: 4.5em;
