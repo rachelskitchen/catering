@@ -1,22 +1,17 @@
 /* buttons (begin) */
 .header_block_buttons {
-    border-style: solid;
-    border-width: 0.32em;
-    border-radius: 3em;
-    cursor: pointer;
-    height: 4em;
-    margin-top: 1.5em;
-    padding-top: 0.6em;
+    height: 1.2em;
+    margin-top: 0.6em;
     position: absolute;
-    text-align: center;
+    font-size: 2.8em;
 }
 .header_block_button_left {
     left: 0;
-    margin-left: 1em;
+    margin-left: .25em;
 }
 .header_block_button_right {
     right: 0;
-    margin-right: 1em;
+    margin-right: .25em;
 }
 /* buttons (end) */
 /* products mod start */
@@ -27,7 +22,7 @@
     position: relative;
 }
 #header .one_button .leftBtn{
-    width: 17.4em;
+    width: 5.4em;
 }
 
 .leftBtn, .rightBtn {
@@ -42,11 +37,6 @@
     left: 5.21em;
 }
 
-#header .one_button span, #header .two_button span {
-    font-size: 2.8em;
-    font-weight: bold;
-}
-
 /* products mod end */
 /* modifiers mod start */
 
@@ -56,10 +46,10 @@
     position: relative;
 }
 #header .two_button .leftBtn {
-    width: 12.2em;
+    width: 3.2em;
 }
 #header .two_button .rightBtn {
-    width: 15.3em;
+    width: 4.8em;
 }
 #header .two_button h1 {
     position: absolute;
@@ -78,7 +68,7 @@
 }
 
 #header .myorder .rightBtn {
-    width: 18.3em;
+    width: 5.3em;
 }
 
 #header .location h1 {
@@ -86,11 +76,6 @@
 }
 
 #header .location .rightBtn {
-    width: 11.3em;
-}
-
-#header .rightBtn.disabled {
-    border-style: solid;
-    border-width: 0.32em;
+    width: 3.3em;
 }
 /* modifiers mod end */

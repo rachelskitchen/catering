@@ -60,7 +60,7 @@ define(["backbone", "main_router"], function(Backbone) {
     footerModes.Maintenance = {mod: 'Maintenance'};
     footerModes.MaintenanceDirectory = {mod: 'MaintenanceDirectory'};
 
-    App.Routers.Router = App.Routers.MainRouter.extend({
+    App.Routers.Router = App.Routers.MobileRouter.extend({
         routes: {
             "": "index",
             "index": "index",
@@ -79,6 +79,8 @@ define(["backbone", "main_router"], function(Backbone) {
             "gallery": "gallery",
             "maintenance": "maintenance",
             "pay": "pay",
+            "profile(/:step)": "profile",
+            "loyalty": "loyalty",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -108,7 +110,8 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Data.footer = new App.Models.FooterModel({
                     myorder: this.navigate.bind(this, 'myorder', true),
                     location: this.navigate.bind(this, 'location', true),
-                    about: this.navigate.bind(this, 'about', true)
+                    about: this.navigate.bind(this, 'about', true),
+                    loyalty: this.trigger.bind(this, 'navigateToLoyalty')
                 });
                 App.Data.mainModel = new App.Models.MainModel();
                 new App.Views.MainView({
@@ -117,6 +120,9 @@ define(["backbone", "main_router"], function(Backbone) {
                 });
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
+
+                // init RevelAPI
+                this.initRevelAPI();
 
                 // emit 'initialized' event
                 this.trigger('initialized');
@@ -133,7 +139,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 return this.navigate("done", true);
             }, this);
 
-            App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
+            App.Routers.MobileRouter.prototype.initialize.apply(this, arguments);
         },
         navigateDirectory: function() {
             if(App.Data.dirMode)
@@ -635,7 +641,7 @@ define(["backbone", "main_router"], function(Backbone) {
             });
         },
         maintenance : function() {
-            App.Routers.MainRouter.prototype.maintenance.apply(this, arguments);
+            App.Routers.MobileRouter.prototype.maintenance.apply(this, arguments);
 
             this.prepare('maintenance', function() {
                 var header = {page_title: ''};
@@ -658,6 +664,12 @@ define(["backbone", "main_router"], function(Backbone) {
 
                 this.change_page();
             });
+        },
+        profile: function(step) {
+            return App.Routers.MobileRouter.prototype.profile.call(this, step, headerModes.Profile, footerModes.Profile);
+        },
+        loyalty: function() {
+            return App.Routers.MobileRouter.prototype.loyalty.call(this, headerModes.Main, footerModes.Loyalty);
         }
     });
 });

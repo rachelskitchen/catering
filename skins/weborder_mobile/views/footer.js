@@ -43,20 +43,13 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         events: {
             "click #myorder": "myorder",
             "click #location": "location",
-            "click #about": "about"
+            "click #about": "about",
+            "click .loyalty": "loyalty"
         },
-        myorder: function() {
-            var myorder = this.model.get('myorder');
-            typeof myorder == 'function' && myorder();
-        },
-        location: function() {
-            var location = this.model.get('location');
-            typeof location == 'function' && location();
-        },
-        about: function() {
-            var about = this.model.get('about');
-            typeof about == 'function' && about();
-        },
+        myorder: setCallback('myorder'),
+        location: setCallback('location'),
+        about: setCallback('about'),
+        loyalty: setCallback('loyalty'),
         updateCount: function(model, collection) {
             var quantity = this.$('.count'),
                 amount = collection.get_only_product_quantity();
@@ -304,4 +297,11 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         name: 'footer',
         mod: 'maintenance_directory'
     });
+
+    function setCallback(prop) {
+        return function() {
+            var tab = this.model.get(prop);
+            typeof tab == 'function' && tab();
+        };
+    }
 });
