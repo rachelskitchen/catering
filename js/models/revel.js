@@ -46,8 +46,9 @@ define(["backbone", "card", "customers"], function(Backbone) {
             profileExists: null,
             oldPassword: null,
             newPassword: null,
+            useCreditCard: true,
             appName: 'Revel Directory',
-            gObj: 'App.Data.RevelAPI',
+            gObj: 'App.Data.RevelAPI'
         },
         initialize: function() {
             this.listenTo(this, 'change:firstTime', this.onFirstTime, this);

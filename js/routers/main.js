@@ -324,6 +324,7 @@ define(["backbone"], function(Backbone) {
 
             var RevelAPI = App.Data.RevelAPI,
                 mainModel = App.Data.mainModel,
+                checkout = App.Data.myorder.checkout,
                 profileCancelCallback,
                 profileSaveCallback;
 
@@ -383,6 +384,7 @@ define(["backbone"], function(Backbone) {
                 typeof profileSaveCallback == 'string' && this.navigate(profileSaveCallback, true);
                 profileCancelCallback = undefined;
                 profileSaveCallback = undefined;
+                App.Data.customer && RevelAPI.stopListening(App.Data.customer);
             }, this);
 
             this.listenTo(this, 'navigateToLoyalty', function() {
@@ -395,12 +397,21 @@ define(["backbone"], function(Backbone) {
                 RevelAPI.checkProfile(RevelAPI.trigger.bind(RevelAPI, 'onProfileShow'));
             }, this);
 
+            this.listenTo(this, 'payCreditCard', function() {
+                profileSaveCallback = Backbone.history.fragment;
+                RevelAPI.checkProfile(RevelAPI.trigger.bind(RevelAPI, 'onProfileShow'));
+            }, this);
+
             this.listenTo(App.Data.header, 'onProfileCancel', function() {
                 RevelAPI.trigger('onProfileCancel');
             });
 
             this.listenTo(RevelAPI, 'onAuthenticated', function() {
                 mainModel.trigger('hideRevelPopup', RevelAPI);
+            });
+
+            checkout.listenTo(RevelAPI.get('customer'), 'change:phone', function(model) {
+                checkout.set('rewardCard', model.get('phone'))
             });
         }
     });

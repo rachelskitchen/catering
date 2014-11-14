@@ -36,7 +36,12 @@
 
 <script type="text/template" id="footer_checkout-template">
     <ul class="checkout">
-        <li>
+        <% if(_settings.RevelAPI) { %>
+        <li class="half">
+            <div class="btn1 profile"><span>Profile</span></div>
+        </li>
+        <% } %>
+        <li class="<% if(_settings.RevelAPI) {print('half');} %>">
             <div id="confirmOrder" class="btn1"><span>Confirm Order</span></div>
         </li>
     </ul>

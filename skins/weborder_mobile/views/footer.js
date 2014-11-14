@@ -117,7 +117,8 @@ define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
         name: 'footer',
         mod: 'checkout',
         events: {
-            "click #confirmOrder": "confirmOrder"
+            "click #confirmOrder": "confirmOrder",
+            "click .profile": "profile"
         },
         confirmOrder: function() {
             App.Data.myorder.check_order({
@@ -128,7 +129,8 @@ define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
             }, function() {
                 App.Data.router.navigate('confirm', true);
             });
-        }
+        },
+        profile: setCallback('profile')
     });
 
     App.Views.FooterView.FooterCardView = App.Views.FactoryView.extend({

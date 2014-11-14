@@ -132,6 +132,16 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
         }
     });
 
+    App.Views.CoreRevelView.CoreRevelCreditCardView = App.Views.CoreRevelView.CoreRevelProfileNotificationView.extend({
+        name: 'revel',
+        mod: 'credit_card',
+        render: function() {
+            App.Views.CoreRevelView.CoreRevelProfileNotificationView.prototype.render.apply(this, arguments);
+            this.$(':checkbox').prop('checked', this.model.get('useCreditCard'));
+            return this;
+        }
+    });
+
     App.Views.CoreRevelView.CoreRevelAuthenticationView = App.Views.FactoryView.extend({
         name: 'revel',
         mod: 'authentication',
@@ -221,5 +231,6 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
     App.Views.RevelView.RevelProfileNotificationView = App.Views.CoreRevelView.CoreRevelProfileNotificationView;
     App.Views.RevelView.RevelLoyaltyView = App.Views.CoreRevelView.CoreRevelLoyaltyView;
     App.Views.RevelView.RevelAuthenticationView = App.Views.CoreRevelView.CoreRevelAuthenticationView;
-    App.Views.RevelView.RevelProfileFooterView = App.Views.CoreRevelView.CoreRevelProfileFooterView
+    App.Views.RevelView.RevelProfileFooterView = App.Views.CoreRevelView.CoreRevelProfileFooterView;
+    App.Views.RevelView.RevelCreditCardView = App.Views.CoreRevelView.CoreRevelCreditCardView;
 });

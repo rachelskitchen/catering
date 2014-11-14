@@ -358,3 +358,7 @@
     font-size: 4em;
     margin-left: -0.52em;
 }
+
+#footer ul.checkout .half {
+    width: 50%;
+}
