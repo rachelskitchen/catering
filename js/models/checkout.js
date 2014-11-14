@@ -56,6 +56,16 @@ define(["backbone"], function(Backbone) {
                     this.set('selected_dining_option', prev);
                 }
             }, this);
+            // fill sections and levels
+            var order_from_seat = App.Data.settings.get('settings_system').order_from_seat,
+                levels = Array.isArray(order_from_seat) ? order_from_seat[4] : '',
+                sections = Array.isArray(order_from_seat) ? order_from_seat[5] : '';
+
+            if(typeof levels == 'string' && levels.length > 0)
+                this.set('levels', levels.split(','));
+
+            if(typeof sections == 'string' && sections.length > 0)
+                this.set('sections', sections.split(','));
         },
         /**
          * Save current state model in storage (detected automatic).

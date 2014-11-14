@@ -1,7 +1,15 @@
 <script type="text/template" id="header_main-template">
     <div class='categories'></div>
-    <div class="logo">
-        <img src="<%= logo %>" alt="<%= business_name %> logo" class="logo" data-default-index="1">
+    <div class='header_left'>
+        <div class='logo'>
+            <img src='<%= logo %>' alt='<%= business_name %> logo' class='logo' data-default-index='1'>
+        </div>
+        <% if (_settings.promo_message) { %>
+            <div class='promo'>
+                <div class='promo_message promo_text'> <span> <%= _settings.promo_message %> </span> </div>
+                <div class='promo_message promo_marquee'> <marquee behavior='scroll' direction='left' scrollamount='6' loop='-1'> <%= _settings.promo_message %> </marquee> </div>
+            </div>
+        <% } %>
     </div>
     <form class="search">
         <input type="search" placeholder="Search" name="search" autocomplete="off">

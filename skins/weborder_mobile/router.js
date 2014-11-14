@@ -43,6 +43,7 @@ define(["backbone", "main_router"], function(Backbone) {
     headerModes.About = {mod: 'TwoButton', className: 'two_button'};
     headerModes.Gallery = headerModes.Map;
     headerModes.Maintenance = {mod: 'Maintenance', className: 'maintenance'};
+    headerModes.Profile = {mod: 'OneButton', className: 'one_button profile'};
 
     footerModes.Main = {mod: 'Main'};
     footerModes.Products = footerModes.Main;
@@ -59,8 +60,10 @@ define(["backbone", "main_router"], function(Backbone) {
     footerModes.Gallery = footerModes.Main;
     footerModes.Maintenance = {mod: 'Maintenance'};
     footerModes.MaintenanceDirectory = {mod: 'MaintenanceDirectory'};
+    footerModes.Profile = {mod: 'Profile'};
+    footerModes.Loyalty = {mod: 'Loyalty'};
 
-    App.Routers.Router = App.Routers.MainRouter.extend({
+    App.Routers.Router = App.Routers.MobileRouter.extend({
         routes: {
             "": "index",
             "index": "index",
@@ -79,6 +82,8 @@ define(["backbone", "main_router"], function(Backbone) {
             "gallery": "gallery",
             "maintenance": "maintenance",
             "pay": "pay",
+            "profile(/:step)": "profile",
+            "loyalty": "loyalty",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -86,6 +91,9 @@ define(["backbone", "main_router"], function(Backbone) {
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
             clearQueryString();
             var self = this;
+
+            // used for footer view
+            App.Settings.isRetailMode = ServiceType.RETAIL == App.Settings.type_of_service;
 
             // set locked routes if online orders are disabled
             if(!App.Settings.online_orders) {
@@ -105,13 +113,20 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Data.footer = new App.Models.FooterModel({
                     myorder: this.navigate.bind(this, 'myorder', true),
                     location: this.navigate.bind(this, 'location', true),
-                    about: this.navigate.bind(this, 'about', true)
+                    about: this.navigate.bind(this, 'about', true),
+                    loyalty: this.trigger.bind(this, 'navigateToLoyalty'),
+                    menu: this.navigate.bind(this, 'menu', true)
                 });
                 App.Data.mainModel = new App.Models.MainModel();
                 new App.Views.MainView({
                     model: App.Data.mainModel,
                     el: 'body'
                 });
+                this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
+                this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
+
+                // init RevelAPI
+                this.initRevelAPI();
 
                 // emit 'initialized' event
                 this.trigger('initialized');
@@ -128,11 +143,19 @@ define(["backbone", "main_router"], function(Backbone) {
                 return this.navigate("done", true);
             }, this);
 
-            App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
+            App.Routers.MobileRouter.prototype.initialize.apply(this, arguments);
         },
         navigateDirectory: function() {
             if(App.Data.dirMode)
                 return window.location.href = getData('directoryReferrer').referrer;
+        },
+        showPromoMessage: function() {
+            App.Data.footer.set('isShowPromoMessage', true);
+            App.Data.mainModel.trigger('showPromoMessage');
+        },
+        hidePromoMessage: function() {
+            App.Data.footer.set('isShowPromoMessage', false);
+            App.Data.mainModel.trigger('hidePromoMessage');
         },
         index: function() {
             var self = this;
@@ -622,7 +645,7 @@ define(["backbone", "main_router"], function(Backbone) {
             });
         },
         maintenance : function() {
-            App.Routers.MainRouter.prototype.maintenance.apply(this, arguments);
+            App.Routers.MobileRouter.prototype.maintenance.apply(this, arguments);
 
             this.prepare('maintenance', function() {
                 var header = {page_title: ''};
@@ -645,6 +668,17 @@ define(["backbone", "main_router"], function(Backbone) {
 
                 this.change_page();
             });
+        },
+        profile: function(step) {
+            App.Data.header.set({
+                page_title: 'Profile',
+                back_title: 'Cancel',
+                back: App.Data.RevelAPI.trigger.bind( App.Data.RevelAPI, 'onProfileCancel')
+            });
+            return App.Routers.MobileRouter.prototype.profile.call(this, step, headerModes.Profile, footerModes.Profile);
+        },
+        loyalty: function() {
+            return App.Routers.MobileRouter.prototype.loyalty.call(this, headerModes.Main, footerModes.Loyalty);
         }
     });
 });

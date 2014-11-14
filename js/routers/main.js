@@ -88,6 +88,13 @@ define(["backbone"], function(Backbone) {
                 if(self.lockedRoutes.indexOf(fragment) > -1) {
                     fragment = 'index';
                 }
+                if (App.Settings.promo_message) {
+                    if (/^(index.*)?$/i.test(fragment)) {
+                        self.trigger('showPromoMessage');
+                    } else {
+                        self.trigger('hidePromoMessage');
+                    }
+                }
                 return Backbone.History.prototype.loadUrl.call(this, fragment);
             }
 
@@ -255,12 +262,70 @@ define(["backbone"], function(Backbone) {
 
                 typeof cb == 'function' && cb();
             }, this);
+        }
+    });
+
+    App.Routers.MobileRouter = App.Routers.MainRouter.extend({
+        profile: function(step, header, footer) {
+            step = step <= 2 && step >= 0 ? Math.ceil(step) : 0;
+
+            var RevelAPI = App.Data.RevelAPI,
+                next = this.navigate.bind(this, 'profile/' + (step + 1), true),
+                prev = this.navigate.bind(this, 'profile/' + (step - 1), true),
+                save = RevelAPI.trigger.bind(RevelAPI, 'onProfileSaved'),
+                views;
+
+            views = [{
+                footer: {next: RevelAPI.processPersonalInfo.bind(RevelAPI, next), prev: null, save: null},
+                content: {mod: 'ProfilePersonal', cache_id: 'ProfilePersonal'}
+            }, {
+                footer: {next: RevelAPI.processPaymentInfo.bind(RevelAPI, next), prev: prev, save: null},
+                content: {mod: 'ProfilePayment', cache_id: 'ProfilePayment'}
+            }, {
+                footer: {next: null, prev: prev, save: RevelAPI.saveProfile.bind(RevelAPI, save)},
+                content: {mod: 'ProfileSecurity', cache_id: 'ProfileSecurity'}
+            }];
+
+            this.prepare('profile', function() {
+                var view = views[step];
+
+                App.Data.header.set('page_title', 'Profile');
+                App.Data.footer.set(view.footer);
+                App.Data.mainModel.set({
+                    header: header,
+                    footer: footer,
+                    content: _.extend({modelName: 'Revel', className: 'revel-profile', model: RevelAPI}, view.content)
+                });
+
+                this.change_page();
+            });
+        },
+        loyalty: function(header, footer) {
+            this.prepare('loyalty', function() {
+                App.Data.header.set('page_title', 'Loyalty');
+
+                App.Data.mainModel.set({
+                    header: header,
+                    footer: footer,
+                    content: {
+                        modelName: 'Revel',
+                        className: 'revel-loyalty',
+                        model: App.Data.RevelAPI,
+                        mod: 'Loyalty',
+                        cache_id: 'Loyalty'
+                    }
+                });
+
+                this.change_page();
+            });
         },
         initRevelAPI: function() {
             App.Data.RevelAPI = new App.Models.RevelAPI();
 
             var RevelAPI = App.Data.RevelAPI,
-                mainModel = App.Data.mainModel;
+                mainModel = App.Data.mainModel,
+                profileCancelCallback,
+                profileSaveCallback;
 
             if(!RevelAPI.isAvailable()) {
                 return;
@@ -282,6 +347,16 @@ define(["backbone"], function(Backbone) {
                 RevelAPI.set('firstTime', false);
             }, this);
 
+
+            this.listenTo(RevelAPI, 'onAuthenticate', function() {
+                mainModel.trigger('showRevelPopup', {
+                    modelName: 'Revel',
+                    mod: 'Authentication',
+                    model: RevelAPI,
+                    cacheId: 'Authentication'
+                });
+            }, this);
+
             this.listenTo(RevelAPI, 'onProfileCreate', function() {
                 mainModel.trigger('showRevelPopup', {
                     modelName: 'Revel',
@@ -291,53 +366,41 @@ define(["backbone"], function(Backbone) {
                 });
             }, this);
 
-            this.listenTo(RevelAPI, 'onProfileCreateAccepted', function() {
+            this.listenTo(RevelAPI, 'onProfileShow', function() {
+                profileCancelCallback = Backbone.history.fragment;
+                this.navigate('profile', true);
                 mainModel.trigger('hideRevelPopup', RevelAPI);
             }, this);
 
-            this.listenTo(RevelAPI, 'onProfileCreateDeclined', function() {
+            this.listenTo(RevelAPI, 'onProfileCancel onAuthenticationCancel', function() {
+                typeof profileCancelCallback == 'string' && this.navigate(profileCancelCallback, true);
+                profileCancelCallback = undefined;
+                profileSaveCallback = undefined;
                 mainModel.trigger('hideRevelPopup', RevelAPI);
+            }, this);
+
+            this.listenTo(RevelAPI, 'onProfileSaved', function() {
+                typeof profileSaveCallback == 'string' && this.navigate(profileSaveCallback, true);
+                profileCancelCallback = undefined;
+                profileSaveCallback = undefined;
             }, this);
 
             this.listenTo(this, 'navigateToLoyalty', function() {
-                RevelAPI.checkProfile(console.log('go to loyalty')/*this.navigate.bind(this, 'loyalty', true)*/);
+                profileSaveCallback = 'loyalty';
+                RevelAPI.checkProfile(this.navigate.bind(this, profileSaveCallback, true));
             }, this);
-        }
-    });
 
-    App.Routers.MobileRouter = App.Routers.MainRouter.extend({
-        profile: function(step, header, footer) {
-            step = step <= 2 && step >= 0 ? Math.ceil(step) : 0;
+            this.listenTo(this, 'navigateToProfile', function() {
+                profileSaveCallback = Backbone.history.fragment;
+                RevelAPI.checkProfile(RevelAPI.trigger.bind(RevelAPI, 'onProfileShow'));
+            }, this);
 
-            var next = this.navigate.bind(this, 'profile/' + (step + 1), true),
-                prev = this.navigate.bind(this, 'profile/' + (step - 1), true),
-                save = function() {},
-                RevelAPI = App.Data.RevelAPI,
-                views;
+            this.listenTo(App.Data.header, 'onProfileCancel', function() {
+                RevelAPI.trigger('onProfileCancel');
+            });
 
-            views = [{
-                footer: {next: RevelAPI.processPersonalInfo.bind(RevelAPI, next), prev: null, save: null},
-                content: {mod: 'ProfilePersonal', cache_id: 'ProfilePersonal'}
-            }, {
-                footer: {next: RevelAPI.processPaymentInfo.bind(RevelAPI, next), prev: prev, save: null},
-                content: {mod: 'ProfilePayment', cache_id: 'ProfilePayment'}
-            }, {
-                footer: {next: null, prev: prev, save: save},
-                content: {mod: 'ProfileSecurity', cache_id: 'ProfileSecurity'}
-            }];
-
-            this.prepare('profile', function() {
-                var view = views[step];
-
-                App.Data.header.set('page_title', 'Profile');
-                App.Data.footer.set(view.footer);
-                App.Data.mainModel.set({
-                    header: header,
-                    footer: footer,
-                    content: _.extend({modelName: 'Revel', className: 'revel-profile', model: RevelAPI}, view.content)
-                });
-
-                this.change_page();
+            this.listenTo(RevelAPI, 'onAuthenticated', function() {
+                mainModel.trigger('hideRevelPopup', RevelAPI);
             });
         }
     });

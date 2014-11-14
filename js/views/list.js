@@ -142,7 +142,7 @@ define(["backbone", "factory"], function(Backbone) {
                     var model = this.sortedModels[i];
 
                     $('img', listElem).attr('src', model.get("logo_url_final") ? model.get("logo_url_final") : model.get(this.image_url_key));
-                    loadSpinner($('img', listElem), {spinner: true, anim: false});
+                    loadSpinner($('img', listElem), {spinner: true, anim: true});
                 }
             }
         },

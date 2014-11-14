@@ -26,7 +26,8 @@ define(["backbone"], function(Backbone) {
     App.Models.FooterModel = Backbone.Model.extend({
         defaults: {
             subtotal: null,
-            img: App.Data.settings.get("img_path")
+            img: App.Data.settings.get("img_path"),
+            isShowPromoMessage: false
         }
     });
 });

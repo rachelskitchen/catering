@@ -1,5 +1,4 @@
 /* list mod block start */
-
 #content ul.products {
     width: 100%;
     list-style: none;
@@ -11,14 +10,12 @@
 #content ul.products li {
     min-height: 14.2em;
     width: 100%;
-    border-bottom: 1px solid #a8c4d8;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
     position: relative;
     cursor: pointer;
 }
 
-#content ul.products li:active {
-    box-shadow: 0 0 8em rgba(0, 170, 234, 0.3) inset;
-}
 #content .product .block_img {
     display: table;
     height: 11.8em;
@@ -29,7 +26,6 @@
     float: left;
 }
 #content .product .block_img > div {
-    background: white;
     display: table-cell;
     height: 11.8em;
     margin: 0em;
@@ -143,18 +139,18 @@
 .product_info .input_beauty {
     display: inline-block;
     position: relative;
-    top:auto;
-    bottom:auto;
-    left:auto;
-    right:auto;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
 }
 .product_info .cost .input_beauty {
     margin-right: 1em;
     margin-left: 1em;
-    width:9.2em;
+    width: 9.2em;
 }
 .product_info .gift_card .input_beauty {
-    width:29em;
+    width: 29em;
 }
 .product_info .gift_card input {
     font-size: 2.7em;

@@ -31,6 +31,10 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'change:footer', this.footer_change, this);
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
+            this.listenTo(this.model, 'showPromoMessage', this.showPromoMessage, this);
+            this.listenTo(this.model, 'hidePromoMessage', this.hidePromoMessage, this);
+            this.listenTo(this.model, 'showRevelPopup', this.showRevelPopup, this);
+            this.listenTo(this.model, 'hideRevelPopup', this.hideRevelPopup, this);
 
             this.iOSFeatures();
 
@@ -146,10 +150,44 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.spinner = setTimeout(this.showSpinner.bind(this), 50);
         },
         showSpinner: function() {
+            this.blurBg();
             this.$('#main-spinner').show();
         },
         hideSpinner: function() {
+            this.unblurBg();
             this.$('#main-spinner').hide();
+        },
+        /**
+         * Styles for a visible promo message.
+         */
+        showPromoMessage: function() {
+            this.$('section').addClass('section_promo_show');
+            this.$('footer').addClass('footer_promo_show');
+        },
+        /**
+         * Styles for a invisible promo message.
+         */
+        hidePromoMessage: function() {
+            this.$('section').removeClass('section_promo_show');
+            this.$('footer').removeClass('footer_promo_show');
+        },
+        showRevelPopup: function(data) {
+            var container = this.$('#revel-popup');
+            container.css({display: 'table'});
+            this.blurBg();
+            this.subViews[3] = App.Views.GeneratorView.create(data.modelName, data, data.cacheId);
+            container.append(this.subViews[3].el);
+        },
+        hideRevelPopup: function() {
+            this.$('#revel-popup').hide();
+            this.unblurBg();
+            this.subViews[3] && this.subViews[3].removeFromDOMTree();
+        },
+        blurBg: function() {
+            this.$('section, footer, header').addClass('blur');
+        },
+        unblurBg: function() {
+            this.$('section, footer, header').removeClass('blur');
         }
     });
 

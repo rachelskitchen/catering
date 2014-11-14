@@ -38,7 +38,11 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
 
     App.Views.CoreRevelView.CoreRevelProfileAddressView = App.Views.AddressView.extend({
         name: 'revel',
-        mod: 'profile_address'
+        mod: 'profile_address',
+        fillValues: function() {
+            var model = this.model;
+            model.country && this.$('.country').val(model.country);
+        }
     });
 
     App.Views.CoreRevelView.CoreRevelProfilePersonalView = App.Views.CoreCheckoutView.CoreCheckoutMainView.extend({
@@ -71,6 +75,10 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
     App.Views.CoreRevelView.CoreRevelProfileSecurityView = App.Views.FactoryView.extend({
         name: 'revel',
         mod: 'profile_security',
+        initialize: function() {
+            this.listenTo(this.model, 'onAuthenticationCancel onProfileCancel onProfileSaved', this.render, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
         events: {
             'blur .password': 'setPassword',
             'change .checkbox': 'changeCheckbox'
@@ -117,17 +125,92 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
             'click .cancel': 'cancel'
         },
         ok: function() {
-            this.model.trigger('onProfileCreateAccepted');
+            this.model.trigger('onProfileShow');
         },
         cancel: function() {
-            this.model.trigger('onProfileCreateDeclined');
+            this.model.trigger('onProfileCancel');
+        }
+    });
+
+    App.Views.CoreRevelView.CoreRevelAuthenticationView = App.Views.FactoryView.extend({
+        name: 'revel',
+        mod: 'authentication',
+        initialize: function() {
+            this.listenTo(this.model, 'onAuthenticationCancel onAuthenticated', this.resetPassword, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        events: {
+            'click .ok': 'authenticate',
+            'click .cancel': 'cancel'
+        },
+        authenticate: function() {
+            var email = this.$('.email').val(),
+                pwd = this.$('.password').val();
+
+            this.model.authenticate(email, pwd);
+        },
+        cancel: function() {
+            this.model.trigger('onAuthenticationCancel');
+        },
+        resetPassword: function() {
+            this.$('.password').val('');
         }
     });
 
     App.Views.CoreRevelView.CoreRevelLoyaltyView = App.Views.FactoryView.extend({
         name: 'revel',
-        mod: 'loyalty'
+        mod: 'loyalty',
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            var qrCode = this.$('.qr-code');
+            qrCode.attr('src', this.model.getQRCode());
+            loadSpinner(qrCode);
+            return this;
+        }
     });
+
+    App.Views.CoreRevelView.CoreRevelProfileFooterView = App.Views.FactoryView.extend({
+        name: 'footer',
+        mod: 'profile',
+        initialize: function() {
+            this.listenTo(this.model, 'change:next change:prev change:save', this.update, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.update();
+            return this;
+        },
+        events: {
+            "click .next": "next",
+            "click .prev": "prev",
+            "click .save": "save"
+        },
+        next: setCallback('next'),
+        prev: setCallback('prev'),
+        save: setCallback('save'),
+        update: function() {
+            var model = this.model;
+            update(model.get('prev'), this.$('.prev'));
+            update(model.get('next'), this.$('.next'));
+            update(model.get('save'), this.$('.save'));
+
+            function update(data, el) {
+                if(data) {
+                    el.show();
+                } else {
+                    el.hide();
+                }
+            }
+        }
+    });
+
+    function setCallback(prop) {
+        return function() {
+            var tab = this.model.get(prop);
+            typeof tab == 'function' && tab();
+        };
+    }
 
     App.Views.RevelView = {};
     App.Views.RevelView.RevelWelcomeView = App.Views.CoreRevelView.CoreRevelWelcomeView;
@@ -137,4 +220,6 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
     App.Views.RevelView.RevelProfileAddressView = App.Views.CoreRevelView.CoreRevelProfileAddressView;
     App.Views.RevelView.RevelProfileNotificationView = App.Views.CoreRevelView.CoreRevelProfileNotificationView;
     App.Views.RevelView.RevelLoyaltyView = App.Views.CoreRevelView.CoreRevelLoyaltyView;
+    App.Views.RevelView.RevelAuthenticationView = App.Views.CoreRevelView.CoreRevelAuthenticationView;
+    App.Views.RevelView.RevelProfileFooterView = App.Views.CoreRevelView.CoreRevelProfileFooterView
 });

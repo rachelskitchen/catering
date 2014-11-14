@@ -1,0 +1,15 @@
+{
+    "usaepay": {
+        "payment_processor": {
+            "paypal": false,
+            "paypal_direct_credit_card": false,
+            "paypal_mobile": false,
+            "usaepay": true
+        },
+        "prevailing_surcharge": 10,
+        "prevailing_tax": 20,
+        "server_time": -43200029,
+        "tax_country": "usa",
+        "rewardCard": 1111
+    }
+}

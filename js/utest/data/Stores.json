@@ -1,0 +1,165 @@
+[
+    {
+        "estabs": [
+            {
+                "province": "A province", 
+                "line_1": "123 My Street", 
+                "kiosk_image_url": "", 
+                "city_name": "Revel City", 
+                "id": 203, 
+                "logo_url": "", 
+                "name": "dkulemalin", 
+                "country": "US", 
+                "zipcode": "12345", 
+                "longitude": 44.060508, 
+                "state": "OR", 
+                "latitude": 56.317284, 
+                "line_2": "", 
+                "type": "Quick Service"
+            }, 
+            {
+                "province": "", 
+                "line_1": "23 Rodionova St", 
+                "kiosk_image_url": "", 
+                "city_name": "Nizhny Novgorod", 
+                "id": 244, 
+                "logo_url": "/medialibrary/image/100/", 
+                "name": "dkormushkina (11-29-2013T00:16)", 
+                "country": "RU", 
+                "zipcode": "603600", 
+                "longitude": 44.059807, 
+                "state": null, 
+                "latitude": 56.316822, 
+                "line_2": "4th Floor", 
+                "type": "Table Service"
+            }
+        ], 
+        "dns": [
+            "qa.revelup.com"
+        ], 
+        "short_name": "qa"
+    }, 
+    {
+        "estabs": [
+            {
+                "province": "", 
+                "line_1": "23 Rodionova St", 
+                "kiosk_image_url": "", 
+                "city_name": "Nizhniy Novgorod", 
+                "id": 29, 
+                "logo_url": "/medialibrary/image/3/", 
+                "name": "qaregressiontesting (v13.11.19)", 
+                "country": "RU", 
+                "zipcode": "66016", 
+                "longitude": 44.060386, 
+                "state": null, 
+                "latitude": 56.317108, 
+                "line_2": "4th floor", 
+                "type": "Quick Service"
+            }
+        ], 
+        "dns": [
+            "qaregressiontesting.revelup.com"
+        ], 
+        "short_name": "qaregressiontesting"
+    }, 
+    {
+        "estabs": [
+            {
+                "province": "Nizhegorodskay", 
+                "line_1": "50, Turgeneva Str.", 
+                "kiosk_image_url": "", 
+                "city_name": "Bor", 
+                "id": 7, 
+                "logo_url": "", 
+                "name": "EvEgorov #2", 
+                "country": "RU", 
+                "zipcode": "610777", 
+                "longitude": 44.1184, 
+                "state": null, 
+                "latitude": 56.33925, 
+                "line_2": "", 
+                "type": "Grocery"
+            }, 
+            {
+                "province": "", 
+                "line_1": "7-115, Verhnepechorskaya St", 
+                "kiosk_image_url": "", 
+                "city_name": "nizhny novgorod", 
+                "id": 6, 
+                "logo_url": "", 
+                "name": "EvEgorov #1", 
+                "country": "RU", 
+                "zipcode": "603116", 
+                "longitude": 44.06827, 
+                "state": null, 
+                "latitude": 56.28669, 
+                "line_2": "4th Floor long long long long long", 
+                "type": "Grocery"
+            }, 
+            {
+                "province": "", 
+                "line_1": "23 Rodionova St", 
+                "kiosk_image_url": "", 
+                "city_name": "Nizhny Novgorod", 
+                "id": 11, 
+                "logo_url": "/medialibrary/image/95/", 
+                "name": "Test 1", 
+                "country": "RU", 
+                "zipcode": "603600", 
+                "longitude": 44.0598, 
+                "state": null, 
+                "latitude": 56.3168, 
+                "line_2": "4th Floor", 
+                "type": "Quick Service"
+            }, 
+            {
+                "province": "", 
+                "line_1": "23 Rodionova St", 
+                "kiosk_image_url": "", 
+                "city_name": "Nizhny Novgorod", 
+                "id": 10, 
+                "logo_url": "", 
+                "name": "Test 2 (12-13-2013T03:04)", 
+                "country": "RU", 
+                "zipcode": "603600", 
+                "longitude": 44.035, 
+                "state": null, 
+                "latitude": 56.318, 
+                "line_2": "4th Floor", 
+                "type": "Quick Service"
+            },
+            {
+                "province": "TEST", 
+                "logo_url": null, 
+                "name": "ADramark", 
+                "country": "RU", 
+                "zipcode": "603600-0001-0002", 
+                "longitude": 44.00050800000003, 
+                "latitude": 56.317284, 
+                "state": "CA", 
+                "city_name": "San Francisco", 
+                "kiosk_image_url": null, 
+                "line_1": "23 Rodionova St", 
+                "line_2": "4th Floor", 
+                "id": 1,
+                "type" : "Grocery"
+            }
+        ], 
+        "dns": [
+            "mlb-dev.revelup.com"
+        ], 
+        "short_name": "mlb_dev"
+    },
+    {
+        "estabs": [
+        ], 
+        "dns": [
+            "mlb-dev.revelup.com"
+        ], 
+        "short_name": "mlb_dev2"
+    },
+    {
+    }
+]
+ 

@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator"], function(Backbone) {
+define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
     'use strict';
 
     App.Views.FooterView = {};
@@ -35,27 +35,23 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(App.Data.myorder, 'remove', this.updateCount, this);
         },
         render: function() {
+            if (App.Settings.promo_message) this.calculatePromoMessageWidth(); // calculate a promo message width
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.updateCount(undefined, App.Data.myorder);
             return this;
         },
         events: {
-            "click #myorder": "myorder",
-            "click #location": "location",
-            "click #about": "about"
+            'click #myorder': 'myorder',
+            'click #location': 'location',
+            'click #about': 'about',
+            'click .loyalty': 'loyalty',
+            'click .menu': 'menu'
         },
-        myorder: function() {
-            var myorder = this.model.get('myorder');
-            typeof myorder == 'function' && myorder();
-        },
-        location: function() {
-            var location = this.model.get('location');
-            typeof location == 'function' && location();
-        },
-        about: function() {
-            var about = this.model.get('about');
-            typeof about == 'function' && about();
-        },
+        myorder: setCallback('myorder'),
+        location: setCallback('location'),
+        about: setCallback('about'),
+        loyalty: setCallback('loyalty'),
+        menu: setCallback('menu'),
         updateCount: function(model, collection) {
             var quantity = this.$('.count'),
                 amount = collection.get_only_product_quantity();
@@ -64,6 +60,56 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 quantity.show();
             else
                 quantity.hide();
+        },
+        /**
+         * Calculate a promo message width.
+         */
+        calculatePromoMessageWidth: function() {
+            if (this.model.get('isShowPromoMessage')) {
+                var promo_message = Backbone.$('<div class="promo_message promo_message_internal">' + App.Settings.promo_message + '</div>');
+                $('body').append(promo_message);
+                this.model.set('widthPromoMessage', promo_message.width());
+                promo_message.remove();
+                this.model.set('widthWindow', $(window).width());
+                this.addPromoMessage(); // add a promo message
+                $(window).resize(this, this.resizePromoMessage);
+            } else {
+                this.$('.promo_message').hide();
+            }
+        },
+        /**
+         * Resize of a promo message.
+         */
+        resizePromoMessage: function() {
+            if (arguments[0].data.model.get('widthWindow') !== $(window).width()) {
+                arguments[0].data.model.set('widthWindow', $(window).width());
+            }
+        },
+        /**
+         * Add a promo message.
+         */
+        addPromoMessage: function() {
+            var self = this;
+            window.setTimeout(function() {
+                var promo_text = self.$('.promo_text');
+                var promo_marquee = self.$('.promo_marquee');
+                if (self.model.get('widthPromoMessage') >= self.model.get('widthWindow')) {
+                    var isFirefox = /firefox/g.test(navigator.userAgent.toLowerCase());
+                    if (isFirefox) {
+                        // bug #15981: "First Firefox displays long promo message completely then erases it and starts scrolling"
+                        $(document).ready(function() {
+                            promo_text.hide();
+                            promo_marquee.show();
+                        });
+                    } else {
+                        promo_text.hide();
+                        promo_marquee.show();
+                    }
+                } else {
+                    promo_text.show();
+                    promo_marquee.hide();
+                }
+            }, 0);
         }
     });
 
@@ -150,6 +196,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             return this;
         },
         remove: function() {
+            $(window).off("resize", this.resizePromoMessage);
             App.Views.FactoryView.prototype.remove.apply(this, arguments);
             $('#section').removeClass('doubleFooter_section').removeClass('tripleFooter_section');
         },
@@ -252,4 +299,18 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         name: 'footer',
         mod: 'maintenance_directory'
     });
+
+    App.Views.FooterView.FooterProfileView = App.Views.RevelView.RevelProfileFooterView;
+
+    App.Views.FooterView.FooterLoyaltyView = App.Views.FooterView.FooterMainView.extend({
+        name: 'footer',
+        mod: 'loyalty'
+    });
+
+    function setCallback(prop) {
+        return function() {
+            var tab = this.model.get(prop);
+            typeof tab == 'function' && tab();
+        };
+    }
 });

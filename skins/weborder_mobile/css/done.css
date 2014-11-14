@@ -1,5 +1,4 @@
 /* main mod start */
-
 #content .done {
     width: 100%;
     height: 100%;
@@ -12,7 +11,6 @@
     text-align: center;
     font-weight: bold;
     padding-top: 1em;
-    color: #2ba1d8;
 }
 
 #content .done .orderCompleted {
@@ -66,7 +64,6 @@
     right: 2em;
     font-size: 2.8em;
     text-align: center;
-    color: #ff0000;
 }
 
 /* error mod end */

@@ -63,6 +63,8 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Data.mainModel = new App.Models.MainModel();
 
                 this.listenTo(App.Data.mainModel, 'change:mod', this.createMainView);
+                this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
+                this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
 
                 App.Data.mainModel.set({
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
@@ -169,6 +171,12 @@ define(["backbone", "main_router"], function(Backbone) {
                         this.navigate('index', true);
                 }
             }, this);
+        },
+        showPromoMessage: function() {
+            App.Data.mainModel.set('isShowPromoMessage', true);
+        },
+        hidePromoMessage: function() {
+            App.Data.mainModel.set('isShowPromoMessage', false);
         },
         index: function() {
             this.prepare('index', function() {

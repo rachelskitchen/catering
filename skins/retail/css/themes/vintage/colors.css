@@ -552,3 +552,7 @@ aside:after, aside:before {
 .confirmPayCard {
     background: #e6decb;
 }
+
+.promo_message {
+    color: #373b40;
+}

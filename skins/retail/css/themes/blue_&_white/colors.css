@@ -568,3 +568,7 @@ aside:after, aside:before {
 #cart h2, #header .checkout .title {
     color: #fff;
 }
+
+.promo_message {
+    color: #373b40;
+}

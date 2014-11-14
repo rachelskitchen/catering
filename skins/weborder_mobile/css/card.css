@@ -1,5 +1,4 @@
 /* main mod start  */
-
 #content ul.card {
     margin-top: 2em;
 }
@@ -12,14 +11,9 @@
     height: 7em;
 }
 
-#content ul.card li.exp:after {
-    background: transparent;
-}
-
 #content ul.card li.required:before {
     content: '*';
     position: absolute;
-    color: #f00;
     font-size: 3em;
     left: -0.8em;
     z-index: 1;
@@ -68,7 +62,6 @@
     width: 100%;
     font-size: 3em;
     position: relative;
-    background: #fff;
     z-index: 1;
     overflow: hidden;
 }
@@ -89,7 +82,6 @@
     right: 0.2em;
     top: 0.3em;
     z-index: 0;
-    color: #cacaca;
     font-family: FontAwesome;
 }
 
@@ -101,11 +93,6 @@
     bottom: -2px;
     left: -2px;
     right: -2px;
-    background-image: -o-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -moz-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -webkit-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -ms-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
 }
 
 #content ul.card select {
@@ -113,7 +100,6 @@
     height: 100%;
     font-size: inherit;
     font-family: inherit;
-    color: inherit;
     border-radius: 0;
     -webkit-appearance: none;
     -o-appearance: none;
@@ -122,14 +108,8 @@
     appearance: none;
     position: relative;
     z-index: 1;
-    background: transparent;
     border: none;
     text-indent: 0.2em;
-}
-
-#content ul.card.firefox select {
-    color: transparent;
-    text-shadow: 0 0 #464646;
 }
 
 #content ul.card.firefox label {
@@ -140,21 +120,10 @@
     top: 0;
 }
 
-
 #content ul.card .btn-reload {
-    font-size: 2.8em;
-    font-weight: bold;
-    color: #3F7CA4;
-    border: solid 0.32em #c3dce9;
-    box-shadow: 0.10em 0.25em 0.5em #a09d9d, inset 0em 0em 0.5em #e8e8e8;
-    border-radius: 3em;
-    cursor: pointer;
-    background-image: -webkit-linear-gradient(top, #ffffff 0%, #eeeeee 100%);
-    background-color: #ffffff;
-    text-align: center;
-    height: 80%;
-    display: inline-block;
-    position: relative;
+    height: auto;
+    line-height: normal;
+    padding: 0.5em;
 }
 
 
@@ -163,7 +132,7 @@
 /* gift card start  */
 #content .card .captcha_wrap {
     float: left;
-    width: 20em;   
+    width: 20em;
     margin: 1em;
     text-align: center;
 }

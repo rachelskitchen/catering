@@ -1,8 +1,9 @@
 /* main mod start */
 #footer .footer {
+    bottom: 0;
+    height: 10.2em;
+    position: absolute;
     width: 100%;
-    height: 100%;
-    position: relative;
 }
 
 #footer ul {
@@ -14,29 +15,42 @@
 #footer li {
     float: left;
     height: 100%;
-}
-
-#footer li.left, #footer li.right {
-    width: 38%;
-}
-
-#footer li.center {
-    width: 24%;
     position: relative;
 }
 
-#footer #about, #footer #location, #footer #myorder {
+#footer .left, #footer .right {
+    width: 38%;
+}
+
+#footer .center {
+    width: 24%;
+}
+
+#footer .retail-mode .left, #footer .retail-mode .right {
+    width: 33%;
+}
+
+#footer .retail-mode .center {
+    width: 34%;
+}
+
+
+#about, #location, #myorder, .loyalty, .menu {
     display: block;
-    height: 100%;
     margin: 0 auto;
     cursor: pointer;
+    text-align: center;
 }
 
-#footer #about, #footer #location {
-    width: 19.1em;
+.btn1 {
+    width: 17.1em;
+    height: 80%;
+    position: relative;
+    top: 10%;
+    text-align: center;
 }
 
-#footer #myorder {
+#myorder.btn2 {
     height: 115%;
     width: 15.5em;
     margin-left: -7.75em;
@@ -45,79 +59,76 @@
     left: 50%;
 }
 
-#footer #about span, #footer #location span, #footer #myorder span {
+#footer span {
     font-size: 2.2em;
-    color: #fff;
     position: relative;
     top: 2.3em;
 }
 
-#footer #myorder span {
+#myorder.btn2 span {
     top: 3.9em;
 }
 
-#footer #about, #footer #location, #footer #myorder {
-    text-align: center;
+#myorder.btn1:before {
+    content: '\f07a';
+    display: block;
+    font-family: FontAwesome;
+    position: absolute;
+    top: -0.1em;
+    left: 50%;
+    font-size: 6em;
+    margin-left: -0.55em;
 }
 
-#footer #about {
-    height: 80%;
-    position: relative;
-    top: 10%;
-}
-
-#footer #about:before {
+#about:before {
     content: '\f02d';
     display: block;
     font-family: FontAwesome;
     position: absolute;
     top: 0.05em;
     left: 50%;
-    color: #fff;
     font-size: 4.5em;
     margin-left: -0.4em;
 }
 
-#footer #location {
-    height: 80%;
-    position: relative;
-    top: 10%;
-}
-
-#footer #location:before {
+#location:before {
     content: '\f041';
     display: block;
     font-family: FontAwesome;
     position: absolute;
     top: 0.05em;
     left: 50%;
-    color: #fff;
     font-size: 4.5em;
     margin-left: -0.5em;
     width: 1em;
     text-align: center;
 }
 
-#footer #myorder {
-    background: url('../img/myorder.png') no-repeat 50% 30% #444;
-    background-size: 50%;
+#myorder.btn1 .count {
+    position: absolute;
+    top: 10%;
+    width: 100%;
+    border-radius: 2.3em;
+    font-size: 2em;
+    display: block;
+    font-weight: bold;
+    text-align: center;
 }
 
-#footer #myorder .count {
+#myorder.btn2 .count {
     position: absolute;
     padding: 0.1em 0.45em;
     top: 15%;
     right: 10%;
     border-radius: 2.3em;
     display: none;
-    background: #00aaea;
 }
 
 /* main mod end */
 /* checkout mod start */
 
 #footer ul.checkout li{
-    width:100%;
+    width: 100%;
     position: relative;
 }
 
@@ -129,19 +140,22 @@
     text-align: center;
     left:4em;
     right:4em;
+    width: auto;
+}
+#footer ul.checkout div span {
+    top: 0;
 }
 
 #footer ul.checkout span {
     font-size: 3em;
-    color: #fff;
 }
 
-#footer #placeOrder {
+#placeOrder {
     left: 2em;
     right: 4em;
 }
 
-#footer #creditCard {
+#creditCard {
     left: 4em;
     right: 2em;
 }
@@ -164,15 +178,15 @@
 
 #footer ul.card span {
     font-size: 3em;
-    color: #fff;
+    top: 0;
 }
 
-#footer ul.card #cancel {
+#cancel {
     left: 8em;
     right: 4em;
 }
 
-#footer ul.card #proceed {
+#proceed {
     left: 4em;
     right: 8em;
 }
@@ -202,34 +216,28 @@
     bottom: 200%;
 }
 
-/*#footer ul.confirm.double li:not(:last-child):not(.half),
-#footer ul.confirm.double li.half + li.half:not(:last-child),,*/
-#footer ul.confirm.double li:not(:last-child),
-#footer ul.confirm.triple li:not(:last-child) {
-    background: #545454;
-}
-
 #footer ul.confirm.double li:last-child:before,
 #footer ul.confirm.triple li:last-child:before {
     content: '';
     display: block;
     width: 100%;
     height: 1px;
-    background: #000;
     position: absolute;
     top: -1px;
 }
 
-#footer ul.confirm li{
+#footer ul.confirm li {
     width: 100%;
     position: relative;
 }
 
 #footer ul.confirm .half {
-    width:50%;
+    width: 50%;
     height: 100%;
     position: relative;
     float: left;
+    top: 0;
+    font-size: inherit;
 }
 
 #footer ul.confirm div {
@@ -238,21 +246,25 @@
     bottom: 1em;
     line-height: 8em;
     text-align: center;
-    left:4em;
-    right:4em;
+    left: 4em;
+    right: 4em;
+    width: auto;
+}
+
+#footer ul.confirm div span {
+    top: 0;
 }
 
 #footer ul.confirm div span {
     font-size: 3em;
-    color: #fff;
 }
 
-#footer #pay {
+#pay {
     right: 4em;
     left: 2em;
 }
 
-#footer #creditCard {
+#creditCard {
     right: 2em;
     left: 4em;
 }
@@ -265,7 +277,7 @@
 /* confirm mod end */
 /* done, maintenance mod start */
 
-#footer #returnToMenu, #footer #reload {
+#returnToMenu, #reload {
     position: absolute;
     top: 1em;
     bottom: 1em;
@@ -275,9 +287,74 @@
     line-height: 8em;
 }
 
-#footer #returnToMenu span, #footer #reload span {
-    color: #fff;
+#returnToMenu span, #reload span {
     font-size: 3em;
 }
 
 /* done, maintenance mod end */
+
+.promo_message_internal {
+    display: block;
+    position: absolute;
+    top: 1000em;
+    white-space: nowrap;
+}
+
+.promo_message {
+    color: #fff;
+    display: none;
+    font-family: helvetica neue;
+    font-size: 2.5em;
+    font-weight: italic;
+    height: 2.5em;
+    margin-top: -2.5em;
+    text-align: center;
+}
+
+.promo_message span {
+    font-size: inherit !important;
+    top: 0 !important;
+}
+
+.loyalty:before {
+    content: '';
+    font-size: 4.5em;
+    width: 1.4em;
+    height: 1em;
+    margin-left: .1em;
+    margin-top: .1em;
+    position: absolute;
+}
+
+.next:before, .prev:before, .save:before {
+    display: block;
+    font-family: FontAwesome;
+    position: absolute;
+    font-size: 6em;
+    top: 0.05em;
+    left: 50%;
+    margin-left: -0.45em;
+    font-size: 4.5em;
+}
+
+.next:before {
+    content: '\f0a9';
+}
+
+.prev:before {
+    content: '\f0a8';
+}
+
+.save:before {
+    content: '\f0c7';
+}
+.menu:before {
+    content: '\f03a';
+    display: block;
+    font-family: FontAwesome;
+    position: absolute;
+    top: 0.15em;
+    left: 50%;
+    font-size: 4em;
+    margin-left: -0.52em;
+}
