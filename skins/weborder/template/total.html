@@ -9,6 +9,15 @@
 </script>
 
 <script type="text/template" id="total_checkout-template">
+    <% if(discount_allow) { %>
+    <li>
+        <span class="title">Total Discounts:</span>
+        <span class="cost">
+            <span class="currency_symbol"><%= currency_symbol %></span>
+            <span class="discount"><%= discounts %></span>
+        </span>
+    </li>
+    <% } %>
     <li>
         <span class="title">Subtotal:</span>
         <span class="cost">
@@ -35,18 +44,7 @@
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="surcharge"><%= surcharge %></span>
         </span>
-    </li>    
-    
-    <% if(discount_allow) { %>
-    <li>
-        <span class="title">Discount:</span>
-        <span class="cost">
-            <span class="currency_symbol">-<%= currency_symbol %></span>
-            <span class="discount"><%= discounts %></span>
-        </span>
     </li>
-    <% } %>
-    
     <li>
         <span class="title">Tax:</span>
         <span class="cost">

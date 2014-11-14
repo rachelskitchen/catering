@@ -237,6 +237,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          */
         addJSON: function(data) {
             this.set({
+                discount: new App.Models.DiscountItem(data.discount),
                 product: new App.Models.Product().addJSON(data.product),
                 modifiers: new App.Collections.ModifierBlocks().addJSON(data.modifiers),
                 id_product: data.id_product,
@@ -519,7 +520,13 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          */
         toString: function() {
             return round_monetary_currency(this.get('sum'));
+        },
+        saveDiscount: function() {
+            var data = this.toJSON();
+            setData('orderLevelDiscount', data);
         }
+         
+   
     });
 
     App.Collections.Myorders = Backbone.Collection.extend({
@@ -783,9 +790,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             return surcharge;
         },
-        recalc_all: function() {
+        recalculate_all: function() {
             var myorder = this, 
-                total_final,
                 tax = 0,
                 total = 0,
                 discounts = 0,
@@ -811,16 +817,13 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
                 discounts += discount;
                 total -= discount;
-            } 
-
-            total_final = total - discount;
+            }
 
             this.total.set({
                 total: total,
                 tax: tax,
                 surcharge: surcharge,
-                discounts: discounts,
-                total_final: total_final
+                discounts: discounts
             });
         },
 
@@ -856,6 +859,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             setData('orders', data);
             this.checkout.saveCheckout();
             this.total.saveTotal();
+            this.discount.saveDiscount();
         },
         /**
          * load order from localstorage
@@ -879,7 +883,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.each(function(model) {
                 tax += model.get_myorder_tax();
             });
-            //var order_level_tax = this.get("discount")
+            //this.recalculate_all();
+            trace( "recalculate_tax : tax = ", tax );
             this.total.set('tax', tax);
         },
         /**
@@ -1191,7 +1196,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     }                   
                 },
                 complete: function() {
-                    myorder.recalc_all();
+                    myorder.recalculate_all();
                 }
             });
 
@@ -1276,6 +1281,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             order_info.tax = total.tax;
             order_info.subtotal = total.subtotal;
             order_info.final_total = total.final_total;
+            //order_info.total_discounts = total.total_discounts;
             order_info.surcharge = total.surcharge;
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.notes = checkout.notes;

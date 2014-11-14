@@ -26,7 +26,6 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
     App.Models.Total = Backbone.Model.extend({
         defaults: {
             total: 0,
-            total_final: 0, //total minus all discounts
             tax: 0,
             surcharge: 0,
             tip: null,
@@ -180,7 +179,8 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
                 surcharge: parseFloat(this.get_surcharge()),
                 subtotal: parseFloat(this.get_total()),
                 tax: parseFloat(this.get_tax()),
-                tip: parseFloat(this.get_tip())
+                tip: parseFloat(this.get_tip()),
+                total_discounts: parseFloat(this.get_discounts_str())
             };
         },
         clone: function() {
