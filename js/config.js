@@ -80,7 +80,8 @@ define({
         collection_sort: "js/models/collection_sort",
         confirm_view: "js/views/confirm",
         revel_api: "js/models/revel",
-        revel_view: "js/views/revel"
+        revel_view: 'js/views/revel',
+        establishments: 'js/models/establishments'
     },
     waitSeconds: 30,
     shim: {
@@ -202,6 +203,9 @@ define({
         },
         "revel_view": {
             deps: ["backbone", "factory"]
+        },
+        'establishments': {
+            deps: ['backbone']
         }
     },
     map: {

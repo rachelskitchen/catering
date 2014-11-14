@@ -38,6 +38,7 @@ define(["backbone", "async"], function(Backbone) {
             this.listenToOnce(this, 'change:settings_system', this.get_settings_main, this);
             this.listenToOnce(this, 'change:skinPath', this.get_settings_for_skin, this)
 
+            this.getBrand(); // get ID of a current brand
             this.get_establishment();  // get ID of current establishment
 
             $.ajaxSetup({
@@ -79,6 +80,7 @@ define(["backbone", "async"], function(Backbone) {
             return $.when(self.get_settings_system());
         },
         defaults: {
+            brand: 1,
             establishment: 1,
             host: "",
             storage_data: 0,
@@ -179,6 +181,14 @@ define(["backbone", "async"], function(Backbone) {
             }
 
             return load;
+        },
+        /**
+         * Get ID of a current brand.
+         */
+        getBrand: function() {
+            var GETParameters = parse_get_params(), // get GET-parameters from address line
+                brand = GETParameters.brand;
+            if (!isNaN(brand) && brand > 0) this.set('brand', brand * 1);
         },
         /**
          * Get ID of current establishment.
