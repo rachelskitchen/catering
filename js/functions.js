@@ -108,6 +108,7 @@ MSG.ERROR_REVEL_UNABLE_TO_PERFORM = 'Unable to perform action. Please ask about 
 MSG.ERROR_REVEL_ATTEMPTS_EXCEEDED = 'Max number of authentication attempts exceeded. Account deleted.';
 MSG.ERROR_REVEL_PASSWORD_UPDATE_FAILED = 'Password update failed. Old password is invalid.';
 MSG.ERROR_REVEL_AUTHENTICATION_FAILED = 'Authentication failed. Please enter valid email & password.';
+MSG.ERROR_ESTABLISHMENTS_LOAD = 'Unable to get the stores list from backend. Now the page is reloaded';
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,

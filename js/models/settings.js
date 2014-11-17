@@ -80,7 +80,7 @@ define(["backbone", "async"], function(Backbone) {
             return $.when(self.get_settings_system());
         },
         defaults: {
-            brand: 1,
+            brand: null,
             establishment: 1,
             host: "",
             storage_data: 0,
@@ -242,6 +242,7 @@ define(["backbone", "async"], function(Backbone) {
                             var data = response.data;
 
                             $.extend(true, settings_system, data);
+                            if (data.brand) self.set('brand', data.brand);
                             settings_system.about_images = settings_system.about_images || [];
                             settings_system.about_title = settings_system.about_title || "";
                             settings_system.about_description = settings_system.about_description || "";

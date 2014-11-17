@@ -243,6 +243,14 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
+    App.Views.MainView.MainEstablishmentsView = App.Views.FactoryView.extend({
+        name: 'main',
+        mod: 'establishments',
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+        }
+    });
+
     App.Views.MainView.MainMaintenanceView = App.Views.FactoryView.extend({
         name: 'main',
         mod: 'maintenance',

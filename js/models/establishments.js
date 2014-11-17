@@ -22,16 +22,23 @@
 
 define(['backbone', 'collection_sort'], function(Backbone) {
     'use strict';
-    App.Models.Establishment = Backbone.Model.extend({
-        defaults: {
-            id: null,
-            name: '',
-            city: '',
-            address: ''
-        }
-    });
+    App.Models.Establishment = Backbone.Model.extend({});
     App.Collections.Establishments = App.Collections.CollectionSort.extend({
         model: App.Models.Establishment,
+        initialize: function() {
+            this._meta = {};
+            this.getEstablishments(); // get establishments from backend
+        },
+        /**
+        * Get or set meta data of collection.
+        */
+        meta: function(prop, value) {
+            if (value === undefined) {
+                return this._meta[prop];
+            } else {
+                this._meta[prop] = value;
+            }
+        },
         /**
         * Get establishments from backend.
         */
@@ -44,15 +51,38 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                     brand: App.Data.settings.get('brand')
                 },
                 dataType: 'json',
+                /*
                 successResp: function(data) {
-                    console.log(data);
+                    self.meta('brandName', data.brand_name);
+                    var establishments = data.establishments;
+                    for (var i = 0; i < establishments.length; i++) {
+                        self.add(establishments[i]);
+                    }
                     dfd.resolve();
                 },
+                */
+                // temp code (begin)
+                success: function(data) {
+                    data.brand_name = 'MLB';
+                    self.meta('brandName', data.brand_name);
+                    var establishments = data[0].estabs;
+                    for (var i = 0; i < establishments.length; i++) {
+                        self.add(establishments[i]);
+                    }
+                    dfd.resolve();
+                },
+                // temp code (end)
                 error: function() {
-                    console.log('ERROR');
+                    App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_LOAD, true); // user notification
                 }
             });
             return dfd;
+        },
+        /**
+        * Get a brand name.
+        */
+        getBrandName: function() {
+            return this.meta('brandName'); // get or set meta data of collection
         }
     });
 })

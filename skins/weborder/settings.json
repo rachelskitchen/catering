@@ -10,7 +10,7 @@
             "model": ["main", "header"],
             "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "instructions", "quantity"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "instructions", "quantity"],
-            "core": ["generator", "myorder_view", "total_view", "products", "modifiers", "jquery_numbermask", "instructions_view"],
+            "core": ["generator", "myorder_view", "total_view", "products", "modifiers", "jquery_numbermask", "instructions_view", "establishments"],
             "js" : ["jquery.contentarrow"]
         },
         "index": {

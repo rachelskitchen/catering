@@ -11,6 +11,7 @@
 </section>
 <aside id="cart"></aside>
 <footer>
+    <span class='current_establishment'> Current Store: <%= _settings.business_name %> &nbsp; &nbsp; <a href='#establishments'> Change? </a> </span>
     <a class="powered-by" target='_blank' href="http://revelup.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
 </footer>
 <div class="popup">
@@ -43,6 +44,10 @@
     </div>
 </script>
 
+<script type='text/template' id='main_establishments-template'>
+    <p align="center"> Temp text... </p>
+</script>
+
 <script type="text/template" id="main_maintenance-template">
 <section class="maintenance">
     <div id="content">
@@ -54,6 +59,7 @@
     </div>
 </section>
 <footer>
+    <span class='current_establishment'> Current Store: <%= _settings.business_name %> &nbsp; &nbsp; <a href='#establishments'> Change? </a> </span>
     <a class="powered-by" target='_blank' href="http://revelup.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
 </footer>
 </script>
@@ -121,6 +127,7 @@
     </div>
 </section>
 <footer>
+    <span class='current_establishment'> Current Store: <%= _settings.business_name %> &nbsp; &nbsp; <a href='#establishments'> Change? </a> </span>
     <a class="powered-by" target='_blank' href="http://revelup.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
 </footer>
 </script>
