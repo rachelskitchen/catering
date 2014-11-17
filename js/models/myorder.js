@@ -590,9 +590,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 && model.previousAttributes().dining_option != value)
                 this.restoreTaxes();
 
-            //this.recalculate_tax();
-            //this.get_discounts();
-            this.recalculate_all();
+            this.recalculate_tax();
         },
         // check if user get maintenance after payment
         check_maintenance: function() {
@@ -794,6 +792,17 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             return surcharge;
         },
+        recalculate_tax: function() {
+            var tax = 0;
+            this.each(function(model) {
+                tax += model.get_myorder_tax();
+            });
+            var discount = this.discount.get("sum");
+            if (discount > 0) { 
+                tax -= this.get_order_discount_tax();
+            }
+            this.total.set('tax', tax);
+        },
         recalculate_all: function() {
             var myorder = this, 
                 tax = 0,
@@ -881,16 +890,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if (this.deliveryItem)
                     this.deliveryItem.get("product").set(delivery_data);
             }
-        },
-        recalculate_tax: function() {
-            var tax = 0;
-            this.each(function(model) {
-                tax += model.get_myorder_tax();
-            });
-            //this.recalculate_all();
-            trace( "recalculate_tax : tax = ", tax );
-            this.total.set('tax', tax);
-        },
+        },       
         /**
          *
          * check collection myorders
@@ -1200,6 +1200,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     }                   
                 },
                 complete: function() {
+                    //for debug:
+                    myorder.process_discounts(order);
                     myorder.recalculate_all();
                 }
             });
@@ -1218,10 +1220,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             json.items.forEach(function(product) {
-                /*product.discount = { name: 'My Item Discount fgfgghsdfssdfds',
-                              sum: 2, 
-                              taxed: true,
-                              id: 22, type: 1};*/
+                product.discount = { name: '10% All/Item/Taxed',
+                              sum: 1.00, 
+                              taxed: false,
+                              id: 1, type: 1};
                 if (!(product.discount instanceof Object)) {
                     return;
                 }
@@ -1236,10 +1238,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                          });
             });
 
-            /*json.discount = { name: 'Order Debug Discount fgfgghsdfssdfds',
-                              discount_sum: 1.6, 
+            json.discount = { name: '10% All/Order/Untaxed',
+                              sum: 1.00, 
                               taxed: true,
-                              id: 23};*/
+                              id: 23};
             if (json.discount instanceof Object) {
                 myorder.discount.set({ name: json.discount.name, 
                                        sum: json.discount.sum.toFixed(2) * 1,                                     
@@ -1285,7 +1287,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             order_info.tax = total.tax;
             order_info.subtotal = total.subtotal;
             order_info.final_total = total.final_total;
-            //order_info.total_discounts = total.total_discounts;
             order_info.surcharge = total.surcharge;
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.notes = checkout.notes;
@@ -1731,7 +1732,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                         product.set('tax', item.tax_rate);
                     });
                 });
-                self.recalculate_tax();
+                self.recalculate_all();
             }
         },
         addDestinationBasedTaxes: function() {
