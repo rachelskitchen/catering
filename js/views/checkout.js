@@ -555,7 +555,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                 App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
                 return;
             } 
-            myorder.get_discounts({ apply_discound: true})
+            myorder.get_discounts({ apply_discount: true})
                 .success(function(data) {
                     if (data.status == "OK") {
                         self.disableApplyBtn();

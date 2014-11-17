@@ -162,7 +162,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 });
                 self.subViews.push(view);
                 view.$el.addClass('s' + (round_monetary_currency(this.model.get("discount").toString()).length + 2));
-                self.$('ul').append(view.el);           
+                self.$('.discount_place').append(view.el);           
             }
 
             return this;

@@ -524,9 +524,15 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         saveDiscount: function() {
             var data = this.toJSON();
             setData('orderLevelDiscount', data);
+        },
+        zero_discount: function() {
+            this.set({  name: "No discount", 
+                        sum: 0,                                  
+                        taxed: false,
+                        id: null,
+                        type: 1
+                    });
         }
-         
-   
     });
 
     App.Collections.Myorders = Backbone.Collection.extend({
@@ -1141,18 +1147,18 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 items = [],
                 order_info = {},
                 checkout = this.checkout.toJSON(),
-                is_apply_discound = params && params.apply_discound ? params.apply_discound : false,
+                is_apply_discount = params && params.apply_discount ? params.apply_discount : false,
                 order = {
                     establishmentId: App.Data.settings.get("establishment"),
                     items: items,
                     orderInfo: order_info
                 };
 
-            if (checkout.discount_code && is_apply_discound) {            
+            if (checkout.discount_code && is_apply_discount) {            
                 order.discount_code = checkout.discount_code;  
             } 
-            if (!is_apply_discound && checkout.last_discound_code) {
-                order.discount_code = checkout.last_discound_code; 
+            if (!is_apply_discount && checkout.last_discount_code) {
+                order.discount_code = checkout.last_discount_code; 
             }
             
             myorder.each(function(model) {
@@ -1185,7 +1191,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                             myorder.process_discounts(data.data);                            
                             break;
                         case "DISCOUNT_CODE_NOT_FOUND":
-                            myorder.checkout.set('last_discound_code', null);
+                            myorder.checkout.set('last_discount_code', null);
+                            myorder.process_discounts(data.data);
                             reportErrorFrm(MSG.DISCOUNT_CODE_NOT_FOUND);
                             break;
                         default:
@@ -1201,7 +1208,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 },
                 complete: function() {
                     //for debug:
-                    myorder.process_discounts(order);
+                    //myorder.process_discounts(order);
                     myorder.recalculate_all();
                 }
             });
@@ -1216,32 +1223,32 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             var myorder = this;
 
             if (json.discount_code) {
-                this.checkout.set('last_discound_code', json.discount_code);
+                this.checkout.set('last_discount_code', json.discount_code);
             }
 
             json.items.forEach(function(product) {
-                product.discount = { name: '10% All/Item/Taxed',
+                /*product.discount = { name: '10% All/Item/Taxed',
                               sum: 1.00, 
                               taxed: false,
-                              id: 1, type: 1};
-                if (!(product.discount instanceof Object)) {
-                    return;
-                }
+                              id: 1, type: 1};*/
                 var model = myorder.findWhere({ "product_sub_id": product.product_sub_id,
-                                                "id_product": product.product });
-               
-                model.get("discount").set({ name: product.discount.name, 
+                                                "id_product": product.product });               
+                if (product.discount instanceof Object) {                
+                    model.get("discount").set({ name: product.discount.name, 
                                         sum: product.discount.sum.toFixed(2) * 1,                                        
                                         taxed: product.discount.taxed,
                                         id: product.discount.id,
                                         type: product.discount.type
                                          });
+                } else {
+                    model.get("discount").zero_discount();
+                }
             });
 
-            json.discount = { name: '10% All/Order/Untaxed',
+            /*json.discount = { name: '10% All/Order/Untaxed',
                               sum: 1.00, 
                               taxed: true,
-                              id: 23};
+                              id: 23};*/
             if (json.discount instanceof Object) {
                 myorder.discount.set({ name: json.discount.name, 
                                        sum: json.discount.sum.toFixed(2) * 1,                                     
@@ -1249,6 +1256,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                        id: json.discount.id,
                                        type: json.discount.type
                                     });
+            } else {
+                myorder.discount.zero_discount();                                   
             }
         },      
 
