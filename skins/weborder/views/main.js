@@ -247,7 +247,21 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         name: 'main',
         mod: 'establishments',
         render: function() {
+            var self = this;
             App.Views.FactoryView.prototype.render.apply(this, arguments);
+            App.Data.establishments.each(function(establishment) {
+                self.$('select').append('<option value="'+establishment.get('id')+'">' + establishment.get('name') + ', ' + establishment.get('line_1') + ', ' + establishment.get('city_name') + '</option>');
+            });
+        },
+        events: {
+            'click button[name=back]': 'back',
+            'click button[name=proceed]': 'proceed'
+        },
+        back: function() {
+            // to do implementation
+        },
+        proceed: function() {
+            // to do implementation
         }
     });
 

@@ -180,11 +180,22 @@ define(["backbone", "main_router"], function(Backbone) {
             App.Data.mainModel.set('isShowPromoMessage', false);
         },
         establishments: function() {
-            App.Data.establishments = new App.Collections.Establishments();
-            App.Data.mainModel.set({
-                mod: 'Establishments'
+            var dfd = $.Deferred(),
+                self = this;
+            if (!App.Data.establishments) {
+                App.Data.establishments = new App.Collections.Establishments();
+                App.Data.establishments.getEstablishments().then(function() {
+                    dfd.resolve();
+                });
+            } else {
+                dfd.resolve();
+            }
+            dfd.then(function() {
+                App.Data.mainModel.set({
+                    mod: 'Establishments'
+                });
+                self.change_page();
             });
-            this.change_page();
         },
         index: function() {
             this.prepare('index', function() {

@@ -27,7 +27,6 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         model: App.Models.Establishment,
         initialize: function() {
             this._meta = {};
-            this.getEstablishments(); // get establishments from backend
         },
         /**
         * Get or set meta data of collection.
