@@ -66,9 +66,45 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
     App.Views.CoreRevelView.CoreRevelProfilePaymentView = App.Views.CoreCardView.CoreCardMainView.extend({
         name: 'revel',
         mod: 'profile_payment',
+        events: {
+            'change .checkbox': 'changeCheckbox'
+        },
         initialize: function() {
+            this.RevelAPI = this.model;
             this.model = this.model.get('card');
+            this.listenTo(this.RevelAPI, 'change:useAsDefaultCard', this.updateCheckbox, this);
+            this.listenTo(this.RevelAPI, 'change:forceCreditCard', this.forceCreditCard, this);
             return App.Views.CoreCardView.CoreCardMainView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            App.Views.CoreCardView.CoreCardMainView.prototype.render.apply(this, arguments);
+            this.updateCheckbox();
+            this.forceCreditCard();
+            return this;
+        },
+        changeCheckbox: function() {
+            this.RevelAPI.set('useAsDefaultCard', this.$(':checkbox').prop('checked'));
+        },
+        updateCheckbox: function() {
+            var value = this.RevelAPI.get('useAsDefaultCard'),
+                inputs = this.$('.input');
+            this.$(':checkbox').prop('checked', value);
+            if(value) {
+                inputs.addClass('required');
+            } else {
+                inputs.removeClass('required');
+            }
+        },
+        forceCreditCard: function () {
+            var checkbox = this.$(':checkbox'),
+                value = this.RevelAPI.get('forceCreditCard');
+            if(value) {
+                checkbox.prop('disabled', true);
+                checkbox.parent().addClass('disabled');
+            } else {
+                checkbox.prop('disabled', false);
+                checkbox.parent().removeClass('disabled');
+            }
         }
     });
 
@@ -132,13 +168,18 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
         }
     });
 
-    App.Views.CoreRevelView.CoreRevelCreditCardView = App.Views.CoreRevelView.CoreRevelProfileNotificationView.extend({
+    App.Views.CoreRevelView.CoreRevelCreditCardView = App.Views.FactoryView.extend({
         name: 'revel',
         mod: 'credit_card',
-        render: function() {
-            App.Views.CoreRevelView.CoreRevelProfileNotificationView.prototype.render.apply(this, arguments);
-            this.$(':checkbox').prop('checked', this.model.get('useCreditCard'));
-            return this;
+        events: {
+            'click .ok': 'ok',
+            'click .cancel': 'cancel'
+        },
+        ok: function() {
+            this.model.trigger('onUseSavedCreditCard');
+        },
+        cancel: function() {
+            this.model.trigger('onPayWithCustomCreditCard');
         }
     });
 

@@ -131,6 +131,29 @@ define(["backbone", "main_router"], function(Backbone) {
                 // only establishment with reward cards option enabled can show RevelAPI buttons
                 App.Settings.RevelAPI = App.Settings.RevelAPI  && App.Settings.enable_reward_cards_collecting;
 
+                // listen to credit card payment
+                this.listenTo(App.Data.footer, 'payWithCreditCard', function() {
+                    if(App.Data.RevelAPI) {
+                        App.Data.RevelAPI.checkCreditCard();
+                    } else {
+                        this.navigate('card', true);
+                    }
+                }, this);
+
+                this.listenTo(App.Data.myorder, 'payWithCreditCard', function() {
+                    App.Data.myorder.check_order({
+                        order: true,
+                        tip: true,
+                        customer: true,
+                        checkout: true,
+                        card: true
+                    }, function() {
+                        saveAllData();
+                        App.Data.mainModel.trigger('loadStarted');
+                        App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
+                    });
+                });
+
                 new App.Views.MainView({
                     model: App.Data.mainModel,
                     el: 'body'
@@ -441,7 +464,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 this.change_page();
 
                 function updateProfile() {
-                    profileCustomer.set(getData(App.Data.customer.toJSON()));
+                    profileCustomer.set(getData(App.Data.customer.toJSON()), {silent: true});
                 }
 
                 function updateCustomer() {
@@ -716,6 +739,24 @@ define(["backbone", "main_router"], function(Backbone) {
         },
         loyalty: function() {
             return App.Routers.MobileRouter.prototype.loyalty.call(this, headerModes.Main, footerModes.Loyalty);
+        },
+        initRevelAPI: function() {
+            App.Routers.MobileRouter.prototype.initRevelAPI.apply(this, arguments);
+
+            var RevelAPI = App.Data.RevelAPI;
+
+            if(!RevelAPI.isAvailable()) {
+                return;
+            }
+
+            this.listenTo(RevelAPI, 'onPayWithSavedCreditCard', function() {
+                App.Data.card.set(RevelAPI.get('card').toJSON());
+                App.Data.myorder.trigger('payWithCreditCard');
+            }, this);
+
+            this.listenTo(RevelAPI, 'onPayWithCustomCreditCard', function() {
+                this.navigate('card', true);
+            }, this);
         }
     });
 });

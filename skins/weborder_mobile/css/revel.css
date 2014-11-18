@@ -95,6 +95,7 @@
     display: inline-block;
     width: 5.5em;
     vertical-align: middle;
+    z-index: 2;
 }
 .revel-profile .exp {
     margin: 0 .5em;
@@ -129,6 +130,13 @@
 }
 .revel-profile :disabled ~ span {
     opacity: 0.2;
+}
+.revel-profile .exp-date {
+    margin-bottom: 0;
+}
+.revel-profile .default-credit-card {
+    margin-top: 2em;
+    line-height: 1.2em;
 }
 /* revel profile end */
 /* revel loyalty start */
