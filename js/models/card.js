@@ -120,6 +120,10 @@ define(["backbone"], function(Backbone) {
                 err = [];
             !cardPattern.test(card.cardNumber) && err.push('Card Number');
             return err;
+        },
+        clearData: function() {
+            this.empty_card_number();
+            this.saveCard();
         }
     });
 });
