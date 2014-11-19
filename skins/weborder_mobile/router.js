@@ -133,7 +133,7 @@ define(["backbone", "main_router"], function(Backbone) {
 
                 // listen to credit card payment
                 this.listenTo(App.Data.footer, 'payWithCreditCard', function() {
-                    if(App.Data.RevelAPI) {
+                    if(App.Settings.RevelAPI) {
                         App.Data.RevelAPI.checkCreditCard();
                     } else {
                         this.navigate('card', true);
