@@ -431,7 +431,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
                     number: this.get('customer').get('phone')
                 },
                 success: function(data) {
-                    if(data.status && Array.isArray(data.data) && typeof data.data[0].total_points == 'number') {
+                    if(data.status && Array.isArray(data.data) && data.data.length && typeof data.data[0].total_points == 'number') {
                         self.set('points', data.data[0].total_points);
                     }
                 },
