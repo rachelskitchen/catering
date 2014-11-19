@@ -306,21 +306,23 @@ define(["backbone"], function(Backbone) {
         },
         loyalty: function(header, footer) {
             this.prepare('loyalty', function() {
-                App.Data.header.set('page_title', 'Loyalty');
+                var RevelAPI = App.Data.RevelAPI,
+                    request = RevelAPI.getLoyaltyPoints();
 
+                App.Data.header.set('page_title', 'Loyalty');
                 App.Data.mainModel.set({
                     header: header,
                     footer: footer,
                     content: {
                         modelName: 'Revel',
                         className: 'revel-loyalty',
-                        model: App.Data.RevelAPI,
+                        model: RevelAPI,
                         mod: 'Loyalty',
                         cache_id: 'Loyalty'
                     }
                 });
 
-                this.change_page();
+                request.then(this.change_page.bind(this));
             });
         },
         initRevelAPI: function() {
