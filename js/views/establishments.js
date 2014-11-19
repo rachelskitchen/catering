@@ -46,10 +46,16 @@ define(['backbone', 'factory'], function(Backbone) {
             'click button[name=back]': 'back',
             'click button[name=proceed]': 'proceed'
         },
+        /**
+        * The "Go Back" button was clicked.
+        */
         back: function() {
             App.Data.mainModel.set('isBlurContent', false);
             this.remove();
         },
+        /**
+        * The "Proceed" button was clicked.
+        */
         proceed: function() {
             // to do implementation
         }
@@ -65,6 +71,9 @@ define(['backbone', 'factory'], function(Backbone) {
             this.collection.each(this.addItem.bind(this));
             return this;
         },
+        /**
+        * Add a item to the select menu.
+        */
         addItem: function(model) {
             this.$('select').append('<option value="' + model.get('id') + '">' + model.get('name') + ', ' + model.get('line_1') + ', ' + model.get('city_name') + '</option>');
         }
