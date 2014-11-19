@@ -38,11 +38,7 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
 
     App.Views.CoreRevelView.CoreRevelProfileAddressView = App.Views.AddressView.extend({
         name: 'revel',
-        mod: 'profile_address',
-        fillValues: function() {
-            var model = this.model;
-            model.country && this.$('.country').val(model.country);
-        }
+        mod: 'profile_address'
     });
 
     App.Views.CoreRevelView.CoreRevelProfilePersonalView = App.Views.CoreCheckoutView.CoreCheckoutMainView.extend({
@@ -51,15 +47,27 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
         initialize: function() {
             this.customer = this.model.get('customer');
             this.card = this.model.get('card');
+            this.listenTo(this.customer, 'change:first_name change:last_name change:email change:phone', this.updateCustomerData, this);
+            this.listenTo(this.model, 'onProfileCancel', this.controlAddress, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.controlAddress();
         },
         controlAddress: function() {
+            while(this.subViews.length) {
+                this.subViews.shift().remove();
+            }
             var address = new App.Views.RevelView.RevelProfileAddressView({
                 customer: this.customer
             });
             this.subViews.push(address);
             this.$('.address').append(address.el);
+        },
+        updateCustomerData: function() {
+            var data = this.customer.toJSON();
+            this.$('.firstName').val(data.first_name);
+            this.$('.lastName').val(data.last_name);
+            this.$('.email').val(data.email);
+            this.$('.phone').val(data.phone);
         }
     });
 
@@ -74,6 +82,7 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
             this.model = this.model.get('card');
             this.listenTo(this.RevelAPI, 'change:useAsDefaultCard', this.updateCheckbox, this);
             this.listenTo(this.RevelAPI, 'change:forceCreditCard', this.forceCreditCard, this);
+            this.listenTo(this.RevelAPI, 'onProfileCancel', this.render, this);
             return App.Views.CoreCardView.CoreCardMainView.prototype.initialize.apply(this, arguments);
         },
         render: function() {

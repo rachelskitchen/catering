@@ -56,6 +56,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.listenTo(this, 'change:profileExists', this.saveProfileExists, this);
             this.listenTo(this, 'change:errorCode', this.listenToErrorCode, this);
             this.listenTo(this, 'onAuthenticationCancel', this.clearRequests, this);
+            this.listenTo(this, 'onProfileCancel', this.restoreOriginalProfileData, this);
 
             this.set('card', new App.Models.Card());
             this.set('customer', new App.Models.Customer({shipping_address: -1}));
@@ -70,6 +71,9 @@ define(["backbone", "card", "customers"], function(Backbone) {
 
             //TODO appName from interface
             App.Settings.RevelAPI = this.isAvailable();
+
+            // save original data
+            this.setOriginalProfileData();
         },
         run: function() {
             this.initFirstTime();
@@ -294,6 +298,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
                     self.get('customer').set(data.customer);
                     self.get('card').set(data.card);
                     self.set('useAsDefaultCard', data.useAsDefaultCard);
+                    self.setOriginalProfileData();
                     typeof cb == 'function' && cb();
                 } catch(e) {
                     this.set('errorCode', REVEL_API_ERROR_CODES.INTERNAL_ERROR);
@@ -386,6 +391,34 @@ define(["backbone", "card", "customers"], function(Backbone) {
                         self.trigger('onPayWithCustomCreditCard');
                     }
                 });
+            }
+        },
+        setOriginalProfileData: function() {
+            this.originalProfileData = {
+                customer: _.clone(this.get('customer').toJSON()),
+                card: _.clone(this.get('card').toJSON()),
+                oldPassword: this.get('oldPassword'),
+                newPassword: this.get('newPassword'),
+                useAsDefaultCard: this.get('useAsDefaultCard'),
+            }
+
+            var address = this.get('customer').get('addresses')[0];
+            if(address) {
+                this.originalProfileData.customer.addresses = [_.clone(address)];
+            } else {
+                this.originalProfileData.customer.addresses = [];
+            }
+        },
+        restoreOriginalProfileData: function() {
+            var data = this.originalProfileData;
+            if(data) {
+                this.set({
+                    oldPassword: data.oldPassword,
+                    newPassword: data.newPassword,
+                    useAsDefaultCard: data.useAsDefaultCard
+                });
+                this.get('customer').set(data.customer);
+                this.get('card').set(data.card);
             }
         }
     });
