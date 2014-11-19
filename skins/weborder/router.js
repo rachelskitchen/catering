@@ -86,12 +86,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 this.initialized = true;
             });
 
-            this.listenTo(App.Data.myorder, 'paymentResponse', function() {
-                App.Data.settings.usaepayBack = true;
-                clearQueryString(true);
-                App.Data.get_parameters = parse_get_params();
-                this.navigate('confirm',  true);
-            }, this);
+            this.initPaymentResponseHandler(this.navigate.bind(this, 'confirm',  true));
 
             this.listenTo(App.Data.myorder, "paymentInProcess", function() {
                 App.Data.mainModel.trigger('loadStarted');
