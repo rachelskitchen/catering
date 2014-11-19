@@ -1152,7 +1152,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             });
 
             function reportErrorFrm(message) {
-                App.Data.errors.alert_red(message);
+                App.Data.errors.alert(message);
             }
         },
         process_discounts: function(json) {

@@ -297,7 +297,7 @@ define(["backbone", "main_router"], function(Backbone) {
                         customer: App.Data.customer,
                         acceptTips: settings.accept_tips_online,
                         noteAllow:  settings.order_notes_allow,
-                        discountAvailable: settings.accept_discount_code,
+                        discountAvailable: settings.accept_discount_code
                     }
                 });
                 this.change_page();

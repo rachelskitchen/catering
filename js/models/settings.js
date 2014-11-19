@@ -347,7 +347,7 @@ define(["backbone", "async"], function(Backbone) {
                             
                             //switch on the discount feature, it's not supported by backend now: 
                             settings_system.accept_discount_code = true;
-
+                            
                             if (settings_system.online_orders && settings_system.dining_options.length == 0) {
                                 self.set('isMaintenance', true);
                             }

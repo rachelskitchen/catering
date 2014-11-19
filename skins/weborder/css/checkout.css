@@ -21,7 +21,7 @@
     bottom: 6px;
 }
 #content > .checkout .tipBlock {
-    height: 70px;
+    height: 65px;
 }
 #content > .checkout div.select {
     display: inline-block;
@@ -132,6 +132,10 @@
     overflow: hidden;
 }
 
+#content > .checkout .row.specials {
+    margin: 5px 0px;
+}
+
 #content > .checkout .input_beauty.special {
     height: 115px;
 }
@@ -195,31 +199,32 @@
 }
 
 /* discount css */
+#content > .checkout .row.discountBlock {
+    height: 50px;
+}
 #content > .checkout div.discount {
     left: 292px;
     right: 120px;
     position: absolute;
-    top: 2px;  
+    top: 5px;  
 }
 #content > .checkout div.discount .number-wrap {
     display:  inline-block;
     position:  relative;
     vertical-align: top;
-    margin-top: 5px;
     width: 70%;
-    height: 35px;
 }
 #content > .checkout div.discount .number {
     display: inline-block;
     position: absolute;
-    height: 50px;
+    height: 30px;
     top: 5px;
     left: 2px;
     right: 40px;
     text-indent: 0 !important;
 }
 #content > .checkout  .discount-label {
-    margin-top: 22px;
+    margin-top: 18px;
 }
 #content > .checkout div.discount .input_beauty {
     position: absolute;
@@ -240,7 +245,7 @@
     font-weight: normal;
     font-size: 14px;
     cursor: pointer;
-    margin-top: 8px;
+    margin-top: 4px;
 }
 #content > .checkout .discount .btn.applied {
    color: rgb(30, 30, 30);

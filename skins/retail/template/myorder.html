@@ -1,5 +1,6 @@
 <script type="text/template" id="myorder_list-template">
     <ul class="myorder"></ul>
+    <ul class="discount"></ul>
 </script>
 
 <script type="text/template" id="myorder_item-template">
@@ -34,6 +35,7 @@
         <span class="currency_symbol"><%= currency_symbol %></span>
         <span class="price"><%= price_sum %></span>
     </div>
+    <ul class="discount_place"></ul>   
     <% if(id_product !== null) { %>
     <div class="btns">
         <span class="edit">Edit</span>
@@ -41,6 +43,27 @@
         <span class="remove"><span>Remove</span></span>
     </div>
     <% } %>
+    <div style="clear:both;"></div>
+</script>
+
+<script type="text/template" id="myorder_product_discount-template">
+    <div class="attrs">
+        <span><%= discount_name %>:</span>
+    </div>
+    <div class="attrs">
+        <span class="currency_symbol">-<%= currency_symbol %></span>
+        <span><%= discount_sum %></span>
+    </div>
+</script> 
+
+<script type="text/template" id="myorder_discount-template">
+    <div class="attrs">
+        <span class="name discount"><%= discount_name %></span>
+    </div>
+    <div class="attrs">
+        <span class="currency_symbol">-<%= currency_symbol %></span>
+        <span><%= discount_sum %></span>
+    </div>
 </script>
 
 <script type="text/template" id="myorder_modifier-template">

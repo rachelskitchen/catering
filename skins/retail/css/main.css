@@ -572,7 +572,7 @@ section.maintenance p {
     position: relative;
 }
 #cart .order-items .myorder > li {
-    min-height: 85px;
+    min-height: 75px;
     margin-bottom: 10px;
 }
 #cart .order-items .myorder > li:last-child {
@@ -595,12 +595,14 @@ section.maintenance p {
     vertical-align: middle;
 }
 #cart .order-items li li {
-    height: 15px;
     font-size: 12px;
 }
 #popup .confirmPayCard .order-items li li {
     font-size: 12px;
     min-height: 12px;
+}
+#popup .confirmPayCard .order-items .name.discount {
+    font-size: 14px;
 }
 #cart .order-items > li, .confirmPayCard .order-items > li {
     height: auto;
@@ -620,7 +622,7 @@ section.maintenance p {
 #cart .main .order-items h3 {
    width: 170px;
 }
-#cart .order-items h3 .name, .confirmPayCard .order-items h3 .name {
+#cart .order-items .name, .confirmPayCard .order-items h3 .name {
     text-transform: uppercase;
     font-size: 14px;
 }

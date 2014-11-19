@@ -159,6 +159,70 @@
 .btn.paypal:before {
     display: none;
 }
+
+/* discount css */
+#content > .checkout .row.discountBlock {
+    height: 50px;
+}
+
+#content > .checkout div.discount {
+    left: 285px;
+    right: 120px;
+    position: absolute;
+    top: 5px;
+}
+#content > .checkout div.discount .number-wrap {
+    display:  inline-block;
+    position:  relative;
+    vertical-align: top;
+    width: 70%;
+}
+#content > .checkout div.discount .number {
+    position: absolute;
+    left: 2px;
+    right: 40px;
+    text-indent: 0 !important;
+}
+#content > .checkout  .discount-label {
+    margin-top: 5px;
+}
+#content > .checkout div.discount .input_beauty {
+    position: absolute;
+    height: 28px;
+    display: inline-block;
+    left: 0px;
+    right: 0px;
+    text-indent: 0;
+}
+#content > .checkout .discount .btn {
+    display: inline-block;
+    width: 65px;
+    height: 32px;
+    border-width: 1px;
+    border-style: solid;
+    text-align: center;
+    line-height: 30px;
+    font-weight: normal;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 2px;
+}
+#content > .checkout .discount .btn {
+    border-color: #adadad;
+    border-width: 1px;
+    box-shadow: 0 0 2px 1px #fff inset, 0 3px 3px rgba(0,0,0,0.3);
+}
+#content > .checkout .discount .btn.applied {
+   color: rgb(30, 30, 30);
+}
+#content > .checkout .discount .btn.disabled {
+    cursor: default;
+    color: #aaa;
+}
+#content > .checkout .discount .btn:after, #content > .checkout .discount .btn:before {
+    display: none;
+}
+
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
     #content > .checkout label {
