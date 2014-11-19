@@ -1,0 +1,32 @@
+.establishments {
+    display: table;
+    height: 100%;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+}
+.establishments > div {
+    display: table-cell;
+    vertical-align: middle;
+}
+.establishments > div div {
+    margin-bottom: 1em;
+}
+.establishments > div div:nth-child(1) {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-shadow: none;
+}
+.establishments > div div:nth-child(2) {
+    margin-bottom: 4em;
+}
+.establishments button {
+    border-radius: 15px;
+    border-style: solid;
+    border-width: 2px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: bold;
+    line-height: 2em;
+    padding: 0 6em;
+}

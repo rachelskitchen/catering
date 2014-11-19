@@ -81,7 +81,8 @@ define({
         confirm_view: "js/views/confirm",
         revel_api: "js/models/revel",
         revel_view: 'js/views/revel',
-        establishments: 'js/models/establishments'
+        establishments: 'js/models/establishments',
+        establishments_view: 'js/views/establishments'
     },
     waitSeconds: 30,
     shim: {

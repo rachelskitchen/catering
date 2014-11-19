@@ -516,6 +516,14 @@ ul.categories {
     color: #373b40;
 }
 
+.establishments {
+    background: url('img/overlay_darken.png');
+}
+
+.establishments > div div:nth-child(1) {
+    color: #fff;
+}
+
 .establishments button {
     background-color: rgba(247,247,247,1);
     border-color: #a9a9a9;

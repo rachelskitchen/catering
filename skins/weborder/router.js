@@ -35,7 +35,6 @@ define(["backbone", "main_router"], function(Backbone) {
         routes: {
             "": "index",
             "index": "index",
-            'establishments': 'establishments',
             "about": "about",
             "map": "map",
             "checkout": "checkout",
@@ -178,24 +177,6 @@ define(["backbone", "main_router"], function(Backbone) {
         },
         hidePromoMessage: function() {
             App.Data.mainModel.set('isShowPromoMessage', false);
-        },
-        establishments: function() {
-            var dfd = $.Deferred(),
-                self = this;
-            if (!App.Data.establishments) {
-                App.Data.establishments = new App.Collections.Establishments();
-                App.Data.establishments.getEstablishments().then(function() {
-                    dfd.resolve();
-                });
-            } else {
-                dfd.resolve();
-            }
-            dfd.then(function() {
-                App.Data.mainModel.set({
-                    mod: 'Establishments'
-                });
-                self.change_page();
-            });
         },
         index: function() {
             this.prepare('index', function() {

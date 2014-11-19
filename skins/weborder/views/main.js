@@ -36,6 +36,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
             this.listenTo(this.model, 'change:isShowPromoMessage', this.calculatePromoMessageWidth, this);
+            this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this);
 
             this.iOSFeatures();
 
@@ -55,7 +56,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             return this;
         },
         events: {
-            'click #popup .cancel': 'hide_popup'
+            'click #popup .cancel': 'hide_popup',
+            'click .change_establishment': 'change_establishment'
         },
         content_change: function() {
             var content = this.$('#content'),
@@ -240,28 +242,39 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     promo_marquee.hide();
                 }
             }, 0);
-        }
-    });
-
-    App.Views.MainView.MainEstablishmentsView = App.Views.FactoryView.extend({
-        name: 'main',
-        mod: 'establishments',
-        render: function() {
-            var self = this;
-            App.Views.FactoryView.prototype.render.apply(this, arguments);
-            App.Data.establishments.each(function(establishment) {
-                self.$('select').append('<option value="'+establishment.get('id')+'">' + establishment.get('name') + ', ' + establishment.get('line_1') + ', ' + establishment.get('city_name') + '</option>');
+        },
+        /**
+         * Show the "Change Establishment" modal window.
+         */
+        change_establishment: function() {
+            $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
+            var dfd = $.Deferred(),
+                self = this;
+            if (!App.Data.establishments) {
+                App.Data.establishments = new App.Collections.Establishments();
+                App.Data.establishments.getEstablishments().then(function() {
+                    dfd.resolve();
+                });
+            } else {
+                dfd.resolve();
+            }
+            dfd.then(function() {
+                var view = new App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView({collection: App.Data.establishments});
+                $(self.el).append(view.el);
+                self.model.set('isBlurContent', true);
+                $('#main-spinner').removeClass('ui-visible');
             });
         },
-        events: {
-            'click button[name=back]': 'back',
-            'click button[name=proceed]': 'proceed'
-        },
-        back: function() {
-            // to do implementation
-        },
-        proceed: function() {
-            // to do implementation
+        /**
+         * A blur effect of content.
+         */
+        blurEffect: function() {
+            // http://wordpress-club.com/krossbrauzernyiy-effekt-razmyitiya-blur-izobrazheniya-v-css
+            if (this.model.get('isBlurContent')) {
+                this.$('.main_el').css({'filter': 'url(#blur)'});
+            } else {
+                this.$('.main_el').removeAttr('style');
+            }
         }
     });
 
