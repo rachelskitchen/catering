@@ -57,7 +57,10 @@ define(['backbone', 'factory'], function(Backbone) {
         * The "Proceed" button was clicked.
         */
         proceed: function() {
-            // to do implementation
+            var model = {};
+            model.selectedEstablishmentID = this.$('select').val();
+            var view = new App.Views.CoreEstablishmentsView.CoreEstablishmentsConfirmationView({model: model});
+            this.$el.append(view.el);
         }
     });
     App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectView = App.Views.FactoryView.extend({
@@ -76,6 +79,58 @@ define(['backbone', 'factory'], function(Backbone) {
         */
         addItem: function(model) {
             this.$('select').append('<option value="' + model.get('id') + '">' + model.get('name') + ', ' + model.get('line_1') + ', ' + model.get('city_name') + '</option>');
+        }
+    });
+    App.Views.CoreEstablishmentsView.CoreEstablishmentsConfirmationView = App.Views.FactoryView.extend({
+        name: 'establishments',
+        mod: 'confirmation',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            return this;
+        },
+        events: {
+            'click button[name=back_confirm]': 'back',
+            'click button[name=proceed_confirm]': 'proceed'
+        },
+        /**
+        * The "Go Back" button was clicked.
+        */
+        back: function() {
+            this.remove();
+        },
+        /**
+        * The "Proceed" button was clicked.
+        */
+        proceed: function() {
+            var moveAddress = window.location.protocol + '//' + window.location.hostname + window.location.pathname;
+            var paramsAddress = '';
+            var params = parse_get_params(); // get GET-parameters from address line
+            if (empty_object(params)) { // check object (empty or not empty)
+                paramsAddress += '?establishment=' + this.model.selectedEstablishmentID;
+            } else {
+                var issetEstablishment = false;
+                for (var i in params) {
+                    var param = '';
+                    if (i !== 'establishment') {
+                        param = i + '=' + params[i];
+                    } else {
+                        issetEstablishment = true;
+                        param = i + '=' + this.model.selectedEstablishmentID;
+                    }
+                    if (paramsAddress === '') {
+                        paramsAddress += '?';
+                    } else {
+                        paramsAddress += '&';
+                    }
+                    paramsAddress += param;
+                }
+                if (!issetEstablishment) paramsAddress += '&establishment=' + this.model.selectedEstablishmentID;
+            }
+            moveAddress += paramsAddress;
+            window.location.href = moveAddress;
         }
     });
 });

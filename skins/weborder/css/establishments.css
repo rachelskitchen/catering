@@ -1,3 +1,13 @@
+div[data-tmpl='establishments_main-template'] button {
+    border-radius: 15px;
+    border-style: solid;
+    border-width: 2px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: bold;
+    line-height: 2em;
+    padding: 0 6em;
+}
 .establishments {
     display: table;
     height: 100%;
@@ -20,13 +30,45 @@
 .establishments > div div:nth-child(2) {
     margin-bottom: 4em;
 }
-.establishments button {
-    border-radius: 15px;
-    border-style: solid;
-    border-width: 2px;
-    cursor: pointer;
-    font-size: 0.9em;
+.establishments_confirmation {
+    display: table;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+}
+.establishments_confirmation > div {
+    display: table-cell;
+    vertical-align: middle;
+}
+.establishments_confirmation button {
+    padding: 0 2em !important;
+}
+.establishments_confirmation .confirmation {
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    height: 12em;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    width: 32em;
+}
+.establishments_confirmation .content {
+    height: 10em;
+    left: 1em;
+    position: absolute;
+    top: 1em;
+    width: 30em;
+}
+.establishments_confirmation .content div {
     font-weight: bold;
-    line-height: 2em;
-    padding: 0 6em;
+    margin-top: 0.7em;
+}
+.establishments_confirmation .content .exclamation {
+    margin-left: auto;
+    margin-right: auto;
 }
