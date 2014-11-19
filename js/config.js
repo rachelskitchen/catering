@@ -207,6 +207,9 @@ define({
         },
         'establishments': {
             deps: ['backbone']
+        },
+        'establishments_view': {
+            deps: ['backbone', 'factory']
         }
     },
     map: {
