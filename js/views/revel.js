@@ -220,12 +220,19 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
     App.Views.CoreRevelView.CoreRevelLoyaltyView = App.Views.FactoryView.extend({
         name: 'revel',
         mod: 'loyalty',
+        initialize: function() {
+            this.listenTo(this.model, 'change:points', this.updateLoyalty, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             var qrCode = this.$('.qr-code');
             qrCode.attr('src', this.model.getQRCode());
             loadSpinner(qrCode);
             return this;
+        },
+        updateLoyalty: function() {
+            this.$('.points').text(this.model.get('points'));
         }
     });
 

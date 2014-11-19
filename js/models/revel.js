@@ -47,6 +47,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             oldPassword: null,
             newPassword: null,
             useAsDefaultCard: null,
+            points: 0,
             appName: 'Revel Directory',
             gObj: 'App.Data.RevelAPI'
         },
@@ -420,6 +421,25 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 this.get('customer').set(data.customer);
                 this.get('card').set(data.card);
             }
+        },
+        getLoyaltyPoints: function() {
+            var request = Backbone.$.Deferred(),
+                self = this;
+            $.ajax({
+                url: App.Data.settings.get("host") + "/weborders/reward_cards/",
+                data: {
+                    number: this.get('customer').get('phone')
+                },
+                success: function(data) {
+                    if(data.status && Array.isArray(data.data) && typeof data.data[0].total_points == 'number') {
+                        self.set('points', data.data[0].total_points);
+                    }
+                },
+                complete: function() {
+                    request.resolve();
+                }
+            });
+            return request;
         }
     });
 });
