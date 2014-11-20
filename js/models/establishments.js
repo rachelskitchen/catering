@@ -62,11 +62,13 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                 */
                 // temp code (begin)
                 success: function(data) {
-                    data.brand_name = 'MLB';
-                    self.meta('brandName', data.brand_name);
-                    var establishments = data[0].estabs;
-                    for (var i = 0; i < establishments.length; i++) {
-                        self.add(establishments[i]);
+                    if (data.length > 0) {
+                        data.brand_name = 'MLB';
+                        self.meta('brandName', data.brand_name);
+                        var establishments = data[0].estabs;
+                        for (var i = 0; i < establishments.length; i++) {
+                            self.add(establishments[i]);
+                        }
                     }
                     dfd.resolve();
                 },
