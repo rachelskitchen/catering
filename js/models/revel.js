@@ -289,6 +289,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
 
             function saveData() {
                 try {
+                    self.set('useAsDefaultCard', Boolean(self.get('useAsDefaultCard')));
                     var data = {
                         customer: self.get('customer').toJSON(),
                         card: self.get('card').toJSON(),
