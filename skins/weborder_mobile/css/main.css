@@ -340,3 +340,60 @@ textarea, input {
     cursor: default;
     z-index: -1;
 }
+
+select {
+    display: block;
+    height: 100%;
+    width: 130%;
+    padding: 0.2em 2em 0.2em 0.5em;
+    font-size: inherit;
+    font-family: inherit;
+    border: none;
+    -webkit-appearance: none;
+    -o-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    outline: none;
+    -moz-outline: none;
+    -moz-user-focus: ignore;
+}
+
+.select {
+    display: block;
+    height: 2em;
+    width: 100%;
+    margin-bottom: 1em;
+    font-family: inherit;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 1em;
+    overflow: hidden;
+}
+/* wrapper is used to resolve problem with android platforms (bug 11036) */
+.select-wrapper {
+    position: relative;
+}
+
+.select:before {
+    content: '\f0d7';
+    display: block;
+    position: absolute;
+    font-size: 1.8em;
+    right: 0.5em;
+    top: 0.1em;
+    z-index: 0;
+    font-family: FontAwesome;
+    pointer-events: none;
+}
+
+.select.required:after {
+    content: '*';
+    display: block;
+    position: absolute;
+    font-size: 1em;
+    left: -0.8em;
+    top: 0.1em;
+    z-index: 1;
+    font-weight: bold;
+}

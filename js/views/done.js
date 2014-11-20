@@ -85,8 +85,6 @@ define(["backbone", "factory"], function(Backbone) {
         },
         return_menu: function() {
             if (this.model.success) {
-                App.Data.myorder.empty_myorder();
-                App.Data.card && App.Data.card.empty_card_number();
                 this.model.trigger('onMenu');
             } else {
                 this.model.trigger('onCheckout');

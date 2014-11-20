@@ -121,7 +121,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             if(removeClass)
                 delete data.className;
 
-            var subView = App.Views.GeneratorView.create(data.modelName, data, data.cacheIt ? id : undefined);
+            var subView = App.Views.GeneratorView.create(data.modelName, data, data.cacheId ? id : undefined);
             if(this.subViews.length > 2)
                 this.subViews.push(subView);
             else
@@ -175,13 +175,14 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             var container = this.$('#revel-popup');
             container.css({display: 'table'});
             this.blurBg();
-            this.subViews[3] = App.Views.GeneratorView.create(data.modelName, data, data.cacheId);
-            container.append(this.subViews[3].el);
+            this.revelView = App.Views.GeneratorView.create(data.modelName, data, data.cacheId);
+            this.subViews.push(this.revelView);
+            container.append(this.revelView.el);
         },
         hideRevelPopup: function() {
             this.$('#revel-popup').hide();
             this.unblurBg();
-            this.subViews[3] && this.subViews[3].removeFromDOMTree();
+            this.revelView && this.revelView.removeFromDOMTree();
         },
         blurBg: function() {
             this.$('section, footer, header').addClass('blur');

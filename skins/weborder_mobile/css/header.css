@@ -21,9 +21,15 @@
     height: 100%;
     position: relative;
 }
-#header .one_button .leftBtn{
+#header .one_button .leftBtn {
     width: 5.4em;
 }
+
+#header .one_button.profile .leftBtn {
+    width: auto;
+    margin-left: 1.5em;
+}
+
 
 .leftBtn, .rightBtn {
     display: none;
