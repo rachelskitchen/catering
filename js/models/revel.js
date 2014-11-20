@@ -343,20 +343,19 @@ define(["backbone", "card", "customers"], function(Backbone) {
         processPaymentInfo: function(success, fail) {
             var card = this.get('card'),
                 useAsDefaultCard = this.get('useAsDefaultCard'),
-                needCheck, result;
+                result;
 
             // CardView listens to this event to set data
             card.trigger('add_card');
-            needCheck = card.get('cardNumber') || useAsDefaultCard;
 
-            if(needCheck) {
-                result = card.check({ignorePersonal: !useAsDefaultCard, ignoreExpDate: !useAsDefaultCard, ignoreSecurityCode: !useAsDefaultCard});
+            if(useAsDefaultCard) {
+                result = card.check();
             }
 
-            if(!needCheck || /ok/i.test(result.status)) {
+            if(!useAsDefaultCard || /ok/i.test(result.status)) {
                 typeof success == 'function' && success(result);
             } else {
-                typeof fail == 'function' && fail(result);//App.Data.errors.alert(result.errorMsg);
+                typeof fail == 'function' && fail(result);
             }
         },
         getUsername: function() {
