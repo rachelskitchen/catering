@@ -38,11 +38,7 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
 
     App.Views.CoreRevelView.CoreRevelProfileAddressView = App.Views.AddressView.extend({
         name: 'revel',
-        mod: 'profile_address',
-        fillValues: function() {
-            var model = this.model;
-            model.country && this.$('.country').val(model.country);
-        }
+        mod: 'profile_address'
     });
 
     App.Views.CoreRevelView.CoreRevelProfilePersonalView = App.Views.CoreCheckoutView.CoreCheckoutMainView.extend({
@@ -51,24 +47,73 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
         initialize: function() {
             this.customer = this.model.get('customer');
             this.card = this.model.get('card');
+            this.listenTo(this.customer, 'change:first_name change:last_name change:email change:phone', this.updateCustomerData, this);
+            this.listenTo(this.model, 'onProfileCancel', this.controlAddress, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.controlAddress();
         },
         controlAddress: function() {
+            while(this.subViews.length) {
+                this.subViews.shift().remove();
+            }
             var address = new App.Views.RevelView.RevelProfileAddressView({
                 customer: this.customer
             });
             this.subViews.push(address);
             this.$('.address').append(address.el);
+        },
+        updateCustomerData: function() {
+            var data = this.customer.toJSON();
+            this.$('.firstName').val(data.first_name);
+            this.$('.lastName').val(data.last_name);
+            this.$('.email').val(data.email);
+            this.$('.phone').val(data.phone);
         }
     });
 
     App.Views.CoreRevelView.CoreRevelProfilePaymentView = App.Views.CoreCardView.CoreCardMainView.extend({
         name: 'revel',
         mod: 'profile_payment',
+        events: {
+            'change .checkbox': 'changeCheckbox'
+        },
         initialize: function() {
+            this.RevelAPI = this.model;
             this.model = this.model.get('card');
+            this.listenTo(this.RevelAPI, 'change:useAsDefaultCard', this.updateCheckbox, this);
+            this.listenTo(this.RevelAPI, 'change:forceCreditCard', this.forceCreditCard, this);
+            this.listenTo(this.RevelAPI, 'onProfileCancel', this.render, this);
             return App.Views.CoreCardView.CoreCardMainView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            App.Views.CoreCardView.CoreCardMainView.prototype.render.apply(this, arguments);
+            this.updateCheckbox();
+            this.forceCreditCard();
+            return this;
+        },
+        changeCheckbox: function() {
+            this.RevelAPI.set('useAsDefaultCard', this.$(':checkbox').prop('checked'));
+        },
+        updateCheckbox: function() {
+            var value = this.RevelAPI.get('useAsDefaultCard'),
+                inputs = this.$('.input');
+            this.$(':checkbox').prop('checked', value);
+            if(value) {
+                inputs.addClass('required');
+            } else {
+                inputs.removeClass('required');
+            }
+        },
+        forceCreditCard: function () {
+            var checkbox = this.$(':checkbox'),
+                value = this.RevelAPI.get('forceCreditCard');
+            if(value) {
+                checkbox.prop('disabled', true);
+                checkbox.parent().addClass('disabled');
+            } else {
+                checkbox.prop('disabled', false);
+                checkbox.parent().removeClass('disabled');
+            }
         }
     });
 
@@ -132,6 +177,21 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
         }
     });
 
+    App.Views.CoreRevelView.CoreRevelCreditCardView = App.Views.FactoryView.extend({
+        name: 'revel',
+        mod: 'credit_card',
+        events: {
+            'click .ok': 'ok',
+            'click .cancel': 'cancel'
+        },
+        ok: function() {
+            this.model.trigger('onUseSavedCreditCard');
+        },
+        cancel: function() {
+            this.model.trigger('onPayWithCustomCreditCard');
+        }
+    });
+
     App.Views.CoreRevelView.CoreRevelAuthenticationView = App.Views.FactoryView.extend({
         name: 'revel',
         mod: 'authentication',
@@ -160,14 +220,64 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
     App.Views.CoreRevelView.CoreRevelLoyaltyView = App.Views.FactoryView.extend({
         name: 'revel',
         mod: 'loyalty',
+        initialize: function() {
+            this.listenTo(this.model, 'change:points', this.updateLoyalty, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             var qrCode = this.$('.qr-code');
             qrCode.attr('src', this.model.getQRCode());
             loadSpinner(qrCode);
             return this;
+        },
+        updateLoyalty: function() {
+            this.$('.points').text(this.model.get('points'));
         }
     });
+
+    App.Views.CoreRevelView.CoreRevelProfileFooterView = App.Views.FactoryView.extend({
+        name: 'footer',
+        mod: 'profile',
+        initialize: function() {
+            this.listenTo(this.model, 'change:next change:prev change:save', this.update, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.update();
+            return this;
+        },
+        events: {
+            "click .next": "next",
+            "click .prev": "prev",
+            "click .save": "save"
+        },
+        next: setCallback('next'),
+        prev: setCallback('prev'),
+        save: setCallback('save'),
+        update: function() {
+            var model = this.model;
+            update(model.get('prev'), this.$('.prev'));
+            update(model.get('next'), this.$('.next'));
+            update(model.get('save'), this.$('.save'));
+
+            function update(data, el) {
+                if(data) {
+                    el.show();
+                } else {
+                    el.hide();
+                }
+            }
+        }
+    });
+
+    function setCallback(prop) {
+        return function() {
+            var tab = this.model.get(prop);
+            typeof tab == 'function' && tab();
+        };
+    }
 
     App.Views.RevelView = {};
     App.Views.RevelView.RevelWelcomeView = App.Views.CoreRevelView.CoreRevelWelcomeView;
@@ -178,4 +288,6 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
     App.Views.RevelView.RevelProfileNotificationView = App.Views.CoreRevelView.CoreRevelProfileNotificationView;
     App.Views.RevelView.RevelLoyaltyView = App.Views.CoreRevelView.CoreRevelLoyaltyView;
     App.Views.RevelView.RevelAuthenticationView = App.Views.CoreRevelView.CoreRevelAuthenticationView;
+    App.Views.RevelView.RevelProfileFooterView = App.Views.CoreRevelView.CoreRevelProfileFooterView;
+    App.Views.RevelView.RevelCreditCardView = App.Views.CoreRevelView.CoreRevelCreditCardView;
 });

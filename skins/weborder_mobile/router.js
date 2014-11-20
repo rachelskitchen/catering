@@ -43,6 +43,7 @@ define(["backbone", "main_router"], function(Backbone) {
     headerModes.About = {mod: 'TwoButton', className: 'two_button'};
     headerModes.Gallery = headerModes.Map;
     headerModes.Maintenance = {mod: 'Maintenance', className: 'maintenance'};
+    headerModes.Profile = {mod: 'OneButton', className: 'one_button profile'};
 
     footerModes.Main = {mod: 'Main'};
     footerModes.Products = footerModes.Main;
@@ -59,6 +60,8 @@ define(["backbone", "main_router"], function(Backbone) {
     footerModes.Gallery = footerModes.Main;
     footerModes.Maintenance = {mod: 'Maintenance'};
     footerModes.MaintenanceDirectory = {mod: 'MaintenanceDirectory'};
+    footerModes.Profile = {mod: 'Profile'};
+    footerModes.Loyalty = {mod: 'Loyalty'};
 
     App.Routers.Router = App.Routers.MobileRouter.extend({
         routes: {
@@ -102,6 +105,11 @@ define(["backbone", "main_router"], function(Backbone) {
                 window.location.hash = "#pay";
             }
 
+            // if it is Revel's WebView need change color_scheme on 'revel'
+            if(cssua.ua.revelsystemswebview) {
+                App.Settings.color_scheme = 'revel';
+            }
+
             // load main, header, footer necessary files
             this.prepare('main', function() {
                 App.Views.Generator.enableCache = true;
@@ -111,18 +119,47 @@ define(["backbone", "main_router"], function(Backbone) {
                     myorder: this.navigate.bind(this, 'myorder', true),
                     location: this.navigate.bind(this, 'location', true),
                     about: this.navigate.bind(this, 'about', true),
-                    loyalty: this.trigger.bind(this, 'navigateToLoyalty')
+                    loyalty: this.trigger.bind(this, 'navigateToLoyalty'),
+                    menu: this.navigate.bind(this, 'menu', true),
+                    profile: this.trigger.bind(this, 'navigateToProfile')
                 });
                 App.Data.mainModel = new App.Models.MainModel();
+
+                // init RevelAPI
+                this.initRevelAPI();
+
+                // only establishment with reward cards option enabled can show RevelAPI buttons
+                App.Settings.RevelAPI = App.Settings.RevelAPI  && App.Settings.enable_reward_cards_collecting;
+
+                // listen to credit card payment
+                this.listenTo(App.Data.footer, 'payWithCreditCard', function() {
+                    if(App.Settings.RevelAPI) {
+                        App.Data.RevelAPI.checkCreditCard();
+                    } else {
+                        this.navigate('card', true);
+                    }
+                }, this);
+
+                this.listenTo(App.Data.myorder, 'payWithCreditCard', function() {
+                    App.Data.myorder.check_order({
+                        order: true,
+                        tip: true,
+                        customer: true,
+                        checkout: true,
+                        card: true
+                    }, function() {
+                        saveAllData();
+                        App.Data.mainModel.trigger('loadStarted');
+                        App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
+                    });
+                });
+
                 new App.Views.MainView({
                     model: App.Data.mainModel,
                     el: 'body'
                 });
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
-
-                // init RevelAPI
-                this.initRevelAPI();
 
                 // emit 'initialized' event
                 this.trigger('initialized');
@@ -132,12 +169,7 @@ define(["backbone", "main_router"], function(Backbone) {
             var checkout = App.Data.myorder.checkout;
                 checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
-            this.listenTo(App.Data.myorder, 'paymentResponse', function() {
-                App.Data.settings.usaepayBack = true;
-                clearQueryString(true);
-                App.Data.get_parameters = parse_get_params();
-                return this.navigate("done", true);
-            }, this);
+            this.initPaymentResponseHandler(this.navigate.bind(this, "done", true));
 
             App.Routers.MobileRouter.prototype.initialize.apply(this, arguments);
         },
@@ -368,6 +400,10 @@ define(["backbone", "main_router"], function(Backbone) {
         },
         checkout: function() {
             this.prepare('checkout', function() {
+                var RevelAPI = App.Data.RevelAPI,
+                    profileCustomer = RevelAPI && RevelAPI.get('customer'),
+                    profile = profileCustomer && RevelAPI.get('profileExists');
+
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card;
 
@@ -377,6 +413,11 @@ define(["backbone", "main_router"], function(Backbone) {
                 if(!App.Data.customer) {
                     App.Data.customer =  new App.Models.Customer();
                     App.Data.customer.loadAddresses();
+                    RevelAPI && !RevelAPI.get('profileExists') && RevelAPI.listenTo(App.Data.customer, 'change:first_name change:last_name change:phone change:email', updateProfile);
+                    if(profileCustomer) {
+                        App.Data.customer.listenTo(profileCustomer, 'change', updateCustomer);
+                        App.Data.customer.set(profileCustomer.toJSON());
+                    }
                 }
 
                 App.Data.header.set({
@@ -416,6 +457,24 @@ define(["backbone", "main_router"], function(Backbone) {
                 });
 
                 this.change_page();
+
+                function updateProfile() {
+                    profileCustomer.set(getData(App.Data.customer.toJSON()), {silent: true});
+                }
+
+                function updateCustomer() {
+                    App.Data.customer.set(getData(profileCustomer.toJSON()));
+                };
+
+                function getData(data) {
+                    return {
+                        first_name: data.first_name,
+                        last_name: data.last_name,
+                        email: data.email,
+                        phone:data.phone,
+                        addresses: data.addresses
+                    };
+                }
             });
         },
         card: function() {
@@ -666,10 +725,33 @@ define(["backbone", "main_router"], function(Backbone) {
             });
         },
         profile: function(step) {
+            App.Data.header.set({
+                page_title: 'Profile',
+                back_title: 'Cancel',
+                back: App.Data.RevelAPI.trigger.bind( App.Data.RevelAPI, 'onProfileCancel')
+            });
             return App.Routers.MobileRouter.prototype.profile.call(this, step, headerModes.Profile, footerModes.Profile);
         },
         loyalty: function() {
             return App.Routers.MobileRouter.prototype.loyalty.call(this, headerModes.Main, footerModes.Loyalty);
+        },
+        initRevelAPI: function() {
+            App.Routers.MobileRouter.prototype.initRevelAPI.apply(this, arguments);
+
+            var RevelAPI = App.Data.RevelAPI;
+
+            if(!RevelAPI.isAvailable()) {
+                return;
+            }
+
+            this.listenTo(RevelAPI, 'onPayWithSavedCreditCard', function() {
+                App.Data.card.set(RevelAPI.get('card').toJSON());
+                App.Data.myorder.trigger('payWithCreditCard');
+            }, this);
+
+            this.listenTo(RevelAPI, 'onPayWithCustomCreditCard', function() {
+                this.navigate('card', true);
+            }, this);
         }
     });
 });

@@ -31,13 +31,13 @@ define(["backbone", "factory", "checkout_view"], function(Backbone) {
             this.listenTo(this, 'address-without-states', this.showDelivery, this);
             this.listenTo(this, 'delivery-to-seat', this.showDeliveryToSeat, this);
             this.listenTo(this, 'address-hide', this.removePrevStyles, this);
-            
-            var count = 1;            
+
+            var count = 1;
             if (App.Data.orderFromSeat instanceof Object) {
                 var level = App.Data.orderFromSeat.enable_level,
                     section = App.Data.orderFromSeat.enable_sector,
-                    row = App.Data.orderFromSeat.enable_row;         
-                    
+                    row = App.Data.orderFromSeat.enable_row;
+
                 if (level) count++;
                 if (section) count++;
                 if (row) count++;
@@ -54,9 +54,9 @@ define(["backbone", "factory", "checkout_view"], function(Backbone) {
             this.$('.contact_info').addClass('address-with-states');
         },
         showDeliveryToSeat: function() {
-            this.removePrevStyles();            
-            this.$('.contact_info').addClass('delivery-to-seat-' + this.numSeatBoxes);        
-        },        
+            this.removePrevStyles();
+            this.$('.contact_info').addClass('delivery-to-seat-' + this.numSeatBoxes);
+        },
         removePrevStyles: function() {
             this.$('.contact_info').removeClass('address-with-states').
                                     removeClass('address-without-states').

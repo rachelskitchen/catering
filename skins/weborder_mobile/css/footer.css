@@ -35,7 +35,7 @@
 }
 
 
-#about, #location, #myorder, .loyalty {
+#about, #location, #myorder, .loyalty, .menu {
     display: block;
     margin: 0 auto;
     cursor: pointer;
@@ -47,6 +47,8 @@
     height: 80%;
     position: relative;
     top: 10%;
+    text-align: center;
+    margin: 0 auto;
 }
 
 #myorder.btn2 {
@@ -116,11 +118,13 @@
 
 #myorder.btn2 .count {
     position: absolute;
-    padding: 0.1em 0.45em;
+    padding: 0 .5em;
     top: 15%;
     right: 10%;
     border-radius: 2.3em;
     display: none;
+    font-size: 2em;
+    line-height: 1.5em;
 }
 
 /* main mod end */
@@ -284,10 +288,12 @@
     left: 10em;
     text-align: center;
     line-height: 8em;
+    width: auto;
 }
 
 #returnToMenu span, #reload span {
     font-size: 3em;
+    top: 0;
 }
 
 /* done, maintenance mod end */
@@ -323,4 +329,41 @@
     margin-left: .1em;
     margin-top: .1em;
     position: absolute;
+}
+
+.next:before, .prev:before, .save:before {
+    display: block;
+    font-family: FontAwesome;
+    position: absolute;
+    font-size: 6em;
+    top: 0.05em;
+    left: 50%;
+    margin-left: -0.45em;
+    font-size: 4.5em;
+}
+
+.next:before {
+    content: '\f0a9';
+}
+
+.prev:before {
+    content: '\f0a8';
+}
+
+.save:before {
+    content: '\f0c7';
+}
+.menu:before {
+    content: '\f03a';
+    display: block;
+    font-family: FontAwesome;
+    position: absolute;
+    top: 0.15em;
+    left: 50%;
+    font-size: 4em;
+    margin-left: -0.52em;
+}
+
+#footer ul.checkout .half {
+    width: 50%;
 }

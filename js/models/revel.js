@@ -46,8 +46,10 @@ define(["backbone", "card", "customers"], function(Backbone) {
             profileExists: null,
             oldPassword: null,
             newPassword: null,
+            useAsDefaultCard: null,
+            points: 0,
             appName: 'Revel Directory',
-            gObj: 'App.Data.RevelAPI',
+            gObj: 'App.Data.RevelAPI'
         },
         initialize: function() {
             this.listenTo(this, 'change:firstTime', this.onFirstTime, this);
@@ -55,6 +57,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.listenTo(this, 'change:profileExists', this.saveProfileExists, this);
             this.listenTo(this, 'change:errorCode', this.listenToErrorCode, this);
             this.listenTo(this, 'onAuthenticationCancel', this.clearRequests, this);
+            this.listenTo(this, 'onProfileCancel', this.restoreOriginalProfileData, this);
 
             this.set('card', new App.Models.Card());
             this.set('customer', new App.Models.Customer({shipping_address: -1}));
@@ -69,6 +72,9 @@ define(["backbone", "card", "customers"], function(Backbone) {
 
             //TODO appName from interface
             App.Settings.RevelAPI = this.isAvailable();
+
+            // save original data
+            this.setOriginalProfileData();
         },
         run: function() {
             this.initFirstTime();
@@ -274,7 +280,8 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 try {
                     var data = {
                         customer: self.get('customer').toJSON(),
-                        card: self.get('card').toJSON()
+                        card: self.get('card').toJSON(),
+                        useAsDefaultCard: self.get('useAsDefaultCard')
                     }
                     self.request('setData', 'profile', JSON.stringify(data), self.getTokenString.bind(self), cb);
                 } catch(e) {
@@ -291,6 +298,8 @@ define(["backbone", "card", "customers"], function(Backbone) {
                     data = JSON.parse(data);
                     self.get('customer').set(data.customer);
                     self.get('card').set(data.card);
+                    self.set('useAsDefaultCard', data.useAsDefaultCard);
+                    self.setOriginalProfileData();
                     typeof cb == 'function' && cb();
                 } catch(e) {
                     this.set('errorCode', REVEL_API_ERROR_CODES.INTERNAL_ERROR);
@@ -331,22 +340,23 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 App.Data.errors.alert(result.errorMsg);
             }
         },
-        processPaymentInfo: function(cb) {
+        processPaymentInfo: function(success, fail) {
             var card = this.get('card'),
+                useAsDefaultCard = this.get('useAsDefaultCard'),
                 needCheck, result;
 
             // CardView listens to this event to set data
             card.trigger('add_card');
-            needCheck = card.get('cardNumber');
+            needCheck = card.get('cardNumber') || useAsDefaultCard;
 
             if(needCheck) {
-                result = card.check({ignorePersonal: true, ignoreExpDate: true, ignoreSecurityCode: true});
+                result = card.check({ignorePersonal: !useAsDefaultCard, ignoreExpDate: !useAsDefaultCard, ignoreSecurityCode: !useAsDefaultCard});
             }
 
             if(!needCheck || /ok/i.test(result.status)) {
-                typeof cb == 'function' && cb();
+                typeof success == 'function' && success(result);
             } else {
-                App.Data.errors.alert(result.errorMsg);
+                typeof fail == 'function' && fail(result);//App.Data.errors.alert(result.errorMsg);
             }
         },
         getUsername: function() {
@@ -368,6 +378,68 @@ define(["backbone", "card", "customers"], function(Backbone) {
             data.push('address=' + encodeURIComponent(JSON.stringify(customer.addresses[0])));
 
             return App.Data.settings.get("host") + "/weborders/qrcode/?" + data.join('&');
+        },
+        checkCreditCard: function() {
+            var token = this.get('token'),
+                self = this;
+            if(token === null) {
+                this.trigger('onCreditCardNotificationShow');
+            } else {
+                this.getProfile(function() {
+                    if(self.get('useAsDefaultCard')) {
+                        self.trigger('onPayWithSavedCreditCard');
+                    } else {
+                        self.trigger('onPayWithCustomCreditCard');
+                    }
+                });
+            }
+        },
+        setOriginalProfileData: function() {
+            this.originalProfileData = {
+                customer: _.clone(this.get('customer').toJSON()),
+                card: _.clone(this.get('card').toJSON()),
+                oldPassword: this.get('oldPassword'),
+                newPassword: this.get('newPassword'),
+                useAsDefaultCard: this.get('useAsDefaultCard'),
+            }
+
+            var address = this.get('customer').get('addresses')[0];
+            if(address) {
+                this.originalProfileData.customer.addresses = [_.clone(address)];
+            } else {
+                this.originalProfileData.customer.addresses = [];
+            }
+        },
+        restoreOriginalProfileData: function() {
+            var data = this.originalProfileData;
+            if(data) {
+                this.set({
+                    oldPassword: data.oldPassword,
+                    newPassword: data.newPassword,
+                    useAsDefaultCard: data.useAsDefaultCard
+                });
+                this.get('customer').set(data.customer);
+                this.get('card').set(data.card);
+            }
+        },
+        getLoyaltyPoints: function() {
+            var request = Backbone.$.Deferred(),
+                self = this;
+            $.ajax({
+                url: App.Data.settings.get("host") + "/weborders/reward_cards/",
+                data: {
+                    number: this.get('customer').get('phone')
+                },
+                success: function(data) {
+                    if(data.status && Array.isArray(data.data) && data.data.length && typeof data.data[0].total_points == 'number') {
+                        self.set('points', data.data[0].total_points);
+                    }
+                },
+                complete: function() {
+                    request.resolve();
+                }
+            });
+            return request;
         }
     });
 });

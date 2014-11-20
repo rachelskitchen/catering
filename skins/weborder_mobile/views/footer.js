@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator"], function(Backbone) {
+define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
     'use strict';
 
     App.Views.FooterView = {};
@@ -41,15 +41,17 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             return this;
         },
         events: {
-            "click #myorder": "myorder",
-            "click #location": "location",
-            "click #about": "about",
-            "click .loyalty": "loyalty"
+            'click #myorder': 'myorder',
+            'click #location': 'location',
+            'click #about': 'about',
+            'click .loyalty': 'loyalty',
+            'click .menu': 'menu'
         },
         myorder: setCallback('myorder'),
         location: setCallback('location'),
         about: setCallback('about'),
         loyalty: setCallback('loyalty'),
+        menu: setCallback('menu'),
         updateCount: function(model, collection) {
             var quantity = this.$('.count'),
                 amount = collection.get_only_product_quantity();
@@ -115,7 +117,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         name: 'footer',
         mod: 'checkout',
         events: {
-            "click #confirmOrder": "confirmOrder"
+            "click #confirmOrder": "confirmOrder",
+            "click .profile": "profile"
         },
         confirmOrder: function() {
             App.Data.myorder.check_order({
@@ -126,7 +129,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             }, function() {
                 App.Data.router.navigate('confirm', true);
             });
-        }
+        },
+        profile: setCallback('profile')
     });
 
     App.Views.FooterView.FooterCardView = App.Views.FactoryView.extend({
@@ -199,25 +203,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             $('#section').removeClass('doubleFooter_section').removeClass('tripleFooter_section');
         },
         creditCard: function() {
-           var payment = App.Data.settings.get_payment_process();
-           if (payment.credit_card_dialog) {
-               App.Data.router.navigate('card', true);
-           } else {
-               var self = this;
-               App.Data.myorder.check_order({
-                   order: true,
-                   tip: true,
-                   customer: true,
-                   checkout: true,
-                   card: false
-               }, function() {
-                   App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
-                   !self.canceled && App.Data.mainModel.trigger('loadStarted');
-                   delete self.canceled;
-                   saveAllData();
-                   App.Data.router.navigate('confirm', true);
-               });
-            }
+           this.model.trigger('payWithCreditCard');
         },
         giftCard: function() {
            App.Data.router.navigate('giftcard', true);
@@ -296,6 +282,13 @@ define(["backbone", "factory", "generator"], function(Backbone) {
     App.Views.FooterView.FooterMaintenanceDirectoryView = App.Views.FactoryView.extend({
         name: 'footer',
         mod: 'maintenance_directory'
+    });
+
+    App.Views.FooterView.FooterProfileView = App.Views.RevelView.RevelProfileFooterView;
+
+    App.Views.FooterView.FooterLoyaltyView = App.Views.FooterView.FooterMainView.extend({
+        name: 'footer',
+        mod: 'loyalty'
     });
 
     function setCallback(prop) {

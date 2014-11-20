@@ -30,16 +30,7 @@ define(["backbone", "card_view"], function(Backbone) {
         },
         onProceed: function() {
             this.setData();
-            App.Data.myorder.check_order({
-                order: true,
-                tip: true,
-                customer: true,
-                checkout: true,
-                card: true
-            }, function() {
-                saveAllData();
-                App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
-            });
+            App.Data.myorder.trigger('payWithCreditCard');
         }
     });
 });
