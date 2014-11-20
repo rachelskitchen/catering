@@ -224,8 +224,9 @@ define(["backbone", "card", "customers"], function(Backbone) {
             obj instanceof Object && this.set('useAsDefaultCardSession', obj.useAsDefaultCardSession);
         },
         saveUseAsDefaultCardSession: function() {
-            this.set('useAsDefaultCardSession', this.get('useAsDefaultCard'));
-            setData('useAsDefaultCardSession', {useAsDefaultCardSession: this.get('useAsDefaultCardSession')});
+            var value = Boolean(this.get('useAsDefaultCard'));
+            this.set('useAsDefaultCardSession', value);
+            setData('useAsDefaultCardSession', {useAsDefaultCardSession: value});
         },
         getProfileExists: function() {
             var obj = getData('profileExists', true);
