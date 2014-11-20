@@ -452,10 +452,12 @@ define(["backbone"], function(Backbone) {
             }, this);
 
             this.listenTo(RevelAPI, 'onPayWithSavedCreditCard', function() {
+                RevelAPI.set('useAsDefaultCardSession', true);
                 RevelAPI.unset('forceCreditCard');
             }, this);
 
             this.listenTo(RevelAPI, 'onPayWithCustomCreditCard', function() {
+                RevelAPI.set('useAsDefaultCardSession', false);
                 mainModel.trigger('hideRevelPopup', RevelAPI);
             }, this);
         }
