@@ -38,7 +38,6 @@ define(["backbone", "async"], function(Backbone) {
             this.listenToOnce(this, 'change:settings_system', this.get_settings_main, this);
             this.listenToOnce(this, 'change:skinPath', this.get_settings_for_skin, this)
 
-            this.getBrand(); // get ID of a current brand
             this.get_establishment();  // get ID of current establishment
 
             $.ajaxSetup({
