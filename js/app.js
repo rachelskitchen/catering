@@ -130,6 +130,7 @@
                 supported_skins: app.skins.available
             });
 
+            var body = document.querySelector('body');
             App.Data.settings.once('change:settings_skin', function() {
                 load_styles_and_scripts(); // load styles and scripts
                 App.Data.myorder = new App.Collections.Myorders;
@@ -138,7 +139,6 @@
                     App.Data.router = new App.Routers.Router;
                     // remove launch spinner
                     App.Data.router.once('started', function() {
-                        var body = document.querySelector('body');
                         if(body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
                             document.querySelector('body').removeChild(spinner);
                         }
@@ -152,7 +152,21 @@
                     app.afterInit();
                 });
             });
-            App.Data.settings.load();
+            require(['establishments', 'establishments_view'], function() {
+                App.Data.establishments = new App.Collections.Establishments();
+                App.Data.establishments.checkGETParameters().then(function() { // check a GET-parameters
+                    var statusApp = App.Data.establishments.getStatusCode(); // get a status code of the app load
+                    if (statusApp === 1) {
+                        App.Routers.MainRouter.prototype.loadViewEstablishments(); // load the page with stores list
+                    } else if (statusApp === 2) {
+                        if (body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
+                            document.querySelector('body').removeChild(spinner);
+                        }
+                    } else if (statusApp === 3) {
+                        App.Data.settings.load(); // load app
+                    }
+                });
+            });
         });
     }
 

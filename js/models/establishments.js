@@ -84,6 +84,53 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         */
         getBrandName: function() {
             return this.meta('brandName'); // get or set meta data of collection
+        },
+        /**
+        * Check a GET-parameters.
+        */
+        checkGETParameters: function() {
+            var dfd = $.Deferred();
+            var self = this;
+            var params = parse_get_params(); // get GET-parameters from address line
+            if (params.establishment || (!params.establishment && !params.brand)) {
+                this.meta('statusCode', 3);
+                dfd.resolve();
+            } else {
+                App.Data.settings.getBrand(); // get ID of a current brand
+                if (App.Data.settings.get('brand') !== null) {
+                    this.getEstablishments().then(function() { // get establishments from backend
+                        if (self.length > 0) {
+                            if (self.length === 1) {
+                                App.Data.settings.set('establishment', self.models[0].get('id'));
+                                self.meta('statusCode', 3);
+                                dfd.resolve();
+                            } else {
+                                self.meta('statusCode', 1);
+                                dfd.resolve();
+                            }
+                        } else {
+                            App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
+                            self.meta('statusCode', 2);
+                            dfd.resolve();
+                        }
+                    });
+                } else {
+                    App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
+                    this.meta('statusCode', 2);
+                    dfd.resolve();
+                }
+            }
+            return dfd;
+        },
+        /**
+        * Get a status code of the app load.
+        *
+        * 1 - app should load view with stores list.
+        * 2 - app reported about error;
+        * 3 - app was loaded;
+        */
+        getStatusCode: function() {
+            return this.meta('statusCode'); // get or set meta data of collection
         }
     });
 })

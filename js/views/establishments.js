@@ -28,11 +28,13 @@ define(['backbone', 'factory'], function(Backbone) {
         mod: 'main',
         initialize: function() {
             this.model = {};
+            this.model.storeDefined = (this.options.storeDefined !== undefined) ? this.options.storeDefined : true;
+            this.model.showFooter = (this.options.showFooter !== undefined) ? this.options.showFooter : false;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
             this.model.brandName = this.collection.getBrandName(); // get a brand name
-            this.model.clientName = App.Data.mainModel.get('clientName');
+            if (this.model.showFooter) this.model.clientName = App.Data.mainModel.get('clientName');
             $(this.el).html(this.template(this.model));
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             var view = new App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectView({collection: this.collection});
@@ -57,10 +59,24 @@ define(['backbone', 'factory'], function(Backbone) {
         * The "Proceed" button was clicked.
         */
         proceed: function() {
-            var model = {};
-            model.selectedEstablishmentID = this.$('select').val();
-            var view = new App.Views.CoreEstablishmentsView.CoreEstablishmentsConfirmationView({model: model});
-            this.$el.append(view.el);
+            var self = this;
+            tmpl_alert_message({
+                message: 'If you choose a different store location, your order will be canceled. Cancel Order?',
+                reload_page: false,
+                is_confirm: true,
+                confirm: {
+                    ok: 'Proceed',
+                    cancel: 'Go Back'
+                },
+                callback: function(result) {
+                    if (result) {
+                        $('#loader').show();
+                        App.Data.settings.set('establishment', self.$('select').val());
+                        self.remove();
+                        App.Data.settings.load(); // load app
+                    }
+                }
+            });
         }
     });
     App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectView = App.Views.FactoryView.extend({
@@ -71,7 +87,7 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            this.collection.each(this.addItem.bind(this));
+            this.collection.each(this.addItem.bind(this)); // add a item to the select menu
             return this;
         },
         /**
@@ -79,58 +95,6 @@ define(['backbone', 'factory'], function(Backbone) {
         */
         addItem: function(model) {
             this.$('select').append('<option value="' + model.get('id') + '">' + model.get('name') + ', ' + model.get('line_1') + ', ' + model.get('city_name') + '</option>');
-        }
-    });
-    App.Views.CoreEstablishmentsView.CoreEstablishmentsConfirmationView = App.Views.FactoryView.extend({
-        name: 'establishments',
-        mod: 'confirmation',
-        initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-        },
-        render: function() {
-            App.Views.FactoryView.prototype.render.apply(this, arguments);
-            return this;
-        },
-        events: {
-            'click button[name=back_confirm]': 'back',
-            'click button[name=proceed_confirm]': 'proceed'
-        },
-        /**
-        * The "Go Back" button was clicked.
-        */
-        back: function() {
-            this.remove();
-        },
-        /**
-        * The "Proceed" button was clicked.
-        */
-        proceed: function() {
-            var moveAddress = window.location.protocol + '//' + window.location.hostname + window.location.pathname;
-            var paramsAddress = '';
-            var params = parse_get_params(); // get GET-parameters from address line
-            if (empty_object(params)) { // check object (empty or not empty)
-                paramsAddress += '?establishment=' + this.model.selectedEstablishmentID;
-            } else {
-                var issetEstablishment = false;
-                for (var i in params) {
-                    var param = '';
-                    if (i !== 'establishment') {
-                        param = i + '=' + params[i];
-                    } else {
-                        issetEstablishment = true;
-                        param = i + '=' + this.model.selectedEstablishmentID;
-                    }
-                    if (paramsAddress === '') {
-                        paramsAddress += '?';
-                    } else {
-                        paramsAddress += '&';
-                    }
-                    paramsAddress += param;
-                }
-                if (!issetEstablishment) paramsAddress += '&establishment=' + this.model.selectedEstablishmentID;
-            }
-            moveAddress += paramsAddress;
-            window.location.href = moveAddress;
         }
     });
 });
