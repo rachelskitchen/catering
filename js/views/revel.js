@@ -145,10 +145,10 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
                 self = this;
             if(isChecked) {
                 password.prop('disabled', false);
-                password.parent().removeClass('disabled');
+                password.parent().removeClass('disabled').addClass('required');
             } else {
                 password.val('').prop('disabled', true);
-                password.parent().addClass('disabled');
+                password.parent().removeClass('required').addClass('disabled');
             }
             password.each(function() {
                 self.setPassword({target: this});

@@ -359,7 +359,10 @@ define(["backbone"], function(Backbone) {
                 return;
             }
 
-            this.once('started', RevelAPI.run.bind(RevelAPI));
+            this.once('started', function() {
+                updateReward();
+                RevelAPI.run();
+            });
 
             this.listenTo(RevelAPI, 'onWelcomeShow', function() {
                 mainModel.trigger('showRevelPopup', {
@@ -448,9 +451,7 @@ define(["backbone"], function(Backbone) {
                 mainModel.trigger('hideRevelPopup', RevelAPI);
             });
 
-            checkout.listenTo(RevelAPI.get('customer'), 'change:phone', function(model) {
-                checkout.set('rewardCard', model.get('phone'))
-            });
+            checkout.listenTo(RevelAPI.get('customer'), 'change:phone', updateReward);
 
             this.listenTo(RevelAPI, 'onUseSavedCreditCard', function() {
                 var self = this,
@@ -473,12 +474,19 @@ define(["backbone"], function(Backbone) {
             }, this);
 
             this.listenTo(RevelAPI, 'onPayWithSavedCreditCard', function() {
+                RevelAPI.set('useAsDefaultCardSession', true);
                 RevelAPI.unset('forceCreditCard');
             }, this);
 
             this.listenTo(RevelAPI, 'onPayWithCustomCreditCard', function() {
+                RevelAPI.set('useAsDefaultCardSession', false);
                 mainModel.trigger('hideRevelPopup', RevelAPI);
             }, this);
+
+            function updateReward() {
+                var phone = RevelAPI.get('customer').get('phone');
+                phone && checkout.set('rewardCard', phone);
+            }
         }
     });
 });
