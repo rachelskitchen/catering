@@ -136,22 +136,29 @@ define(["backbone", "main_router"], function(Backbone) {
                     if(App.Settings.RevelAPI) {
                         App.Data.RevelAPI.checkCreditCard();
                     } else {
-                        this.navigate('card', true);
+                        showDefaultCardView.call(this);
                     }
                 }, this);
 
                 this.listenTo(App.Data.myorder, 'payWithCreditCard', function() {
-                    App.Data.myorder.check_order({
-                        order: true,
-                        tip: true,
-                        customer: true,
-                        checkout: true,
-                        card: true
-                    }, function() {
+                    var paymentProcessor = App.Data.settings.get_payment_process();
+                    if(paymentProcessor.credit_card_dialog) {
+                        App.Data.myorder.check_order({
+                            order: true,
+                            tip: true,
+                            customer: true,
+                            checkout: true,
+                            card: true
+                        }, sendRequest);
+                    } else {
+                        sendRequest();
+                    }
+
+                    function sendRequest() {
                         saveAllData();
                         App.Data.mainModel.trigger('loadStarted');
                         App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
-                    });
+                    }
                 });
 
                 new App.Views.MainView({
@@ -167,7 +174,7 @@ define(["backbone", "main_router"], function(Backbone) {
             });
 
             var checkout = App.Data.myorder.checkout;
-                checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
+            checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
             this.initPaymentResponseHandler(this.navigate.bind(this, "done", true));
 
@@ -750,8 +757,17 @@ define(["backbone", "main_router"], function(Backbone) {
             }, this);
 
             this.listenTo(RevelAPI, 'onPayWithCustomCreditCard', function() {
-                this.navigate('card', true);
+                showDefaultCardView.call(this);
             }, this);
         }
     });
+
+    function showDefaultCardView() {
+        var paymentProcessor = App.Data.settings.get_payment_process();
+        if(paymentProcessor.credit_card_dialog) {
+            this.navigate('card', true);
+        } else {
+            App.Data.myorder.trigger('payWithCreditCard');
+        }
+    }
 });
