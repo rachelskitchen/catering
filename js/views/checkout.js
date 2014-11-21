@@ -556,7 +556,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                 return;
             } 
             myorder.get_discounts({ apply_discount: true})
-                .success(function(data) {
+                .done(function(data) {
                     if (data.status == "OK") {
                         self.disableApplyBtn();
                     }

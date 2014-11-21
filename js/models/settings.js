@@ -217,7 +217,7 @@ define(["backbone", "async"], function(Backbone) {
                     },
                     type_of_service: ServiceType.TABLE_SERVICE,
                     default_dining_option: 'DINING_OPTION_TOGO',
-                    accept_discount_code: false
+                    accept_discount_code: true
                 },
                 load = $.Deferred();
 
@@ -339,15 +339,6 @@ define(["backbone", "async"], function(Backbone) {
                                 settings_system.online_orders = false;
                             }
 
-//for debug:
-                            //settings_system.online_orders = true;
-                            
-                            //debug: disable order-from-seat feature:
-                            //settings_system.order_from_seat[0] = false;
-                            
-                            //switch on the discount feature, it's not supported by backend now: 
-                            settings_system.accept_discount_code = true;
-                            
                             if (settings_system.online_orders && settings_system.dining_options.length == 0) {
                                 self.set('isMaintenance', true);
                             }

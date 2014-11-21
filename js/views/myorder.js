@@ -161,7 +161,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     model: this.model
                 });
                 self.subViews.push(view);
-                view.$el.addClass('s' + (round_monetary_currency(this.model.get("discount").toString()).length + 2));
+                view.$el.addClass('s' + (round_monetary_currency(this.model.get("discount").toString()).length + 1));
                 self.$('.discount_place').append(view.el);           
             }
 

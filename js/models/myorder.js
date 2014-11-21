@@ -1062,15 +1062,16 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
         },
         get_discounts: function(params) {
-            var self = this;
+            var self = this;          
 
-            if (!App.Settings.accept_discount_code)
-                return false;
+            if (!App.Settings.accept_discount_code || self.get_only_product_quantity() < 1) {
+                return (new $.Deferred()).reject();
+            }
 
             if (this.get_discount_xhr) {
                 this.get_discount_xhr.abort();
             }
-
+            
             this.get_discount_xhr = this._get_discounts(params);            
             this.get_discount_xhr.always(function() {              
                 delete self.get_discount_xhr;               
@@ -1086,6 +1087,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 checkout = this.checkout.toJSON(),
                 is_apply_discount = params && params.apply_discount ? params.apply_discount : false,
                 order = {
+                    skin: App.Data.settings.get('skin'),
                     establishmentId: App.Data.settings.get("establishment"),
                     items: items,
                     orderInfo: order_info
@@ -1169,7 +1171,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                                 "id_product": product.product });               
                 if (product.discount instanceof Object) {                
                     model.get("discount").set({ name: product.discount.name, 
-                                        sum: product.discount.sum.toFixed(2) * 1,                                        
+                                        sum: product.discount.sum,                                        
                                         taxed: product.discount.taxed,
                                         id: product.discount.id,
                                         type: product.discount.type
@@ -1185,7 +1187,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                               id: 23};*/
             if (json.discount instanceof Object) {
                 myorder.discount.set({ name: json.discount.name, 
-                                       sum: json.discount.sum.toFixed(2) * 1,                                     
+                                       sum: json.discount.sum,                                     
                                        taxed: json.discount.taxed,
                                        id: json.discount.id,
                                        type: json.discount.type

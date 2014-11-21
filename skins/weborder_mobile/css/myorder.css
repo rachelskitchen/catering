@@ -12,14 +12,14 @@
     bottom: 24.3em;
 }
 
-#content ul.myorder {
+#content ul.items {
     list-style: none;
 }
 
 /* myorder mod list end */
 
 /* myorder mod item start */
-#content ul.myorder > li {
+#content ul.items > li {
     border-top-width: 1px;
     border-top-style: solid;
     padding: 1.5em 0;
@@ -30,13 +30,13 @@
     border-top: none;
 }
 
-#content ul.myorder ul {
+#content ul.items ul {
     list-style: none;
     font-size: 2.4em;
     margin-left: 1em;
 }
 
-#content ul.myorder h3 {
+#content ul.items h3 {
     font-size: 2.8em;
     height: 1.5em;
     position: relative;
@@ -45,11 +45,12 @@
     overflow: hidden;
 }
 
-#content ul.myorder h3 .currency_symbol {
+#content ul.items h3 .currency_symbol,
+#content ul.items ul .currency_symbol {
     letter-spacing: -0.2em;
 }
 
-#content ul.myorder h3 .cost {
+#content ul.items h3 .cost {
     position: absolute;
     right: 0;
     width: 1.3em;
@@ -59,7 +60,7 @@
     overflow: hidden;
 }
 
-#content ul.myorder h3 .name {
+#content ul.items h3 .name {
     position: absolute;
     left: 0;
     right: 1.3em;
@@ -68,13 +69,13 @@
     overflow: hidden;
 }
 
-#content ul.myorder ul li {
+#content ul.items ul li {
     position: relative;
     padding: 0.2em 0 0;
     height: 1.5em;
 }
 
-#content ul.myorder ul .cost {
+#content ul.items ul .cost {
     position: absolute;
     right: 0;
     width: 5.3em;
@@ -84,7 +85,7 @@
     overflow: hidden;
 }
 
-#content ul.myorder ul .name {
+#content ul.items ul .name {
     position: absolute;
     left: 0;
     right: 5.4em;
@@ -93,7 +94,7 @@
     overflow: hidden;
 }
 
-#content ul.myorder ul .currency_symbol {
+#content ul.items ul .currency_symbol {
     letter-spacing: -0.2em
 }
 
@@ -207,59 +208,59 @@
     right: 6.3em;
 }
 
-#content ul.myorder h3.s2 .cost {
+#content ul.items h3.s2 .cost {
     width: 2.1em;
 }
 
-#content ul.myorder h3.s2 .name {
+#content ul.items h3.s2 .name {
     right: 2.1em;
 }
 
-#content ul.myorder h3.s3 .cost {
+#content ul.items h3.s3 .cost {
     width: 2.8em;
 }
 
-#content ul.myorder h3.s3 .name {
+#content ul.items h3.s3 .name {
     right: 2.8em;
 }
 
-#content ul.myorder h3.s4 .cost {
+#content ul.items h3.s4 .cost {
     width: 3.3em;
 }
 
-#content ul.myorder h3.s4 .name {
+#content ul.items h3.s4 .name {
     right: 3.3em;
 }
 
-#content ul.myorder h3.s5 .cost {
+#content ul.items h3.s5 .cost {
     width: 3.3em;
 }
 
-#content ul.myorder h3.s5 .name {
+#content ul.items h3.s5 .name {
     right: 3.3em;
 }
 
-#content ul.myorder h3.s6 .cost {
+#content ul.items h3.s6 .cost {
     width: 4.3em;
 }
 
-#content ul.myorder h3.s6 .name {
+#content ul.items h3.s6 .name {
     right: 4.4em;
 }
 
-#content ul.myorder h3.s7 .cost {
+#content ul.items h3.s7 .cost {
     width: 4.9em;
 }
 
-#content ul.myorder h3.s7 .name {
+#content ul.items h3.s7 .name {
     right: 4.9em;
 }
 
-#content ul.myorder h3.s8 .cost {
+#content ul.items h3.s8 .cost {
     width: 5.4em;
 }
 
-#content ul.myorder h3.s8 .name {
+#content ul.items h3.s8 .name {
     right: 5.4em;
 }
 

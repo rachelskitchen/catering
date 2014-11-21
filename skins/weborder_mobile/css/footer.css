@@ -285,10 +285,12 @@
     left: 10em;
     text-align: center;
     line-height: 8em;
+    width: auto;
 }
 
 #returnToMenu span, #reload span {
     font-size: 3em;
+    top: 0;
 }
 
 /* done, maintenance mod end */

@@ -575,9 +575,6 @@ section.maintenance p {
     min-height: 75px;
     margin-bottom: 10px;
 }
-#cart .order-items .myorder > li:last-child {
-    margin-bottom: 0;
-}
 #cart .order-items .image, .confirmPayCard .order-items .image {
     width: 65px;
     height: 85px;
@@ -587,6 +584,16 @@ section.maintenance p {
     float: left;
     margin-right: 10px;
 }
+#cart .order-items .myorder > li.no_image .image {
+     height: 35px;
+}
+#cart .order-items .myorder > li.no_image img {
+    display: none;
+}
+#cart .order-items .myorder > li.no_image {
+    min-height: 35px;
+}
+
 #cart .order-items img, .confirmPayCard .order-items img {
     height: auto;
     width: auto;

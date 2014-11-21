@@ -257,7 +257,7 @@ select {
 #content .modifier .input.radio.checked:after {
     background-position: 100% 0;
 }
-#content ul.myorder > li {
+#content ul.items > li {
     border-top-color: #a8c4d8;
 }
 #content ul.myorder .btns span {

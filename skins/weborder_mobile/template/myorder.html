@@ -1,5 +1,6 @@
 <script type="text/template" id="myorder_list-template">
-    <ul class="myorder"></ul>
+    <ul class="myorder items"></ul>
+    <ul class="discount items"></ul>
 </script>
 
 <script type="text/template" id="myorder_item-template">
@@ -25,6 +26,7 @@
         <li class="special">*** <%= special %></li>
         <% } %>
     </ul>
+    <ul class="discount_place"></ul>
     <% if(id_product !== null) { %>
     <div class="btns">
         <span class="remove">Remove</span>
@@ -62,4 +64,24 @@
           <textarea class="instructions bg-style1" placeholder='Order notes'><%=note%></textarea>
       </div>
     <% } %>
+</script>
+
+<script type="text/template" id="myorder_product_discount-template">
+    <span class="name"><%= discount_name %></span>
+    <span class="cost">
+        <span class="plus">-</span>
+        <span class="currency_symbol"><%= currency_symbol %></span>
+        <span class="price"><%= discount_sum %></span>
+    </span>
+</script>
+
+<script type="text/template" id="myorder_discount-template">
+    <h3 class="s<%= price_length %>">
+        <span class="name"><%= discount_name %></span>
+        <span class="cost">
+            <span>-</span>
+            <span class="currency_symbol"><%= currency_symbol %></span>
+            <span class="price"><%= discount_sum %></span>
+        </span>
+    </h3>    
 </script>
