@@ -58,7 +58,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.listenTo(this, 'change:profileExists', this.saveProfileExists, this);
             this.listenTo(this, 'change:errorCode', this.listenToErrorCode, this);
             this.listenTo(this, 'change:useAsDefaultCard change:useAsDefaultCardSession', this.saveUseAsDefaultCardSession, this);
-            this.listenTo(this, 'onAuthenticationCancel', this.clearRequests, this);
+            this.listenTo(this, 'onAuthenticationCancel', onAuthenticationCancel, this);
             this.listenTo(this, 'onProfileCancel', this.restoreOriginalProfileData, this);
 
             this.set('card', new App.Models.Card());
@@ -78,6 +78,16 @@ define(["backbone", "card", "customers"], function(Backbone) {
 
             // save original data
             this.setOriginalProfileData();
+
+            // need restore profile when token is present and profile exists (case: directory-weborder transfer)
+            if(this.get('token') !== null && this.get('profileExists')) {
+                this.getProfile();
+            }
+
+            function onAuthenticationCancel() {
+                this.clearRequests();
+                this.set('token', null);
+            }
         },
         run: function() {
             this.initFirstTime();
