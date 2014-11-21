@@ -174,7 +174,7 @@ define(["backbone", "main_router"], function(Backbone) {
             });
 
             var checkout = App.Data.myorder.checkout;
-                checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
+            checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
             this.initPaymentResponseHandler(this.navigate.bind(this, "done", true));
 
