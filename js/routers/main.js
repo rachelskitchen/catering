@@ -262,6 +262,27 @@ define(["backbone"], function(Backbone) {
 
                 typeof cb == 'function' && cb();
             }, this);
+        },
+        /**
+        * Load the page with stores list.
+        */
+        loadViewEstablishments: function() {
+            var style = './css/establishments.css';
+            var template = './template/establishments.html';
+            $('head').append('<link rel="stylesheet" href="' + style + '" type="text/css" />');
+            $.ajax({
+                url: template,
+                dataType: "html",
+                success : function(data) {
+                    $("head").append(data);
+                    var view = new App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView({
+                        collection: App.Data.establishments,
+                        storeDefined: false
+                    });
+                    $('body').append(view.el);
+                    $('#loader').hide();
+                }
+            });
         }
     });
 
