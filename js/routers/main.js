@@ -266,23 +266,36 @@ define(["backbone"], function(Backbone) {
         /**
         * Load the page with stores list.
         */
-        loadViewEstablishments: function() {
+        loadViewEstablishments: function(obj) {
+            /**
+            * Load view with stores list.
+            */
+            var loadEstablishmentsView = function() {
+                var view = new App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView({
+                    collection: App.Data.establishments,
+                    storeDefined: obj.storeDefined,
+                    showFooter: obj.showFooter
+                });
+                $('body').append(view.el);
+                $('#loader').hide();
+            };
             var style = './css/establishments.css';
-            var template = './template/establishments.html';
-            $('head').append('<link rel="stylesheet" href="' + style + '" type="text/css" />');
-            $.ajax({
-                url: template,
-                dataType: "html",
-                success : function(data) {
-                    $("head").append(data);
-                    var view = new App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView({
-                        collection: App.Data.establishments,
-                        storeDefined: false
-                    });
-                    $('body').append(view.el);
-                    $('#loader').hide();
-                }
-            });
+            if ($('link[href="' + style +'"]').length === 0) {
+                $('head').append('<link rel="stylesheet" href="' + style + '" type="text/css" />');
+            }
+            if ($('#establishments_main-template').length === 0) {
+                var template = './template/establishments.html';
+                $.ajax({
+                    url: template,
+                    dataType: 'html',
+                    success: function(data) {
+                        $('head').append(data);
+                        loadEstablishmentsView(); // load view with stores list
+                    }
+                });
+            } else {
+                loadEstablishmentsView(); // load view with stores list
+            }
         }
     });
 

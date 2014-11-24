@@ -6,11 +6,11 @@
     "color_schemes": ["default", "blue_&_white", "vintage"],
     "routing": {
         "main": {
-            "css": ["main", "myorder", "jquery.contentarrow", "products", "modifiers", "instructions", "quantity", "establishments"],
+            "css": ["main", "myorder", "jquery.contentarrow", "products", "modifiers", "instructions", "quantity"],
             "model": ["main", "header"],
-            "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "instructions", "quantity", "establishments"],
+            "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "instructions", "quantity"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "instructions", "quantity"],
-            "core": ["generator", "myorder_view", "total_view", "products", "modifiers", "jquery_numbermask", "instructions_view", "establishments", "establishments_view"],
+            "core": ["generator", "myorder_view", "total_view", "products", "modifiers", "jquery_numbermask", "instructions_view"],
             "js" : ["jquery.contentarrow"]
         },
         "index": {
