@@ -246,7 +246,7 @@ define(["backbone", "async"], function(Backbone) {
                             $.extend(true, settings_system, data);
                             if (data.brand) {
                                 self.set('brand', data.brand);
-                                App.Data.establishments.trigger('brandLoaded');
+                                self.trigger('brandLoaded');
                             }
                             settings_system.about_images = settings_system.about_images || [];
                             settings_system.about_title = settings_system.about_title || "";

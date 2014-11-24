@@ -79,8 +79,10 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                 self = this;
             var params = parse_get_params(); // get GET-parameters from address line
             if (params.establishment || (!params.establishment && !params.brand)) {
-                this.once('brandLoaded', function() {
-                    self.getEstablishments(); // get establishments from backend
+                App.Data.settings.once('brandLoaded', function() {
+                    self.getEstablishments().then(function() { // get establishments from backend
+                        if (App.Data.mainModel && self.length > 1) App.Data.mainModel.set('isShowStoreChoice', true);
+                    });
                 });
                 this.meta('statusCode', 3);
                 dfd.resolve();
