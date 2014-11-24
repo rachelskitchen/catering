@@ -264,4 +264,68 @@
     right: 5.4em;
 }
 
+/* myorder discount_code template */
+#content .discountBlock {
+    position: absolute;
+    bottom: 0;
+    left: 1.0em;
+    right: 1.0em;
+    height: 4.2em;
+    z-index: 100;
+}
+
+#content .discountBlock.isNote {
+    bottom: 19.1em;
+}
+
+#content .discountBlock .note_field {
+    float: left;
+    height: 1.4em;
+    font-size: 2.4em;
+    margin-top: 0.2em;
+    margin-left: 1.5em;
+    width: 10em;    
+    position: relative;
+}
+
+#content .discountBlock .note_field:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -2px;
+    bottom: -2px;
+    left: -2px;
+    right: -2px;
+    z-index: 0;
+}
+
+#content .discountBlock input {
+    display: block;
+    width: 100%;
+    height: 100%;
+    resize: none;
+    border: none;
+    border-radius: 0;
+    font-size: inherit;
+    font-family: inherit;
+    position: relative;
+    z-index: 1;
+}
+
+#content .discountBlock .btns {
+    margin-top: 0.6em;
+    margin-left: 1.5em;
+    float: left;
+}
+
+#content .discountBlock .btns span {
+    font-size: 2.4em;
+    cursor: pointer;
+    padding: 0.1em 0.5em 0.1em 0.5em;
+    border-radius: 1.2em;
+    border-width: 1px;
+    border-style: solid;
+    position: relative;
+}
+
 /* myorder mod item end */

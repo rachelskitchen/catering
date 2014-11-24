@@ -35,6 +35,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         render: function() {
             var model = {};
             model.subTotal = this.get_subtotal();
+            model.discount_allow = App.Settings.accept_discount_code === true;
+            model.discounts = this.model.get_discounts_str();
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
             this.$el.html(this.template(model));
         },

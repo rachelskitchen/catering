@@ -529,7 +529,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             var data = this.model.toJSON();
             data.iPad = iPad();
             this.$el.html(this.template(data));
-            inputTypeNumberMask(this.$('input'), /^[\d\w]{0,14}$/);
+            inputTypeNumberMask(this.$('input'), /^[\d\w]{0,16}$/);
 
             return this;
         },
@@ -551,7 +551,59 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             var self = this, 
                 myorder = this.options.myorder;
  
-            if (!/^[\d\w]{7,14}$/.test(this.model.get("discount_code")) ) {
+            if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
+                App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
+                return;
+            } 
+            myorder.get_discounts({ apply_discount: true})
+                .done(function(data) {
+                    if (data.status == "OK") {
+                        self.disableApplyBtn();
+                    }
+                });
+        },
+        enableApplyBtn: function() {
+            this.$(".btnApply").removeAttr("disabled").removeClass("applied").text("Apply");
+        },
+        disableApplyBtn: function() {
+            this.$(".btnApply").attr("disabled", "disabled").addClass("applied").text("Applied");
+        }
+    });
+
+    App.Views.CoreCheckoutView.CoreCheckoutDiscountCode2View = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'discount_code',
+        initialize: function() {
+            this.listenTo(this.model, 'change', this.render, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            var data = this.model.toJSON();
+            data.iPad = iPad();
+            this.$el.html(this.template(data));
+            inputTypeNumberMask(this.$('input'), /^[\d\w]{0,16}$/);
+
+            return this;
+        },
+        events: {            
+            'click .btnApply': 'onApplyCode',
+            'keyup input[name=discount_code]': 'onChangeDiscountCode'
+        },
+        onChangeDiscountCode: function(e) {
+            var newValue = e.target.value,
+                oldValue = this.model.get("discount_code");
+
+            if (newValue == oldValue)
+                return;
+           
+            this.model.set({"discount_code":newValue}, {silent: true});
+            this.enableApplyBtn();
+        },
+        onApplyCode: function() {
+            var self = this, 
+                myorder = this.options.myorder;
+ 
+            if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
                 App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
                 return;
             } 
@@ -581,6 +633,8 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
     App.Views.CheckoutView.CheckoutPickupView = App.Views.CoreCheckoutView.CoreCheckoutPickupView;
 
     App.Views.CheckoutView.CheckoutDiscountCodeView = App.Views.CoreCheckoutView.CoreCheckoutDiscountCodeView;
+
+    App.Views.CheckoutView.CheckoutDiscountCode2View = App.Views.CoreCheckoutView.CoreCheckoutDiscountCode2View;
 
     App.Views.CheckoutView.CheckoutPayView = App.Views.CoreCheckoutView.CoreCheckoutPayView;
 

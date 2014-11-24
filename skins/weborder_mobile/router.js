@@ -352,6 +352,13 @@ define(["backbone", "main_router"], function(Backbone) {
                             className: 'myorderList' + (isNote ? ' isNote' : '')
                         },
                         {
+                            modelName: 'Checkout',
+                            model: App.Data.myorder.checkout,
+                            mod: 'DiscountCode2',
+                            className: 'discountBlock' + (isNote ? ' isNote' : ''),
+                            collection: App.Data.myorder
+                        },
+                        {
                             modelName: 'Total',
                             model: App.Data.myorder.total,
                             mod: 'Main',
