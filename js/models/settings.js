@@ -39,37 +39,7 @@ define(["backbone", "async"], function(Backbone) {
             this.listenToOnce(this, 'change:skinPath', this.get_settings_for_skin, this)
 
             this.get_establishment();  // get ID of current establishment
-
-            $.ajaxSetup({
-                timeout: self.get("timeout"),
-                cache: true,
-                success: function(data) {
-                    if (!data.status) {
-                        App.Data.errors.alert_red(MSG.ERROR_INCORRECT_AJAX_DATA, true);
-                    } else {
-                        switch (data.status) {
-                            case "OK":
-                                if (typeof this.successResp === 'function') {
-                                    this.successResp(data.data);
-                                }
-                                break;
-                            default:
-                                App.Data.errors.alert_red(data.errorMsg, true);
-                        }
-                    }
-                },
-                error: function(xhr) {
-                    App.Data.errors.alert(MSG.ERROR_SERVER_UNREACHED, true); // user notification
-                },
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-Requested-With", {
-                        toString: function() {
-                            return "";
-                        }
-                    });
-                    xhr.setRequestHeader("X-Revel-Revision", self.get("x_revel_revision"));
-                }
-            });
+            this.ajaxSetup(); // AJAX-requests settings
 
             // fix for Bug 9344. Chrome v34.0.1847.131 crashes when reload page
             if(/Chrome\/34\.0\.1847\.(131|137)/i.test(window.navigator.userAgent))
@@ -91,6 +61,39 @@ define(["backbone", "async"], function(Backbone) {
             isMaintenance: false,
             version: 1.06,
             supported_skins: []
+        },
+        /**
+         * AJAX-requests settings.
+         */
+        ajaxSetup: function() {
+            var self = this;
+            $.ajaxSetup({
+                timeout: self.get('timeout'),
+                cache: true,
+                success: function(data) {
+                    if (!data.status) {
+                        App.Data.errors.alert_red(MSG.ERROR_INCORRECT_AJAX_DATA, true); // user notification (server return HTTP status 200, but data.status is error)
+                    } else {
+                        switch (data.status) {
+                            case 'OK':
+                                if (typeof this.successResp === 'function') this.successResp(data.data);
+                                break;
+                            default:
+                                App.Data.errors.alert_red(data.errorMsg, true); // user notification (server return HTTP status 200, but data.status is error)
+                                break;
+                        }
+                    }
+                },
+                error: function(xhr) {
+                    App.Data.errors.alert(MSG.ERROR_SERVER_UNREACHED, true); // user notification
+                },
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('X-Requested-With', {
+                        toString: function() { return ''; }
+                    });
+                    xhr.setRequestHeader('X-Revel-Revision', self.get('x_revel_revision'));
+                }
+            });
         },
         /**
          * Selection of the data warehouse.
