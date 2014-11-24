@@ -10,7 +10,16 @@
     padding: 0;
     user-select: none;
 }
-div[data-tmpl='establishments_main-template'] select {
+.establishments {
+    background: url('../img/overlay_darken.png');
+    display: table;
+    height: 100%;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    z-index: 101;
+}
+.establishments select {
     -moz-appearance: none;
     -ms-appearance: none;
     -webkit-appearance: none;
@@ -26,11 +35,11 @@ div[data-tmpl='establishments_main-template'] select {
     padding: 0 25px 0 10px;
     width: 100%;
 }
-div[data-tmpl='establishments_main-template'] select:-moz-focusring {
+.establishments select:-moz-focusring {
     color: transparent;
     text-shadow: 0 0 0 #686868;
 }
-div[data-tmpl='establishments_main-template'] button {
+.establishments button {
     background-color: rgba(247,247,247,1);
     border-color: #a9a9a9;
     border-radius: 15px;
@@ -44,12 +53,12 @@ div[data-tmpl='establishments_main-template'] button {
     padding: 0 6em;
     text-shadow: 0 0 2px #fff;
 }
-div[data-tmpl='establishments_main-template'] button:hover {
+.establishmentsbutton:hover {
     -moz-box-shadow: 0 0 5px 2px rgba(60, 167, 222, 0.3) inset, 0 0 8px 2px #fff;
     -webkit-box-shadow: 0 0 5px 2px rgba(60, 167, 222, 0.3) inset, 0 0 8px 2px #fff;
     box-shadow: 0 0 5px 2px rgba(60, 167, 222, 0.3) inset, 0 0 8px 2px #fff;
 }
-div[data-tmpl='establishments_main-template'] .select-wrapper {
+.establishments .select-wrapper {
     background: #fcfcfc;
     border-color: #cecece;
     border-radius: 20px;
@@ -60,10 +69,10 @@ div[data-tmpl='establishments_main-template'] .select-wrapper {
     height: 22px;
     overflow: hidden;
 }
-div[data-tmpl='establishments_main-template'] .select-wrapper:hover {
+.establishments .select-wrapper:hover {
     border-color: #66ccff;
 }
-div[data-tmpl='establishments_main-template'] .select-wrapper:after {
+.establishments .select-wrapper:after {
     background-color: inherit;
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjE1LjIiPjxnPjxwYXRoIGQ9Im00LDBMMSw2TDcsNloiIGZpbGw9IiM2ODY4NjgiLz48cmVjdCBoZWlnaHQ9IjEiIHdpZHRoPSI4IiB5PSI3IiB4PSIwIiBmaWxsPSIjNjg2ODY4Ii8+PHBhdGggZD0ibTQsMTUuMkwxLDkuMkw3LDkuMloiIGZpbGw9IiM2ODY4NjgiLz48L2c+PC9zdmc+');
     background-position: 5px 50%;
@@ -79,15 +88,6 @@ div[data-tmpl='establishments_main-template'] .select-wrapper:after {
     position: relative;
     width: 22px;
     z-index: 1;
-}
-.establishments {
-    background: url('../img/overlay_darken.png');
-    display: table;
-    height: 100%;
-    position: absolute;
-    text-align: center;
-    width: 100%;
-    z-index: 101;
 }
 .establishments > div {
     display: table-cell;
