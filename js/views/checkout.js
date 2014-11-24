@@ -589,7 +589,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             'click .dcode_have': 'enterDiscountCode',
             'click .dcode_remove': 'removeDiscountCode',     
             'click .btnApply': 'onApplyCode',
-            'keyup input[name=discount_code]': 'onChangeDiscountCode'
+            'change input[name=discount_code]': 'onChangeDiscountCode'
         },
         onChangeDiscountCode: function(e) {
             var newValue = e.target.value,
