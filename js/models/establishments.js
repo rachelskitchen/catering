@@ -43,14 +43,14 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         */
         getEstablishments: function() {
             var self = this;
+            App.Data.settings.ajaxSetup(); // AJAX-requests settings
             var dfd = $.Deferred();
             $.ajax({
-                url: App.Data.settings.get('host')+'/weborders/locations/',
+                url: App.Data.settings.get('host') + '/weborders/locations/',
                 data: {
                     brand: App.Data.settings.get('brand')
                 },
                 dataType: 'json',
-                /*
                 successResp: function(data) {
                     self.meta('brandName', data.brand_name);
                     var establishments = data.establishments;
@@ -59,20 +59,6 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                     }
                     dfd.resolve();
                 },
-                */
-                // temp code (begin)
-                success: function(data) {
-                    if (data.length > 0) {
-                        data.brand_name = 'MLB';
-                        self.meta('brandName', data.brand_name);
-                        var establishments = data[0].estabs;
-                        for (var i = 0; i < establishments.length; i++) {
-                            self.add(establishments[i]);
-                        }
-                    }
-                    dfd.resolve();
-                },
-                // temp code (end)
                 error: function() {
                     App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_LOAD, true); // user notification
                 }
