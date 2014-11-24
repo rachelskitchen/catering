@@ -70,10 +70,40 @@ define(['backbone', 'factory'], function(Backbone) {
                 },
                 callback: function(result) {
                     if (result) {
-                        $('#loader').show();
-                        App.Data.settings.set('establishment', self.$('select').val());
-                        self.remove();
-                        App.Data.settings.load(); // load app
+                        var selectedEstablishmentID = self.$('select').val();
+                        if (empty_object(App.Data.settings.get('settings_system'))) { // check object (empty or not empty)
+                            $('#loader').show();
+                            App.Data.settings.set('establishment', selectedEstablishmentID);
+                            self.remove();
+                            App.Data.settings.load(); // load app
+                        } else {
+                            var moveAddress = window.location.protocol + '//' + window.location.hostname + window.location.pathname;
+                            var paramsAddress = '';
+                            var params = parse_get_params(); // get GET-parameters from address line
+                            if (empty_object(params)) { // check object (empty or not empty)
+                                paramsAddress += '?establishment=' + selectedEstablishmentID;
+                            } else {
+                                var issetEstablishment = false;
+                                for (var i in params) {
+                                    var param = '';
+                                    if (i !== 'establishment') {
+                                        param = i + '=' + params[i];
+                                    } else {
+                                        issetEstablishment = true;
+                                        param = i + '=' + selectedEstablishmentID;
+                                    }
+                                    if (paramsAddress === '') {
+                                        paramsAddress += '?';
+                                    } else {
+                                        paramsAddress += '&';
+                                    }
+                                    paramsAddress += param;
+                                }
+                                if (!issetEstablishment) paramsAddress += '&establishment=' + selectedEstablishmentID;
+                            }
+                            moveAddress += paramsAddress;
+                            window.location.href = moveAddress;
+                        }
                     }
                 }
             });
