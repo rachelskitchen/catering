@@ -279,6 +279,7 @@ define(["backbone"], function(Backbone) {
                 $('body').append(view.el);
                 $('#loader').hide();
             };
+            $('title').text('Web application');
             var style = './css/establishments.css';
             if ($('link[href="' + style +'"]').length === 0) {
                 $('head').append('<link rel="stylesheet" href="' + style + '" type="text/css" />');
