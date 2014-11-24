@@ -157,7 +157,10 @@
                 App.Data.establishments.checkGETParameters().then(function() { // check a GET-parameters
                     var statusApp = App.Data.establishments.getStatusCode(); // get a status code of the app load
                     if (statusApp === 1) {
-                        App.Routers.MainRouter.prototype.loadViewEstablishments(); // load the page with stores list
+                        App.Routers.MainRouter.prototype.loadViewEstablishments({
+                            storeDefined: false,
+                            showFooter: false
+                        }); // load the page with stores list
                     } else if (statusApp === 2) {
                         if (body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
                             document.querySelector('body').removeChild(spinner);

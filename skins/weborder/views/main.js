@@ -248,22 +248,13 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          */
         change_establishment: function() {
             $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
-            var dfd = $.Deferred(),
-                self = this;
-            if (!App.Data.establishments) {
-                App.Data.establishments = new App.Collections.Establishments();
-                App.Data.establishments.getEstablishments().then(function() {
-                    dfd.resolve();
-                });
-            } else {
-                dfd.resolve();
-            }
-            dfd.then(function() {
-                var view = new App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView({collection: App.Data.establishments});
-                $(self.el).append(view.el);
-                self.model.set('isBlurContent', true);
-                $('#main-spinner').removeClass('ui-visible');
-            });
+            var self = this;
+            App.Routers.MainRouter.prototype.loadViewEstablishments({
+                storeDefined: true,
+                showFooter: true
+            }); // load the page with stores list
+            self.model.set('isBlurContent', true);
+            $('#main-spinner').removeClass('ui-visible');
         },
         /**
          * A blur effect of content.

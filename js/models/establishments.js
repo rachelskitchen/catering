@@ -75,10 +75,13 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         * Check a GET-parameters.
         */
         checkGETParameters: function() {
-            var dfd = $.Deferred();
-            var self = this;
+            var dfd = $.Deferred(),
+                self = this;
             var params = parse_get_params(); // get GET-parameters from address line
             if (params.establishment || (!params.establishment && !params.brand)) {
+                this.once('brandLoaded', function() {
+                    self.getEstablishments(); // get establishments from backend
+                });
                 this.meta('statusCode', 3);
                 dfd.resolve();
             } else {
