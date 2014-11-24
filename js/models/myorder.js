@@ -1185,12 +1185,12 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                               sum: 1.00, 
                               taxed: true,
                               id: 23};*/
-            if (json.discount instanceof Object) {
-                myorder.discount.set({ name: json.discount.name, 
-                                       sum: json.discount.sum,                                     
-                                       taxed: json.discount.taxed,
-                                       id: json.discount.id,
-                                       type: json.discount.type
+            if (json.orderInfo.discount instanceof Object) {
+                myorder.discount.set({ name: json.orderInfo.discount.name, 
+                                       sum: json.orderInfo.discount.sum,                                     
+                                       taxed: json.orderInfo.discount.taxed,
+                                       id: json.orderInfo.discount.id,
+                                       type: json.orderInfo.discount.type
                                     });
             } else {
                 myorder.discount.zero_discount();                                   
@@ -1213,8 +1213,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     establishmentId: App.Data.settings.get("establishment"),
                     items: items,
                     orderInfo: order_info,
-                    paymentInfo: payment_info,
-                    discount: this.discount.get("id") ? this.discount.toJSON() : undefined
+                    paymentInfo: payment_info                   
                 };
 
             myorder.each(function(model) {
@@ -1236,6 +1235,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.notes = checkout.notes;
             order_info.asap = checkout.isPickupASAP;
+            order_info.discount = this.discount.get("id") ? this.discount.toJSON() : undefined;
 
             var customerData = this.getCustomerData();
             call_name = call_name.concat(customerData.call_name);
