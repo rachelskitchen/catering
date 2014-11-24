@@ -312,7 +312,7 @@ footer {
     margin-top: -7px;
 }
 .current_establishment {
-    display: block;
+    display: none;
     float: left;
     padding-left: 0.65em;
 }

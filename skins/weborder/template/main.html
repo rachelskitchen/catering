@@ -11,12 +11,10 @@
     </section>
     <aside id='cart' class='main_el'> </aside>
     <footer class='main_el'>
-        <% if (App.Data.establishments.length > 1) { %>
-            <span class='current_establishment'>
-                Current Store: <%= _settings.business_name %>
-                <a class='change_establishment' href='javascript: void(0);'> Change? </a>
-            </span>
-        <% } %>
+        <span class='current_establishment'>
+            Current Store: <%= _settings.business_name %>
+            <a class='change_establishment' href='javascript: void(0);'> Change? </a>
+        </span>
         <a class="powered-by" target='_blank' href="http://revelup.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
     </footer>
     <div class="popup">
