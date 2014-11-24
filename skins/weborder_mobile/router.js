@@ -356,7 +356,7 @@ define(["backbone", "main_router"], function(Backbone) {
                             model: App.Data.myorder.checkout,
                             mod: 'DiscountCode2',
                             className: 'discountBlock' + (isNote ? ' isNote' : ''),
-                            collection: App.Data.myorder
+                            myorder: App.Data.myorder
                         },
                         {
                             modelName: 'Total',

@@ -5,7 +5,7 @@
     bottom: 0;
     left: 1.5em;
     right: 1.5em;
-    height: 6.5em;
+    height: 7.0em;
     text-align: right;
     padding: 0.5em 0 0.8em;
     border-top-width: 1px;
@@ -16,7 +16,7 @@
 }
 
 #content .myorderSubtotal.isNote {
-    bottom: 16.3em;
+    bottom: 15.6em;
 }
 
 #content .myorderSubtotal > div {

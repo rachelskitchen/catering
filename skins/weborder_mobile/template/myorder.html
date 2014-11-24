@@ -87,12 +87,20 @@
 </script>
 
 <script type="text/template" id="myorder_discount_code-template">
-
-    <div class='note_field border2'>
-        <input class="instructions bg-style1" placeholder='Discount Code'><%= discount_code %></input>
+    <% if(discount_allow) { %>
+    <div class='dcode_have <% if(discount_code_applied) print("hidden"); %>'>
+        <div class='discount_code_text color-style1'>Have a Discount Code?</div>
     </div>
-    <div class="btns">
-        <span class="btnApply">Apply</button>       
-    </div>        
-
+    <div class='dcode_enter hidden'>
+        <div class='discount_field border2'>
+            <input class="instructions bg-style1" name='discount_code' value='<%= discount_code %>' placeholder='Discount Code'>
+        </div>
+        <div class="btns">
+            <span class="btnApply">Apply</button>       
+        </div>
+    </div>   
+    <div class='dcode_remove <% if(!discount_code_applied) print("hidden"); %>'>
+        <div class='discount_code_text color-style1'>Remove Discount Code</div>
+    </div>
+    <% } %>
 </script>

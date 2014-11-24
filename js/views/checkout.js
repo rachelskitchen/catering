@@ -574,18 +574,20 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         name: 'myorder',
         mod: 'discount_code',
         initialize: function() {
-            this.listenTo(this.model, 'change', this.render, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
             var data = this.model.toJSON();
-            data.iPad = iPad();
+            data.discount_allow = App.Settings.accept_discount_code === true;
+            data.discount_code_applied = this.model.get("last_discount_code"); 
             this.$el.html(this.template(data));
             inputTypeNumberMask(this.$('input'), /^[\d\w]{0,16}$/);
 
             return this;
         },
-        events: {            
+        events: {
+            'click .dcode_have': 'enterDiscountCode',
+            'click .dcode_remove': 'removeDiscountCode',     
             'click .btnApply': 'onApplyCode',
             'keyup input[name=discount_code]': 'onChangeDiscountCode'
         },
@@ -597,7 +599,19 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                 return;
            
             this.model.set({"discount_code":newValue}, {silent: true});
-            this.enableApplyBtn();
+        },
+        enterDiscountCode: function() {
+            this.$(".dcode_have").addClass('hidden');
+            this.$(".dcode_enter").removeClass('hidden');
+            this.$('input[name=discount_code]').val(this.model.get("discount_code"));
+        },
+        removeDiscountCode: function() {
+            var myorder = this.options.myorder;
+            this.$(".dcode_remove").addClass('hidden');
+            this.$(".dcode_have").removeClass('hidden');
+            this.model.set({last_discount_code: '',
+                            discount_code: ''}, {silent: true});
+            myorder.get_discounts();
         },
         onApplyCode: function() {
             var self = this, 
@@ -610,15 +624,14 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             myorder.get_discounts({ apply_discount: true})
                 .done(function(data) {
                     if (data.status == "OK") {
-                        self.disableApplyBtn();
+                        self.discountApplied();
                     }
                 });
         },
-        enableApplyBtn: function() {
-            this.$(".btnApply").removeAttr("disabled").removeClass("applied").text("Apply");
-        },
-        disableApplyBtn: function() {
-            this.$(".btnApply").attr("disabled", "disabled").addClass("applied").text("Applied");
+        discountApplied: function() {
+            this.$(".dcode_have").addClass('hidden');
+            this.$(".dcode_enter").addClass('hidden');
+            this.$(".dcode_remove").removeClass('hidden');
         }
     });
 

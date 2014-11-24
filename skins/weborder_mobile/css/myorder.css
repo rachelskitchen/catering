@@ -267,28 +267,25 @@
 /* myorder discount_code template */
 #content .discountBlock {
     position: absolute;
-    bottom: 0;
+    bottom: 3em;
     left: 1.0em;
     right: 1.0em;
     height: 4.2em;
     z-index: 100;
 }
-
 #content .discountBlock.isNote {
-    bottom: 19.1em;
+    bottom: 19.0em;
 }
-
-#content .discountBlock .note_field {
+#content .discountBlock .discount_field {
     float: left;
-    height: 1.4em;
+    height: 1.8em;
     font-size: 2.4em;
     margin-top: 0.2em;
-    margin-left: 1.5em;
-    width: 10em;    
+    margin-left: 0.5em;
+    width: 8.5em;    
     position: relative;
 }
-
-#content .discountBlock .note_field:before {
+#content .discountBlock .discount_field:before {
     content: '';
     display: block;
     position: absolute;
@@ -298,7 +295,6 @@
     right: -2px;
     z-index: 0;
 }
-
 #content .discountBlock input {
     display: block;
     width: 100%;
@@ -313,19 +309,27 @@
 }
 
 #content .discountBlock .btns {
-    margin-top: 0.6em;
-    margin-left: 1.5em;
+    margin-top: 0.8em;
+    margin-left: 1.3em;
     float: left;
 }
-
 #content .discountBlock .btns span {
     font-size: 2.4em;
     cursor: pointer;
-    padding: 0.1em 0.5em 0.1em 0.5em;
+    padding: 0.1em 0.5em 0.15em 0.5em;
     border-radius: 1.2em;
     border-width: 1px;
     border-style: solid;
     position: relative;
+}
+
+#content .discountBlock  .discount_code_text {
+    float: left;
+    font-size: 2.4em;
+    cursor: pointer;
+    padding-left: 0.2em;
+    padding-top: 0.2em;
+    text-decoration: underline;
 }
 
 /* myorder mod item end */

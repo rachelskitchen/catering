@@ -42,6 +42,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         update: function() {
             this.$('.total').text(round_monetary_currency(this.get_subtotal()));
+            this.$('.discount').text(this.model.get_discounts_str());
         },
         get_subtotal: function() {
             if (this.collection.get_only_product_quantity() == 0) {
