@@ -39,6 +39,9 @@
     color: transparent;
     text-shadow: 0 0 0 #686868;
 }
+.establishments select::-ms-expand {
+    display: none;
+}
 .establishments button {
     background-color: rgba(247,247,247,1);
     border-color: #a9a9a9;
