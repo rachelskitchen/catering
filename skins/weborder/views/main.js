@@ -273,8 +273,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          */
         blurEffect: function() {
             // http://wordpress-club.com/krossbrauzernyiy-effekt-razmyitiya-blur-izobrazheniya-v-css
+            // http://caniuse.com/#search=filter
             if (this.model.get('isBlurContent')) {
-                this.$('.main_el').css({'filter': 'url(#blur)'});
+                this.$('.main_el').css({
+                    '-webkit-filter': 'url(#blur)',
+                    'filter': 'url(#blur)'
+                });
             } else {
                 this.$('.main_el').removeAttr('style');
             }
