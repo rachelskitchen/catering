@@ -594,9 +594,6 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             var newValue = e.target.value,
                 oldValue = this.model.get("discount_code");
 
-            //trace.push2screen = true;
-            //trace("newVal = ", newValue);
-
             if (newValue == oldValue)
                 return;
            
@@ -620,7 +617,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                 myorder = this.options.myorder;
  
             if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
-                App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE + " --> " + this.model.get("discount_code"));
+                App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
                 return;
             } 
             myorder.get_discounts({ apply_discount: true})
