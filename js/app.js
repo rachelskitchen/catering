@@ -142,6 +142,7 @@
                         if(body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
                             document.querySelector('body').removeChild(spinner);
                         }
+                        App.Data.router.trigger('needLoadEstablishments');
                     });
                     if(App.Data.settings.get('isMaintenance')) {
                         window.location.hash = "#maintenance";
@@ -154,21 +155,37 @@
             });
             require(['establishments', 'establishments_view'], function() {
                 App.Data.establishments = new App.Collections.Establishments();
-                App.Data.establishments.checkGETParameters().then(function() { // check a GET-parameters
-                    var statusApp = App.Data.establishments.getStatusCode(); // get a status code of the app load
-                    if (statusApp === 1) {
-                        App.Routers.MainRouter.prototype.loadViewEstablishments({
-                            storeDefined: false,
-                            showFooter: false
-                        }); // load the page with stores list
-                    } else if (statusApp === 2) {
+                switch(App.Data.establishments.getStatusCode()) { // get a status code of the app load
+                    case 1:
+                        App.Data.establishments.getEstablishments().then(function() { // get establishments from backend
+                            if (App.Data.establishments.length > 0) {
+                                if (self.length === 1) {
+                                    App.Data.settings.set('establishment', App.Data.establishments.models[0].get('id'));
+                                    App.Data.settings.load(); // load app
+                                } else {
+                                    App.Routers.MainRouter.prototype.loadViewEstablishments({
+                                        storeDefined: false,
+                                        showFooter: false
+                                    }); // load the page with stores list
+                                }
+                            } else {
+                                App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
+                                if (body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
+                                    document.querySelector('body').removeChild(spinner);
+                                }
+                            }
+                        });
+                        break;
+                    case 2:
+                        App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
                         if (body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
                             document.querySelector('body').removeChild(spinner);
                         }
-                    } else if (statusApp === 3) {
+                        break;
+                    case 3:
                         App.Data.settings.load(); // load app
-                    }
-                });
+                        break;
+                }
             });
         });
     }
