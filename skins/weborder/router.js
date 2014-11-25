@@ -65,6 +65,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 this.listenTo(App.Data.mainModel, 'change:mod', this.createMainView);
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
+                this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this);
 
                 App.Data.mainModel.set({
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
@@ -172,6 +173,16 @@ define(["backbone", "main_router"], function(Backbone) {
         },
         hidePromoMessage: function() {
             App.Data.mainModel.set('isShowPromoMessage', false);
+        },
+        /**
+        * Get a stores list.
+        */
+        getEstablishments: function() {
+            if (App.Data.establishments.length === 0) {
+                App.Data.establishments.getEstablishments().then(function() { // get establishments from backend
+                    if (App.Data.establishments.length > 1) App.Data.mainModel.set('isShowStoreChoice', true);
+                });
+            }
         },
         index: function() {
             this.prepare('index', function() {

@@ -185,14 +185,6 @@ define(["backbone", "async"], function(Backbone) {
             return load;
         },
         /**
-         * Get ID of a current brand.
-         */
-        getBrand: function() {
-            var GETParameters = parse_get_params(), // get GET-parameters from address line
-                brand = GETParameters.brand;
-            if (!isNaN(brand) && brand > 0) this.set('brand', brand * 1);
-        },
-        /**
          * Get ID of current establishment.
          */
         get_establishment: function() {
@@ -244,10 +236,7 @@ define(["backbone", "async"], function(Backbone) {
                             var data = response.data;
 
                             $.extend(true, settings_system, data);
-                            if (data.brand) {
-                                self.set('brand', data.brand);
-                                self.trigger('brandLoaded');
-                            }
+                            self.set('brand', data.brand);
                             settings_system.about_images = settings_system.about_images || [];
                             settings_system.about_title = settings_system.about_title || "";
                             settings_system.about_description = settings_system.about_description || "";
