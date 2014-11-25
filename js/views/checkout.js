@@ -581,8 +581,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             data.discount_allow = App.Settings.accept_discount_code === true;
             data.discount_code_applied = this.model.get("last_discount_code"); 
             this.$el.html(this.template(data));
-            inputTypeNumberMask(this.$('input'), /^[\d\w]{0,16}$/);
-
+            inputTypeStringMask(this.$('input'), /^[\d\w]{0,16}$/, '');
             return this;
         },
         events: {
@@ -595,6 +594,9 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             var newValue = e.target.value,
                 oldValue = this.model.get("discount_code");
 
+            //trace.push2screen = true;
+            //trace("newVal = ", newValue);
+
             if (newValue == oldValue)
                 return;
            
@@ -605,7 +607,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             this.$(".dcode_enter").removeClass('hidden');
             this.$('input[name=discount_code]').val(this.model.get("discount_code"));
         },
-        removeDiscountCode: function() {
+        removeDiscountCode: function() {            
             var myorder = this.options.myorder;
             this.$(".dcode_remove").addClass('hidden');
             this.$(".dcode_have").removeClass('hidden');
@@ -618,7 +620,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
                 myorder = this.options.myorder;
  
             if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
-                App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
+                App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE + " --> " + this.model.get("discount_code"));
                 return;
             } 
             myorder.get_discounts({ apply_discount: true})

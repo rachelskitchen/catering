@@ -1014,6 +1014,14 @@ function replaceAll(find, replace, str) {
     return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
 }
 
+
+/**
+ * use mask for input field type is a string
+ */
+function inputTypeStringMask(el, pattern, initial) {
+    inputTypeNumberMask(el, pattern, initial, true);
+}
+
 /**
  * use mask for input field type=number
  */

@@ -2,7 +2,7 @@
 
 #content .myorderSubtotal {
     position: absolute;
-    bottom: 0;
+    bottom: 0.8em;
     left: 1.5em;
     right: 1.5em;
     height: 7.0em;
@@ -22,7 +22,6 @@
 #content .myorderSubtotal > div {
     font-size: 2.8em;
     font-weight: bold;
-    margin-top: 0.1em;
 }
 
 #content .myorderSubtotal .currency_symbol {
