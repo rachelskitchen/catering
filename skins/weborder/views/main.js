@@ -270,7 +270,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         /**
          * A blur effect of content.
-         * Blur effect supported on Firefox 35, Google Chrome 31, Safari 7, iOS Safari 7.1, Android browser 4.4, Chrome for Android 39.
+         * Blur effect supported on Firefox 35, Google Chrome 18, Safari 6, iOS Safari 6.1, Android browser 4.4, Chrome for Android 39.
          */
         blurEffect: function() {
             // http://wordpress-club.com/krossbrauzernyiy-effekt-razmyitiya-blur-izobrazheniya-v-css
