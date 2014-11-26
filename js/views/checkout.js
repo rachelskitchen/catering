@@ -529,7 +529,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             var data = this.model.toJSON();
             data.iPad = iPad();
             this.$el.html(this.template(data));
-            inputTypeNumberMask(this.$('input'), /^[\d\w]{0,16}$/);
+            inputTypeStringMask(this.$('input'), /^[\d\w]{0,16}$/, '');
 
             return this;
         },
