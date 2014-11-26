@@ -30,6 +30,7 @@ define(["backbone", "async"], function(Backbone) {
             this.set('basePath', app.config.baseUrl.replace(/\/$/, '') || '.');
             this.set('host', app.REVEL_HOST);
             this.set('hostname', /^http[s]*:\/\/(.+)/.exec(app.REVEL_HOST)[1]); //it's the host w/o "http[s]://" substring
+            this.listenTo(this, 'change:establishment', this.load, this);
         },
         load: function() {
             var self = this;
@@ -50,7 +51,7 @@ define(["backbone", "async"], function(Backbone) {
         },
         defaults: {
             brand: null,
-            establishment: 1,
+            establishment: null,
             host: "",
             storage_data: 0,
             skin: "", // weborder by default
@@ -188,10 +189,15 @@ define(["backbone", "async"], function(Backbone) {
          * Get ID of current establishment.
          */
         get_establishment: function() {
-            var get_parameters = parse_get_params(), // get GET-parameters from address line
-                establishment = get_parameters.establishment || get_parameters.rvarEstablishment;
-            if (!isNaN(establishment))
-                this.set("establishment", establishment);
+            if (this.get('establishment') === null) {
+                var get_parameters = parse_get_params(), // get GET-parameters from address line
+                    establishment = get_parameters.establishment || get_parameters.rvarEstablishment;
+                if (!isNaN(establishment)) {
+                    this.set("establishment", establishment);
+                } else {
+                    this.set("establishment", 1); // set default value
+                }
+            }
         },
         /**
          * Get system setting.

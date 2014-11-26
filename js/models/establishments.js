@@ -26,8 +26,24 @@ define(['backbone', 'collection_sort'], function(Backbone) {
     App.Collections.Establishments = App.Collections.CollectionSort.extend({
         model: App.Models.Establishment,
         initialize: function() {
+            var self = this;
             this._meta = {};
             this.checkGETParameters(); // check a GET-parameters
+            if (this.getStatusCode() === 1) {
+                this.getEstablishments().then(function() {
+                    if (self.length > 0) {
+                        if (self.length === 1) {
+                            self.meta('statusCode', 3);
+                            self.trigger('changeEstablishment', self.models[0].get('id'));
+                        } else {
+                            self.meta('statusCode', 1);
+                            self.trigger('loadStoresList');
+                        }
+                    } else {
+                        self.meta('statusCode', 2);
+                    }
+                });
+            }
         },
         /**
         * Get or set meta data of collection.

@@ -131,6 +131,9 @@
             });
 
             var body = document.querySelector('body');
+            var params = parse_get_params(); // get GET-parameters from address line
+            var requestedSkin = (params.skin === undefined) ? 'weborder' : params.skin;
+            var storesListForSkins = ['weborder', 'retail', 'weborder_mobile'];
             App.Data.settings.once('change:settings_skin', function() {
                 load_styles_and_scripts(); // load styles and scripts
                 App.Data.myorder = new App.Collections.Myorders;
@@ -142,7 +145,9 @@
                         if(body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
                             document.querySelector('body').removeChild(spinner);
                         }
-                        App.Data.router.trigger('needLoadEstablishments');
+                        if (storesListForSkins.indexOf(requestedSkin) !== -1) {
+                            App.Data.router.trigger('needLoadEstablishments');
+                        }
                     });
                     if(App.Data.settings.get('isMaintenance')) {
                         window.location.hash = "#maintenance";
@@ -153,40 +158,33 @@
                     app.afterInit();
                 });
             });
-            require(['establishments', 'establishments_view'], function() {
-                App.Data.establishments = new App.Collections.Establishments();
-                switch(App.Data.establishments.getStatusCode()) { // get a status code of the app load
-                    case 1:
-                        App.Data.establishments.getEstablishments().then(function() { // get establishments from backend
-                            if (App.Data.establishments.length > 0) {
-                                if (self.length === 1) {
-                                    App.Data.settings.set('establishment', App.Data.establishments.models[0].get('id'));
-                                    App.Data.settings.load(); // load app
-                                } else {
-                                    App.Routers.MainRouter.prototype.loadViewEstablishments({
-                                        storeDefined: false,
-                                        showFooter: false
-                                    }); // load the page with stores list
-                                }
-                            } else {
-                                App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
-                                if (body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
-                                    document.querySelector('body').removeChild(spinner);
-                                }
+            if (storesListForSkins.indexOf(requestedSkin) !== -1) {
+                require(['establishments', 'establishments_view'], function() {
+                    App.Data.establishments = new App.Collections.Establishments();
+                    switch(App.Data.establishments.getStatusCode()) { // get a status code of the app load
+                        case 2:
+                            App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
+                            if (body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
+                                document.querySelector('body').removeChild(spinner);
                             }
-                        });
-                        break;
-                    case 2:
-                        App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
-                        if (body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
-                            document.querySelector('body').removeChild(spinner);
-                        }
-                        break;
-                    case 3:
-                        App.Data.settings.load(); // load app
-                        break;
-                }
-            });
+                            break;
+                        case 3:
+                            App.Data.settings.load(); // load app
+                            break;
+                    }
+                    App.Data.establishments.once('loadStoresList', function() {
+                        App.Routers.MainRouter.prototype.loadViewEstablishments({
+                            storeDefined: false,
+                            showFooter: false
+                        }); // load the page with stores list
+                    });
+                    App.Data.establishments.once('changeEstablishment', function(establishmentID) {
+                        App.Data.settings.set('establishment', establishmentID);
+                    });
+                });
+            } else {
+                App.Data.settings.load(); // load app
+            }
         });
     }
 
