@@ -60,6 +60,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.listenTo(this, 'change:useAsDefaultCard change:useAsDefaultCardSession', this.saveUseAsDefaultCardSession, this);
             this.listenTo(this, 'onAuthenticationCancel', onAuthenticationCancel, this);
             this.listenTo(this, 'onProfileCancel', this.restoreOriginalProfileData, this);
+            this.listenTo(this, 'onPayWithCustomCreditCard onPayWithSavedCreditCard', this.trigger.bind(this, 'startListeningToCustomer'), this);
 
             this.set('card', new App.Models.Card());
             this.set('customer', new App.Models.Customer({shipping_address: -1}));
@@ -404,6 +405,11 @@ define(["backbone", "card", "customers"], function(Backbone) {
         checkCreditCard: function() {
             var useAsDefaultCardSession = this.get('useAsDefaultCardSession'),
                 self = this;
+
+            // Need stop listening to profile customer changes.
+            // 'startListeningToCustomer' event will be emitted when 'onPayWithCustomCreditCard' and 'onPayWithSavedCreditCard' occurs
+            this.trigger('stopListeningToCustomer');
+
             if(useAsDefaultCardSession === null) {
                 this.trigger('onCreditCardNotificationShow');
             } else if(useAsDefaultCardSession === false) {
