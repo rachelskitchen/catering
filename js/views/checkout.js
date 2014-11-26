@@ -518,6 +518,9 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         }
     });
 
+    /*  
+    *  This DiscountCode view is used by weborder and retail skins.
+    */
     App.Views.CoreCheckoutView.CoreCheckoutDiscountCodeView = App.Views.FactoryView.extend({
         name: 'checkout',
         mod: 'discount_code',
@@ -570,6 +573,9 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         }
     });
 
+    /*  
+    *  This DiscountCode2 view is used by weborder_mobile and paypal skins.
+    */
     App.Views.CoreCheckoutView.CoreCheckoutDiscountCode2View = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'discount_code',

@@ -1147,8 +1147,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     }                   
                 },
                 complete: function() {
-                    //for debug:
-                    //myorder.process_discounts(order);
                     myorder.recalculate_all();
                 }
             });
@@ -1160,13 +1158,19 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         process_discounts: function(json) {
             if (!(json instanceof Object)) return;
             
-            var myorder = this;
+            var myorder = this;         
 
             json.items.forEach(function(product) {
-                /*product.discount = { name: '10% All/Item/Taxed',
-                              sum: 1.00, 
+                /*if (product.product_name_override == "Bag Charge" || product.product_name_override == "Delivery Charge") {
+                    if (!myorder.debug_counter) {
+                        myorder.debug_counter = 0;
+                    }
+                    myorder.debug_counter = myorder.debug_counter + 0.2;
+                    product.discount = { name: 'Debug $1 item discount',
+                              sum: myorder.debug_counter, 
                               taxed: false,
-                              id: 1, type: 1};*/
+                              id: 1, type: 1};
+                }*/
                 var model = myorder.findWhere({ "product_sub_id": product.product_sub_id,
                                                 "id_product": product.product });               
                 if (product.discount instanceof Object) {                

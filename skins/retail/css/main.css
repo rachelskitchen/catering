@@ -611,6 +611,10 @@ section.maintenance p {
 #popup .confirmPayCard .order-items .name.discount {
     font-size: 14px;
 }
+#cart .order-items .name.discount,
+.confirmPayCard .order-items h3 .name.discount {
+    text-transform: none;
+}
 #cart .order-items > li, .confirmPayCard .order-items > li {
     height: auto;
 }

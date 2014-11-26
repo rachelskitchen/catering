@@ -81,6 +81,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.tip_allow = App.Settings.accept_tips_online === true;
             model.discount_allow = App.Settings.accept_discount_code === true;
             model.discounts = this.model.get_discounts_str();
+            model.deliveryDiscount = this.collection.deliveryItem ? this.collection.deliveryItem.get("discount").get("sum") : 0;
+            model.deliveryDiscount = round_monetary_currency(model.deliveryDiscount);
             
             if (this.collection.get_only_product_quantity() == 0) {
                 model.surcharge = round_monetary_currency(0);
@@ -109,21 +111,32 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             }else{
                 this.$('.surcharge_item').addClass('hide');
             }
+            if (data.deliveryDiscount > 0){
+                this.$('.delivery_discount_item').removeClass('hide');
+            }else{
+                this.$('.delivery_discount_item').addClass('hide');
+            }
             this.$('.subtotal').text(data.subTotal);
             this.$('.surcharge').text(data.surcharge);
             this.$('.tax').text(data.tax);
             this.$('.discount').text(data.discounts);
+            this.$('.delivery-discount').text(data.deliveryDiscount);
             this.$('.tip').text(data.tip);
-            this.$('.grandtotal').text(data.grandTotal);            
+            this.$('.grandtotal').text(data.grandTotal);
         },
         updateDeliveryCharge: function(model, value) {
             var delivery = this.model.get_delivery_charge();
             if(value == 'DINING_OPTION_DELIVERY' && delivery * 1 > 0 && this.collection.get_only_product_quantity() > 0) {
                 this.$('span.delivery-charge').text(delivery);
-                this.$('li.delivery-charge').show();
+                this.$('li.delivery-charge').show();               
                 this.$('ul.confirm').addClass('has-delivery');
+                var deliveryDiscount = this.collection.deliveryItem ? this.collection.deliveryItem.get("discount").get("sum") : 0;
+                if (deliveryDiscount > 0) {
+                    this.$('.delivery_discount_item').removeClass('hide');
+                }
             } else {
                 this.$('li.delivery-charge').hide();
+                this.$('.delivery_discount_item').addClass('hide');
                 this.$('ul.confirm').removeClass('has-delivery');
             }
         },
