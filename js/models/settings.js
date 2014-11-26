@@ -80,7 +80,11 @@ define(["backbone", "async"], function(Backbone) {
                                 if (typeof this.successResp === 'function') this.successResp(data.data);
                                 break;
                             default:
-                                App.Data.errors.alert_red(data.errorMsg, true); // user notification (server return HTTP status 200, but data.status is error)
+                                if (typeof this.errorResp === 'function') {
+                                    this.errorResp(data.data);
+                                } else {
+                                    App.Data.errors.alert_red(data.errorMsg, true); // user notification (server return HTTP status 200, but data.status is error)
+                                }
                                 break;
                         }
                     }
