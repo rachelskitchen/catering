@@ -100,25 +100,21 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         getStatusCode: function() {
             var self = this,
                 status = this.meta('statusCode'); // get or set meta data of collection
-            if (this.models.length === 0) {
-                if (status === 1) {
-                    this.getEstablishments().then(function() {
-                        if (self.length > 0) {
-                            if (self.length === 1) {
-                                self.meta('statusCode', 3);
-                                self.trigger('changeEstablishment', self.models[0].get('id'));
-                            } else {
-                                self.meta('statusCode', 1);
-                                self.trigger('loadStoresList');
-                            }
+            if (status === 1 && this.models.length === 0) {
+                this.getEstablishments().then(function() {
+                    if (self.length > 0) {
+                        if (self.length === 1) {
+                            self.meta('statusCode', 3);
+                            self.trigger('changeEstablishment', self.models[0].get('id'));
                         } else {
-                            self.meta('statusCode', 2);
-                            self.trigger('initializeDone');
+                            self.meta('statusCode', 1);
+                            self.trigger('loadStoresList', false, false);
                         }
-                    });
-                } else {
-                    this.trigger('initializeDone');
-                }
+                    } else {
+                        self.meta('statusCode', 2);
+                        self.trigger('showError');
+                    }
+                });
             }
             return status;
         }

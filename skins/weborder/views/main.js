@@ -261,10 +261,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         change_establishment: function() {
             $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
             var self = this;
-            App.Routers.MainRouter.prototype.loadViewEstablishments({
-                storeDefined: true,
-                showFooter: true
-            }); // load the page with stores list
+            App.Data.establishments.trigger('loadStoresList', true, true);
             self.model.set('isBlurContent', true);
             $('#main-spinner').removeClass('ui-visible');
         },

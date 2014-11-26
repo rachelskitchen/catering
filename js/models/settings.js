@@ -30,7 +30,7 @@ define(["backbone", "async"], function(Backbone) {
             this.set('basePath', app.config.baseUrl.replace(/\/$/, '') || '.');
             this.set('host', app.REVEL_HOST);
             this.set('hostname', /^http[s]*:\/\/(.+)/.exec(app.REVEL_HOST)[1]); //it's the host w/o "http[s]://" substring
-            this.listenTo(this, 'needLoadApp', this.load, this);
+            this.listenTo(this, 'change:establishment', this.load, this); // load app
         },
         load: function() {
             var self = this;
@@ -39,7 +39,6 @@ define(["backbone", "async"], function(Backbone) {
             this.listenToOnce(this, 'change:settings_system', this.get_settings_main, this);
             this.listenToOnce(this, 'change:skinPath', this.get_settings_for_skin, this)
 
-            this.get_establishment();  // get ID of current establishment
             this.ajaxSetup(); // AJAX-requests settings
 
             // fix for Bug 9344. Chrome v34.0.1847.131 crashes when reload page
@@ -197,9 +196,9 @@ define(["backbone", "async"], function(Backbone) {
                 var get_parameters = parse_get_params(), // get GET-parameters from address line
                     establishment = get_parameters.establishment || get_parameters.rvarEstablishment;
                 if (!isNaN(establishment)) {
-                    this.set("establishment", establishment);
+                    return establishment;
                 } else {
-                    this.set("establishment", 1); // set default value
+                    return 1; // set default value
                 }
             }
         },
