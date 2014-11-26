@@ -237,7 +237,7 @@ define(["backbone"], function(Backbone) {
                 App.Data.card.loadCard();
                 App.Data.giftcard = new App.Models.GiftCard();
                 App.Data.giftcard.loadCard();
-                App.Data.customer = new App.Models.Customer();
+                App.Data.customer = new App.Models.Customer({RevelAPI: App.Data.RevelAPI});
                 App.Data.customer.loadCustomer();
                 App.Data.customer.loadAddresses();
                 App.Data.myorder.loadOrders();
@@ -404,7 +404,6 @@ define(["backbone"], function(Backbone) {
                 profileCancelCallback = undefined;
                 profileSaveCallback = undefined;
                 RevelAPI.unset('forceCreditCard');
-                App.Data.customer && RevelAPI.stopListening(App.Data.customer);
             }, this);
 
             this.listenTo(this, 'navigateToLoyalty', function() {
@@ -417,10 +416,10 @@ define(["backbone"], function(Backbone) {
                 RevelAPI.checkProfile(RevelAPI.trigger.bind(RevelAPI, 'onProfileShow'));
             }, this);
 
-            this.listenTo(this, 'payCreditCard', function() {
-                profileSaveCallback = this.navigate.bind(this, Backbone.history.fragment, true);
-                RevelAPI.checkProfile(RevelAPI.trigger.bind(RevelAPI, 'onProfileShow'));
-            }, this);
+            // this.listenTo(this, 'payCreditCard', function() {
+            //     profileSaveCallback = this.navigate.bind(this, Backbone.history.fragment, true);
+            //     RevelAPI.checkProfile(RevelAPI.trigger.bind(RevelAPI, 'onProfileShow'));
+            // }, this);
 
             this.listenTo(App.Data.header, 'onProfileCancel', function() {
                 RevelAPI.trigger('onProfileCancel');
@@ -448,7 +447,7 @@ define(["backbone"], function(Backbone) {
                 RevelAPI.set('useAsDefaultCard', true); // need for case when profile doesn't exist
                 RevelAPI.checkProfile(function() {
                     RevelAPI.set('useAsDefaultCard', true); // need for case when profile exists and credit card is invalid
-                    RevelAPI.processPaymentInfo(success, fail)
+                    RevelAPI.processPaymentInfo(success, fail);
                 });
             }, this);
 
