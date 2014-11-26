@@ -178,7 +178,7 @@ define(["backbone", "main_router"], function(Backbone) {
         * Get a stores list.
         */
         getEstablishments: function() {
-            if (App.Data.establishments.length === 0) {
+            if (!App.Data.settings.get('isMaintenance') && App.Data.establishments.length === 0) {
                 App.Data.establishments.getEstablishments().then(function() { // get establishments from backend
                     if (App.Data.establishments.length > 1) App.Data.mainModel.set('isShowStoreChoice', true);
                 });
