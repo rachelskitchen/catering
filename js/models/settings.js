@@ -30,7 +30,7 @@ define(["backbone", "async"], function(Backbone) {
             this.set('basePath', app.config.baseUrl.replace(/\/$/, '') || '.');
             this.set('host', app.REVEL_HOST);
             this.set('hostname', /^http[s]*:\/\/(.+)/.exec(app.REVEL_HOST)[1]); //it's the host w/o "http[s]://" substring
-            this.listenTo(this, 'change:establishment', this.load, this);
+            this.listenTo(this, 'needLoadApp', this.load, this);
         },
         load: function() {
             var self = this;
