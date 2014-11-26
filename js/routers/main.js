@@ -331,6 +331,7 @@ define(["backbone"], function(Backbone) {
             var RevelAPI = App.Data.RevelAPI,
                 mainModel = App.Data.mainModel,
                 checkout = App.Data.myorder.checkout,
+                profileCustomer = RevelAPI.get('customer'),
                 profileCancelCallback,
                 profileSaveCallback;
 
@@ -429,7 +430,9 @@ define(["backbone"], function(Backbone) {
                 mainModel.trigger('hideRevelPopup', RevelAPI);
             });
 
-            checkout.listenTo(RevelAPI.get('customer'), 'change:phone', updateReward);
+            // bind phone changes in profile with reward card in checkout
+            this.listenTo(RevelAPI, 'startListeningToCustomer', checkout.listenTo.bind(checkout, profileCustomer, 'change:phone', updateReward));
+            this.listenTo(RevelAPI, 'stopListeningToCustomer', checkout.stopListening.bind(checkout, profileCustomer));
 
             this.listenTo(RevelAPI, 'onUseSavedCreditCard', function() {
                 var self = this,
@@ -462,7 +465,7 @@ define(["backbone"], function(Backbone) {
             }, this);
 
             function updateReward() {
-                var phone = RevelAPI.get('customer').get('phone');
+                var phone = profileCustomer.get('phone');
                 phone && checkout.set('rewardCard', phone);
             }
         }
