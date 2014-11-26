@@ -219,31 +219,36 @@
         require(['establishments', 'establishments_view'], function() {
             App.Data.establishments = new App.Collections.Establishments();
             // status code = 1 (app should load view with stores list)
-            App.Data.establishments.once('loadStoresList', function() {
+            App.Data.establishments.on('loadStoresList', function(storeDefined, showFooter) {
                 App.Routers.MainRouter.prototype.loadViewEstablishments({
-                    storeDefined: false,
-                    showFooter: false
+                    storeDefined: storeDefined,
+                    showFooter: showFooter
                 }); // load the page with stores list
             });
-            // status code = 3 (app was loaded)
-            App.Data.establishments.once('changeEstablishment', function(establishmentID) {
-                App.Data.settings.set('establishment', establishmentID);
-                App.Data.settings.trigger('needLoadApp');
-            });
-            App.Data.establishments.once('initializeDone', function() {
-                switch(App.Data.establishments.getStatusCode()) { // get a status code of the app load
-                    case 2:
-                        App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
-                        if (body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
-                            document.querySelector('body').removeChild(spinner);
-                        }
-                        break;
-                    case 3:
-                        App.Data.settings.trigger('needLoadApp');
-                        break;
+            // status code = 2 (app reported about error)
+            App.Data.establishments.on('showError', function() {
+                App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
+                if (body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
+                    document.querySelector('body').removeChild(spinner);
                 }
             });
-            App.Data.establishments.getStatusCode(); // get a status code of the app load
+            // status code = 3 (app was loaded)
+            App.Data.establishments.on('changeEstablishment', function(establishmentID) {
+                App.Data.settings.set('establishment', establishmentID);
+            });
+            var status = App.Data.establishments.getStatusCode(); // get a status code of the app load
+            switch (status) {
+                case 2:
+                    App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
+                    if (body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
+                        document.querySelector('body').removeChild(spinner);
+                    }
+                    break;
+                case 3:
+                    var establishment = App.Data.settings.get_establishment(); // get ID of current establishment
+                    App.Data.establishments.trigger('changeEstablishment', establishment);
+                    break;
+            }
         });
     }
 })();

@@ -73,9 +73,8 @@ define(['backbone', 'factory'], function(Backbone) {
                         var selectedEstablishmentID = self.$('select').val();
                         if (empty_object(App.Data.settings.get('settings_system'))) { // check object (empty or not empty)
                             $('#loader').show();
-                            App.Data.settings.set('establishment', selectedEstablishmentID);
+                            App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
                             self.remove();
-                            App.Data.settings.load(); // load app
                         } else {
                             var moveAddress = window.location.protocol + '//' + window.location.hostname + window.location.pathname;
                             var paramsAddress = '';
