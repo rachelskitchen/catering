@@ -29,21 +29,6 @@ define(['backbone', 'collection_sort'], function(Backbone) {
             var self = this;
             this._meta = {};
             this.checkGETParameters(); // check a GET-parameters
-            if (this.getStatusCode() === 1) {
-                this.getEstablishments().then(function() {
-                    if (self.length > 0) {
-                        if (self.length === 1) {
-                            self.meta('statusCode', 3);
-                            self.trigger('changeEstablishment', self.models[0].get('id'));
-                        } else {
-                            self.meta('statusCode', 1);
-                            self.trigger('loadStoresList');
-                        }
-                    } else {
-                        self.meta('statusCode', 2);
-                    }
-                });
-            }
         },
         /**
         * Get or set meta data of collection.
@@ -93,8 +78,8 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                     }
                     dfd.resolve();
                 },
-                error: function() {
-                    App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_LOAD, true); // user notification
+                errorResp: function() {
+                    dfd.resolve();
                 }
             });
             return dfd;
@@ -113,7 +98,29 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         * 3 - app was loaded;
         */
         getStatusCode: function() {
-            return this.meta('statusCode'); // get or set meta data of collection
+            var self = this,
+                status = this.meta('statusCode'); // get or set meta data of collection
+            if (this.models.length === 0) {
+                if (status === 1) {
+                    this.getEstablishments().then(function() {
+                        if (self.length > 0) {
+                            if (self.length === 1) {
+                                self.meta('statusCode', 3);
+                                self.trigger('changeEstablishment', self.models[0].get('id'));
+                            } else {
+                                self.meta('statusCode', 1);
+                                self.trigger('loadStoresList');
+                            }
+                        } else {
+                            self.meta('statusCode', 2);
+                            self.trigger('initializeDone');
+                        }
+                    });
+                } else {
+                    this.trigger('initializeDone');
+                }
+            }
+            return status;
         }
     });
 })
