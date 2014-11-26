@@ -340,7 +340,9 @@ define(["backbone"], function(Backbone) {
             }
 
             this.once('started', function() {
-                updateReward();
+                // If rewardCard is not set yet need set its value from profile.
+                // Reward card may be set by this moment after checkout restoring from localStorage.
+                !checkout.get('rewardCard') && updateReward();
                 RevelAPI.run();
             });
 
