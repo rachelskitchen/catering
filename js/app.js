@@ -180,6 +180,7 @@
                     });
                     App.Data.establishments.once('changeEstablishment', function(establishmentID) {
                         App.Data.settings.set('establishment', establishmentID);
+                        App.Data.settings.trigger('needLoadApp');
                     });
                 });
             } else {
