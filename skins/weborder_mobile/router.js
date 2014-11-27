@@ -105,6 +105,11 @@ define(["backbone", "main_router"], function(Backbone) {
                 window.location.hash = "#pay";
             }
 
+            // if it is Revel's WebView need change color_scheme on 'revel'
+            if(cssua.ua.revelsystemswebview) {
+                App.Settings.color_scheme = 'revel';
+            }
+
             // load main, header, footer necessary files
             this.prepare('main', function() {
                 App.Views.Generator.enableCache = true;
@@ -115,9 +120,47 @@ define(["backbone", "main_router"], function(Backbone) {
                     location: this.navigate.bind(this, 'location', true),
                     about: this.navigate.bind(this, 'about', true),
                     loyalty: this.trigger.bind(this, 'navigateToLoyalty'),
-                    menu: this.navigate.bind(this, 'menu', true)
+                    menu: this.navigate.bind(this, 'menu', true),
+                    profile: this.trigger.bind(this, 'navigateToProfile')
                 });
                 App.Data.mainModel = new App.Models.MainModel();
+
+                // init RevelAPI
+                this.initRevelAPI();
+
+                // only establishment with reward cards option enabled can show RevelAPI buttons
+                App.Settings.RevelAPI = App.Settings.RevelAPI  && App.Settings.enable_reward_cards_collecting;
+
+                // listen to credit card payment
+                this.listenTo(App.Data.footer, 'payWithCreditCard', function() {
+                    if(App.Settings.RevelAPI) {
+                        App.Data.RevelAPI.checkCreditCard();
+                    } else {
+                        showDefaultCardView.call(this);
+                    }
+                }, this);
+
+                this.listenTo(App.Data.myorder, 'payWithCreditCard', function() {
+                    var paymentProcessor = App.Data.settings.get_payment_process();
+                    if(paymentProcessor.credit_card_dialog) {
+                        App.Data.myorder.check_order({
+                            order: true,
+                            tip: true,
+                            customer: true,
+                            checkout: true,
+                            card: true
+                        }, sendRequest);
+                    } else {
+                        sendRequest();
+                    }
+
+                    function sendRequest() {
+                        saveAllData();
+                        App.Data.mainModel.trigger('loadStarted');
+                        App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
+                    }
+                });
+
                 new App.Views.MainView({
                     model: App.Data.mainModel,
                     el: 'body'
@@ -125,23 +168,15 @@ define(["backbone", "main_router"], function(Backbone) {
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
 
-                // init RevelAPI
-                this.initRevelAPI();
-
                 // emit 'initialized' event
                 this.trigger('initialized');
                 this.initialized = true;
             });
 
             var checkout = App.Data.myorder.checkout;
-                checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
+            checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
-            this.listenTo(App.Data.myorder, 'paymentResponse', function() {
-                App.Data.settings.usaepayBack = true;
-                clearQueryString(true);
-                App.Data.get_parameters = parse_get_params();
-                return this.navigate("done", true);
-            }, this);
+            this.initPaymentResponseHandler(this.navigate.bind(this, "done", true));
 
             App.Routers.MobileRouter.prototype.initialize.apply(this, arguments);
         },
@@ -387,7 +422,7 @@ define(["backbone", "main_router"], function(Backbone) {
                     App.Data.giftcard = new App.Models.GiftCard;
 
                 if(!App.Data.customer) {
-                    App.Data.customer =  new App.Models.Customer();
+                    App.Data.customer =  new App.Models.Customer({RevelAPI: App.Data.RevelAPI});
                     App.Data.customer.loadAddresses();
                 }
 
@@ -687,6 +722,33 @@ define(["backbone", "main_router"], function(Backbone) {
         },
         loyalty: function() {
             return App.Routers.MobileRouter.prototype.loyalty.call(this, headerModes.Main, footerModes.Loyalty);
+        },
+        initRevelAPI: function() {
+            App.Routers.MobileRouter.prototype.initRevelAPI.apply(this, arguments);
+
+            var RevelAPI = App.Data.RevelAPI;
+
+            if(!RevelAPI.isAvailable()) {
+                return;
+            }
+
+            this.listenTo(RevelAPI, 'onPayWithSavedCreditCard', function() {
+                App.Data.card.set(RevelAPI.get('card').toJSON());
+                App.Data.myorder.trigger('payWithCreditCard');
+            }, this);
+
+            this.listenTo(RevelAPI, 'onPayWithCustomCreditCard', function() {
+                showDefaultCardView.call(this);
+            }, this);
         }
     });
+
+    function showDefaultCardView() {
+        var paymentProcessor = App.Data.settings.get_payment_process();
+        if(paymentProcessor.credit_card_dialog) {
+            this.navigate('card', true);
+        } else {
+            App.Data.myorder.trigger('payWithCreditCard');
+        }
+    }
 });

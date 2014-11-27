@@ -8,7 +8,7 @@
             <div id="about" class="btn1"><span>About</span></div>
         </li>
         <li class="center">
-            <% if(_settings.isRetailMode && _settings.RevelAPI) { %>
+            <% if(_settings.isRetailMode && _settings.RevelAPI && _settings.online_orders) { %>
             <div class="btn1 loyalty"><span>Loyalty</span></div>
             <% } else if(_settings.isRetailMode && _settings.online_orders) { %>
             <div id="location" class="btn1"><span>Location</span></div>
@@ -36,7 +36,12 @@
 
 <script type="text/template" id="footer_checkout-template">
     <ul class="checkout">
-        <li>
+        <% if(_settings.RevelAPI) { %>
+        <li class="half">
+            <div class="btn1 profile"><span>Profile</span></div>
+        </li>
+        <% } %>
+        <li class="<% if(_settings.RevelAPI) {print('half');} %>">
             <div id="confirmOrder" class="btn1"><span>Confirm Order</span></div>
         </li>
     </ul>

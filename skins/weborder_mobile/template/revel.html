@@ -86,10 +86,10 @@
     <label class="input border">
         <input type="text" placeholder="Security Code" class="secure ios-safari-caret" value="<%=securityCode%>" min="0" />
     </label>
-    <div>
+    <div class="input">
         <span>Exp. Date:</span>
         <span class="select-wrapper exp">
-            <label class="select">
+            <label class="select exp-date">
                 <select id="exp-month">
                     <option value="01">01</option>
                     <option value="02">02</option>
@@ -107,12 +107,17 @@
             </label>
         </span>
         <span class="select-wrapper">
-            <label class="select">
+            <label class="select exp-date">
                 <select id="exp-year">
                 </select>
             </label>
         </span>
     </div>
+    <label class="checkbox-wrapper default-credit-card">
+        <input type="checkbox" class="checkbox ios-safari-caret"/>
+        <span>Use as default credit card for payments?</span>
+        <span class="checkbox"></span>
+    </label>
 </script>
 
 <script type="text/template" id="revel_profile_security-template">
@@ -138,5 +143,12 @@
         <img alt="QR code" class="qr-code">
     </div>
     <p>Total Rewards Points accumulated:</p>
-    <span class="points">0</span>
+    <span class="points"><%= points %></span>
+</script>
+
+<script type="text/template" id="revel_credit_card-template">
+    <h1 class="title">Revel Loyalty Rewards</h1>
+    <p>Use saved card instead of entering a new card number every time at any establishment that uses Revel!</p>
+    <a href="javascript:void(0)" class="btn cancel">Cancel</a>
+    <a href="javascript:void(0)" class="btn ok">Ok!</a>
 </script>

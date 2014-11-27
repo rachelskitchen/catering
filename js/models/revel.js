@@ -46,15 +46,21 @@ define(["backbone", "card", "customers"], function(Backbone) {
             profileExists: null,
             oldPassword: null,
             newPassword: null,
+            useAsDefaultCard: null,
+            useAsDefaultCardSession: null,
+            points: 0,
             appName: 'Revel Directory',
-            gObj: 'App.Data.RevelAPI',
+            gObj: 'App.Data.RevelAPI'
         },
         initialize: function() {
             this.listenTo(this, 'change:firstTime', this.onFirstTime, this);
             this.listenTo(this, 'change:token', this.saveToken, this);
             this.listenTo(this, 'change:profileExists', this.saveProfileExists, this);
             this.listenTo(this, 'change:errorCode', this.listenToErrorCode, this);
-            this.listenTo(this, 'onAuthenticationCancel', this.clearRequests, this);
+            this.listenTo(this, 'change:useAsDefaultCard change:useAsDefaultCardSession', this.saveUseAsDefaultCardSession, this);
+            this.listenTo(this, 'onAuthenticationCancel', onAuthenticationCancel, this);
+            this.listenTo(this, 'onProfileCancel', this.restoreOriginalProfileData, this);
+            this.listenTo(this, 'onPayWithCustomCreditCard onPayWithSavedCreditCard', this.trigger.bind(this, 'startListeningToCustomer'), this);
 
             this.set('card', new App.Models.Card());
             this.set('customer', new App.Models.Customer({shipping_address: -1}));
@@ -63,12 +69,26 @@ define(["backbone", "card", "customers"], function(Backbone) {
             // For instance, if `getData` request responds the error 'Session expired' need automatically get a new token and continue `getData` performing.
             this.pendingRequests = [];
 
-            // restore token and profileExists
+            // restore token, useAsDefaultCardSession and profileExists
             this.getToken();
             this.getProfileExists();
+            this.getUseAsDefaultCardSession();
 
             //TODO appName from interface
             App.Settings.RevelAPI = this.isAvailable();
+
+            // save original data
+            this.setOriginalProfileData();
+
+            // need restore profile when token is present and profile exists (case: directory-weborder transfer)
+            if(this.get('token') !== null && this.get('profileExists')) {
+                this.getProfile();
+            }
+
+            function onAuthenticationCancel() {
+                this.clearRequests();
+                this.set('token', null);
+            }
         },
         run: function() {
             this.initFirstTime();
@@ -210,6 +230,15 @@ define(["backbone", "card", "customers"], function(Backbone) {
         saveToken: function() {
             setData('token', {token: this.get('token')});
         },
+        getUseAsDefaultCardSession: function() {
+            var obj = getData('useAsDefaultCardSession');
+            obj instanceof Object && this.set('useAsDefaultCardSession', obj.useAsDefaultCardSession);
+        },
+        saveUseAsDefaultCardSession: function() {
+            var value = Boolean(this.get('useAsDefaultCard'));
+            this.set('useAsDefaultCardSession', value);
+            setData('useAsDefaultCardSession', {useAsDefaultCardSession: value});
+        },
         getProfileExists: function() {
             var obj = getData('profileExists', true);
             obj instanceof Object && this.set('profileExists', obj.profileExists);
@@ -272,9 +301,11 @@ define(["backbone", "card", "customers"], function(Backbone) {
 
             function saveData() {
                 try {
+                    self.set('useAsDefaultCard', Boolean(self.get('useAsDefaultCard')));
                     var data = {
                         customer: self.get('customer').toJSON(),
-                        card: self.get('card').toJSON()
+                        card: self.get('card').toJSON(),
+                        useAsDefaultCard: self.get('useAsDefaultCard')
                     }
                     self.request('setData', 'profile', JSON.stringify(data), self.getTokenString.bind(self), cb);
                 } catch(e) {
@@ -291,6 +322,8 @@ define(["backbone", "card", "customers"], function(Backbone) {
                     data = JSON.parse(data);
                     self.get('customer').set(data.customer);
                     self.get('card').set(data.card);
+                    self.set('useAsDefaultCard', data.useAsDefaultCard);
+                    self.setOriginalProfileData();
                     typeof cb == 'function' && cb();
                 } catch(e) {
                     this.set('errorCode', REVEL_API_ERROR_CODES.INTERNAL_ERROR);
@@ -331,22 +364,22 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 App.Data.errors.alert(result.errorMsg);
             }
         },
-        processPaymentInfo: function(cb) {
+        processPaymentInfo: function(success, fail) {
             var card = this.get('card'),
-                needCheck, result;
+                useAsDefaultCard = this.get('useAsDefaultCard'),
+                result;
 
             // CardView listens to this event to set data
             card.trigger('add_card');
-            needCheck = card.get('cardNumber');
 
-            if(needCheck) {
-                result = card.check({ignorePersonal: true, ignoreExpDate: true, ignoreSecurityCode: true});
+            if(useAsDefaultCard) {
+                result = card.check();
             }
 
-            if(!needCheck || /ok/i.test(result.status)) {
-                typeof cb == 'function' && cb();
+            if(!useAsDefaultCard || /ok/i.test(result.status)) {
+                typeof success == 'function' && success(result);
             } else {
-                App.Data.errors.alert(result.errorMsg);
+                typeof fail == 'function' && fail(result);
             }
         },
         getUsername: function() {
@@ -368,6 +401,75 @@ define(["backbone", "card", "customers"], function(Backbone) {
             data.push('address=' + encodeURIComponent(JSON.stringify(customer.addresses[0])));
 
             return App.Data.settings.get("host") + "/weborders/qrcode/?" + data.join('&');
+        },
+        checkCreditCard: function() {
+            var useAsDefaultCardSession = this.get('useAsDefaultCardSession'),
+                self = this;
+
+            // Need stop listening to profile customer changes.
+            // 'startListeningToCustomer' event will be emitted when 'onPayWithCustomCreditCard' and 'onPayWithSavedCreditCard' occurs
+            this.trigger('stopListeningToCustomer');
+
+            if(useAsDefaultCardSession === null) {
+                this.trigger('onCreditCardNotificationShow');
+            } else if(useAsDefaultCardSession === false) {
+                this.trigger('onPayWithCustomCreditCard');
+            } else {
+                this.getProfile(function() {
+                    if(self.get('useAsDefaultCard')) {
+                        self.trigger('onPayWithSavedCreditCard');
+                    } else {
+                        self.trigger('onPayWithCustomCreditCard');
+                    }
+                });
+            }
+        },
+        setOriginalProfileData: function() {
+            this.originalProfileData = {
+                customer: _.clone(this.get('customer').toJSON()),
+                card: _.clone(this.get('card').toJSON()),
+                oldPassword: this.get('oldPassword'),
+                newPassword: this.get('newPassword'),
+                useAsDefaultCard: this.get('useAsDefaultCard'),
+            }
+
+            var address = this.get('customer').get('addresses')[0];
+            if(address) {
+                this.originalProfileData.customer.addresses = [_.clone(address)];
+            } else {
+                this.originalProfileData.customer.addresses = [];
+            }
+        },
+        restoreOriginalProfileData: function() {
+            var data = this.originalProfileData;
+            if(data) {
+                this.set({
+                    oldPassword: data.oldPassword,
+                    newPassword: data.newPassword,
+                    useAsDefaultCard: data.useAsDefaultCard
+                });
+                this.get('customer').set(data.customer);
+                this.get('card').set(data.card);
+            }
+        },
+        getLoyaltyPoints: function() {
+            var request = Backbone.$.Deferred(),
+                self = this;
+            $.ajax({
+                url: App.Data.settings.get("host") + "/weborders/reward_cards/",
+                data: {
+                    number: this.get('customer').get('phone')
+                },
+                success: function(data) {
+                    if(data.status && Array.isArray(data.data) && data.data.length && typeof data.data[0].total_points == 'number') {
+                        self.set('points', data.data[0].total_points);
+                    }
+                },
+                complete: function() {
+                    request.resolve();
+                }
+            });
+            return request;
         }
     });
 });

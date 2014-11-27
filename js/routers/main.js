@@ -237,7 +237,7 @@ define(["backbone"], function(Backbone) {
                 App.Data.card.loadCard();
                 App.Data.giftcard = new App.Models.GiftCard();
                 App.Data.giftcard.loadCard();
-                App.Data.customer = new App.Models.Customer();
+                App.Data.customer = new App.Models.Customer({RevelAPI: App.Data.RevelAPI});
                 App.Data.customer.loadCustomer();
                 App.Data.customer.loadAddresses();
                 App.Data.myorder.loadOrders();
@@ -277,13 +277,13 @@ define(["backbone"], function(Backbone) {
 
             views = [{
                 footer: {next: RevelAPI.processPersonalInfo.bind(RevelAPI, next), prev: null, save: null},
-                content: {mod: 'ProfilePersonal', cache_id: 'ProfilePersonal'}
+                content: {mod: 'ProfilePersonal', cacheId: 'ProfilePersonal'}
             }, {
-                footer: {next: RevelAPI.processPaymentInfo.bind(RevelAPI, next), prev: prev, save: null},
-                content: {mod: 'ProfilePayment', cache_id: 'ProfilePayment'}
+                footer: {next: RevelAPI.processPaymentInfo.bind(RevelAPI, next, creditCardValidationAlert), prev: prev, save: null},
+                content: {mod: 'ProfilePayment', cacheId: 'ProfilePayment'}
             }, {
                 footer: {next: null, prev: prev, save: RevelAPI.saveProfile.bind(RevelAPI, save)},
-                content: {mod: 'ProfileSecurity', cache_id: 'ProfileSecurity'}
+                content: {mod: 'ProfileSecurity', cacheId: 'ProfileSecurity'}
             }];
 
             this.prepare('profile', function() {
@@ -299,24 +299,30 @@ define(["backbone"], function(Backbone) {
 
                 this.change_page();
             });
+
+            function creditCardValidationAlert(result) {
+                App.Data.errors.alert(result.errorMsg);
+            }
         },
         loyalty: function(header, footer) {
             this.prepare('loyalty', function() {
-                App.Data.header.set('page_title', 'Loyalty');
+                var RevelAPI = App.Data.RevelAPI,
+                    request = RevelAPI.getLoyaltyPoints();
 
+                App.Data.header.set('page_title', 'Loyalty');
                 App.Data.mainModel.set({
                     header: header,
                     footer: footer,
                     content: {
                         modelName: 'Revel',
                         className: 'revel-loyalty',
-                        model: App.Data.RevelAPI,
+                        model: RevelAPI,
                         mod: 'Loyalty',
                         cache_id: 'Loyalty'
                     }
                 });
 
-                this.change_page();
+                request.then(this.change_page.bind(this));
             });
         },
         initRevelAPI: function() {
@@ -324,6 +330,8 @@ define(["backbone"], function(Backbone) {
 
             var RevelAPI = App.Data.RevelAPI,
                 mainModel = App.Data.mainModel,
+                checkout = App.Data.myorder.checkout,
+                profileCustomer = RevelAPI.get('customer'),
                 profileCancelCallback,
                 profileSaveCallback;
 
@@ -331,7 +339,12 @@ define(["backbone"], function(Backbone) {
                 return;
             }
 
-            this.once('started', RevelAPI.run.bind(RevelAPI));
+            this.once('started', function() {
+                // If rewardCard is not set yet need set its value from profile.
+                // Reward card may be set by this moment after checkout restoring from localStorage.
+                !checkout.get('rewardCard') && updateReward();
+                RevelAPI.run();
+            });
 
             this.listenTo(RevelAPI, 'onWelcomeShow', function() {
                 mainModel.trigger('showRevelPopup', {
@@ -366,32 +379,43 @@ define(["backbone"], function(Backbone) {
                 });
             }, this);
 
+            this.listenTo(RevelAPI, 'onCreditCardNotificationShow', function() {
+                mainModel.trigger('showRevelPopup', {
+                    modelName: 'Revel',
+                    mod: 'CreditCard',
+                    model: RevelAPI,
+                    cacheId: 'RevelCreditCard'
+                });
+            }, this);
+
             this.listenTo(RevelAPI, 'onProfileShow', function() {
-                profileCancelCallback = Backbone.history.fragment;
+                profileCancelCallback = this.navigate.bind(this, Backbone.history.fragment, true);
                 this.navigate('profile', true);
                 mainModel.trigger('hideRevelPopup', RevelAPI);
             }, this);
 
             this.listenTo(RevelAPI, 'onProfileCancel onAuthenticationCancel', function() {
-                typeof profileCancelCallback == 'string' && this.navigate(profileCancelCallback, true);
+                typeof profileCancelCallback == 'function' && profileCancelCallback();
                 profileCancelCallback = undefined;
                 profileSaveCallback = undefined;
+                RevelAPI.unset('forceCreditCard');
                 mainModel.trigger('hideRevelPopup', RevelAPI);
             }, this);
 
             this.listenTo(RevelAPI, 'onProfileSaved', function() {
-                typeof profileSaveCallback == 'string' && this.navigate(profileSaveCallback, true);
+                typeof profileSaveCallback == 'function' && profileSaveCallback();
                 profileCancelCallback = undefined;
                 profileSaveCallback = undefined;
+                RevelAPI.unset('forceCreditCard');
             }, this);
 
             this.listenTo(this, 'navigateToLoyalty', function() {
-                profileSaveCallback = 'loyalty';
-                RevelAPI.checkProfile(this.navigate.bind(this, profileSaveCallback, true));
+                profileSaveCallback = this.navigate.bind(this, 'loyalty', true);
+                RevelAPI.checkProfile(profileSaveCallback);
             }, this);
 
             this.listenTo(this, 'navigateToProfile', function() {
-                profileSaveCallback = Backbone.history.fragment;
+                profileSaveCallback = this.navigate.bind(this, Backbone.history.fragment, true);
                 RevelAPI.checkProfile(RevelAPI.trigger.bind(RevelAPI, 'onProfileShow'));
             }, this);
 
@@ -402,6 +426,51 @@ define(["backbone"], function(Backbone) {
             this.listenTo(RevelAPI, 'onAuthenticated', function() {
                 mainModel.trigger('hideRevelPopup', RevelAPI);
             });
+
+            // bind phone changes in profile with reward card in checkout
+            checkout.listenTo(profileCustomer, 'change:phone', function() {
+                !checkout.get('rewardCard') && updateReward();
+            });
+
+            // if user saves profile reward card should be overriden excepting use case when profile is updated during payment with credit card
+            this.listenTo(RevelAPI, 'startListeningToCustomer', checkout.listenTo.bind(checkout, RevelAPI, 'onProfileSaved', updateReward));
+            this.listenTo(RevelAPI, 'stopListeningToCustomer', checkout.stopListening.bind(checkout, RevelAPI));
+            RevelAPI.trigger('startListeningToCustomer');
+
+            this.listenTo(RevelAPI, 'onUseSavedCreditCard', function() {
+                var self = this,
+                    success = RevelAPI.saveProfile.bind(RevelAPI, RevelAPI.trigger.bind(RevelAPI, 'onPayWithSavedCreditCard')),
+                    fail = function() {
+                        self.navigate('profile/1', true);
+                        RevelAPI.processPaymentInfo(null, function(result) {App.Data.errors.alert(result.errorMsg);});
+                    };
+
+                profileSaveCallback = RevelAPI.trigger.bind(RevelAPI, 'onPayWithSavedCreditCard');
+                profileCancelCallback = this.navigate.bind(this, Backbone.history.fragment, true);
+                mainModel.trigger('hideRevelPopup', RevelAPI);
+
+                RevelAPI.set('forceCreditCard', true);
+                RevelAPI.set('useAsDefaultCard', true); // need for case when profile doesn't exist
+                RevelAPI.checkProfile(function() {
+                    RevelAPI.set('useAsDefaultCard', true); // need for case when profile exists and credit card is invalid
+                    RevelAPI.processPaymentInfo(success, fail);
+                });
+            }, this);
+
+            this.listenTo(RevelAPI, 'onPayWithSavedCreditCard', function() {
+                RevelAPI.set('useAsDefaultCardSession', true);
+                RevelAPI.unset('forceCreditCard');
+            }, this);
+
+            this.listenTo(RevelAPI, 'onPayWithCustomCreditCard', function() {
+                RevelAPI.set('useAsDefaultCardSession', false);
+                mainModel.trigger('hideRevelPopup', RevelAPI);
+            }, this);
+
+            function updateReward() {
+                var phone = profileCustomer.get('phone');
+                phone && checkout.set('rewardCard', phone);
+            }
         }
     });
 });
