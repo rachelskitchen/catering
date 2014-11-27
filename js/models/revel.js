@@ -425,30 +425,32 @@ define(["backbone", "card", "customers"], function(Backbone) {
             }
         },
         setOriginalProfileData: function() {
+            var customer = this.get('customer').toJSON(),
+                addresses = customer.addresses.slice().map(function(item) {
+                    return _.clone(item);
+                });
+
             this.originalProfileData = {
-                customer: _.clone(this.get('customer').toJSON()),
+                customer: _.extend({}, customer, {addresses: addresses}),
                 card: _.clone(this.get('card').toJSON()),
                 oldPassword: this.get('oldPassword'),
                 newPassword: this.get('newPassword'),
                 useAsDefaultCard: this.get('useAsDefaultCard'),
             }
-
-            var address = this.get('customer').get('addresses')[0];
-            if(address) {
-                this.originalProfileData.customer.addresses = [_.clone(address)];
-            } else {
-                this.originalProfileData.customer.addresses = [];
-            }
         },
         restoreOriginalProfileData: function() {
-            var data = this.originalProfileData;
+            var data = this.originalProfileData,
+                addresses;
             if(data) {
                 this.set({
                     oldPassword: data.oldPassword,
                     newPassword: data.newPassword,
                     useAsDefaultCard: data.useAsDefaultCard
                 });
-                this.get('customer').set(data.customer);
+                addresses = data.customer.addresses.slice().map(function(item) {
+                    return _.clone(item);
+                });
+                this.get('customer').set(_.extend({}, data.customer, {addresses: addresses}));
                 this.get('card').set(data.card);
             }
         },
