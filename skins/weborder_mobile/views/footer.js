@@ -117,7 +117,8 @@ define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
         name: 'footer',
         mod: 'checkout',
         events: {
-            "click #confirmOrder": "confirmOrder"
+            "click #confirmOrder": "confirmOrder",
+            "click .profile": "profile"
         },
         confirmOrder: function() {
             App.Data.myorder.check_order({
@@ -128,7 +129,8 @@ define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
             }, function() {
                 App.Data.router.navigate('confirm', true);
             });
-        }
+        },
+        profile: setCallback('profile')
     });
 
     App.Views.FooterView.FooterCardView = App.Views.FactoryView.extend({
@@ -201,25 +203,7 @@ define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
             $('#section').removeClass('doubleFooter_section').removeClass('tripleFooter_section');
         },
         creditCard: function() {
-           var payment = App.Data.settings.get_payment_process();
-           if (payment.credit_card_dialog) {
-               App.Data.router.navigate('card', true);
-           } else {
-               var self = this;
-               App.Data.myorder.check_order({
-                   order: true,
-                   tip: true,
-                   customer: true,
-                   checkout: true,
-                   card: false
-               }, function() {
-                   App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
-                   !self.canceled && App.Data.mainModel.trigger('loadStarted');
-                   delete self.canceled;
-                   saveAllData();
-                   App.Data.router.navigate('confirm', true);
-               });
-            }
+           this.model.trigger('payWithCreditCard');
         },
         giftCard: function() {
            App.Data.router.navigate('giftcard', true);

@@ -45,17 +45,29 @@ define(["backbone", "geopoint"], function(Backbone) {
              * zipcode
              */
         },
+        initialize: function() {
+            this.syncWithRevelAPI();
+        },
         /**
          * Get customer name in the format "Smith M.".
          */
         get_customer_name : function() {
-            return this.get('first_name') + this.get('last_name').trim().replace(/(\w).*/, function(m, g) {return ' ' + g + '.';});
+            var first_name = this.get('first_name'),
+                last_name = this.get('last_name');
+
+            first_name = typeof first_name == 'string' && first_name.length ? first_name : '';
+            last_name = typeof last_name == 'string' && last_name.length ? last_name : '';
+            last_name = last_name.trim().replace(/(\w).*/, function(m, g) {return ' ' + g + '.';});
+
+            return (first_name + last_name).trim();
         },
         saveCustomer: function() {
             setData('customer', this);
         },
         loadCustomer: function() {
-            this.set(getData('customer'));
+            var data = getData('customer');
+            data = data instanceof Object ? data : {};
+            this.set(data);
             var shipping_services = this.get("shipping_services");
             if(Array.isArray(shipping_services) && shipping_services.length && this.get("shipping_selected") > -1) {
                 this.set("load_shipping_status", "restoring", {silent: true});
@@ -66,7 +78,7 @@ define(["backbone", "geopoint"], function(Backbone) {
         },
         loadAddresses: function() {
             var data = getData('address', true);
-            if (data instanceof Object && data.addresses && data.addresses.length == 1 && App.skin != App.Skins.RETAIL) {
+            if (data instanceof Object && Array.isArray(data.addresses) && data.addresses.length == 1 && App.skin != App.Skins.RETAIL) {
                 if (data.addresses[0].country != App.Settings.address.country) {
                     //the thread come here e.g. when we navigate from 'Retail' skin with other country payment previously submitted to weborder_mobile skin
                     data = undefined;
@@ -76,20 +88,29 @@ define(["backbone", "geopoint"], function(Backbone) {
         },
         address_str: function() {
             var addresses = this.get('addresses'),
-                settings = App.Data.settings.get('settings_system'),
+                settings = App.Settings,
                 str = [];
-            addresses = addresses[addresses.length - 1];
+
+            if(Array.isArray(addresses) && addresses.length > 0) {
+                addresses = addresses[addresses.length - 1];
+            } else {
+                return '';
+            }
+
+            if(!(addresses instanceof Object)) {
+                return '';
+            }
 
             addresses.street_1 && str.push(addresses.street_1);
             addresses.street_2 && str.push(addresses.street_2);
             addresses.city && str.push(addresses.city);
-            settings.address && settings.address.state && str.push(addresses.state);
+            settings.address && settings.address.state && addresses.state && str.push(addresses.state);
             addresses.zipcode && str.push(addresses.zipcode);
 
             return str.join(', ');
         },
         _check_delivery_fields: function() {
-            var settings = App.Data.settings.get('settings_system'),
+            var settings = App.Settings,
                 empty = [],
                 address = this.get('addresses'),
                 req = {
@@ -235,6 +256,54 @@ define(["backbone", "geopoint"], function(Backbone) {
             function complete() {
                 self.set("load_shipping_status", "resolved", {silent: true});
                 self.trigger("change:shipping_services");
+            }
+        },
+        syncWithRevelAPI: function() {
+            var RevelAPI = this.get('RevelAPI');
+
+            if(!RevelAPI || !RevelAPI.isAvailable()) {
+                return;
+            }
+
+            var profileCustomer = RevelAPI.get('customer'),
+                profileExists = RevelAPI.get('profileExists'),
+                self = this;
+
+            // if profile doesn't exist we should provide autofill out profile page
+            !profileExists && RevelAPI.listenTo(this, 'change:first_name change:last_name change:phone change:email', updateProfile);
+
+            // when user saves profile above listener should be unbound and checkout page should be updated
+            this.listenTo(RevelAPI, 'onProfileSaved', function() {
+                RevelAPI.stopListening(this);
+                update();
+            }, this);
+
+            // listen to profile customer changes if user wasn't set any value for one of 'first_name', 'last_name', 'phone', 'email' fields
+            this.listenTo(profileCustomer, 'change', function() {
+                if(!this.get('first_name') && !this.get('last_name') && !this.get('phone') && !this.get('email')) {
+                    update();
+                }
+            }, this);
+
+            // fill out current model
+            this.set(profileCustomer.toJSON());
+
+            function updateProfile() {
+                profileCustomer.set(getData(self.toJSON()), {silent: true});
+            }
+
+            function update() {
+                self.set(getData(profileCustomer.toJSON()));
+            };
+
+            function getData(data) {
+                return {
+                    first_name: data.first_name,
+                    last_name: data.last_name,
+                    email: data.email,
+                    phone:data.phone,
+                    addresses: data.addresses
+                };
             }
         }
     });

@@ -412,7 +412,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             var currency_symbol = App.Data.settings.get('settings_system').currency_symbol,
                 uom = App.Data.settings.get("settings_system").scales.default_weighing_unit,
                 product = this.get_product().toJSON(),
-                price = this.get('initial_price') || product.price,//model.get('sum');
+                price = Number(this.get('initial_price')) >= 0 ? this.get('initial_price') : product.price,//model.get('sum');
                 item_tax = this.get_myorder_tax(),
                 item_obj = {
                     modifier_amount: modifiers_price,
@@ -1552,7 +1552,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             contactName && call_name.push(contactName);
 
             if(App.Data.orderFromSeat instanceof Object) {
-                call_name = call_name.concat(this.getOrderSeatCallName(customer.phone));
+                checkout.dining_option == 'DINING_OPTION_DELIVERY_SEAT' ? call_name.push.apply(call_name,  this.getOrderSeatCallName(customer.phone)) : call_name.push(customer.phone);
             } else {
                 checkout.pickupTime && call_name.push(checkout.pickupTime);
                 if (customer.phone) {
@@ -1710,6 +1710,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         },
         isBagChargeAvailable: function() {
             return this.checkout.isBagChargeAvailable();
+        },
+        clearData: function() {
+            this.empty_myorder();
+            this.saveOrders();
         }
     });
 });

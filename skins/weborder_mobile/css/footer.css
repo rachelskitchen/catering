@@ -48,6 +48,7 @@
     position: relative;
     top: 10%;
     text-align: center;
+    margin: 0 auto;
 }
 
 #myorder.btn2 {
@@ -117,11 +118,13 @@
 
 #myorder.btn2 .count {
     position: absolute;
-    padding: 0.1em 0.45em;
+    padding: 0 .5em;
     top: 15%;
     right: 10%;
     border-radius: 2.3em;
     display: none;
+    font-size: 2em;
+    line-height: 1.5em;
 }
 
 /* main mod end */
@@ -359,4 +362,8 @@
     left: 50%;
     font-size: 4em;
     margin-left: -0.52em;
+}
+
+#footer ul.checkout .half {
+    width: 50%;
 }

@@ -1026,8 +1026,8 @@ function inputTypeStringMask(el, pattern, initial) {
  * use mask for input field type=number
  */
 function inputTypeNumberMask(el, pattern, initial, dontChangeType) {
-    if (cssua.userAgent.mobile) {
-        !dontChangeType && el.attr("type", "number");
+    if (cssua.userAgent.mobile && !dontChangeType) {
+        el.attr("type", "number");
         el.numberMask({pattern: pattern });
     } else {
         var prev = initial && initial.toString() || '';
