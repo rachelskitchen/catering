@@ -1065,6 +1065,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             var self = this;          
 
             if (!App.Settings.accept_discount_code || self.get_only_product_quantity() < 1) {
+                self.recalculate_all();
                 return (new $.Deferred()).reject();
             }
 
