@@ -419,11 +419,6 @@ define(["backbone"], function(Backbone) {
                 RevelAPI.checkProfile(RevelAPI.trigger.bind(RevelAPI, 'onProfileShow'));
             }, this);
 
-            // this.listenTo(this, 'payCreditCard', function() {
-            //     profileSaveCallback = this.navigate.bind(this, Backbone.history.fragment, true);
-            //     RevelAPI.checkProfile(RevelAPI.trigger.bind(RevelAPI, 'onProfileShow'));
-            // }, this);
-
             this.listenTo(App.Data.header, 'onProfileCancel', function() {
                 RevelAPI.trigger('onProfileCancel');
             });
@@ -433,8 +428,14 @@ define(["backbone"], function(Backbone) {
             });
 
             // bind phone changes in profile with reward card in checkout
-            this.listenTo(RevelAPI, 'startListeningToCustomer', checkout.listenTo.bind(checkout, profileCustomer, 'change:phone', updateReward));
-            this.listenTo(RevelAPI, 'stopListeningToCustomer', checkout.stopListening.bind(checkout, profileCustomer));
+            checkout.listenTo(profileCustomer, 'change:phone', function() {
+                !checkout.get('rewardCard') && updateReward();
+            });
+
+            // if user saves profile reward card should be overriden excepting use case when profile is updated during payment with credit card
+            this.listenTo(RevelAPI, 'startListeningToCustomer', checkout.listenTo.bind(checkout, RevelAPI, 'onProfileSaved', updateReward));
+            this.listenTo(RevelAPI, 'stopListeningToCustomer', checkout.stopListening.bind(checkout, RevelAPI));
+            RevelAPI.trigger('startListeningToCustomer');
 
             this.listenTo(RevelAPI, 'onUseSavedCreditCard', function() {
                 var self = this,

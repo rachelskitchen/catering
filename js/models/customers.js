@@ -272,15 +272,18 @@ define(["backbone", "geopoint"], function(Backbone) {
             // if profile doesn't exist we should provide autofill out profile page
             !profileExists && RevelAPI.listenTo(this, 'change:first_name change:last_name change:phone change:email', updateProfile);
 
-            // when user saves profile above listener should be unbound
-            this.listenTo(RevelAPI, 'onProfileSaved', RevelAPI.stopListening.bind(RevelAPI, this));
+            // when user saves profile above listener should be unbound and checkout page should be updated
+            this.listenTo(RevelAPI, 'onProfileSaved', function() {
+                RevelAPI.stopListening(this);
+                update();
+            }, this);
 
-            // stop listening to RevelAPI profile customer
-            this.listenTo(RevelAPI, 'stopListeningToCustomer', this.stopListening.bind(this, profileCustomer));
-
-            // start listening to RevelAPI profile customer
-            this.listenTo(RevelAPI, 'startListeningToCustomer', this.listenTo.bind(this, profileCustomer, 'change', update));
-            RevelAPI.trigger('startListeningToCustomer');
+            // listen to profile customer changes if user wasn't set any value for one of 'first_name', 'last_name', 'phone', 'email' fields
+            this.listenTo(profileCustomer, 'change', function() {
+                if(!this.get('first_name') && !this.get('last_name') && !this.get('phone') && !this.get('email')) {
+                    update();
+                }
+            }, this);
 
             // fill out current model
             this.set(profileCustomer.toJSON());
