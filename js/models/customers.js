@@ -280,7 +280,7 @@ define(["backbone", "geopoint"], function(Backbone) {
 
             // listen to profile customer changes if user wasn't set any value for one of 'first_name', 'last_name', 'phone', 'email' fields
             this.listenTo(profileCustomer, 'change', function() {
-                if(!this.get('first_name') && !this.get('last_name') && !this.get('phone') && !this.get('email')) {
+                if(RevelAPI.get('profileExists') && !this.get('first_name') && !this.get('last_name') && !this.get('phone') && !this.get('email')) {
                     update();
                 }
             }, this);
@@ -289,7 +289,8 @@ define(["backbone", "geopoint"], function(Backbone) {
             this.set(profileCustomer.toJSON());
 
             function updateProfile() {
-                profileCustomer.set(getData(self.toJSON()), {silent: true});
+                profileCustomer.set(getData(self.toJSON()));
+                RevelAPI.setOriginalProfileData();
             }
 
             function update() {

@@ -429,7 +429,7 @@ define(["backbone"], function(Backbone) {
 
             // bind phone changes in profile with reward card in checkout
             checkout.listenTo(profileCustomer, 'change:phone', function() {
-                !checkout.get('rewardCard') && updateReward();
+                !checkout.get('rewardCard') && RevelAPI.get('profileExists') && updateReward();
             });
 
             // if user saves profile reward card should be overriden excepting use case when profile is updated during payment with credit card
