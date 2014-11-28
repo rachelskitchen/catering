@@ -115,7 +115,7 @@
             app.beforeInit();
 
             // init spinner
-            var spinner = app.initSpinner(app.addSpinner, app.getFontSize);
+            app.initSpinner(app.addSpinner, app.getFontSize); // show spinner when App is initializing and init jquery 'spinner' plugin
 
             // init errors object and check browser version
             App.Data.errors = new App.Models.Errors;
@@ -131,30 +131,29 @@
                 supported_skins: app.skins.available
             });
 
-            var body = document.querySelector('body');
-            App.Data.settings.once('change:settings_skin', function() {
+            App.Data.settings.on('change:settings_skin', function() {
                 load_styles_and_scripts(); // load styles and scripts
                 App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
                 require([App.Data.settings.get("skin") + "/router"], function() {
                     App.Data.router = new App.Routers.Router;
-                    // remove launch spinner
+                    App.Data.router.prepare.initialized = false;
+                    // hide launch spinner
                     App.Data.router.once('started', function() {
-                        if(body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
-                            document.querySelector('body').removeChild(spinner);
-                        }
+                        $('#loader').hide();
                         App.Data.router.trigger('needLoadEstablishments');
                     });
                     if(App.Data.settings.get('isMaintenance')) {
                         window.location.hash = "#maintenance";
                     }
+                    Backbone.history.stop();
                     Backbone.history.start();
 
                     // invoke afterStart callback
                     app.afterInit();
                 });
             });
-            app.loadApp(body, spinner); // loading application
+            app.loadApp(); // loading application
         });
     }
 
@@ -215,7 +214,7 @@
     /**
      * Loading application.
      */
-    function loadApp(body, spinner) {
+    function loadApp() {
         require(['establishments', 'establishments_view'], function() {
             App.Data.establishments = new App.Collections.Establishments();
             // status code = 1 (app should load view with stores list)
@@ -228,21 +227,18 @@
             // status code = 2 (app reported about error)
             App.Data.establishments.on('showError', function() {
                 App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
-                if (body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
-                    document.querySelector('body').removeChild(spinner);
-                }
+                $('#loader').hide();
             });
             // status code = 3 (app was loaded)
             App.Data.establishments.on('changeEstablishment', function(establishmentID) {
+                if (App.Views.GeneratorView) App.Views.GeneratorView.clearCache(); // clear cache if store was changed
                 App.Data.settings.set('establishment', establishmentID);
             });
             var status = App.Data.establishments.getStatusCode(); // get a status code of the app load
             switch (status) {
                 case 2:
                     App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
-                    if (body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
-                        document.querySelector('body').removeChild(spinner);
-                    }
+                    $('#loader').hide();
                     break;
                 case 3:
                     var establishment = App.Data.settings.get_establishment(); // get ID of current establishment

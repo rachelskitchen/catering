@@ -35,9 +35,9 @@ define(["backbone", "async"], function(Backbone) {
         load: function() {
             var self = this;
 
-            this.listenTo(this, 'change:skin', this.setSkinPath, this);
             this.listenToOnce(this, 'change:settings_system', this.get_settings_main, this);
-            this.listenToOnce(this, 'change:skinPath', this.get_settings_for_skin, this)
+            this.once('changeSkin', this.setSkinPath); // set a skin path
+            this.once('changeSkinPath', this.get_settings_for_skin); // get settings from file "settings.json" for current skin
 
             this.ajaxSetup(); // AJAX-requests settings
 
@@ -148,6 +148,7 @@ define(["backbone", "async"], function(Backbone) {
                 settings.delivery_charge = 0;
 
             this.set('skin', App.skin);
+            this.trigger('changeSkin');
         },
         /**
          * Get settings from file "settings.json" for current skin.
@@ -465,6 +466,7 @@ define(["backbone", "async"], function(Backbone) {
                 img_path: skinPath + '/img/',
                 skinPath: skinPath
             });
+            this.trigger('changeSkinPath');
         }
     });
 });
