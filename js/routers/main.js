@@ -237,7 +237,7 @@ define(["backbone"], function(Backbone) {
                 App.Data.card.loadCard();
                 App.Data.giftcard = new App.Models.GiftCard();
                 App.Data.giftcard.loadCard();
-                App.Data.customer = new App.Models.Customer();
+                App.Data.customer = new App.Models.Customer({RevelAPI: App.Data.RevelAPI});
                 App.Data.customer.loadCustomer();
                 App.Data.customer.loadAddresses();
                 App.Data.myorder.loadOrders();
@@ -366,6 +366,7 @@ define(["backbone"], function(Backbone) {
             var RevelAPI = App.Data.RevelAPI,
                 mainModel = App.Data.mainModel,
                 checkout = App.Data.myorder.checkout,
+                profileCustomer = RevelAPI.get('customer'),
                 profileCancelCallback,
                 profileSaveCallback;
 
@@ -374,7 +375,9 @@ define(["backbone"], function(Backbone) {
             }
 
             this.once('started', function() {
-                updateReward();
+                // If rewardCard is not set yet need set its value from profile.
+                // Reward card may be set by this moment after checkout restoring from localStorage.
+                !checkout.get('rewardCard') && updateReward();
                 RevelAPI.run();
             });
 
@@ -439,7 +442,6 @@ define(["backbone"], function(Backbone) {
                 profileCancelCallback = undefined;
                 profileSaveCallback = undefined;
                 RevelAPI.unset('forceCreditCard');
-                App.Data.customer && RevelAPI.stopListening(App.Data.customer);
             }, this);
 
             this.listenTo(this, 'navigateToLoyalty', function() {
@@ -452,11 +454,6 @@ define(["backbone"], function(Backbone) {
                 RevelAPI.checkProfile(RevelAPI.trigger.bind(RevelAPI, 'onProfileShow'));
             }, this);
 
-            this.listenTo(this, 'payCreditCard', function() {
-                profileSaveCallback = this.navigate.bind(this, Backbone.history.fragment, true);
-                RevelAPI.checkProfile(RevelAPI.trigger.bind(RevelAPI, 'onProfileShow'));
-            }, this);
-
             this.listenTo(App.Data.header, 'onProfileCancel', function() {
                 RevelAPI.trigger('onProfileCancel');
             });
@@ -465,7 +462,15 @@ define(["backbone"], function(Backbone) {
                 mainModel.trigger('hideRevelPopup', RevelAPI);
             });
 
-            checkout.listenTo(RevelAPI.get('customer'), 'change:phone', updateReward);
+            // bind phone changes in profile with reward card in checkout
+            checkout.listenTo(profileCustomer, 'change:phone', function() {
+                !checkout.get('rewardCard') && RevelAPI.get('profileExists') && updateReward();
+            });
+
+            // if user saves profile reward card should be overriden excepting use case when profile is updated during payment with credit card
+            this.listenTo(RevelAPI, 'startListeningToCustomer', checkout.listenTo.bind(checkout, RevelAPI, 'onProfileSaved', updateReward));
+            this.listenTo(RevelAPI, 'stopListeningToCustomer', checkout.stopListening.bind(checkout, RevelAPI));
+            RevelAPI.trigger('startListeningToCustomer');
 
             this.listenTo(RevelAPI, 'onUseSavedCreditCard', function() {
                 var self = this,
@@ -483,7 +488,7 @@ define(["backbone"], function(Backbone) {
                 RevelAPI.set('useAsDefaultCard', true); // need for case when profile doesn't exist
                 RevelAPI.checkProfile(function() {
                     RevelAPI.set('useAsDefaultCard', true); // need for case when profile exists and credit card is invalid
-                    RevelAPI.processPaymentInfo(success, fail)
+                    RevelAPI.processPaymentInfo(success, fail);
                 });
             }, this);
 
@@ -498,7 +503,7 @@ define(["backbone"], function(Backbone) {
             }, this);
 
             function updateReward() {
-                var phone = RevelAPI.get('customer').get('phone');
+                var phone = profileCustomer.get('phone');
                 phone && checkout.set('rewardCard', phone);
             }
         }

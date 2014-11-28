@@ -31,6 +31,8 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         initialize: function() {
             this.listenTo(this.model, 'change:dining_option', this.controlAddress, this);
             this.listenTo(this.model, 'change:dining_option', this.controlDeliverySeat, this);
+            this.listenTo(this.model, 'change:rewardCard', this.updateData, this);
+            this.listenTo(this.options.customer, 'change:first_name change:last_name change:email change:phone', this.updateData, this);
             this.customer = this.options.customer;
             this.card = App.Data.card;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
@@ -135,6 +137,14 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             } else {
                 this.$('.delivery_seat').hide();
             }
+        },
+        updateData: function() {
+            var customer = this.customer;
+            this.$('.firstName').val(customer.get('first_name'));
+            this.$('.lastName').val(customer.get('last_name'));
+            this.$('.email').val(customer.get('email'));
+            this.$('.phone').val(customer.get('phone'));
+            this.$('.rewardCard').val(this.model.get('rewardCard'));
         }
     });
 
