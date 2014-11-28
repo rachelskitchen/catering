@@ -455,6 +455,9 @@ define(["backbone", "main_router"], function(Backbone) {
                 });
 
                 this.change_page();
+
+                var RevelAPI = App.Data.RevelAPI;
+                RevelAPI.isAvailable() && RevelAPI.get('token') === null && RevelAPI.requireAuthentication(); // Bug 16425
             });
         },
         card: function() {
