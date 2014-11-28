@@ -71,37 +71,25 @@ define(['backbone', 'factory'], function(Backbone) {
                 callback: function(result) {
                     if (result) {
                         var selectedEstablishmentID = self.$('select').val();
-                        if (empty_object(App.Data.settings.get('settings_system'))) { // check object (empty or not empty)
-                            $('#loader').show();
-                            App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
-                            self.remove();
-                        } else {
-                            var moveAddress = window.location.protocol + '//' + window.location.hostname + window.location.pathname;
-                            var paramsAddress = '';
-                            var params = parse_get_params(); // get GET-parameters from address line
-                            if (empty_object(params)) { // check object (empty or not empty)
-                                paramsAddress += '?establishment=' + selectedEstablishmentID;
+                        if (App.Data.settings.get('establishment') !== selectedEstablishmentID) {
+                            if (App.Data.settings.get('establishment') === null) {
+                                $('#loader').show();
+                                App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
+                                self.remove();
                             } else {
-                                var issetEstablishment = false;
-                                for (var i in params) {
-                                    var param = '';
-                                    if (i !== 'establishment') {
-                                        param = i + '=' + params[i];
-                                    } else {
-                                        issetEstablishment = true;
-                                        param = i + '=' + selectedEstablishmentID;
-                                    }
-                                    if (paramsAddress === '') {
-                                        paramsAddress += '?';
-                                    } else {
-                                        paramsAddress += '&';
-                                    }
-                                    paramsAddress += param;
-                                }
-                                if (!issetEstablishment) paramsAddress += '&establishment=' + selectedEstablishmentID;
+                                $('#loader').show();
+                                delete App.Data.router;
+                                delete App.Data.categories;
+                                delete App.Data.AboutModel;
+                                delete App.Data.mainModel.get('cart').collection;
+                                delete App.Data.mainModel.get('header').model;
+                                $('link[href$="colors.css"]').remove();
+                                $('.main-container').remove();
+                                App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
+                                self.back(); // the "Go Back" button was clicked
                             }
-                            moveAddress += paramsAddress;
-                            window.location.href = moveAddress;
+                        } else {
+                            self.back(); // the "Go Back" button was clicked
                         }
                     }
                 }

@@ -41,6 +41,12 @@ define(['backbone'], function(Backbone) {
                     cache[id] = view;
             }
             return view;
+        },
+        /**
+         * Clear cache if store was changed.
+         */
+        clearCache: function() {
+            cache = {};
         }
     };
 
