@@ -81,9 +81,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.setOriginalProfileData();
 
             // need restore profile when token is present and profile exists (case: directory-weborder transfer)
-            if(this.get('token') !== null && this.get('profileExists')) {
-                this.getProfile();
-            }
+            this.get('token') !== null && this.requireAuthentication();
 
             function onAuthenticationCancel() {
                 this.clearRequests();
@@ -472,6 +470,9 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 }
             });
             return request;
+        },
+        requireAuthentication: function() {
+            this.get('profileExists') && this.getProfile();
         }
     });
 });
