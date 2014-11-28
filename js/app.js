@@ -115,7 +115,7 @@
             app.beforeInit();
 
             // init spinner
-            app.initSpinner(app.addSpinner, app.getFontSize); // show spinner when App is initializing and init jquery 'spinner' plugin
+            var spinner = app.initSpinner(app.addSpinner, app.getFontSize);
 
             // init errors object and check browser version
             App.Data.errors = new App.Models.Errors;
@@ -140,7 +140,7 @@
                     App.Data.router.prepare.initialized = false;
                     // hide launch spinner
                     App.Data.router.once('started', function() {
-                        $('#loader').hide();
+                        $(spinner).hide();
                         App.Data.router.trigger('needLoadEstablishments');
                     });
                     if(App.Data.settings.get('isMaintenance')) {
@@ -153,7 +153,7 @@
                     app.afterInit();
                 });
             });
-            app.loadApp(); // loading application
+            app.loadApp(spinner); // loading application
         });
     }
 
@@ -214,7 +214,7 @@
     /**
      * Loading application.
      */
-    function loadApp() {
+    function loadApp(spinner) {
         require(['establishments', 'establishments_view'], function() {
             App.Data.establishments = new App.Collections.Establishments();
             // status code = 1 (app should load view with stores list)
@@ -227,7 +227,7 @@
             // status code = 2 (app reported about error)
             App.Data.establishments.on('showError', function() {
                 App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
-                $('#loader').hide();
+                $(spinner).hide();
             });
             // status code = 3 (app was loaded)
             App.Data.establishments.on('changeEstablishment', function(establishmentID) {
@@ -238,7 +238,7 @@
             switch (status) {
                 case 2:
                     App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
-                    $('#loader').hide();
+                    $(spinner).hide();
                     break;
                 case 3:
                     var establishment = App.Data.settings.get_establishment(); // get ID of current establishment
