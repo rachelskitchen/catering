@@ -407,10 +407,6 @@ define(["backbone", "main_router"], function(Backbone) {
         },
         checkout: function() {
             this.prepare('checkout', function() {
-                var RevelAPI = App.Data.RevelAPI,
-                    profileCustomer = RevelAPI && RevelAPI.get('customer'),
-                    profile = profileCustomer && RevelAPI.get('profileExists');
-
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card;
 
@@ -418,13 +414,8 @@ define(["backbone", "main_router"], function(Backbone) {
                     App.Data.giftcard = new App.Models.GiftCard;
 
                 if(!App.Data.customer) {
-                    App.Data.customer =  new App.Models.Customer();
+                    App.Data.customer =  new App.Models.Customer({RevelAPI: App.Data.RevelAPI});
                     App.Data.customer.loadAddresses();
-                    RevelAPI && !RevelAPI.get('profileExists') && RevelAPI.listenTo(App.Data.customer, 'change:first_name change:last_name change:phone change:email', updateProfile);
-                    if(profileCustomer) {
-                        App.Data.customer.listenTo(profileCustomer, 'change', updateCustomer);
-                        App.Data.customer.set(profileCustomer.toJSON());
-                    }
                 }
 
                 App.Data.header.set({
@@ -465,23 +456,8 @@ define(["backbone", "main_router"], function(Backbone) {
 
                 this.change_page();
 
-                function updateProfile() {
-                    profileCustomer.set(getData(App.Data.customer.toJSON()), {silent: true});
-                }
-
-                function updateCustomer() {
-                    App.Data.customer.set(getData(profileCustomer.toJSON()));
-                };
-
-                function getData(data) {
-                    return {
-                        first_name: data.first_name,
-                        last_name: data.last_name,
-                        email: data.email,
-                        phone:data.phone,
-                        addresses: data.addresses
-                    };
-                }
+                var RevelAPI = App.Data.RevelAPI;
+                RevelAPI.isAvailable() && RevelAPI.get('token') === null && RevelAPI.requireAuthentication(); // Bug 16425
             });
         },
         card: function() {

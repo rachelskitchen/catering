@@ -60,6 +60,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.listenTo(this, 'change:useAsDefaultCard change:useAsDefaultCardSession', this.saveUseAsDefaultCardSession, this);
             this.listenTo(this, 'onAuthenticationCancel', onAuthenticationCancel, this);
             this.listenTo(this, 'onProfileCancel', this.restoreOriginalProfileData, this);
+            this.listenTo(this, 'onPayWithCustomCreditCard onPayWithSavedCreditCard', this.trigger.bind(this, 'startListeningToCustomer'), this);
 
             this.set('card', new App.Models.Card());
             this.set('customer', new App.Models.Customer({shipping_address: -1}));
@@ -80,9 +81,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.setOriginalProfileData();
 
             // need restore profile when token is present and profile exists (case: directory-weborder transfer)
-            if(this.get('token') !== null && this.get('profileExists')) {
-                this.getProfile();
-            }
+            this.get('token') !== null && this.requireAuthentication();
 
             function onAuthenticationCancel() {
                 this.clearRequests();
@@ -404,6 +403,11 @@ define(["backbone", "card", "customers"], function(Backbone) {
         checkCreditCard: function() {
             var useAsDefaultCardSession = this.get('useAsDefaultCardSession'),
                 self = this;
+
+            // Need stop listening to profile customer changes.
+            // 'startListeningToCustomer' event will be emitted when 'onPayWithCustomCreditCard' and 'onPayWithSavedCreditCard' occurs
+            this.trigger('stopListeningToCustomer');
+
             if(useAsDefaultCardSession === null) {
                 this.trigger('onCreditCardNotificationShow');
             } else if(useAsDefaultCardSession === false) {
@@ -419,30 +423,32 @@ define(["backbone", "card", "customers"], function(Backbone) {
             }
         },
         setOriginalProfileData: function() {
+            var customer = this.get('customer').toJSON(),
+                addresses = customer.addresses.slice().map(function(item) {
+                    return _.clone(item);
+                });
+
             this.originalProfileData = {
-                customer: _.clone(this.get('customer').toJSON()),
+                customer: _.extend({}, customer, {addresses: addresses}),
                 card: _.clone(this.get('card').toJSON()),
                 oldPassword: this.get('oldPassword'),
                 newPassword: this.get('newPassword'),
                 useAsDefaultCard: this.get('useAsDefaultCard'),
             }
-
-            var address = this.get('customer').get('addresses')[0];
-            if(address) {
-                this.originalProfileData.customer.addresses = [_.clone(address)];
-            } else {
-                this.originalProfileData.customer.addresses = [];
-            }
         },
         restoreOriginalProfileData: function() {
-            var data = this.originalProfileData;
+            var data = this.originalProfileData,
+                addresses;
             if(data) {
                 this.set({
                     oldPassword: data.oldPassword,
                     newPassword: data.newPassword,
                     useAsDefaultCard: data.useAsDefaultCard
                 });
-                this.get('customer').set(data.customer);
+                addresses = data.customer.addresses.slice().map(function(item) {
+                    return _.clone(item);
+                });
+                this.get('customer').set(_.extend({}, data.customer, {addresses: addresses}));
                 this.get('card').set(data.card);
             }
         },
@@ -464,6 +470,9 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 }
             });
             return request;
+        },
+        requireAuthentication: function() {
+            this.get('profileExists') && this.getProfile();
         }
     });
 });
