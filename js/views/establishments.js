@@ -72,12 +72,11 @@ define(['backbone', 'factory'], function(Backbone) {
                     if (result) {
                         var selectedEstablishmentID = self.$('select').val();
                         if (App.Data.settings.get('establishment') !== selectedEstablishmentID) {
+                            $('#loader').show();
                             if (App.Data.settings.get('establishment') === null) {
-                                $('#loader').show();
                                 App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
                                 self.remove();
                             } else {
-                                $('#loader').show();
                                 delete App.Data.router;
                                 delete App.Data.categories;
                                 delete App.Data.AboutModel;
