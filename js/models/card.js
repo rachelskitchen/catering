@@ -160,8 +160,8 @@ define(["backbone"], function(Backbone) {
             function getData() {
                 var data = profileCustomer.toJSON();
                 return {
-                    firstName: data.firstName,
-                    lastName: data.lastName
+                    firstName: data.first_name,
+                    lastName: data.last_name
                 };
             }
         }
