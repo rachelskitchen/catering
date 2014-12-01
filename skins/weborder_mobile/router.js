@@ -408,7 +408,7 @@ define(["backbone", "main_router"], function(Backbone) {
         checkout: function() {
             this.prepare('checkout', function() {
                 if(!App.Data.card)
-                    App.Data.card = new App.Models.Card;
+                    App.Data.card = new App.Models.Card({RevelAPI: App.Data.RevelAPI});
 
                 if(!App.Data.giftcard)
                     App.Data.giftcard = new App.Models.GiftCard;
