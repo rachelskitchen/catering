@@ -27,15 +27,10 @@ define(['backbone', 'factory'], function(Backbone) {
         name: 'establishments',
         mod: 'main',
         initialize: function() {
-            this.model = {};
-            this.model.storeDefined = (this.options.storeDefined !== undefined) ? this.options.storeDefined : true;
-            this.model.showFooter = (this.options.showFooter !== undefined) ? this.options.showFooter : false;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
-            this.model.brandName = this.collection.getBrandName(); // get a brand name
-            if (this.model.showFooter) this.model.clientName = App.Data.mainModel.get('clientName');
-            $(this.el).html(this.template(this.model));
+            this.model.set('brandName', this.collection.getBrandName()); // get a brand name
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             var view = new App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectView({collection: this.collection});
             this.$('.establishments_select').append(view.el);

@@ -266,15 +266,14 @@ define(["backbone"], function(Backbone) {
         /**
         * Load the page with stores list.
         */
-        loadViewEstablishments: function(obj) {
+        loadViewEstablishments: function() {
             /**
             * Load view with stores list.
             */
             var loadEstablishmentsView = function() {
                 var view = new App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView({
                     collection: App.Data.establishments,
-                    storeDefined: obj.storeDefined,
-                    showFooter: obj.showFooter
+                    model: App.Data.establishments.getModelForView() // get a model for the stores list view
                 });
                 $('body').append(view.el);
                 $('#loader').hide();

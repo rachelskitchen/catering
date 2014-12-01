@@ -22,12 +22,20 @@
 
 define(['backbone', 'collection_sort'], function(Backbone) {
     'use strict';
+    App.Models.ModelForCoreEstablishmentsMainView = Backbone.Model.extend({
+        defaults: {
+            storeDefined: false,
+            showFooter: false,
+            clientName: null
+        },
+    });
     App.Models.Establishment = Backbone.Model.extend({});
     App.Collections.Establishments = App.Collections.CollectionSort.extend({
         model: App.Models.Establishment,
         initialize: function() {
-            var self = this;
             this._meta = {};
+            var modelForView = new App.Models.ModelForCoreEstablishmentsMainView();
+            this.meta('modelForView', modelForView); // get or set meta data of collection
             this.checkGETParameters(); // check a GET-parameters
         },
         /**
@@ -47,13 +55,13 @@ define(['backbone', 'collection_sort'], function(Backbone) {
             var params = parse_get_params(), // get GET-parameters from address line
                 self = this;
             if (params.establishment || (!params.establishment && !params.brand)) {
-                this.meta('statusCode', 3);
+                this.meta('statusCode', 3); // get or set meta data of collection
             } else {
                 if (!isNaN(params.brand) && params.brand > 0) {
                     App.Data.settings.set('brand', params.brand);
-                    this.meta('statusCode', 1);
+                    this.meta('statusCode', 1); // get or set meta data of collection
                 } else {
-                    this.meta('statusCode', 2);
+                    this.meta('statusCode', 2); // get or set meta data of collection
                 }
             }
         },
@@ -71,7 +79,7 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                 },
                 dataType: 'json',
                 successResp: function(data) {
-                    self.meta('brandName', data.brand_name);
+                    self.meta('brandName', data.brand_name); // get or set meta data of collection
                     var establishments = data.establishments;
                     for (var i = 0; i < establishments.length; i++) {
                         self.add(establishments[i]);
@@ -91,6 +99,12 @@ define(['backbone', 'collection_sort'], function(Backbone) {
             return this.meta('brandName'); // get or set meta data of collection
         },
         /**
+        * Get a model for the stores list view.
+        */
+        getModelForView: function() {
+            return this.meta('modelForView'); // get or set meta data of collection
+        },
+        /**
         * Get a status code of the app load.
         *
         * 1 - app should load view with stores list.
@@ -104,14 +118,14 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                 this.getEstablishments().then(function() {
                     if (self.length > 0) {
                         if (self.length === 1) {
-                            self.meta('statusCode', 3);
+                            self.meta('statusCode', 3); // get or set meta data of collection
                             self.trigger('changeEstablishment', self.models[0].get('id'));
                         } else {
-                            self.meta('statusCode', 1);
-                            self.trigger('loadStoresList', false, false);
+                            self.meta('statusCode', 1); // get or set meta data of collection
+                            self.trigger('loadStoresList');
                         }
                     } else {
-                        self.meta('statusCode', 2);
+                        self.meta('statusCode', 2); // get or set meta data of collection
                         self.trigger('showError');
                     }
                 });

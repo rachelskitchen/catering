@@ -214,9 +214,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          */
         change_establishment: function() {
             $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
-            var self = this;
-            App.Data.establishments.trigger('loadStoresList', true, true);
-            self.model.set('isBlurContent', true);
+            App.Data.establishments.getModelForView().set({
+                storeDefined: true,
+                showFooter: true
+            }); // get a model for the stores list view
+            App.Data.establishments.trigger('loadStoresList');
+            this.model.set('isBlurContent', true);
             $('#main-spinner').removeClass('ui-visible');
         },
         /**

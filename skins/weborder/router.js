@@ -73,6 +73,7 @@ define(["backbone", "main_router"], function(Backbone) {
                     headerModel: App.Data.header,
                     cartCollection: App.Data.myorder
                 });
+                App.Data.establishments.getModelForView().set('clientName', App.Data.mainModel.get('clientName')); // get a model for the stores list view
 
                 // listen to navigation control
                 this.navigationControl();
