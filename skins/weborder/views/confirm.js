@@ -25,15 +25,26 @@ define(["backbone", "confirm_view"], function(Backbone) {
 
     App.Views.ConfirmView.ConfirmPayCardView = App.Views.CoreConfirmView.CoreConfirmPayCardView.extend({
         render: function() {
-            var new_model = {},//this.collection.toJSON(),
+            var new_model = {}, offset,
                 pickup = this.collection.checkout.get("pickupTS"),
                 currentTime = this.options.timetable.base(),
-                time = currentTime.getTime();
+                time = currentTime.getTime(),
+                isASAP = this.collection.checkout.get("isPickupASAP");
 
             new_model.isDelivery = this.collection.checkout.get("dining_option") === 'DINING_OPTION_DELIVERY';
 
             if (pickup) pickup = new Date(time > pickup ? time : pickup);
-            new_model.pickup_time = format_date_3(pickup);
+
+            if (isASAP) {
+                if (new_model.isDelivery) {
+                   offset = App.Settings.estimated_delivery_time; 
+                } else {
+                   offset = App.Settings.estimated_order_preparation_time;
+                }
+                new_model.pickup_time = 'Today ASAP (' + offset + ' min)';
+            } else {   
+                new_model.pickup_time = format_date_3(pickup);
+            }
 
             this.$el.html(this.template(new_model));
 
