@@ -81,6 +81,7 @@ define(['backbone', 'factory'], function(Backbone) {
                                 delete App.Data.categories;
                                 delete App.Data.AboutModel;
                                 delete App.Data.mainModel.get('cart').collection;
+                                delete App.Data.mainModel.get('header').collection;
                                 delete App.Data.mainModel.get('header').model;
                                 $('link[href$="colors.css"]').remove();
                                 $('.main-container').remove();
