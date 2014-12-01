@@ -41,7 +41,7 @@ define(["backbone", "confirm_view"], function(Backbone) {
                 } else {
                    offset = App.Settings.estimated_order_preparation_time;
                 }
-                new_model.pickup_time = 'Today ASAP (' + offset + ' min)';
+                new_model.pickup_time = offset > 0 ? 'Today ASAP (' + offset + ' min)' : 'Today ASAP';
             } else {   
                 new_model.pickup_time = format_date_3(pickup);
             }
