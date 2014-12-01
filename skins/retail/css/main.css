@@ -224,14 +224,15 @@ footer {
     right: 550px;
     top: 0;
 }
-#header .main div.header_left div.logo {
-    float: left;
+#header .main div.logo {
     font-size: 8px;
     height: 100%;
     max-width: 100%;
-    position: relative;
+    position: absolute;
     text-align: left;
     width: auto;
+    top: 0;
+    left: 0;
 }
 #header .main div.header_left div.promo {
     float: left;
