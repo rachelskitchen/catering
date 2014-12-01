@@ -142,9 +142,9 @@ define(["backbone"], function(Backbone) {
             // when user saves profile model should be updated
             this.listenTo(RevelAPI, 'onProfileSaved', update);
 
-            // listen to profile customer changes if user wasn't set any value for one of 'firstName', 'lastName' fields
+            // listen to profile customer changes if user wasn't set any value for one of 'firstName', 'secondName' fields
             this.listenTo(profileCustomer, 'change', function() {
-                if(RevelAPI.get('profileExists') && !this.get('firstName') && !this.get('lastName')) {
+                if(RevelAPI.get('profileExists') && !this.get('firstName') && !this.get('secondName')) {
                     update();
                 }
             }, this);
@@ -161,7 +161,7 @@ define(["backbone"], function(Backbone) {
                 var data = profileCustomer.toJSON();
                 return {
                     firstName: data.first_name,
-                    lastName: data.last_name
+                    secondName: data.last_name
                 };
             }
         }
