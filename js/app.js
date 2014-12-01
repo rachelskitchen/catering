@@ -225,11 +225,8 @@
             };
             App.Data.establishments = new App.Collections.Establishments();
             // status code = 1 (app should load view with stores list)
-            App.Data.establishments.on('loadStoresList', function(storeDefined, showFooter) {
-                App.Routers.MainRouter.prototype.loadViewEstablishments({
-                    storeDefined: storeDefined,
-                    showFooter: showFooter
-                }); // load the page with stores list
+            App.Data.establishments.on('loadStoresList', function() {
+                App.Routers.MainRouter.prototype.loadViewEstablishments(); // load the page with stores list
             });
             // status code = 2 (app reported about error)
             App.Data.establishments.on('showError', function() {
