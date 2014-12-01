@@ -61,11 +61,9 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             model.rewardCardType = cssua.ua.mobile ? /android/i.test(cssua.ua.mobile) ? 'tel' : 'number' : 'text'; // too hard logic due to some native android browsers don't correctly display placeholder attribute for input[type='number']
 
             this.$el.html(this.template(model));
-            this.$('.phone').numberMask({
-                type: "float",
-                pattern: /^\+?\d{0,15}$/
-            });
-            this.$('input.rewardCard').numberMask({pattern: /^\d*$/ });
+
+            inputTypeNumberMask(this.$('.phone'), /^\+?\d{0,15}$/, model.phone, true);
+            inputTypeNumberMask(this.$('input.rewardCard'), /^\d*$/, model.rewardCard, true);
             this.$('.firstName, .lastName').numberMask({pattern: /^.*$/ }).on("keypressNumber", function(event) {
                 try {
                     var start = event.target.selectionStart,
