@@ -165,8 +165,11 @@ aside:before, aside:after {
     left: 0;
     right: 5px;
     height: 12px;
-    border-width: 1px;
+    border-width: 0px;
     border-style: solid;
+}
+aside.cart_left_panel:before, aside.cart_left_panel:after {
+    border-width: 1px;
 }
 aside:before {
     top: 0px;
