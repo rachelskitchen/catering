@@ -52,6 +52,9 @@ section:before {
     background: -o-linear-gradient(top, #d0d0d0 0%, #d0d0d0 10%, #c4c4c4 100%);
     background: linear-gradient(to bottom, #d0d0d0 0%, #d0d0d0 10%, #c4c4c4 100%);
 }
+.current_establishment a {
+    color: #2186b1;
+}
 .powered-by {
     background: url('img/poweredBy.png') no-repeat 0 0 transparent;
 }

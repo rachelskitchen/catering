@@ -1,22 +1,26 @@
 <script type="text/template" id="main_main-template">
-<header id="header"></header>
-<section>
-    <div id="content"></div>
-</section>
-<aside id="cart"></aside>
-<footer>
-    <a class="powered-by" target='_blank' href="http://revelup.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
-</footer>
-<div class="popup">
-    <div class='popoup_align'>
-    </div>
-    <div class='popup_wrapper'>
-        <div id="popup" class="animation">
-            <div class="cancel"></div>
+    <header id='header' class='main_el'> </header>
+    <section class='main_el'>
+        <div id="content"></div>
+    </section>
+    <aside id='cart' class='main_el'> </aside>
+    <footer class='main_el'>
+        <span class='current_establishment'>
+            Current Store: <%= _settings.business_name %>
+            <a class='change_establishment' href='javascript: void(0);'> Change? </a>
+        </span>
+        <a class="powered-by" target='_blank' href="http://revelup.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
+    </footer>
+    <div class="popup">
+        <div class='popoup_align'>
+        </div>
+        <div class='popup_wrapper'>
+            <div id="popup" class="animation">
+                <div class="cancel"></div>
+            </div>
         </div>
     </div>
-</div>
-<div id="main-spinner"></div>
+    <div id="main-spinner"></div>
 </script>
 
 <script type="text/template" id="alert-template">

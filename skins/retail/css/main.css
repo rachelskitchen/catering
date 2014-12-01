@@ -317,6 +317,15 @@ footer {
 #header .checkout .search {
     display: none;
 }
+.current_establishment {
+    display: none;
+    float: left;
+    padding-left: 0.65em;
+}
+.current_establishment a {
+    margin-left: 2em;
+    text-decoration: none;
+}
 .powered-by {
     display: block;
     width: 141px;
