@@ -271,10 +271,13 @@ define(["backbone"], function(Backbone) {
             * Load view with stores list.
             */
             var loadEstablishmentsView = function() {
-                var view = new App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView({
+                Backbone.$('body').append('<div class="establishments_view"> </div>');
+                var view = App.Views.GeneratorView.create('CoreEstablishments', {
+                    mod: 'Main',
+                    el: Backbone.$('.establishments_view'),
                     collection: App.Data.establishments,
                     model: App.Data.establishments.getModelForView() // get a model for the stores list view
-                });
+                }, 'ContentEstablishmentsCore');
                 $('body').append(view.el);
                 $('#loader').hide();
             };

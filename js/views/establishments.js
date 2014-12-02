@@ -32,12 +32,12 @@ define(['backbone', 'factory', 'generator'], function(Backbone) {
         render: function() {
             this.model.set('brandName', this.collection.getBrandName()); // get a brand name
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            var viewSelect = App.Views.GeneratorView.create('CoreEstablishments', {
+            this.viewSelect = App.Views.GeneratorView.create('CoreEstablishments', {
                 mod: 'Select',
-                el: this.$('.select-wrapper'),
+                el: this.$('.establishments_select'),
                 collection: this.collection
-            }, 'core_establishments_select_view');
-            this.subViews.push(viewSelect);
+            }, 'ContentEstablishmentsSelect');
+            this.subViews.push(this.viewSelect);
             return this;
         },
         remove: function() {
@@ -52,7 +52,8 @@ define(['backbone', 'factory', 'generator'], function(Backbone) {
         */
         back: function() {
             this.collection.trigger('clickButtonBack');
-            this.remove();
+            this.removeFromDOMTree(); // remove a view from DOM
+            Backbone.$('.establishments_view').remove();
         },
         /**
         * The "Proceed" button was clicked.
@@ -74,7 +75,7 @@ define(['backbone', 'factory', 'generator'], function(Backbone) {
                             $('#loader').show();
                             if (App.Data.settings.get('establishment') === null) {
                                 App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
-                                self.remove();
+                                self.removeFromDOMTree(); // remove a view from DOM
                             } else {
                                 delete App.Data.router;
                                 delete App.Data.categories;
