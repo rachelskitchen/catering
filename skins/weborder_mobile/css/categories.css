@@ -57,7 +57,7 @@
     vertical-align: middle;
 }
 #content ul.categories dl.noimage {
-    left: 1.8em;
+    padding: 2em 7em 2em 5em;
 }
 
 #content ul.categories dt {
