@@ -140,7 +140,7 @@
                     App.Data.router.prepare.initialized = false;
                     // hide launch spinner
                     App.Data.router.once('started', function() {
-                        $(spinner).hide();
+                        spinner.style.display = 'none';
                         App.Data.router.trigger('needLoadEstablishments');
                     });
                     if(App.Data.settings.get('isMaintenance')) {
@@ -221,7 +221,7 @@
              */
             var showError = function() {
                 App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
-                $(spinner).hide();
+                spinner.style.display = 'none';
             };
             App.Data.establishments = new App.Collections.Establishments();
             // status code = 1 (app should load view with stores list)
