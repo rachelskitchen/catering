@@ -71,24 +71,20 @@ define(['backbone', 'factory', 'generator'], function(Backbone) {
                 callback: function(result) {
                     if (result) {
                         var selectedEstablishmentID = self.$('select').val();
-                        if (App.Data.settings.get('establishment') !== selectedEstablishmentID) {
-                            $('#loader').show();
-                            if (App.Data.settings.get('establishment') === null) {
-                                App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
-                                self.removeFromDOMTree(); // remove a view from DOM
-                            } else {
-                                delete App.Data.router;
-                                delete App.Data.categories;
-                                delete App.Data.AboutModel;
-                                delete App.Data.mainModel.get('cart').collection;
-                                delete App.Data.mainModel.get('header').collection;
-                                delete App.Data.mainModel.get('header').model;
-                                $('link[href$="colors.css"]').remove();
-                                $('.main-container').remove();
-                                App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
-                                self.back(); // the "Go Back" button was clicked
-                            }
+                        $('#loader').show();
+                        if (self.collection.getEstablishmentID() === undefined) { // get a establishment's ID
+                            App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
+                            self.removeFromDOMTree(); // remove a view from DOM
                         } else {
+                            delete App.Data.router;
+                            delete App.Data.categories;
+                            delete App.Data.AboutModel;
+                            delete App.Data.mainModel.get('cart').collection;
+                            delete App.Data.mainModel.get('header').collection;
+                            delete App.Data.mainModel.get('header').model;
+                            $('link[href$="colors.css"]').remove();
+                            $('.main-container').remove();
+                            App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
                             self.back(); // the "Go Back" button was clicked
                         }
                     }
@@ -111,7 +107,10 @@ define(['backbone', 'factory', 'generator'], function(Backbone) {
         * Add a item to the select menu.
         */
         addItem: function(model) {
-            this.$('select').append('<option value="' + model.get('id') + '">' + model.get('name') + ', ' + model.get('line_1') + ', ' + model.get('city_name') + '</option>');
+            var currentEstablishment = this.collection.getEstablishmentID(); // get a establishment's ID
+            if (currentEstablishment != model.get('id')) {
+                this.$('select').append('<option value="' + model.get('id') + '">' + model.get('name') + ', ' + model.get('line_1') + ', ' + model.get('city_name') + '</option>');
+            }
         }
     });
 });

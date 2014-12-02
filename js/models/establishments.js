@@ -36,6 +36,9 @@ define(['backbone', 'collection_sort'], function(Backbone) {
             this._meta = {};
             var modelForView = new App.Models.ModelForCoreEstablishmentsMainView();
             this.meta('modelForView', modelForView); // get or set meta data of collection
+            this.listenTo(this, 'changeEstablishment', function(establishmentID) {
+                this.meta('establishment', establishmentID * 1); // get or set meta data of collection
+            });
             this.checkGETParameters(); // check a GET-parameters
         },
         /**
@@ -103,6 +106,12 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         */
         getModelForView: function() {
             return this.meta('modelForView'); // get or set meta data of collection
+        },
+        /**
+        * Get a establishment's ID.
+        */
+        getEstablishmentID: function() {
+            return this.meta('establishment'); // get or set meta data of collection
         },
         /**
         * Get a status code of the app load.
