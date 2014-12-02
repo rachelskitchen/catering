@@ -278,21 +278,21 @@ define(["backbone"], function(Backbone) {
                     collection: App.Data.establishments,
                     model: App.Data.establishments.getModelForView() // get a model for the stores list view
                 }, 'ContentEstablishmentsCore');
-                $('body').append(view.el);
-                $('#loader').hide();
+                Backbone.$('body').append(view.el);
+                Backbone.$('#loader').hide();
             };
-            $('title').text('Web application');
+            Backbone.$('title').text('Web application');
             var style = './css/establishments.css';
-            if ($('link[href="' + style +'"]').length === 0) {
-                $('head').append('<link rel="stylesheet" href="' + style + '" type="text/css" />');
+            if (Backbone.$('link[href="' + style +'"]').length === 0) {
+                Backbone.$('head').append('<link rel="stylesheet" href="' + style + '" type="text/css" />');
             }
-            if ($('#establishments_main-template').length === 0) {
+            if (Backbone.$('#establishments_main-template').length === 0) {
                 var template = './template/establishments.html';
-                $.ajax({
+                Backbone.$.ajax({
                     url: template,
                     dataType: 'html',
                     success: function(data) {
-                        $('head').append(data);
+                        Backbone.$('head').append(data);
                         loadEstablishmentsView(); // load view with stores list
                     }
                 });

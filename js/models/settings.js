@@ -67,7 +67,7 @@ define(["backbone", "async"], function(Backbone) {
          */
         ajaxSetup: function() {
             var self = this;
-            $.ajaxSetup({
+            Backbone.$.ajaxSetup({
                 timeout: self.get('timeout'),
                 cache: true,
                 success: function(data) {

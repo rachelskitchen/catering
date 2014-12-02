@@ -71,7 +71,7 @@ define(['backbone', 'factory', 'generator'], function(Backbone) {
                 callback: function(result) {
                     if (result) {
                         var selectedEstablishmentID = self.$('select').val();
-                        $('#loader').show();
+                        Backbone.$('#loader').show();
                         if (self.collection.getEstablishmentID() === undefined) { // get a establishment's ID
                             App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
                             self.removeFromDOMTree(); // remove a view from DOM
@@ -82,8 +82,8 @@ define(['backbone', 'factory', 'generator'], function(Backbone) {
                             delete App.Data.mainModel.get('cart').collection;
                             delete App.Data.mainModel.get('header').collection;
                             delete App.Data.mainModel.get('header').model;
-                            $('link[href$="colors.css"]').remove();
-                            $('.main-container').remove();
+                            Backbone.$('link[href$="colors.css"]').remove();
+                            Backbone.$('.main-container').remove();
                             App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
                             self.back(); // the "Go Back" button was clicked
                         }

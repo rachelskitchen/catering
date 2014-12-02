@@ -72,10 +72,10 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         * Get establishments from backend.
         */
         getEstablishments: function() {
-            var dfd = $.Deferred(),
+            var dfd = Backbone.$.Deferred(),
                 self = this;
             App.Data.settings.ajaxSetup(); // AJAX-requests settings
-            $.ajax({
+            Backbone.$.ajax({
                 url: App.Data.settings.get('host') + '/weborders/locations/',
                 data: {
                     brand: App.Data.settings.get('brand')
