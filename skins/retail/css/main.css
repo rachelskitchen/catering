@@ -621,8 +621,14 @@ section.maintenance p {
     line-height: 15px;
     margin-left: 75px;
 }
+#cart .order-items h3.noimage, .confirmPayCard .order-items h3.noimage {
+    margin-left: 0;
+}
 #cart .main .order-items h3 {
    width: 170px;
+}
+#cart .main .order-items h3.noimage {
+   width: 245px;
 }
 #cart .order-items h3 .name, .confirmPayCard .order-items h3 .name {
     text-transform: uppercase;
@@ -632,6 +638,10 @@ section.maintenance p {
 .confirmPayCard .order-items .cost, .confirmPayCard .order-items .attrs {
     font-size: 12px;
     margin-left: 75px;
+}
+#cart .order-items .cost.noimage, #cart .order-items .attrs.noimage,
+.confirmPayCard .order-items .cost.noimage, .confirmPayCard .order-items .attrs.noimage {
+    margin-left: 0;
 }
 .order-items .currency_symbol {
     margin-right: -3px;
@@ -647,6 +657,9 @@ section.maintenance p {
     position: static;
     margin-top: 5px;
     margin-left: 75px;
+}
+#cart .checkout .order-items .btns.noimage, .confirmPayCard .order-items .btns.noimage {
+    margin-left: 0;
 }
 #cart .order-items .btns > span, .confirmPayCard .order-items .btns > span {
     display: inline-block;
