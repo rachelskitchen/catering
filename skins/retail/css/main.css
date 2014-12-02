@@ -942,3 +942,10 @@ input[type="search"] {
     padding-top: 0.15em;
     text-align: center;
 }
+
+.blur {
+    -moz-filter: blur(5px);
+    -ms-filter: blur(5px);
+    -webkit-filter: blur(5px);
+    filter: blur(5px);
+}
