@@ -116,6 +116,12 @@
 
             // init spinner
             var spinner = app.initSpinner(app.addSpinner, app.getFontSize);
+            Backbone.$(window).on('hideSpinner', function() {
+                spinner.style.display = 'none';
+            });
+            Backbone.$(window).on('showSpinner', function() {
+                spinner.style.display = 'block';
+            });
 
             // init errors object and check browser version
             App.Data.errors = new App.Models.Errors;
