@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(['backbone', 'factory'], function(Backbone) {
+define(['backbone', 'factory', 'generator'], function(Backbone) {
     'use strict';
     App.Views.CoreEstablishmentsView = {};
     App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView = App.Views.FactoryView.extend({
@@ -32,8 +32,12 @@ define(['backbone', 'factory'], function(Backbone) {
         render: function() {
             this.model.set('brandName', this.collection.getBrandName()); // get a brand name
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            var view = new App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectView({collection: this.collection});
-            this.$('.establishments_select').append(view.el);
+            var viewSelect = App.Views.GeneratorView.create('CoreEstablishments', {
+                mod: 'Select',
+                el: this.$('.select-wrapper'),
+                collection: this.collection
+            }, 'core_establishments_select_view');
+            this.subViews.push(viewSelect);
             return this;
         },
         remove: function() {

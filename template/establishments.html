@@ -18,7 +18,7 @@
     <div class='establishments'>
         <div>
             <div> Choose which <%= brandName %> you are looking for: </div>
-            <div class='establishments_select'> </div>
+            <div class='select-wrapper'> </div>
             <% if (storeDefined) { %>
                 <div> <button type='button' name='back'> Go Back </button> </div>
             <% } %>
@@ -41,5 +41,5 @@
     <% } %>
 </script>
 <script type='text/template' id='establishments_select-template'>
-    <div class='select-wrapper'> <select> </select> </div>
+    <select> </select>
 </script>
