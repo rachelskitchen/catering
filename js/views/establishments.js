@@ -70,8 +70,8 @@ define(['backbone', 'factory', 'generator'], function(Backbone) {
                 },
                 callback: function(result) {
                     if (result) {
+                        Backbone.$(window).trigger('showSpinner');
                         var selectedEstablishmentID = self.$('select').val();
-                        Backbone.$('#loader').show();
                         if (self.collection.getEstablishmentID() === undefined) { // get a establishment's ID
                             App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
                             self.removeFromDOMTree(); // remove a view from DOM

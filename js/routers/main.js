@@ -279,7 +279,7 @@ define(["backbone"], function(Backbone) {
                     model: App.Data.establishments.getModelForView() // get a model for the stores list view
                 }, 'ContentEstablishmentsCore');
                 Backbone.$('body').append(view.el);
-                Backbone.$('#loader').hide();
+                Backbone.$(window).trigger('hideSpinner');
             };
             Backbone.$('title').text('Web application');
             var style = './css/establishments.css';
