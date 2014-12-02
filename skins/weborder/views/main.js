@@ -38,6 +38,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'change:isShowPromoMessage', this.calculatePromoMessageWidth, this);
             this.listenTo(this.model, 'change:isShowStoreChoice', this.checkBlockStoreChoice, this);
             this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this);
+            this.listenTo(App.Data.establishments, 'clickButtonBack', this.hideBlurEffect, this);
 
             this.iOSFeatures();
 
@@ -283,6 +284,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             } else {
                 this.$('.main_el').removeAttr('style');
             }
+        },
+        /**
+         * Hide a blur effect of content.
+         */
+        hideBlurEffect: function() {
+            this.model.set('isBlurContent', false);
         }
     });
 

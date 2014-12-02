@@ -47,7 +47,7 @@ define(['backbone', 'factory'], function(Backbone) {
         * The "Go Back" button was clicked.
         */
         back: function() {
-            App.Data.mainModel.set('isBlurContent', false);
+            this.collection.trigger('clickButtonBack');
             this.remove();
         },
         /**
