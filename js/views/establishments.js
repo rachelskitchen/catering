@@ -108,27 +108,16 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
         * Add a item to the select menu.
         */
         addItem: function(model) {
-            /*
             var currentEstablishment = this.collection.getEstablishmentID(); // get a establishment's ID
             if (currentEstablishment != model.get('id')) {
-                this.$('select').append('<option value="' + model.get('id') + '">' + model.get('name') + ', ' + model.get('line_1') + ', ' + model.get('city_name') + '</option>');
+                this.viewSelectItem = App.Views.GeneratorView.create('CoreEstablishments', {
+                    mod: 'SelectItem',
+                    el: $('<option value="' + model.get('id') + '"> </option>'),
+                    model: model
+                }, 'ContentEstablishmentsSelectItem' + model.get('id'));
+                this.subViews.push(this.viewSelectItem);
+                this.$('select').append(this.viewSelectItem.el);
             }
-            */
-            /*
-            this.viewSelect = App.Views.GeneratorView.create('CoreEstablishments', {
-                mod: 'Select',
-                el: this.$('.establishments_select'),
-                collection: this.collection
-            }, 'ContentEstablishmentsSelect');
-            this.subViews.push(this.viewSelect);
-            */
-            var view = App.Views.GeneratorView.create('CoreEstablishments', {
-                mod: 'SelectItem',
-                el: $('<option> <option>'),
-                model: model
-            }, 'ContentEstablishmentsSelectItem' + model.get('id'));
-            App.Views.ListView.prototype.addItem.call(this, view);
-            this.subViews.push(view);
         }
     });
     App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectItemView = App.Views.FactoryView.extend({
