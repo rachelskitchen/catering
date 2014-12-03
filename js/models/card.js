@@ -38,6 +38,9 @@ define(["backbone"], function(Backbone) {
             zip: '',
             img: App.Data.settings.get("img_path")
         },
+        initialize: function() {
+            this.syncWithRevelAPI();
+        },
         /**
         * Save current state model in storage (detected automatic).
         */
@@ -124,6 +127,43 @@ define(["backbone"], function(Backbone) {
         clearData: function() {
             this.empty_card_number();
             this.saveCard();
+        },
+        syncWithRevelAPI: function() {
+            var RevelAPI = this.get('RevelAPI');
+
+            if(!RevelAPI || !RevelAPI.isAvailable()) {
+                return;
+            }
+
+            var profileCustomer = RevelAPI.get('customer'),
+                profileExists = RevelAPI.get('profileExists'),
+                self = this;
+
+            // when user saves profile model should be updated
+            this.listenTo(RevelAPI, 'onProfileSaved', update);
+
+            // listen to profile customer changes if user wasn't set any value for one of 'firstName', 'secondName' fields
+            this.listenTo(profileCustomer, 'change', function() {
+                if(RevelAPI.get('profileExists') && !this.get('firstName') && !this.get('secondName')) {
+                    update();
+                }
+            }, this);
+
+            // fill out current model
+            this.set(getData());
+
+            function update() {
+                var data = profileCustomer.toJSON();
+                self.set(getData());
+            }
+
+            function getData() {
+                var data = profileCustomer.toJSON();
+                return {
+                    firstName: data.first_name,
+                    secondName: data.last_name
+                };
+            }
         }
     });
 });

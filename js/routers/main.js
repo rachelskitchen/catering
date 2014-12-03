@@ -233,7 +233,7 @@ define(["backbone"], function(Backbone) {
             var load = $.Deferred();
 
             this.prepare('pay', function() {
-                App.Data.card = new App.Models.Card();
+                App.Data.card = new App.Models.Card({RevelAPI: App.Data.RevelAPI});
                 App.Data.card.loadCard();
                 App.Data.giftcard = new App.Models.GiftCard();
                 App.Data.giftcard.loadCard();

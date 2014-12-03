@@ -69,10 +69,17 @@ define(["backbone", "factory"], function(Backbone) {
          * 1 - desc
          */
         sortItems: function(attr, order) {
-            this.subViews.sort(function(x, y) {
-                x = x.model.get(attr);
-                y = y.model.get(attr);
+            this.subViews.sort(function(mx, my) {
+                var x = mx.model.get(attr);
+                var y = my.model.get(attr);
                 var result = x < y ? -1 : x > y ? 1 : 0;
+                if (result == 0 && attr != 'name') {
+                    //for equal attributes sort models by attr 'name': 
+                    x = mx.model.get('name');
+                    y = my.model.get('name');
+                    result = x < y ? -1 : x > y ? 1 : 0;
+                    return result; // 'asc' always
+                }
                 return order ? -1 * result : result;
             });
             this.subViews.reduce(function(x, y) {
