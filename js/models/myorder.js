@@ -1086,6 +1086,30 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                 doFormRedirect(data.data.action, data.data.query);
                             }
                             return;
+                        case "PAYMENT_INFO_REQUIRED":
+                            if(data.data && data.data.app_token && data.data.token_url) {
+                                $.ajax({
+                                    type: "POST",
+                                    beforeSend: function(xhr){xhr.setRequestHeader('Authorization', "Intuit_APIKey intuit_apikey=ipp-" + data.data.app_token);},
+                                    url: data.data.token_url + "?apptoken=" + data.data.app_token,
+                                    data: JSON.stringify({card: {
+                                            number: card.cardNumber,
+                                            expMonth: card.expMonth,
+                                            expYear: card.expDate,
+                                            cvc: card.securityCode}}),
+                                    dataType: "json",
+                                    contentType: "application/json; charset=utf-8",
+                                    success: function (data) {
+                                        myorder.checkout.set('token', data.value);
+                                        myorder.submit_order_and_pay(payment_type, validationOnly, capturePhase);
+                                    },
+                                    error: function (data) {
+                                        data.errorMsg = MSG.ERROR_OCCURRED + "Error during tokenization";
+                                        reportErrorFrm(data.errorMsg);
+                                    }
+                                });
+                            }
+                            break;
                         case "INSUFFICIENT_STOCK":
                             var message = '<span style="color: red;"> <b>' + MSG.ERROR_INSUFFICIENT_STOCK + '</b> </span> <br />';
                             for (var i = 0, j = data.responseJSON.length; i < j; i++) {
@@ -1272,6 +1296,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                             payment_info.cardInfo.cardNumber = cardNumber;
                             payment_info.cardInfo.securityCode = card.securityCode;
                         }
+                        if  (checkout.token) {
+                            payment_info.cardInfo.token = checkout.token;
+                            myorder.checkout.unset("token");
+                        }
+
                     }
                     break;
                 case PAYMENT_TYPE.PAYPAL: // pay with paypal account

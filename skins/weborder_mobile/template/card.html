@@ -1,5 +1,11 @@
 <script type="text/template" id="card_main-template">
     <ul class="card <% if(isFirefox) { %>firefox<% } %>">
+        <li class="<% if(paypal_direct_credit_card) { %>required<% } %> border">
+            <input type="text" placeholder="First Name" value="<%= firstName %>" class="first_name ios-safari-caret" maxlength="20">
+        </li>
+        <li class="<% if(paypal_direct_credit_card) { %>required<% } %> border">
+            <input type="text" placeholder="Last Name" value="<%= secondName %>" class="last_name ios-safari-caret"  maxlength="20">
+        </li>
         <li class="required border">
             <input type="text" placeholder="Card Number" class="number ios-safari-caret" value="<%=cardNumber%>" min="0" />
         </li>

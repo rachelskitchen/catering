@@ -15,11 +15,18 @@ define(["backbone"], function(Backbone) {
 
                 return this.strategies.sort.call(this,a,b);
             },
-            sortNumbers: function(a, b) {
-                a = a.get(this.sortKey) * 1;
-                b = b.get(this.sortKey) * 1;
+            sortNumbers: function(oa, ob) {
+                var a = oa.get(this.sortKey) * 1;
+                var b = ob.get(this.sortKey) * 1;
                 a = isNaN(a) ? null : a; // if not a number, that can not compare
                 b = isNaN(b) ? null : b;
+
+                if (a == b && this.sortKey != 'name') {
+                    //for equal attributes sort models by attr 'name': 
+                    a = oa.get('name');
+                    b = ob.get('name');
+                    return a < b ? -1 : a > b ? 1 : 0;
+                }
 
                 return this.strategies.sort.call(this,a,b);
             },
