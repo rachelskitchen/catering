@@ -73,18 +73,13 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                         Backbone.$(window).trigger('showSpinner');
                         var selectedEstablishmentID = self.$('select').val();
                         if (self.collection.getEstablishmentID() === undefined) { // get a establishment's ID
-                            App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
+                            self.collection.trigger('changeEstablishment', selectedEstablishmentID);
                             self.removeFromDOMTree(); // remove a view from DOM
                         } else {
-                            delete App.Data.router;
-                            delete App.Data.categories;
-                            delete App.Data.AboutModel;
-                            delete App.Data.mainModel.get('cart').collection;
-                            delete App.Data.mainModel.get('header').collection;
-                            delete App.Data.mainModel.get('header').model;
+                            self.collection.trigger('resetEstablishmentData');
                             Backbone.$('link[href$="colors.css"]').remove();
                             Backbone.$('.main-container').remove();
-                            App.Data.establishments.trigger('changeEstablishment', selectedEstablishmentID);
+                            self.collection.trigger('changeEstablishment', selectedEstablishmentID);
                             self.back(); // the "Go Back" button was clicked
                         }
                     }

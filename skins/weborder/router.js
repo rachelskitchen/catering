@@ -66,6 +66,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this);
+                this.listenToOnce(App.Data.establishments, 'resetEstablishmentData', this.resetEstablishmentData, this); // remove establishment data in case if establishment ID will change
 
                 App.Data.mainModel.set({
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
@@ -184,6 +185,17 @@ define(["backbone", "main_router"], function(Backbone) {
                     if (App.Data.establishments.length > 1) App.Data.mainModel.set('isShowStoreChoice', true);
                 });
             }
+        },
+        /**
+        * Remove establishment data in case if establishment ID will change.
+        */
+        resetEstablishmentData: function() {
+            delete App.Data.router;
+            delete App.Data.categories;
+            delete App.Data.AboutModel;
+            delete App.Data.mainModel.get('cart').collection;
+            delete App.Data.mainModel.get('header').collection;
+            delete App.Data.mainModel.get('header').model;
         },
         index: function() {
             this.prepare('index', function() {
