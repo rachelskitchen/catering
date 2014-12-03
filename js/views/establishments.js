@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(['backbone', 'factory', 'generator'], function(Backbone) {
+define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
     'use strict';
     App.Views.CoreEstablishmentsView = {};
     App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView = App.Views.FactoryView.extend({
@@ -92,14 +92,15 @@ define(['backbone', 'factory', 'generator'], function(Backbone) {
             });
         }
     });
-    App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectView = App.Views.FactoryView.extend({
+    App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectView = App.Views.ListView.extend({
         name: 'establishments',
         mod: 'select',
         initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            App.Views.ListView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.collection, 'add', this.addItem, this);
         },
         render: function() {
-            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            App.Views.ListView.prototype.render.apply(this, arguments);
             this.collection.each(this.addItem.bind(this)); // add a item to the select menu
             return this;
         },
@@ -107,10 +108,31 @@ define(['backbone', 'factory', 'generator'], function(Backbone) {
         * Add a item to the select menu.
         */
         addItem: function(model) {
+            /*
             var currentEstablishment = this.collection.getEstablishmentID(); // get a establishment's ID
             if (currentEstablishment != model.get('id')) {
                 this.$('select').append('<option value="' + model.get('id') + '">' + model.get('name') + ', ' + model.get('line_1') + ', ' + model.get('city_name') + '</option>');
             }
+            */
+            /*
+            this.viewSelect = App.Views.GeneratorView.create('CoreEstablishments', {
+                mod: 'Select',
+                el: this.$('.establishments_select'),
+                collection: this.collection
+            }, 'ContentEstablishmentsSelect');
+            this.subViews.push(this.viewSelect);
+            */
+            var view = App.Views.GeneratorView.create('CoreEstablishments', {
+                mod: 'SelectItem',
+                el: $('<option> <option>'),
+                model: model
+            }, 'ContentEstablishmentsSelectItem' + model.get('id'));
+            App.Views.ListView.prototype.addItem.call(this, view);
+            this.subViews.push(view);
         }
+    });
+    App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectItemView = App.Views.FactoryView.extend({
+        name: 'establishments',
+        mod: 'select_item'
     });
 });
