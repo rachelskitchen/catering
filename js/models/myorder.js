@@ -536,8 +536,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.checkout.set('dining_option', App.Settings.default_dining_option);
 
             this.listenTo(this.checkout, 'change:dining_option', this.change_dining_option, this);
-            this.listenTo(this.checkout, 'change:pickupTS', this.get_discounts, this);
-            this.listenTo(this.checkout, 'change:isPickupASAP', this.get_discounts, this);
+            this.listenTo(this.checkout, 'change:pickupTS', this.update_discounts, this);
+            this.listenTo(this.checkout, 'change:isPickupASAP', this.update_discounts, this);
             
             this.listenTo(this, 'add', this.onModelAdded);
             this.listenTo(this, 'remove', this.onModelRemoved);
@@ -703,7 +703,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.change_only_gift_dining_option();
             this.isShippingOrderType() && this.getDestinationBasedTaxes(model);
 
-            this.get_discounts();
+            this.update_discounts();
         },
         /**
          *  Recalculate total when model remove
@@ -713,7 +713,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             this.change_only_gift_dining_option();
 
-            this.get_discounts();
+            this.update_discounts();
         },
         /**
          *  Recalculate total when model change
@@ -733,7 +733,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             model.changedAttributes() && model.changedAttributes().sum && model.trigger('update:sum', model);
 
-            this.get_discounts();
+            this.update_discounts();
         },     
         recalculate_tax: function() {
             var tax = 0;
@@ -782,20 +782,23 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 discounts: discounts
             });
         },
-
+        findDeliveryItem: function() {
+            return this.find(function(model) {
+                return model.get('product').get('isDeliveryItem') === true;
+            });
+        },
+        findBagChargeItem: function() {
+            return this.find(function(model) {
+                return model.get('product').id == null &&
+                       model.get('product').get('name') == MSG.BAG_CHARGE_ITEM;
+            });
+        },
         /**
          * save order to localstorage
          */
         saveOrders: function() {
-            var data = this.clone(); // create one more bagcharge item via cloning, need to delete both
-
-            // need remove bag charge / delivery charge item from storage
-            var obj = data.find(function(model) {
-                return model.get('product').id == null &&
-                       model.get('product').get('isDeliveryItem') === true;
-            });
+            var obj = this.findDeliveryItem();
             if (obj) {
-                data.remove(obj);
                 setData('delivery_data', {
                     name: obj.get('product').get('name'),
                     price: obj.get('product').get('price'),
@@ -806,13 +809,12 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 setData('delivery_data', {});
             }
 
-            obj = data.find(function(model) {
-                return model.get('product').id == null &&
-                       model.get('product').get('name') == MSG.BAG_CHARGE_ITEM;
+            var order = this.toJSON();
+            var orderToSave = _.filter(order, function(model) {
+                return model.product.id != null;
             });
-            data.remove(obj);
 
-            setData('orders', data);
+            setData('orders', orderToSave);
             this.checkout.saveCheckout();
             this.total.saveTotal();
             this.discount.saveDiscount();
@@ -1061,8 +1063,17 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 });
             }
         },
+        update_discounts: function() {
+            if (!this.getDiscountsTimeout)
+                this.getDiscountsTimeout = setTimeout(this.get_discounts.bind(this), 100); 
+        },
         get_discounts: function(params) {
-            var self = this;          
+            var self = this;
+
+            if (this.getDiscountsTimeout) {
+                clearTimeout(this.getDiscountsTimeout);
+                delete this.getDiscountsTimeout;
+            }          
 
             if (!App.Settings.accept_discount_code || self.get_only_product_quantity() < 1) {
                 self.recalculate_all();
@@ -1174,6 +1185,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 }*/
                 var model = myorder.findWhere({ "product_sub_id": product.product_sub_id,
                                                 "id_product": product.product });               
+                if (!model || !model.get("discount"))
+                    return;
+
                 if (product.discount instanceof Object) {                
                     model.get("discount").set({ name: product.discount.name, 
                                         sum: product.discount.sum,                                        
@@ -1593,7 +1607,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                       // so one/two items still exist in the collection and total is non zero.
             this.remove(this.bagChargeItem);
             this.remove(this.deliveryItem);
-
+            
             this.total.empty(); //this is for reliability cause of raunding errors exist.
 
             this.checkout.set('dining_option', 'DINING_OPTION_ONLINE');
