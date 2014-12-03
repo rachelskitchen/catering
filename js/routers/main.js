@@ -271,21 +271,19 @@ define(["backbone"], function(Backbone) {
             * Load view with stores list.
             */
             var loadEstablishmentsView = function() {
-                Backbone.$('body').append('<div class="establishments_view"> </div>');
+                var bodyElement = Backbone.$('body');
+                bodyElement.append('<div class="establishments_view"> </div>');
                 var view = App.Views.GeneratorView.create('CoreEstablishments', {
                     mod: 'Main',
                     el: Backbone.$('.establishments_view'),
                     collection: App.Data.establishments,
                     model: App.Data.establishments.getModelForView() // get a model for the stores list view
                 }, 'ContentEstablishmentsCore');
-                Backbone.$('body').append(view.el);
+                bodyElement.append(view.el);
                 Backbone.$(window).trigger('hideSpinner');
             };
-            Backbone.$('title').text('Web application');
-            var style = './css/establishments.css';
-            if (Backbone.$('link[href="' + style +'"]').length === 0) {
-                Backbone.$('head').append('<link rel="stylesheet" href="' + style + '" type="text/css" />');
-            }
+            if (Backbone.$('title').text() === '') pageTitle('Revel Systems'); // set page title
+            loadCSS('./css/establishments'); // include CSS file
             if (Backbone.$('#establishments_main-template').length === 0) {
                 var template = './template/establishments.html';
                 Backbone.$.ajax({
