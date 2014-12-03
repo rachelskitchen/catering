@@ -3,10 +3,12 @@
 </script>
 
 <script type="text/template" id="myorder_item-template">
+    <% if(!_settings.hide_images) { %>
     <div class="image">
         <img src=<%= image %> alt="<%= name %> logo<%= id %>" class="logo" data-default-index="1">
     </div>
-    <h3 class="s<%= price_length %>">
+    <% } %>
+    <h3 class="s<%= price_length %> <% if(_settings.hide_images) {print('noimage');} %>">
         <% if(sold_by_weight) { %>
             <span class="name"><%= sizeModifier %> <%= name %></span>
         <% } else { %>
@@ -25,17 +27,17 @@
         <% } %>
     </ul>
     <% _.each(attrs, function(attr) { %>
-    <div class="attrs">
+    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
         <span><%= attr.name %></span>:
         <span><%= attr.value %></span>
     </div>
     <% }); %>
-    <div class="cost">
+    <div class="cost <% if(_settings.hide_images) {print('noimage');} %>">
         <span class="currency_symbol"><%= currency_symbol %></span>
         <span class="price"><%= price_sum %></span>
     </div>
     <% if(id_product !== null) { %>
-    <div class="btns">
+    <div class="btns <% if(_settings.hide_images) {print('noimage');} %>">
         <span class="edit">Edit</span>
         <span class="divider"></span>
         <span class="remove"><span>Remove</span></span>
