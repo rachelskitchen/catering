@@ -48,10 +48,10 @@
 }
 #content .product dl {
     position: relative;
-    padding: 0 1.2em;
+    padding: 0 2em;
 }
-#content .product dl.noimage {
-    left: 1.8em;
+#content .product dl.noimage dt {
+    padding-left: 0;
 }
 
 #content .product dt {
