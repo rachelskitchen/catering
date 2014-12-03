@@ -77,8 +77,6 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                             self.removeFromDOMTree(); // remove a view from DOM
                         } else {
                             self.collection.trigger('resetEstablishmentData');
-                            Backbone.$('link[href$="colors.css"]').remove();
-                            Backbone.$('.main-container').remove();
                             self.collection.trigger('changeEstablishment', selectedEstablishmentID);
                             self.back(); // the "Go Back" button was clicked
                         }
