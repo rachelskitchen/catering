@@ -196,6 +196,14 @@ define(["backbone", "main_router"], function(Backbone) {
             delete App.Data.mainModel.get('cart').collection;
             delete App.Data.mainModel.get('header').collection;
             delete App.Data.mainModel.get('header').model;
+            this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
+        },
+        /**
+        * Remove HTML and CSS of current establishment in case if establishment ID will change.
+        */
+        removeHTMLandCSS: function() {
+            Backbone.$('link[href$="colors.css"]').remove();
+            this.bodyElement.children('.main-container').remove();
         },
         index: function() {
             this.prepare('index', function() {
