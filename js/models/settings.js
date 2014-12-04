@@ -371,11 +371,14 @@ define(["backbone", "async"], function(Backbone) {
         },
         load_geoloc: function() {
             var set_sys = App.Data.settings.get("settings_system");
+            var just_load_lib = false;
 
             // if coordinates are set in server then return
             if (set_sys.address.coordinates.lat != null && set_sys.address.coordinates.lng != null) {
-                set_sys.geolocation_load.resolve();
-                return;
+                //set_sys.geolocation_load.resolve();
+                //return;
+                //TODO: probably split this function into 2 ones 
+                just_load_lib = true;
             }
 
             var self = this,
@@ -390,6 +393,8 @@ define(["backbone", "async"], function(Backbone) {
                 }
 
                 require(["async!https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"], function() {
+                    if (just_load_lib) 
+                        return;
                     var geocoder = new google.maps.Geocoder();
                     geocoder.geocode({"address": address_google}, function(results, status) {
                         if (status === google.maps.GeocoderStatus.OK) {

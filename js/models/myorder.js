@@ -501,7 +501,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             name: 'default', 
             sum: 0,
             taxed: false,
-            type: null         
+            type: null
         },
         /**
          * get discount format string
@@ -509,9 +509,17 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         toString: function() {
             return round_monetary_currency(this.get('sum'));
         },
-        saveDiscount: function() {
+        saveDiscount: function(key) {
             var data = this.toJSON();
-            setData('orderLevelDiscount', data);
+            if (!key) 
+                key = 'orderLevelDiscount';
+            setData(key, data);
+        },
+        loadDiscount: function(key) {
+            if (!key) 
+                key = 'orderLevelDiscount';
+            var data = getData(key);
+            this.set(data);
         },
         zero_discount: function() {
             this.set({  name: "No discount", 
@@ -637,13 +645,23 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          *  create orders from JSON.
          */
         addJSON: function(data) {
-            var self = this;
+            var self = this, obj;
             data && data.forEach(function(element) {
-                if (element.product.id) { // not add delivery and bag charge items
+                if (element.product.id) { // not add delivery and bag charge items here
                     var myorder = new App.Models.Myorder();
                     myorder.addJSON(element);
                     self.add(myorder);
                     myorder.set('initial_price', myorder.get_initial_price());
+                } else {
+                    //just update discounts for BagCharge and DeliveryCharge items:
+                    if (element.product.name == MSG.BAG_CHARGE_ITEM) {
+                        obj = self.findBagChargeItem();
+                        obj && obj.get("discount").set(element.discount);
+                    }
+                    if (element.product.name == MSG.DELIVERY_ITEM) {
+                        obj = self.findDeliveryItem();
+                        obj && obj.get("discount").set(element.discount);
+                    }
                 }
             });
         },
@@ -809,10 +827,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 setData('delivery_data', {});
             }
 
-            var order = this.toJSON();
-            var orderToSave = _.filter(order, function(model) {
-                return model.product.id != null;
-            });
+            var orderToSave = this.toJSON();
 
             setData('orders', orderToSave);
             this.checkout.saveCheckout();
@@ -835,6 +850,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if (this.deliveryItem)
                     this.deliveryItem.get("product").set(delivery_data);
             }
+
+            this.discount.loadDiscount();
+            this.recalculate_all();
         },       
         /**
          *
