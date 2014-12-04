@@ -593,7 +593,7 @@ function round_monetary_currency(value, precision, up) {
  *  Sync load template
  */
 
-function loadTemplate2(name,file) {
+function loadTemplate2(name, file, isCore) {
     if (!App.Data.loadModelTemplate) {
         App.Data.loadModelTemplate = {};
     }
@@ -604,7 +604,7 @@ function loadTemplate2(name,file) {
         App.Data.loadModelTemplate.dfd = $.Deferred();
         App.Data.loadModelTemplate.count++;
         $.ajax({
-            url: App.Data.settings.get('skinPath') + "/template/" + file + ".html",
+            url: isCore ? 'template/' + file + '.html' : App.Data.settings.get('skinPath') + '/template/' + file + '.html',
             dataType: "html",
             success : function(data) {
                 $("head").append(data);
