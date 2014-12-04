@@ -173,7 +173,7 @@ define(["backbone", "async"], function(Backbone) {
                     settings_skin.styles = data instanceof Object && data.styles instanceof Array ? data.styles : [];
                     settings_skin.scripts = data instanceof Object && data.scripts instanceof Array ? data.scripts : [];
                     settings_skin.routing = data.routing;
-                    Backbone.$.extend(settings_skin.routing, self.get('settings_skin').routing);
+                    Backbone.$.extend(settings_skin.routing, self.defaults.settings_skin.routing);
                     settings_skin.color_schemes = data.color_schemes instanceof Array ? data.color_schemes : [];
                     self.set("settings_skin", settings_skin);
                     self.trigger('changeSettingsSkin');
