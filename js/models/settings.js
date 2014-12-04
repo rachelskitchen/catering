@@ -54,7 +54,14 @@ define(["backbone", "async"], function(Backbone) {
             host: "",
             storage_data: 0,
             skin: "", // weborder by default
-            settings_skin: {},
+            settings_skin: {
+                routing: {
+                    establishments: {
+                        cssCore: ['establishments'],
+                        templates: ['establishments']
+                    }
+                }
+            },
             settings_system: {},
             timeout: 60000,
             x_revel_revision: null,
@@ -166,8 +173,10 @@ define(["backbone", "async"], function(Backbone) {
                     settings_skin.styles = data instanceof Object && data.styles instanceof Array ? data.styles : [];
                     settings_skin.scripts = data instanceof Object && data.scripts instanceof Array ? data.scripts : [];
                     settings_skin.routing = data.routing;
+                    Backbone.$.extend(settings_skin.routing, self.get('settings_skin').routing);
                     settings_skin.color_schemes = data.color_schemes instanceof Array ? data.color_schemes : [];
                     self.set("settings_skin", settings_skin);
+                    self.trigger('changeSettingsSkin');
                     var default_img = self.get_img_default();
                     $("<style>.img_default { background: url('" + default_img + "'); }</style>").appendTo("head");
                 },

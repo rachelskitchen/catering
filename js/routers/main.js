@@ -182,23 +182,28 @@ define(["backbone"], function(Backbone) {
 
             color_schemes.length > 0 && !this.prepare.initialized && initTheme.call(this);
 
-            for(i = 0, j = scripts.length; i < j; i++)
-                js.push(skin + "/js/" + scripts[i]);
+            if (page === 'establishments') {
+                for (i = 0, j = templates.length; i < j; i++)
+                    loadTemplate2(null, templates[i], true); // sync load template
+            } else {
+                for(i = 0, j = scripts.length; i < j; i++)
+                    js.push(skin + "/js/" + scripts[i]);
 
-            for(i = 0, j = templates.length; i < j; i++)
-                loadTemplate2(null, templates[i]);
+                for (i = 0, j = templates.length; i < j; i++)
+                    loadTemplate2(null, templates[i]);
 
-            for(i = 0, j = views.length; i < j; i++)
-                js.push(skin + "/views/" + views[i]);
+                for(i = 0, j = views.length; i < j; i++)
+                    js.push(skin + "/views/" + views[i]);
 
-            for(i = 0, j = css.length; i < j; i++)
-                loadCSS(skinPath + "/css/" + css[i]);
+                for(i = 0, j = css.length; i < j; i++)
+                    loadCSS(skinPath + "/css/" + css[i]);
+
+                for(i = 0, j = models.length; i < j; i++)
+                    js.push(skin + "/models/" + models[i]);
+            }
 
             for(i = 0, j = cssCore.length; i < j; i++)
                 loadCSS(basePath + "/css/" + cssCore[i]);
-
-            for(i = 0, j = models.length; i < j; i++)
-                js.push(skin + "/models/" + models[i]);
 
             require(js, function() {
                 if (App.Data.loadModelTemplate && App.Data.loadModelTemplate.dfd) {
@@ -281,20 +286,7 @@ define(["backbone"], function(Backbone) {
                 Backbone.$(window).trigger('hideSpinner');
             };
             if (Backbone.$('title').text() === '') pageTitle('Revel Systems'); // set page title
-            loadCSS('./css/establishments'); // include CSS file
-            if (Backbone.$('#establishments_main-template').length === 0) {
-                var template = './template/establishments.html';
-                Backbone.$.ajax({
-                    url: template,
-                    dataType: 'html',
-                    success: function(data) {
-                        Backbone.$('head').append(data);
-                        loadEstablishmentsView(); // load view with stores list
-                    }
-                });
-            } else {
-                loadEstablishmentsView(); // load view with stores list
-            }
+            this.prepare('establishments', loadEstablishmentsView); // load view with stores list
         }
     });
 

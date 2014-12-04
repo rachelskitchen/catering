@@ -137,7 +137,7 @@
                 supported_skins: app.skins.available
             });
 
-            App.Data.settings.on('change:settings_skin', function() {
+            App.Data.settings.on('changeSettingsSkin', function() {
                 load_styles_and_scripts(); // load styles and scripts
                 App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
