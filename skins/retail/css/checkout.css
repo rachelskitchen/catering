@@ -153,7 +153,7 @@
     height: 48px;
     width: 245px;
     overflow: hidden;
-    text-indent: 300px;
+    line-height: 1000px;
     height: 46px !important;
 }
 .btn.paypal:before {
