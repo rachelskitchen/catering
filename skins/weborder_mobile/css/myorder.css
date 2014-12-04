@@ -45,8 +45,9 @@
     overflow: hidden;
 }
 
-#content ul.myorder h3 .currency_symbol {
-    letter-spacing: -0.2em;
+#content ul.myorder h3 .currency_symbol, #content ul.myorder ul .currency_symbol {
+    position: relative;
+    left: 0.2em;
 }
 
 #content ul.myorder h3 .cost {
@@ -91,10 +92,6 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-}
-
-#content ul.myorder ul .currency_symbol {
-    letter-spacing: -0.2em
 }
 
 #content ul.myorder ul .special {
