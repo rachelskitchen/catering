@@ -260,14 +260,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          * Show the "Change Establishment" modal window.
          */
         change_establishment: function() {
-            Backbone.$('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
             App.Data.establishments.getModelForView().set({
                 storeDefined: true,
                 showFooter: true
             }); // get a model for the stores list view
             App.Data.establishments.trigger('loadStoresList');
             this.model.set('isBlurContent', true);
-            Backbone.$('#main-spinner').removeClass('ui-visible');
         },
         /**
          * A blur effect of content.
