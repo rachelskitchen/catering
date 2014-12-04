@@ -106,6 +106,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this);
+                this.listenToOnce(App.Data.establishments, 'resetEstablishmentData', this.resetEstablishmentData, this); // remove establishment data in case if establishment ID will change
 
                 App.Data.mainModel.set({
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
@@ -115,6 +116,7 @@ define(["backbone", "main_router"], function(Backbone) {
                     categories: App.Data.categories,
                     search: App.Data.search
                 });
+                App.Data.establishments.getModelForView().set('clientName', App.Data.mainModel.get('clientName')); // get a model for the stores list view
 
                 // listen to navigation control
                 this.navigationControl();
@@ -342,6 +344,25 @@ define(["backbone", "main_router"], function(Backbone) {
                     if (App.Data.establishments.length > 1) App.Data.mainModel.set('isShowStoreChoice', true);
                 });
             }
+        },
+        /**
+        * Remove establishment data in case if establishment ID will change.
+        */
+        resetEstablishmentData: function() {
+            delete App.Data.router;
+            delete App.Data.categories;
+            delete App.Data.AboutModel;
+            delete App.Data.mainModel.get('cart').collection;
+            delete App.Data.mainModel.get('header').collection;
+            delete App.Data.mainModel.get('header').model;
+            this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
+        },
+        /**
+        * Remove HTML and CSS of current establishment in case if establishment ID will change.
+        */
+        removeHTMLandCSS: function() {
+            Backbone.$('link[href$="colors.css"]').remove();
+            this.bodyElement.children('.main-container').remove();
         },
         index: function(data) {
             // init origin state for case when page is loaded without any data (#index or hash is not assigned)
