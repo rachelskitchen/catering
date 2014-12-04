@@ -201,6 +201,8 @@ define(["backbone", "async"], function(Backbone) {
                 } else {
                     return 1; // set default value
                 }
+            } else {
+                return this.get('establishment');
             }
         },
         /**

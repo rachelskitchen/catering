@@ -146,7 +146,7 @@
                     App.Data.router.prepare.initialized = false;
                     // hide launch spinner
                     App.Data.router.once('started', function() {
-                        spinner.style.display = 'none';
+                        Backbone.$(window).trigger('hideSpinner');
                         App.Data.router.trigger('needLoadEstablishments');
                     });
                     if(App.Data.settings.get('isMaintenance')) {
@@ -227,19 +227,17 @@
              */
             var showError = function() {
                 App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
-                spinner.style.display = 'none';
+                Backbone.$(window).trigger('hideSpinner');
             };
             App.Data.establishments = new App.Collections.Establishments();
             // status code = 1 (app should load view with stores list)
             App.Data.establishments.on('loadStoresList', function() {
                 App.Routers.MainRouter.prototype.loadViewEstablishments(); // load the page with stores list
             });
-            // status code = 2 (app reported about error)
-            App.Data.establishments.on('showError', function() {
-                showError(); // app reported about error
-            });
+            App.Data.establishments.on('showError', showError); // status code = 2 (app reported about error)
             // status code = 3 (app was loaded)
             App.Data.establishments.on('changeEstablishment', function(establishmentID) {
+                Backbone.$(window).trigger('showSpinner');
                 if (App.Views.GeneratorView) App.Views.GeneratorView.clearCache(); // clear cache if store was changed
                 App.Data.settings.set('establishment', establishmentID);
             });

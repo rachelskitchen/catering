@@ -26,9 +26,6 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
     App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView = App.Views.FactoryView.extend({
         name: 'establishments',
         mod: 'main',
-        initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-        },
         render: function() {
             this.model.set('brandName', this.collection.getBrandName()); // get a brand name
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -40,9 +37,6 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
             this.subViews.push(this.viewSelect);
             return this;
         },
-        remove: function() {
-            App.Views.FactoryView.prototype.remove.apply(this, arguments);
-        },
         events: {
             'click button[name=back]': 'back',
             'click button[name=proceed]': 'proceed'
@@ -53,7 +47,6 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
         back: function() {
             this.collection.trigger('clickButtonBack');
             this.removeFromDOMTree(); // remove a view from DOM
-            Backbone.$('.establishments_view').remove();
         },
         /**
         * The "Proceed" button was clicked.
@@ -70,7 +63,6 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                 },
                 callback: function(result) {
                     if (result) {
-                        Backbone.$(window).trigger('showSpinner');
                         var selectedEstablishmentID = self.$('select').val();
                         if (self.collection.getEstablishmentID() === undefined) { // get a establishment's ID
                             self.collection.trigger('changeEstablishment', selectedEstablishmentID);
