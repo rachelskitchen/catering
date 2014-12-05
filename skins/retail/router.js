@@ -355,6 +355,9 @@ define(["backbone", "main_router"], function(Backbone) {
             delete App.Data.mainModel.get('cart').collection;
             delete App.Data.mainModel.get('header').collection;
             delete App.Data.mainModel.get('header').model;
+            Backbone.history.stop();
+            this.index.initState = undefined;
+            window.location.hash = '';
             this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
         },
         /**
