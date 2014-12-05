@@ -39,7 +39,12 @@ define(['backbone'], function(Backbone) {
             return Backbone.View.prototype.constructor.apply(this, arguments);
         },
         initialize: function() {
-            this.template = template_helper(this.name, this.mod);
+            this.template = function(params) {
+                var template = template_helper(this.name, this.mod),
+                    baseParams = {_settings: App.Settings};
+                params = params instanceof Object ? _.extend(baseParams, params) : baseParams;
+                return template(params);
+            };
             this.render();
             App.Data.devMode && this.$el.attr("data-tmpl", this.name + "_" + this.mod + "-template");
         },

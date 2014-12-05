@@ -896,3 +896,17 @@ section.maintenance p {
 input[type="search"] {
     -webkit-appearance: textfield;
 }
+
+/* Mercury accepted credit card */
+.mercury-accepted-credit-cards {
+    position: absolute;
+    bottom: 0;
+    right: 200px;
+}
+.card-logo {
+    display: inline-block;
+    margin-left: 10px;
+}
+.imgCardLogo {
+    height: 32px;
+}
