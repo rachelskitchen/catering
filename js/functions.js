@@ -108,7 +108,13 @@ MSG.ERROR_REVEL_UNABLE_TO_PERFORM = 'Unable to perform action. Please ask about 
 MSG.ERROR_REVEL_ATTEMPTS_EXCEEDED = 'Max number of authentication attempts exceeded. Account deleted.';
 MSG.ERROR_REVEL_PASSWORD_UPDATE_FAILED = 'Password update failed. Old password is invalid.';
 MSG.ERROR_REVEL_AUTHENTICATION_FAILED = 'Authentication failed. Please enter valid email & password.';
+// page 'Establishments' (begin)
+MSG.CHOOSE_BRAND_DESKTOP = 'Choose which %s you are looking for:';
+MSG.CHOOSE_BRAND_MOBILE = 'Choose which %s you\'re looking for:';
+MSG.PROCEED_BUTTON = 'Proceed';
+MSG.BACK_BUTTON = 'Go Back';
 MSG.ERROR_ESTABLISHMENTS_NOSTORE = 'No store is available for the specified brand';
+// page 'Establishments' (end)
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,

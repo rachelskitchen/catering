@@ -27,7 +27,9 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
         name: 'establishments',
         mod: 'main',
         render: function() {
-            this.model.set('brandName', this.collection.getBrandName()); // get a brand name
+            this.model.set('CHOOSE_BRAND_LINE', MSG.CHOOSE_BRAND_DESKTOP.replace('%s', this.collection.getBrandName()));
+            this.model.set('PROCEED_BUTTON', MSG.PROCEED_BUTTON);
+            this.model.set('BACK_BUTTON', MSG.BACK_BUTTON);
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.viewSelect = App.Views.GeneratorView.create('CoreEstablishments', {
                 mod: 'Select',
