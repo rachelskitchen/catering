@@ -27,9 +27,13 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
         name: 'establishments',
         mod: 'main',
         render: function() {
-            this.model.set('CHOOSE_BRAND_LINE', MSG.CHOOSE_BRAND_DESKTOP.replace('%s', this.collection.getBrandName()));
-            this.model.set('PROCEED_BUTTON', MSG.PROCEED_BUTTON);
-            this.model.set('BACK_BUTTON', MSG.BACK_BUTTON);
+            var type = this.model.get('isMobileVersion') ? 'MOBILE' : 'DESKTOP';
+            this.model.set('CHOOSE_BRAND', MSG['ESTABLISHMENTS_CHOOSE_BRAND_' + type].replace('%s', this.collection.getBrandName()));
+            this.model.set('PROCEED_BUTTON', MSG.ESTABLISHMENTS_PROCEED_BUTTON);
+            this.model.set('BACK_BUTTON', MSG.ESTABLISHMENTS_BACK_BUTTON);
+            this.model.set('ALERT_MESSAGE', MSG['ESTABLISHMENTS_ALERT_MESSAGE_' + type]);
+            this.model.set('ALERT_PROCEED_BUTTON', MSG['ESTABLISHMENTS_ALERT_PROCEED_BUTTON_' + type]);
+            this.model.set('ALERT_BACK_BUTTON', MSG['ESTABLISHMENTS_ALERT_BACK_BUTTON_' + type]);
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.viewSelect = App.Views.GeneratorView.create('CoreEstablishments', {
                 mod: 'Select',
@@ -54,14 +58,24 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
         * The "Proceed" button was clicked.
         */
         proceed: function() {
-            var self = this;
+            var self = this,
+                message;
+            if (this.model.get('isMobileVersion')) {
+                message = '<div class="establishments_alert_mobile">' +
+                    '<p>' + MSG.ESTABLISHMENTS_ALERT_MESSAGE_TITLE_MOBILE + '</p>' +
+                    '<p>' + this.model.get('ALERT_MESSAGE') + '</p>' +
+                    '<p>' + MSG.ESTABLISHMENTS_ALERT_MESSAGE_QUESTION_MOBILE + '</p>' +
+                '</div>';
+            } else {
+                message = this.model.get('ALERT_MESSAGE');
+            }
             tmpl_alert_message({
-                message: 'If you choose a different store location, your order will be canceled. Cancel Order?',
+                message: message,
                 reload_page: false,
                 is_confirm: true,
                 confirm: {
-                    ok: 'Proceed',
-                    cancel: 'Go Back'
+                    ok: this.model.get('ALERT_PROCEED_BUTTON'),
+                    cancel: this.model.get('ALERT_BACK_BUTTON')
                 },
                 callback: function(result) {
                     if (result) {
@@ -77,6 +91,7 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                     }
                 }
             });
+            if (this.model.get('isMobileVersion')) Backbone.$('#alert .icon').hide();
         }
     });
     App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectView = App.Views.ListView.extend({

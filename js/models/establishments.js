@@ -24,6 +24,7 @@ define(['backbone', 'collection_sort'], function(Backbone) {
     'use strict';
     App.Models.ModelForCoreEstablishmentsMainView = Backbone.Model.extend({
         defaults: {
+            isMobileVersion: false,
             storeDefined: false,
             showFooter: false,
             clientName: null
@@ -140,6 +141,12 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                 });
             }
             return status;
+        },
+        /**
+        * Set a view version (desktop or mobile).
+        */
+        setViewVersion: function(isMobileVersion) {
+            this.getModelForView().set('isMobileVersion', isMobileVersion);
         }
     });
 })

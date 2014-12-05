@@ -127,9 +127,9 @@ define(["backbone", "async"], function(Backbone) {
              }
         },
         /**
-         * resolve app's skin
+         * Get a current skin.
          */
-        get_settings_main: function() {
+        get_current_skin: function() {
             var params = parse_get_params(),
                 skin = params.skin || params.rvarSkin,
                 settings = this.get('settings_system'),
@@ -155,6 +155,13 @@ define(["backbone", "async"], function(Backbone) {
                 settings.delivery_charge = 0;
 
             this.set('skin', App.skin);
+            return App.skin;
+        },
+        /**
+         * resolve app's skin
+         */
+        get_settings_main: function() {
+            if (this.get('skin') === '') this.get_current_skin(); // get a current skin
             this.trigger('changeSkin');
         },
         /**
