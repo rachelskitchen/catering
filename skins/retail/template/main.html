@@ -17,6 +17,28 @@
     </div>
 </div>
 <div id="main-spinner"></div>
+<% if(_settings.payment_processor.mercury) { %>
+<ul class="mercury-accepted-credit-cards">
+    <li class="card-logo">
+        <img title="Visa Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/visa.png">
+    </li>
+    <li class="card-logo">
+        <img title="MasterCard Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/Mastercard.png">
+    </li>
+    <li class="card-logo">
+        <img id="imgAmex" title="American Express Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/amex.png">
+    </li>
+    <li class="card-logo">
+        <img title="Discover Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/discover.png">
+    </li>
+    <li class="card-logo">
+        <img title="Diners Club Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/dinersclub.png">
+    </li>
+    <li class="card-logo">
+        <img title="JCB Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/jcb.png">
+    </li>
+</ul>
+<% } %>
 </script>
 
 <script type="text/template" id="alert-template">
@@ -117,4 +139,26 @@
 <footer>
     <a class="powered-by" target='_blank' href="http://revelup.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
 </footer>
+<% if(_settings.payment_processor.mercury) { %>
+<ul class="mercury-accepted-credit-cards">
+    <li class="card-logo">
+        <img title="Visa Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/visa.png">
+    </li>
+    <li class="card-logo">
+        <img title="MasterCard Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/Mastercard.png">
+    </li>
+    <li class="card-logo">
+        <img id="imgAmex" title="American Express Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/amex.png">
+    </li>
+    <li class="card-logo">
+        <img title="Discover Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/discover.png">
+    </li>
+    <li class="card-logo">
+        <img title="Diners Club Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/dinersclub.png">
+    </li>
+    <li class="card-logo">
+        <img title="JCB Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/jcb.png">
+    </li>
+</ul>
+<% } %>
 </script>

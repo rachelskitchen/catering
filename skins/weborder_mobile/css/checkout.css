@@ -308,3 +308,18 @@
     position: relative;
     z-index: 1;
 }
+
+/* Mercury accepted credit card */
+.mercury-accepted-credit-cards {
+    border-bottom: 1px solid #a8c4d8;
+    padding-bottom: 1.5em;
+    margin: 1.5em;
+    text-align: center;
+}
+.card-logo {
+    display: inline-block;
+    margin-left: 1.3em;
+}
+.imgCardLogo {
+    height: 4em;
+}

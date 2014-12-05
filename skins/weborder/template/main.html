@@ -2,7 +2,7 @@
 <section>
     <header id="header"></header>
     <div id="content">
-       
+
     </div>
 </section>
 <aside id="cart"></aside>
@@ -19,6 +19,28 @@
     </div>
 </div>
 <div id="main-spinner"></div>
+<% if(_settings.payment_processor.mercury) { %>
+<ul class="mercury-accepted-credit-cards">
+    <li class="card-logo">
+        <img title="Visa Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/visa.png">
+    </li>
+    <li class="card-logo">
+        <img title="MasterCard Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/Mastercard.png">
+    </li>
+    <li class="card-logo">
+        <img id="imgAmex" title="American Express Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/amex.png">
+    </li>
+    <li class="card-logo">
+        <img title="Discover Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/discover.png">
+    </li>
+    <li class="card-logo">
+        <img title="Diners Club Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/dinersclub.png">
+    </li>
+    <li class="card-logo">
+        <img title="JCB Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/jcb.png">
+    </li>
+</ul>
+<% } %>
 </script>
 
 <script type="text/template" id="alert-template">
@@ -28,14 +50,14 @@
         <div class="alert_block">
             <div class="no-cancel"></div>
             <div class="icon <%= icon_type %>"></div>
-            <div class='message'><%= message %></div>        
+            <div class='message'><%= message %></div>
             <div class='btn_wrapper'>
                 <div class='btn btnOk'><%= btnText1 %></div>
                 <% if (is_confirm === true) { %>
                    <div class='btn btnCancel'><%= btnText2 %></div>
-                <% } %>  
-            </div>   
-        </div>           
+                <% } %>
+            </div>
+        </div>
     </div>
 </script>
 
@@ -98,7 +120,7 @@
                             <% if(row) { %> Row <span><%= row %></span>,<% } %>
                             <% if(seat) { %> Seat <span><%= seat %></span><% } %>
                         </td>
-                    </tr>                       
+                    </tr>
                     <% } %>
                     <% if(reward_points) { %>
                     <tr>
@@ -119,4 +141,26 @@
 <footer>
     <a class="powered-by" target='_blank' href="http://revelup.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
 </footer>
+<% if(_settings.payment_processor.mercury) { %>
+<ul class="mercury-accepted-credit-cards">
+    <li class="card-logo">
+        <img title="Visa Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/visa.png">
+    </li>
+    <li class="card-logo">
+        <img title="MasterCard Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/Mastercard.png">
+    </li>
+    <li class="card-logo">
+        <img id="imgAmex" title="American Express Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/amex.png">
+    </li>
+    <li class="card-logo">
+        <img title="Discover Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/discover.png">
+    </li>
+    <li class="card-logo">
+        <img title="Diners Club Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/dinersclub.png">
+    </li>
+    <li class="card-logo">
+        <img title="JCB Logo" class="imgCardLogo" src="https://hc.mercurydev.net/App_Themes/Default/jcb.png">
+    </li>
+</ul>
+<% } %>
 </script>
