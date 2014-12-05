@@ -109,11 +109,19 @@ MSG.ERROR_REVEL_ATTEMPTS_EXCEEDED = 'Max number of authentication attempts excee
 MSG.ERROR_REVEL_PASSWORD_UPDATE_FAILED = 'Password update failed. Old password is invalid.';
 MSG.ERROR_REVEL_AUTHENTICATION_FAILED = 'Authentication failed. Please enter valid email & password.';
 // page 'Establishments' (begin)
-MSG.CHOOSE_BRAND_DESKTOP = 'Choose which %s you are looking for:';
-MSG.CHOOSE_BRAND_MOBILE = 'Choose which %s you\'re looking for:';
-MSG.PROCEED_BUTTON = 'Proceed';
-MSG.BACK_BUTTON = 'Go Back';
-MSG.ERROR_ESTABLISHMENTS_NOSTORE = 'No store is available for the specified brand';
+MSG.ESTABLISHMENTS_ERROR_NOSTORE = 'No store is available for the specified brand';
+MSG.ESTABLISHMENTS_CHOOSE_BRAND_DESKTOP = 'Choose which %s you are looking for:';
+MSG.ESTABLISHMENTS_CHOOSE_BRAND_MOBILE = 'Choose which %s you\'re looking for:';
+MSG.ESTABLISHMENTS_PROCEED_BUTTON = 'Proceed';
+MSG.ESTABLISHMENTS_BACK_BUTTON = 'Go Back';
+MSG.ESTABLISHMENTS_ALERT_MESSAGE_DESKTOP = 'If you choose a different store location, your order will be canceled. Cancel Order?';
+MSG.ESTABLISHMENTS_ALERT_MESSAGE_TITLE_MOBILE = 'Warning';
+MSG.ESTABLISHMENTS_ALERT_MESSAGE_MOBILE = 'If you switch stores, your order will be discarded.';
+MSG.ESTABLISHMENTS_ALERT_MESSAGE_QUESTION_MOBILE = 'Continue?';
+MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_DESKTOP = 'Proceed';
+MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_MOBILE = 'Ok';
+MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_DESKTOP = 'Go Back';
+MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_MOBILE = 'Back';
 // page 'Establishments' (end)
 
 var PAYMENT_TYPE = {

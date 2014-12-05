@@ -226,10 +226,12 @@
              * App reported about error.
              */
             var showError = function() {
-                App.Data.errors.alert(MSG.ERROR_ESTABLISHMENTS_NOSTORE, true); // user notification
+                App.Data.errors.alert(MSG.ESTABLISHMENTS_ERROR_NOSTORE, true); // user notification
                 Backbone.$(window).trigger('hideSpinner');
             };
             App.Data.establishments = new App.Collections.Establishments();
+            var skin = App.Data.settings.get_current_skin(true); // get a current skin
+            App.Data.establishments.setViewVersion(skin === 'weborder_mobile'); // set a view version (desktop or mobile)
             // status code = 1 (app should load view with stores list)
             App.Data.establishments.on('loadStoresList', function() {
                 App.Routers.MainRouter.prototype.loadViewEstablishments(); // load the page with stores list

@@ -275,6 +275,9 @@ define(["backbone"], function(Backbone) {
             * Load view with stores list.
             */
             var loadEstablishmentsView = function() {
+                if (App.Data.establishments.getModelForView().get('isMobileVersion')) {
+                    loadCSS('./css/' + 'establishments_mobile');
+                }
                 var view = App.Views.GeneratorView.create('CoreEstablishments', {
                     mod: 'Main',
                     el: Backbone.$('<div class="establishments_view"> </div>'),
