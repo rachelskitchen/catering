@@ -169,6 +169,7 @@ define(["backbone"], function(Backbone) {
                 views = page && Array.isArray(settings_skin.routing[page].views) ? settings_skin.routing[page].views : [],
                 css = page && Array.isArray(settings_skin.routing[page].css) ? settings_skin.routing[page].css : [],
                 cssCore = page && Array.isArray(settings_skin.routing[page].cssCore) ? settings_skin.routing[page].cssCore : [],
+                templatesCore = page && Array.isArray(settings_skin.routing[page].templatesCore) ? settings_skin.routing[page].templatesCore : [],
                 models = page && Array.isArray(settings_skin.routing[page].model) ? settings_skin.routing[page].model : [],
                 core = page && Array.isArray(settings_skin.routing[page].core) ? settings_skin.routing[page].core : [],
                 color_schemes = Array.isArray(settings_skin.color_schemes) ? settings_skin.color_schemes : [],
@@ -182,28 +183,26 @@ define(["backbone"], function(Backbone) {
 
             color_schemes.length > 0 && !this.prepare.initialized && initTheme.call(this);
 
-            if (page === 'establishments') {
-                for (i = 0, j = templates.length; i < j; i++)
-                    loadTemplate2(null, templates[i], true); // sync load template
-            } else {
-                for(i = 0, j = scripts.length; i < j; i++)
-                    js.push(skin + "/js/" + scripts[i]);
+            for(i = 0, j = scripts.length; i < j; i++)
+                js.push(skin + "/js/" + scripts[i]);
 
-                for (i = 0, j = templates.length; i < j; i++)
-                    loadTemplate2(null, templates[i]);
+            for (i = 0, j = templates.length; i < j; i++)
+                loadTemplate2(null, templates[i]);
 
-                for(i = 0, j = views.length; i < j; i++)
-                    js.push(skin + "/views/" + views[i]);
+            for(i = 0, j = views.length; i < j; i++)
+                js.push(skin + "/views/" + views[i]);
 
-                for(i = 0, j = css.length; i < j; i++)
-                    loadCSS(skinPath + "/css/" + css[i]);
+            for(i = 0, j = css.length; i < j; i++)
+                loadCSS(skinPath + "/css/" + css[i]);
 
-                for(i = 0, j = models.length; i < j; i++)
-                    js.push(skin + "/models/" + models[i]);
-            }
+            for(i = 0, j = models.length; i < j; i++)
+                js.push(skin + "/models/" + models[i]);
 
             for(i = 0, j = cssCore.length; i < j; i++)
                 loadCSS(basePath + "/css/" + cssCore[i]);
+
+            for (i = 0, j = templatesCore.length; i < j; i++)
+                loadTemplate2(null, templatesCore[i], true); // sync load template
 
             require(js, function() {
                 if (App.Data.loadModelTemplate && App.Data.loadModelTemplate.dfd) {
