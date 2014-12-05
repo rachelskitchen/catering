@@ -397,3 +397,19 @@ select {
     z-index: 1;
     font-weight: bold;
 }
+
+/* scroll css, it's common for all themes: */
+#content .custom-scroll::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 0.4em rgba(0,0,0,0.3);
+    border-radius: 0.6em;
+    background-color: #eee;
+}
+#content .custom-scroll::-webkit-scrollbar {
+    width: 0.8em;
+    background-color: #EEE;
+}
+#content .custom-scroll::-webkit-scrollbar-thumb {
+    border-radius: 0.6em;
+    -webkit-box-shadow: inset 0 0 0.4em rgba(0,0,0,.3);
+    background-color: #BBB;
+}

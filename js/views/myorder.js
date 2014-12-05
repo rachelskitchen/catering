@@ -25,6 +25,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
     App.Views.CoreMyOrderView = {};
 
+  
     App.Views.CoreMyOrderView.CoreMyOrderModifierView = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'modifier',
@@ -33,6 +34,31 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
             model.price = round_monetary_currency(this.model.isFree() ? model.free_amount : model.order_price);
             this.$el.html(this.template(model));
+            return this;
+        }
+    });
+
+    App.Views.CoreMyOrderView.CoreMyOrderProductDiscountView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'product_discount',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model.get("discount"), 'change', this.render, this);
+        },
+        render: function() {
+            // this.model is the instance of App.Models.Myorder 
+            var model = {},
+                discount = this.model.get("discount");
+            model.currency_symbol = App.Settings.currency_symbol;
+            model.discount_name = discount.get('name');
+            model.discount_sum = discount.toString();
+            this.$el.html(this.template(model));
+            if (discount.get("sum") <= 0) {
+                this.$el.hide();
+            }
+            else {
+                this.$el.show();
+            }
             return this;
         }
     });
@@ -103,6 +129,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change', this.update);
+            this.listenTo(this.model.get_product(), 'change', this.update);
         },
         render: function() {
             var self = this,
@@ -126,6 +153,17 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     self.$('ul').append(view.el);
                 });
             });
+
+            if (App.Settings.accept_discount_code && this.model.get("discount") instanceof Object) {
+                var view = App.Views.GeneratorView.create('MyOrder', {
+                    el: $('<li></li>'),
+                    mod: 'ProductDiscount',
+                    model: this.model
+                });
+                self.subViews.push(view);
+                view.$el.addClass('s' + (round_monetary_currency(this.model.get("discount").toString()).length + 1));
+                self.$('.discount_place').append(view.el);           
+            }
 
             return this;
         },
@@ -173,6 +211,31 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
+    App.Views.CoreMyOrderView.CoreMyOrderDiscountView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'discount',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'change', this.render, this);
+        },
+        render: function() {
+            var model = {};
+            // this.model is the instance of App.Models.DiscountItem 
+            model.currency_symbol = App.Settings.currency_symbol;
+            model.discount_sum = this.model.toString();
+            model.discount_name = this.model.get('name');          
+            model.price_length = model.discount_sum.length + 1;
+            this.$el.html(this.template(model));
+            if (this.model.get("sum") <= 0) {
+                this.$el.hide();
+            }
+            else {
+                this.$el.show();
+            }        
+            return this;
+        }        
+    });
+
     App.Views.CoreMyOrderView.CoreMyOrderListView = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'list',
@@ -217,6 +280,17 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     this.$('.myorder').append(this.bagChargeItemView.el);
                 }
             }
+
+            if (this.subViews.indexOf(this.discountItemView) == -1 && this.collection.discount ) {
+                var view = App.Views.GeneratorView.create('MyOrder', {
+                    mod: 'Discount',
+                    model: this.collection.discount,
+                    el: $('<li></li>')
+                });
+                this.subViews.push(view);
+                this.discountItemView = view;
+                this.$('.discount').append(this.discountItemView.el);
+            }
         },
         removeItem: function(model) {
             var self = this;
@@ -255,6 +329,10 @@ define(["backbone", "factory", "generator"], function(Backbone) {
     App.Views.MyOrderView = {};
 
     App.Views.MyOrderView.MyOrderModifierView = App.Views.CoreMyOrderView.CoreMyOrderModifierView;
+
+    App.Views.MyOrderView.MyOrderProductDiscountView = App.Views.CoreMyOrderView.CoreMyOrderProductDiscountView;
+
+    App.Views.MyOrderView.MyOrderDiscountView = App.Views.CoreMyOrderView.CoreMyOrderDiscountView;
 
     App.Views.MyOrderView.MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView;
 

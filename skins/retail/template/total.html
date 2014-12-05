@@ -5,6 +5,15 @@
 </script>
 
 <script type="text/template" id="total_checkout-template">
+    <% if(discount_allow) { %>
+    <li>
+        <span class="title">Discounts:</span>
+        <span class="cost">
+            <span class="currency_symbol"><%= currency_symbol %></span>
+            <span class="discount"><%= discounts %></span>
+        </span>
+    </li>
+    <% } %>
     <li>
         <span class="title">Subtotal:</span>
         <span class="cost">
@@ -20,6 +29,19 @@
             <span class="delivery-charge"><%= deliveryCharge %></span>
         </span>
     </li>
+<% } %>
+<% if (deliveryCharge && discount_allow) { %>
+    <% if (deliveryDiscount*1 > 0) { %>
+       <li class="delivery_discount_item">
+    <% } else { %>
+       <li class="delivery_discount_item hide">
+    <% } %>
+        <span class="title">Shipping Discount:</span>
+        <span class="cost">
+            <span class="currency_symbol">-<%= currency_symbol %></span>
+            <span class="delivery-discount"><%= deliveryDiscount %></span>
+        </span>
+    </li>   
 <% } %>
     <% if (surcharge !== null && surcharge * 1 !== 0) { %>
       <li class="surcharge_item">

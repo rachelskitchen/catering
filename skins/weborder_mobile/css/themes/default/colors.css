@@ -257,13 +257,17 @@ select {
 #content .modifier .input.radio.checked:after {
     background-position: 100% 0;
 }
-#content ul.myorder > li {
+#content ul.items > li {
     border-top-color: #a8c4d8;
 }
-#content ul.myorder .btns span {
+#content ul.myorder .btns span,
+#content .discountBlock .btns span {
     color: #f0f0f0;
     background: #3f7ca4;
     border-color: transparent;
+}
+#content .discountBlock .btns span {
+    box-shadow: 0.4em 0em 0em rgba(234, 234, 234, 0.9);
 }
 #content ul.myorder .btns span:active {
     box-shadow: 0 0 1em rgba(230, 230, 230, 0.7) inset;
