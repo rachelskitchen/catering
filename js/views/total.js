@@ -35,11 +35,14 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         render: function() {
             var model = {};
             model.subTotal = this.get_subtotal();
+            model.discount_allow = App.Settings.accept_discount_code === true;
+            model.discounts = this.model.get_discounts_str();
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
             this.$el.html(this.template(model));
         },
         update: function() {
             this.$('.total').text(round_monetary_currency(this.get_subtotal()));
+            this.$('.discount').text(this.model.get_discounts_str());
         },
         get_subtotal: function() {
             if (this.collection.get_only_product_quantity() == 0) {
@@ -72,11 +75,15 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.surcharge = this.model.get_surcharge();
             model.grandTotal = this.model.get_grand();
             model.tax = this.model.get_tax();
-            model.tip = this.model.get_tip(); //this.model.get('tip') ? this.model.get_tip() : '0.00';
-            model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
+            model.tip = this.model.get_tip();
+            model.currency_symbol = App.Settings.currency_symbol;
             model.deliveryCharge = this.model.get_delivery_charge();
-            model.tip_allow = App.Data.settings.get('settings_system').accept_tips_online === true;
-
+            model.tip_allow = App.Settings.accept_tips_online === true;
+            model.discount_allow = App.Settings.accept_discount_code === true;
+            model.discounts = this.model.get_discounts_str();
+            model.deliveryDiscount = this.collection.deliveryItem ? this.collection.deliveryItem.get("discount").get("sum") : 0;
+            model.deliveryDiscount = round_monetary_currency(model.deliveryDiscount);
+            
             if (this.collection.get_only_product_quantity() == 0) {
                 model.surcharge = round_monetary_currency(0);
                 model.tax = round_monetary_currency(0);
@@ -104,9 +111,16 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             }else{
                 this.$('.surcharge_item').addClass('hide');
             }
+            if (data.deliveryDiscount > 0){
+                this.$('.delivery_discount_item').removeClass('hide');
+            }else{
+                this.$('.delivery_discount_item').addClass('hide');
+            }
             this.$('.subtotal').text(data.subTotal);
             this.$('.surcharge').text(data.surcharge);
             this.$('.tax').text(data.tax);
+            this.$('.discount').text(data.discounts);
+            this.$('.delivery-discount').text(data.deliveryDiscount);
             this.$('.tip').text(data.tip);
             this.$('.grandtotal').text(data.grandTotal);
         },
@@ -114,10 +128,15 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             var delivery = this.model.get_delivery_charge();
             if(value == 'DINING_OPTION_DELIVERY' && delivery * 1 > 0 && this.collection.get_only_product_quantity() > 0) {
                 this.$('span.delivery-charge').text(delivery);
-                this.$('li.delivery-charge').show();
+                this.$('li.delivery-charge').show();               
                 this.$('ul.confirm').addClass('has-delivery');
+                var deliveryDiscount = this.collection.deliveryItem ? this.collection.deliveryItem.get("discount").get("sum") : 0;
+                if (deliveryDiscount > 0) {
+                    this.$('.delivery_discount_item').removeClass('hide');
+                }
             } else {
                 this.$('li.delivery-charge').hide();
+                this.$('.delivery_discount_item').addClass('hide');
                 this.$('ul.confirm').removeClass('has-delivery');
             }
         },
