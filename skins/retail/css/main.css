@@ -900,13 +900,13 @@ input[type="search"] {
 /* Mercury accepted credit card */
 .mercury-accepted-credit-cards {
     position: absolute;
-    bottom: 0;
-    right: 200px;
+    bottom: 5px;
+    right: 150px;
 }
 .card-logo {
     display: inline-block;
-    margin-left: 10px;
+    margin-left: 0px;
 }
 .imgCardLogo {
-    height: 32px;
+    height: 20px;
 }
