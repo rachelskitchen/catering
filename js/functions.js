@@ -110,7 +110,7 @@ MSG.ERROR_REVEL_PASSWORD_UPDATE_FAILED = 'Password update failed. Old password i
 MSG.ERROR_REVEL_AUTHENTICATION_FAILED = 'Authentication failed. Please enter valid email & password.';
 MSG.ERROR_NO_MSG_FROM_SERVER = "No message about the error";
 MSG.ERROR_GET_DISCOUNTS = "Failed request to get discounts";
-MSG.ERROR_INCORRECT_DISCOUNT_CODE = "Type correct discount code from 4 to 16 symbols";
+MSG.ERROR_INCORRECT_DISCOUNT_CODE = "Type correct discount code from 4 to 16 characters";
 MSG.DISCOUNT_CODE_NOT_FOUND = "The typed discount code hasn't been found. Automatic discounts can be applied only.";
 
 var PAYMENT_TYPE = {
