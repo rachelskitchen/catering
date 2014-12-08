@@ -384,7 +384,14 @@ define(["backbone", "main_router"], function(Backbone) {
                             modelName: 'MyOrder',
                             collection: App.Data.myorder,
                             mod: 'List',
-                            className: 'myorderList' + (isNote ? ' isNote' : '')
+                            className: 'myorderList custom-scroll' + (isNote ? ' isNote' : '')
+                        },
+                        {
+                            modelName: 'Checkout',
+                            model: App.Data.myorder.checkout,
+                            mod: 'DiscountCode2',
+                            className: 'discountBlock' + (isNote ? ' isNote' : ''),
+                            myorder: App.Data.myorder
                         },
                         {
                             modelName: 'Total',
@@ -399,7 +406,8 @@ define(["backbone", "main_router"], function(Backbone) {
                             mod: 'Note',
                             className: 'myorderNote'
                         }
-                    ]
+                    ],
+                    no_perfect_scroll: true
                 });
 
                 this.change_page();

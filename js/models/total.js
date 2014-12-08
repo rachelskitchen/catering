@@ -31,6 +31,7 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             tip: null,
             delivery: null,
             bag_charge: null,
+            discounts: 0, //sum of all discounts
             tax_country: '',
             prevailing_surcharge: null,
             prevailing_tax: null
@@ -92,6 +93,12 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             }
 
             return round_monetary_currency(subtotal);
+        },
+        /**
+         * get total discount
+         */
+        get_discounts_str: function() {
+            return round_monetary_currency(this.get('discounts'));
         },
         /*
          * Get tip.
@@ -172,7 +179,8 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
                 surcharge: parseFloat(this.get_surcharge()),
                 subtotal: parseFloat(this.get_total()),
                 tax: parseFloat(this.get_tax()),
-                tip: parseFloat(this.get_tip())
+                tip: parseFloat(this.get_tip()),
+                total_discounts: parseFloat(this.get_discounts_str())
             };
         },
         clone: function() {
