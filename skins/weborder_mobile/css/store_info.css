@@ -43,8 +43,9 @@
 }
 
 #content .store_info_main_data {
+    height: auto;
+    padding-bottom: 2.9em;
     width: 100%;
-    height: 17.7em;
     border-bottom-width: 1px;
     border-bottom-style: solid;
     position: relative;
@@ -91,6 +92,13 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+
+#content .store_info_main_data .current_establishment {
+    display: none;
+}
+#content .store_info_main_data .current_establishment a {
+    text-decoration: none;
 }
 
 #content a.phone, #content a.phone:link, #content a.phone:visited, #content a.phone:hover, #content a.phone:active {

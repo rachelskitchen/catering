@@ -167,6 +167,8 @@ define(["backbone", "main_router"], function(Backbone) {
                 });
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
+                this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this);
+                this.listenToOnce(App.Data.establishments, 'resetEstablishmentData', this.resetEstablishmentData, this); // remove establishment data in case if establishment ID will change
 
                 // emit 'initialized' event
                 this.trigger('initialized');
@@ -191,6 +193,31 @@ define(["backbone", "main_router"], function(Backbone) {
         hidePromoMessage: function() {
             App.Data.footer.set('isShowPromoMessage', false);
             App.Data.mainModel.trigger('hidePromoMessage');
+        },
+        /**
+        * Get a stores list.
+        */
+        getEstablishments: function() {
+            if (!App.Data.settings.get('isMaintenance') && App.Data.establishments.length === 0) {
+                App.Data.establishments.getEstablishments().then(function() { // get establishments from backend
+                    if (App.Data.establishments.length > 1) App.Data.mainModel.set('isShowStoreChoice', true);
+                });
+            }
+        },
+        /**
+        * Remove establishment data in case if establishment ID will change.
+        */
+        resetEstablishmentData: function() {
+            delete App.Data.router;
+            delete App.Data.categories;
+            delete App.Data.mainModel.get('header').model;
+            this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
+        },
+        /**
+        * Remove HTML and CSS of current establishment in case if establishment ID will change.
+        */
+        removeHTMLandCSS: function() {
+            Backbone.$('link[href$="colors.css"]').remove();
         },
         index: function() {
             var self = this;
