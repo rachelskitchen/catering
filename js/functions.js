@@ -367,9 +367,9 @@ function format_date_3(date) {
  * Load data from storage (cookie, sessionStorage, localStorage).
  */
 function getData(name, local) {
-     var data;
+    var data;
 
-     switch (App.Data.settings.get('storage_data')) {
+    switch (App.Data.settings.get('storage_data')) {
         case 1:
             if(local && localStorage instanceof Object && localStorage[name])
                 data = JSON.parse(localStorage[name]);
