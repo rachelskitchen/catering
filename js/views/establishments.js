@@ -91,7 +91,6 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                     }
                 }
             });
-            if (this.model.get('isMobileVersion')) Backbone.$('#alert .icon').hide();
         }
     });
     App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectView = App.Views.ListView.extend({
