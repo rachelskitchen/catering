@@ -49,20 +49,20 @@
 </script>
 
 <script type="text/template" id="myorder_product_discount-template">
-    <div class="attrs">
+    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
         <span><%= discount_name %>:</span>
     </div>
-    <div class="attrs">
+    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
         <span class="currency_symbol">-<%= currency_symbol %></span>
         <span><%= discount_sum %></span>
     </div>
 </script> 
 
 <script type="text/template" id="myorder_discount-template">
-    <div class="attrs">
+    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
         <span class="name discount"><%= discount_name %></span>
     </div>
-    <div class="attrs">
+    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
         <span class="currency_symbol">-<%= currency_symbol %></span>
         <span><%= discount_sum %></span>
     </div>
