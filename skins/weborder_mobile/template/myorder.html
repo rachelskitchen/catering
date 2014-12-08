@@ -1,5 +1,6 @@
 <script type="text/template" id="myorder_list-template">
-    <ul class="myorder"></ul>
+    <ul class="myorder items"></ul>
+    <ul class="discount items"></ul>
 </script>
 
 <script type="text/template" id="myorder_item-template">
@@ -25,6 +26,7 @@
         <li class="special">*** <%= special %></li>
         <% } %>
     </ul>
+    <ul class="discount_place"></ul>
     <% if(id_product !== null) { %>
     <div class="btns">
         <span class="remove">Remove</span>
@@ -61,5 +63,44 @@
       <div class='note_field border2'>
           <textarea class="instructions bg-style1" placeholder='Order notes'><%=note%></textarea>
       </div>
+    <% } %>
+</script>
+
+<script type="text/template" id="myorder_product_discount-template">
+    <span class="name"><%= discount_name %></span>
+    <span class="cost">
+        <span class="plus">-</span>
+        <span class="currency_symbol"><%= currency_symbol %></span>
+        <span class="price"><%= discount_sum %></span>
+    </span>
+</script>
+
+<script type="text/template" id="myorder_discount-template">
+    <h3 class="s<%= price_length %>">
+        <span class="name"><%= discount_name %></span>
+        <span class="cost">
+            <span>-</span>
+            <span class="currency_symbol"><%= currency_symbol %></span>
+            <span class="price"><%= discount_sum %></span>
+        </span>
+    </h3>    
+</script>
+
+<script type="text/template" id="myorder_discount_code-template">
+    <% if(discount_allow) { %>
+    <div class='dcode_have <% if(discount_code_applied) print("hidden"); %>'>
+        <div class='discount_code_text color-style1'>Have a Discount Code?</div>
+    </div>
+    <div class='dcode_enter hidden'>
+        <div class='discount_field border2'>
+            <input class="instructions bg-style1" name='discount_code' value='<%= discount_code %>' placeholder='Discount Code'>
+        </div>
+        <div class="btns">
+            <span class="btnApply">Apply</button>       
+        </div>
+    </div>   
+    <div class='dcode_remove <% if(!discount_code_applied) print("hidden"); %>'>
+        <div class='discount_code_text color-style1'>Remove Discount Code</div>
+    </div>
     <% } %>
 </script>

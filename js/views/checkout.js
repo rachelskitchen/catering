@@ -526,6 +526,128 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         }
     });
 
+    /*  
+    *  This DiscountCode view is used by weborder and retail skins.
+    */
+    App.Views.CoreCheckoutView.CoreCheckoutDiscountCodeView = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'discount_code',
+        initialize: function() {
+            this.listenTo(this.model, 'change', this.render, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            var data = this.model.toJSON();
+            data.iPad = iPad();
+            this.$el.html(this.template(data));
+            inputTypeStringMask(this.$('input'), /^[\d\w]{0,16}$/, '');
+
+            return this;
+        },
+        events: {            
+            'click .btnApply': 'onApplyCode',
+            'keyup input[name=discount_code]': 'onChangeDiscountCode'
+        },
+        onChangeDiscountCode: function(e) {
+            var newValue = e.target.value,
+                oldValue = this.model.get("discount_code");
+
+            if (newValue == oldValue)
+                return;
+           
+            this.model.set({"discount_code":newValue}, {silent: true});
+            this.enableApplyBtn();
+        },
+        onApplyCode: function() {
+            var self = this, 
+                myorder = this.options.myorder;
+ 
+            if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
+                App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
+                return;
+            } 
+            myorder.get_discounts({ apply_discount: true})
+                .done(function(data) {
+                    if (data.status == "OK") {
+                        self.disableApplyBtn();
+                    }
+                });
+        },
+        enableApplyBtn: function() {
+            this.$(".btnApply").removeAttr("disabled").removeClass("applied").text("Apply");
+        },
+        disableApplyBtn: function() {
+            this.$(".btnApply").attr("disabled", "disabled").addClass("applied").text("Applied");
+        }
+    });
+
+    /*  
+    *  This DiscountCode2 view is used by weborder_mobile and paypal skins.
+    */
+    App.Views.CoreCheckoutView.CoreCheckoutDiscountCode2View = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'discount_code',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            var data = this.model.toJSON();
+            data.discount_allow = App.Settings.accept_discount_code === true;
+            data.discount_code_applied = this.model.get("last_discount_code"); 
+            this.$el.html(this.template(data));
+            inputTypeStringMask(this.$('input'), /^[\d\w]{0,16}$/, '');
+            return this;
+        },
+        events: {
+            'click .dcode_have': 'enterDiscountCode',
+            'click .dcode_remove': 'removeDiscountCode',     
+            'click .btnApply': 'onApplyCode',
+            'change input[name=discount_code]': 'onChangeDiscountCode'
+        },
+        onChangeDiscountCode: function(e) {
+            var newValue = e.target.value,
+                oldValue = this.model.get("discount_code");
+
+            if (newValue == oldValue)
+                return;
+           
+            this.model.set({"discount_code":newValue}, {silent: true});
+        },
+        enterDiscountCode: function() {
+            this.$(".dcode_have").addClass('hidden');
+            this.$(".dcode_enter").removeClass('hidden');
+            this.$('input[name=discount_code]').val(this.model.get("discount_code"));
+        },
+        removeDiscountCode: function() {            
+            var myorder = this.options.myorder;
+            this.$(".dcode_remove").addClass('hidden');
+            this.$(".dcode_have").removeClass('hidden');
+            this.model.set({last_discount_code: '',
+                            discount_code: ''}, {silent: true});
+            myorder.get_discounts();
+        },
+        onApplyCode: function() {
+            var self = this, 
+                myorder = this.options.myorder;
+ 
+            if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
+                App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
+                return;
+            } 
+            myorder.get_discounts({ apply_discount: true})
+                .done(function(data) {
+                    if (data.status == "OK") {
+                        self.discountApplied();
+                    }
+                });
+        },
+        discountApplied: function() {
+            this.$(".dcode_have").addClass('hidden');
+            this.$(".dcode_enter").addClass('hidden');
+            this.$(".dcode_remove").removeClass('hidden');
+        }
+    });
+
     App.Views.CheckoutView = {};
 
     App.Views.CheckoutView.CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView;
@@ -535,6 +657,10 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
     App.Views.CheckoutView.CheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView;
 
     App.Views.CheckoutView.CheckoutPickupView = App.Views.CoreCheckoutView.CoreCheckoutPickupView;
+
+    App.Views.CheckoutView.CheckoutDiscountCodeView = App.Views.CoreCheckoutView.CoreCheckoutDiscountCodeView;
+
+    App.Views.CheckoutView.CheckoutDiscountCode2View = App.Views.CoreCheckoutView.CoreCheckoutDiscountCode2View;
 
     App.Views.CheckoutView.CheckoutPayView = App.Views.CoreCheckoutView.CoreCheckoutPayView;
 

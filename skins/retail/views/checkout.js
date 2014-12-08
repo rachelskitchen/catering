@@ -61,6 +61,18 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
             specials.before(order_type.el);
             specials.before(main.el);
 
+            if (this.options.discountAvailable) {
+                var discount = App.Views.GeneratorView.create('Checkout', {
+                    model: this.collection.checkout,
+                    mod: 'DiscountCode',
+                    className: 'row discountBlock',
+                    myorder: this.collection
+                });
+                this.subViews.push(discount);
+                specials.before(discount.el);
+                discount.$el.on('touchstart', 'input', this.inputClick.bind(this));
+            }
+
             this.$('.data').contentarrow();
             main.$el.on('touchstart', 'input', this.inputClick.bind(this));
             this.iOSSafariCaretFix();
