@@ -50,7 +50,7 @@
     border-width: 2px;
     color: #646464;
     cursor: pointer;
-    font-size: 0.9em;
+    font-size: 14.4px;
     font-weight: bold;
     line-height: 2em;
     padding: 0 6em;
@@ -101,7 +101,7 @@
 }
 .establishments > div div:nth-child(1) {
     color: #fff;
-    font-size: 1.2em;
+    font-size: 19.2px;
     font-weight: bold;
     text-shadow: none;
 }

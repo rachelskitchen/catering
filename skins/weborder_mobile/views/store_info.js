@@ -29,6 +29,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         name: 'store_info',
         mod: 'main',
         initialize: function() {
+            this.listenTo(App.Data.mainModel, 'change:isShowStoreChoice', this.checkBlockStoreChoice, this);
+            this.listenTo(App.Data.establishments, 'clickButtonBack', this.hideBlurEffect, this);
             var settings = App.Data.settings,
                 settings_system = settings.get('settings_system');
             this.model = new Backbone.Model({
@@ -58,15 +60,49 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             });
             App.Views.LogoView.prototype.initialize.apply(this, arguments);
         },
+        render: function() {
+            App.Views.LogoView.prototype.render.apply(this, arguments);
+            if (App.Data.establishments.length > 1) App.Data.mainModel.set('isShowStoreChoice', true);
+            this.checkBlockStoreChoice(); // show the "Store Choice" block if a brand have several stores
+        },
         events: {
             "click .phone": "call",
-            "click .store_info_main_data": "store_info"
+            "click .store_info_main_data": "store_info",
+            'click .change_establishment': 'change_establishment'
         },
         call: function(e) {
             e.stopPropagation();
         },
         store_info: function() {
             App.Data.router.navigate('location', true);
+        },
+        /**
+         * Show the "Store Choice" block if a brand have several stores.
+         */
+        checkBlockStoreChoice: function() {
+            if (App.Data.mainModel.get('isShowStoreChoice')) {
+                this.$('.current_establishment').show();
+            } else {
+                this.$('.current_establishment').hide();
+            }
+        },
+        /**
+         * Show the "Change Establishment" modal window.
+         */
+        change_establishment: function(e) {
+            App.Data.establishments.getModelForView().set({
+                storeDefined: true,
+                showFooter: false
+            }); // get a model for the stores list view
+            App.Data.establishments.trigger('loadStoresList');
+            App.Data.mainModel.set('isBlurContent', true);
+            e.stopPropagation();
+        },
+        /**
+         * Hide a blur effect of content.
+         */
+        hideBlurEffect: function() {
+            App.Data.mainModel.set('isBlurContent', false);
         }
     });
 
