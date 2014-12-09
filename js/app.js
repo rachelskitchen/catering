@@ -111,15 +111,17 @@
         require.config(app.config);
 
         require(["jquery_alerts", "cssua", "functions", "errors", "myorder", "settings", "timetable", "log", "tax", "main_router"], function() {
+            var win = Backbone.$(window);
+
             // invoke beforeStart onfig
             app.beforeInit();
 
             // init spinner
             var spinner = app.initSpinner(app.addSpinner, app.getFontSize);
-            Backbone.$(window).on('hideSpinner', function() {
+            win.on('hideSpinner', function() {
                 spinner.style.display = 'none';
             });
-            Backbone.$(window).on('showSpinner', function() {
+            win.on('showSpinner', function() {
                 spinner.style.display = 'block';
             });
 
@@ -136,30 +138,30 @@
             App.Data.settings = new App.Models.Settings({
                 supported_skins: app.skins.available
             });
+            var settings = App.Data.settings;
 
-            App.Data.settings.on('changeSettingsSkin', function() {
+            settings.on('changeSettingsSkin', function() {
                 load_styles_and_scripts(); // load styles and scripts
                 App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
-                require([App.Data.settings.get("skin") + "/router"], function() {
+                require([settings.get('skin') + '/router'], function() {
                     App.Data.router = new App.Routers.Router;
-                    App.Data.router.prepare.initialized = false;
+                    var router = App.Data.router;
+                    router.prepare.initialized = false;
                     // hide launch spinner
-                    App.Data.router.once('started', function() {
-                        Backbone.$(window).trigger('hideSpinner');
-                        App.Data.router.trigger('needLoadEstablishments');
+                    router.once('started', function() {
+                        win.trigger('hideSpinner');
+                        router.trigger('needLoadEstablishments');
                     });
-                    if(App.Data.settings.get('isMaintenance')) {
-                        window.location.hash = "#maintenance";
-                    }
-                    Backbone.history.stop();
+                    if (settings.get('isMaintenance')) window.location.hash = '#maintenance';
+                    if (Backbone.History.started) Backbone.history.stop();
                     Backbone.history.start();
 
                     // invoke afterStart callback
                     app.afterInit();
                 });
             });
-            app.loadApp(spinner); // loading application
+            app.loadApp(); // loading application
         });
     }
 
@@ -220,7 +222,7 @@
     /**
      * Loading application.
      */
-    function loadApp(spinner) {
+    function loadApp() {
         require(['establishments', 'establishments_view'], function() {
             var settings = App.Data.settings;
             var win = Backbone.$(window);
