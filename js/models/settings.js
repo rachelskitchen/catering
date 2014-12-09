@@ -74,12 +74,13 @@ define(["backbone", "async"], function(Backbone) {
          */
         ajaxSetup: function() {
             var self = this;
+            var errors = App.Data.errors;
             Backbone.$.ajaxSetup({
                 timeout: self.get('timeout'),
                 cache: true,
                 success: function(data) {
                     if (!data.status) {
-                        App.Data.errors.alert_red(MSG.ERROR_INCORRECT_AJAX_DATA, true); // user notification (server return HTTP status 200, but data.status is error)
+                        errors.alert_red(MSG.ERROR_INCORRECT_AJAX_DATA, true); // user notification (server return HTTP status 200, but data.status is error)
                     } else {
                         switch (data.status) {
                             case 'OK':
@@ -89,14 +90,14 @@ define(["backbone", "async"], function(Backbone) {
                                 if (typeof this.errorResp === 'function') {
                                     this.errorResp(data.data);
                                 } else {
-                                    App.Data.errors.alert_red(data.errorMsg, true); // user notification (server return HTTP status 200, but data.status is error)
+                                    errors.alert_red(data.errorMsg, true); // user notification (server return HTTP status 200, but data.status is error)
                                 }
                                 break;
                         }
                     }
                 },
                 error: function(xhr) {
-                    App.Data.errors.alert(MSG.ERROR_SERVER_UNREACHED, true); // user notification
+                    errors.alert(MSG.ERROR_SERVER_UNREACHED, true); // user notification
                 },
                 beforeSend: function(xhr) {
                     xhr.setRequestHeader('X-Requested-With', {
