@@ -136,6 +136,13 @@ define(["backbone"], function(Backbone) {
             this.once('started', function() {
                 self.started = true;
             });
+
+            // remember state of data of application (begin)
+            App.Data.stateAppData = {};
+            for (var i in App.Data) {
+                App.Data.stateAppData[i] = true;
+            }
+            // remember state of data of application (end)
         },
         navigate: function() {
             this.started && arguments[0] != location.hash.slice(1) && App.Data.mainModel.trigger('loadStarted');
@@ -289,6 +296,17 @@ define(["backbone"], function(Backbone) {
             };
             if (Backbone.$('title').text() === '') pageTitle('Revel Systems'); // set page title
             this.prepare('establishments', loadEstablishmentsView); // load view with stores list
+        },
+        /**
+        * Remove establishment data in case if establishment ID will change.
+        */
+        resetEstablishmentData: function() {
+            delete App.Data.router;
+            for (var i in App.Data) {
+                if (App.Data.stateAppData[i] === undefined) {
+                    delete App.Data[i];
+                }
+            }
         }
     });
 

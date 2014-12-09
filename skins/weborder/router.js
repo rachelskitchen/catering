@@ -26,10 +26,17 @@ define(["backbone", "main_router"], function(Backbone) {
     var headers = {},
         carts = {};
 
-    headers.main = {mod: 'Main', className: 'main'};
-    headers.checkout = {mod: 'Checkout', className: 'checkout'};
-    carts.main = {mod: 'Main', className: 'main'};
-    carts.checkout = {mod: 'Checkout', className: 'checkout'};
+    /**
+    * Default router data.
+    */
+    function defaultRouterData() {
+        headers.main = {mod: 'Main', className: 'main'};
+        headers.checkout = {mod: 'Checkout', className: 'checkout'};
+        carts.main = {mod: 'Main', className: 'main'};
+        carts.checkout = {mod: 'Checkout', className: 'checkout'};
+    }
+
+    defaultRouterData(); // default router data
 
     App.Routers.Router = App.Routers.MainRouter.extend({
         routes: {
@@ -190,12 +197,8 @@ define(["backbone", "main_router"], function(Backbone) {
         * Remove establishment data in case if establishment ID will change.
         */
         resetEstablishmentData: function() {
-            delete App.Data.router;
-            delete App.Data.categories;
-            delete App.Data.AboutModel;
-            delete App.Data.mainModel.get('cart').collection;
-            delete App.Data.mainModel.get('header').collection;
-            delete App.Data.mainModel.get('header').model;
+            App.Routers.MainRouter.prototype.resetEstablishmentData.apply(this, arguments);
+            defaultRouterData(); // default router data
             this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
         },
         /**
