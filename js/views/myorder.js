@@ -52,7 +52,17 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.currency_symbol = App.Settings.currency_symbol;
             model.discount_name = discount.get('name');
             model.discount_sum = discount.toString();
+            model.price_length = model.discount_sum.length + 1;
             this.$el.html(this.template(model));
+
+            this.$el.removeClass( function() { // remove classes with pattern /^s\d{1,2}/
+                    return this.className.split(' ').filter(function(className) 
+                                        {
+                                            return className.match(/^s\d{1,2}/)
+                                        }).join(' ');
+                });
+            this.$el.addClass('s' + (model.discount_sum.length + 1));
+                
             if (discount.get("sum") <= 0) {
                 this.$el.hide();
             }
@@ -161,7 +171,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     model: this.model
                 });
                 self.subViews.push(view);
-                view.$el.addClass('s' + (round_monetary_currency(this.model.get("discount").toString()).length + 1));
                 self.$('.discount_place').append(view.el);           
             }
 
@@ -179,7 +188,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
             model.initial_price = round_monetary_currency(this.model.get('initial_price'));
             model.price_sum = round_monetary_currency(this.model.get('sum'));
-            model.price_length = round_monetary_currency(model.price_sum).length;
+            model.price_length = round_monetary_currency(model.initial_price).length; //price is not changed for the product
             model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;//    product.get('uom');
             model.is_gift = product.get('is_gift');
             model.gift_card_number = product.get('gift_card_number');

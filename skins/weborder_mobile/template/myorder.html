@@ -4,7 +4,7 @@
 </script>
 
 <script type="text/template" id="myorder_item-template">
-    <h3 class="s<%= price_length %>">
+    <h3 class="s<%= price_length+1 %>">
         <% if(sold_by_weight) { %>
             <span class="name"><%= sizeModifier %> <%= name %></span>
         <% } else { %>
@@ -76,7 +76,7 @@
 </script>
 
 <script type="text/template" id="myorder_discount-template">
-    <h3 class="s<%= price_length %>">
+    <h3 class="s<%= price_length + 1 %>">
         <span class="name"><%= discount_name %></span>
         <span class="cost">
             <span>-</span>
