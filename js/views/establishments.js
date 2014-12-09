@@ -90,7 +90,7 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                         }
                     }
                 }
-            });
+            }); // user customized alerts for Weborder skin
         }
     });
     App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectView = App.Views.ListView.extend({
