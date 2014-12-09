@@ -160,7 +160,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     self.subViews.push(view);
                     view.$el.addClass('s' + (round_monetary_currency(modifier.get('price')).length + 1));
 
-                    self.$('ul').append(view.el);
+                    self.$('.modifier_place').append(view.el);
                 });
             });
 
