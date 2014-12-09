@@ -224,11 +224,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          */
         blurEffect: function() {
             // http://caniuse.com/#search=filter
-            if (this.model.get('isBlurContent')) {
-                this.$('.main_el').addClass('blur');
-            } else {
-                this.$('.main_el').removeClass('blur');
-            }
+            var mainEl = this.$('.main_el');
+            this.model.get('isBlurContent') ? mainEl.addClass('blur') : mainEl.removeClass('blur');
         },
         /**
          * Hide a blur effect of content.
