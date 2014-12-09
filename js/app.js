@@ -148,11 +148,10 @@
                     App.Data.router = new App.Routers.Router;
                     var router = App.Data.router;
                     router.prepare.initialized = false;
-                    // hide launch spinner
                     router.once('started', function() {
                         win.trigger('hideSpinner');
                         router.trigger('needLoadEstablishments');
-                    });
+                    }); // hide a launch spinner & load an establishments list
                     if (settings.get('isMaintenance')) window.location.hash = '#maintenance';
                     if (Backbone.History.started) Backbone.history.stop();
                     Backbone.history.start();
