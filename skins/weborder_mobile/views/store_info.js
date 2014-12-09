@@ -59,7 +59,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             });
             App.Views.LogoView.prototype.initialize.apply(this, arguments);
             if (!App.Data.storeInfo) App.Data.storeInfo = this.model;
-            this.listenTo(this.model, 'change:isShowStoreChoice', this.checkBlockStoreChoice, this);
+            this.listenTo(this.model, 'change:isShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
         },
         render: function() {
             App.Views.LogoView.prototype.render.apply(this, arguments);
