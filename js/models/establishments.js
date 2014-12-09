@@ -117,9 +117,9 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         /**
         * Get a status code of the app load.
         *
-        * 1 - app should load view with stores list.
+        * 1 - app should load view with stores list;
         * 2 - app reported about error;
-        * 3 - app was loaded;
+        * 3 - app was loaded.
         */
         getStatusCode: function() {
             var self = this,
