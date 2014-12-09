@@ -40,6 +40,22 @@
             </span>
         </li>
 <% } %>
+
+<% if (deliveryCharge && discount_allow) { %>
+    <% if (deliveryDiscount*1 > 0) { %>
+       <li class="delivery_discount_item">
+     <% } else { %>
+       <li class="delivery_discount_item hide">
+    <% } %>
+        <span class="title">Delivery Discount:</span>
+        <span class="cost">
+            <span class="plus">-</span>
+            <span class="currency_symbol"><%= currency_symbol %></span>
+            <span class="delivery-discount"><%= deliveryDiscount %></span>
+        </span>
+    </li>
+<% } %>
+
 <% if (surcharge !== null && surcharge * 1 !== 0) { %>
         <li>
             <span class="title">Surcharge:</span>

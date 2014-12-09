@@ -45,9 +45,10 @@
     overflow: hidden;
 }
 
-#content ul.items h3 .currency_symbol, #content ul.items ul .currency_symbol {
+#content ul.items .currency_symbol,
+#content ul.items .plus {
     position: relative;
-    left: 0.2em;
+    left: 0.24em;
 }
 
 #content ul.items h3 .cost {
