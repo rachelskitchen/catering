@@ -205,9 +205,10 @@ define(["backbone", "main_router"], function(Backbone) {
         * Get a stores list.
         */
         getEstablishments: function() {
-            if (!App.Data.settings.get('isMaintenance') && App.Data.establishments.length === 0) {
-                App.Data.establishments.getEstablishments().then(function() { // get establishments from backend
-                    if (App.Data.establishments.length > 1) App.Data.storeInfo.set('isShowStoreChoice', true);
+            var ests = App.Data.establishments;
+            if (!App.Data.settings.get('isMaintenance') && ests.length === 0) {
+                ests.getEstablishments().then(function() { // get establishments from backend
+                    if (ests.length > 1) App.Data.storeInfo.set('isShowStoreChoice', true);
                 });
             }
         },

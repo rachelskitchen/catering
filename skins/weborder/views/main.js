@@ -36,9 +36,9 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
             this.listenTo(this.model, 'change:isShowPromoMessage', this.calculatePromoMessageWidth, this);
-            this.listenTo(this.model, 'change:isShowStoreChoice', this.checkBlockStoreChoice, this);
-            this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this);
-            this.listenTo(App.Data.establishments, 'clickButtonBack', this.hideBlurEffect, this);
+            this.listenTo(this.model, 'change:isShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
+            this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
+            this.listenTo(App.Data.establishments, 'clickButtonBack', this.hideBlurEffect, this); // hide a blur effect of content
 
             this.iOSFeatures();
 
@@ -257,11 +257,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          * Show the "Change Establishment" modal window.
          */
         change_establishment: function() {
-            App.Data.establishments.getModelForView().set({
+            var ests = App.Data.establishments;
+            ests.getModelForView().set({
                 storeDefined: true,
                 showFooter: true
             }); // get a model for the stores list view
-            App.Data.establishments.trigger('loadStoresList');
+            ests.trigger('loadStoresList');
             this.model.set('isBlurContent', true);
         },
         /**
