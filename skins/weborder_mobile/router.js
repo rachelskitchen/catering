@@ -174,7 +174,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 });
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
-                this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this);
+                this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
                 this.listenToOnce(App.Data.establishments, 'resetEstablishmentData', this.resetEstablishmentData, this); // remove establishment data in case if establishment ID will change
 
                 // emit 'initialized' event
