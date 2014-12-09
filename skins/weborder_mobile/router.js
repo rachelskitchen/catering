@@ -26,42 +26,49 @@ define(["backbone", "main_router"], function(Backbone) {
     var headerModes = {},
         footerModes = {};
 
-    headerModes.Main = {mod: 'Main', className: 'main'};
-    headerModes.OneButton = {mod: 'OneButton', className: 'one_button'};
-    headerModes.Products = headerModes.OneButton;
-    headerModes.Dir = headerModes.OneButton;
-    headerModes.Modifiers = {mod: 'Modifiers', className: 'two_button'};
-    headerModes.Myorder = {mod: 'TwoButton', className: 'two_button myorder'};
-    headerModes.Checkout = headerModes.OneButton;
-    headerModes.Card = headerModes.Main;
-    headerModes.GiftCard = headerModes.Main;
-    headerModes.Confirm = headerModes.OneButton;
-    headerModes.Done = headerModes.Main;
-    headerModes.Location = {mod: 'Location', className: 'two_button location'};
-    headerModes.BackToMenu = {mod: 'OneButton', className: 'one_button back_to_menu'};
-    headerModes.Map = headerModes.OneButton;
-    headerModes.About = {mod: 'TwoButton', className: 'two_button'};
-    headerModes.Gallery = headerModes.Map;
-    headerModes.Maintenance = {mod: 'Maintenance', className: 'maintenance'};
-    headerModes.Profile = {mod: 'OneButton', className: 'one_button profile'};
+    /**
+    * Default router data.
+    */
+    function defaultRouterData() {
+        headerModes.Main = {mod: 'Main', className: 'main'};
+        headerModes.OneButton = {mod: 'OneButton', className: 'one_button'};
+        headerModes.Products = headerModes.OneButton;
+        headerModes.Dir = headerModes.OneButton;
+        headerModes.Modifiers = {mod: 'Modifiers', className: 'two_button'};
+        headerModes.Myorder = {mod: 'TwoButton', className: 'two_button myorder'};
+        headerModes.Checkout = headerModes.OneButton;
+        headerModes.Card = headerModes.Main;
+        headerModes.GiftCard = headerModes.Main;
+        headerModes.Confirm = headerModes.OneButton;
+        headerModes.Done = headerModes.Main;
+        headerModes.Location = {mod: 'Location', className: 'two_button location'};
+        headerModes.BackToMenu = {mod: 'OneButton', className: 'one_button back_to_menu'};
+        headerModes.Map = headerModes.OneButton;
+        headerModes.About = {mod: 'TwoButton', className: 'two_button'};
+        headerModes.Gallery = headerModes.Map;
+        headerModes.Maintenance = {mod: 'Maintenance', className: 'maintenance'};
+        headerModes.Profile = {mod: 'OneButton', className: 'one_button profile'};
 
-    footerModes.Main = {mod: 'Main'};
-    footerModes.Products = footerModes.Main;
-    footerModes.Modifiers = footerModes.Main;
-    footerModes.Myorder = footerModes.Main;
-    footerModes.Checkout = {mod: 'Checkout'};
-    footerModes.Card = {mod: 'Card'};
-    footerModes.GiftCard = {mod: 'GiftCard'};
-    footerModes.Confirm = {mod: 'Confirm'};
-    footerModes.Done = {mod: 'Done'};
-    footerModes.Location = footerModes.Main;
-    footerModes.Map = footerModes.Main;
-    footerModes.About = footerModes.Main;
-    footerModes.Gallery = footerModes.Main;
-    footerModes.Maintenance = {mod: 'Maintenance'};
-    footerModes.MaintenanceDirectory = {mod: 'MaintenanceDirectory'};
-    footerModes.Profile = {mod: 'Profile'};
-    footerModes.Loyalty = {mod: 'Loyalty'};
+        footerModes.Main = {mod: 'Main'};
+        footerModes.Products = footerModes.Main;
+        footerModes.Modifiers = footerModes.Main;
+        footerModes.Myorder = footerModes.Main;
+        footerModes.Checkout = {mod: 'Checkout'};
+        footerModes.Card = {mod: 'Card'};
+        footerModes.GiftCard = {mod: 'GiftCard'};
+        footerModes.Confirm = {mod: 'Confirm'};
+        footerModes.Done = {mod: 'Done'};
+        footerModes.Location = footerModes.Main;
+        footerModes.Map = footerModes.Main;
+        footerModes.About = footerModes.Main;
+        footerModes.Gallery = footerModes.Main;
+        footerModes.Maintenance = {mod: 'Maintenance'};
+        footerModes.MaintenanceDirectory = {mod: 'MaintenanceDirectory'};
+        footerModes.Profile = {mod: 'Profile'};
+        footerModes.Loyalty = {mod: 'Loyalty'};
+    }
+
+    defaultRouterData(); // default router data
 
     App.Routers.Router = App.Routers.MobileRouter.extend({
         routes: {
@@ -200,7 +207,7 @@ define(["backbone", "main_router"], function(Backbone) {
         getEstablishments: function() {
             if (!App.Data.settings.get('isMaintenance') && App.Data.establishments.length === 0) {
                 App.Data.establishments.getEstablishments().then(function() { // get establishments from backend
-                    if (App.Data.establishments.length > 1) App.Data.mainModel.set('isShowStoreChoice', true);
+                    if (App.Data.establishments.length > 1) App.Data.storeInfo.set('isShowStoreChoice', true);
                 });
             }
         },
@@ -208,9 +215,8 @@ define(["backbone", "main_router"], function(Backbone) {
         * Remove establishment data in case if establishment ID will change.
         */
         resetEstablishmentData: function() {
-            delete App.Data.router;
-            delete App.Data.categories;
-            delete App.Data.mainModel.get('header').model;
+            App.Routers.MobileRouter.prototype.resetEstablishmentData.apply(this, arguments);
+            defaultRouterData(); // default router data
             this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
         },
         /**

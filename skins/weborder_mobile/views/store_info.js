@@ -29,8 +29,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         name: 'store_info',
         mod: 'main',
         initialize: function() {
-            this.listenTo(App.Data.mainModel, 'change:isShowStoreChoice', this.checkBlockStoreChoice, this);
-            this.listenTo(App.Data.establishments, 'clickButtonBack', this.hideBlurEffect, this);
             var settings = App.Data.settings,
                 settings_system = settings.get('settings_system');
             this.model = new Backbone.Model({
@@ -56,13 +54,16 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     hour: Math.floor(settings_system.estimated_delivery_time / 60),
                     minutes: Math.ceil(settings_system.estimated_delivery_time % 60)
                 },
-                distance_mearsure: settings_system.distance_mearsure
+                distance_mearsure: settings_system.distance_mearsure,
+                isShowStoreChoice: false
             });
             App.Views.LogoView.prototype.initialize.apply(this, arguments);
+            if (!App.Data.storeInfo) App.Data.storeInfo = this.model;
+            this.listenTo(this.model, 'change:isShowStoreChoice', this.checkBlockStoreChoice, this);
         },
         render: function() {
             App.Views.LogoView.prototype.render.apply(this, arguments);
-            if (App.Data.establishments.length > 1) App.Data.mainModel.set('isShowStoreChoice', true);
+            if (App.Data.establishments.length > 1) this.model.set('isShowStoreChoice', true);
             this.checkBlockStoreChoice(); // show the "Store Choice" block if a brand have several stores
         },
         events: {
@@ -80,7 +81,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          * Show the "Store Choice" block if a brand have several stores.
          */
         checkBlockStoreChoice: function() {
-            if (App.Data.mainModel.get('isShowStoreChoice')) {
+            if (this.model.get('isShowStoreChoice')) {
                 this.$('.current_establishment').show();
             } else {
                 this.$('.current_establishment').hide();
@@ -97,12 +98,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             App.Data.establishments.trigger('loadStoresList');
             App.Data.mainModel.set('isBlurContent', true);
             e.stopPropagation();
-        },
-        /**
-         * Hide a blur effect of content.
-         */
-        hideBlurEffect: function() {
-            App.Data.mainModel.set('isBlurContent', false);
         }
     });
 

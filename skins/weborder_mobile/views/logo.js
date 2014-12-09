@@ -29,6 +29,7 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
         initialize: function() {
             this.resize = logoResize.bind(this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenToOnce(App.Data.establishments, 'resetEstablishmentData', this.setDefaultData, this); // default data
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -41,10 +42,17 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
                 this.$el.prepend(logoNode);
                 $(window).on('resize', self.resize);
             } else {
-                loadSpinner(this.$('img#logo'), false, function() {
+                var logo = this.$('img#logo');
+                loadSpinner(logo, false, function() {
                     self.resize();
                     $(window).on('resize', self.resize);
-                });
+                }); // loading img spinner
+                if (logo.length == true) {
+                    logo.on('load', function() {
+                        self.resize();
+                        $(window).on('resize', self.resize);
+                    });
+                }
             }
 
             return this;
@@ -56,6 +64,13 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
         removeFromDOMTree: function() {
             $(window).off('resize', this.resize);
             return App.Views.FactoryView.prototype.removeFromDOMTree.apply(this, arguments);
+        },
+        /**
+        * Default data.
+        */
+        setDefaultData: function() {
+            logoNode = undefined;
+            ih = undefined;
         }
     });
 

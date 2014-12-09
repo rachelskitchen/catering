@@ -29,7 +29,6 @@ define(["backbone"], function(Backbone) {
             content: {},
             footer: {},
             img: App.Data.settings.get("img_path"),
-            isShowStoreChoice: false,
             isBlurContent: false
         }
     });
