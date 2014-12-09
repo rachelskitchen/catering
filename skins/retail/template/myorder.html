@@ -16,7 +16,7 @@
             <span class="name">(<%= quantity %>) <%= sizeModifier %> <%= name %></span>
         <% } %>
     </h3>
-    <ul>
+    <ul class="modifier_place">
         <% if(sold_by_weight) { %>
         <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
         <% } %>
