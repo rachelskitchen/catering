@@ -206,10 +206,10 @@ define({
             deps: ["backbone", "factory"]
         },
         'establishments': {
-            deps: ['backbone']
+            deps: ['backbone', 'collection_sort']
         },
         'establishments_view': {
-            deps: ['backbone', 'factory']
+            deps: ['backbone', 'factory', 'generator', 'list']
         }
     },
     map: {
