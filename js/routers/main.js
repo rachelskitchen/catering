@@ -298,6 +298,18 @@ define(["backbone"], function(Backbone) {
             this.prepare('establishments', loadEstablishmentsView); // load view with stores list
         },
         /**
+        * Get a stores list.
+        */
+        getEstablishments: function() {
+            var self = this;
+            var ests = App.Data.establishments;
+            if (!App.Data.settings.get('isMaintenance') && ests.length === 0) {
+                ests.getEstablishments().then(function() { // get establishments from backend
+                    if (ests.length > 1) self.callback();
+                });
+            }
+        },
+        /**
         * Remove establishment data in case if establishment ID will change.
         */
         resetEstablishmentData: function() {
