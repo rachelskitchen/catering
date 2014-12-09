@@ -282,14 +282,14 @@ define(["backbone"], function(Backbone) {
             * Load view with stores list.
             */
             var loadEstablishmentsView = function() {
-                if (App.Data.establishments.getModelForView().get('isMobileVersion')) {
-                    loadCSS('./css/' + 'establishments_mobile');
-                }
+                var ests = App.Data.establishments;
+                var modelForView = ests.getModelForView(); // get a model for the stores list view
+                if (modelForView.get('isMobileVersion')) loadCSS('./css/' + 'establishments_mobile'); // include CSS-file
                 var view = App.Views.GeneratorView.create('CoreEstablishments', {
                     mod: 'Main',
                     el: Backbone.$('<div class="establishments_view"> </div>'),
-                    collection: App.Data.establishments,
-                    model: App.Data.establishments.getModelForView() // get a model for the stores list view
+                    collection: ests,
+                    model: modelForView
                 }, 'ContentEstablishmentsCore');
                 Backbone.$('body').append(view.el);
                 Backbone.$(window).trigger('hideSpinner');
