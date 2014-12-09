@@ -81,11 +81,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          * Show the "Store Choice" block if a brand have several stores.
          */
         checkBlockStoreChoice: function() {
-            if (this.model.get('isShowStoreChoice')) {
-                this.$('.current_establishment').show();
-            } else {
-                this.$('.current_establishment').hide();
-            }
+            var block = this.$('.current_establishment');
+            this.model.get('isShowStoreChoice') ? block.show() : block.hide();
         },
         /**
          * Show the "Change Establishment" modal window.
