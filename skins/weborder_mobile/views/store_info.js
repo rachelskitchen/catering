@@ -88,11 +88,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          * Show the "Change Establishment" modal window.
          */
         change_establishment: function(e) {
-            App.Data.establishments.getModelForView().set({
+            var ests = App.Data.establishments;
+            ests.getModelForView().set({
                 storeDefined: true,
                 showFooter: false
             }); // get a model for the stores list view
-            App.Data.establishments.trigger('loadStoresList');
+            ests.trigger('loadStoresList');
             App.Data.mainModel.set('isBlurContent', true);
             e.stopPropagation();
         }
