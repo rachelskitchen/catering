@@ -46,6 +46,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             profileExists: null,
             oldPassword: null,
             newPassword: null,
+            repeatPassword: null,
             useAsDefaultCard: null,
             useAsDefaultCardSession: null,
             points: 0,
@@ -278,15 +279,16 @@ define(["backbone", "card", "customers"], function(Backbone) {
             var profileExists = this.get('profileExists'),
                 newPassword = this.get('newPassword'),
                 oldPassword = this.get('oldPassword'),
+                repeatPassword = this.get('repeatPassword');
                 self = this;
 
             // save without password changing
-            if(!newPassword && !oldPassword && profileExists) {
+            if (!newPassword && !oldPassword && !repeatPassword && profileExists) {
                 return saveData();
             }
 
             // save with password changing
-            if((!profileExists && newPassword) || (oldPassword && newPassword && profileExists)) {
+            if (((!profileExists && newPassword && repeatPassword) || (oldPassword && newPassword && repeatPassword && profileExists)) && (newPassword === repeatPassword)) {
                 return this.change_password(newPassword, oldPassword, saveData);
             }
 
@@ -295,6 +297,8 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 App.Data.errors.alert(MSG.ERROR_REVEL_EMPTY_NEW_PASSWORD);
             } else if(newPassword && !oldPassword && profileExists) {
                 App.Data.errors.alert(MSG.ERROR_REVEL_EMPTY_OLD_PASSWORD);
+            } else if (newPassword !== repeatPassword) {
+                App.Data.errors.alert(MSG.ERROR_REVEL_NOT_MATCH_PASSWORDS);
             }
 
             function saveData() {
@@ -433,6 +437,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 card: _.clone(this.get('card').toJSON()),
                 oldPassword: this.get('oldPassword'),
                 newPassword: this.get('newPassword'),
+                repeatPassword: this.get('repeatPassword'),
                 useAsDefaultCard: this.get('useAsDefaultCard'),
             }
         },
@@ -443,6 +448,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 this.set({
                     oldPassword: data.oldPassword,
                     newPassword: data.newPassword,
+                    repeatPassword: data.repeatPassword,
                     useAsDefaultCard: data.useAsDefaultCard
                 });
                 addresses = data.customer.addresses.slice().map(function(item) {
