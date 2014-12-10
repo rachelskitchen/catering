@@ -74,6 +74,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
                 this.listenToOnce(App.Data.establishments, 'resetEstablishmentData', this.resetEstablishmentData, this); // remove establishment data in case if establishment ID will change
+                this.listenToOnce(App.Data.establishments, 'clickButtonBack', App.Data.mainModel.set.bind(App.Data.mainModel, 'isBlurContent', false), this);
 
                 App.Data.mainModel.set({
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],

@@ -278,24 +278,24 @@ define(["backbone"], function(Backbone) {
         * Load the page with stores list.
         */
         loadViewEstablishments: function() {
-            /**
-            * Load view with stores list.
-            */
-            var loadEstablishmentsView = function() {
-                var ests = App.Data.establishments;
-                var modelForView = ests.getModelForView(); // get a model for the stores list view
-                if (modelForView.get('isMobileVersion')) loadCSS('./css/' + 'establishments_mobile'); // include CSS-file
+            var ests = App.Data.establishments,
+                modelForView = ests.getModelForView(),// get a model for the stores list view
+                settings = App.Data.settings,
+                cssCore = settings.get('settings_skin').routing.establishments.cssCore;
+
+            modelForView.get('isMobileVersion') && cssCore.indexOf('establishments_mobile') && cssCore.push('establishments_mobile');
+            !settings.get('settings_skin').name_app && pageTitle('Revel Systems');
+
+            App.Routers.MainRouter.prototype.prepare('establishments', function() {
                 var view = App.Views.GeneratorView.create('CoreEstablishments', {
                     mod: 'Main',
-                    el: Backbone.$('<div class="establishments_view"> </div>'),
+                    className: 'establishments_view',
                     collection: ests,
                     model: modelForView
                 }, 'ContentEstablishmentsCore');
                 Backbone.$('body').append(view.el);
                 Backbone.$(window).trigger('hideSpinner');
-            };
-            if (Backbone.$('title').text() === '') pageTitle('Revel Systems'); // set page title
-            this.prepare('establishments', loadEstablishmentsView); // load view with stores list
+            });
         },
         /**
         * Get a stores list.

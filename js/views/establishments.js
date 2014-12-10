@@ -113,7 +113,7 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
             if (currentEstablishment != model.get('id')) {
                 this.viewSelectItem = App.Views.GeneratorView.create('CoreEstablishments', {
                     mod: 'SelectItem',
-                    el: $('<option value="' + model.get('id') + '"> </option>'),
+                    el: Backbone.$('<option value="' + model.get('id') + '"> </option>'),
                     model: model
                 }, 'ContentEstablishmentsSelectItem' + model.get('id'));
                 this.subViews.push(this.viewSelectItem);
