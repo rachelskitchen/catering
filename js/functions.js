@@ -103,6 +103,7 @@ MSG.FREE_MODIFIERS_QUANTITY1 = "First modifier selected will be free";
 MSG.PRODUCTS_VALID_TIME = "Available: ";
 MSG.ERROR_REVEL_EMPTY_NEW_PASSWORD = 'Please enter new password.';
 MSG.ERROR_REVEL_EMPTY_OLD_PASSWORD = 'Please enter old password.';
+MSG.ERROR_REVEL_NOT_MATCH_PASSWORDS = 'New Password & Repeat Password doesn\'t match';
 MSG.ERROR_REVEL_USER_EXISTS = 'User %s already exists.';
 MSG.ERROR_REVEL_UNABLE_TO_PERFORM = 'Unable to perform action. Please ask about this problem at ask.revelsystems.com.';
 MSG.ERROR_REVEL_ATTEMPTS_EXCEEDED = 'Max number of authentication attempts exceeded. Account deleted.';
