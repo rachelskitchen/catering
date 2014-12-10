@@ -31,6 +31,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection, 'change:active', this.show_hide, this);
+            this.listenTo(this.collection, 'change:parent_selected', this.uncheck, this);
             this.show_hide();
         },
         render: function() {
@@ -55,6 +56,11 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             } else {
                 this.$el.removeAttr('style');
                 this.options.self.update_slider_render();
+            }
+        },
+        uncheck: function(value) {
+            if(this.collection.parent_selected != this.model.get('parent_name')) {
+                this.$('input').prop('checked', false);
             }
         }
     });
