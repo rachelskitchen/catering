@@ -326,7 +326,6 @@ footer {
     width: 141px;
     height: 27px;
     float: right;
-    margin-right: 10px;
 }
 #cart .main {
     position: absolute;
@@ -964,4 +963,18 @@ input[type="search"] {
     font-weight: regular;
     padding-top: 0.15em;
     text-align: center;
+}
+
+/* Mercury accepted credit card */
+.mercury-accepted-credit-cards {
+    position: absolute;
+    bottom: 5px;
+    right: 150px;
+}
+.card-logo {
+    display: inline-block;
+    margin-left: 0px;
+}
+.imgCardLogo {
+    height: 20px;
 }
