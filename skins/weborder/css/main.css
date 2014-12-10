@@ -539,7 +539,7 @@ section.maintenance p {
     left: 0;
 }
 #cart .order-items .name.discount {
-    font-style: italic;    
+    font-style: italic;
 }
 #cart .order-items .cost {
     position: absolute;
@@ -920,4 +920,18 @@ section.maintenance p {
     font-weight: regular;
     padding: 0.15em 0.4em 0em 0.4em;
     text-align: center;
+}
+
+/* Mercury accepted credit card */
+.mercury-accepted-credit-cards {
+    position: absolute;
+    bottom: 5px;
+    right: 150px;
+}
+.card-logo {
+    display: inline-block;
+    margin-left: 0px;
+}
+.imgCardLogo {
+    height: 20px;
 }
