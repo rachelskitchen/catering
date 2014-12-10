@@ -30,7 +30,9 @@ define(["backbone", "async"], function(Backbone) {
             this.set('basePath', app.config.baseUrl.replace(/\/$/, '') || '.');
             this.set('host', app.REVEL_HOST);
             this.set('hostname', /^http[s]*:\/\/(.+)/.exec(app.REVEL_HOST)[1]); //it's the host w/o "http[s]://" substring
+            this.ajaxSetup(); // AJAX-requests settings
             this.listenTo(this, 'change:establishment', this.load, this); // load app
+
         },
         load: function() {
             var self = this;
@@ -38,8 +40,6 @@ define(["backbone", "async"], function(Backbone) {
             this.listenToOnce(this, 'change:settings_system', this.get_settings_main, this);
             this.once('changeSkin', this.setSkinPath); // set a skin path
             this.once('changeSkinPath', this.get_settings_for_skin); // get settings from file "settings.json" for current skin
-
-            this.ajaxSetup(); // AJAX-requests settings
 
             // fix for Bug 9344. Chrome v34.0.1847.131 crashes when reload page
             if(/Chrome\/34\.0\.1847\.(131|137)/i.test(window.navigator.userAgent))
@@ -73,8 +73,8 @@ define(["backbone", "async"], function(Backbone) {
          * AJAX-requests settings.
          */
         ajaxSetup: function() {
-            var self = this;
-            var errors = App.Data.errors;
+            var self = this,
+                errors = App.Data.errors;
             Backbone.$.ajaxSetup({
                 timeout: self.get('timeout'),
                 cache: true,
@@ -100,6 +100,10 @@ define(["backbone", "async"], function(Backbone) {
                     errors.alert(MSG.ERROR_SERVER_UNREACHED, true); // user notification
                 },
                 beforeSend: function(xhr) {
+                    // prepend hostname for urls with relative links
+                    if(!/^(http(s)?:\/\/)|\./.test(this.url)) {
+                        this.url = self.get('host').replace(/(\/)?$/, '/') + this.url.replace(/^(\/)?/, '');
+                    }
                     xhr.setRequestHeader('X-Requested-With', {
                         toString: function() { return ''; }
                     });
@@ -210,17 +214,9 @@ define(["backbone", "async"], function(Backbone) {
          * Get ID of current establishment.
          */
         get_establishment: function() {
-            if (this.get('establishment') === null) {
-                var get_parameters = parse_get_params(), // get GET-parameters from address line
-                    establishment = get_parameters.establishment || get_parameters.rvarEstablishment;
-                if (!isNaN(establishment)) {
-                    return establishment;
-                } else {
-                    return 1; // set default value
-                }
-            } else {
-                return this.get('establishment');
-            }
+            var get_parameters = parse_get_params(), // get GET-parameters from address line
+                establishment = parseInt(get_parameters.establishment || get_parameters.rvarEstablishment, 10);
+            return establishment;
         },
         /**
          * Get system setting.
@@ -411,7 +407,7 @@ define(["backbone", "async"], function(Backbone) {
             if (set_sys.address.coordinates.lat != null && set_sys.address.coordinates.lng != null) {
                 //set_sys.geolocation_load.resolve();
                 //return;
-                //TODO: probably split this function into 2 ones 
+                //TODO: probably split this function into 2 ones
                 just_load_lib = true;
             }
 
@@ -427,7 +423,7 @@ define(["backbone", "async"], function(Backbone) {
                 }
 
                 require(["async!https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"], function() {
-                    if (just_load_lib) 
+                    if (just_load_lib)
                         return;
                     var geocoder = new google.maps.Geocoder();
                     geocoder.geocode({"address": address_google}, function(results, status) {

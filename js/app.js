@@ -223,39 +223,29 @@
      */
     function loadApp() {
         require(['establishments', 'establishments_view'], function() {
-            var settings = App.Data.settings;
-            var win = Backbone.$(window);
+            var settings = App.Data.settings,
+                win = Backbone.$(window);
             /**
              * App reported about error.
              */
-            var showError = function() {
+            function showError() {
                 App.Data.errors.alert(MSG.ESTABLISHMENTS_ERROR_NOSTORE, true); // user notification
                 win.trigger('hideSpinner');
             };
-            App.Data.establishments = new App.Collections.Establishments();
-            var ests = App.Data.establishments;
-            var skin = settings.get_current_skin(true); // get a current skin
-            ests.setViewVersion(skin === 'weborder_mobile'); // set a view version (desktop or mobile)
-            ests.on('loadStoresList', function() {
-                App.Routers.MainRouter.prototype.loadViewEstablishments(); // load the page with stores list
-            }); // status code = 1 (app should load view with stores list)
+            var ests = App.Data.establishments = new App.Collections.Establishments(),
+                skin = settings.get_current_skin(true); // get a current skin
+            ests.listenTo(settings, 'change:brand', function() {
+                ests.meta('brand', settings.get('brand'));
+            });
+            ests.setViewVersion(skin === App.Skins.WEBORDER_MOBILE); // set a view version (desktop or mobile)
+            ests.on('loadStoresList', App.Routers.MainRouter.prototype.loadViewEstablishments.bind(window)); // status code = 1 (app should load view with stores list)
             ests.on('showError', showError); // status code = 2 (app reported about error)
             ests.on('changeEstablishment', function(estID) {
-                var genView = App.Views.GeneratorView;
                 win.trigger('showSpinner');
-                if (genView) genView.clearCache(); // clear cache if store was changed
+                App.Views.GeneratorView.clearCache(); // clear cache if store was changed
                 settings.set('establishment', estID);
             }); // status code = 3 (app was loaded)
-            var status = ests.getStatusCode(); // get a status code of the app load
-            switch (status) {
-                case 2:
-                    showError(); // app reported about error
-                    break;
-                case 3:
-                    var est = settings.get_establishment(); // get ID of current establishment
-                    ests.trigger('changeEstablishment', est);
-                    break;
-            }
+            ests.checkGETParameters(settings.get_establishment());
         });
     }
 })();

@@ -38,7 +38,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'change:isShowPromoMessage', this.calculatePromoMessageWidth, this);
             this.listenTo(this.model, 'change:isShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
             this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
-            this.listenTo(App.Data.establishments, 'clickButtonBack', this.hideBlurEffect, this); // hide a blur effect of content
 
             this.iOSFeatures();
 
@@ -273,12 +272,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             // http://caniuse.com/#search=filter
             var mainEl = this.$('.main_el');
             this.model.get('isBlurContent') ? mainEl.addClass('blur') : mainEl.removeClass('blur');
-        },
-        /**
-         * Hide a blur effect of content.
-         */
-        hideBlurEffect: function() {
-            this.model.set('isBlurContent', false);
         }
     });
 

@@ -40,7 +40,6 @@ define(['backbone', 'collection_sort'], function(Backbone) {
             this.listenTo(this, 'changeEstablishment', function(establishmentID) {
                 this.meta('establishment', establishmentID * 1); // get or set meta data of collection
             });
-            this.checkGETParameters(); // check a GET-parameters
         },
         /**
         * Get or set meta data of collection.
@@ -53,20 +52,44 @@ define(['backbone', 'collection_sort'], function(Backbone) {
             }
         },
         /**
-        * Check a GET-parameters.
+        * Check a GET-parameters. Get a status code of the app load.
+        *
+        * 1 - app should load view with stores list;
+        * 2 - app reported about error;
+        * 3 - app was loaded.
         */
-        checkGETParameters: function() {
+        checkGETParameters: function(establishment) {
             var params = parse_get_params(), // get GET-parameters from address line
                 self = this;
-            if (params.establishment || (!params.establishment && !params.brand)) {
-                this.meta('statusCode', 3); // get or set meta data of collection
+
+            establishment = establishment || !params.brand && 1;
+
+            if (establishment) {
+                return changeEstablishment(establishment); // get or set meta data of collection
+            }
+
+            if (params.brand > 0) {
+                this.meta('brand', params.brand);
+                this.getEstablishments().then(function() {
+                    if (self.length > 0) {
+                        if (self.length === 1) {
+                            changeEstablishment(self.models[0].get('id'));
+                        } else {
+                            self.meta('statusCode', 1); // get or set meta data of collection
+                            self.trigger('loadStoresList');
+                        }
+                    } else {
+                        self.meta('statusCode', 2); // get or set meta data of collection
+                        self.trigger('showError');
+                    }
+                });
             } else {
-                if (!isNaN(params.brand) && params.brand > 0) {
-                    App.Data.settings.set('brand', params.brand);
-                    this.meta('statusCode', 1); // get or set meta data of collection
-                } else {
-                    this.meta('statusCode', 2); // get or set meta data of collection
-                }
+                this.meta('statusCode', 2); // get or set meta data of collection
+            }
+
+            function changeEstablishment(establishment) {
+                self.meta('statusCode', 3); // get or set meta data of collection
+                self.trigger('changeEstablishment', establishment);
             }
         },
         /**
@@ -75,19 +98,15 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         getEstablishments: function() {
             var dfd = Backbone.$.Deferred(),
                 self = this;
-            App.Data.settings.ajaxSetup(); // AJAX-requests settings
             Backbone.$.ajax({
-                url: App.Data.settings.get('host') + '/weborders/locations/',
+                url: '/weborders/locations/',
                 data: {
-                    brand: App.Data.settings.get('brand')
+                    brand: this.meta('brand')
                 },
                 dataType: 'json',
                 successResp: function(data) {
                     self.meta('brandName', data.brand_name); // get or set meta data of collection
-                    var establishments = data.establishments;
-                    for (var i = 0; i < establishments.length; i++) {
-                        self.add(establishments[i]);
-                    }
+                    self.add(data.establishments);
                     dfd.resolve();
                 },
                 errorResp: function() {
@@ -113,34 +132,6 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         */
         getEstablishmentID: function() {
             return this.meta('establishment'); // get or set meta data of collection
-        },
-        /**
-        * Get a status code of the app load.
-        *
-        * 1 - app should load view with stores list;
-        * 2 - app reported about error;
-        * 3 - app was loaded.
-        */
-        getStatusCode: function() {
-            var self = this,
-                status = this.meta('statusCode'); // get or set meta data of collection
-            if (status === 1 && this.models.length === 0) {
-                this.getEstablishments().then(function() {
-                    if (self.length > 0) {
-                        if (self.length === 1) {
-                            self.meta('statusCode', 3); // get or set meta data of collection
-                            self.trigger('changeEstablishment', self.models[0].get('id'));
-                        } else {
-                            self.meta('statusCode', 1); // get or set meta data of collection
-                            self.trigger('loadStoresList');
-                        }
-                    } else {
-                        self.meta('statusCode', 2); // get or set meta data of collection
-                        self.trigger('showError');
-                    }
-                });
-            }
-            return status;
         },
         /**
         * Set a view version (desktop or mobile).

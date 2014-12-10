@@ -35,9 +35,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'hidePromoMessage', this.hidePromoMessage, this);
             this.listenTo(this.model, 'showRevelPopup', this.showRevelPopup, this);
             this.listenTo(this.model, 'hideRevelPopup', this.hideRevelPopup, this);
-            this.listenToOnce(App.Data.establishments, 'resetEstablishmentData', this.showSpinnerAndHideContent, this); // show a spinner and hide a content
+            this.listenToOnce(this.model, 'showSpinnerAndHideContent', this.showSpinnerAndHideContent, this); // show a spinner and hide a content
             this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
-            this.listenTo(App.Data.establishments, 'clickButtonBack', this.hideBlurEffect, this); // hide a blur effect of content
 
             this.iOSFeatures();
 
@@ -207,12 +206,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         blurEffect: function() {
             // http://caniuse.com/#search=filter
             this.model.get('isBlurContent') ? this.blurBg() : this.unblurBg();
-        },
-        /**
-         * Hide a blur effect of content.
-         */
-        hideBlurEffect: function() {
-            this.model.set('isBlurContent', false);
         }
     });
 
