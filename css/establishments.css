@@ -186,7 +186,7 @@
     word-wrap: break-word;
 }
 #alert .btn_wrapper {
-    height: 48px;
+    height: auto;
     margin: 15px;
 }
 #alert .btn {
