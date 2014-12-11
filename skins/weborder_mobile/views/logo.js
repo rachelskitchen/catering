@@ -49,8 +49,10 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
                 }); // loading img spinner
                 if (logo.length == true) {
                     logo.on('load', function() {
-                        self.resize();
-                        $(window).on('resize', self.resize);
+                        window.setTimeout(function() {
+                            self.resize();
+                            $(window).on('resize', self.resize);
+                        }, 0);
                     });
                 }
             }
