@@ -104,6 +104,9 @@ define(["backbone", "factory", 'modifiers_view'], function(Backbone) {
             this.subViews.push(view);
         },
         change: function(e) {
+            if(!App.Settings.online_orders) {
+                return;
+            }
             var data = this.options.data;
             if(e.target.value == -1)
                 data.product.set('attribute_' + data.row +'_selected', null);

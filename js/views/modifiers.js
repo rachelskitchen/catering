@@ -64,9 +64,16 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             return this;
         },
         add_special: function() {
+            if(!App.Settings.online_orders) {
+                return;
+            }
             this.model.set('selected', true);
         },
         change: function(e, stat) {
+            if(!App.Settings.online_orders) {
+                return;
+            }
+
             var modifierBlock = this.options.modifierClass;
             var el = $(e.currentTarget),
                 checked = el.prop('checked'),
@@ -155,6 +162,10 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             return this;
         },
         change: function(e) {
+            if(!App.Settings.online_orders) {
+                return;
+            }
+
             var data = this.options.data,
                 id = this.options.id,
                 product = data.product,

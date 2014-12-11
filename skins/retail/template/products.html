@@ -42,7 +42,7 @@
         <dd class="vertical-scrollbar"><%= description %></dd>
     </dl>
 
-    <% if (is_gift) { %>
+    <% if (is_gift && _settings.online_orders) { %>
     <div class='gift_card'>
         <span class="message">Enter gift card number you want to load money to.</span>
         <span>Gift Card Number: </span>
@@ -51,7 +51,7 @@
         </div>
     </div>
     <% } %>
-    <% if (is_gift && not_size) { %>
+    <% if (is_gift && not_size && _settings.online_orders) { %>
     <div class='gift_card'>
         <span>Amount: </span>
         <div class="input_beauty">
