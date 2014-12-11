@@ -47,14 +47,6 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
                     self.resize();
                     $(window).on('resize', self.resize);
                 }); // loading img spinner
-                if (logo.length == true) {
-                    logo.on('load', function() {
-                        window.setTimeout(function() {
-                            self.resize();
-                            $(window).on('resize', self.resize);
-                        }, 0);
-                    });
-                }
             }
 
             return this;
@@ -73,6 +65,7 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
         setDefaultData: function() {
             logoNode = undefined;
             ih = undefined;
+            $(window).off('resize', this.resize);
         }
     });
 
