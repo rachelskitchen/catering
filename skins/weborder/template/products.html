@@ -45,7 +45,7 @@
         <dt class='name'>
             <%= name %>
             <span class="cost">
-                <% if (is_gift && not_size) { %>
+                <% if (is_gift && not_size && _settings.online_orders) { %>
                     <span class='currency_symbol gift_card_symbol' ><%=currency_symbol%></span>
                     <div class="input_beauty">
                         <input type="text" id="price" name="gift_card_price" value='<%= price %>' class="gift_card_price price" />
@@ -65,7 +65,7 @@
         <% } %>
     </dl>
 
-    <% if (is_gift) { %>
+    <% if (is_gift && _settings.online_orders) { %>
     <div class='gift_card'>
         <span>Gift Card Number: </span>
         <div class="input_beauty">
