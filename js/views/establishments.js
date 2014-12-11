@@ -59,38 +59,42 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
         */
         proceed: function() {
             var self = this,
-                message;
-            if (this.model.get('isMobileVersion')) {
-                message = '<div class="establishments_alert_mobile">' +
-                    '<p>' + MSG.ESTABLISHMENTS_ALERT_MESSAGE_TITLE_MOBILE + '</p>' +
-                    '<p>' + this.model.get('ALERT_MESSAGE') + '</p>' +
-                    '<p>' + MSG.ESTABLISHMENTS_ALERT_MESSAGE_QUESTION_MOBILE + '</p>' +
-                '</div>';
-            } else {
-                message = this.model.get('ALERT_MESSAGE');
-            }
-            tmpl_alert_message({
-                message: message,
-                reload_page: false,
-                is_confirm: true,
-                confirm: {
-                    ok: this.model.get('ALERT_PROCEED_BUTTON'),
-                    cancel: this.model.get('ALERT_BACK_BUTTON')
+                message,
+                selectedEstablishmentID = this.$('select').val(),
+                callbackIfIsSetEstablishment = function() {
+                    self.collection.trigger('resetEstablishmentData');
+                    self.collection.trigger('changeEstablishment', selectedEstablishmentID);
+                    self.back(); // the "Go Back" button was clicked
                 },
-                callback: function(result) {
-                    if (result) {
-                        var selectedEstablishmentID = self.$('select').val();
-                        if (self.collection.getEstablishmentID() === undefined) { // get a establishment's ID
-                            self.collection.trigger('changeEstablishment', selectedEstablishmentID);
-                            self.removeFromDOMTree(); // remove a view from DOM
-                        } else {
-                            self.collection.trigger('resetEstablishmentData');
-                            self.collection.trigger('changeEstablishment', selectedEstablishmentID);
-                            self.back(); // the "Go Back" button was clicked
-                        }
-                    }
+                callbackIfNotSetEstablishment = function() {
+                    self.collection.trigger('changeEstablishment', selectedEstablishmentID);
+                    self.removeFromDOMTree(); // remove a view from DOM
+                };
+            if (this.collection.getEstablishmentID()) { // get a establishment's ID
+                if (this.model.get('isMobileVersion')) {
+                    message = '<div class="establishments_alert_mobile">' +
+                        '<p>' + MSG.ESTABLISHMENTS_ALERT_MESSAGE_TITLE_MOBILE + '</p>' +
+                        '<p>' + this.model.get('ALERT_MESSAGE') + '</p>' +
+                        '<p>' + MSG.ESTABLISHMENTS_ALERT_MESSAGE_QUESTION_MOBILE + '</p>' +
+                    '</div>';
+                } else {
+                    message = this.model.get('ALERT_MESSAGE');
                 }
-            }); // user customized alerts for Weborder skin
+                tmpl_alert_message({
+                    message: message,
+                    reload_page: false,
+                    is_confirm: true,
+                    confirm: {
+                        ok: this.model.get('ALERT_PROCEED_BUTTON'),
+                        cancel: this.model.get('ALERT_BACK_BUTTON')
+                    },
+                    callback: function(result) {
+                        if (result) callbackIfIsSetEstablishment();
+                    }
+                }); // user customized alerts for Weborder skin
+            } else {
+                callbackIfNotSetEstablishment();
+            }
         }
     });
     App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectView = App.Views.ListView.extend({
