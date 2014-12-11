@@ -240,7 +240,7 @@ select {
 #content ul.modifiers li, #content .myorderSubtotal {
     border-top-color: #a8c4d8;
 }
-#content .modifier label:not(.fade-out):active {
+#content .modifier label:not(.fade-out):not(.no-controls):active {
     box-shadow: 0 0 3em rgba(0, 170, 234, 0.1) inset;
 }
 #content .modifier .input.checkbox:after {
