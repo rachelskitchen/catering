@@ -61,12 +61,12 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
             var self = this,
                 message,
                 selectedEstablishmentID = this.$('select').val(),
-                callbackIfIsSetEstablishment = function() {
+                estExist = function() {
                     self.collection.trigger('resetEstablishmentData');
                     self.collection.trigger('changeEstablishment', selectedEstablishmentID);
                     self.back(); // the "Go Back" button was clicked
                 },
-                callbackIfNotSetEstablishment = function() {
+                estNotExist = function() {
                     self.collection.trigger('changeEstablishment', selectedEstablishmentID);
                     self.removeFromDOMTree(); // remove a view from DOM
                 };
@@ -89,11 +89,11 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                         cancel: this.model.get('ALERT_BACK_BUTTON')
                     },
                     callback: function(result) {
-                        if (result) callbackIfIsSetEstablishment();
+                        if (result) estExist();
                     }
                 }); // user customized alerts for Weborder skin
             } else {
-                callbackIfNotSetEstablishment();
+                estNotExist();
             }
         }
     });
