@@ -96,8 +96,7 @@ define(['modifiers'], function() {
                         modifier: 'id',
                         modifier_cost: 'cost',
                         modifier_price: 20,
-                        qty: 1, // ??? dont know
-                        qty_type: 0 // ??? dont know
+                        qty: 1 // ??? dont know                       
                 });
             });
         });
