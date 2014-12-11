@@ -112,6 +112,10 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             }
         },
         update_free: function() {
+            if(!App.Settings.online_orders) {
+                return;
+            }
+
             var free_amount = this.model.get('free_amount'),
                 currency_symbol = App.Data.settings.get('settings_system').currency_symbol,
                 $cost = this.$('.cost'),
