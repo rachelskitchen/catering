@@ -136,6 +136,13 @@ define(["backbone"], function(Backbone) {
             this.once('started', function() {
                 self.started = true;
             });
+
+            // remember state of data of application (begin)
+            App.Data.stateAppData = {};
+            for (var i in App.Data) {
+                App.Data.stateAppData[i] = true;
+            }
+            // remember state of data of application (end)
         },
         navigate: function() {
             this.started && arguments[0] != location.hash.slice(1) && App.Data.mainModel.trigger('loadStarted');
@@ -169,6 +176,7 @@ define(["backbone"], function(Backbone) {
                 views = page && Array.isArray(settings_skin.routing[page].views) ? settings_skin.routing[page].views : [],
                 css = page && Array.isArray(settings_skin.routing[page].css) ? settings_skin.routing[page].css : [],
                 cssCore = page && Array.isArray(settings_skin.routing[page].cssCore) ? settings_skin.routing[page].cssCore : [],
+                templatesCore = page && Array.isArray(settings_skin.routing[page].templatesCore) ? settings_skin.routing[page].templatesCore : [],
                 models = page && Array.isArray(settings_skin.routing[page].model) ? settings_skin.routing[page].model : [],
                 core = page && Array.isArray(settings_skin.routing[page].core) ? settings_skin.routing[page].core : [],
                 color_schemes = Array.isArray(settings_skin.color_schemes) ? settings_skin.color_schemes : [],
@@ -185,7 +193,7 @@ define(["backbone"], function(Backbone) {
             for(i = 0, j = scripts.length; i < j; i++)
                 js.push(skin + "/js/" + scripts[i]);
 
-            for(i = 0, j = templates.length; i < j; i++)
+            for (i = 0, j = templates.length; i < j; i++)
                 loadTemplate2(null, templates[i]);
 
             for(i = 0, j = views.length; i < j; i++)
@@ -194,11 +202,14 @@ define(["backbone"], function(Backbone) {
             for(i = 0, j = css.length; i < j; i++)
                 loadCSS(skinPath + "/css/" + css[i]);
 
+            for(i = 0, j = models.length; i < j; i++)
+                js.push(skin + "/models/" + models[i]);
+
             for(i = 0, j = cssCore.length; i < j; i++)
                 loadCSS(basePath + "/css/" + cssCore[i]);
 
-            for(i = 0, j = models.length; i < j; i++)
-                js.push(skin + "/models/" + models[i]);
+            for (i = 0, j = templatesCore.length; i < j; i++)
+                loadTemplate2(null, templatesCore[i], true); // sync load template
 
             require(js, function() {
                 if (App.Data.loadModelTemplate && App.Data.loadModelTemplate.dfd) {
@@ -262,6 +273,52 @@ define(["backbone"], function(Backbone) {
 
                 typeof cb == 'function' && cb();
             }, this);
+        },
+        /**
+        * Load the page with stores list.
+        */
+        loadViewEstablishments: function() {
+            var ests = App.Data.establishments,
+                modelForView = ests.getModelForView(),// get a model for the stores list view
+                settings = App.Data.settings,
+                cssCore = settings.get('settings_skin').routing.establishments.cssCore;
+
+            modelForView.get('isMobileVersion') && cssCore.indexOf('establishments_mobile') && cssCore.push('establishments_mobile');
+            !settings.get('settings_skin').name_app && pageTitle('Revel Systems');
+
+            App.Routers.MainRouter.prototype.prepare('establishments', function() {
+                var view = App.Views.GeneratorView.create('CoreEstablishments', {
+                    mod: 'Main',
+                    className: 'establishments_view',
+                    collection: ests,
+                    model: modelForView
+                }, 'ContentEstablishmentsCore');
+                Backbone.$('body').append(view.el);
+                Backbone.$(window).trigger('hideSpinner');
+            });
+        },
+        /**
+        * Get a stores list.
+        */
+        getEstablishments: function() {
+            var self = this;
+            var ests = App.Data.establishments;
+            if (!App.Data.settings.get('isMaintenance') && ests.length === 0) {
+                ests.getEstablishments().then(function() { // get establishments from backend
+                    if (ests.length > 1) self.callback();
+                });
+            }
+        },
+        /**
+        * Remove establishment data in case if establishment ID will change.
+        */
+        resetEstablishmentData: function() {
+            delete App.Data.router;
+            for (var i in App.Data) {
+                if (App.Data.stateAppData[i] === undefined) {
+                    delete App.Data[i];
+                }
+            }
         }
     });
 

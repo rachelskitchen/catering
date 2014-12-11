@@ -50,6 +50,9 @@ section:before {
     background: #2699ca;
     box-shadow: 0 0 7px #34acd7 inset, 0 0 12px #b1ccda;
 }
+.current_establishment a {
+    color: #2186b1;
+}
 .powered-by {
     background: url('img/poweredBy.png') no-repeat 0 0 transparent;
 }

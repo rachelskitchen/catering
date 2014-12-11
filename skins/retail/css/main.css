@@ -321,6 +321,15 @@ footer {
 #header .checkout .search {
     display: none;
 }
+.current_establishment {
+    display: none;
+    float: left;
+    padding-left: 0.65em;
+}
+.current_establishment a {
+    margin-left: 2em;
+    text-decoration: none;
+}
 .powered-by {
     display: block;
     width: 141px;
@@ -963,6 +972,13 @@ input[type="search"] {
     font-weight: regular;
     padding-top: 0.15em;
     text-align: center;
+}
+
+.blur {
+    -moz-filter: blur(5px);
+    -ms-filter: blur(5px);
+    -webkit-filter: blur(5px);
+    filter: blur(5px);
 }
 
 /* Mercury accepted credit card */

@@ -30,46 +30,16 @@ define(["backbone", "async"], function(Backbone) {
             this.set('basePath', app.config.baseUrl.replace(/\/$/, '') || '.');
             this.set('host', app.REVEL_HOST);
             this.set('hostname', /^http[s]*:\/\/(.+)/.exec(app.REVEL_HOST)[1]); //it's the host w/o "http[s]://" substring
+            this.ajaxSetup(); // AJAX-requests settings
+            this.listenTo(this, 'change:establishment', this.load, this); // load app
+
         },
         load: function() {
             var self = this;
 
-            this.listenTo(this, 'change:skin', this.setSkinPath, this);
             this.listenToOnce(this, 'change:settings_system', this.get_settings_main, this);
-            this.listenToOnce(this, 'change:skinPath', this.get_settings_for_skin, this)
-
-            this.get_establishment();  // get ID of current establishment
-
-            $.ajaxSetup({
-                timeout: self.get("timeout"),
-                cache: true,
-                success: function(data) {
-                    if (!data.status) {
-                        App.Data.errors.alert_red(MSG.ERROR_INCORRECT_AJAX_DATA, true);
-                    } else {
-                        switch (data.status) {
-                            case "OK":
-                                if (typeof this.successResp === 'function') {
-                                    this.successResp(data.data);
-                                }
-                                break;
-                            default:
-                                App.Data.errors.alert_red(data.errorMsg, true);
-                        }
-                    }
-                },
-                error: function(xhr) {
-                    App.Data.errors.alert(MSG.ERROR_SERVER_UNREACHED, true); // user notification
-                },
-                beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-Requested-With", {
-                        toString: function() {
-                            return "";
-                        }
-                    });
-                    xhr.setRequestHeader("X-Revel-Revision", self.get("x_revel_revision"));
-                }
-            });
+            this.once('changeSkin', this.setSkinPath); // set a skin path
+            this.once('changeSkinPath', this.get_settings_for_skin); // get settings from file "settings.json" for current skin
 
             // fix for Bug 9344. Chrome v34.0.1847.131 crashes when reload page
             if(/Chrome\/34\.0\.1847\.(131|137)/i.test(window.navigator.userAgent))
@@ -79,17 +49,67 @@ define(["backbone", "async"], function(Backbone) {
             return $.when(self.get_settings_system());
         },
         defaults: {
-            establishment: 1,
+            brand: null,
+            establishment: null,
             host: "",
             storage_data: 0,
             skin: "", // weborder by default
-            settings_skin: {},
+            settings_skin: {
+                routing: {
+                    establishments: {
+                        cssCore: ['establishments'],
+                        templatesCore: ['establishments']
+                    }
+                }
+            },
             settings_system: {},
             timeout: 60000,
             x_revel_revision: null,
             isMaintenance: false,
             version: 1.06,
             supported_skins: []
+        },
+        /**
+         * AJAX-requests settings.
+         */
+        ajaxSetup: function() {
+            var self = this,
+                errors = App.Data.errors;
+            Backbone.$.ajaxSetup({
+                timeout: self.get('timeout'),
+                cache: true,
+                success: function(data) {
+                    if (!data.status) {
+                        errors.alert_red(MSG.ERROR_INCORRECT_AJAX_DATA, true); // user notification (server return HTTP status 200, but data.status is error)
+                    } else {
+                        switch (data.status) {
+                            case 'OK':
+                                if (typeof this.successResp === 'function') this.successResp(data.data);
+                                break;
+                            default:
+                                if (typeof this.errorResp === 'function') {
+                                    this.errorResp(data.data);
+                                } else {
+                                    errors.alert_red(data.errorMsg, true); // user notification (server return HTTP status 200, but data.status is error)
+                                }
+                                break;
+                        }
+                    }
+                },
+                error: function(xhr) {
+                    errors.alert(MSG.ERROR_SERVER_UNREACHED, true); // user notification
+                },
+                beforeSend: function(xhr) {
+                    // prepend hostname for urls with relative links
+                    if(!/^(http(s)?:\/\/)|\./.test(this.url)) {
+                        this.url = self.get('host').replace(/(\/)?$/, '/') + this.url.replace(/^(\/)?/, '');
+                    }
+                    xhr.setRequestHeader('X-Requested-With', {
+                        toString: function() { return ''; }
+                    });
+                    xhr.setRequestHeader('X-Revel-Revision', self.get('x_revel_revision'));
+                }
+            });
         },
         /**
          * Selection of the data warehouse.
@@ -112,9 +132,9 @@ define(["backbone", "async"], function(Backbone) {
              }
         },
         /**
-         * resolve app's skin
+         * Get a current skin.
          */
-        get_settings_main: function() {
+        get_current_skin: function() {
             var params = parse_get_params(),
                 skin = params.skin || params.rvarSkin,
                 settings = this.get('settings_system'),
@@ -140,6 +160,14 @@ define(["backbone", "async"], function(Backbone) {
                 settings.delivery_charge = 0;
 
             this.set('skin', App.skin);
+            return App.skin;
+        },
+        /**
+         * resolve app's skin
+         */
+        get_settings_main: function() {
+            if (this.get('skin') === '') this.get_current_skin(); // get a current skin
+            this.trigger('changeSkin');
         },
         /**
          * Get settings from file "settings.json" for current skin.
@@ -157,8 +185,10 @@ define(["backbone", "async"], function(Backbone) {
                     settings_skin.styles = data instanceof Object && data.styles instanceof Array ? data.styles : [];
                     settings_skin.scripts = data instanceof Object && data.scripts instanceof Array ? data.scripts : [];
                     settings_skin.routing = data.routing;
+                    Backbone.$.extend(settings_skin.routing, self.defaults.settings_skin.routing);
                     settings_skin.color_schemes = data.color_schemes instanceof Array ? data.color_schemes : [];
                     self.set("settings_skin", settings_skin);
+                    self.trigger('changeSettingsSkin');
                     var default_img = self.get_img_default();
                     $("<style>.img_default { background: url('" + default_img + "'); }</style>").appendTo("head");
                 },
@@ -185,9 +215,8 @@ define(["backbone", "async"], function(Backbone) {
          */
         get_establishment: function() {
             var get_parameters = parse_get_params(), // get GET-parameters from address line
-                establishment = get_parameters.establishment || get_parameters.rvarEstablishment;
-            if (!isNaN(establishment))
-                this.set("establishment", establishment);
+                establishment = parseInt(get_parameters.establishment || get_parameters.rvarEstablishment, 10);
+            return establishment;
         },
         /**
          * Get system setting.
@@ -233,6 +262,7 @@ define(["backbone", "async"], function(Backbone) {
                             var data = response.data;
 
                             $.extend(true, settings_system, data);
+                            self.set('brand', data.brand);
                             settings_system.about_images = settings_system.about_images || [];
                             settings_system.about_title = settings_system.about_title || "";
                             settings_system.about_description = settings_system.about_description || "";
@@ -377,7 +407,7 @@ define(["backbone", "async"], function(Backbone) {
             if (set_sys.address.coordinates.lat != null && set_sys.address.coordinates.lng != null) {
                 //set_sys.geolocation_load.resolve();
                 //return;
-                //TODO: probably split this function into 2 ones 
+                //TODO: probably split this function into 2 ones
                 just_load_lib = true;
             }
 
@@ -393,7 +423,7 @@ define(["backbone", "async"], function(Backbone) {
                 }
 
                 require(["async!https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"], function() {
-                    if (just_load_lib) 
+                    if (just_load_lib)
                         return;
                     var geocoder = new google.maps.Geocoder();
                     geocoder.geocode({"address": address_google}, function(results, status) {
@@ -457,6 +487,7 @@ define(["backbone", "async"], function(Backbone) {
                 img_path: skinPath + '/img/',
                 skinPath: skinPath
             });
+            this.trigger('changeSkinPath');
         }
     });
 });

@@ -28,7 +28,8 @@ define(["backbone"], function(Backbone) {
             header: {},
             content: {},
             footer: {},
-            img: App.Data.settings.get("img_path")
+            img: App.Data.settings.get("img_path"),
+            isBlurContent: false
         }
     });
 });
