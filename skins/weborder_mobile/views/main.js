@@ -35,6 +35,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'hidePromoMessage', this.hidePromoMessage, this);
             this.listenTo(this.model, 'showRevelPopup', this.showRevelPopup, this);
             this.listenTo(this.model, 'hideRevelPopup', this.hideRevelPopup, this);
+            this.listenToOnce(this.model, 'showSpinnerAndHideContent', this.showSpinnerAndHideContent, this); // show a spinner and hide a content
+            this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
 
             this.iOSFeatures();
 
@@ -189,6 +191,21 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         unblurBg: function() {
             this.$('section, footer, header').removeClass('blur');
+        },
+        /**
+         * Show a spinner and hide a content.
+         */
+        showSpinnerAndHideContent: function() {
+            this.showSpinner(); // show spinner
+            this.$('header, section, footer').hide();
+        },
+        /**
+         * A blur effect of content.
+         * Blur effect supported on Firefox 35, Google Chrome 18, Safari 6, iOS Safari 6.1, Android browser 4.4, Chrome for Android 39.
+         */
+        blurEffect: function() {
+            // http://caniuse.com/#search=filter
+            this.model.get('isBlurContent') ? this.blurBg() : this.unblurBg();
         }
     });
 

@@ -322,6 +322,9 @@ select {
 #content .store_info_main_data:active {
     box-shadow: 0 0 6em rgba(0, 170, 234, 0.3) inset;
 }
+#content .store_info_main_data .current_establishment a {
+    color: #2699ca;
+}
 #content a.phone, #content a.phone:link, #content a.phone:visited, #content a.phone:hover, #content a.phone:active {
     color: #2699ca;
 }

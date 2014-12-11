@@ -113,6 +113,21 @@ MSG.ERROR_NO_MSG_FROM_SERVER = "No message about the error";
 MSG.ERROR_GET_DISCOUNTS = "Failed request to get discounts";
 MSG.ERROR_INCORRECT_DISCOUNT_CODE = "Type correct discount code from 4 to 16 characters";
 MSG.DISCOUNT_CODE_NOT_FOUND = "The typed discount code hasn't been found. Automatic discounts can be applied only.";
+// page 'Establishments' (begin)
+MSG.ESTABLISHMENTS_ERROR_NOSTORE = 'No store is available for the specified brand';
+MSG.ESTABLISHMENTS_CHOOSE_BRAND_DESKTOP = 'Choose which %s you are looking for:';
+MSG.ESTABLISHMENTS_CHOOSE_BRAND_MOBILE = 'Choose which %s you\'re looking for:';
+MSG.ESTABLISHMENTS_PROCEED_BUTTON = 'Proceed';
+MSG.ESTABLISHMENTS_BACK_BUTTON = 'Go Back';
+MSG.ESTABLISHMENTS_ALERT_MESSAGE_DESKTOP = 'If you choose a different store location, your order will be canceled. Cancel Order?';
+MSG.ESTABLISHMENTS_ALERT_MESSAGE_TITLE_MOBILE = 'Warning';
+MSG.ESTABLISHMENTS_ALERT_MESSAGE_MOBILE = 'If you switch stores, your order will be discarded.';
+MSG.ESTABLISHMENTS_ALERT_MESSAGE_QUESTION_MOBILE = 'Continue?';
+MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_DESKTOP = 'Proceed';
+MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_MOBILE = 'Ok';
+MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_DESKTOP = 'Go Back';
+MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_MOBILE = 'Back';
+// page 'Establishments' (end)
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
@@ -597,7 +612,7 @@ function round_monetary_currency(value, precision, up) {
  *  Sync load template
  */
 
-function loadTemplate2(name,file) {
+function loadTemplate2(name, file, isCore) {
     if (!App.Data.loadModelTemplate) {
         App.Data.loadModelTemplate = {};
     }
@@ -608,7 +623,7 @@ function loadTemplate2(name,file) {
         App.Data.loadModelTemplate.dfd = $.Deferred();
         App.Data.loadModelTemplate.count++;
         $.ajax({
-            url: App.Data.settings.get('skinPath') + "/template/" + file + ".html",
+            url: isCore ? 'template/' + file + '.html' : App.Data.settings.get('skinPath') + '/template/' + file + '.html',
             dataType: "html",
             success : function(data) {
                 $("head").append(data);

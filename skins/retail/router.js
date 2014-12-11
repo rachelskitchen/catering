@@ -31,11 +31,18 @@ define(["backbone", "main_router"], function(Backbone) {
     var headers = {},
         carts = {};
 
-    headers.main = {mod: 'Main', className: 'main'};
-    headers.confirm = {mod: 'Confirm', className: 'confirm'};
-    headers.checkout = {mod: 'Checkout', className: 'checkout main'};
-    carts.main = {mod: 'Main', className: 'main animation'};
-    carts.checkout = {mod: 'Checkout', className: 'checkout'};
+    /**
+    * Default router data.
+    */
+    function defaultRouterData() {
+        headers.main = {mod: 'Main', className: 'main'};
+        headers.confirm = {mod: 'Confirm', className: 'confirm'};
+        headers.checkout = {mod: 'Checkout', className: 'checkout main'};
+        carts.main = {mod: 'Main', className: 'main animation'};
+        carts.checkout = {mod: 'Checkout', className: 'checkout'};
+    }
+
+    defaultRouterData(); // default router data
 
     App.Routers.Router = App.Routers.MainRouter.extend({
         routes: {
@@ -105,6 +112,9 @@ define(["backbone", "main_router"], function(Backbone) {
                 this.listenTo(App.Data.mainModel, 'change:mod', this.createMainView);
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
+                this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
+                this.listenToOnce(App.Data.establishments, 'resetEstablishmentData', this.resetEstablishmentData, this); // remove establishment data in case if establishment ID will change
+                this.listenToOnce(App.Data.establishments, 'clickButtonBack', App.Data.mainModel.set.bind(App.Data.mainModel, 'isBlurContent', false), this);
 
                 App.Data.mainModel.set({
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
@@ -114,6 +124,7 @@ define(["backbone", "main_router"], function(Backbone) {
                     categories: App.Data.categories,
                     search: App.Data.search
                 });
+                App.Data.establishments.getModelForView().set('clientName', App.Data.mainModel.get('clientName')); // get a model for the stores list view
 
                 // listen to navigation control
                 this.navigationControl();
@@ -331,6 +342,33 @@ define(["backbone", "main_router"], function(Backbone) {
         },
         hidePromoMessage: function() {
             App.Data.header.set('isShowPromoMessage', false);
+        },
+        /**
+        * Get a stores list.
+        */
+        getEstablishments: function() {
+            this.callback = function() {
+                App.Data.mainModel.set('isShowStoreChoice', true);
+            };
+            App.Routers.MainRouter.prototype.getEstablishments.apply(this, arguments);
+        },
+        /**
+        * Remove establishment data in case if establishment ID will change.
+        */
+        resetEstablishmentData: function() {
+            App.Routers.MainRouter.prototype.resetEstablishmentData.apply(this, arguments);
+            Backbone.history.stop();
+            this.index.initState = undefined;
+            window.location.hash = '';
+            defaultRouterData(); // default router data
+            this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
+        },
+        /**
+        * Remove HTML and CSS of current establishment in case if establishment ID will change.
+        */
+        removeHTMLandCSS: function() {
+            Backbone.$('link[href$="colors.css"]').remove();
+            this.bodyElement.children('.main-container').remove();
         },
         index: function(data) {
             // init origin state for case when page is loaded without any data (#index or hash is not assigned)

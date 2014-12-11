@@ -85,14 +85,15 @@
     // define main module
     define(['config'], function(config) {
         return {
-        skins: skins,
-        config: config,
-        init: init,
-        addSpinner: addSpinner,
-        getFontSize: getFontSize,
-        initSpinner: initSpinner,
-        beforeInit: new Function,
-        afterInit: new Function
+            skins: skins,
+            config: config,
+            init: init,
+            addSpinner: addSpinner,
+            getFontSize: getFontSize,
+            initSpinner: initSpinner,
+            beforeInit: new Function,
+            afterInit: new Function,
+            loadApp: loadApp // loading application
         }
     });
 
@@ -110,11 +111,19 @@
         require.config(app.config);
 
         require(["jquery_alerts", "cssua", "functions", "errors", "myorder", "settings", "timetable", "log", "tax", "main_router"], function() {
+            var win = Backbone.$(window);
+
             // invoke beforeStart onfig
             app.beforeInit();
 
             // init spinner
             var spinner = app.initSpinner(app.addSpinner, app.getFontSize);
+            win.on('hideSpinner', function() {
+                spinner.style.display = 'none';
+            });
+            win.on('showSpinner', function() {
+                spinner.style.display = 'block';
+            });
 
             // init errors object and check browser version
             App.Data.errors = new App.Models.Errors;
@@ -129,30 +138,29 @@
             App.Data.settings = new App.Models.Settings({
                 supported_skins: app.skins.available
             });
+            var settings = App.Data.settings;
 
-            App.Data.settings.once('change:settings_skin', function() {
+            settings.on('changeSettingsSkin', function() {
                 load_styles_and_scripts(); // load styles and scripts
                 App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
-                require([App.Data.settings.get("skin") + "/router"], function() {
+                require([settings.get('skin') + '/router'], function() {
                     App.Data.router = new App.Routers.Router;
-                    // remove launch spinner
-                    App.Data.router.once('started', function() {
-                        var body = document.querySelector('body');
-                        if(body && Array.prototype.indexOf.call(body.childNodes, spinner) > -1) {
-                            document.querySelector('body').removeChild(spinner);
-                        }
-                    });
-                    if(App.Data.settings.get('isMaintenance')) {
-                        window.location.hash = "#maintenance";
-                    }
+                    var router = App.Data.router;
+                    router.prepare.initialized = false;
+                    router.once('started', function() {
+                        win.trigger('hideSpinner');
+                        router.trigger('needLoadEstablishments');
+                    }); // hide a launch spinner & load an establishments list
+                    if (settings.get('isMaintenance')) window.location.hash = '#maintenance';
+                    if (Backbone.History.started) Backbone.history.stop();
                     Backbone.history.start();
 
                     // invoke afterStart callback
                     app.afterInit();
                 });
             });
-            App.Data.settings.load();
+            app.loadApp(); // loading application
         });
     }
 
@@ -208,5 +216,36 @@
         };
 
         return loader;
+    }
+
+    /**
+     * Loading application.
+     */
+    function loadApp() {
+        require(['establishments', 'establishments_view'], function() {
+            var settings = App.Data.settings,
+                win = Backbone.$(window);
+            /**
+             * App reported about error.
+             */
+            function showError() {
+                App.Data.errors.alert(MSG.ESTABLISHMENTS_ERROR_NOSTORE, true); // user notification
+                win.trigger('hideSpinner');
+            };
+            var ests = App.Data.establishments = new App.Collections.Establishments(),
+                skin = settings.get_current_skin(true); // get a current skin
+            ests.listenTo(settings, 'change:brand', function() {
+                ests.meta('brand', settings.get('brand'));
+            });
+            ests.setViewVersion(skin === App.Skins.WEBORDER_MOBILE); // set a view version (desktop or mobile)
+            ests.on('loadStoresList', App.Routers.MainRouter.prototype.loadViewEstablishments.bind(window)); // status code = 1 (app should load view with stores list)
+            ests.on('showError', showError); // status code = 2 (app reported about error)
+            ests.on('changeEstablishment', function(estID) {
+                win.trigger('showSpinner');
+                App.Views.GeneratorView.clearCache(); // clear cache if store was changed
+                settings.set('establishment', estID);
+            }); // status code = 3 (app was loaded)
+            ests.checkGETParameters(settings.get_establishment());
+        });
     }
 })();

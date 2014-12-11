@@ -1,0 +1,31 @@
+.establishments > div {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+#alert .alert_wrapper {
+    margin-left: 0px;
+}
+#alert .alert_block {
+    min-width: 280px;
+}
+#alert .alert-background {
+    background: #f1f1f1;
+}
+#alert .icon {
+    display: none;
+}
+#alert .message .establishments_alert_mobile p {
+    font-weight: normal;
+    margin: 0.5em 0 0.5em 0;
+}
+#alert .message .establishments_alert_mobile p:first-child {
+    font-size: 40px;
+    font-weight: bold;
+}
+#alert .btn_wrapper {
+    margin: 10px;
+}
+#alert .btn {
+    min-width: 80px;
+    padding: 0px 10px 0px 10px;
+}

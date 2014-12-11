@@ -1,50 +1,54 @@
 <script type="text/template" id="main_main-template">
-<section>
-    <% if (_settings.promo_message) { %>
-        <div class='promo_message promo_text'> <span> <%= _settings.promo_message %> </span> </div>
-        <div class='promo_message promo_marquee'> <marquee behavior='scroll' direction='left' scrollamount='6' loop='-1'> <%= _settings.promo_message %> </marquee> </div>
-    <% } %>
-    <header id="header"></header>
-    <div id="content">
-
-    </div>
-</section>
-<aside id="cart"></aside>
-<footer>
-    <a class="powered-by" target='_blank' href="http://revelup.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
-</footer>
-<div class="popup">
-    <div class='popoup_align'>
-    </div>
-    <div class='popup_wrapper'>
-        <div id="popup">
-            <div class="cancel"></div>
+    <section class='main_el'>
+        <% if (_settings.promo_message) { %>
+            <div class='promo_message promo_text'> <span> <%= _settings.promo_message %> </span> </div>
+            <div class='promo_message promo_marquee'> <marquee behavior='scroll' direction='left' scrollamount='6' loop='-1'> <%= _settings.promo_message %> </marquee> </div>
+        <% } %>
+        <header id="header"></header>
+        <div id="content">
+           
+        </div>
+    </section>
+    <aside id='cart' class='main_el'> </aside>
+    <footer class='main_el'>
+        <span class='current_establishment'>
+            Current Store: <%= _settings.business_name %>
+            <a class='change_establishment' href='javascript: void(0);'> Change? </a>
+        </span>
+        <a class="powered-by" target='_blank' href="http://revelup.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
+    </footer>
+    <div class="popup">
+        <div class='popoup_align'>
+        </div>
+        <div class='popup_wrapper'>
+            <div id="popup">
+                <div class="cancel"></div>
+            </div>
         </div>
     </div>
-</div>
-<div id="main-spinner"></div>
-<% if(_settings.payment_processor.mercury) { %>
-<ul class="mercury-accepted-credit-cards">
-    <li class="card-logo">
-        <img title="Visa Logo" class="imgCardLogo" src="img/visa.png">
-    </li>
-    <li class="card-logo">
-        <img title="MasterCard Logo" class="imgCardLogo" src="img/Mastercard.png">
-    </li>
-    <li class="card-logo">
-        <img id="imgAmex" title="American Express Logo" class="imgCardLogo" src="img/amex.png">
-    </li>
-    <li class="card-logo">
-        <img title="Discover Logo" class="imgCardLogo" src="img/discover.png">
-    </li>
-    <li class="card-logo">
-        <img title="Diners Club Logo" class="imgCardLogo" src="img/dinersclub.png">
-    </li>
-    <li class="card-logo">
-        <img title="JCB Logo" class="imgCardLogo" src="img/jcb.png">
-    </li>
-</ul>
-<% } %>
+    <div id="main-spinner"></div>
+    <% if(_settings.payment_processor.mercury) { %>
+    <ul class="mercury-accepted-credit-cards">
+        <li class="card-logo">
+            <img class="imgCardLogo" src="img/visa.png">
+        </li>
+        <li class="card-logo">
+            <img class="imgCardLogo" src="img/mastercard.png">
+        </li>
+        <li class="card-logo">
+            <img class="imgCardLogo" src="img/amex.png">
+        </li>
+        <li class="card-logo">
+            <img class="imgCardLogo" src="img/discover.png">
+        </li>
+        <li class="card-logo">
+            <img class="imgCardLogo" src="img/dinersclub.png">
+        </li>
+        <li class="card-logo">
+            <img class="imgCardLogo" src="img/jcb.png">
+        </li>
+    </ul>
+    <% } %>
 </script>
 
 <script type="text/template" id="alert-template">
