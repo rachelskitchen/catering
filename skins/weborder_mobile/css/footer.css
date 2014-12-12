@@ -311,9 +311,14 @@
     font-family: helvetica neue;
     font-size: 2.5em;
     font-weight: italic;
-    height: 1.5em;
-    margin-top: -1.5em;
+    height: 2.5em;
+    margin-top: -2.5em;
     text-align: center;
+}
+
+.promo_message_retail {
+    height: 1.5em !important;
+    margin-top: -1.5em !important;
 }
 
 .promo_message span {
