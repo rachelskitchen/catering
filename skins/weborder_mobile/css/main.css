@@ -297,8 +297,10 @@ textarea, input {
     text-transform: lowercase;
 }
 
-.section_promo_show { bottom: 15em !important; }
-.footer_promo_show { height: 15em !important; }
+.section_promo_show { bottom: 17em !important; }
+.footer_promo_show { height: 17em !important; }
+.section_promo_show_retail { bottom: 15em !important; }
+.footer_promo_show_retail { height: 15em !important; }
 
 .blur {
     -webkit-filter: blur(5px);

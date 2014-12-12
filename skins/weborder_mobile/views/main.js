@@ -163,15 +163,25 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          * Styles for a visible promo message.
          */
         showPromoMessage: function() {
-            this.$('section').addClass('section_promo_show');
-            this.$('footer').addClass('footer_promo_show');
+            if (App.Settings.isRetailMode) {
+                this.$('section').addClass('section_promo_show_retail');
+                this.$('footer').addClass('footer_promo_show_retail');
+            } else {
+                this.$('section').addClass('section_promo_show');
+                this.$('footer').addClass('footer_promo_show');
+            }
         },
         /**
          * Styles for a invisible promo message.
          */
         hidePromoMessage: function() {
-            this.$('section').removeClass('section_promo_show');
-            this.$('footer').removeClass('footer_promo_show');
+            if (App.Settings.isRetailMode) {
+                this.$('section').removeClass('section_promo_show_retail');
+                this.$('footer').removeClass('footer_promo_show_retail');
+            } else {
+                this.$('section').removeClass('section_promo_show');
+                this.$('footer').removeClass('footer_promo_show');
+            }
         },
         showRevelPopup: function(data) {
             var container = this.$('#revel-popup');
