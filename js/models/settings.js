@@ -215,7 +215,7 @@ define(["backbone", "async"], function(Backbone) {
          */
         get_establishment: function() {
             var get_parameters = parse_get_params(), // get GET-parameters from address line
-                establishment = parseInt(get_parameters.establishment || get_parameters.rvarEstablishment, 10);
+                establishment = parseInt(get_parameters.establishment || get_parameters.rvarEstablishment || 1, 10);
             return establishment;
         },
         /**
