@@ -47,14 +47,18 @@
 <script type="text/template" id="myorder_matrix-template">
     <div class='product modifiers-list product_info modifiers-bottom-line'>
     </div>
+    <% if(_settings.online_orders) { %>
     <div class='quantity modifiers-list quantity_info modifiers-bottom-line'>
     </div>
-    <div class='product_attribute_info modifiers'>
+    <% } %>
+    <div class="product_attribute_info modifiers <% if(!_settings.online_orders) {print('no-controls');} %>">
     </div>
-    <div class='modifiers_info modifiers'>
+    <div class="modifiers_info modifiers <% if(!_settings.online_orders) {print('no-controls');} %>">
     </div>
+    <% if(_settings.online_orders) { %>
     <div class='product_instructions'>
     </div>
+    <% } %>
 </script>
 
 <script type="text/template" id="myorder_note-template">
@@ -83,7 +87,7 @@
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="price"><%= discount_sum %></span>
         </span>
-    </h3>    
+    </h3>
 </script>
 
 <script type="text/template" id="myorder_discount_code-template">
@@ -96,9 +100,9 @@
             <input class="instructions bg-style1" name='discount_code' value='<%= discount_code %>' placeholder='Discount Code'>
         </div>
         <div class="btns">
-            <span class="btnApply">Apply</button>       
+            <span class="btnApply">Apply</button>
         </div>
-    </div>   
+    </div>
     <div class='dcode_remove <% if(!discount_code_applied) print("hidden"); %>'>
         <div class='discount_code_text color-style1'>Remove Discount Code</div>
     </div>

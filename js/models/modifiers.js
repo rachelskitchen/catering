@@ -70,8 +70,7 @@ define(["backbone"], function(Backbone) {
                     modifier: this.get('id'),
                     modifier_cost: (this.get('cost') === null) ? 0 : this.get('cost'),
                     modifier_price: this.isFree() ? this.get('free_amount') * 1 : this.get('order_price') * 1,
-                    qty: 1,
-                    qty_type: 0
+                    qty: 1
                 };
             }
         },
@@ -269,8 +268,14 @@ define(["backbone"], function(Backbone) {
             if(this.isSpecial()) {
                 return [];
             }
-
-            return this.get('modifiers').modifiers_submit();
+            
+            var self = this, 
+                modifiers = this.get('modifiers').modifiers_submit();
+            
+            modifiers.forEach(function(model) {
+                model.admin_mod_key = self.get("admin_mod_key");
+            });            
+            return modifiers;
         },
         isSpecial: function() {
             return this.get('admin_modifier') && this.get('admin_mod_key') === 'SPECIAL';

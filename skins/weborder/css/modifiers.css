@@ -86,6 +86,9 @@
     top: 5px;
     border-radius: 4px;
 }
+.modifiers_table .modifier .no-controls .input {
+    display: none;
+}
 .modifiers_table .modifier .input.radio {
     border-radius: 18px;
 }
@@ -98,6 +101,10 @@
     cursor: inherit;
     display: inline-block;
     width: 100%;
+}
+
+.modifiers_table .modifier label.no-controls {
+    cursor: default;
 }
 
 .modifiers_table .modifier .title {
@@ -124,4 +131,8 @@
     padding: 0 7px;
     line-height: 21px;
     text-align: center;
+}
+
+.modifiers_table .no-controls .special_button {
+    display: none;
 }

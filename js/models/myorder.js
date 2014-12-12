@@ -731,6 +731,12 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             this.change_only_gift_dining_option();
 
+            if (this.get_only_product_quantity() < 1) {
+                this.discount.zero_discount();
+                this.bagChargeItem && this.bagChargeItem.get("discount").zero_discount();
+                this.deliveryItem && this.deliveryItem.get("discount").zero_discount();
+            }
+
             this.update_discounts();
         },
         /**
@@ -1082,7 +1088,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
         },
         update_discounts: function() {
-            if (!this.getDiscountsTimeout)
+            if (!this.getDiscountsTimeout) //it's to reduce the number of requests to the server
                 this.getDiscountsTimeout = setTimeout(this.get_discounts.bind(this), 100);
         },
         get_discounts: function(params) {
@@ -1158,7 +1164,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     switch(data.status) {
                         case "OK":
                             myorder.checkout.set('last_discount_code', data.data.discount_code);
-                            myorder.process_discounts(data.data);
+                            if (myorder.get_only_product_quantity() > 0) {
+                                myorder.process_discounts(data.data);
+                            }
                             break;
                         case "DISCOUNT_CODE_NOT_FOUND":
                             myorder.checkout.set('last_discount_code', null);

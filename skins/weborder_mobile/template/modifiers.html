@@ -1,5 +1,5 @@
 <script type="text/template" id="modifiers_item-template">
-    <label for="modifier<%= id %>" class="s<%= slength %> <% if (isSpecial) { %>special_label<% } %>">
+    <label for="modifier<%= id %>" class="s<%= slength %> <% if (isSpecial) { %>special_label<% } %> <% if(!_settings.online_orders) {print('no-controls');} %>">
         <% if (!isSpecial) { %>
         <input type="<%= type %>" id="modifier<%= id %>" name="modifier<%= modifierClassName %>">
         <span class="input <%= type %>"></span>
@@ -28,7 +28,7 @@
 </script>
 
 <script type="text/template" id="modifiers_classes_item-template">
-    <dt class="modifier_class color-style1"><%= name %><% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %></dt>
+    <dt class="modifier_class color-style1"><%= name %><% if(free_modifiers && _settings.online_orders) { %><span class="free">(<%= free_modifiers %>)</span><% } %></dt>
     <dd class="modifier_class_list modifiers-bottom-line"></dd>
 </script>
 

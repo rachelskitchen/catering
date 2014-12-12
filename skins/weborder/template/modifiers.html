@@ -1,5 +1,5 @@
 <script type="text/template" id="modifiers_item-template">
-    <label for="modifier<%= id %>" class="s<%= slength %> <% if(isSpecial) { %>special_label<% } %>">
+    <label for="modifier<%= id %>" class="s<%= slength %> <% if(isSpecial) { %>special_label<% } %> <% if(!_settings.online_orders) {print('no-controls');} %>">
         <% if (!isSpecial) { %>
         <input type="<%= type %>" id="modifier<%= id %>" name="modifier<%= modifierClassName %>">
         <span class="input <%= type %>"></span>
@@ -16,7 +16,7 @@
                 (<span class="plus">+</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>)
             </span>
         <% } %>
-        <% if (!isInventoryMatrix) { %>
+        <% if (!isInventoryMatrix && _settings.online_orders) { %>
         <span class="free">(<span class="value"></span>)</span>
         <% } %>
     </label>
@@ -30,6 +30,7 @@
 <script type="text/template" id="modifiers_classes_item-template">
     <div class='modifiers_classes_title'>
         <%= name %>
+        <% if(_settings.online_orders) { %>
         <div class='modifiers_classes_subtitle'>
         <% if (type === 0 && typeof maximum_amount != 'number' && typeof minimum_amount != 'number') { %>
             Optional <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
@@ -45,6 +46,7 @@
             Choose one <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
         <% } else if (type === 2) { %>
             Optional <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+        <% } %>
         <% } %>
         </div>
     </div>
