@@ -145,6 +145,9 @@
                 App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
                 require([settings.get('skin') + '/router'], function() {
+                    if(typeof Backbone.history.stopStateTracking == 'function') {
+                        Backbone.history.stopStateTracking();
+                    }
                     App.Data.router = new App.Routers.Router;
                     var router = App.Data.router;
                     router.prepare.initialized = false;

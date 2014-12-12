@@ -137,6 +137,9 @@ define(["backbone"], function(Backbone) {
                 self.started = true;
             });
 
+            // start listen to state changes
+            this.once('initialized', this.runStateTracking.bind(this));
+
             // remember state of data of application (begin)
             App.Data.stateAppData = {};
             for (var i in App.Data) {
@@ -319,6 +322,34 @@ define(["backbone"], function(Backbone) {
                     delete App.Data[i];
                 }
             }
+        },
+        /*
+         * Push data changes to session history entry.
+         * Tracking state data is stored in `stateData` property of session history entry's data object.
+         */
+        updateState: function(data) {
+            window.history.pushState({stateData: data});
+        },
+        /*
+         * Restore state data from session history entry.
+         * Tracking state data is stored in `stateData` property of session history entry's data object.
+         *
+         * @return event.state.stateData object
+         */
+        restoreState: function(event) {
+            return event.state instanceof Object ? event.state.stateData : undefined;
+        },
+        /*
+         * Start tracking of application state changes
+         */
+        runStateTracking: function() {
+            if(!(typeof window.addEventListener == 'function') || !(typeof window.history == 'object') || !(typeof window.history.pushState == 'function')) {
+                return;
+            }
+            var cb = this.restoreState.bind(this);
+            window.addEventListener('popstate', cb, false);
+            Backbone.history.stopStateTracking = window.removeEventListener.bind(window, 'popstate', cb, false);
+            return true;
         }
     });
 
