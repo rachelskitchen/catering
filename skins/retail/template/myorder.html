@@ -37,7 +37,7 @@
         <span class="currency_symbol"><%= currency_symbol %></span>
         <span class="price"><%= price_sum %></span>
     </div>
-    <ul class="discount_place"></ul>   
+    <ul class="discount_place"></ul>
     <% if(id_product !== null) { %>
     <div class="btns <% if(_settings.hide_images) {print('noimage');} %>">
         <span class="edit">Edit</span>
@@ -56,7 +56,7 @@
         <span class="currency_symbol">-<%= currency_symbol %></span>
         <span><%= discount_sum %></span>
     </div>
-</script> 
+</script>
 
 <script type="text/template" id="myorder_discount-template">
     <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
@@ -78,8 +78,8 @@
             <div class='product product_info'></div>
             <div class='product_attribute_info'></div>
         </div>
-        <div class='quantity quantity_info'></div>
         <% if(_settings.online_orders) { %>
+        <div class='quantity quantity_info'></div>
         <div class='action_button'>Add to Bag</div>
         <% } %>
     </div>

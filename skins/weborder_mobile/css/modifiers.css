@@ -38,7 +38,8 @@
     font-size: 2.8em;
 }
 
-#content .modifier .currency_symbol {
+#content .modifier .currency_symbol,
+#content .modifier .plus {
     position: relative;
     left: 0.2em;
 }
@@ -49,6 +50,10 @@
     width: 100%;
     height: 100%;
     cursor: pointer;
+}
+
+#content .modifier label.no-controls {
+    cursor: default;
 }
 
 #content .modifier span {
@@ -82,6 +87,14 @@
     top: 0.2em;
     bottom: 0;
     font-size: inherit;
+}
+
+#content .no-controls .modifier .input {
+    display: none;
+}
+
+#content .no-controls .modifier .title {
+    left: 1em;
 }
 
 #content .modifier .input.checkbox:after, #content .modifier .input.radio:after {
@@ -128,7 +141,7 @@
 }
 
 #content .modifier .s5 .cost, #content .modifier .s5 .free {
-    width: 4.5em;
+    width: 4.7em;
 }
 
 #content .modifier .s5 .title {

@@ -290,7 +290,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 }
             }
 
-            if (this.subViews.indexOf(this.discountItemView) == -1 && this.collection.discount ) {
+            if (this.subViews.indexOf(this.discountItemView) == -1 && this.collection.discount && !this.discountItemView ) {
                 var view = App.Views.GeneratorView.create('MyOrder', {
                     mod: 'Discount',
                     model: this.collection.discount,
@@ -307,9 +307,10 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 if(model === view.model) {
                     view.remove();
                     self.subViews.splice(i, 1);
-                    if (self.subViews.length == 1 && self.subViews.indexOf(self.bagChargeItemView) != -1) {
+                    var bag_charge_index = self.subViews.indexOf(self.bagChargeItemView);
+                    if (self.collection.get_only_product_quantity() < 1 && bag_charge_index != -1) {
                         self.bagChargeItemView.remove();
-                        self.subViews.splice(0, 1);
+                        self.subViews.splice(bag_charge_index, 1);
                     }
                     return true;
                 }
