@@ -208,7 +208,8 @@ define(["backbone", "main_router"], function(Backbone) {
         */
         getEstablishments: function() {
             this.callback = function() {
-                App.Data.storeInfo.set('isShowStoreChoice', true);
+                var si = App.Data.storeInfo;
+                if (si) si.set('isShowStoreChoice', true);
             };
             App.Routers.MainRouter.prototype.getEstablishments.apply(this, arguments);
         },
