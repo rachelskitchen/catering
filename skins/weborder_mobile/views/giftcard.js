@@ -27,6 +27,10 @@ define(["backbone", "giftcard_view"], function(Backbone) {
         initialize: function() {
             App.Views.CoreGiftCardView.CoreGiftCardMainView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'add_card', this.onProceed, this);
+            this.listenTo(App.Data.myorder, "paymentFailed", function(message) {
+                App.Data.mainModel.trigger("loadCompleted");
+                message && App.Data.errors.alert(message);
+            }, this);
         },
         onProceed: function() {
             this.setData();
@@ -38,6 +42,7 @@ define(["backbone", "giftcard_view"], function(Backbone) {
                 giftcard: true
             }, function() {
                 App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.GIFT);
+                App.Data.mainModel.trigger('loadStarted');
             });
         }
     });
