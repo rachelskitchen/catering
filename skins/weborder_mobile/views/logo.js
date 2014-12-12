@@ -27,9 +27,9 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
 
     App.Views.LogoView = App.Views.CoreStoreInfoView.CoreStoreInfoMainView.extend({
         initialize: function() {
+            this.setDefaultData(); // default data
             this.resize = logoResize.bind(this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenToOnce(App.Data.establishments, 'resetEstablishmentData', this.setDefaultData, this); // default data
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
