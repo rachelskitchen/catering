@@ -39,7 +39,6 @@ body {
 }
 #content .modifiers-bottom-line:before {
     border-color: #5c5d5d;
-    box-shadow: 0em 0.2em 0.4em 0.2em rgba(60, 167, 222, 0.2);
 }
 #popup_content {
     background-position: 1.5em 1em;
