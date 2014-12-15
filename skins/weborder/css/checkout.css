@@ -236,24 +236,32 @@
 }
 #content > .checkout .discount .btn {
     display: inline-block;
-    width: 65px;
     height: 32px;
-    border-width: 1px;
+    min-width: 68px;
+    border-width: 2px;
+    border-radius: 20px;
     border-style: solid;
     text-align: center;
     line-height: 30px;
-    font-weight: normal;
+    font-weight: bold;
     font-size: 14px;
+    text-shadow: 0 0 2px #fff;
     cursor: pointer;
     margin-top: 4px;
+    padding: 0px 10px;
 }
 /* these button colores are the same for all themes: */
-#content > .checkout .discount .btn.applied {
-   color: rgb(30, 30, 30);
+#content > .checkout .discount .btn {
+    border-color: #a9a9a9;    
+    color: #646464;
+    background-color: rgba(247,247,247,1); 
+    box-shadow: 0 3px 3px rgba(0,0,0,0.3);
 }
-#content > .checkout .discount .btn.disabled {
+#content > .checkout .discount .btn:active {
+    background-color: rgba(254,254,254,1); 
+}
+#content > .checkout .discount .btn.applied {
     cursor: default;
-    color: #aaa;
 }
 #content > .checkout .discount .btn:after, 
 #content > .checkout .discount .btn:before {

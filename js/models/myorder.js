@@ -1181,7 +1181,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 },
                 error: function(xhr) {
                     if (xhr.statusText != "abort") {
-                        reportErrorFrm(MSG.ERROR_GET_DISCOUNTS);
+                        if (is_apply_discount)
+                            reportErrorFrm(MSG.ERROR_GET_DISCOUNTS);
                     }
                 },
                 complete: function() {

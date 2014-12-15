@@ -331,6 +331,8 @@ define(["backbone", "async"], function(Backbone) {
                             if (settings_system.auto_bag_charge < 0)
                                 settings_system.auto_bag_charge = 0;
 
+                           //for debug: 
+                           //settings_system.color_scheme =  "blue_&_white"; // "default", "blue_&_white", "vintage"
                             setData(color_scheme_key, new Backbone.Model({color_scheme: settings_system.color_scheme}), true);
 
                             settings_system.scales.number_of_digits_to_right_of_decimal = Math.abs((settings_system.scales.number_of_digits_to_right_of_decimal).toFixed(0) * 1);
