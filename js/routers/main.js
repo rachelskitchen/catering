@@ -131,6 +131,9 @@ define(["backbone"], function(Backbone) {
 
                 if (needGoogleMaps)
                     App.Data.settings.load_geoloc();
+
+                // update session history state-object
+                this.updateState(true);
             });
 
             this.once('started', function() {
@@ -327,8 +330,18 @@ define(["backbone"], function(Backbone) {
          * Push data changes to session history entry.
          * Tracking state data is stored in `stateData` property of session history entry's data object.
          */
-        updateState: function(data) {
-            window.history.pushState({stateData: data});
+        updateState: function(replaceState) {
+            if(replaceState) {
+                window.history.replaceState({stateData: this.getState()});
+            } else {
+                window.history.pushState({stateData: this.getState()});
+            }
+        },
+        /*
+         * Create and return session history state-object.
+         */
+        getState: function() {
+            return {};
         },
         /*
          * Restore state data from session history entry.
