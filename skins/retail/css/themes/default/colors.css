@@ -330,6 +330,9 @@ aside:after, aside:before {
 .required:before {
     color: #ff0000;
 }
+#content > .checkout .discount .btn {
+    color: #646464;
+}
 .products_spinner {
     background: rgba(231, 231, 231, 0.5);
     box-shadow: 0 0 40px rgba(231, 231, 231, 0.8);
