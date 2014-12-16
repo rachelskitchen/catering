@@ -260,6 +260,9 @@ ul.categories {
 #content > .checkout .tips .btn.disabled {
     color: #aaa;
 }
+#content > .checkout .discount .btn {
+    color: #646464;
+}
 /*
 #content > .checkout .input_beauty.special > div {
     background: transparent;

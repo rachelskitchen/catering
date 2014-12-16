@@ -249,11 +249,11 @@
     cursor: pointer;
     margin-top: 4px;
     padding: 0px 10px;
+    line-height: 20px;
 }
 /* these button colores are the same for all themes: */
 #content > .checkout .discount .btn {
     border-color: #a9a9a9;    
-    color: #646464;
     background-color: rgba(247,247,247,1); 
     box-shadow: 0 3px 3px rgba(0,0,0,0.3);
 }
