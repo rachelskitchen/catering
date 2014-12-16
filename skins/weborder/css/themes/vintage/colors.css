@@ -287,7 +287,9 @@ ul.categories {
 #content > .checkout .tips .btn.disabled {
     color: #aaa;
 }
-
+#content > .checkout .discount .btn {
+    color: #414141;
+}
 .products_spinner {
     background: rgba(231, 231, 231, 0.5);
     box-shadow: 0 0 40px rgba(231, 231, 231, 0.8);

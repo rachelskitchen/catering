@@ -1170,8 +1170,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                             break;
                         case "DISCOUNT_CODE_NOT_FOUND":
                             myorder.checkout.set('last_discount_code', null);
-                            myorder.process_discounts(data.data);
                             reportErrorFrm(MSG.DISCOUNT_CODE_NOT_FOUND);
+                            myorder.update_discounts();//get discounts w/o discount_code
                             break;
                         default:
                             if (!data.errorMsg) data.errorMsg = MSG.ERROR_NO_MSG_FROM_SERVER;
@@ -1181,8 +1181,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 },
                 error: function(xhr) {
                     if (xhr.statusText != "abort") {
-                        if (is_apply_discount)
-                            reportErrorFrm(MSG.ERROR_GET_DISCOUNTS);
+                        reportErrorFrm(MSG.ERROR_GET_DISCOUNTS);
                     }
                 },
                 complete: function() {
@@ -1191,7 +1190,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             });
 
             function reportErrorFrm(message) {
-                App.Data.errors.alert(message);
+                if (is_apply_discount) {
+                    App.Data.errors.alert(message);
+                }
             }
         },
         process_discounts: function(json) {
