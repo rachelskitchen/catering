@@ -263,9 +263,7 @@ ul.categories {
     color: #aaa;
 }
 #content > .checkout .discount .btn {
-    border-color: #adadad;
-    border-width: 1px;
-    box-shadow: 0 0 2px 1px #fff inset, 0 3px 3px rgba(0,0,0,0.3);
+    color: #646464;
 }
 .products_spinner {
     background: rgba(231, 231, 231, 0.5);
