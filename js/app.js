@@ -142,7 +142,7 @@
 
             settings.on('changeSettingsSkin', function() {
                 load_styles_and_scripts(); // load styles and scripts
-                App.Data.myorder = new App.Collections.Myorders;
+                var myorder = App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
                 require([settings.get('skin') + '/router'], function() {
                     App.Data.router = new App.Routers.Router;
@@ -158,6 +158,10 @@
 
                     // invoke afterStart callback
                     app.afterInit();
+                });
+                myorder.on('reset add remove', function() {
+                    var ests = App.Data.establishments;
+                    if (ests) ests.needShowAlert(myorder.get_only_product_quantity() > 0);
                 });
             });
             app.loadApp(); // loading application

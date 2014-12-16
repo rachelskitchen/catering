@@ -71,27 +71,31 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                     self.removeFromDOMTree(); // remove a view from DOM
                 };
             if (this.collection.getEstablishmentID()) { // get a establishment's ID
-                if (this.model.get('isMobileVersion')) {
-                    message = '<div class="establishments_alert_mobile">' +
-                        '<p>' + MSG.ESTABLISHMENTS_ALERT_MESSAGE_TITLE_MOBILE + '</p>' +
-                        '<p>' + this.model.get('ALERT_MESSAGE') + '</p>' +
-                        '<p>' + MSG.ESTABLISHMENTS_ALERT_MESSAGE_QUESTION_MOBILE + '</p>' +
-                    '</div>';
-                } else {
-                    message = this.model.get('ALERT_MESSAGE');
-                }
-                tmpl_alert_message({
-                    message: message,
-                    reload_page: false,
-                    is_confirm: true,
-                    confirm: {
-                        ok: this.model.get('ALERT_PROCEED_BUTTON'),
-                        cancel: this.model.get('ALERT_BACK_BUTTON')
-                    },
-                    callback: function(result) {
-                        if (result) estExist();
+                if (this.model.get('needShowAlert')) {
+                    if (this.model.get('isMobileVersion')) {
+                        message = '<div class="establishments_alert_mobile">' +
+                            '<p>' + MSG.ESTABLISHMENTS_ALERT_MESSAGE_TITLE_MOBILE + '</p>' +
+                            '<p>' + this.model.get('ALERT_MESSAGE') + '</p>' +
+                            '<p>' + MSG.ESTABLISHMENTS_ALERT_MESSAGE_QUESTION_MOBILE + '</p>' +
+                        '</div>';
+                    } else {
+                        message = this.model.get('ALERT_MESSAGE');
                     }
-                }); // user customized alerts for Weborder skin
+                    tmpl_alert_message({
+                        message: message,
+                        reload_page: false,
+                        is_confirm: true,
+                        confirm: {
+                            ok: this.model.get('ALERT_PROCEED_BUTTON'),
+                            cancel: this.model.get('ALERT_BACK_BUTTON')
+                        },
+                        callback: function(result) {
+                            if (result) estExist();
+                        }
+                    }); // user customized alerts for Weborder skin
+                } else {
+                    estExist();
+                }
             } else {
                 estNotExist();
             }
