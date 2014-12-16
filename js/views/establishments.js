@@ -82,6 +82,7 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                         message = this.model.get('ALERT_MESSAGE');
                     }
                     tmpl_alert_message({
+                        template: 'alert-establishments',
                         message: message,
                         reload_page: false,
                         is_confirm: true,
