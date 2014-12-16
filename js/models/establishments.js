@@ -27,6 +27,7 @@ define(['backbone', 'collection_sort'], function(Backbone) {
             isMobileVersion: false,
             storeDefined: false,
             showFooter: false,
+            needShowAlert: false,
             clientName: null
         },
     });
@@ -138,6 +139,12 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         */
         setViewVersion: function(isMobileVersion) {
             this.getModelForView().set('isMobileVersion', isMobileVersion);
-        }
+        },
+        /**
+        * Set a property "needShowAlert" of a model for the stores list view.
+        */
+        needShowAlert: function(needShowAlert) {
+            this.getModelForView().set('needShowAlert', needShowAlert);
+        },
     });
 })
