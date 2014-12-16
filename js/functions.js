@@ -528,6 +528,7 @@ function alert_message(options) {
 /**
  * User customized alerts for weborder skin.
  * options: {
+ *     template - template ID
  *     message - alert message
  *     reload_page - if true - reload page after press button
  *     is_confirm - true if confirm message
@@ -541,7 +542,9 @@ function tmpl_alert_message(options) {
     var alert = $('#alert'),
         confirm = options.confirm || {};
 
-    if ($("#alert-template").length == 0) {
+    var template = options.template ? options.template : 'alert';
+
+    if ($('#' + template + '-template').length == 0) {
         jq_alert_message(options);
         return;
     }
@@ -557,7 +560,7 @@ function tmpl_alert_message(options) {
         is_confirm: options.is_confirm
     };
 
-    var tmpl = template_helper2("alert-template");
+    var tmpl = template_helper2(template + '-template'); // helper of template for PayPal
     alert.html(tmpl(data));
     alert.addClass('ui-visible');
     $(".alert_block").addClass("alert-background");
