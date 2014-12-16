@@ -131,11 +131,17 @@ define(["backbone"], function(Backbone) {
 
                 if (needGoogleMaps)
                     App.Data.settings.load_geoloc();
+
+                // update session history state-object
+                this.updateState(true);
             });
 
             this.once('started', function() {
                 self.started = true;
             });
+
+            // start listen to state changes
+            this.once('initialized', this.runStateTracking.bind(this));
 
             // remember state of data of application (begin)
             App.Data.stateAppData = {};
@@ -319,6 +325,44 @@ define(["backbone"], function(Backbone) {
                     delete App.Data[i];
                 }
             }
+        },
+        /*
+         * Push data changes to session history entry.
+         * Tracking state data is stored in `stateData` property of session history entry's data object.
+         */
+        updateState: function(replaceState) {
+            if(replaceState) {
+                window.history.replaceState({stateData: this.getState()});
+            } else {
+                window.history.pushState({stateData: this.getState()});
+            }
+        },
+        /*
+         * Create and return session history state-object.
+         */
+        getState: function() {
+            return {};
+        },
+        /*
+         * Restore state data from session history entry.
+         * Tracking state data is stored in `stateData` property of session history entry's data object.
+         *
+         * @return event.state.stateData object
+         */
+        restoreState: function(event) {
+            return event.state instanceof Object ? event.state.stateData : undefined;
+        },
+        /*
+         * Start tracking of application state changes
+         */
+        runStateTracking: function() {
+            if(!(typeof window.addEventListener == 'function') || !(typeof window.history == 'object') || !(typeof window.history.pushState == 'function')) {
+                return;
+            }
+            var cb = this.restoreState.bind(this);
+            window.addEventListener('popstate', cb, false);
+            Backbone.history.stopStateTracking = window.removeEventListener.bind(window, 'popstate', cb, false);
+            return true;
         }
     });
 

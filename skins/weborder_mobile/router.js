@@ -192,8 +192,16 @@ define(["backbone", "main_router"], function(Backbone) {
             App.Routers.MobileRouter.prototype.initialize.apply(this, arguments);
         },
         navigateDirectory: function() {
-            if(App.Data.dirMode)
-                return window.location.href = getData('directoryReferrer').referrer;
+            if(App.Data.dirMode) {
+                var directoryState = getData('directory.state'),
+                    directoryHash = '';
+
+                if(directoryState instanceof Object && directoryState.hash) {
+                    directoryHash = directoryState.hash;
+                }
+
+                return window.location.href = getData('directoryReferrer').referrer + directoryHash;
+            }
         },
         showPromoMessage: function() {
             App.Data.footer.set('isShowPromoMessage', true);
