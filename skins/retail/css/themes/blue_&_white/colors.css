@@ -9,6 +9,11 @@ textarea, input {
 select {
     background-color: transparent;
 }
+/* bug #14192 - IE 10: blue highlight displays in drop down in selecting a value in it */
+select:focus::-ms-value {
+    background-color: transparent;
+    color: #000;
+}
 /* remove dotted outline in firefox */
 select:-moz-focusring {
     color: transparent;
