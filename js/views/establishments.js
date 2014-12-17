@@ -28,6 +28,7 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
         mod: 'main',
         render: function() {
             var type = this.model.get('isMobileVersion') ? 'MOBILE' : 'DESKTOP';
+            if (type === 'DESKTOP') this.model.set('showFooter', true);
             this.model.set('CHOOSE_BRAND', MSG['ESTABLISHMENTS_CHOOSE_BRAND_' + type].replace('%s', this.collection.getBrandName()));
             this.model.set('PROCEED_BUTTON', MSG.ESTABLISHMENTS_PROCEED_BUTTON);
             this.model.set('BACK_BUTTON', MSG.ESTABLISHMENTS_BACK_BUTTON);

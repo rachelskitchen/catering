@@ -258,8 +258,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         change_establishment: function() {
             var ests = App.Data.establishments;
             ests.getModelForView().set({
-                storeDefined: true,
-                showFooter: true
+                storeDefined: true
             }); // get a model for the stores list view
             ests.trigger('loadStoresList');
             this.model.set('isBlurContent', true);

@@ -26,7 +26,11 @@
         </div>
         <% if (showFooter) { %>
             <footer>
-                <a class='powered-by' target='_blank' href='http://revelup.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>'> </a>
+                <% if (clientName) { %>
+                    <a class='powered-by' target='_blank' href='http://revelup.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>'> </a>
+                <% } else { %>
+                    <span class="powered-by"> </span>
+                <% } %>
             </footer>
         <% } %>
     </div>
