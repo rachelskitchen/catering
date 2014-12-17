@@ -48,6 +48,7 @@ textarea, input {
     -webkit-user-select: text;
     -ms-user-select: text;
     -o-user-select: text;
+    border-radius: 0;
 }
 
 .fl_left {float: left;}
