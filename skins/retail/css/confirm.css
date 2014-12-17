@@ -164,6 +164,10 @@
     width: 2px !important;
 }
 
+#popup .order-items ul.discount > li {
+    margin-top: 10px;
+}
+
 #popup .order-items .remove,
 #popup .order-items .edit {
     cursor: pointer;
