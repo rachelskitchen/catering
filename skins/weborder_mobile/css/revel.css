@@ -147,9 +147,9 @@
     padding: 1em 1.5em 0;
 }
 .revel-loyalty .img {
-    margin: 1.5em auto;
-    height: 15em;
-    width: 15em;
+    margin: 0.5em auto;
+    height: 14em;
+    width: 14em;
     position: relative;
 }
 .revel-loyalty .img:before {
