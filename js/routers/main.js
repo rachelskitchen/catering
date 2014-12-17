@@ -331,10 +331,16 @@ define(["backbone"], function(Backbone) {
          * Tracking state data is stored in `stateData` property of session history entry's data object.
          */
         updateState: function(replaceState) {
+            if(typeof this.updateState.counter == 'undefined') {
+                this.updateState.counter = 0;
+            }
+
+            var title = 'State' + (++this.updateState.counter);
+
             if(replaceState) {
-                window.history.replaceState({stateData: this.getState()});
+                window.history.replaceState({stateData: this.getState()}, title);
             } else {
-                window.history.pushState({stateData: this.getState()});
+                window.history.pushState({stateData: this.getState()}, title);
             }
         },
         /*
