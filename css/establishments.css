@@ -101,3 +101,17 @@
 .establishments > div div:nth-child(2) {
     margin-bottom: 4em;
 }
+.establishments footer {
+    bottom: 0px;
+    height: 30px;
+    left: 0px;
+    position: absolute;
+    width: 100%;
+}
+.establishments footer .powered-by {
+    background: url('../img/powered_by.png') no-repeat 0 0 transparent;
+    display: block;
+    float: right;
+    height: 27px;
+    width: 141px;
+}
