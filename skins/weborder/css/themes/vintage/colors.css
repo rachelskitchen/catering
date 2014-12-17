@@ -248,9 +248,6 @@ ul.categories {
 #cart .order-items .divider {
     background: url('img/item_controls.png') no-repeat -17px 0 transparent;
 }
-#content > .checkout h2 {
-    color: #2ba0d6;
-}
 .required:before {
     color: #ff0000;
 }
