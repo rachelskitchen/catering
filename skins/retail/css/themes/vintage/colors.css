@@ -119,6 +119,22 @@ header .tabs label {
 #header .main .search:before {
     color: #d7d7d7;
 }
+
+/* bug #12737 - Retail: some browsers display X in the search box, others don't. When it's displayed, its color's weird */
+#header .main .search input[type='search']::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+}
+#header .main .search input[type='search']::-webkit-search-cancel-button:after {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAABGdBTUEAALGPC/xhBQAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB94MEggaE+GAT1cAAAFHSURBVBjTNdDNK4NxAAfw7+83KyxSyltea0JyUK6OcnJwMTTUtCQH83Lx0pC8pCgXyUkOSi5OLi5KcnGw5eXBHmzmYRvTWDPbHl8X/oNPH/ifghyxDdLjDZKkSCR1kMSNqtHR1U/FfU4xaunms8uN9LJKTKyvoqK8UGihKJ0d7Yi/hZBfWgxx533mon0AX/cKDMVm2GbnsTnmwPfnF0wZAhO7exAkEQi+02kfxof3EiIWgRQ/MNU2YmZtCQUFuQL/huPDE3ZWVdOWJ9lW10D3xQNJIpHUIY1pEo8+jRsLy9BTOmJZ5TB+aFjp68WTP0BjmoS88fg4ae1BxOuDocgMx84+ZF4J4n4F460tuFX9NGRG49MvVy6YcrIxt72F2poKWd/UPHV4cISUpkJxuYHw6xuHLFa6Ts/+nlJGkrhWVA5ZrAyHXvkL9wuvoTnD6UcAAAAASUVORK5CYII=');
+    background-position: top left;
+    background-repeat: no-repeat;
+    background-size: 9px;
+    content: '';
+    display: block;
+    height: 9px;
+    width: 9px;
+}
+
 #header .main .search input {
     background: transparent;
 }
