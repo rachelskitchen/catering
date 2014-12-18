@@ -113,5 +113,6 @@
     display: block;
     float: right;
     height: 27px;
+    outline: none;
     width: 141px;
 }
