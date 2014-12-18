@@ -598,17 +598,18 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         check_maintenance: function() {
             if (getData('orders')) {
                 App.Data.settings.loadSettings();
-                var mess = [];
-                if (App.Data.settings.get('settings_system').email) {
-                    mess.push('email:&nbsp;' + App.Data.settings.get('settings_system').email);
-                }
-                if (App.Data.settings.get('settings_system').phone) {
-                    mess.push('phone:&nbsp;' + App.Data.settings.get('settings_system').phone);
-                }
+                var mess = [],
+                    index = 0;
+                App.Settings.email && mess.push(App.Settings.email);
+                App.Settings.phone && mess.push(App.Settings.phone);
                 if (mess.length) {
-                    App.Data.errors.alert('The error has occurred, please contact: ' + mess.join(', '));
+                    App.Data.errors.alert(MSG.ERROR_HAS_OCCURRED_WITH_CONTACT.replace(/%([^%]*)%/g, function(match, group) {
+                        var data = mess[index];
+                        index ++;
+                        return data ? '<br>' + group + data + ',' : '';
+                    }).replace(/,$/, ''));
                 } else {
-                    App.Data.errors.alert('The error has occurred');
+                    App.Data.errors.alert(MSG.ERROR_HAS_OCCURRED);
                 }
             }
         },
