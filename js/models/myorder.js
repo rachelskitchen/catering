@@ -1100,8 +1100,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 delete this.getDiscountsTimeout;
             }
 
-            if (!App.Settings.accept_discount_code || self.get_only_product_quantity() < 1) {
-                self.recalculate_all();
+            self.recalculate_all();
+            if (!App.Settings.accept_discount_code || self.get_only_product_quantity() < 1 || self.NoRequestDiscounts === true) {
+                self.trigger("NoRequestDiscountsComplete");
                 return (new $.Deferred()).reject();
             }
 
@@ -1187,6 +1188,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 },
                 complete: function() {
                     myorder.recalculate_all();
+                    myorder.trigger("DiscountsComplete");
                 }
             });
 
