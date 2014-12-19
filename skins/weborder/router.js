@@ -266,7 +266,7 @@ define(["backbone", "main_router"], function(Backbone) {
                 dfd.then(function() {
                     self.change_page(function() {
                         App.Data.mainModel.set('needShowStoreChoice', true);
-                    });
+                    }); // change page
                     //start preload google maps api:
                     App.Data.settings.load_geoloc();
                 });
