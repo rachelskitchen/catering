@@ -39,10 +39,14 @@ define(["backbone", "main_router"], function(Backbone) {
     defaultRouterData(); // default router data
 
     App.Routers.Router = App.Routers.MainRouter.extend({
-        change_page: function() {
-            if (App.Data.establishments.length) {
-                var mm = App.Data.mainModel;
-                /^(index.*)?$/i.test(Backbone.history.fragment) ? mm.set('needShowStoreChoice', true) : mm.set('needShowStoreChoice', false);
+        /**
+         * Change page.
+         */
+        change_page: function(callback) {
+            if (callback instanceof Function) {
+                if (App.Data.establishments.length) callback();
+            } else {
+                App.Data.mainModel.set('needShowStoreChoice', false);
             }
             App.Routers.MainRouter.prototype.change_page.apply(this, arguments);
         },
@@ -260,7 +264,9 @@ define(["backbone", "main_router"], function(Backbone) {
                 });
 
                 dfd.then(function() {
-                    self.change_page();
+                    self.change_page(function() {
+                        App.Data.mainModel.set('needShowStoreChoice', true);
+                    });
                     //start preload google maps api:
                     App.Data.settings.load_geoloc();
                 });
