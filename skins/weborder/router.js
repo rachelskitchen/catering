@@ -43,11 +43,7 @@ define(["backbone", "main_router"], function(Backbone) {
          * Change page.
          */
         change_page: function(callback) {
-            if (callback instanceof Function) {
-                if (App.Data.establishments.length) callback();
-            } else {
-                App.Data.mainModel.set('needShowStoreChoice', false);
-            }
+            (callback instanceof Function && App.Data.establishments.length) ? callback() : App.Data.mainModel.set('needShowStoreChoice', false);
             App.Routers.MainRouter.prototype.change_page.apply(this, arguments);
         },
         routes: {
