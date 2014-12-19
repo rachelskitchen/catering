@@ -263,7 +263,8 @@ define(["backbone", "main_router"], function(Backbone) {
                     content: [
                         {
                             modelName: 'StoreInfo',
-                            mod: 'Main'
+                            mod: 'Main',
+                            cacheId: true
                         },
                         {
                             modelName: 'Categories',
