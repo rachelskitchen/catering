@@ -55,15 +55,15 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     minutes: Math.ceil(settings_system.estimated_delivery_time % 60)
                 },
                 distance_mearsure: settings_system.distance_mearsure,
-                isShowStoreChoice: false
+                needShowStoreChoice: false
             });
             App.Views.LogoView.prototype.initialize.apply(this, arguments);
             if (!App.Data.storeInfo) App.Data.storeInfo = this.model;
-            this.listenTo(this.model, 'change:isShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
+            this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
         },
         render: function() {
             App.Views.LogoView.prototype.render.apply(this, arguments);
-            if (App.Data.establishments.length > 1) this.model.set('isShowStoreChoice', true);
+            if (App.Data.establishments.length > 1) this.model.set('needShowStoreChoice', true);
             this.checkBlockStoreChoice(); // show the "Store Choice" block if a brand have several stores
         },
         events: {
@@ -82,7 +82,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          */
         checkBlockStoreChoice: function() {
             var block = this.$('.current_establishment');
-            this.model.get('isShowStoreChoice') ? block.show() : block.hide();
+            this.model.get('needShowStoreChoice') ? block.show() : block.hide();
         },
         /**
          * Show the "Change Establishment" modal window.
