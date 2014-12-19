@@ -46,6 +46,9 @@ define(['backbone'], function(Backbone) {
          * Clear cache if store was changed.
          */
         clearCache: function() {
+            for (var view in cache) {
+                if (!~view.indexOf('CoreEstablishments')) cache[view].remove();
+            }
             cache = {};
         }
     };

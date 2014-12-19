@@ -27,8 +27,8 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
 
     App.Views.LogoView = App.Views.CoreStoreInfoView.CoreStoreInfoMainView.extend({
         initialize: function() {
-            this.resize = window.logoResize.bind(this);
             this.setDefaultData(); // default data
+            this.resize = logoResize.bind(this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
@@ -39,23 +39,23 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
             if(logoNode) {
                 this.$('.store_info_main_logo').remove();
                 this.$el.prepend(logoNode);
-                $(window).on('resize', window.logoResize);
+                $(window).on('resize', self.resize);
             } else {
                 var logo = this.$('img#logo');
                 loadSpinner(logo, false, function() {
                     self.resize();
-                    $(window).on('resize', window.logoResize);
+                    $(window).on('resize', self.resize);
                 }); // loading img spinner
             }
 
             return this;
         },
         remove: function() {
-            $(window).off('resize', window.logoResize);
+            $(window).off('resize', this.resize);
             return App.Views.FactoryView.prototype.remove.apply(this, arguments);
         },
         removeFromDOMTree: function() {
-            $(window).off('resize', window.logoResize);
+            $(window).off('resize', this.resize);
             return App.Views.FactoryView.prototype.removeFromDOMTree.apply(this, arguments);
         },
         /**
@@ -64,7 +64,6 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
         setDefaultData: function() {
             logoNode = undefined;
             ih = undefined;
-            $(window).off('resize', window.logoResize);
         }
     });
 
@@ -95,5 +94,4 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
 
         logoNode = logoCont.get(0);
     }
-    window.logoResize = logoResize;
 });
