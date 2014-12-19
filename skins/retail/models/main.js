@@ -29,7 +29,7 @@ define(["backbone"], function(Backbone) {
             content: {},
             cart: {},
             img: App.Data.settings.get("img_path"),
-            isShowStoreChoice: false,
+            needShowStoreChoice: false,
             isBlurContent: false
         }
     });

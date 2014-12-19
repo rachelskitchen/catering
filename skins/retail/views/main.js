@@ -36,7 +36,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
             this.listenTo(this.model, 'onRoute', this.hide_popup, this);
-            this.listenTo(this.model, 'change:isShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
+            this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
             this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
 
             this.iOSFeatures();
@@ -47,7 +47,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            if (App.Data.establishments.length > 1) this.model.set('isShowStoreChoice', true);
+            if (App.Data.establishments.length > 1) this.model.set('needShowStoreChoice', true);
             !this.iPad7Feature.init && this.iPad7Feature();
 
             var spinner = this.$('#main-spinner');
@@ -204,7 +204,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
          */
         checkBlockStoreChoice: function() {
             var block = this.$('.current_establishment');
-            this.model.get('isShowStoreChoice') ? block.show() : block.hide();
+            this.model.get('needShowStoreChoice') ? block.show() : block.hide();
         },
         /**
          * Show the "Change Establishment" modal window.
