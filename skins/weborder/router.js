@@ -39,6 +39,13 @@ define(["backbone", "main_router"], function(Backbone) {
     defaultRouterData(); // default router data
 
     App.Routers.Router = App.Routers.MainRouter.extend({
+        change_page: function() {
+            if (App.Data.establishments.length) {
+                var mm = App.Data.mainModel;
+                /^(index.*)?$/i.test(Backbone.history.fragment) ? mm.set('needShowStoreChoice', true) : mm.set('needShowStoreChoice', false);
+            }
+            App.Routers.MainRouter.prototype.change_page.apply(this, arguments);
+        },
         routes: {
             "": "index",
             "index": "index",
