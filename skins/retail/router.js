@@ -164,6 +164,13 @@ define(["backbone", "main_router"], function(Backbone) {
 
             App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
         },
+        /**
+         * Change page.
+         */
+        change_page: function(callback) {
+            (callback instanceof Function && App.Data.establishments.length) ? callback() : App.Data.mainModel.set('needShowStoreChoice', false);
+            App.Routers.MainRouter.prototype.change_page.apply(this, arguments);
+        },
         createMainView: function() {
             var data = App.Data.mainModel.toJSON(),
                 mainView = App.Views.GeneratorView.create('Main', data, data.mod === 'Main'),
@@ -445,7 +452,9 @@ define(["backbone", "main_router"], function(Backbone) {
                 });
 
                 dfd.then(function() {
-                    self.change_page();
+                    self.change_page(function() {
+                        App.Data.mainModel.set('needShowStoreChoice', true);
+                    }); // change page
                     //start preload google maps api:
                     App.Data.settings.load_geoloc();
                 });

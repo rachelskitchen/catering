@@ -39,13 +39,6 @@ define(["backbone", "main_router"], function(Backbone) {
     defaultRouterData(); // default router data
 
     App.Routers.Router = App.Routers.MainRouter.extend({
-        /**
-         * Change page.
-         */
-        change_page: function(callback) {
-            (callback instanceof Function && App.Data.establishments.length) ? callback() : App.Data.mainModel.set('needShowStoreChoice', false);
-            App.Routers.MainRouter.prototype.change_page.apply(this, arguments);
-        },
         routes: {
             "": "index",
             "index": "index",
@@ -123,6 +116,13 @@ define(["backbone", "main_router"], function(Backbone) {
                 checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
             App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
+        },
+        /**
+         * Change page.
+         */
+        change_page: function(callback) {
+            (callback instanceof Function && App.Data.establishments.length) ? callback() : App.Data.mainModel.set('needShowStoreChoice', false);
+            App.Routers.MainRouter.prototype.change_page.apply(this, arguments);
         },
         createMainView: function() {
             var data = App.Data.mainModel.toJSON(),
