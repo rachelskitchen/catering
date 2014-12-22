@@ -34,7 +34,7 @@ define(["backbone", "main_router"], function(Backbone) {
         headerModes.OneButton = {mod: 'OneButton', className: 'one_button'};
         headerModes.Products = headerModes.OneButton;
         headerModes.Dir = headerModes.OneButton;
-        headerModes.Modifiers = {mod: 'Modifiers', className: 'two_button'};
+        headerModes.Modifiers = {mod: 'Modifiers', className: 'two_button modifiers'};
         headerModes.Myorder = {mod: 'TwoButton', className: 'two_button myorder'};
         headerModes.Checkout = headerModes.OneButton;
         headerModes.Card = headerModes.Main;
