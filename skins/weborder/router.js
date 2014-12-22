@@ -67,22 +67,23 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Views.Generator.enableCache = true;
                 // set header, cart, main models
                 App.Data.header = new App.Models.HeaderModel();
-                App.Data.mainModel = new App.Models.MainModel();
+                var mainModel = App.Data.mainModel = new App.Models.MainModel();
+                var ests = App.Data.establishments;
 
-                this.listenTo(App.Data.mainModel, 'change:mod', this.createMainView);
+                this.listenTo(mainModel, 'change:mod', this.createMainView);
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
-                this.listenToOnce(App.Data.establishments, 'resetEstablishmentData', this.resetEstablishmentData, this); // remove establishment data in case if establishment ID will change
-                this.listenTo(App.Data.establishments, 'clickButtonBack', App.Data.mainModel.set.bind(App.Data.mainModel, 'isBlurContent', false), this);
+                this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
+                this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
-                App.Data.mainModel.set({
+                mainModel.set({
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
-                    model: App.Data.mainModel,
+                    model: mainModel,
                     headerModel: App.Data.header,
                     cartCollection: App.Data.myorder
                 });
-                App.Data.establishments.getModelForView().set('clientName', App.Data.mainModel.get('clientName')); // get a model for the stores list view
+                ests.getModelForView().set('clientName', mainModel.get('clientName'));
 
                 // listen to navigation control
                 this.navigationControl();

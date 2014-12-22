@@ -130,7 +130,8 @@ define(["backbone", "main_router"], function(Backbone) {
                     menu: this.navigate.bind(this, 'menu', true),
                     profile: this.trigger.bind(this, 'navigateToProfile')
                 });
-                App.Data.mainModel = new App.Models.MainModel();
+                var mainModel = App.Data.mainModel = new App.Models.MainModel();
+                var ests = App.Data.establishments;
 
                 // init RevelAPI
                 this.initRevelAPI();
@@ -163,21 +164,21 @@ define(["backbone", "main_router"], function(Backbone) {
 
                     function sendRequest() {
                         saveAllData();
-                        App.Data.mainModel.trigger('loadStarted');
+                        mainModel.trigger('loadStarted');
                         App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
                     }
                 });
 
                 new App.Views.MainView({
-                    model: App.Data.mainModel,
+                    model: mainModel,
                     el: 'body'
                 });
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
-                this.listenToOnce(App.Data.establishments, 'resetEstablishmentData', this.resetEstablishmentData, this); // remove establishment data in case if establishment ID will change
-                this.listenToOnce(App.Data.establishments, 'resetEstablishmentData', App.Data.mainModel.trigger.bind(App.Data.mainModel, 'showSpinnerAndHideContent'), this);
-                this.listenToOnce(App.Data.establishments, 'clickButtonBack', App.Data.mainModel.set.bind(App.Data.mainModel, 'isBlurContent', false), this);
+                this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
+                this.listenToOnce(ests, 'resetEstablishmentData', mainModel.trigger.bind(mainModel, 'showSpinnerAndHideContent'), this);
+                this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
                 // emit 'initialized' event
                 this.trigger('initialized');
