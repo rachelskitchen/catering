@@ -70,7 +70,10 @@ define(["backbone", "main_router"], function(Backbone) {
 
             // check available dining options and set default
             if(App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) == -1 && App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_DELIVERY) == -1) {
-                App.Data.settings.set('isMaintenance', true);
+                App.Data.settings.set({
+                    'isMaintenance': true,
+                    'maintenanceMessage': ERROR[MAINTENANCE.ORDER_TYPE]
+                });
             } else {
                 App.Settings.default_dining_option = App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) > -1 ? 'DINING_OPTION_TOGO' : 'DINING_OPTION_DELIVERY';
                 App.Data.myorder.checkout.set('dining_option', App.Settings.default_dining_option);
@@ -555,9 +558,11 @@ define(["backbone", "main_router"], function(Backbone) {
             });
         },
         maintenance: function() {
-            if (App.Data.settings.get('isMaintenance')) {
+            var settings = App.Data.settings;
+            if (settings.get('isMaintenance')) {
                 App.Data.mainModel.set({
-                    mod: 'Maintenance'
+                    mod: 'Maintenance',
+                    errMsg: settings.get('maintenanceMessage')
                 });
             }
             this.change_page();
