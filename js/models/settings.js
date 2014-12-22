@@ -369,7 +369,7 @@ define(["backbone", "async"], function(Backbone) {
             if (set_sys.address.coordinates.lat != null && set_sys.address.coordinates.lng != null) {
                 //set_sys.geolocation_load.resolve();
                 //return;
-                //TODO: probably split this function into 2 ones 
+                //TODO: probably split this function into 2 ones
                 just_load_lib = true;
             }
 
@@ -385,7 +385,7 @@ define(["backbone", "async"], function(Backbone) {
                 }
 
                 require(["async!https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"], function() {
-                    if (just_load_lib) 
+                    if (just_load_lib)
                         return;
                     var geocoder = new google.maps.Geocoder();
                     geocoder.geocode({"address": address_google}, function(results, status) {
@@ -406,7 +406,7 @@ define(["backbone", "async"], function(Backbone) {
             var skin = this.get("skin");
 
             if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
-                && !processor.usaepay && !processor.mercury && !processor.paypal && !settings_system.accept_cash_online && !processor.gift_card && !processor.moneris) {
+                && !processor.usaepay && !processor.mercury && !processor.paypal && !processor.cash && !processor.gift_card && !processor.moneris) {
                 return undefined;
             }
 
@@ -421,7 +421,7 @@ define(["backbone", "async"], function(Backbone) {
             processor.gift_card && payment_count++;
 
             return Backbone.$.extend(processor, {
-                cash: settings_system.accept_cash_online,
+                cash: processor.cash,
                 payment_count: payment_count,
                 credit_card_button: credit_card_button,
                 credit_card_dialog: credit_card_dialog
