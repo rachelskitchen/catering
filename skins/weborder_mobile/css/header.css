@@ -51,11 +51,27 @@
     height: 100%;
     position: relative;
 }
+#header .two_button.modifiers {
+    /* solution for bug #16151 */
+    text-align: center;
+}
 #header .two_button .leftBtn {
     width: 3.2em;
 }
+#header .two_button.modifiers .leftBtn {
+    /* solution for bug #16151 */
+    position: relative;
+    vertical-align: top;
+    float: left;
+}
 #header .two_button .rightBtn {
     width: 4.8em;
+}
+#header .two_button.modifiers .rightBtn {
+    /* solution for bug #16151 */
+    position: relative;
+    vertical-align: top;
+    float: right;
 }
 #header .two_button h1 {
     position: absolute;
@@ -63,6 +79,16 @@
     right: 4.7em;
     bottom: 0;
     left: 3.9em;
+}
+#header .two_button.modifiers h1 {
+    /* solution for bug #16151 */
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
 }
 
 #header .two_button.back_to_menu h1 {
