@@ -55,10 +55,19 @@ ERROR.SELECT_SIZE_MODIFIER = "Select a size please";
 ERROR.SELECT_PRODUCT_ATTRIBUTES = "Please select all attributes";
 ERROR.BLOCK_WEIGHT_IS_NOT_VALID = "The product weight is not set or zero";
 
+ERROR.MAINTENANCE_DEFAULT = 'Maintenance. Please come back later.';
 ERROR.MAINTENANCE_CONFIGURATION = 'Can\'t get application configuration. Please check backend settings.';
 ERROR.MAINTENANCE_PAYMENT = 'Please setup at least one payment option';
 ERROR.MAINTENANCE_DINING = 'Please setup at least one dining option'; // for QSR
 ERROR.MAINTENANCE_ORDER_TYPE = 'Please setup at least one order type (in-store pickup or shipping).'; // for Retail
+
+var MAINTENANCE = {
+    DEFAULT: 'MAINTENANCE_DEFAULT',
+    BACKEND_CONFIGURATION: 'MAINTENANCE_CONFIGURATION',
+    PAYMENT_OPTION: 'MAINTENANCE_PAYMENT',
+    DINING_OPTION: 'MAINTENANCE_DINING',
+    ORDER_TYPE: 'MAINTENANCE_ORDER_TYPE'
+};
 
 //write messages here
 MSG.ERROR_STORE_IS_CLOSED = "We're sorry, your order cannot be processed because the store is closed for selected pickup day/time";

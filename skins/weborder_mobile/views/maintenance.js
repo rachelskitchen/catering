@@ -29,6 +29,9 @@ define(["backbone", "factory"], function(Backbone) {
         name: 'maintenance',
         mod: 'main',
         render: function() {
+            this.model = new Backbone.Model({
+                errMsg: App.Data.settings.get('maintenanceMessage')
+            });
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.listenToOnce(App.Data.mainModel, 'loadCompleted', App.Data.myorder.check_maintenance);
         }
