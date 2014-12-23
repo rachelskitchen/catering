@@ -99,8 +99,10 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         onChangeElem: function(e) {
             e.target.value = fistLetterToUpperCase(e.target.value).trim();
-            this.model[e.target.name] = e.target.value;
-            this.updateAddress();
+            if (this.model[e.target.name] != e.target.value) {
+                this.model[e.target.name] = e.target.value;
+                this.updateAddress();
+            }
         },
         countryChange: function(e) {
             this.model.country = e.target.value;
@@ -216,7 +218,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 this.$(".shipping-status").spinner();
             }
 
-            this.changeShipping({currentTarget: shipping.get(0)});
+            this.changeShipping({currentTarget: shipping.get(0), shipping_status: shipping_status});
         },
         countryChange: function(e) {
             App.Views.AddressView.prototype.countryChange.apply(this, arguments);
@@ -240,8 +242,10 @@ define(['backbone', 'factory'], function(Backbone) {
             }
 
             myorder.change_dining_option(checkout, checkout.get("dining_option"));
-            myorder.total.set_delivery_charge(price);
-            myorder.deliveryItem.get("product").set({"price": price, "name": name});
+            if (e.shipping_status != "pending") {
+                myorder.total.set_delivery_charge(price/*, {silent: App.Data.updateDiscountsStatus == "pending" }*/);
+                myorder.deliveryItem.get("product").set({"price": price, "name": name});
+            }
         },
         updateAddress: function() {
             App.Views.AddressView.prototype.updateAddress.apply(this, arguments);
