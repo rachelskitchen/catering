@@ -27,7 +27,6 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
 
     App.Views.LogoView = App.Views.CoreStoreInfoView.CoreStoreInfoMainView.extend({
         initialize: function() {
-            this.setDefaultData(); // default data
             this.resize = logoResize.bind(this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
@@ -52,6 +51,7 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
         },
         remove: function() {
             $(window).off('resize', this.resize);
+            this.setDefaultData(); // default data
             return App.Views.FactoryView.prototype.remove.apply(this, arguments);
         },
         removeFromDOMTree: function() {
