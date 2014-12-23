@@ -160,10 +160,6 @@
     margin-top: 0.2em;
 }
 
-#content ul.tips .btn.disabled {
-    cursor: default;
-}
-
 #content ul.tips .line {
     white-space: nowrap;
 }

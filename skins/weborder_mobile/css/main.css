@@ -344,6 +344,18 @@ textarea, input {
     z-index: -1;
 }
 
+/* fix for Samsung Galaxy S4 native browser (Bug #16151) */
+.modifiers .btn.btn-disabled, .modifiers .btn.btn-disabled:hover,
+.modifiers .btn.btn-disabled:active, .modifiers .btn.btn-disabled:before, .modifiers .btn.btn-disabled:before {
+    z-index: 1;
+}
+
+/* fix for Samsung Galaxy S4 native browser (Bug #16151) */
+.modifiers .btn.btn-disabled span {
+    position: relative;
+    z-index: 2;
+}
+
 select {
     display: block;
     height: 100%;
