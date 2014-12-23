@@ -59,7 +59,7 @@ ERROR.MAINTENANCE_DEFAULT = 'Maintenance. Please come back later.';
 ERROR.MAINTENANCE_CONFIGURATION = 'Can\'t get application configuration. Please check backend settings.';
 ERROR.MAINTENANCE_PAYMENT = 'Please setup at least one payment option';
 ERROR.MAINTENANCE_DINING = 'Please setup at least one dining option'; // for QSR
-ERROR.MAINTENANCE_ORDER_TYPE = 'Please setup at least one order type (in-store pickup or shipping).'; // for Retail
+ERROR.MAINTENANCE_ORDER_TYPE = 'Please setup at least one order type (in-store pickup or shipping)'; // for Retail
 
 var MAINTENANCE = {
     DEFAULT: 'MAINTENANCE_DEFAULT',
