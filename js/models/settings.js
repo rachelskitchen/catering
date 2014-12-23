@@ -66,6 +66,7 @@ define(["backbone", "async"], function(Backbone) {
             timeout: 60000,
             x_revel_revision: null,
             isMaintenance: false,
+            maintenanceMessage: '',
             version: 1.06,
             supported_skins: []
         },
@@ -372,14 +373,23 @@ define(["backbone", "async"], function(Backbone) {
                             }
 
                             if (settings_system.online_orders && settings_system.dining_options.length == 0) {
-                                self.set('isMaintenance', true);
+                                self.set({
+                                    'isMaintenance': true,
+                                    'maintenanceMessage': ERROR[MAINTENANCE.DINING_OPTION]
+                                });
                             }
                             break;
+                        // DISALLOW_ONLINE status doesn't use now. Instead we get 404 HTTP-status now from a backend.
+                        /*
                         case 'DISALLOW_ONLINE':
                             recoverColorScheme();
                             console.log('online and app orders unchecked');
-                            self.set('isMaintenance', true);
+                            self.set({
+                                'isMaintenance': true,
+                                'maintenanceMessage': ERROR[MAINTENANCE.BACKEND_CONFIGURATION]
+                            });
                             break;
+                        */
                         default:
                             App.Data.errors.alert_red(response.errorMsg, true);
                             recoverColorScheme();
@@ -392,7 +402,8 @@ define(["backbone", "async"], function(Backbone) {
                 error: function() {
                     self.set({
                         settings_system: settings_system, // default settings
-                        isMaintenance: true
+                        isMaintenance: true,
+                        maintenanceMessage: ERROR[MAINTENANCE.BACKEND_CONFIGURATION]
                     });
                 },
                 complete: function() {
