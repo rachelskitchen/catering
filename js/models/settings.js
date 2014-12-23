@@ -66,7 +66,7 @@ define(["backbone", "async"], function(Backbone) {
             timeout: 60000,
             x_revel_revision: null,
             isMaintenance: false,
-            maintenanceMessage: ERROR[MAINTENANCE.DEFAULT],
+            maintenanceMessage: '',
             version: 1.06,
             supported_skins: []
         },
