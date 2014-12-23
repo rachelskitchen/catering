@@ -800,6 +800,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 tax += model.get_myorder_tax();
             });
 
+            if (total < 0) total = 0;
+            if (tax < 0) tax = 0;
+            if (surcharge < 0) surcharge = 0;          
+
             this.total.set({
                 total: total,
                 tax: tax,
@@ -1100,8 +1104,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 delete this.getDiscountsTimeout;
             }
 
-            self.recalculate_all();
+            App.skin == App.Skins.PAYPAL && self.recalculate_all();
+
             if (!App.Settings.accept_discount_code || self.get_only_product_quantity() < 1 || self.NoRequestDiscounts === true) {
+                App.skin != App.Skins.PAYPAL && self.recalculate_all();
                 self.trigger("NoRequestDiscountsComplete");
                 return (new $.Deferred()).reject();
             }
