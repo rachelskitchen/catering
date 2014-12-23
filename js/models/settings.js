@@ -379,6 +379,8 @@ define(["backbone", "async"], function(Backbone) {
                                 });
                             }
                             break;
+                        // DISALLOW_ONLINE status doesn't use now. Instead we get 404 HTTP-status now from a backend.
+                        /*
                         case 'DISALLOW_ONLINE':
                             recoverColorScheme();
                             console.log('online and app orders unchecked');
@@ -387,6 +389,7 @@ define(["backbone", "async"], function(Backbone) {
                                 'maintenanceMessage': ERROR[MAINTENANCE.BACKEND_CONFIGURATION]
                             });
                             break;
+                        */
                         default:
                             App.Data.errors.alert_red(response.errorMsg, true);
                             recoverColorScheme();
