@@ -27,6 +27,11 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
 
     App.Views.LogoView = App.Views.CoreStoreInfoView.CoreStoreInfoMainView.extend({
         initialize: function() {
+            var el = this.el,
+                $el = this.$el;
+            el.addEventListener('DOMNodeInserted', function(e) {
+                if (el === e.target && logoNode) $el.prepend(logoNode);
+            });
             this.resize = logoResize.bind(this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
