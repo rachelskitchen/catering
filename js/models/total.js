@@ -34,7 +34,8 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             discounts: 0, //sum of all discounts
             tax_country: '',
             prevailing_surcharge: null,
-            prevailing_tax: null
+            prevailing_tax: null,
+            total_wo_delivery: 0
         },
         initialize: function(opts) {
             var settings = App.Data.settings.get("settings_system"),
@@ -60,12 +61,22 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
                 if (deliveryItem)
                     App.Data.myorder.onModelChange(deliveryItem);
             });
+
+            this.listenTo(this, 'change:total', function() {
+                this.set("total_wo_delivery", this.get('total') - this.get_delivery_charge()*1, {silent: true});                
+            });
         },
         /**
          * get Total
          */
         get_total: function() {
             return round_monetary_currency(this.get('total'));
+        },
+         /**
+         * get Total w/o delivery charge
+         */
+        get_total_wo_delivery: function() {
+            return round_monetary_currency(this.get('total_wo_delivery'));
         },
         /**
          * get Tax
