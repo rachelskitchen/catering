@@ -3,20 +3,22 @@
 </script>
 
 <script type="text/template" id="header_one_button-template">
-    <div class="header_block_buttons header_block_button_left leftBtn">
+    <div class="btn header_block_buttons header_block_button_left leftBtn">
         <span><%= back_title %></span>
     </div>
     <h1 class="title"><%= page_title %></h1>
 </script>
 
 <script type="text/template" id="header_two_button-template">
-    <div class="header_block_buttons header_block_button_left leftBtn">
+    <div class="btn header_block_buttons header_block_button_left leftBtn">
         <span><%= back_title %></span>
     </div>
     <h1 class="title"><%= page_title %></h1>
-    <div class="header_block_buttons header_block_button_right rightBtn enable">
+    <% if(_settings.online_orders) { %>
+    <div class="btn header_block_buttons header_block_button_right rightBtn enable">
         <span><%= forward_title %></span>
     </div>
+    <% } %>
 </script>
 
 <script type="text/template" id="header_maintenance-template">

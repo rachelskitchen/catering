@@ -78,7 +78,11 @@ define({
         search: "js/models/search",
         subcategories: "js/models/subcategories",
         collection_sort: "js/models/collection_sort",
-        confirm_view: "js/views/confirm"
+        confirm_view: "js/views/confirm",
+        revel_api: "js/models/revel",
+        revel_view: 'js/views/revel',
+        establishments: 'js/models/establishments',
+        establishments_view: 'js/views/establishments'
     },
     waitSeconds: 30,
     shim: {
@@ -192,8 +196,20 @@ define({
         "search": {
             deps: ["products"]
         },
-        "collection_sort" : {
+        "collection_sort": {
             deps: ["backbone"]
+        },
+        "revel_api": {
+            deps: ["backbone"]
+        },
+        "revel_view": {
+            deps: ["backbone", "factory"]
+        },
+        'establishments': {
+            deps: ['backbone', 'collection_sort']
+        },
+        'establishments_view': {
+            deps: ['backbone', 'factory', 'generator', 'list']
         }
     },
     map: {

@@ -1,0 +1,43 @@
+<script type='text/template' id='alert-establishments-template'>
+    <div class='alert_align'> </div>
+    <div class='alert_wrapper'>
+        <div class='alert_block'>
+            <div class='no-cancel'> </div>
+            <div class='icon <%= icon_type %>'> </div>
+            <div class='message'> <%= message %> </div>
+            <div class='btn_wrapper'>
+                <% if (is_confirm) { %>
+                   <div class='btn btnCancel'> <%= btnText2 %> </div>
+                <% } %>
+                <div class='btn btnOk'> <%= btnText1 %> </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script type='text/template' id='establishments_main-template'>
+    <div class='establishments'>
+        <div>
+            <div> <%= CHOOSE_BRAND %> </div>
+            <div class='establishments_select select-wrapper'> </div>
+            <% if (storeDefined) { %>
+                <div> <button type='button' name='back'> <%= BACK_BUTTON %> </button> </div>
+            <% } %>
+            <div> <button type='button' name='proceed'> <%= PROCEED_BUTTON %> </button> </div>
+        </div>
+        <% if (showFooter) { %>
+            <footer>
+                <% if (clientName) { %>
+                    <a class='powered-by' target='_blank' href='http://revelup.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>'> </a>
+                <% } else { %>
+                    <a class="powered-by" target="_blank" href="http://revelup.com"> </a>
+                <% } %>
+            </footer>
+        <% } %>
+    </div>
+</script>
+<script type='text/template' id='establishments_select-template'>
+    <select> </select>
+</script>
+<script type="text/template" id="establishments_select_item-template">
+    <%= name %>, <%= line_1 %>, <%= city_name %>
+</script>

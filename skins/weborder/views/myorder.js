@@ -133,7 +133,7 @@ define(["backbone", "myorder_view"], function(Backbone) {
                     wrapper_height,
 
                     product = this.$('.product_info').outerHeight(),
-                    special = this.$('.instruction_block')[0].clientHeight,
+                    special = this.$('.instruction_block').outerHeight(),
                     size = this.$('.quantity_info').outerHeight();
 
                 el.height('auto');

@@ -1,23 +1,47 @@
 <script type="text/template" id="footer_main-template">
-    <ul>
+    <% if (_settings.promo_message) { %>
+        <div class='promo_message promo_text <% if(_settings.isRetailMode) {print("promo_message_retail");} %>'> <span> <%= _settings.promo_message %> </span> </div>
+        <div class='promo_message promo_marquee <% if(_settings.isRetailMode) {print("promo_message_retail");} %>'> <marquee behavior='scroll' direction='left' scrollamount='6' loop='-1'> <%= _settings.promo_message %> </marquee> </div>
+    <% } %>
+    <ul class="<% if(_settings.isRetailMode) {print('retail-mode');} %>">
         <li class="left">
             <div id="about" class="btn1"><span>About</span></div>
         </li>
         <li class="center">
+            <% if(_settings.isRetailMode && _settings.RevelAPI && _settings.online_orders) { %>
+            <div class="btn1 loyalty"><span>Loyalty</span></div>
+            <% } else if(_settings.isRetailMode && _settings.online_orders) { %>
+            <div id="location" class="btn1"><span>Location</span></div>
+            <% } else if(_settings.online_orders) { %>
             <div id="myorder" class="btn2">
                 <span>My Order</span>
                 <span class="count"></span>
             </div>
+            <% } %>
         </li>
         <li class="right">
+            <% if(_settings.isRetailMode && _settings.online_orders) { %>
+            <div id="myorder" class="btn1">
+                <span>My Order</span>
+                <span class="count"></span>
+            </div>
+            <% } else if(_settings.RevelAPI) { %>
+            <div class="btn1 loyalty"><span>Loyalty</span></div>
+            <% } else { %>
             <div id="location" class="btn1"><span>Location</span></div>
+            <% } %>
         </li>
     </ul>
 </script>
 
 <script type="text/template" id="footer_checkout-template">
     <ul class="checkout">
-        <li>
+        <% if(_settings.RevelAPI) { %>
+        <li class="half">
+            <div class="btn1 profile"><span>Profile</span></div>
+        </li>
+        <% } %>
+        <li class="<% if(_settings.RevelAPI) {print('half');} %>">
             <div id="confirmOrder" class="btn1"><span>Confirm Order</span></div>
         </li>
     </ul>
@@ -76,4 +100,45 @@
 </script>
 
 <script type="text/template" id="footer_maintenance_directory-template">
+</script>
+
+<script type="text/template" id="footer_profile-template">
+    <ul>
+        <li class="left">
+            <div class="btn1 btn-left prev"><span>Previous</span></div>
+        </li>
+        <li class="center"></li>
+        <li class="right">
+            <div class="btn1 btn-right next"><span>Next</span></div>
+            <div class="btn1 btn-right save"><span>Save</span></div>
+        </li>
+    </ul>
+</script>
+
+<script type="text/template" id="footer_loyalty-template">
+    <ul class="<% if(_settings.isRetailMode) {print('retail-mode');} %>">
+        <li class="left">
+            <div id="about" class="btn1"><span>About</span></div>
+        </li>
+        <li class="center">
+            <% if(_settings.isRetailMode && _settings.online_orders) { %>
+            <div class="btn1 menu"><span>Menu</span></div>
+            <% } else if(_settings.online_orders) { %>
+            <div id="myorder" class="btn2">
+                <span>My Order</span>
+                <span class="count"></span>
+            </div>
+            <% } %>
+        </li>
+        <li class="right">
+            <% if(_settings.isRetailMode && _settings.online_orders) { %>
+            <div id="myorder" class="btn1">
+                <span>My Order</span>
+                <span class="count"></span>
+            </div>
+            <% } else if(_settings.RevelAPI) { %>
+            <div class="btn1 menu"><span>Menu</span></div>
+            <% } %>
+        </li>
+    </ul>
 </script>

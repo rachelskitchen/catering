@@ -2,29 +2,31 @@
 
 #content .myorderSubtotal {
     position: absolute;
-    bottom: 0;
+    bottom: 0.8em;
     left: 1.5em;
     right: 1.5em;
-    height: 4em;
+    height: 7.0em;
     text-align: right;
     padding: 0.5em 0 0.8em;
-    border-top: 1px solid #a8c4d8;
+    border-top-width: 1px;
+    border-top-style: solid;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
 }
 
 #content .myorderSubtotal.isNote {
-    bottom: 17em;
+    bottom: 15.6em;
 }
 
-#content .myorderSubtotal > span {
+#content .myorderSubtotal > div {
     font-size: 2.8em;
     font-weight: bold;
 }
 
 #content .myorderSubtotal .currency_symbol {
-    letter-spacing: -0.2em;
+    position: relative;
+    left: 0.2em;
 }
 
 /* total mod myorder end */
@@ -33,15 +35,10 @@
 #content ul.confirm {
     list-style: none;
     margin: 1.5em;
-    /*height: 18em;*/
-    border-bottom: 1px solid #a8c4d8;
-    padding-bottom: 3em;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    padding-bottom: 2em;
 }
-
-#content ul.confirm.has-delivery {
-    height: 23em;
-}
-
 
 #content ul.confirm li {
     font-size: 2.8em;
@@ -69,7 +66,12 @@
 }
 
 #content ul.confirm span.currency_symbol {
-    letter-spacing: -0.2em;
+    position: relative;
+    left: 0.2em;
+}
+#content ul.confirm span.plus {
+    position: relative;
+    left: 0.3em;
 }
 
 /* total mod confirm end */

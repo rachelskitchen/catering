@@ -65,6 +65,8 @@ MSG.ERROR_SUBMIT_ORDER = "Failed to submit an order. Please try again.";
 MSG.ERROR_ORDERS_PICKUPTIME_LIMIT = "Maximum number of orders for this pickup time exceeded. Please select different pickup time.";
 MSG.ERROR_INSUFFICIENT_STOCK = "Some products have insufficient stock.";
 MSG.ERROR_OCCURRED = "Error occurred: ";
+MSG.ERROR_HAS_OCCURRED = "The error has occurred";
+MSG.ERROR_HAS_OCCURRED_WITH_CONTACT = "The error has occurred, please contact: %email: %%phone: %";
 MSG.ERROR_MIN_ITEMS_LIMIT = "Please select at least %s items to place an order.";
 MSG.ERROR_INCORRECT_AJAX_DATA = "Incorrect data in server responce.";
 MSG.ERROR_SERVER_UNREACHED = 'The server cannot be reached at this time.';
@@ -101,6 +103,33 @@ MSG.FREE_MODIFIERS_PRICE = "Modifiers for less than %s will be free";
 MSG.FREE_MODIFIERS_QUANTITY = "First %s modifiers selected will be free";
 MSG.FREE_MODIFIERS_QUANTITY1 = "First modifier selected will be free";
 MSG.PRODUCTS_VALID_TIME = "Available: ";
+MSG.ERROR_REVEL_EMPTY_NEW_PASSWORD = 'Please enter new password.';
+MSG.ERROR_REVEL_EMPTY_OLD_PASSWORD = 'Please enter old password.';
+MSG.ERROR_REVEL_NOT_MATCH_PASSWORDS = 'New Password & Repeat Password values don\'t match';
+MSG.ERROR_REVEL_USER_EXISTS = 'User %s already exists.';
+MSG.ERROR_REVEL_UNABLE_TO_PERFORM = 'Unable to perform action. Please ask about this problem at ask.revelsystems.com.';
+MSG.ERROR_REVEL_ATTEMPTS_EXCEEDED = 'Max number of authentication attempts exceeded. Account deleted.';
+MSG.ERROR_REVEL_PASSWORD_UPDATE_FAILED = 'Password update failed. Old password is invalid.';
+MSG.ERROR_REVEL_AUTHENTICATION_FAILED = 'Authentication failed. Please enter valid email & password.';
+MSG.ERROR_NO_MSG_FROM_SERVER = "No message about the error";
+MSG.ERROR_GET_DISCOUNTS = "Failed request to get discounts";
+MSG.ERROR_INCORRECT_DISCOUNT_CODE = "Type correct discount code from 4 to 16 characters";
+MSG.DISCOUNT_CODE_NOT_FOUND = "The typed discount code hasn't been found. Automatic discounts can be applied only.";
+// page 'Establishments' (begin)
+MSG.ESTABLISHMENTS_ERROR_NOSTORE = 'No store is available for the specified brand';
+MSG.ESTABLISHMENTS_CHOOSE_BRAND_DESKTOP = 'Choose which %s you are looking for:';
+MSG.ESTABLISHMENTS_CHOOSE_BRAND_MOBILE = 'Choose which %s you\'re looking for:';
+MSG.ESTABLISHMENTS_PROCEED_BUTTON = 'Proceed';
+MSG.ESTABLISHMENTS_BACK_BUTTON = 'Go Back';
+MSG.ESTABLISHMENTS_ALERT_MESSAGE_DESKTOP = 'If you choose a different store location, your order will be canceled. Cancel Order?';
+MSG.ESTABLISHMENTS_ALERT_MESSAGE_TITLE_MOBILE = 'Warning';
+MSG.ESTABLISHMENTS_ALERT_MESSAGE_MOBILE = 'If you switch stores, your order will be discarded.';
+MSG.ESTABLISHMENTS_ALERT_MESSAGE_QUESTION_MOBILE = 'Continue?';
+MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_DESKTOP = 'Proceed';
+MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_MOBILE = 'Ok';
+MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_DESKTOP = 'Go Back';
+MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_MOBILE = 'Back';
+// page 'Establishments' (end)
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
@@ -356,9 +385,9 @@ function format_date_3(date) {
  * Load data from storage (cookie, sessionStorage, localStorage).
  */
 function getData(name, local) {
-     var data;
+    var data;
 
-     switch (App.Data.settings.get('storage_data')) {
+    switch (App.Data.settings.get('storage_data')) {
         case 1:
             if(local && localStorage instanceof Object && localStorage[name])
                 data = JSON.parse(localStorage[name]);
@@ -501,6 +530,7 @@ function alert_message(options) {
 /**
  * User customized alerts for weborder skin.
  * options: {
+ *     template - template ID
  *     message - alert message
  *     reload_page - if true - reload page after press button
  *     is_confirm - true if confirm message
@@ -514,7 +544,9 @@ function tmpl_alert_message(options) {
     var alert = $('#alert'),
         confirm = options.confirm || {};
 
-    if ($("#alert-template").length == 0) {
+    var template = options.template ? options.template : 'alert';
+
+    if ($('#' + template + '-template').length == 0) {
         jq_alert_message(options);
         return;
     }
@@ -530,7 +562,7 @@ function tmpl_alert_message(options) {
         is_confirm: options.is_confirm
     };
 
-    var tmpl = template_helper2("alert-template");
+    var tmpl = template_helper2(template + '-template'); // helper of template for PayPal
     alert.html(tmpl(data));
     alert.addClass('ui-visible');
     $(".alert_block").addClass("alert-background");
@@ -585,7 +617,7 @@ function round_monetary_currency(value, precision, up) {
  *  Sync load template
  */
 
-function loadTemplate2(name,file) {
+function loadTemplate2(name, file, isCore) {
     if (!App.Data.loadModelTemplate) {
         App.Data.loadModelTemplate = {};
     }
@@ -596,7 +628,7 @@ function loadTemplate2(name,file) {
         App.Data.loadModelTemplate.dfd = $.Deferred();
         App.Data.loadModelTemplate.count++;
         $.ajax({
-            url: App.Data.settings.get('skinPath') + "/template/" + file + ".html",
+            url: isCore ? 'template/' + file + '.html' : App.Data.settings.get('skinPath') + '/template/' + file + '.html',
             dataType: "html",
             success : function(data) {
                 $("head").append(data);
@@ -882,7 +914,7 @@ function loadSpinner(logo, anim_params, cb) {
         if(hash in App.Data.images) {
             if (App.Data.images[hash].attr('src') == defImage)
                 parent.addClass('no-photo');
-            return logo.replaceWith(App.Data.images[hash].clone());
+            logo.replaceWith(App.Data.images[hash].clone())
         }
         spinner = $('<div class="img-spinner"></div>');
 
@@ -934,6 +966,19 @@ function isIEMobile() {
     else {
         isIEMobile.retval = (navigator.userAgent.match(/IEMobile/) ? true : false);
         return isIEMobile.retval;
+    }
+}
+
+/**
+ * Check if iPad device
+ */
+function iPad() {
+    if (iPad.retval) {
+        return iPad.retval;
+    }
+    else {
+        iPad.retval = /ipad/i.test(window.navigator.userAgent) ? true : false;
+        return iPad.retval;
     }
 }
 
@@ -990,12 +1035,20 @@ function replaceAll(find, replace, str) {
     return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
 }
 
+
+/**
+ * use mask for input field type is a string
+ */
+function inputTypeStringMask(el, pattern, initial) {
+    inputTypeNumberMask(el, pattern, initial, true);
+}
+
 /**
  * use mask for input field type=number
  */
 function inputTypeNumberMask(el, pattern, initial, dontChangeType) {
-    if (cssua.userAgent.mobile) {
-        !dontChangeType && el.attr("type", "number");
+    if (cssua.userAgent.mobile && !dontChangeType) {
+        el.attr("type", "number");
         el.numberMask({pattern: pattern });
     } else {
         var prev = initial && initial.toString() || '';

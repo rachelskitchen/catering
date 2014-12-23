@@ -1,0 +1,131 @@
+{
+    "ex": [
+        {
+            "call_name": "Revel S. / Tue Jan 21 2014 5:08am ",
+            "closed": false,
+            "created_date": "01/21/2014  05:08",
+            "customer": {
+                "phone":"+65456986368", 
+                "first_name":"Revel", 
+                "last_name":"S.", 
+                "id":663105279
+            },
+            "final_total": 2.02,
+            "id": 61509,
+            "subtotal": 1.86,
+            "tax": 0.16,
+            "tip": 0,
+            "dining_option": 0,
+            "pickup_time": "01/16/2014  12:30",
+            "prevailing_surcharge": 10,
+            "prevailing_tax": 11,
+            "tax_country": 12,
+            "surcharge": 13
+        },
+        {
+            "call_name": "Revel S. / Tue Jan 21 2014 4:35am ",
+            "closed": true,
+            "created_date": "01/21/2014  04:35",
+            "customer": {
+                "phone":"+65456986367", 
+                "first_name":"Revel", 
+                "last_name":"S.", 
+                "id":663105279
+            },
+            "final_total": 0,
+            "id": 61518,
+            "subtotal": 0,
+            "tax": 0,
+            "tip": 0,
+            "dining_option": 1,
+            "pickup_time": "01/16/2014  13:30",
+            "prevailing_surcharge": 101,
+            "prevailing_tax": 111,
+            "tax_country": 121,
+            "surcharge": 131
+        }
+    ],
+    "exLoad": [
+        {
+            "closed": "Open",
+            "created_date": "01/21/2014  05:08",
+            "customer": {
+                "phone":"+65456986368", 
+                "first_name":"Revel", 
+                "last_name":"S.", 
+                "id":663105279
+            },
+            "final_total": 2.02,
+            "id": 61509,
+            "subtotal": 1.86,
+            "tax": 0.16,
+            "tip": 0,
+            "dining_option": "DINING_OPTION_TOGO",
+            "pickup_time": "01/16/2014  12:30",
+            "prevailing_surcharge": 10,
+            "prevailing_tax": 11,
+            "tax_country": 12,
+            "surcharge": 13
+        },
+        {
+            "closed": "Closed",
+            "created_date": "01/21/2014  04:35",
+            "customer": {
+                "phone":"+65456986367", 
+                "first_name":"Revel", 
+                "last_name":"S.", 
+                "id":663105279
+            },
+            "final_total": 0,
+            "id": 61518,
+            "subtotal": 0,
+            "tax": 0,
+            "tip": 0,
+            "dining_option": "DINING_OPTION_EATIN",
+            "pickup_time": "01/16/2014  13:30",
+            "prevailing_surcharge": 101,
+            "prevailing_tax": 111,
+            "tax_country": 121,
+            "surcharge": 131
+        }
+    ],
+    "additional1": [
+        {
+            "dining_option": 0, 
+            "prevailing_tax": 111,
+            "product": {}
+        }
+    ],
+    "additional1ready": [
+        {
+            "dining_option": 0, 
+            "prevailing_tax": 111,
+            "product": {
+                "tax": "prevailing_tax!"
+            }
+        }
+    ],
+    "additional2": [
+        {
+            "dining_option": 0, 
+            "prevailing_tax": 111,
+            "product": {
+                "tax": 10
+            }
+        }
+    ],
+    "additionalAll" : [
+        {
+            "product": {
+                "name": "Delivery Charge",
+                "price": 2
+            }
+        },
+        {
+            "product": {
+                "name": "Bag Charge",
+                "price": 3
+            }
+        }
+    ]
+}

@@ -55,6 +55,9 @@ section:before {
     background-image: -ms-linear-gradient(bottom, #bfbebe 0%, #d2d1d1 100%);
     box-shadow: 0 0 7px #f8f8f8 inset, 0 0 12px #b1ccda;
 }
+.current_establishment a {
+    color: #2186b1;
+}
 .powered-by {
     background: url('img/poweredBy.png') no-repeat 0 0 transparent;
 }
@@ -256,7 +259,11 @@ ul.categories {
 }
 #content > .checkout .tips .btn.disabled {
     color: #aaa;
-}/*
+}
+#content > .checkout .discount .btn {
+    color: #646464;
+}
+/*
 #content > .checkout .input_beauty.special > div {
     background: transparent;
     color: #aaa;
@@ -487,4 +494,8 @@ ul.categories {
 
 .modifiers_table .free {
     color: green;
+}
+
+.promo_message {
+    color: #373b40;
 }

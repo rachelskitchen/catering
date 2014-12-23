@@ -1,19 +1,22 @@
 <script type="text/template" id="myorder_list-template">
     <ul class="myorder"></ul>
+    <ul class="discount"></ul>
 </script>
 
 <script type="text/template" id="myorder_item-template">
+    <% if(!_settings.hide_images) { %>
     <div class="image">
         <img src=<%= image %> alt="<%= name %> logo<%= id %>" class="logo" data-default-index="1">
     </div>
-    <h3 class="s<%= price_length %>">
+    <% } %>
+    <h3 class="s<%= price_length %> <% if(_settings.hide_images) {print('noimage');} %>">
         <% if(sold_by_weight) { %>
             <span class="name"><%= sizeModifier %> <%= name %></span>
         <% } else { %>
             <span class="name">(<%= quantity %>) <%= sizeModifier %> <%= name %></span>
         <% } %>
     </h3>
-    <ul>
+    <ul class="modifier_place">
         <% if(sold_by_weight) { %>
         <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
         <% } %>
@@ -25,22 +28,44 @@
         <% } %>
     </ul>
     <% _.each(attrs, function(attr) { %>
-    <div class="attrs">
+    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
         <span><%= attr.name %></span>:
         <span><%= attr.value %></span>
     </div>
     <% }); %>
-    <div class="cost">
+    <div class="cost <% if(_settings.hide_images) {print('noimage');} %>">
         <span class="currency_symbol"><%= currency_symbol %></span>
         <span class="price"><%= price_sum %></span>
     </div>
+    <ul class="discount_place"></ul>
     <% if(id_product !== null) { %>
-    <div class="btns">
+    <div class="btns <% if(_settings.hide_images) {print('noimage');} %>">
         <span class="edit">Edit</span>
         <span class="divider"></span>
         <span class="remove"><span>Remove</span></span>
     </div>
     <% } %>
+    <div style="clear:both;"></div>
+</script>
+
+<script type="text/template" id="myorder_product_discount-template">
+    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
+        <span><%= discount_name %>:</span>
+    </div>
+    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
+        <span class="currency_symbol">-<%= currency_symbol %></span>
+        <span><%= discount_sum %></span>
+    </div>
+</script>
+
+<script type="text/template" id="myorder_discount-template">
+    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
+        <span class="name discount"><%= discount_name %></span>
+    </div>
+    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
+        <span class="currency_symbol">-<%= currency_symbol %></span>
+        <span><%= discount_sum %></span>
+    </div>
 </script>
 
 <script type="text/template" id="myorder_modifier-template">
@@ -53,7 +78,9 @@
             <div class='product product_info'></div>
             <div class='product_attribute_info'></div>
         </div>
+        <% if(_settings.online_orders) { %>
         <div class='quantity quantity_info'></div>
         <div class='action_button'>Add to Bag</div>
+        <% } %>
     </div>
 </script>

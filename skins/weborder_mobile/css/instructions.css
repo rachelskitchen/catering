@@ -1,5 +1,4 @@
 /* modifiers mod block start */
-
 #content .product_instructions {
     width: 100%;
     height: 23em;
@@ -12,9 +11,9 @@
     text-align: center;
     font-size: 2.8em;
     font-weight: bold;
-    border-bottom: 1px solid #a8c4d8;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
     padding: 0.3em 0;
-    color: #2ba1d8;
 }
 
 #content .product_instructions .textarea {
@@ -22,7 +21,7 @@
     height: 3.5em;
     font-size: 2.4em;
     margin: 0 auto;
-    position:relative;
+    position: relative;
 }
 
 #content .product_instructions .textarea:before {
@@ -33,11 +32,6 @@
     bottom: -2px;
     left: -2px;
     right: -2px;
-    background-image: -o-linear-gradient(to top, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -moz-linear-gradient(to top, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -webkit-linear-gradient(to top, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: -ms-linear-gradient(to top, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
-    background-image: linear-gradient(to top, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
     z-index: 0;
 }
 
@@ -50,7 +44,6 @@
     border-radius: 0;
     font-size: inherit;
     font-family: inherit;
-    background: #fff;
     position: relative;
     z-index: 1;
 }

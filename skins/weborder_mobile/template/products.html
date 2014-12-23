@@ -5,7 +5,7 @@
 <script type="text/template" id="product_list_item-template">
     <% if(!hide_images) { %>
         <div class="block_img">
-            <div class="img">
+            <div class="img bg-style1">
                 <img alt="<%= name %> <%= id %>"/>
             </div>
         </div>
@@ -30,16 +30,16 @@
 
 <script type="text/template" id="product_modifiers-template">
     <% if(!hide_images) { %>
-        <div class="block_img"> <div> <img alt="<%= name %> <%= id %>"/> </div> </div>
+        <div class="block_img"> <div class="bg-style1"> <img alt="<%= name %> <%= id %>"/> </div> </div>
     <% } %>
     <dl class="<%
             if (hide_images) print('noimage');
         %>">
         <dt class="s<%= price_length %>">
             <span class="cost">
-                <% if (is_gift && not_size) { %>
+                <% if (is_gift && not_size && _settings.online_orders) { %>
                     <span class='currency_symbol gift_card_symbol' ><%=currency_symbol%></span>
-                    <div class="input_beauty">
+                    <div class="input_beauty border2">
                         <input type="text" id="price" name="gift_card_price" value='<%= price %>' class="gift_card_price price" />
                     </div>
                 <% } else { %>
@@ -63,10 +63,10 @@
             <% } %>
         </dd>
     </dl>
-    <% if (is_gift) { %>
+    <% if (is_gift && _settings.online_orders) { %>
     <div class='gift_card <%if (hide_images) print('noimage');%>'>
         <p>Gift Card Number: </p>
-        <div class="input_beauty">
+        <div class="input_beauty border2">
             <input type="text" name="gift_card_number" value='<%= gift_card_number %>' class="gift_card_number" />
         </div>
     </div>

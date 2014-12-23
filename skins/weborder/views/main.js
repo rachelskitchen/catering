@@ -35,6 +35,9 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'change:popup', this.popup_change, this);
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
+            this.listenTo(this.model, 'change:isShowPromoMessage', this.calculatePromoMessageWidth, this);
+            this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
+            this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
 
             this.iOSFeatures();
 
@@ -43,7 +46,9 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
+            if (App.Settings.promo_message) this.calculatePromoMessageWidth(); // calculate a promo message width
             App.Views.FactoryView.prototype.render.apply(this, arguments);
+            if (App.Data.establishments.length > 1) this.model.set('needShowStoreChoice', true);
             !this.iPad7Feature.init && this.iPad7Feature();
 
             var spinner = this.$('#main-spinner');
@@ -53,7 +58,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             return this;
         },
         events: {
-            'click #popup .cancel': 'hide_popup'
+            'click #popup .cancel': 'hide_popup',
+            'click .change_establishment': 'change_establishment'
         },
         content_change: function() {
             var content = this.$('#content'),
@@ -183,6 +189,88 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         hideSpinner: function() {
             this.$('#main-spinner').addClass('ui-visible').removeClass('ui-visible');
+        },
+        remove: function() {
+            $(window).off('resize', this.resizePromoMessage);
+            App.Views.FactoryView.prototype.remove.apply(this, arguments);
+        },
+        /**
+         * Calculate a promo message width.
+         */
+        calculatePromoMessageWidth: function() {
+            if (this.model.get('isShowPromoMessage')) {
+                var promo_message = Backbone.$('<div class="promo_message promo_message_internal"> <span>' + App.Settings.promo_message + '</span> </div>');
+                $('body').append(promo_message);
+                this.model.set('widthPromoMessage', promo_message.find('span').width());
+                promo_message.remove();
+                this.model.set('widthWindow', $(window).width());
+                this.addPromoMessage(); // add a promo message
+                $(window).resize(this, this.resizePromoMessage);
+            } else {
+                this.$('.promo_message').hide();
+            }
+        },
+        /**
+         * Resize of a promo message.
+         */
+        resizePromoMessage: function() {
+            if (arguments[0].data.model.get('widthWindow') !== $(window).width()) {
+                arguments[0].data.model.set('widthWindow', $(window).width());
+                arguments[0].data.addPromoMessage(); // add a promo message
+            }
+        },
+        /**
+         * Add promo message.
+         */
+        addPromoMessage: function() {
+            var self = this;
+            window.setTimeout(function() {
+                var promo_text = self.$('.promo_text');
+                var promo_marquee = self.$('.promo_marquee');
+                if (self.model.get('widthPromoMessage') >= promo_text.parent().width() - 20) {
+                    var isFirefox = /firefox/g.test(navigator.userAgent.toLowerCase());
+                    if (isFirefox) {
+                        // bug #15981: "First Firefox displays long promo message completely then erases it and starts scrolling"
+                        $(document).ready(function() {
+                            promo_text.hide();
+                            promo_marquee.show();
+                        });
+                    } else {
+                        promo_text.hide();
+                        promo_marquee.show();
+                    }
+                } else {
+                    promo_text.show();
+                    promo_marquee.hide();
+                }
+            }, 0);
+        },
+        /**
+         * Show the "Store Choice" block if a brand have several stores.
+         */
+        checkBlockStoreChoice: function() {
+            var block = this.$('.current_establishment');
+            this.model.get('needShowStoreChoice') ? block.show() : block.hide();
+        },
+        /**
+         * Show the "Change Establishment" modal window.
+         */
+        change_establishment: function() {
+            var ests = App.Data.establishments;
+            ests.getModelForView().set({
+                storeDefined: true
+            }); // get a model for the stores list view
+            ests.trigger('loadStoresList');
+            this.model.set('isBlurContent', true);
+        },
+        /**
+         * A blur effect of content.
+         * Blur effect supported on Firefox 35, Google Chrome 18, Safari 6, iOS Safari 6.1, Android browser 4.4, Chrome for Android 39.
+         */
+        blurEffect: function() {
+            // http://caniuse.com/#search=filter
+            var mainEl = this.$('.main_el');
+            this.model.get('isBlurContent') ? mainEl.addClass('blur') : mainEl.removeClass('blur');
         }
     });
 

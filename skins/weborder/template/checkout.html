@@ -233,3 +233,17 @@
         </div>
     </div>
 </script>
+
+<script type="text/template" id="checkout_discount_code-template">
+    <label class="discount-label"><span class="bold">Discount Code:</span></label>
+    <div class="discount">
+        <span class="number-wrap">
+            <div class="number">
+                <div class="input_beauty">
+                    <input type="text" name="discount_code" class="<% if(iPad) print('ipad') %>" value='<% print(discount_code) %>'>
+                </div>
+            </div>
+        </span>
+        <button class="btn btnApply">Apply</button>       
+    </div>
+</script>

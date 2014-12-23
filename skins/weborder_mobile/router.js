@@ -26,41 +26,51 @@ define(["backbone", "main_router"], function(Backbone) {
     var headerModes = {},
         footerModes = {};
 
-    headerModes.Main = {mod: 'Main', className: 'main'};
-    headerModes.OneButton = {mod: 'OneButton', className: 'one_button'};
-    headerModes.Products = headerModes.OneButton;
-    headerModes.Dir = headerModes.OneButton;
-    headerModes.Modifiers = {mod: 'Modifiers', className: 'two_button'};
-    headerModes.Myorder = {mod: 'TwoButton', className: 'two_button myorder'};
-    headerModes.Checkout = headerModes.OneButton;
-    headerModes.Card = headerModes.Main;
-    headerModes.GiftCard = headerModes.Main;
-    headerModes.Confirm = headerModes.OneButton;
-    headerModes.Done = headerModes.Main;
-    headerModes.Location = {mod: 'Location', className: 'two_button location'};
-    headerModes.BackToMenu = {mod: 'OneButton', className: 'one_button back_to_menu'};
-    headerModes.Map = headerModes.OneButton;
-    headerModes.About = {mod: 'TwoButton', className: 'two_button'};
-    headerModes.Gallery = headerModes.Map;
-    headerModes.Maintenance = {mod: 'Maintenance', className: 'maintenance'};
+    /**
+    * Default router data.
+    */
+    function defaultRouterData() {
+        headerModes.Main = {mod: 'Main', className: 'main'};
+        headerModes.OneButton = {mod: 'OneButton', className: 'one_button'};
+        headerModes.Products = headerModes.OneButton;
+        headerModes.Dir = headerModes.OneButton;
+        headerModes.Modifiers = {mod: 'Modifiers', className: 'two_button modifiers'};
+        headerModes.Myorder = {mod: 'TwoButton', className: 'two_button myorder'};
+        headerModes.Checkout = headerModes.OneButton;
+        headerModes.Card = headerModes.Main;
+        headerModes.GiftCard = headerModes.Main;
+        headerModes.Confirm = headerModes.OneButton;
+        headerModes.Done = headerModes.Main;
+        headerModes.Location = {mod: 'Location', className: 'two_button location'};
+        headerModes.BackToMenu = {mod: 'OneButton', className: 'one_button back_to_menu'};
+        headerModes.Map = headerModes.OneButton;
+        headerModes.About = {mod: 'TwoButton', className: 'two_button'};
+        headerModes.Gallery = headerModes.Map;
+        headerModes.Maintenance = {mod: 'Maintenance', className: 'maintenance'};
+        headerModes.Profile = {mod: 'OneButton', className: 'one_button profile'};
 
-    footerModes.Main = {mod: 'Main'};
-    footerModes.Products = footerModes.Main;
-    footerModes.Modifiers = footerModes.Main;
-    footerModes.Myorder = footerModes.Main;
-    footerModes.Checkout = {mod: 'Checkout'};
-    footerModes.Card = {mod: 'Card'};
-    footerModes.GiftCard = {mod: 'GiftCard'};
-    footerModes.Confirm = {mod: 'Confirm'};
-    footerModes.Done = {mod: 'Done'};
-    footerModes.Location = footerModes.Main;
-    footerModes.Map = footerModes.Main;
-    footerModes.About = footerModes.Main;
-    footerModes.Gallery = footerModes.Main;
-    footerModes.Maintenance = {mod: 'Maintenance'};
-    footerModes.MaintenanceDirectory = {mod: 'MaintenanceDirectory'};
+        footerModes.Main = {mod: 'Main'};
+        footerModes.Products = footerModes.Main;
+        footerModes.Modifiers = footerModes.Main;
+        footerModes.Myorder = footerModes.Main;
+        footerModes.Checkout = {mod: 'Checkout'};
+        footerModes.Card = {mod: 'Card'};
+        footerModes.GiftCard = {mod: 'GiftCard'};
+        footerModes.Confirm = {mod: 'Confirm'};
+        footerModes.Done = {mod: 'Done'};
+        footerModes.Location = footerModes.Main;
+        footerModes.Map = footerModes.Main;
+        footerModes.About = footerModes.Main;
+        footerModes.Gallery = footerModes.Main;
+        footerModes.Maintenance = {mod: 'Maintenance'};
+        footerModes.MaintenanceDirectory = {mod: 'MaintenanceDirectory'};
+        footerModes.Profile = {mod: 'Profile'};
+        footerModes.Loyalty = {mod: 'Loyalty'};
+    }
 
-    App.Routers.Router = App.Routers.MainRouter.extend({
+    defaultRouterData(); // default router data
+
+    App.Routers.Router = App.Routers.MobileRouter.extend({
         routes: {
             "": "index",
             "index": "index",
@@ -79,6 +89,8 @@ define(["backbone", "main_router"], function(Backbone) {
             "gallery": "gallery",
             "maintenance": "maintenance",
             "pay": "pay",
+            "profile(/:step)": "profile",
+            "loyalty": "loyalty",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -87,9 +99,22 @@ define(["backbone", "main_router"], function(Backbone) {
             clearQueryString();
             var self = this;
 
+            // used for footer view
+            App.Settings.isRetailMode = ServiceType.RETAIL == App.Settings.type_of_service;
+
+            // set locked routes if online orders are disabled
+            if(!App.Settings.online_orders) {
+                this.lockedRoutes = ['modifiers_edit', 'myorder', 'checkout', 'card', 'giftcard', 'confirm', 'done', 'pay'];
+            }
+
             // check if we here from paypal payment page
             if (App.Data.get_parameters.pay || App.Data.get_parameters[MONERIS_PARAMS.PAY]) {
                 window.location.hash = "#pay";
+            }
+
+            // if it is Revel's WebView need change color_scheme on 'revel'
+            if(cssua.ua.revelsystemswebview) {
+                App.Settings.color_scheme = 'revel';
             }
 
             // load main, header, footer necessary files
@@ -100,13 +125,60 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Data.footer = new App.Models.FooterModel({
                     myorder: this.navigate.bind(this, 'myorder', true),
                     location: this.navigate.bind(this, 'location', true),
-                    about: this.navigate.bind(this, 'about', true)
+                    about: this.navigate.bind(this, 'about', true),
+                    loyalty: this.trigger.bind(this, 'navigateToLoyalty'),
+                    menu: this.navigate.bind(this, 'menu', true),
+                    profile: this.trigger.bind(this, 'navigateToProfile')
                 });
-                App.Data.mainModel = new App.Models.MainModel();
+                var mainModel = App.Data.mainModel = new App.Models.MainModel();
+                var ests = App.Data.establishments;
+
+                // init RevelAPI
+                this.initRevelAPI();
+
+                // only establishment with reward cards option enabled can show RevelAPI buttons
+                App.Settings.RevelAPI = App.Settings.RevelAPI  && App.Settings.enable_reward_cards_collecting;
+
+                // listen to credit card payment
+                this.listenTo(App.Data.footer, 'payWithCreditCard', function() {
+                    if(App.Settings.RevelAPI) {
+                        App.Data.RevelAPI.checkCreditCard();
+                    } else {
+                        showDefaultCardView.call(this);
+                    }
+                }, this);
+
+                this.listenTo(App.Data.myorder, 'payWithCreditCard', function() {
+                    var paymentProcessor = App.Data.settings.get_payment_process();
+                    if(paymentProcessor.credit_card_dialog) {
+                        App.Data.myorder.check_order({
+                            order: true,
+                            tip: true,
+                            customer: true,
+                            checkout: true,
+                            card: true
+                        }, sendRequest);
+                    } else {
+                        sendRequest();
+                    }
+
+                    function sendRequest() {
+                        saveAllData();
+                        mainModel.trigger('loadStarted');
+                        App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
+                    }
+                });
+
                 new App.Views.MainView({
-                    model: App.Data.mainModel,
+                    model: mainModel,
                     el: 'body'
                 });
+                this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
+                this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
+                this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
+                this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
+                this.listenToOnce(ests, 'resetEstablishmentData', mainModel.trigger.bind(mainModel, 'showSpinnerAndHideContent'), this);
+                this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
                 // emit 'initialized' event
                 this.trigger('initialized');
@@ -114,15 +186,55 @@ define(["backbone", "main_router"], function(Backbone) {
             });
 
             var checkout = App.Data.myorder.checkout;
-                checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
+            checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
             this.initPaymentResponseHandler(this.navigate.bind(this, "done", true));
 
-            App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
+            App.Routers.MobileRouter.prototype.initialize.apply(this, arguments);
         },
         navigateDirectory: function() {
-            if(App.Data.dirMode)
-                return window.location.href = getData('directoryReferrer').referrer;
+            if(App.Data.dirMode) {
+                var directoryState = getData('directory.state'),
+                    directoryHash = '';
+
+                if(directoryState instanceof Object && directoryState.hash) {
+                    directoryHash = directoryState.hash;
+                }
+
+                return window.location.href = getData('directoryReferrer').referrer + directoryHash;
+            }
+        },
+        showPromoMessage: function() {
+            App.Data.footer.set('isShowPromoMessage', true);
+            App.Data.mainModel.trigger('showPromoMessage');
+        },
+        hidePromoMessage: function() {
+            App.Data.footer.set('isShowPromoMessage', false);
+            App.Data.mainModel.trigger('hidePromoMessage');
+        },
+        /**
+        * Get a stores list.
+        */
+        getEstablishments: function() {
+            this.callback = function() {
+                var si = App.Data.storeInfo;
+                if (si) si.set('needShowStoreChoice', true);
+            };
+            App.Routers.MainRouter.prototype.getEstablishments.apply(this, arguments);
+        },
+        /**
+        * Remove establishment data in case if establishment ID will change.
+        */
+        resetEstablishmentData: function() {
+            App.Routers.MobileRouter.prototype.resetEstablishmentData.apply(this, arguments);
+            defaultRouterData(); // default router data
+            this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
+        },
+        /**
+        * Remove HTML and CSS of current establishment in case if establishment ID will change.
+        */
+        removeHTMLandCSS: function() {
+            Backbone.$('link[href$="colors.css"]').remove();
         },
         index: function() {
             var self = this;
@@ -152,7 +264,8 @@ define(["backbone", "main_router"], function(Backbone) {
                     content: [
                         {
                             modelName: 'StoreInfo',
-                            mod: 'Main'
+                            mod: 'Main',
+                            cacheId: true
                         },
                         {
                             modelName: 'Categories',
@@ -236,7 +349,7 @@ define(["backbone", "main_router"], function(Backbone) {
                     });
 
                     App.Data.mainModel.set({
-                        header: headerModes.Modifiers,
+                        header: App.Settings.online_orders ? headerModes.Modifiers : Backbone.$.extend(headerModes.Modifiers, {className: 'one_button'}),
                         footer: footerModes.Modifiers,
                         content: {
                             modelName: 'MyOrder',
@@ -316,7 +429,14 @@ define(["backbone", "main_router"], function(Backbone) {
                             modelName: 'MyOrder',
                             collection: App.Data.myorder,
                             mod: 'List',
-                            className: 'myorderList' + (isNote ? ' isNote' : '')
+                            className: 'myorderList custom-scroll' + (isNote ? ' isNote' : '')
+                        },
+                        {
+                            modelName: 'Checkout',
+                            model: App.Data.myorder.checkout,
+                            mod: 'DiscountCode2',
+                            className: 'discountBlock' + (isNote ? ' isNote' : ''),
+                            myorder: App.Data.myorder
                         },
                         {
                             modelName: 'Total',
@@ -331,7 +451,8 @@ define(["backbone", "main_router"], function(Backbone) {
                             mod: 'Note',
                             className: 'myorderNote'
                         }
-                    ]
+                    ],
+                    no_perfect_scroll: true
                 });
 
                 this.change_page();
@@ -340,13 +461,13 @@ define(["backbone", "main_router"], function(Backbone) {
         checkout: function() {
             this.prepare('checkout', function() {
                 if(!App.Data.card)
-                    App.Data.card = new App.Models.Card;
+                    App.Data.card = new App.Models.Card({RevelAPI: App.Data.RevelAPI});
 
                 if(!App.Data.giftcard)
                     App.Data.giftcard = new App.Models.GiftCard;
 
                 if(!App.Data.customer) {
-                    App.Data.customer =  new App.Models.Customer();
+                    App.Data.customer =  new App.Models.Customer({RevelAPI: App.Data.RevelAPI});
                     App.Data.customer.loadAddresses();
                 }
 
@@ -387,6 +508,9 @@ define(["backbone", "main_router"], function(Backbone) {
                 });
 
                 this.change_page();
+
+                var RevelAPI = App.Data.RevelAPI;
+                RevelAPI.isAvailable() && RevelAPI.get('token') === null && RevelAPI.requireAuthentication(); // Bug 16425
             });
         },
         card: function() {
@@ -612,7 +736,7 @@ define(["backbone", "main_router"], function(Backbone) {
             });
         },
         maintenance : function() {
-            App.Routers.MainRouter.prototype.maintenance.apply(this, arguments);
+            App.Routers.MobileRouter.prototype.maintenance.apply(this, arguments);
 
             this.prepare('maintenance', function() {
                 var header = {page_title: ''};
@@ -635,6 +759,44 @@ define(["backbone", "main_router"], function(Backbone) {
 
                 this.change_page();
             });
+        },
+        profile: function(step) {
+            App.Data.header.set({
+                page_title: 'Profile',
+                back_title: 'Cancel',
+                back: App.Data.RevelAPI.trigger.bind( App.Data.RevelAPI, 'onProfileCancel')
+            });
+            return App.Routers.MobileRouter.prototype.profile.call(this, step, headerModes.Profile, footerModes.Profile);
+        },
+        loyalty: function() {
+            return App.Routers.MobileRouter.prototype.loyalty.call(this, headerModes.Main, footerModes.Loyalty);
+        },
+        initRevelAPI: function() {
+            App.Routers.MobileRouter.prototype.initRevelAPI.apply(this, arguments);
+
+            var RevelAPI = App.Data.RevelAPI;
+
+            if(!RevelAPI.isAvailable()) {
+                return;
+            }
+
+            this.listenTo(RevelAPI, 'onPayWithSavedCreditCard', function() {
+                App.Data.card.set(RevelAPI.get('card').toJSON());
+                App.Data.myorder.trigger('payWithCreditCard');
+            }, this);
+
+            this.listenTo(RevelAPI, 'onPayWithCustomCreditCard', function() {
+                showDefaultCardView.call(this);
+            }, this);
         }
     });
+
+    function showDefaultCardView() {
+        var paymentProcessor = App.Data.settings.get_payment_process();
+        if(paymentProcessor.credit_card_dialog) {
+            this.navigate('card', true);
+        } else {
+            App.Data.myorder.trigger('payWithCreditCard');
+        }
+    }
 });

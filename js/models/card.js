@@ -38,6 +38,9 @@ define(["backbone"], function(Backbone) {
             zip: '',
             img: App.Data.settings.get("img_path")
         },
+        initialize: function() {
+            this.syncWithRevelAPI();
+        },
         /**
         * Save current state model in storage (detected automatic).
         */
@@ -57,15 +60,20 @@ define(["backbone"], function(Backbone) {
             this.set(data);
             return this;
         },
-        check: function() {
-            var cardPattern = /^[3-6]\d{12,18}$/,
-                skin = App.Data.settings.get('skin'),
-                card = this.toJSON(),
+        check: function(opts) {
+            var card = this.toJSON(),
                 err = [];
 
-            err = err.concat(this.checkPerson());
-            !cardPattern.test(card.cardNumber) && err.push('Card Number');
-            err = err.concat(this.checkSecurityCode());
+            //`opts` object may have following properties:
+            //  `ignorePerson` (if it's true person data isn't validated),
+            //  `ignoreCardNumber` (if it's true card number isn't validated)
+            //  `ignoreSecurityCode` (if it's true security code isn't validated)
+            //  `ignoreExpDate` (if it's true expiration date isn't validated)
+            opts = opts instanceof Object ? opts : {};
+
+            !opts.ignorePerson && err.push.apply(err, this.checkPerson());
+            !opts.ignoreCardNumber && err.push.apply(err, this.checkCardNumber());
+            !opts.ignoreSecurityCode && err.push.apply(err, this.checkSecurityCode());
 
             if (err.length) {
                 return {
@@ -79,7 +87,7 @@ define(["backbone"], function(Backbone) {
                 date = new Date(year, month),
                 dateCur = new Date();
 
-            if (date < dateCur) {
+            if (!opts.ignoreExpDate && date < dateCur) {
                 return {
                     status: "ERROR",
                     errorMsg: MSG.ERROR_CARD_EXP
@@ -109,9 +117,53 @@ define(["backbone"], function(Backbone) {
             !securityPattern.test(card.securityCode) && err.push('Security Code');
             return err;
         },
+        checkCardNumber: function() {
+            var cardPattern = /^[3-6]\d{12,18}$/,
+                card = this.toJSON(),
+                err = [];
+            !cardPattern.test(card.cardNumber) && err.push('Card Number');
+            return err;
+        },
         clearData: function() {
             this.empty_card_number();
             this.saveCard();
+        },
+        syncWithRevelAPI: function() {
+            var RevelAPI = this.get('RevelAPI');
+
+            if(!RevelAPI || !RevelAPI.isAvailable()) {
+                return;
+            }
+
+            var profileCustomer = RevelAPI.get('customer'),
+                profileExists = RevelAPI.get('profileExists'),
+                self = this;
+
+            // when user saves profile model should be updated
+            this.listenTo(RevelAPI, 'onProfileSaved', update);
+
+            // listen to profile customer changes if user wasn't set any value for one of 'firstName', 'secondName' fields
+            this.listenTo(profileCustomer, 'change', function() {
+                if(RevelAPI.get('profileExists') && !this.get('firstName') && !this.get('secondName')) {
+                    update();
+                }
+            }, this);
+
+            // fill out current model
+            this.set(getData());
+
+            function update() {
+                var data = profileCustomer.toJSON();
+                self.set(getData());
+            }
+
+            function getData() {
+                var data = profileCustomer.toJSON();
+                return {
+                    firstName: data.first_name,
+                    secondName: data.last_name
+                };
+            }
         }
     });
 });

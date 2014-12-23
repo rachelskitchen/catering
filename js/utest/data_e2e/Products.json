@@ -1,0 +1,125 @@
+{
+    "product_ids":[
+        1011,
+        1018,
+        1022
+    ],
+    "t_shirt_main": {
+        "cost" : null,
+        "course_number" : null,
+        "description": "T-Shirt dest description",
+        "id": 1011,
+        "id_category" : 176,
+        "is_cold": true,
+        "image": "http://www.linedrawing.me/wp-content/uploads/2014/01/t-shirt-line-drawing-5.jpg",
+        "name": "T-Shirt main",
+        "price": 5,
+        "tax" : 20,
+        "sort": 10,
+        "sold_by_weight" : false,
+        "uom" : "count",
+        "attribute_type": 1,
+        "attribute_1_name": "Color",
+        "attribute_2_name": "Picture",
+        "attribute_1_enable": true,
+        "attribute_2_enable": true,
+        "stock_amount": 10,
+        "max_price": null,
+        "is_gift": false
+    },
+    "children_ids": [
+        1012,
+        1013,
+        1015,
+        1016
+    ],
+    "t_shirt_child": {
+        "product": {
+            "cost" : null,
+            "course_number" : null,
+            "description": "",
+            "id": 1012,
+            "id_category" : 176,
+            "is_cold": false,
+            "image": "",
+            "name": "T-Shirt Red Home Slim",
+            "price": 5.5,
+            "tax" : 20,
+            "sort": 11,
+            "sold_by_weight" : false,
+            "uom" : "",
+            "attribute_type": 2
+        },
+        "modifiers": [{
+            "admin_mod_key": "SIZE",
+            "admin_modifier": true,
+            "amount_free": null,
+            "forced": false,
+            "id": 371,
+            "lock_amount": 1,
+            "lock_enable": false,
+            "name": "Size",
+            "sort": 0,
+            "modifiers": [
+                {
+                    "cost": null,
+                    "id": 290,
+                    "name": "XL",
+                    "price": 0.09,
+                    "selected": false,
+                    "sort": 2
+                },
+                {
+                    "cost": 0,
+                    "id": 291,
+                    "name": "L",
+                    "price": 4,
+                    "selected": true,
+                    "sort": 3
+                }
+            ]
+        }],
+        "attributes": {
+            "attribute_value_1": 1,
+            "attribute_value_1_name": "Red",
+            "attribute_value_2": 2,
+            "attribute_value_2_name": "Home"
+        }
+    },
+    "child_attributes": {
+        "attribute_value_1": 3,
+        "attribute_value_1_name": "Yellow"
+    },
+    "reward_point_1_55": {
+        "sort": 1,
+        "id_category": 232,
+        "is_cold": false,
+        "description": "",
+        "sold_by_weight": false,
+        "attribute_type": 0,
+        "image": "",
+        "tax": 20,
+        "price": 2.4,
+        "cost": null,
+        "course_number": null,
+        "id": 1329,
+        "uom": "",
+        "name": "Product Reward Point 1.55"
+    },
+    "reward_point_1_0": {
+        "sort": 2,
+        "id_category": 232,
+        "is_cold": false,
+        "description": "",
+        "sold_by_weight": false,
+        "attribute_type": 0,
+        "image": "",
+        "tax": 20,
+        "price": 2,
+        "cost": null,
+        "course_number": null,
+        "id": 1330,
+        "uom": "",
+        "name": "Product Reward Point 1.0"
+    }
+}

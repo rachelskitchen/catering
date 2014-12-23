@@ -58,12 +58,24 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
                 customer: this.options.customer,
                 mod: 'Main'
             }), specials = this.$('.specials'),
-                tips;
+                tips, discount;
 
             this.subViews.push(order_type, pickup, main);
             specials.before(order_type.el);
             specials.before(pickup.el);
             specials.before(main.el);
+
+            if (this.options.discountAvailable) {
+                discount = App.Views.GeneratorView.create('Checkout', {
+                    model: this.collection.checkout,
+                    mod: 'DiscountCode',
+                    className: 'row discountBlock',
+                    myorder: this.collection
+                });
+                this.subViews.push(discount);
+                specials.before(discount.el);
+                discount.$el.on('touchstart', 'input', this.inputClick.bind(this));
+            }
 
             if(this.options.acceptTips) {
                 tips = App.Views.GeneratorView.create('Tips', {

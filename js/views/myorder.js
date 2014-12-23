@@ -25,6 +25,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
     App.Views.CoreMyOrderView = {};
 
+  
     App.Views.CoreMyOrderView.CoreMyOrderModifierView = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'modifier',
@@ -33,6 +34,41 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
             model.price = round_monetary_currency(this.model.isFree() ? model.free_amount : model.order_price);
             this.$el.html(this.template(model));
+            return this;
+        }
+    });
+
+    App.Views.CoreMyOrderView.CoreMyOrderProductDiscountView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'product_discount',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model.get("discount"), 'change', this.render, this);
+        },
+        render: function() {
+            // this.model is the instance of App.Models.Myorder 
+            var model = {},
+                discount = this.model.get("discount");
+            model.currency_symbol = App.Settings.currency_symbol;
+            model.discount_name = discount.get('name');
+            model.discount_sum = discount.toString();
+            model.price_length = model.discount_sum.length + 1;
+            this.$el.html(this.template(model));
+
+            this.$el.removeClass( function() { // remove classes with pattern /^s\d{1,2}/
+                    return this.className.split(' ').filter(function(className) 
+                                        {
+                                            return className.match(/^s\d{1,2}/)
+                                        }).join(' ');
+                });
+            this.$el.addClass('s' + (model.discount_sum.length + 1));
+                
+            if (discount.get("sum") <= 0) {
+                this.$el.hide();
+            }
+            else {
+                this.$el.show();
+            }
             return this;
         }
     });
@@ -103,6 +139,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change', this.update);
+            this.listenTo(this.model.get_product(), 'change', this.update);
         },
         render: function() {
             var self = this,
@@ -123,9 +160,19 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     self.subViews.push(view);
                     view.$el.addClass('s' + (round_monetary_currency(modifier.get('price')).length + 1));
 
-                    self.$('ul').append(view.el);
+                    self.$('.modifier_place').append(view.el);
                 });
             });
+
+            if (App.Settings.accept_discount_code && this.model.get("discount") instanceof Object) {
+                var view = App.Views.GeneratorView.create('MyOrder', {
+                    el: $('<li></li>'),
+                    mod: 'ProductDiscount',
+                    model: this.model
+                });
+                self.subViews.push(view);
+                self.$('.discount_place').append(view.el);           
+            }
 
             return this;
         },
@@ -141,7 +188,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
             model.initial_price = round_monetary_currency(this.model.get('initial_price'));
             model.price_sum = round_monetary_currency(this.model.get('sum'));
-            model.price_length = round_monetary_currency(model.price_sum).length;
+            model.price_length = round_monetary_currency(model.initial_price).length; //price is not changed for the product
             model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;//    product.get('uom');
             model.is_gift = product.get('is_gift');
             model.gift_card_number = product.get('gift_card_number');
@@ -171,6 +218,31 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.subViews.remove();
             this.render();
         }
+    });
+
+    App.Views.CoreMyOrderView.CoreMyOrderDiscountView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'discount',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'change', this.render, this);
+        },
+        render: function() {
+            var model = {};
+            // this.model is the instance of App.Models.DiscountItem 
+            model.currency_symbol = App.Settings.currency_symbol;
+            model.discount_sum = this.model.toString();
+            model.discount_name = this.model.get('name');          
+            model.price_length = model.discount_sum.length + 1;
+            this.$el.html(this.template(model));
+            if (this.model.get("sum") <= 0) {
+                this.$el.hide();
+            }
+            else {
+                this.$el.show();
+            }        
+            return this;
+        }        
     });
 
     App.Views.CoreMyOrderView.CoreMyOrderListView = App.Views.FactoryView.extend({
@@ -217,6 +289,17 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     this.$('.myorder').append(this.bagChargeItemView.el);
                 }
             }
+
+            if (this.subViews.indexOf(this.discountItemView) == -1 && this.collection.discount && !this.discountItemView ) {
+                var view = App.Views.GeneratorView.create('MyOrder', {
+                    mod: 'Discount',
+                    model: this.collection.discount,
+                    el: $('<li></li>')
+                });
+                this.subViews.push(view);
+                this.discountItemView = view;
+                this.$('.discount').append(this.discountItemView.el);
+            }
         },
         removeItem: function(model) {
             var self = this;
@@ -224,9 +307,10 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 if(model === view.model) {
                     view.remove();
                     self.subViews.splice(i, 1);
-                    if (self.subViews.length == 1 && self.subViews.indexOf(self.bagChargeItemView) != -1) {
-                        self.bagChargeItemView.remove();
-                        self.subViews.splice(0, 1);
+                    var bag_charge_index = self.subViews.indexOf(self.bagChargeItemView);
+                    if (self.collection.get_only_product_quantity() < 1 && bag_charge_index != -1) {
+                        Backbone.View.prototype.remove.call(self.bagChargeItemView);
+                        self.subViews.splice(bag_charge_index, 1);
                     }
                     return true;
                 }
@@ -255,6 +339,10 @@ define(["backbone", "factory", "generator"], function(Backbone) {
     App.Views.MyOrderView = {};
 
     App.Views.MyOrderView.MyOrderModifierView = App.Views.CoreMyOrderView.CoreMyOrderModifierView;
+
+    App.Views.MyOrderView.MyOrderProductDiscountView = App.Views.CoreMyOrderView.CoreMyOrderProductDiscountView;
+
+    App.Views.MyOrderView.MyOrderDiscountView = App.Views.CoreMyOrderView.CoreMyOrderDiscountView;
 
     App.Views.MyOrderView.MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView;
 
