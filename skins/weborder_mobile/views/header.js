@@ -108,9 +108,9 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         update: function() {
             if (this.model.get('order').get('product').check_selected()) {
-                this.$('.rightBtn').removeClass('disabled');
+                this.$('.rightBtn').removeClass('btn-disabled');
             } else {
-                this.$('.rightBtn').addClass('disabled');
+                this.$('.rightBtn').addClass('btn-disabled');
             }
         }
     });
