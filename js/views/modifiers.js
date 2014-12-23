@@ -64,9 +64,16 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             return this;
         },
         add_special: function() {
+            if(!App.Settings.online_orders) {
+                return;
+            }
             this.model.set('selected', true);
         },
         change: function(e, stat) {
+            if(!App.Settings.online_orders) {
+                return;
+            }
+
             var modifierBlock = this.options.modifierClass;
             var el = $(e.currentTarget),
                 checked = el.prop('checked'),
@@ -105,6 +112,10 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             }
         },
         update_free: function() {
+            if(!App.Settings.online_orders) {
+                return;
+            }
+
             var free_amount = this.model.get('free_amount'),
                 currency_symbol = App.Data.settings.get('settings_system').currency_symbol,
                 $cost = this.$('.cost'),
@@ -155,6 +166,10 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             return this;
         },
         change: function(e) {
+            if(!App.Settings.online_orders) {
+                return;
+            }
+
             var data = this.options.data,
                 id = this.options.id,
                 product = data.product,

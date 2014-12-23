@@ -9,6 +9,11 @@ textarea, input {
 select {
     background-color: transparent;
 }
+/* bug #14192 - IE 10: blue highlight displays in drop down in selecting a value in it */
+select:focus::-ms-value {
+    background-color: transparent;
+    color: #000;
+}
 /* remove dotted outline in firefox */
 select:-moz-focusring {
     color: transparent;
@@ -48,6 +53,9 @@ section:before {
     box-shadow: 0 1px 1px #f8f8f8 inset, 0 -1px 1px rgba(205, 205, 205, 0.4);
     background: #2699ca;
 }
+.current_establishment a {
+    color: #2186b1;
+}
 .powered-by {
     background: url('img/poweredBy.png') no-repeat 0 0 transparent;
 }
@@ -59,7 +67,7 @@ section:before {
     border-bottom-color: rgba(55, 59, 64, 0.7);
 }
 #header .menu li.cart {
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAdCAYAAACwuqxLAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDIxIDc5LjE1NTc3MiwgMjAxNC8wMS8xMy0xOTo0NDowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTQgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6QkU4MTgwQzIzQjk1MTFFNEIxNDNFM0ExOEY1QkM0Q0EiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6QkU4MTgwQzMzQjk1MTFFNEIxNDNFM0ExOEY1QkM0Q0EiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpCRTgxODBDMDNCOTUxMUU0QjE0M0UzQTE4RjVCQzRDQSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpCRTgxODBDMTNCOTUxMUU0QjE0M0UzQTE4RjVCQzRDQSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PlyQzckAAAGMSURBVHjatJXPK0RRFMffPDN+DWpimghNpJSVLGaKYpZ+Jushyt9hYWXHzkIMxVKKnQ3FQtgoKRYWVhYsLJSfMz5HJ0nTe2/K+dand5s773zvuefcd0Op3gHHRzWQhR7o0N+u4BxyJ8cHBa+XXZ/gEvgGlqEFVmALUrAqc+m+zIhXgJBHBlOwoeMJ2PkzPwNr8AHDZLJfSgbdusI8ZIoEF+U0wzBskkmiFINFfXEeDj12QLZrHeIwF9QgDf3wCEuOvxbgE6bJoimIQVafZ/DkF529v9b/VsOsn0EljOv40gmuB32OFeuimE5IkaSlBnXuAo4g8msx0rIV0A5vujVSqyFohnfYhlO4gz0xGGWw69ioS1b1qu3435Lsyl0dWEgWnReDqNTCysTV4lgYSPFrXR1YSBYds6yBqOA6tvquQaOhQVgM6g0NktY1iLpGp/jnNItBlbWBZZEbrNs0IQZ11kWOGxq0unpNWikiBklDg075kk7qNr3I5xXa9P4t9XyU6T19C896d99/CTAAjExNzCAsWeMAAAAASUVORK5CYII=');
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwIiB5PSIwIiB3aWR0aD0iNTAiIGhlaWdodD0iNTYiIHZpZXdCb3g9IjAgMCA1MCA1NiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBhdGggZD0iTTk2LjUsNDMuMzEiLz48Zz48cG9seWdvbiBmaWxsPSIjMzczQTQwIiBwb2ludHM9IjQ1Ljc1LDE2LjQ2MyAyNSwxNi40NjMgNC4yNSwxNi40NjMgMSw1NS4zNDQgMjUsNTUuMzQzIDQ5LDU1LjM0NCIvPjxwYXRoIGZpbGw9IiMzNzNBNDAiIGQ9Ik0zMi44NjcsMy4yNTlDMjkuNzYxLDAuODc4LDI2LjU1MSwwLjYyLDI1LDAuNjZjLTEuNTUxLTAuMDQtNC43NjEsMC4yMTktNy44NjcsMi42Yy0zLjk0OCwzLjAyOC02LjMzMiw4LjM0NS03LjA4MywxNS44MDRsMi45ODQsMC4zMDFjMC42NjMtNi41NjcsMi42MzktMTEuMTcxLDUuODc0LTEzLjY4NWMyLjE3LTEuNjg3LDQuMzg1LTIuMDAzLDUuNjA5LTIuMDI4bDAuMDA3LDAuMDQ0QzI0LjU1MywzLjY5MSwyNC43MjYsMy42NjgsMjUsMy42NTZjMC4yNzQsMC4wMTIsMC40NDcsMC4wMzUsMC40NzYsMC4wMzlsMC4wMDctMC4wNDRjMS4yMjQsMC4wMjUsMy40MzgsMC4zNDEsNS42MDksMi4wMjhjMy4yMzUsMi41MTQsNS4yMTEsNy4xMTgsNS44NzQsMTMuNjg1bDIuOTg0LTAuMzAxQzM5LjE5OCwxMS42MDQsMzYuODE1LDYuMjg3LDMyLjg2NywzLjI1OXoiLz48L2c+PC9zdmc+');
     background-repeat: no-repeat;
     background-position: 50%;
     background-size: 100%;
@@ -323,6 +331,9 @@ aside:after, aside:before {
 .required:before {
     color: #ff0000;
 }
+#content > .checkout .discount .btn {
+    color: #646464;
+}
 .products_spinner {
     background: rgba(231, 231, 231, 0.5);
     box-shadow: 0 0 40px rgba(231, 231, 231, 0.8);
@@ -567,4 +578,8 @@ aside:after, aside:before {
 }
 #cart h2, #header .checkout .title {
     color: #fff;
+}
+
+.promo_message {
+    color: #373b40;
 }

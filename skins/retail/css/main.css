@@ -165,8 +165,11 @@ aside:before, aside:after {
     left: 0;
     right: 5px;
     height: 12px;
-    border-width: 1px;
+    border-width: 0px;
     border-style: solid;
+}
+aside.cart_left_panel:before, aside.cart_left_panel:after {
+    border-width: 1px;
 }
 aside:before {
     top: 0px;
@@ -216,15 +219,29 @@ footer {
 #header .main {
     position: relative;
 }
-#header .main div.logo {
+#header .main div.header_left {
     height: 100%;
-    position: absolute;
     left: 0;
+    line-height: 62px;
+    position: absolute;
     right: 550px;
     top: 0;
-    text-align: left;
-    line-height: 62px;
+}
+#header .main div.logo {
     font-size: 8px;
+    height: 100%;
+    max-width: 100%;
+    position: absolute;
+    text-align: left;
+    width: auto;
+    top: 0;
+    left: 0;
+}
+#header .main div.header_left div.promo {
+    float: left;
+    height: 100%;
+    position: absolute;
+    right: 0px;
 }
 #header .main div.logo .ui-spinner {
     left: 25px;
@@ -263,6 +280,10 @@ footer {
 .confirm #header .img-spinner {
     height: 100%;
 }
+#header .main img.logo {
+    float: left;
+    margin-top: 1.1em;
+}
 #header .main img.logo,
 .confirm #header {
     height: auto;
@@ -299,6 +320,15 @@ footer {
 }
 #header .checkout .search {
     display: none;
+}
+.current_establishment {
+    display: none;
+    float: left;
+    padding-left: 0.65em;
+}
+.current_establishment a {
+    margin-left: 2em;
+    text-decoration: none;
 }
 .powered-by {
     display: block;
@@ -554,11 +584,8 @@ section.maintenance p {
     position: relative;
 }
 #cart .order-items .myorder > li {
-    min-height: 85px;
+    min-height: 75px;
     margin-bottom: 10px;
-}
-#cart .order-items .myorder > li:last-child {
-    margin-bottom: 0;
 }
 #cart .order-items .image, .confirmPayCard .order-items .image {
     width: 65px;
@@ -569,6 +596,16 @@ section.maintenance p {
     float: left;
     margin-right: 10px;
 }
+#cart .order-items .myorder > li.no_image .image {
+     height: 35px;
+}
+#cart .order-items .myorder > li.no_image img {
+    display: none;
+}
+#cart .order-items .myorder > li.no_image {
+    min-height: 35px;
+}
+
 #cart .order-items img, .confirmPayCard .order-items img {
     height: auto;
     width: auto;
@@ -577,12 +614,18 @@ section.maintenance p {
     vertical-align: middle;
 }
 #cart .order-items li li {
-    height: 15px;
     font-size: 12px;
 }
 #popup .confirmPayCard .order-items li li {
     font-size: 12px;
     min-height: 12px;
+}
+#popup .confirmPayCard .order-items .name.discount {
+    font-size: 14px;
+}
+#cart .order-items .name.discount,
+.confirmPayCard .order-items h3 .name.discount {
+    text-transform: none;
 }
 #cart .order-items > li, .confirmPayCard .order-items > li {
     height: auto;
@@ -599,10 +642,18 @@ section.maintenance p {
     line-height: 15px;
     margin-left: 75px;
 }
+#cart .order-items h3.noimage, .confirmPayCard .order-items h3.noimage {
+    margin-left: 0;
+}
 #cart .main .order-items h3 {
    width: 170px;
 }
-#cart .order-items h3 .name, .confirmPayCard .order-items h3 .name {
+
+#cart .main .order-items h3.noimage {
+   width: 245px;
+}
+
+#cart .order-items .name, .confirmPayCard .order-items h3 .name {
     text-transform: uppercase;
     font-size: 14px;
 }
@@ -610,6 +661,10 @@ section.maintenance p {
 .confirmPayCard .order-items .cost, .confirmPayCard .order-items .attrs {
     font-size: 12px;
     margin-left: 75px;
+}
+#cart .order-items .cost.noimage, #cart .order-items .attrs.noimage,
+.confirmPayCard .order-items .cost.noimage, .confirmPayCard .order-items .attrs.noimage {
+    margin-left: 0;
 }
 .order-items .currency_symbol {
     margin-right: -3px;
@@ -625,6 +680,9 @@ section.maintenance p {
     position: static;
     margin-top: 5px;
     margin-left: 75px;
+}
+#cart .checkout .order-items .btns.noimage, .confirmPayCard .order-items .btns.noimage {
+    margin-left: 0;
 }
 #cart .order-items .btns > span, .confirmPayCard .order-items .btns > span {
     display: inline-block;
@@ -894,6 +952,33 @@ section.maintenance p {
 /* safari fixes */
 input[type="search"] {
     -webkit-appearance: textfield;
+}
+
+.cursor-default {
+    cursor: default !important;
+}
+
+.promo_message_internal {
+    display: block !important;
+    position: absolute;
+    top: 1000em;
+    white-space: nowrap;
+}
+
+.promo_message {
+    display: none;
+    font-family: helvetica neue;
+    font-size: 1.65em;
+    font-weight: regular;
+    padding-top: 0.15em;
+    text-align: center;
+}
+
+.blur {
+    -moz-filter: blur(5px);
+    -ms-filter: blur(5px);
+    -webkit-filter: blur(5px);
+    filter: blur(5px);
 }
 
 /* Mercury accepted credit card */

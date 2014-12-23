@@ -1,0 +1,75 @@
+[
+    {
+        "estabs": [
+            {
+                "province": " ", 
+                "logo_url": "/medialibrary/image/4/",
+                "name": "AClex's Establishment", 
+                "country": "US", 
+                "brand": "MLB", 
+                "zipcode": "94133", 
+                "longitude": 44.030, 
+                "latitude": 56.3132, 
+                "state": "CA", 
+                "city_name": "Nizhny Novgorod", 
+                "line_1": "88 1st street street street street street", 
+                "line_2": "4th Floor", 
+                "id": 4,
+                "type": "Q"
+            }, 
+            {
+                "province": " ", 
+                "logo_url": "/medialibrary/image/25/",
+                "name": "dkormushkina - long long long long", 
+                "country": "RU", 
+                "brand": "MLB", 
+                "zipcode": "603600", 
+                "longitude":  44.037, 
+                "latitude": 56.316852, 
+                "state": null, 
+                "city_name": "San Francisco", 
+                "line_1": "24 Not-Rodionova St", 
+                "line_2": "4th Floor", 
+                "id": 3,
+                "type": "T"
+            }, 
+            {
+                "province": null, 
+                "logo_url": "http://mlb-dev.revelup.com/medialibrary/image/NOIMAGE/",
+                "name": "Game Used", 
+                "country": "US", 
+                "brand": "MLB", 
+                "zipcode": "94133", 
+                "longitude": 44.03, 
+                "latitude":  56.317852, 
+                "state": "CA", 
+                "city_name": null, 
+                "line_1": "170 Columbus", 
+                "line_2": "4th Floor", 
+                "id": 2,
+                "type": "Q"
+            }, 
+            {
+                "province": "TEST", 
+                "logo_url": null, 
+                "name": "ADramark", 
+                "country": "RU", 
+                "brand": "MLB", 
+                "zipcode": "603600", 
+                "longitude": 44.06050800000003, 
+                "latitude": 56.317284, 
+                "state": "CA", 
+                "city_name": "San Francisco", 
+                "line_1": "23 Rodionova St", 
+                "line_2": "4th Floor", 
+                "id": 1,
+                "type": "R"
+            }
+        ], 
+        "dns": [
+            "mlb-dev.revelup.com"
+        ], 
+        "short_name": "mlb_dev"
+    }
+]
+ 

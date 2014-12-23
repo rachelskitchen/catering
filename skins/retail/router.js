@@ -31,11 +31,18 @@ define(["backbone", "main_router"], function(Backbone) {
     var headers = {},
         carts = {};
 
-    headers.main = {mod: 'Main', className: 'main'};
-    headers.confirm = {mod: 'Confirm', className: 'confirm'};
-    headers.checkout = {mod: 'Checkout', className: 'checkout main'};
-    carts.main = {mod: 'Main', className: 'main animation'};
-    carts.checkout = {mod: 'Checkout', className: 'checkout'};
+    /**
+    * Default router data.
+    */
+    function defaultRouterData() {
+        headers.main = {mod: 'Main', className: 'main'};
+        headers.confirm = {mod: 'Confirm', className: 'confirm'};
+        headers.checkout = {mod: 'Checkout', className: 'checkout main'};
+        carts.main = {mod: 'Main', className: 'main animation'};
+        carts.checkout = {mod: 'Checkout', className: 'checkout'};
+    }
+
+    defaultRouterData(); // default router data
 
     App.Routers.Router = App.Routers.MainRouter.extend({
         routes: {
@@ -55,6 +62,11 @@ define(["backbone", "main_router"], function(Backbone) {
             clearQueryString();
             this.bodyElement = Backbone.$('body');
             this.bodyElement.append('<div class="main-container"></div>');
+
+            // set locked routes if online orders are disabled
+            if(!App.Settings.online_orders) {
+                this.lockedRoutes = ['checkout', 'pay', 'confirm'];
+            }
 
             // check available dining options and set default
             if(App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) == -1 && App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_DELIVERY) == -1) {
@@ -80,7 +92,8 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Views.Generator.enableCache = true;
                 // set header, cart, main models
                 App.Data.header = new App.Models.HeaderModel();
-                App.Data.mainModel = new App.Models.MainModel();
+                var mainModel = App.Data.mainModel = new App.Models.MainModel();
+                var ests = App.Data.establishments;
                 App.Data.categories = new App.Collections.Categories();
                 App.Data.subCategories = new App.Collections.SubCategories();
                 App.Data.search = new App.Collections.Search();
@@ -97,16 +110,22 @@ define(["backbone", "main_router"], function(Backbone) {
                     App.Data.filter.loadSort();
                 }
 
-                this.listenTo(App.Data.mainModel, 'change:mod', this.createMainView);
+                this.listenTo(mainModel, 'change:mod', this.createMainView);
+                this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
+                this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
+                this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
+                this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
+                this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
-                App.Data.mainModel.set({
+                mainModel.set({
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
-                    model: App.Data.mainModel,
+                    model: mainModel,
                     headerModel: App.Data.header,
                     cartCollection: App.Data.myorder,
                     categories: App.Data.categories,
                     search: App.Data.search
                 });
+                ests.getModelForView().set('clientName', mainModel.get('clientName'));
 
                 // listen to navigation control
                 this.navigationControl();
@@ -145,6 +164,13 @@ define(["backbone", "main_router"], function(Backbone) {
             });
 
             App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
+        },
+        /**
+         * Change page.
+         */
+        change_page: function(callback) {
+            (callback instanceof Function && App.Data.establishments.length) ? callback() : App.Data.mainModel.set('needShowStoreChoice', false);
+            App.Routers.MainRouter.prototype.change_page.apply(this, arguments);
         },
         createMainView: function() {
             var data = App.Data.mainModel.toJSON(),
@@ -294,7 +320,9 @@ define(["backbone", "main_router"], function(Backbone) {
 
             // onCart event occurs when 'cart' item is clicked
             this.listenTo(App.Data.header, 'onCart', function() {
-                App.Data.myorder.trigger('showCart');
+                if(App.Settings.online_orders) {
+                    App.Data.myorder.trigger('showCart');
+                }
             });
         },
         encodeState: function(data) {
@@ -316,6 +344,39 @@ define(["backbone", "main_router"], function(Backbone) {
             } catch(e) {
                 log('Unable to decode state for string "%s"', data);
             }
+        },
+        showPromoMessage: function() {
+            App.Data.header.set('isShowPromoMessage', true);
+        },
+        hidePromoMessage: function() {
+            App.Data.header.set('isShowPromoMessage', false);
+        },
+        /**
+        * Get a stores list.
+        */
+        getEstablishments: function() {
+            this.callback = function() {
+                App.Data.mainModel.set('needShowStoreChoice', true);
+            };
+            App.Routers.MainRouter.prototype.getEstablishments.apply(this, arguments);
+        },
+        /**
+        * Remove establishment data in case if establishment ID will change.
+        */
+        resetEstablishmentData: function() {
+            App.Routers.MainRouter.prototype.resetEstablishmentData.apply(this, arguments);
+            Backbone.history.stop();
+            this.index.initState = undefined;
+            window.location.hash = '';
+            defaultRouterData(); // default router data
+            this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
+        },
+        /**
+        * Remove HTML and CSS of current establishment in case if establishment ID will change.
+        */
+        removeHTMLandCSS: function() {
+            Backbone.$('link[href$="colors.css"]').remove();
+            this.bodyElement.children('.main-container').remove();
         },
         index: function(data) {
             // init origin state for case when page is loaded without any data (#index or hash is not assigned)
@@ -392,7 +453,9 @@ define(["backbone", "main_router"], function(Backbone) {
                 });
 
                 dfd.then(function() {
-                    self.change_page();
+                    self.change_page(function() {
+                        App.Data.mainModel.set('needShowStoreChoice', true);
+                    }); // change page
                     //start preload google maps api:
                     App.Data.settings.load_geoloc();
                 });
@@ -472,7 +535,8 @@ define(["backbone", "main_router"], function(Backbone) {
                         timetable: App.Data.timetables,
                         customer: App.Data.customer,
                         acceptTips: settings.accept_tips_online,
-                        noteAllow: settings.order_notes_allow
+                        noteAllow: settings.order_notes_allow,
+                        discountAvailable: settings.accept_discount_code
                     }
                 });
                 this.change_page();

@@ -31,6 +31,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'change:footer', this.footer_change, this);
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
+            this.listenTo(this.model, 'showPromoMessage', this.showPromoMessage, this);
+            this.listenTo(this.model, 'hidePromoMessage', this.hidePromoMessage, this);
+            this.listenTo(this.model, 'showRevelPopup', this.showRevelPopup, this);
+            this.listenTo(this.model, 'hideRevelPopup', this.hideRevelPopup, this);
+            this.listenToOnce(this.model, 'showSpinnerAndHideContent', this.showSpinnerAndHideContent, this); // show a spinner and hide a content
+            this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
 
             this.iOSFeatures();
 
@@ -117,7 +123,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             if(removeClass)
                 delete data.className;
 
-            var subView = App.Views.GeneratorView.create(data.modelName, data, data.cacheIt ? id : undefined);
+            var subView = App.Views.GeneratorView.create(data.modelName, data, data.cacheId ? id : undefined);
             if(this.subViews.length > 2)
                 this.subViews.push(subView);
             else
@@ -146,10 +152,70 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.spinner = setTimeout(this.showSpinner.bind(this), 50);
         },
         showSpinner: function() {
+            this.blurBg();
             this.$('#main-spinner').show();
         },
         hideSpinner: function() {
+            this.unblurBg();
             this.$('#main-spinner').hide();
+        },
+        /**
+         * Styles for a visible promo message.
+         */
+        showPromoMessage: function() {
+            if (App.Settings.isRetailMode) {
+                this.$('section').addClass('section_promo_show_retail');
+                this.$('footer').addClass('footer_promo_show_retail');
+            } else {
+                this.$('section').addClass('section_promo_show');
+                this.$('footer').addClass('footer_promo_show');
+            }
+        },
+        /**
+         * Styles for a invisible promo message.
+         */
+        hidePromoMessage: function() {
+            if (App.Settings.isRetailMode) {
+                this.$('section').removeClass('section_promo_show_retail');
+                this.$('footer').removeClass('footer_promo_show_retail');
+            } else {
+                this.$('section').removeClass('section_promo_show');
+                this.$('footer').removeClass('footer_promo_show');
+            }
+        },
+        showRevelPopup: function(data) {
+            var container = this.$('#revel-popup');
+            container.css({display: 'table'});
+            this.blurBg();
+            this.revelView = App.Views.GeneratorView.create(data.modelName, data, data.cacheId);
+            this.subViews.push(this.revelView);
+            container.append(this.revelView.el);
+        },
+        hideRevelPopup: function() {
+            this.$('#revel-popup').hide();
+            this.unblurBg();
+            this.revelView && this.revelView.removeFromDOMTree();
+        },
+        blurBg: function() {
+            this.$('section, footer, header').addClass('blur');
+        },
+        unblurBg: function() {
+            this.$('section, footer, header').removeClass('blur');
+        },
+        /**
+         * Show a spinner and hide a content.
+         */
+        showSpinnerAndHideContent: function() {
+            this.showSpinner(); // show spinner
+            this.$('header, section, footer').hide();
+        },
+        /**
+         * A blur effect of content.
+         * Blur effect supported on Firefox 35, Google Chrome 18, Safari 6, iOS Safari 6.1, Android browser 4.4, Chrome for Android 39.
+         */
+        blurEffect: function() {
+            // http://caniuse.com/#search=filter
+            this.model.get('isBlurContent') ? this.blurBg() : this.unblurBg();
         }
     });
 

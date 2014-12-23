@@ -1,10 +1,8 @@
 /* main mod start */
-
 #content div.quantity {
     width: 100%;
     height: 12em;
     position: relative;
-    /*margin-bottom: 0.8em;*/
 }
 
 #content div.quantity .title {
@@ -13,9 +11,9 @@
     text-align: center;
     font-size: 2.8em;
     font-weight: bold;
-    border-bottom: 1px solid #a8c4d8;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
     padding: 0.3em 0;
-    color: #2ba1d8;
 }
 
 #content div.quantity > div {
@@ -52,15 +50,11 @@
 }
 #content div.quantity .increase,
 #content div.quantity .increase.disabled:active {
-    background: url('../img/plus.png') no-repeat 0 0 transparent;
-    background-size: 200% 100%;
     right: 1.5em;
 }
 
 #content div.quantity .decrease,
 #content div.quantity .decrease.disabled:active {
-    background: url('../img/minus.png') no-repeat 0 0 transparent;
-    background-size: 200% 100%;
     left: 1.5em;
 }
 
@@ -68,11 +62,6 @@
 #content div.quantity .decrease.disabled {
     cursor: auto;
     opacity: 0.5;
-}
-
-#content div.quantity .increase:active,
-#content div.quantity .decrease:active {
-    background-position: 100% 0;
 }
 
 /* css for sold_by_weight case */
@@ -87,7 +76,7 @@
     top: 0.8em;
 }
 
-.weight_edit_input {   
+.weight_edit_input {
     font-weight: bold;
     font-size: 2.4em;
     padding-top: 0.1em !important;

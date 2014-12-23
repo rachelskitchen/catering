@@ -31,6 +31,8 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         initialize: function() {
             this.listenTo(this.model, 'change:dining_option', this.controlAddress, this);
             this.listenTo(this.model, 'change:dining_option', this.controlDeliverySeat, this);
+            this.listenTo(this.model, 'change:rewardCard', this.updateData, this);
+            this.listenTo(this.options.customer, 'change:first_name change:last_name change:email change:phone', this.updateData, this);
             this.customer = this.options.customer;
             this.card = App.Data.card;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
@@ -59,11 +61,9 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             model.rewardCardType = cssua.ua.mobile ? /android/i.test(cssua.ua.mobile) ? 'tel' : 'number' : 'text'; // too hard logic due to some native android browsers don't correctly display placeholder attribute for input[type='number']
 
             this.$el.html(this.template(model));
-            this.$('.phone').numberMask({
-                type: "float",
-                pattern: /^\+?\d{0,15}$/
-            });
-            this.$('input.rewardCard').numberMask({pattern: /^\d*$/ });
+
+            inputTypeNumberMask(this.$('.phone'), /^\+?\d{0,15}$/, model.phone, true);
+            inputTypeNumberMask(this.$('input.rewardCard'), /^\d*$/, model.rewardCard, true);
             this.$('.firstName, .lastName').numberMask({pattern: /^.*$/ }).on("keypressNumber", function(event) {
                 try {
                     var start = event.target.selectionStart,
@@ -135,6 +135,14 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             } else {
                 this.$('.delivery_seat').hide();
             }
+        },
+        updateData: function() {
+            var customer = this.customer;
+            this.$('.firstName').val(customer.get('first_name'));
+            this.$('.lastName').val(customer.get('last_name'));
+            this.$('.email').val(customer.get('email'));
+            this.$('.phone').val(customer.get('phone'));
+            this.$('.rewardCard').val(this.model.get('rewardCard'));
         }
     });
 
@@ -191,43 +199,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
 
     App.Views.CoreCheckoutView.CoreCheckoutAddressView = App.Views.DeliveryAddressesView.extend({
         name: 'checkout',
-        mod: 'address',
-        initialize: function() {
-            this.listenTo(this, 'update_address', this.updateAddress, this);
-            App.Views.DeliveryAddressesView.prototype.initialize.apply(this, arguments);
-            this.updateAddress();
-        },
-        updateAddress: function() {
-            var settings = App.Data.settings.get('settings_system'),
-                shipping_address = this.options.customer.get('shipping_address'),
-                model = this.model,
-                address;
-
-            address = {
-                street_1: model.street_1,
-                street_2: model.street_2,
-                city: model.city,
-                state: model.state,
-                province: model.province,
-                zipcode: model.zipcode,
-                country: model.country
-            };
-
-            var addresses = this.options.customer.get('addresses');
-
-            if (addresses.length === 0 || typeof addresses[addresses.length - 1].street_1 !== 'string') {
-                addresses.push(address);
-            } else if (shipping_address === -1) {
-                addresses[addresses.length - 1] = address;
-            }
-            addresses[addresses.length - 1].address = this.options.customer.address_str();
-
-            if (model.isShippingServices && address.street_1 && address.city && address.country &&
-                address.zipcode && (address.country == 'US' ? address.state : true) &&
-                                   (address.country == 'CA' ? address.province : true)) {
-                this.options.customer.get_shipping_services();
-            }
-        }
+        mod: 'address'
     });
 
     App.Views.CoreCheckoutView.CoreCheckoutSeatView = App.Views.FactoryView.extend({
@@ -554,6 +526,128 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         }
     });
 
+    /*  
+    *  This DiscountCode view is used by weborder and retail skins.
+    */
+    App.Views.CoreCheckoutView.CoreCheckoutDiscountCodeView = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'discount_code',
+        initialize: function() {
+            this.listenTo(this.model, 'change', this.render, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            var data = this.model.toJSON();
+            data.iPad = iPad();
+            this.$el.html(this.template(data));
+            inputTypeStringMask(this.$('input'), /^[\d\w]{0,16}$/, '');
+
+            return this;
+        },
+        events: {            
+            'click .btnApply': 'onApplyCode',
+            'keyup input[name=discount_code]': 'onChangeDiscountCode'
+        },
+        onChangeDiscountCode: function(e) {
+            var newValue = e.target.value,
+                oldValue = this.model.get("discount_code");
+
+            if (newValue == oldValue)
+                return;
+           
+            this.model.set({"discount_code":newValue}, {silent: true});
+            this.enableApplyBtn();
+        },
+        onApplyCode: function() {
+            var self = this, 
+                myorder = this.options.myorder;
+ 
+            if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
+                App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
+                return;
+            } 
+            myorder.get_discounts({ apply_discount: true})
+                .done(function(data) {
+                    if (data.status == "OK") {
+                        self.disableApplyBtn();
+                    }
+                });
+        },
+        enableApplyBtn: function() {
+            this.$(".btnApply").removeAttr("disabled").removeClass("applied").text("Apply");
+        },
+        disableApplyBtn: function() {
+            this.$(".btnApply").attr("disabled", "disabled").addClass("applied").text("Applied");
+        }
+    });
+
+    /*  
+    *  This DiscountCode2 view is used by weborder_mobile and paypal skins.
+    */
+    App.Views.CoreCheckoutView.CoreCheckoutDiscountCode2View = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'discount_code',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            var data = this.model.toJSON();
+            data.discount_allow = App.Settings.accept_discount_code === true;
+            data.discount_code_applied = this.model.get("last_discount_code"); 
+            this.$el.html(this.template(data));
+            inputTypeStringMask(this.$('input'), /^[\d\w]{0,16}$/, '');
+            return this;
+        },
+        events: {
+            'click .dcode_have': 'enterDiscountCode',
+            'click .dcode_remove': 'removeDiscountCode',     
+            'click .btnApply': 'onApplyCode',
+            'change input[name=discount_code]': 'onChangeDiscountCode'
+        },
+        onChangeDiscountCode: function(e) {
+            var newValue = e.target.value,
+                oldValue = this.model.get("discount_code");
+
+            if (newValue == oldValue)
+                return;
+           
+            this.model.set({"discount_code":newValue}, {silent: true});
+        },
+        enterDiscountCode: function() {
+            this.$(".dcode_have").addClass('hidden');
+            this.$(".dcode_enter").removeClass('hidden');
+            this.$('input[name=discount_code]').val(this.model.get("discount_code"));
+        },
+        removeDiscountCode: function() {            
+            var myorder = this.options.myorder;
+            this.$(".dcode_remove").addClass('hidden');
+            this.$(".dcode_have").removeClass('hidden');
+            this.model.set({last_discount_code: '',
+                            discount_code: ''}, {silent: true});
+            myorder.get_discounts();
+        },
+        onApplyCode: function() {
+            var self = this, 
+                myorder = this.options.myorder;
+ 
+            if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
+                App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
+                return;
+            } 
+            myorder.get_discounts({ apply_discount: true})
+                .done(function(data) {
+                    if (data.status == "OK") {
+                        self.discountApplied();
+                    }
+                });
+        },
+        discountApplied: function() {
+            this.$(".dcode_have").addClass('hidden');
+            this.$(".dcode_enter").addClass('hidden');
+            this.$(".dcode_remove").removeClass('hidden');
+        }
+    });
+
     App.Views.CheckoutView = {};
 
     App.Views.CheckoutView.CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView;
@@ -563,6 +657,10 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
     App.Views.CheckoutView.CheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView;
 
     App.Views.CheckoutView.CheckoutPickupView = App.Views.CoreCheckoutView.CoreCheckoutPickupView;
+
+    App.Views.CheckoutView.CheckoutDiscountCodeView = App.Views.CoreCheckoutView.CoreCheckoutDiscountCodeView;
+
+    App.Views.CheckoutView.CheckoutDiscountCode2View = App.Views.CoreCheckoutView.CoreCheckoutDiscountCode2View;
 
     App.Views.CheckoutView.CheckoutPayView = App.Views.CoreCheckoutView.CoreCheckoutPayView;
 

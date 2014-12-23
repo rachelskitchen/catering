@@ -36,6 +36,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
             this.listenTo(this.model, 'onRoute', this.hide_popup, this);
+            this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
+            this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
 
             this.iOSFeatures();
 
@@ -45,6 +47,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
+            if (App.Data.establishments.length > 1) this.model.set('needShowStoreChoice', true);
             !this.iPad7Feature.init && this.iPad7Feature();
 
             var spinner = this.$('#main-spinner');
@@ -54,7 +57,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             return this;
         },
         events: {
-            'click #popup .cancel': 'hide_popup'
+            'click #popup .cancel': 'hide_popup',
+            'click .change_establishment': 'change_establishment'
         },
         content_change: function() {
             var content = this.$('#content'),
@@ -194,6 +198,33 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         hideSpinner: function() {
             this.$('#main-spinner').addClass('ui-visible').removeClass('ui-visible');
+        },
+        /**
+         * Show the "Store Choice" block if a brand have several stores.
+         */
+        checkBlockStoreChoice: function() {
+            var block = this.$('.current_establishment');
+            this.model.get('needShowStoreChoice') ? block.show() : block.hide();
+        },
+        /**
+         * Show the "Change Establishment" modal window.
+         */
+        change_establishment: function() {
+            var ests = App.Data.establishments;
+            ests.getModelForView().set({
+                storeDefined: true
+            }); // get a model for the stores list view
+            ests.trigger('loadStoresList');
+            this.model.set('isBlurContent', true);
+        },
+        /**
+         * A blur effect of content.
+         * Blur effect supported on Firefox 35, Google Chrome 18, Safari 6, iOS Safari 6.1, Android browser 4.4, Chrome for Android 39.
+         */
+        blurEffect: function() {
+            // http://caniuse.com/#search=filter
+            var mainEl = this.$('.main_el');
+            this.model.get('isBlurContent') ? mainEl.addClass('blur') : mainEl.removeClass('blur');
         }
     });
 

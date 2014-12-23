@@ -34,9 +34,11 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(this.options.search, 'onSearchComplete', this.searchComplete, this);
             this.listenTo(this.options.search, 'onSearchStart', this.searchStart, this);
             this.listenTo(this.collection, 'onRestoreState', this.restoreState, this);
+            this.listenTo(this.model, 'change:isShowPromoMessage', this.calculatePromoMessageWidth, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
+            if (App.Settings.promo_message) this.calculatePromoMessageWidth(); // calculate a promo message width
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             var view = new App.Views.GeneratorView.create('Categories', {
                 collection: this.collection,
@@ -111,6 +113,79 @@ define(["backbone", "factory"], function(Backbone) {
             pattern && input.attr('disabled', 'disabled').val(pattern);
             input.removeAttr('disabled');
             this.onSearch({preventDefault: new Function});
+        },
+        /**
+         * Calculate a promo message width.
+         */
+        calculatePromoMessageWidth: function() {
+            if (this.model.get('isShowPromoMessage')) {
+                var promo_message = Backbone.$('<div class="promo_message promo_message_internal"> <span>' + App.Settings.promo_message + '</span> </div>');
+                $('body').append(promo_message);
+                this.model.set('widthPromoMessage', promo_message.find('span').width());
+                promo_message.remove();
+                this.model.set('widthWindow', $(window).width());
+                var self = this;
+                var interval = window.setInterval(function() {
+                    var img_logo = self.$('img.logo');
+                    if (img_logo.length !== 0) {
+                        self.resizeLogoPromoMessage(); // resize a logo & a promo message
+                        self.addPromoMessage(); // add a promo message
+                        $(window).resize(self, self.resizePromoMessage);
+                        clearInterval(interval);
+                    }
+                }, 100);
+            } else {
+                this.$('.promo_message').hide();
+            }
+        },
+        /**
+         * Resize of a promo message.
+         */
+        resizePromoMessage: function() {
+            if (arguments[0].data.model.get('widthWindow') !== $(window).width()) {
+                arguments[0].data.model.set('widthWindow', $(window).width());
+                arguments[0].data.resizeLogoPromoMessage(); // resize a logo & a promo message
+                arguments[0].data.addPromoMessage(); // add a promo message
+            }
+        },
+        /**
+         * Resize a logo & a promo message.
+         */
+        resizeLogoPromoMessage: function() {
+            var header_left = this.$('div.header_left')
+            var logo_container = this.$('div.logo');
+            var promo_container = this.$('div.promo');
+            var percent_logo = logo_container.width() / header_left.width();
+            if (percent_logo > 0.6) logo_container.css({'max-width': '60%'});
+            var width_logo = logo_container.width();
+            promo_container.css({'left': width_logo + 15 + 'px'});
+        },
+        /**
+         * Add a promo message.
+         */
+        addPromoMessage: function() {
+            var self = this;
+            window.setTimeout(function() {
+                var promo_container = self.$('.promo');
+                var promo_text = self.$('.promo_text');
+                var promo_marquee = self.$('.promo_marquee');
+                if (self.model.get('widthPromoMessage') >= promo_container.width()) {
+                    var isFirefox = /firefox/g.test(navigator.userAgent.toLowerCase());
+                    if (isFirefox) {
+                        // bug #15981: "First Firefox displays long promo message completely then erases it and starts scrolling"
+                        $(document).ready(function() {
+                            promo_text.hide();
+                            promo_marquee.show();
+                        });
+                    } else {
+                        promo_text.hide();
+                        promo_marquee.show();
+                    }
+                } else {
+                    promo_text.show();
+                    promo_marquee.hide();
+                }
+            }, 0);
         }
     });
 

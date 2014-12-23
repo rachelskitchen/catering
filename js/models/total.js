@@ -31,9 +31,11 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             tip: null,
             delivery: null,
             bag_charge: null,
+            discounts: 0, //sum of all discounts
             tax_country: '',
             prevailing_surcharge: null,
-            prevailing_tax: null
+            prevailing_tax: null,
+            total_wo_delivery: 0
         },
         initialize: function(opts) {
             var settings = App.Data.settings.get("settings_system"),
@@ -59,12 +61,24 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
                 if (deliveryItem)
                     App.Data.myorder.onModelChange(deliveryItem);
             });
+
+            this.listenTo(this, 'change:total', function() {
+                var total_wo_delivery = App.Data.myorder.checkout.get('dining_option') != 'DINING_OPTION_DELIVERY' ? this.get('total')
+                     : this.get('total') - this.get_delivery_charge()*1;
+                this.set("total_wo_delivery", total_wo_delivery, {silent: true});                
+            });
         },
         /**
          * get Total
          */
         get_total: function() {
             return round_monetary_currency(this.get('total'));
+        },
+         /**
+         * get Total w/o delivery charge
+         */
+        get_total_wo_delivery: function() {
+            return round_monetary_currency(this.get('total_wo_delivery'));
         },
         /**
          * get Tax
@@ -92,6 +106,12 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             }
 
             return round_monetary_currency(subtotal);
+        },
+        /**
+         * get total discount
+         */
+        get_discounts_str: function() {
+            return round_monetary_currency(this.get('discounts'));
         },
         /*
          * Get tip.
@@ -172,7 +192,8 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
                 surcharge: parseFloat(this.get_surcharge()),
                 subtotal: parseFloat(this.get_total()),
                 tax: parseFloat(this.get_tax()),
-                tip: parseFloat(this.get_tip())
+                tip: parseFloat(this.get_tip()),
+                total_discounts: parseFloat(this.get_discounts_str())
             };
         },
         clone: function() {

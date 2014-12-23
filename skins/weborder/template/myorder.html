@@ -1,5 +1,6 @@
 <script type="text/template" id="myorder_list-template">
     <ul class="myorder"></ul>
+    <ul class="discount"></ul>
 </script>
 
 <script type="text/template" id="myorder_item-template">
@@ -14,7 +15,7 @@
             <span class="price"><%= initial_price %></span>
         </span>
     </h3>
-    <ul>
+    <ul class="modifier_place">
         <% if(sold_by_weight) { %>
         <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
         <% } %>
@@ -25,6 +26,7 @@
         <li class="special">*** <%= special %></li>
         <% } %>
     </ul>
+    <div class="discount_place"></div>
     <% if(id_product !== null) { %>
     <div class="btns">
         <span class="edit">Edit</span>
@@ -34,12 +36,31 @@
     <% } %>
 </script>
 
+<script type="text/template" id="myorder_discount-template">
+    <h3 class="s<%= price_length %>">
+        <span class="name"><%= discount_name %></span>
+        <span class="cost">
+            <span class="currency_symbol">-<%= currency_symbol %></span>
+            <span class="price"><%= discount_sum %></span>
+        </span>
+    </h3>
+</script>
+
 <script type="text/template" id="myorder_modifier-template">
     <span class="name">w/ <%= name %></span>
     <span class="cost">
         <span class="plus">+</span>
         <span class="currency_symbol"><%= currency_symbol %></span>
         <span class="price"><%= price %></span>
+    </span>
+</script>
+
+<script type="text/template" id="myorder_product_discount-template">
+    <span class="name discount"><%= discount_name %></span>
+    <span class="cost">
+        <span class="plus">-</span>
+        <span class="currency_symbol"><%= currency_symbol %></span>
+        <span class="price"><%= discount_sum %></span>
     </span>
 </script>
 
@@ -55,6 +76,7 @@
                 </div>
             </div>
         </div>
+        <% if(_settings.online_orders) { %>
         <div class='product_instructions'>
         </div>
         <div class='quantity quantity_info'>
@@ -62,6 +84,7 @@
         <div class='action_button'>
             Add Item
         </div>
+        <% } %>
     </div>
 </script>
 

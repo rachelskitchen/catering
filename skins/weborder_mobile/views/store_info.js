@@ -54,19 +54,47 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     hour: Math.floor(settings_system.estimated_delivery_time / 60),
                     minutes: Math.ceil(settings_system.estimated_delivery_time % 60)
                 },
-                distance_mearsure: settings_system.distance_mearsure
+                distance_mearsure: settings_system.distance_mearsure,
+                needShowStoreChoice: false
             });
             App.Views.LogoView.prototype.initialize.apply(this, arguments);
+            if (!App.Data.storeInfo) App.Data.storeInfo = this.model;
+            this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
+        },
+        render: function() {
+            App.Views.LogoView.prototype.render.apply(this, arguments);
+            if (App.Data.establishments.length > 1) this.model.set('needShowStoreChoice', true);
+            this.checkBlockStoreChoice(); // show the "Store Choice" block if a brand have several stores
         },
         events: {
             "click .phone": "call",
-            "click .store_info_main_data": "store_info"
+            "click .store_info_main_data": "store_info",
+            'click .change_establishment': 'change_establishment'
         },
         call: function(e) {
             e.stopPropagation();
         },
         store_info: function() {
             App.Data.router.navigate('location', true);
+        },
+        /**
+         * Show the "Store Choice" block if a brand have several stores.
+         */
+        checkBlockStoreChoice: function() {
+            var block = this.$('.current_establishment');
+            this.model.get('needShowStoreChoice') ? block.show() : block.hide();
+        },
+        /**
+         * Show the "Change Establishment" modal window.
+         */
+        change_establishment: function(e) {
+            var ests = App.Data.establishments;
+            ests.getModelForView().set({
+                storeDefined: true
+            }); // get a model for the stores list view
+            ests.trigger('loadStoresList');
+            App.Data.mainModel.set('isBlurContent', true);
+            e.stopPropagation();
         }
     });
 

@@ -1,0 +1,79 @@
+{
+    "accept_cash_online": true,
+    "scales": {
+      "default_weighing_unit": "Lb",
+      "label_for_manual_weights": "Man",
+      "number_of_digits_to_right_of_decimal": 2
+    },
+    "estimated_order_preparation_time": 0.0,
+    "accept_online_orders_when_store_is_closed": true,
+    "auto_bag_charge": 1.0,
+    "delivery_charge": 5.0,
+    "online_order_start_time_offset": 5,
+    "delivery_cold_untaxed": true,
+    "delivery_for_online_orders": true,
+    "about_description": "Anyone who reads Old and Middle English literary texts will be familiar with the mid-brown volumes of the EETS ...",
+    "order_from_seat": [
+      false,
+      true,
+      true,
+      true
+    ],
+    "hide_products_description": true,
+    "hide_images": false,
+    "prevailing_tax": 10.0,
+    "cannot_order_with_empty_inventory": false,
+    "order_notes_allow": true,
+    "phone": "+1.949.111.2233",
+    "accept_tips_online": true,
+    "date_format": "dada",
+    "enable_reward_cards_collecting": true,
+    "currency_symbol": "$",
+    "server_time": 1403250227111,
+    "special_requests_online": true,
+    "online_order_end_time_offset": 5,
+    "about_access_to_location": "Anyone who reads Old and Middle English literary texts will be familiar ...",
+    "min_items": 0,
+    "logo": "/medialibrary/revel-image/2014-05-13/Logo.jpg",
+    "estimated_delivery_time": 0.0,
+    "time_zone_offset": -25200.0,
+    "about_images": [
+      "/medialibrary/revel-image/2014-05-20/1.jpg",
+      "/medialibrary/revel-image/2014-05-20/2.jpg",
+      "/medialibrary/revel-image/2014-05-19/woa_mobile3_1.png",
+      "/medialibrary/revel-image/2014-05-19/image1.jpg"
+    ],
+    "timetables": [
+      
+    ],
+    "about_title": "Long title including some charactures",
+    "payment_processor": {
+      "paypal_direct_credit_card": false,
+      "paypal": true,
+      "paypal_mobile": true,
+      "usaepay": true
+    },
+    "tax_country": "usa",
+    "color_scheme": "Blue & White",
+    "email": "test123@revelsystems.com",
+    "prevailing_surcharge": 5.0,
+    "distance_mearsure": "km",
+    "holidays": [
+      
+    ],
+    "time_format": "24 hour",
+    "address": {
+      "province": "",
+      "city": "Nizhny Novgorod",
+      "country": "RU",
+      "state": null,
+      "postal_code": "603600",
+      "line_1": "32 Rodionova",
+      "line_2": ""
+    },
+    "max_delivery_distance": 100.0,
+    "business_name": "Weborder-QA-New",
+    "eat_in_for_online_orders": true,
+    "online_order_time_slot": 0.0,
+    "min_delivery_amount": 1.0
+}

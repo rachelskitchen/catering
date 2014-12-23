@@ -311,6 +311,15 @@ footer {
     text-indent: 0;
     margin-top: -7px;
 }
+.current_establishment {
+    display: none;
+    float: left;
+    padding-left: 0.65em;
+}
+.current_establishment a {
+    margin-left: 2em;
+    text-decoration: none;
+}
 .powered-by {
     display: block;
     width: 141px;
@@ -504,7 +513,8 @@ section.maintenance p {
 #cart .order-items li {
     position: relative;
 }
-#cart .order-items .myorder > li {
+#cart .order-items .myorder > li,
+#cart .order-items .discount > li {
     margin-top: 10px;
 }
 #cart .order-items li li {
@@ -536,6 +546,9 @@ section.maintenance p {
     top: 0;
     bottom: 0;
     left: 0;
+}
+#cart .order-items .name.discount {
+    font-style: italic;
 }
 #cart .order-items .cost {
     position: absolute;
@@ -901,6 +914,29 @@ section.maintenance p {
     vertical-align: middle;
 }
 /** confirm page end*/
+
+.promo_message_internal {
+    display: block !important;
+    position: absolute;
+    top: 1000em;
+    white-space: nowrap;
+}
+
+.promo_message {
+    display: none;
+    font-family: helvetica neue;
+    font-size: 1.65em;
+    font-weight: regular;
+    padding: 0.15em 0.4em 0em 0.4em;
+    text-align: center;
+}
+
+.blur {
+    -moz-filter: blur(5px);
+    -ms-filter: blur(5px);
+    -webkit-filter: blur(5px);
+    filter: blur(5px);
+}
 
 /* Mercury accepted credit card */
 .mercury-accepted-credit-cards {
