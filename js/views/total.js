@@ -145,8 +145,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 return round_monetary_currency(0);
             }
 
-            return this.collection.checkout.get('dining_option') != 'DINING_OPTION_DELIVERY' ? this.collection.total.get_total()
-                : this.collection.total.get_total_wo_delivery();
+            return this.collection.total.get_total_wo_delivery();
         }
     });
 

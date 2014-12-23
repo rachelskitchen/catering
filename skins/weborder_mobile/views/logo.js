@@ -27,18 +27,23 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
 
     App.Views.LogoView = App.Views.CoreStoreInfoView.CoreStoreInfoMainView.extend({
         initialize: function() {
-            this.setDefaultData(); // default data
             this.resize = logoResize.bind(this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
 
-            var self = this;
+            function insertFromCache() {
+                self.$('.store_info_main_logo').remove();
+                self.$el.prepend(logoNode);
+            }
+
+            var self = this,
+                el = this.el,
+                $el = this.$el;
 
             if(logoNode) {
-                this.$('.store_info_main_logo').remove();
-                this.$el.prepend(logoNode);
+                insertFromCache();
                 $(window).on('resize', self.resize);
             } else {
                 var logo = this.$('img#logo');
@@ -48,10 +53,15 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
                 }); // loading img spinner
             }
 
+            el.addEventListener('DOMNodeInserted', function(e) {
+                if (el === e.target && logoNode) insertFromCache();
+            });
+
             return this;
         },
         remove: function() {
             $(window).off('resize', this.resize);
+            this.setDefaultData(); // default data
             return App.Views.FactoryView.prototype.remove.apply(this, arguments);
         },
         removeFromDOMTree: function() {
