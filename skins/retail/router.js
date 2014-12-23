@@ -58,25 +58,28 @@ define(["backbone", "main_router"], function(Backbone) {
         },
         hashForGoogleMaps: ['map', 'checkout'],//for #index we start preload api after main screen reached
         initialize: function() {
+            var settings = App.Settings;
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
             clearQueryString();
             this.bodyElement = Backbone.$('body');
             this.bodyElement.append('<div class="main-container"></div>');
 
             // set locked routes if online orders are disabled
-            if(!App.Settings.online_orders) {
+            if (!settings.online_orders) {
                 this.lockedRoutes = ['checkout', 'pay', 'confirm'];
             }
 
-            // check available dining options and set default
-            if(App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) == -1 && App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_DELIVERY) == -1) {
-                App.Data.settings.set({
-                    'isMaintenance': true,
-                    'maintenanceMessage': ERROR[MAINTENANCE.ORDER_TYPE]
-                });
-            } else {
-                App.Settings.default_dining_option = App.Settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) > -1 ? 'DINING_OPTION_TOGO' : 'DINING_OPTION_DELIVERY';
-                App.Data.myorder.checkout.set('dining_option', App.Settings.default_dining_option);
+            if (settings.dining_options instanceof Array) {
+                // check available dining options and set default
+                if (settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) == -1 && settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_DELIVERY) == -1) {
+                    App.Data.settings.set({
+                        'isMaintenance': true,
+                        'maintenanceMessage': ERROR[MAINTENANCE.ORDER_TYPE]
+                    });
+                } else {
+                    settings.default_dining_option = settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) > -1 ? 'DINING_OPTION_TOGO' : 'DINING_OPTION_DELIVERY';
+                    App.Data.myorder.checkout.set('dining_option', settings.default_dining_option);
+                }
             }
 
             // cancel requests to modifiers
