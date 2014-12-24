@@ -367,14 +367,20 @@ define(["backbone", "async"], function(Backbone) {
                             App.Settings = App.Data.settings.get("settings_system");
 
                             if (!self.get_payment_process()) { // get payment processors
-                                if (App.Data.dirMode) { // app accessed via Directory app (bug #17548)
+
+                                if (App.Data.dirMode) { // app accessed via Directory app
+
                                     settings_system.online_orders = false; // if all payment processors are disabled this case looks like 'online_orders' is checked off because 'online_orders' affects only order creating functionality
-                                } else { // app accessed directly from browser (bug #17548)
+
+                                } else { // app accessed directly from browser
+
                                     self.set({
                                         'isMaintenance': true,
                                         'maintenanceMessage': ERROR[MAINTENANCE.PAYMENT_OPTION]
                                     });
+
                                 }
+
                             }
 
                             if (settings_system.online_orders && settings_system.dining_options.length == 0) {
