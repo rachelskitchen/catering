@@ -137,9 +137,9 @@ define(["backbone", "card", "customers"], function(Backbone) {
                     args.unshift(method);
                     if(parseInt(cssua.ua, 10) < 8) {
                         window.location.href = '/' + args.join('/');
-                    } else if('postMessage' in window) {
+                    } else if(window.webkit instanceof Object && window.webkit.messageHandlers.observe instanceof Object && typeof window.webkit.messageHandlers.observe.postMessage == 'function') {
                         // postMessage() method is used in iOS8 for communication HTML5 client <-> iOS wrapper
-                        window.postMessage(args.join('/'), location.origin);
+                        window.webkit.messageHandlers.observe.postMessage(args.join('/'), location.origin);
                     }
 
                 } else {
