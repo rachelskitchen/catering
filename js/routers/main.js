@@ -383,13 +383,22 @@ define(["backbone"], function(Backbone) {
                 views;
 
             views = [{
-                footer: {next: RevelAPI.processPersonalInfo.bind(RevelAPI, next), prev: null, save: null},
+                footer: {
+                    next: RevelAPI.processPersonalInfo.bind(RevelAPI, function() {
+                        if(RevelAPI.get('profileExists')) {
+                            RevelAPI.getProfile(next);
+                        } else {
+                            next();
+                        }
+                    }),
+                    prev: null,
+                    save: null},
                 content: {mod: 'ProfilePersonal', cacheId: 'ProfilePersonal'}
             }, {
                 footer: {next: RevelAPI.processPaymentInfo.bind(RevelAPI, next, creditCardValidationAlert), prev: prev, save: null},
                 content: {mod: 'ProfilePayment', cacheId: 'ProfilePayment'}
             }, {
-                footer: {next: null, prev: prev, save: RevelAPI.saveProfile.bind(RevelAPI, save)},
+                footer: {next: null, prev: RevelAPI.getProfile.bind(RevelAPI, prev), save: RevelAPI.saveProfile.bind(RevelAPI, save)},
                 content: {mod: 'ProfileSecurity', cacheId: 'ProfileSecurity'}
             }];
 
@@ -501,10 +510,15 @@ define(["backbone"], function(Backbone) {
                 mainModel.trigger('hideRevelPopup', RevelAPI);
             }, this);
 
-            this.listenTo(RevelAPI, 'onProfileCancel onAuthenticationCancel', function() {
+            this.listenTo(RevelAPI, 'onProfileCancel', function() {
                 typeof profileCancelCallback == 'function' && profileCancelCallback();
                 profileCancelCallback = undefined;
                 profileSaveCallback = undefined;
+                RevelAPI.unset('forceCreditCard');
+                mainModel.trigger('hideRevelPopup', RevelAPI);
+            }, this);
+
+            this.listenTo(RevelAPI, 'onAuthenticationCancel', function() {
                 RevelAPI.unset('forceCreditCard');
                 mainModel.trigger('hideRevelPopup', RevelAPI);
             }, this);
@@ -558,10 +572,10 @@ define(["backbone"], function(Backbone) {
 
                 RevelAPI.set('forceCreditCard', true);
                 RevelAPI.set('useAsDefaultCard', true); // need for case when profile doesn't exist
-                RevelAPI.checkProfile(function() {
+                RevelAPI.checkProfile(RevelAPI.getProfile.bind(RevelAPI, function() {
                     RevelAPI.set('useAsDefaultCard', true); // need for case when profile exists and credit card is invalid
                     RevelAPI.processPaymentInfo(success, fail);
-                });
+                }));
             }, this);
 
             this.listenTo(RevelAPI, 'onPayWithSavedCreditCard', function() {
