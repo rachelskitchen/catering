@@ -147,7 +147,7 @@ define(["backbone", "async"], function(Backbone) {
 
             // if device is Nexus 7 or smaller than weborder mobile version should be applied
             var isMobileVersion = App.Skins.WEBORDER_MOBILE
-                && App.skin == App.Skins.WEBORDER && 'matchMedia' in window
+                && (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL) && 'matchMedia' in window
                 && (window.devicePixelRatio ? window.devicePixelRatio > 1.33 : /IEMobile/i.test(navigator.userAgent))
                 && !/ipad|Nexus\s?10/i.test(navigator.userAgent)
                 && cssua.userAgent.mobile
@@ -160,8 +160,11 @@ define(["backbone", "async"], function(Backbone) {
             if(App.skin == App.Skins.RETAIL)
                 settings.delivery_charge = 0;
 
-            if (!returnSkin) this.set('skin', App.skin);
-            return App.skin;
+            if (returnSkin) {
+                return App.skin;
+            } else {
+                this.set('skin', App.skin);
+            }
         },
         /**
          * resolve app's skin
