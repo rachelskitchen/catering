@@ -135,7 +135,7 @@ define(["backbone", "async"], function(Backbone) {
         /**
          * Get a current skin.
          */
-        get_current_skin: function() {
+        get_current_skin: function(returnSkin) {
             var params = parse_get_params(),
                 skin = params.skin || params.rvarSkin,
                 settings = this.get('settings_system'),
@@ -160,7 +160,7 @@ define(["backbone", "async"], function(Backbone) {
             if(App.skin == App.Skins.RETAIL)
                 settings.delivery_charge = 0;
 
-            this.set('skin', App.skin);
+            if (!returnSkin) this.set('skin', App.skin);
             return App.skin;
         },
         /**
@@ -378,18 +378,10 @@ define(["backbone", "async"], function(Backbone) {
                             }
 
                             if (settings_system.online_orders && settings_system.dining_options.length == 0) {
-                                // bug #17550 - 'Please setup at least one order type (in-store pickup or shipping)' to be controlled by Type of Service, not by ?skin=retail
-                                if (settings_system.type_of_service == ServiceType.RETAIL) {
-                                    self.set({
-                                        'isMaintenance': true,
-                                        'maintenanceMessage': ERROR[MAINTENANCE.ORDER_TYPE]
-                                    });
-                                } else {
-                                    self.set({
-                                        'isMaintenance': true,
-                                        'maintenanceMessage': ERROR[MAINTENANCE.DINING_OPTION]
-                                    });
-                                }
+                                self.set({
+                                    'isMaintenance': true,
+                                    'maintenanceMessage': ERROR[MAINTENANCE.DINING_OPTION]
+                                });
                             }
                             break;
                         // DISALLOW_ONLINE status doesn't use now. Instead we get 404 HTTP-status now from a backend.
