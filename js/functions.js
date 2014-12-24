@@ -56,11 +56,13 @@ ERROR.SELECT_PRODUCT_ATTRIBUTES = "Please select all attributes";
 ERROR.BLOCK_WEIGHT_IS_NOT_VALID = "The product weight is not set or zero";
 
 ERROR.MAINTENANCE_CONFIGURATION = 'Can\'t get application configuration. Please check backend settings.';
+ERROR.MAINTENANCE_PAYMENT = 'Please setup at least one payment option'; // for app accessed directly from browser (not via Directory app)
 ERROR.MAINTENANCE_DINING = 'Please setup at least one dining option'; // for QSR
 ERROR.MAINTENANCE_ORDER_TYPE = 'Please setup at least one order type (in-store pickup or shipping)'; // for Retail
 
 var MAINTENANCE = {
     BACKEND_CONFIGURATION: 'MAINTENANCE_CONFIGURATION',
+    PAYMENT_OPTION: 'MAINTENANCE_PAYMENT',
     DINING_OPTION: 'MAINTENANCE_DINING',
     ORDER_TYPE: 'MAINTENANCE_ORDER_TYPE'
 };
