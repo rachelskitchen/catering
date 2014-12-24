@@ -460,14 +460,16 @@ define(["backbone", "main_router"], function(Backbone) {
         },
         checkout: function() {
             this.prepare('checkout', function() {
+                var RevelAPI = App.Data.RevelAPI;
+
                 if(!App.Data.card)
-                    App.Data.card = new App.Models.Card({RevelAPI: App.Data.RevelAPI});
+                    App.Data.card = new App.Models.Card({RevelAPI: RevelAPI});
 
                 if(!App.Data.giftcard)
                     App.Data.giftcard = new App.Models.GiftCard;
 
                 if(!App.Data.customer) {
-                    App.Data.customer =  new App.Models.Customer({RevelAPI: App.Data.RevelAPI});
+                    App.Data.customer =  new App.Models.Customer({RevelAPI: RevelAPI});
                     App.Data.customer.loadAddresses();
                 }
 
@@ -508,9 +510,6 @@ define(["backbone", "main_router"], function(Backbone) {
                 });
 
                 this.change_page();
-
-                var RevelAPI = App.Data.RevelAPI;
-                RevelAPI.isAvailable() && RevelAPI.get('token') === null && RevelAPI.requireAuthentication(); // Bug 16425
             });
         },
         card: function() {

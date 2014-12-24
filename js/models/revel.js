@@ -70,19 +70,17 @@ define(["backbone", "card", "customers"], function(Backbone) {
             // For instance, if `getData` request responds the error 'Session expired' need automatically get a new token and continue `getData` performing.
             this.pendingRequests = [];
 
-            // restore token, useAsDefaultCardSession and profileExists
+            // restore token, useAsDefaultCardSession, customer and profileExists
             this.getToken();
             this.getProfileExists();
             this.getUseAsDefaultCardSession();
+            this.getCustomer();
 
             //TODO appName from interface
             App.Settings.RevelAPI = this.isAvailable();
 
             // save original data
             this.setOriginalProfileData();
-
-            // need restore profile when token is present and profile exists (case: directory-weborder transfer)
-            this.get('token') !== null && this.requireAuthentication();
 
             function onAuthenticationCancel() {
                 this.clearRequests();
@@ -245,6 +243,13 @@ define(["backbone", "card", "customers"], function(Backbone) {
         saveProfileExists: function() {
             setData('profileExists', {profileExists: this.get('profileExists')}, true);
         },
+        getCustomer: function() {
+            var obj = getData('revel.customer', true);
+            obj instanceof Object && this.get('customer').set(obj);
+        },
+        saveCustomer: function() {
+            setData('revel.customer', this.get('customer'), true);
+        },
         authenticate: function(user, pwd, cb) {
             var self = this;
             this.request('authenticate', String(user), String(pwd), saveToken);
@@ -305,11 +310,13 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 try {
                     self.set('useAsDefaultCard', Boolean(self.get('useAsDefaultCard')));
                     var data = {
-                        customer: self.get('customer').toJSON(),
                         card: self.get('card').toJSON(),
                         useAsDefaultCard: self.get('useAsDefaultCard')
                     }
-                    self.request('setData', 'profile', JSON.stringify(data), self.getTokenString.bind(self), cb);
+                    self.request('setData', 'profile', JSON.stringify(data), self.getTokenString.bind(self), function() {
+                        self.saveCustomer();
+                        typeof cb == 'function' && cb();
+                    });
                 } catch(e) {
                     self.set('errorCode', REVEL_API_ERROR_CODES.INTERNAL_ERROR);
                     console.log('Unable to save user\'s profile', '\n', e);
@@ -322,7 +329,6 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.request('getData', 'profile', this.getTokenString.bind(this), function(data) {
                 try {
                     data = JSON.parse(data);
-                    self.get('customer').set(data.customer);
                     self.get('card').set(data.card);
                     self.set('useAsDefaultCard', data.useAsDefaultCard);
                     self.setOriginalProfileData();
@@ -335,7 +341,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
         },
         checkProfile: function(cb) {
             if(this.get('profileExists')) {
-                this.getProfile(cb);
+                typeof cb == 'function' && cb();
             } else {
                 this.trigger('onProfileCreate', cb);
             }
@@ -476,9 +482,6 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 }
             });
             return request;
-        },
-        requireAuthentication: function() {
-            this.get('profileExists') && this.getProfile();
         }
     });
 });
