@@ -66,6 +66,7 @@ define(["backbone", "async"], function(Backbone) {
             timeout: 60000,
             x_revel_revision: null,
             isMaintenance: false,
+            maintenanceMessage: '',
             version: 1.06,
             supported_skins: []
         },
@@ -365,21 +366,35 @@ define(["backbone", "async"], function(Backbone) {
                             self.set("settings_system", settings_system);
                             App.Settings = App.Data.settings.get("settings_system");
 
-                            // if all payment processors are disabled this case looks like 'online_orders' is checked off because
-                            // 'online_orders' affects only order creating functionality
-                            if(!self.get_payment_process()) {
-                                settings_system.online_orders = false;
+                            if (!self.get_payment_process()) { // get payment processors
+                                if (App.Data.dirMode) { // app accessed via Directory app (bug #17548)
+                                    settings_system.online_orders = false; // if all payment processors are disabled this case looks like 'online_orders' is checked off because 'online_orders' affects only order creating functionality
+                                } else { // app accessed directly from browser (bug #17548)
+                                    self.set({
+                                        'isMaintenance': true,
+                                        'maintenanceMessage': ERROR[MAINTENANCE.PAYMENT_OPTION]
+                                    });
+                                }
                             }
 
                             if (settings_system.online_orders && settings_system.dining_options.length == 0) {
-                                self.set('isMaintenance', true);
+                                self.set({
+                                    'isMaintenance': true,
+                                    'maintenanceMessage': ERROR[MAINTENANCE.DINING_OPTION]
+                                });
                             }
                             break;
+                        // DISALLOW_ONLINE status doesn't use now. Instead we get 404 HTTP-status now from a backend.
+                        /*
                         case 'DISALLOW_ONLINE':
                             recoverColorScheme();
                             console.log('online and app orders unchecked');
-                            self.set('isMaintenance', true);
+                            self.set({
+                                'isMaintenance': true,
+                                'maintenanceMessage': ERROR[MAINTENANCE.BACKEND_CONFIGURATION]
+                            });
                             break;
+                        */
                         default:
                             App.Data.errors.alert_red(response.errorMsg, true);
                             recoverColorScheme();
@@ -392,7 +407,8 @@ define(["backbone", "async"], function(Backbone) {
                 error: function() {
                     self.set({
                         settings_system: settings_system, // default settings
-                        isMaintenance: true
+                        isMaintenance: true,
+                        maintenanceMessage: ERROR[MAINTENANCE.BACKEND_CONFIGURATION]
                     });
                 },
                 complete: function() {
