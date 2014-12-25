@@ -230,8 +230,6 @@
      */
     function loadApp() {
         require(['establishments', 'establishments_view'], function() {
-            var settings = App.Data.settings,
-                win = Backbone.$(window);
             /**
              * App reported about error.
              */
@@ -239,12 +237,13 @@
                 App.Data.errors.alert(MSG.ESTABLISHMENTS_ERROR_NOSTORE, true); // user notification
                 win.trigger('hideSpinner');
             };
-            var ests = App.Data.establishments = new App.Collections.Establishments(),
-                skin = settings.get_current_skin(true); // get a current skin
+            var settings = App.Data.settings,
+                ests = App.Data.establishments = new App.Collections.Establishments(),
+                win = Backbone.$(window);
+            ests.setViewVersion(settings.isMobileVersion()); // set a view version (desktop or mobile)
             ests.listenTo(settings, 'change:brand', function() {
                 ests.meta('brand', settings.get('brand'));
             });
-            ests.setViewVersion(skin === App.Skins.WEBORDER_MOBILE); // set a view version (desktop or mobile)
             ests.on('loadStoresList', App.Routers.MainRouter.prototype.loadViewEstablishments.bind(window)); // status code = 1 (app should load view with stores list)
             ests.on('showError', showError); // status code = 2 (app reported about error)
             ests.on('changeEstablishment', function(estID) {
