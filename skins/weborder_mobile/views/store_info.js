@@ -34,6 +34,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.model = new Backbone.Model({
                 logo: settings_system.logo ? settings.get('host') + settings_system.logo : null,
                 phone: settings_system.phone,
+                email: settings_system.email,
                 location: settings_system.address instanceof Object ? settings_system.address.line_1 : null,
                 phoneFormat: function(phone) {
                     if(phone.length < 10)
@@ -68,10 +69,17 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         events: {
             "click .phone": "call",
+            'click .email': 'writeEmail',
             "click .store_info_main_data": "store_info",
             'click .change_establishment': 'change_establishment'
         },
         call: function(e) {
+            e.stopPropagation();
+        },
+        /**
+         * User clicked on a email link.
+         */
+        writeEmail: function(e) {
             e.stopPropagation();
         },
         store_info: function() {
@@ -107,9 +115,16 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             App.Views.LogoView.prototype.initialize.apply(this, arguments);
         },
         events: {
-            "click .phone": "call"
+            "click .phone": "call",
+            'click .email': 'writeEmail'
         },
         call: function(e) {
+            e.stopPropagation();
+        },
+        /**
+         * User clicked on a email link.
+         */
+        writeEmail: function(e) {
             e.stopPropagation();
         }
     });
