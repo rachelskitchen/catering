@@ -133,41 +133,35 @@ define(["backbone", "async"], function(Backbone) {
              }
         },
         /**
-         * Get a current skin.
+         * Determines whether the app is a mobile version.
+         * If a device is Nexus 7 or a smaller, then the mobile version of the Weborder skin should be applied.
          */
-        get_current_skin: function() {
+        isMobileVersion: function() {
+            var isMobileVersion = App.Skins.WEBORDER_MOBILE
+                && 'matchMedia' in window
+                && (window.devicePixelRatio ? window.devicePixelRatio > 1.33 : /IEMobile/i.test(navigator.userAgent))
+                && !/ipad|Nexus\s?10/i.test(navigator.userAgent)
+                && cssua.userAgent.mobile
+                && (matchMedia('(orientation:portrait)').matches || matchMedia('(orientation:landscape)').matches);
+            return isMobileVersion;
+        },
+        /**
+         * Resolve app's skin.
+         */
+        get_settings_main: function() {
             var params = parse_get_params(),
                 skin = params.skin || params.rvarSkin,
                 settings = this.get('settings_system'),
                 isUnknownSkin = !(skin && this.get('supported_skins').indexOf(skin) > -1),
-                defaultSkin = settings.type_of_service == ServiceType.RETAIL ? App.Skins.RETAIL : App.Skins.DEFAULT;
+                defaultSkin = (settings.type_of_service == ServiceType.RETAIL) ? App.Skins.RETAIL : App.Skins.DEFAULT;
 
-            //set alias to current skin
-            App.skin = isUnknownSkin ? defaultSkin : skin;
+            App.skin = isUnknownSkin ? defaultSkin : skin; // set alias to current skin
 
-            // if device is Nexus 7 or smaller than weborder mobile version should be applied
-            var isMobileVersion = App.Skins.WEBORDER_MOBILE
-                && App.skin == App.Skins.WEBORDER && 'matchMedia' in window
-                && (window.devicePixelRatio ? window.devicePixelRatio > 1.33 : /IEMobile/i.test(navigator.userAgent))
-                && !/ipad|Nexus\s?10/i.test(navigator.userAgent)
-                && cssua.userAgent.mobile
-                && (matchMedia("(orientation:portrait)").matches || matchMedia("(orientation:landscape)").matches);
-
-            if(isMobileVersion)
+            if ((App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL) && this.isMobileVersion())
                 App.skin = App.Skins.WEBORDER_MOBILE;
-
-            // if RETAIL skin set delivery_charge to 0
-            if(App.skin == App.Skins.RETAIL)
-                settings.delivery_charge = 0;
+            if (App.skin == App.Skins.RETAIL) settings.delivery_charge = 0; // if Retail skin set delivery_charge to 0
 
             this.set('skin', App.skin);
-            return App.skin;
-        },
-        /**
-         * resolve app's skin
-         */
-        get_settings_main: function() {
-            if (this.get('skin') === '') this.get_current_skin(); // get a current skin
             this.trigger('changeSkin');
         },
         /**
