@@ -68,18 +68,15 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.checkBlockStoreChoice(); // show the "Store Choice" block if a brand have several stores
         },
         events: {
-            "click .phone": "call",
-            'click .email': 'writeEmail',
+            "click .phone": "stopPropagation",
+            'click .email': 'stopPropagation',
             "click .store_info_main_data": "store_info",
             'click .change_establishment': 'change_establishment'
         },
-        call: function(e) {
-            e.stopPropagation();
-        },
         /**
-         * User clicked on a email link.
+         * Prevents the event from bubbling up the DOM tree, preventing any parent handlers from being notified of the event.
          */
-        writeEmail: function(e) {
+        stopPropagation: function(e) {
             e.stopPropagation();
         },
         store_info: function() {
@@ -115,16 +112,13 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             App.Views.LogoView.prototype.initialize.apply(this, arguments);
         },
         events: {
-            "click .phone": "call",
-            'click .email': 'writeEmail'
-        },
-        call: function(e) {
-            e.stopPropagation();
+            "click .phone": "stopPropagation",
+            'click .email': 'stopPropagation'
         },
         /**
-         * User clicked on a email link.
+         * Prevents the event from bubbling up the DOM tree, preventing any parent handlers from being notified of the event.
          */
-        writeEmail: function(e) {
+        stopPropagation: function(e) {
             e.stopPropagation();
         }
     });
