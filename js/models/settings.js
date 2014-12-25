@@ -133,44 +133,38 @@ define(["backbone", "async"], function(Backbone) {
              }
         },
         /**
-         * Get a current skin.
+         * Determines whether the app is a mobile version.
+         * If a device is Nexus 7 or a smaller, then the mobile version of the Weborder skin should be applied.
          */
-        get_current_skin: function(returnSkin) {
-            var params = parse_get_params(),
-                skin = params.skin || params.rvarSkin,
-                settings = this.get('settings_system'),
-                isUnknownSkin = !(skin && this.get('supported_skins').indexOf(skin) > -1),
-                defaultSkin = settings.type_of_service == ServiceType.RETAIL ? App.Skins.RETAIL : App.Skins.DEFAULT;
-
-            //set alias to current skin
-            App.skin = isUnknownSkin ? defaultSkin : skin;
-
-            // if device is Nexus 7 or smaller than weborder mobile version should be applied
+        isMobileVersion: function() {
             var isMobileVersion = App.Skins.WEBORDER_MOBILE
-                && (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL) && 'matchMedia' in window
+                && 'matchMedia' in window
                 && (window.devicePixelRatio ? window.devicePixelRatio > 1.33 : /IEMobile/i.test(navigator.userAgent))
                 && !/ipad|Nexus\s?10/i.test(navigator.userAgent)
                 && cssua.userAgent.mobile
-                && (matchMedia("(orientation:portrait)").matches || matchMedia("(orientation:landscape)").matches);
-
-            if(isMobileVersion)
-                App.skin = App.Skins.WEBORDER_MOBILE;
-
-            // if RETAIL skin set delivery_charge to 0
-            if(App.skin == App.Skins.RETAIL)
-                settings.delivery_charge = 0;
-
-            if (returnSkin) {
-                return App.skin;
-            } else {
-                this.set('skin', App.skin);
-            }
+                && (matchMedia('(orientation:portrait)').matches || matchMedia('(orientation:landscape)').matches);
+            return isMobileVersion;
         },
         /**
          * resolve app's skin
          */
         get_settings_main: function() {
-            if (this.get('skin') === '') this.get_current_skin(); // get a current skin
+            var params = parse_get_params(),
+                skin = params.skin || params.rvarSkin,
+                settings = this.get('settings_system'),
+                isUnknownSkin = !(skin && this.get('supported_skins').indexOf(skin) > -1),
+                defaultSkin = (settings.type_of_service == ServiceType.RETAIL) ? App.Skins.RETAIL : App.Skins.DEFAULT;
+
+            App.skin = isUnknownSkin ? defaultSkin : skin; // set alias to current skin
+
+            if (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL) {
+                if (this.isMobileVersion()) // determines whether the app is a mobile version
+                    App.skin = App.Skins.WEBORDER_MOBILE;
+            }
+            if (App.skin == App.Skins.RETAIL)
+                settings.delivery_charge = 0; // if Retail skin set delivery_charge to 0
+
+            this.set('skin', App.skin);
             this.trigger('changeSkin');
         },
         /**
