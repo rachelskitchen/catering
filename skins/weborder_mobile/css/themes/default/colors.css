@@ -326,7 +326,8 @@ select {
 #content .store_info_main_data .current_establishment a {
     color: #2699ca;
 }
-#content a.phone, #content a.phone:link, #content a.phone:visited, #content a.phone:hover, #content a.phone:active {
+#content a.phone, #content a.phone:link, #content a.phone:visited, #content a.phone:hover, #content a.phone:active,
+#content a.email, #content a.email:link, #content a.email:visited, #content a.email:hover, #content a.email:active {
     color: #2699ca;
 }
 #content ul.location ul.desc li:not(.info) {

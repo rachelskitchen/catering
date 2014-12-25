@@ -86,12 +86,13 @@
 }
 #content .store_info_main_data dd {
     font-size: 2.4em;
-    width: 55%;
     float: right;
     margin-bottom: 0.2em;
+    padding-right: 10%;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    width: 45%;
 }
 
 #content .store_info_main_data .current_establishment {
@@ -101,7 +102,8 @@
     text-decoration: none;
 }
 
-#content a.phone, #content a.phone:link, #content a.phone:visited, #content a.phone:hover, #content a.phone:active {
+#content a.phone, #content a.phone:link, #content a.phone:visited, #content a.phone:hover, #content a.phone:active,
+#content a.email, #content a.email:link, #content a.email:visited, #content a.email:hover, #content a.email:active {
     text-decoration: none;
 }
 
