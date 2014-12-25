@@ -146,7 +146,7 @@ define(["backbone", "async"], function(Backbone) {
             return isMobileVersion;
         },
         /**
-         * resolve app's skin
+         * Resolve app's skin.
          */
         get_settings_main: function() {
             var params = parse_get_params(),
@@ -157,12 +157,9 @@ define(["backbone", "async"], function(Backbone) {
 
             App.skin = isUnknownSkin ? defaultSkin : skin; // set alias to current skin
 
-            if (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL) {
-                if (this.isMobileVersion()) // determines whether the app is a mobile version
-                    App.skin = App.Skins.WEBORDER_MOBILE;
-            }
-            if (App.skin == App.Skins.RETAIL)
-                settings.delivery_charge = 0; // if Retail skin set delivery_charge to 0
+            if ((App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL) && this.isMobileVersion())
+                App.skin = App.Skins.WEBORDER_MOBILE;
+            if (App.skin == App.Skins.RETAIL) settings.delivery_charge = 0; // if Retail skin set delivery_charge to 0
 
             this.set('skin', App.skin);
             this.trigger('changeSkin');
