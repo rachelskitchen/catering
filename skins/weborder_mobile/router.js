@@ -176,8 +176,8 @@ define(["backbone", "main_router"], function(Backbone) {
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
-                this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
-                this.listenToOnce(ests, 'resetEstablishmentData', mainModel.trigger.bind(mainModel, 'showSpinnerAndHideContent'), this);
+                this.listenTo(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
+                this.listenTo(ests, 'resetEstablishmentData', mainModel.trigger.bind(mainModel, 'showSpinnerAndHideContent'), this);
                 this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
                 // emit 'initialized' event

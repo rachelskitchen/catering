@@ -156,7 +156,10 @@
                         router.trigger('needLoadEstablishments');
                     }); // hide a launch spinner & load an establishments list
                     if (settings.get('isMaintenance')) window.location.hash = '#maintenance';
-                    if (Backbone.History.started) Backbone.history.stop();
+                    if (Backbone.History.started) {
+                        Backbone.history.stop();
+                        Backbone.history.trigger('history.stop');
+                    }
                     Backbone.history.start();
 
                     // invoke afterStart callback
