@@ -325,6 +325,10 @@ define(["backbone"], function(Backbone) {
                     delete App.Data[i];
                 }
             }
+            // need stop listening any object when `history.stop` event occurs
+            this.listenTo(Backbone.history, 'history.stop', function() {
+                this.stopListening();
+            }, this);
         },
         /*
          * Push data changes to session history entry.
@@ -347,7 +351,7 @@ define(["backbone"], function(Backbone) {
          * Create and return session history state-object.
          */
         getState: function() {
-            return {};
+            return {establishment: App.Data.settings.get('establishment')};
         },
         /*
          * Restore state data from session history entry.
@@ -356,7 +360,13 @@ define(["backbone"], function(Backbone) {
          * @return event.state.stateData object
          */
         restoreState: function(event) {
-            return event.state instanceof Object ? event.state.stateData : undefined;
+            var data = event.state instanceof Object ? event.state.stateData : undefined,
+                ests = App.Data.establishments;
+            if(data) {
+                ests.trigger('resetEstablishmentData');
+                ests.trigger('changeEstablishment', data.establishment, true);
+            }
+            return data;
         },
         /*
          * Start tracking of application state changes
@@ -365,9 +375,17 @@ define(["backbone"], function(Backbone) {
             if(!(typeof window.addEventListener == 'function') || !(typeof window.history == 'object') || !(typeof window.history.pushState == 'function')) {
                 return;
             }
-            var cb = this.restoreState.bind(this);
+            var cb = this.restoreState.bind(this),
+                ests = App.Data.establishments;
             window.addEventListener('popstate', cb, false);
             Backbone.history.stopStateTracking = window.removeEventListener.bind(window, 'popstate', cb, false);
+            // Listen to establishment changes to track in session history.
+            this.listenTo(ests, 'changeEstablishment', function(id, isRestoring) {
+                if(isRestoring) {
+                    return;
+                }
+                this.updateState();
+            }, this);
             return true;
         }
     });
