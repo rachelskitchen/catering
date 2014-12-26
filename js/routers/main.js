@@ -362,7 +362,7 @@ define(["backbone"], function(Backbone) {
         restoreState: function(event) {
             var data = event.state instanceof Object ? event.state.stateData : undefined,
                 ests = App.Data.establishments;
-            if(data) {
+            if(data && ests) {
                 ests.trigger('resetEstablishmentData');
                 ests.trigger('changeEstablishment', data.establishment, true);
             }
@@ -379,13 +379,15 @@ define(["backbone"], function(Backbone) {
                 ests = App.Data.establishments;
             window.addEventListener('popstate', cb, false);
             Backbone.history.stopStateTracking = window.removeEventListener.bind(window, 'popstate', cb, false);
-            // Listen to establishment changes to track in session history.
-            this.listenTo(ests, 'changeEstablishment', function(id, isRestoring) {
-                if(isRestoring) {
-                    return;
-                }
-                this.updateState();
-            }, this);
+            if(ests) {
+                // Listen to establishment changes to track in session history.
+                this.listenTo(ests, 'changeEstablishment', function(id, isRestoring) {
+                    if(isRestoring) {
+                        return;
+                    }
+                    this.updateState();
+                }, this);
+            }
             return true;
         }
     });
