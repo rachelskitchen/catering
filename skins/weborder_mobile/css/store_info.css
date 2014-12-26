@@ -52,10 +52,6 @@
     cursor: pointer;
 }
 
-#content .store_info_main_data.delivery_info {
-    height: 30.7em !important;
-}
-
 #content .store_info_main_data:after {
     content: '';
     display: block;
