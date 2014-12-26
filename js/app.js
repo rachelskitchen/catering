@@ -152,14 +152,17 @@
                     var router = App.Data.router;
                     router.prepare.initialized = false;
                     router.once('started', function() {
+                        // hide a launch spinner & load an establishments list
                         win.trigger('hideSpinner');
                         router.trigger('needLoadEstablishments');
-                    }); // hide a launch spinner & load an establishments list
-                    if (settings.get('isMaintenance')) window.location.hash = '#maintenance';
+                    });
+                    // need clear hash and stop listening to history when user changes establishment
                     if (Backbone.History.started) {
                         Backbone.history.stop();
+                        window.location.hash = '';
                         Backbone.history.trigger('history.stop');
                     }
+                    if (settings.get('isMaintenance')) window.location.hash = '#maintenance';
                     Backbone.history.start();
 
                     // invoke afterStart callback
@@ -250,6 +253,12 @@
             ests.on('loadStoresList', App.Routers.MainRouter.prototype.loadViewEstablishments.bind(window)); // status code = 1 (app should load view with stores list)
             ests.on('showError', showError); // status code = 2 (app reported about error)
             ests.on('changeEstablishment', function(estID) {
+                // Need stop execution if establishment id is same.
+                // It's important for restoring from session history.
+                if(settings.get('establishment') == estID) {
+                    return;
+                }
+                ests.trigger('resetEstablishmentData');
                 win.trigger('showSpinner');
                 App.Views.GeneratorView.clearCache(); // clear cache if store was changed
                 settings.set('establishment', estID);

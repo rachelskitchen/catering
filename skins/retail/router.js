@@ -165,8 +165,9 @@ define(["backbone", "main_router"], function(Backbone) {
                 checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
             this.on('route', function() {
-               App.Data.mainModel.trigger('onRoute');
-               App.Data.errors.hide();
+                // can be called when App.Data.mainModel is not initializd yet ('back' btn in browser history control)
+                App.Data.mainModel && App.Data.mainModel.trigger('onRoute');
+                App.Data.errors.hide();
             });
 
             App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
@@ -352,10 +353,12 @@ define(["backbone", "main_router"], function(Backbone) {
             }
         },
         showPromoMessage: function() {
-            App.Data.header.set('isShowPromoMessage', true);
+            // can be called when App.Data.header is not initializd yet ('back' btn in browser history control)
+            App.Data.header && App.Data.header.set('isShowPromoMessage', true);
         },
         hidePromoMessage: function() {
-            App.Data.header.set('isShowPromoMessage', false);
+            // can be called when App.Data.header is not initializd yet ('back' btn in browser history control)
+            App.Data.header && App.Data.header.set('isShowPromoMessage', false);
         },
         /**
         * Get a stores list.
@@ -371,9 +374,7 @@ define(["backbone", "main_router"], function(Backbone) {
         */
         resetEstablishmentData: function() {
             App.Routers.MainRouter.prototype.resetEstablishmentData.apply(this, arguments);
-            Backbone.history.stop();
             this.index.initState = undefined;
-            window.location.hash = '';
             defaultRouterData(); // default router data
             this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
         },

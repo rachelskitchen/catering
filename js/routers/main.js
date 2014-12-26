@@ -340,11 +340,10 @@ define(["backbone"], function(Backbone) {
             }
 
             var title = 'State' + (++this.updateState.counter);
-
             if(replaceState) {
-                window.history.replaceState({stateData: this.getState()}, title);
+                window.history.replaceState({stateData: this.getState()}, title, location.href);
             } else {
-                window.history.pushState({stateData: this.getState()}, title);
+                window.history.pushState({stateData: this.getState()}, title, location.href);
             }
         },
         /*
@@ -363,7 +362,6 @@ define(["backbone"], function(Backbone) {
             var data = event.state instanceof Object ? event.state.stateData : undefined,
                 ests = App.Data.establishments;
             if(data && ests) {
-                ests.trigger('resetEstablishmentData');
                 ests.trigger('changeEstablishment', data.establishment, true);
             }
             return data;

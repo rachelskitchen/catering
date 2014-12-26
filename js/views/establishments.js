@@ -63,7 +63,6 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                 message,
                 selectedEstablishmentID = this.$('select').val(),
                 estExist = function() {
-                    self.collection.trigger('resetEstablishmentData');
                     self.collection.trigger('changeEstablishment', selectedEstablishmentID);
                     self.back(); // the "Go Back" button was clicked
                 },
