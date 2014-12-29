@@ -416,7 +416,17 @@ define(["backbone"], function(Backbone) {
                 footer: {next: RevelAPI.processPaymentInfo.bind(RevelAPI, next, creditCardValidationAlert), prev: prev, save: null},
                 content: {mod: 'ProfilePayment', cacheId: 'ProfilePayment'}
             }, {
-                footer: {next: null, prev: RevelAPI.getProfile.bind(RevelAPI, prev), save: RevelAPI.saveProfile.bind(RevelAPI, save)},
+                footer: {
+                    next: null,
+                    prev: function() {
+                        if(RevelAPI.get('profileExists')) {
+                            RevelAPI.getProfile(prev);
+                        } else {
+                            prev();
+                        }
+                    },
+                    save: RevelAPI.saveProfile.bind(RevelAPI, save)
+                },
                 content: {mod: 'ProfileSecurity', cacheId: 'ProfileSecurity'}
             }];
 
