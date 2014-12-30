@@ -1,18 +1,25 @@
 /* main mod start */
 
-#content .maintenance-wrapper {
-    display: table;
+#content .maintenance {
     height: 100%;
-    text-align: center;
-    font-size: 4em;
-    font-weight: bold;
     position: absolute;
+    text-align: center;
     width: 100%;
 }
 
-#content .maintenance {
-    display: table-cell;
+#content .maintenance:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
     vertical-align: middle;
+}
+
+#content .maintenance p {
+    display: inline-block;
+    font-size: 4em;
+    font-weight: bold;
+    vertical-align: middle;
+    width: 95%;
 }
 
 /* main mod end */
