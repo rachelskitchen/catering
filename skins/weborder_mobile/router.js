@@ -752,7 +752,8 @@ define(["backbone", "main_router"], function(Backbone) {
                     footer: App.Data.dirMode ? footerModes.MaintenanceDirectory : footerModes.Maintenance,
                     content: {
                         modelName: 'Maintenance',
-                        mod: 'Main'
+                        mod: 'Main',
+                        className: 'maintenance'
                     }
                 });
 
