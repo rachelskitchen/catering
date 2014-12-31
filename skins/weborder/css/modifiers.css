@@ -70,6 +70,7 @@
     word-break: break-all;
     margin:0 7px 7px 0;
     cursor: pointer;
+    min-height: 30px;
 }
 
 @media only screen and (max-device-width: 949px) {
@@ -135,4 +136,20 @@
 
 .modifiers_table .no-controls .special_button {
     display: none;
+}
+
+.mdf_quantity select {
+    font-size: 14px;
+    font-weight: normal;
+    padding-right: 18px;
+    padding-left: 8px;
+}
+
+.mdf_quantity {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: bold;    
+    margin-top: -2px;
+    height: 26px;
 }
