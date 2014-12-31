@@ -33,7 +33,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         mod: 'item',
         events: {
             'change input': 'change',
-            'click .special_label': 'add_special'
+            'click .special_label': 'add_special',
+            'change .mdf_quantity select': 'change_quantity'
         },
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
@@ -57,6 +58,14 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             }
 
             this.$el.html(this.template(model));
+            
+            var option_el, 
+                mdf_qauntity_el = this.$(".mdf_quantity select");
+            for (var i=1; i <= 5; i++) {
+                option_el = $('<option>').val(i).text("x" + i);
+                mdf_qauntity_el.append(option_el);
+            }
+
             this.afterRender(model.sort);
             this.update();
             this.update_free();
@@ -104,10 +113,17 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 if(this.model.get('selected')) {
                     this.$('input').attr('checked', 'checked');
                     this.$('.input').addClass('checked');
+                    this.$(".mdf_quantity").css("display", "inline-block");
+                    
+                    $('.mdf_quantity option:selected').removeAttr('selected');
+                    if (this.model.get('quantity') > 0) {
+                        this.$(".mdf_quantity select").val(this.model.get('quantity'));
+                    }
                 }
                 else {
                     this.$('input').removeAttr('checked');
                     this.$('.input').removeClass('checked');
+                    this.$(".mdf_quantity").hide();
                 }
             }
         },
@@ -136,6 +152,12 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
 
             function hide() {
                 $(this).removeClass('visible').addClass('hidden');
+            }
+        },
+        change_quantity: function() {
+            var quantity = this.$(".mdf_quantity select").val();
+            if (quantity) {
+                this.model.set('quantity', quantity*1);
             }
         }
     });
@@ -278,11 +300,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         mod: 'item',
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
-            this.listenLocked = setInterval(this.controlCheckboxes.bind(this), 300);
-
+            this.listenTo(this.model, 'change', this.controlCheckboxes, this);
         },
         remove: function() {
-            clearInterval(this.listenLocked);
             App.Views.ItemView.prototype.remove.apply(this, arguments);
         },
         render: function() {
@@ -322,6 +342,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             this.afterRender(this.model.escape('sort'));
             this.subViews.push(view);
 
+            this.controlCheckboxes();
             return this;
         },
         controlCheckboxes: function() {

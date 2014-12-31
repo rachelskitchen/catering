@@ -32,7 +32,9 @@ define(["backbone"], function(Backbone) {
             selected: false,
             sort: null,
             cost: null, // only for order send.
-            img: null
+            img: null,
+            quantity: 1,
+            qty_type: 0 //0 - full modifier, 1 - first half, 2 second half
         },
         initialize: function() {
             this.set('img', App.Data.settings.get('img_path'));
@@ -70,7 +72,8 @@ define(["backbone"], function(Backbone) {
                     modifier: this.get('id'),
                     modifier_cost: (this.get('cost') === null) ? 0 : this.get('cost'),
                     modifier_price: this.isFree() ? this.get('free_amount') * 1 : this.get('order_price') * 1,
-                    qty: 1
+                    qty: this.get('quantity'),
+                    qty_type: this.get('qty_type')
                 };
             }
         },
@@ -136,7 +139,7 @@ define(["backbone"], function(Backbone) {
             var sum = 0;
             this.where({selected: true}).forEach(function(modifier) {
                 var free_amount = modifier.get('free_amount'),
-                    price = modifier.get('order_price');
+                    price = modifier.get('order_price') * modifier.get('quantity') * (modifier.get('qty_type') > 0 ? 0.5 : 1);
                 sum += modifier.isFree() ? parseFloat(free_amount) : price;
             });
             return sum;
@@ -332,11 +335,27 @@ define(["backbone"], function(Backbone) {
 
             this.set('amount_free_selected', selected);
         },
+        update_free_quantity_change: function(model) {
+            if(this.get('ignore_free_modifiers'))
+                return;
+
+            var isPrice = this.get('amount_free_is_dollars'),
+                isAdmin = this.get('admin_modifier');
+            // if it is admin_modifier amount_free functionality should be ignored
+            if(isAdmin)
+                return;
+
+            if(isPrice)
+                this.update_free_price(model);
+            else
+                this.update_free_quantity(model);
+        },
         update_free_quantity: function(model) {
             var amount = this.get('amount_free'),
                 selected = this.get('amount_free_selected');
 
             selected.forEach(function(model, index) {
+                var quantity = model.get('quantity');
                 if(index > amount - 1)
                     model.unset('free_amount');
                 else
@@ -349,15 +368,16 @@ define(["backbone"], function(Backbone) {
 
             selected.forEach(function(model) {
                 var price = model.get('price');
+                var quantity = model.get('quantity');
                 if(amount == 0)
                     return model.unset('free_amount');
 
-                if(amount < price) {
-                    model.set('free_amount', round_monetary_currency(price - amount));
+                if(amount < price * quantity) {
+                    model.set('free_amount', round_monetary_currency(price * quantity - amount));
                     amount = 0;
                 } else {
                     model.set('free_amount', 0);
-                    amount = round_monetary_currency(amount - price);
+                    amount = round_monetary_currency(amount - price * quantity);
                 }
             });
         },
@@ -398,6 +418,12 @@ define(["backbone"], function(Backbone) {
             function cb(model, opts) {
                 this.trigger('change', this, _.extend({modifier: model}, opts));
                 this.update_free(model);
+            }
+
+            this.listenTo(modifiers, 'change:quantity', cb2, this);
+            function cb2(model, opts) {
+                //this.trigger('change', this, _.extend({modifier: model}, opts));
+                this.update_free_quantity_change(model);
             }
         },
         checkAmountFree: function() {
