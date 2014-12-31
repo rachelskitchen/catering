@@ -412,7 +412,7 @@ define(["backbone", "async"], function(Backbone) {
             return load;
         },
         load_geoloc: function() {
-            var set_sys = App.Data.settings.get("settings_system");
+            var set_sys = this.get("settings_system");
             var just_load_lib = false;
 
             // if coordinates are set in server then return
@@ -420,6 +420,7 @@ define(["backbone", "async"], function(Backbone) {
                 //set_sys.geolocation_load.resolve();
                 //return;
                 //TODO: probably split this function into 2 ones
+                set_sys.geolocation_load.resolve();
                 just_load_lib = true;
             }
 
