@@ -34,7 +34,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         events: {
             'change input': 'change',
             'click .special_label': 'add_special',
-            'change .mdf_quantity select': 'change_quantity'
+            'change .mdf_quantity select': 'change_quantity',
+            'change .mdf_split select': 'change_split_modifier'
         },
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
@@ -64,6 +65,12 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             for (var i=1; i <= 5; i++) {
                 option_el = $('<option>').val(i).text("x" + i);
                 mdf_qauntity_el.append(option_el);
+            }
+
+            var mdf_split_el = this.$(".mdf_split select");
+            for (var i=0; i < 3; i++) {
+                option_el = $('<option>').val(i).text(MSG.HALF_PRICE_STR[i]);
+                mdf_split_el.append(option_el);
             }
 
             this.afterRender(model.sort);
@@ -114,16 +121,21 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                     this.$('input').attr('checked', 'checked');
                     this.$('.input').addClass('checked');
                     this.$(".mdf_quantity").css("display", "inline-block");
+                    this.$(".mdf_split").css("display", "inline-block");
                     
                     $('.mdf_quantity option:selected').removeAttr('selected');
                     if (this.model.get('quantity') > 0) {
                         this.$(".mdf_quantity select").val(this.model.get('quantity'));
                     }
+                    
+                    $('.mdf_split option:selected').removeAttr('selected');
+                    this.$(".mdf_split select").val(this.model.get('qty_type'));
                 }
                 else {
                     this.$('input').removeAttr('checked');
                     this.$('.input').removeClass('checked');
                     this.$(".mdf_quantity").hide();
+                    this.$(".mdf_split").hide();
                 }
             }
         },
@@ -158,6 +170,12 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             var quantity = this.$(".mdf_quantity select").val();
             if (quantity) {
                 this.model.set('quantity', quantity*1);
+            }
+        },
+        change_split_modifier: function() {
+            var qty_type = this.$(".mdf_split select").val();
+            if (qty_type != undefined) {
+                this.model.set('qty_type', qty_type*1);
             }
         }
     });
