@@ -90,6 +90,10 @@ define(["backbone"], function(Backbone) {
         },
         removeFreeModifier: function() {
             this.unset('free_amount');
+        },
+        half_price_koeff: function() {
+            //half or full item price for split modifiers
+            return this.get('qty_type') > 0 ? 0.5 : 1;
         }
     });
 
@@ -139,7 +143,7 @@ define(["backbone"], function(Backbone) {
             var sum = 0;
             this.where({selected: true}).forEach(function(modifier) {
                 var free_amount = modifier.get('free_amount'),
-                    price = modifier.get('order_price') * modifier.get('quantity') * (modifier.get('qty_type') > 0 ? 0.5 : 1);
+                    price = modifier.get('order_price') * modifier.get('quantity') * modifier.half_price_koeff();
                 sum += modifier.isFree() ? parseFloat(free_amount) : price;
             });
             return sum;
@@ -355,7 +359,6 @@ define(["backbone"], function(Backbone) {
                 selected = this.get('amount_free_selected');
 
             selected.forEach(function(model, index) {
-                var quantity = model.get('quantity');
                 if(index > amount - 1)
                     model.unset('free_amount');
                 else
@@ -367,17 +370,19 @@ define(["backbone"], function(Backbone) {
                 selected = this.get('amount_free_selected');
 
             selected.forEach(function(model) {
-                var price = model.get('price');
-                var quantity = model.get('quantity');
+                var price = model.get('price'),
+                    quantity = model.get('quantity'),
+                    qty_type_koeff = model.half_price_koeff();
+
                 if(amount == 0)
                     return model.unset('free_amount');
 
-                if(amount < price * quantity) {
-                    model.set('free_amount', round_monetary_currency(price * quantity - amount));
+                if(amount < price * quantity * qty_type_koeff) {
+                    model.set('free_amount', round_monetary_currency(price * quantity * qty_type_koeff - amount));
                     amount = 0;
                 } else {
                     model.set('free_amount', 0);
-                    amount = round_monetary_currency(amount - price * quantity);
+                    amount = round_monetary_currency(amount - price * quantity * qty_type_koeff);
                 }
             });
         },
@@ -421,8 +426,8 @@ define(["backbone"], function(Backbone) {
             }
 
             this.listenTo(modifiers, 'change:quantity', cb2, this);
+            this.listenTo(modifiers, 'change:qty_type', cb2, this);
             function cb2(model, opts) {
-                //this.trigger('change', this, _.extend({modifier: model}, opts));
                 this.update_free_quantity_change(model);
             }
         },
