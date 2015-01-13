@@ -145,9 +145,6 @@
                 var myorder = App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
                 require([settings.get('skin') + '/router'], function() {
-                    if(typeof Backbone.history.stopStateTracking == 'function') {
-                        Backbone.history.stopStateTracking();
-                    }
                     App.Data.router = new App.Routers.Router;
                     var router = App.Data.router;
                     router.prepare.initialized = false;
@@ -156,12 +153,6 @@
                         win.trigger('hideSpinner');
                         router.trigger('needLoadEstablishments');
                     });
-                    // need clear hash and stop listening to history when user changes establishment
-                    if (Backbone.History.started) {
-                        Backbone.history.stop();
-                        window.location.hash = '';
-                        Backbone.history.trigger('history.stop');
-                    }
                     if (settings.get('isMaintenance')) window.location.hash = '#maintenance';
                     Backbone.history.start();
 

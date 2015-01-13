@@ -210,7 +210,8 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Data.mainModel.trigger('loadCompleted');
 
                 var state = {},
-                    encoded;
+                    hashRE = /#.*$/,
+                    encoded, url;
 
                 if(this.state)
                     state = this.state;
@@ -221,9 +222,9 @@ define(["backbone", "main_router"], function(Backbone) {
                 state.parent_selected = App.Data.categories.parent_selected;
                 state.selected = App.Data.categories.selected;
                 encoded = this.encodeState(state);
+                url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
 
-                // can't use this.navigate() due to it invokes spinner
-                Backbone.Router.prototype.navigate.call(this, 'index/' + encoded);
+                this.updateState(!this.index.initState, url);
 
                 // save state after initialization of views.
                 // second entry in window.history (#index -> #index/<data>).
@@ -244,7 +245,9 @@ define(["backbone", "main_router"], function(Backbone) {
                 if(result.get('products').length == 0)
                     return;
 
-                var state = {};
+                var state = {},
+                    hashRE = /#.*$/,
+                    encoded, url;
 
                 if(this.state)
                     state = this.state;
@@ -252,16 +255,18 @@ define(["backbone", "main_router"], function(Backbone) {
                 delete state.parent_selected;
                 delete state.selected;
                 state.pattern = result.get('pattern');
+                encoded = this.encodeState(state);
+                url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
 
-                // can't use this.navigate() due to it invokes spinner
-                Backbone.Router.prototype.navigate.call(this, 'index/' + this.encodeState(state), true);
+                this.updateState(!this.index.initState, url);
             });
 
             // listen to filter changes and encode it to hash
             this.listenTo(App.Data.filter, 'change', function(model) {
                 var state = {},
                     noChanges = true,
-                    i;
+                    hashRE = /#.*$/,
+                    i, encoded, url;
 
                 if(this.state)
                     state = this.state;
@@ -284,8 +289,10 @@ define(["backbone", "main_router"], function(Backbone) {
                 if(state.attribute1 == 1)
                     delete state.attribute1;
 
-                // can't use this.navigate() due to it invokes spinner
-                Backbone.Router.prototype.navigate.call(this, 'index/' + this.encodeState(state));
+                encoded = this.encodeState(state);
+                url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
+
+                this.updateState(false, url);
             });
 
             // onCheckoutClick event occurs when 'checkout' button is clicked
@@ -374,7 +381,7 @@ define(["backbone", "main_router"], function(Backbone) {
         */
         resetEstablishmentData: function() {
             App.Routers.MainRouter.prototype.resetEstablishmentData.apply(this, arguments);
-            this.index.initState = undefined;
+            this.index.initState = null;
             defaultRouterData(); // default router data
             this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
         },

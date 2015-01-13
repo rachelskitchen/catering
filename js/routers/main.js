@@ -325,25 +325,29 @@ define(["backbone"], function(Backbone) {
                     delete App.Data[i];
                 }
             }
-            // need stop listening any object when `history.stop` event occurs
-            this.listenTo(Backbone.history, 'history.stop', function() {
-                this.stopListening();
-            }, this);
+
+            var history = Backbone.history;
+
+            history.stop(); // stop tracking browser history changes
+            typeof history.stopStateTracking == 'function' && history.stopStateTracking(); // stop tracking state changes
+            this.stopListening(); // stop listening all handlers
         },
         /*
          * Push data changes to session history entry.
          * Tracking state data is stored in `stateData` property of session history entry's data object.
          */
-        updateState: function(replaceState) {
+        updateState: function(replaceState, url) {
             if(typeof this.updateState.counter == 'undefined') {
                 this.updateState.counter = 0;
             }
 
             var title = 'State' + (++this.updateState.counter);
+            url = url || location.href;
+
             if(replaceState) {
-                window.history.replaceState({stateData: this.getState()}, title, location.href);
+                window.history.replaceState({stateData: this.getState()}, title, url);
             } else {
-                window.history.pushState({stateData: this.getState()}, title, location.href);
+                window.history.pushState({stateData: this.getState()}, title, url);
             }
         },
         /*
@@ -362,7 +366,7 @@ define(["backbone"], function(Backbone) {
             var data = event.state instanceof Object ? event.state.stateData : undefined,
                 ests = App.Data.establishments;
             if(data && ests) {
-                ests.trigger('changeEstablishment', data.establishment, true);
+                ests.trigger('changeEstablishment', data.establishment, true); // 3rd parameter is flag of restoring
             }
             return data;
         },
@@ -383,7 +387,8 @@ define(["backbone"], function(Backbone) {
                     if(isRestoring) {
                         return;
                     }
-                    this.updateState();
+                    // need clear hash when user changes establishment
+                    this.updateState(false, location.href.replace(/#.*/, ''));
                 }, this);
             }
             return true;
