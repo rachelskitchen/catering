@@ -1238,3 +1238,18 @@ function format_timetables(timetables, separator) {
     }
     return res.join(separator);
 }
+// End of timetable functions
+
+/*
+* removeClassRegexp: removes all classes by regular expression
+*           example: removeClassRegexp($('#element_id'), "s\\d+")
+*/
+function removeClassRegexp(jq_elem, exp_str) {
+    var regexpStr = "(\\s+)?" + exp_str + "(?=\\s|$)";
+    var regexp = new RegExp(regexpStr, "g");
+    jq_elem.each(function(index, elem){
+       $(elem).prop('className', $(elem).prop('className').replace(regexp, ''));
+    });
+}
+
+               

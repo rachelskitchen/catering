@@ -152,5 +152,22 @@
     font-size: 14px;
     font-weight: bold;    
     margin-top: -2px;
-    height: 26px;
+    height: 26px; 
+    position: relative;      
+}
+
+.mdf_split select {
+    width: 50px;
+    padding-right: 28px;
+    padding-left: 18px;
+    opacity: 0.9;
+    filter: alpha(opacity=90);
+}
+
+.mdf_split .selected_option {
+    position: absolute;
+    top: 5px;
+    left: 8px;
+    width: 18px;
+    height: 17px;
 }

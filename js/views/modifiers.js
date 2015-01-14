@@ -120,16 +120,23 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 if(this.model.get('selected')) {
                     this.$('input').attr('checked', 'checked');
                     this.$('.input').addClass('checked');
-                    this.$(".mdf_quantity").css("display", "inline-block");
-                    this.$(".mdf_split").css("display", "inline-block");
-                    
-                    $('.mdf_quantity option:selected').removeAttr('selected');
-                    if (this.model.get('quantity') > 0) {
-                        this.$(".mdf_quantity select").val(this.model.get('quantity'));
+
+                    if (App.Settings.enable_quantity_modifiers) {
+                        this.$(".mdf_quantity").css("display", "inline-block");
+                        
+                        $('.mdf_quantity option:selected').removeAttr('selected');
+                        if (this.model.get('quantity') > 0) {
+                            this.$(".mdf_quantity select").val(this.model.get('quantity'));
+                        }
                     }
-                    
-                    $('.mdf_split option:selected').removeAttr('selected');
-                    this.$(".mdf_split select").val(this.model.get('qty_type'));
+                    if (App.Settings.enable_split_modifiers) {
+                        this.$(".mdf_split").css("display", "inline-block");
+                        
+                        this.$(".mdf_split select").val(this.model.get('qty_type'));
+                        var elem = this.$(".mdf_split .selected_option")
+                        removeClassRegexp(elem, "option_\\d+");
+                        elem.addClass("option_"+this.model.get('qty_type'));
+                    }
                 }
                 else {
                     this.$('input').removeAttr('checked');
@@ -176,6 +183,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             var qty_type = this.$(".mdf_split select").val();
             if (qty_type != undefined) {
                 this.model.set('qty_type', qty_type*1);
+                var selopt = this.$(".mdf_split .selected_option");
+                removeClassRegexp(selopt, "option_\\d+");
+                selopt.addClass("option_" + qty_type);
             }
         }
     });

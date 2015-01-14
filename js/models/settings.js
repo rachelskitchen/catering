@@ -247,7 +247,9 @@ define(["backbone", "async"], function(Backbone) {
                     },
                     type_of_service: ServiceType.TABLE_SERVICE,
                     default_dining_option: 'DINING_OPTION_TOGO',
-                    accept_discount_code: true
+                    accept_discount_code: true,
+                    enable_quantity_modifiers: true,
+                    enable_split_modifiers: true
                 },
                 load = $.Deferred();
 
