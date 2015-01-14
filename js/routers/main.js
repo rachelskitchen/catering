@@ -319,6 +319,7 @@ define(["backbone"], function(Backbone) {
         * Remove establishment data in case if establishment ID will change.
         */
         resetEstablishmentData: function() {
+            this.prepare.initialized = false;
             delete App.Data.router;
             for (var i in App.Data) {
                 if (App.Data.stateAppData[i] === undefined) {
