@@ -68,8 +68,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             }
 
             var mdf_split_el = this.$(".mdf_split select");
+            var index = [1, 2, 0];//this change the order of options as First Half, Second Half and Full.
             for (var i=0; i < 3; i++) {
-                option_el = $('<option>').val(i).text(MSG.HALF_PRICE_STR[i]);
+                option_el = $('<option>').val(index[i]).text(MSG.HALF_PRICE_STR[index[i]]);
                 mdf_split_el.append(option_el);
             }
 

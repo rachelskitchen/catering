@@ -47,6 +47,7 @@ define(['backbone'], function(Backbone) {
             };
             this.render();
             App.Data.devMode && this.$el.attr("data-tmpl", this.name + "_" + this.mod + "-template");
+            App.Data.devMode && this.$el.attr("data-view", this.options.dbgClassName);
         },
         render: function() {
             this.$el.html(this.template(this.model ? (this.model.toJSON ? this.model.toJSON() : this.model) : undefined));
