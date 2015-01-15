@@ -20,12 +20,16 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(['done_view'], function() {
+define(['done_view'], function(done_view) {
 
-    App.Views.MainView.MainDoneView = App.Views.CoreMainView.CoreMainDoneView.extend({
+    var MainDoneView = App.Views.CoreMainView.CoreMainDoneView.extend({
         return_menu: function() {
             this.model.unset('popup');
             App.Views.CoreMainView.CoreMainDoneView.prototype.return_menu.apply(this, arguments);
         }
+    });
+
+    return new (require('factory'))(done_view.initViews.bind(done_view), function() {
+        App.Views.MainView.MainDoneView = MainDoneView;
     });
 });

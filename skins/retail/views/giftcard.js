@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "giftcard_view"], function(Backbone) {
+define(["giftcard_view"], function() {
     'use strict';
 
 });

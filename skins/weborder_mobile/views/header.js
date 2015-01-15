@@ -20,12 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator"], function(Backbone) {
+define(["backbone", "factory", "generator"], function() {
     'use strict';
 
-    App.Views.HeaderView = {};
-
-    App.Views.HeaderView.HeaderMainView = App.Views.FactoryView.extend({
+    var HeaderMainView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'main',
         initialize: function() {
@@ -37,7 +35,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.HeaderView.HeaderOneButtonView = App.Views.HeaderView.HeaderMainView.extend({
+    var HeaderOneButtonView = HeaderMainView.extend({
         name: 'header',
         mod: 'one_button',
         initialize: function() {
@@ -66,7 +64,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.HeaderView.HeaderTwoButtonView = App.Views.HeaderView.HeaderOneButtonView.extend({
+    var HeaderTwoButtonView = HeaderOneButtonView.extend({
         name: 'header',
         mod: 'two_button',
         initialize: function() {
@@ -94,7 +92,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.HeaderView.HeaderModifiersView = App.Views.HeaderView.HeaderTwoButtonView.extend({
+    var HeaderModifiersView = HeaderTwoButtonView.extend({
         name: 'header',
         mod: 'two_button',
         render: function() {
@@ -115,7 +113,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.HeaderView.HeaderLocationView = App.Views.HeaderView.HeaderTwoButtonView.extend({
+    var HeaderLocationView = HeaderTwoButtonView.extend({
         name: 'header',
         mod: 'two_button',
         render: function() {
@@ -128,8 +126,18 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.HeaderView.HeaderMaintenanceView = App.Views.FactoryView.extend({
+    var HeaderMaintenanceView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'maintenance'
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.HeaderView = {};
+        App.Views.HeaderView.HeaderMainView = HeaderMainView;
+        App.Views.HeaderView.HeaderOneButtonView = HeaderOneButtonView;
+        App.Views.HeaderView.HeaderTwoButtonView = HeaderTwoButtonView;
+        App.Views.HeaderView.HeaderModifiersView = HeaderModifiersView;
+        App.Views.HeaderView.HeaderLocationView = HeaderLocationView;
+        App.Views.HeaderView.HeaderMaintenanceView = HeaderMaintenanceView;
     });
 });

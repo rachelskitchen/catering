@@ -175,6 +175,11 @@ define(["backbone", "geopoint"], function(Backbone) {
                     address = address.replace(', ' + street2, '');
                 }
 
+                // if max_delivery_distance isn't set or `0` need perform success result without distance checking
+                if(!settings.max_delivery_distance) {
+                    return success();
+                }
+
                 geocoder.geocode({"address": address}, function(results, status) {
                     if (status === google.maps.GeocoderStatus.OK) {
                         var location = results[0]['geometry']['location'],

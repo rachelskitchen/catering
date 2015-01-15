@@ -20,12 +20,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(['backbone'], function(Backbone) {
+define(["factory"], function() {
     'use strict';
 
     App.Views.FilterView = {};
 
-    App.Views.FilterView.FilterSortView = App.Views.FactoryView.extend({
+    var FilterSortView = App.Views.FactoryView.extend({
         name: 'filter',
         mod: 'sort',
         initialize: function() {
@@ -108,7 +108,7 @@ define(['backbone'], function(Backbone) {
         }
     });
 
-    App.Views.FilterView.FilterAttributeView = App.Views.FilterView.FilterSortView.extend({
+    var FilterAttributeView = FilterSortView.extend({
         name: 'filter',
         mod: 'attribute',
         initialize: function() {
@@ -249,5 +249,11 @@ define(['backbone'], function(Backbone) {
         update: function() {
 
         }
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.FilterView = {};
+        App.Views.FilterView.FilterSortView = FilterSortView;
+        App.Views.FilterView.FilterAttributeView = FilterAttributeView;
     });
 });

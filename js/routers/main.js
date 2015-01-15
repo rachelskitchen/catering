@@ -190,6 +190,11 @@ define(["backbone"], function(Backbone) {
                 js = core,
                 i, j;
 
+            // contain list of skin css specified
+            if(!Array.isArray(this.skinCSS)) {
+                this.skinCSS = [];
+            }
+
             callback = typeof callback == 'function' ? callback.bind(this) : new Function;
 
             dependencies = Array.isArray(dependencies) ? dependencies : [];
@@ -200,24 +205,32 @@ define(["backbone"], function(Backbone) {
                 js.push(skin + "/js/" + scripts[i]);
 
             for (i = 0, j = templates.length; i < j; i++)
-                loadTemplate2(null, templates[i]);
+                loadTemplate2(skin, templates[i]);
 
             for(i = 0, j = views.length; i < j; i++)
                 js.push(skin + "/views/" + views[i]);
 
             for(i = 0, j = css.length; i < j; i++)
-                loadCSS(skinPath + "/css/" + css[i]);
+                this.skinCSS.push(loadCSS(skinPath + "/css/" + css[i]));
 
             for(i = 0, j = models.length; i < j; i++)
                 js.push(skin + "/models/" + models[i]);
 
             for(i = 0, j = cssCore.length; i < j; i++)
-                loadCSS(basePath + "/css/" + cssCore[i]);
+                this.skinCSS.push(loadCSS(basePath + "/css/" + cssCore[i]));
 
             for (i = 0, j = templatesCore.length; i < j; i++)
                 loadTemplate2(null, templatesCore[i], true); // sync load template
 
             require(js, function() {
+                // init Views (#18015)
+                var ViewModule = require('factory');
+                Array.prototype.forEach.call(arguments, function(module) {
+                    if(module instanceof ViewModule) {
+                        module.initViews();
+                    }
+                });
+
                 if (App.Data.loadModelTemplate && App.Data.loadModelTemplate.dfd) {
                     dependencies.push(App.Data.loadModelTemplate.dfd);
                 }
@@ -258,6 +271,7 @@ define(["backbone"], function(Backbone) {
                 App.Data.customer.loadCustomer();
                 App.Data.customer.loadAddresses();
                 App.Data.myorder.loadOrders();
+                App.Data.establishments && App.Data.establishments.removeSavedEstablishment();
                 load.resolve();
             });
 
@@ -332,6 +346,13 @@ define(["backbone"], function(Backbone) {
             history.stop(); // stop tracking browser history changes
             typeof history.stopStateTracking == 'function' && history.stopStateTracking(); // stop tracking state changes
             this.stopListening(); // stop listening all handlers
+            this.removeHTMLandCSS(); // remove css and templates from DOM tree
+        },
+        removeHTMLandCSS: function() {
+            Backbone.$('script[type="text/template"]').remove();
+            Array.isArray(this.skinCSS) && this.skinCSS.forEach(function(el) {
+                el.remove();
+            });
         },
         /*
          * Push data changes to session history entry.
@@ -628,4 +649,19 @@ define(["backbone"], function(Backbone) {
             }
         }
     });
+
+    /**
+     * Router Module class
+     */
+    function RouterModule() {
+        this.args = arguments;
+    }
+
+    RouterModule.prototype.initRouter = function() {
+        Array.prototype.forEach.call(this.args, function(cb) {
+            typeof cb == 'function' && cb();
+        });
+    };
+
+    return RouterModule;
 });

@@ -420,7 +420,6 @@ define(["backbone", "async"], function(Backbone) {
                 //set_sys.geolocation_load.resolve();
                 //return;
                 //TODO: probably split this function into 2 ones
-                set_sys.geolocation_load.resolve();
                 just_load_lib = true;
             }
 
@@ -437,7 +436,7 @@ define(["backbone", "async"], function(Backbone) {
 
                 require(["async!https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"], function() {
                     if (just_load_lib)
-                        return;
+                        return set_sys.geolocation_load.resolve();
                     var geocoder = new google.maps.Geocoder();
                     geocoder.geocode({"address": address_google}, function(results, status) {
                         if (status === google.maps.GeocoderStatus.OK) {

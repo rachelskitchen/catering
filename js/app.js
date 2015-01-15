@@ -144,7 +144,10 @@
                 load_styles_and_scripts(); // load styles and scripts
                 var myorder = App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
-                require([settings.get('skin') + '/router'], function() {
+                require([settings.get('skin') + '/router'], function(module) {
+                    if(module instanceof require('main_router')) {
+                        module.initRouter();
+                    }
                     App.Data.router = new App.Routers.Router;
                     var router = App.Data.router;
                     router.prepare.initialized = false;

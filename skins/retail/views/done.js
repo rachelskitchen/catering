@@ -20,12 +20,16 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["done_view"], function() {
+define(["done_view"], function(done_view) {
     'use strict';
 
-    App.Views.MainView.MainDoneView = App.Views.CoreMainView.CoreMainDoneView.extend({
+    var MainDoneView = App.Views.CoreMainView.CoreMainDoneView.extend({
         getPickupTime: function() {
             return {};
         }
+    });
+
+    return new (require('factory'))(done_view.initViews.bind(done_view), function() {
+        App.Views.MainView.MainDoneView = MainDoneView;
     });
 });

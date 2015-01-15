@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory"], function(Backbone) {
+define([], function() {
     'use strict';
-    
+
 });

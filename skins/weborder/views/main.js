@@ -23,9 +23,7 @@
 define(["backbone", "factory", "generator"], function(Backbone) {
     'use strict';
 
-    App.Views.MainView = {};
-
-    App.Views.MainView.MainMainView = App.Views.FactoryView.extend({
+    var MainMainView = App.Views.FactoryView.extend({
         name: 'main',
         mod: 'main',
         initialize: function() {
@@ -274,7 +272,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.MainView.MainMaintenanceView = App.Views.FactoryView.extend({
+    var MainMaintenanceView = App.Views.FactoryView.extend({
         name: 'main',
         mod: 'maintenance',
         render: function() {
@@ -289,4 +287,9 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
+    return new (require('factory'))(function() {
+        App.Views.MainView = {};
+        App.Views.MainView.MainMainView = MainMainView;
+        App.Views.MainView.MainMaintenanceView = MainMaintenanceView;
+    });
 });

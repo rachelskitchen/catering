@@ -20,12 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator", "products_view"], function(Backbone) {
+define(["products_view"], function() {
     'use strict';
 
-    App.Views.CartView = {};
-
-    App.Views.CartView.CartCoreView = App.Views.FactoryView.extend({
+    var CartCoreView = App.Views.FactoryView.extend({
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection, "add remove", this.onChangeOrder, this);
@@ -75,7 +73,7 @@ define(["backbone", "factory", "generator", "products_view"], function(Backbone)
         }
     });
 
-    App.Views.CartView.CartMainView = App.Views.CartView.CartCoreView.extend({
+    var CartMainView = CartCoreView.extend({
         name: 'cart',
         mod: 'main',
         render: function() {
@@ -103,7 +101,7 @@ define(["backbone", "factory", "generator", "products_view"], function(Backbone)
         }
     });
 
-    App.Views.CartView.CartCheckoutView = App.Views.CartView.CartCoreView.extend({
+    var CartCheckoutView = CartCoreView.extend({
         name: 'cart',
         mod: 'checkout',
         render: function() {
@@ -123,5 +121,12 @@ define(["backbone", "factory", "generator", "products_view"], function(Backbone)
                 checkout: this.collection.checkout
             }));
         }
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.CartView = {};
+        App.Views.CartView.CartCoreView = CartCoreView;
+        App.Views.CartView.CartMainView = CartMainView;
+        App.Views.CartView.CartCheckoutView = CartCheckoutView;
     });
 });

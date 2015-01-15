@@ -470,23 +470,16 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         }
     });
 
-    App.Views.ModifiersView = {};
-
-    App.Views.ModifiersView.ModifiersItemView = App.Views.CoreModifiersView.CoreModifiersItemView;
-
-    App.Views.ModifiersView.ModifiersMatrixView = App.Views.CoreModifiersView.CoreModifiersMatrixView;
-
-    App.Views.ModifiersView.ModifiersListView = App.Views.CoreModifiersView.CoreModifiersListView;
-
-    App.Views.ModifiersView.ModifiersMatrixesView = App.Views.CoreModifiersView.CoreModifiersMatrixesView;
-
-    App.Views.ModifiersClassesView = {};
-
-    App.Views.ModifiersClassesView.ModifiersClassesItemView = App.Views.CoreModifiersClassesView.CoreModifiersClassesItemView;
-
-    App.Views.ModifiersClassesView.ModifiersClassesMatrixView = App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixView;
-
-    App.Views.ModifiersClassesView.ModifiersClassesListView = App.Views.CoreModifiersClassesView.CoreModifiersClassesListView;
-
-    App.Views.ModifiersClassesView.ModifiersClassesMatrixesView = App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView;
+    return new (require('factory'))(function() {
+        App.Views.ModifiersView = {};
+        App.Views.ModifiersClassesView = {};
+        App.Views.ModifiersView.ModifiersItemView = App.Views.CoreModifiersView.CoreModifiersItemView;
+        App.Views.ModifiersView.ModifiersMatrixView = App.Views.CoreModifiersView.CoreModifiersMatrixView;
+        App.Views.ModifiersView.ModifiersListView = App.Views.CoreModifiersView.CoreModifiersListView;
+        App.Views.ModifiersView.ModifiersMatrixesView = App.Views.CoreModifiersView.CoreModifiersMatrixesView;
+        App.Views.ModifiersClassesView.ModifiersClassesItemView = App.Views.CoreModifiersClassesView.CoreModifiersClassesItemView;
+        App.Views.ModifiersClassesView.ModifiersClassesMatrixView = App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixView;
+        App.Views.ModifiersClassesView.ModifiersClassesListView = App.Views.CoreModifiersClassesView.CoreModifiersClassesListView;
+        App.Views.ModifiersClassesView.ModifiersClassesMatrixesView = App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView;
+    });
 });

@@ -20,10 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "checkout_view"], function(Backbone) {
+define(["checkout_view"], function(checkout_view) {
     'use strict';
 
-    App.Views.CheckoutView.CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView.extend({
+    var CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView.extend({
         name: 'checkout',
         mod: 'main',
         initialize: function() {
@@ -62,5 +62,9 @@ define(["backbone", "factory", "checkout_view"], function(Backbone) {
                                     removeClass('address-without-states').
                                     removeClass('delivery-to-seat-' + this.numSeatBoxes);
         }
+    });
+
+    return new (require('factory'))(checkout_view.initViews.bind(checkout_view), function() {
+        App.Views.CheckoutView.CheckoutMainView = CheckoutMainView;
     });
 });

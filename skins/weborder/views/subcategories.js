@@ -20,12 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator", "list"], function(Backbone) {
+define(["generator", "list"], function() {
     'use strict';
 
-    App.Views.SubCategoryView = {};
-
-    App.Views.SubCategoryView.SubCategorySelectView = App.Views.ItemView.extend({
+    var SubCategorySelectView = App.Views.ItemView.extend({
         name: 'subcategory',
         mod: 'select',
         initialize: function() {
@@ -43,9 +41,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         }
     });
 
-    App.Views.SubCategoriesView = {};
-
-    App.Views.SubCategoriesView.SubCategoriesSelectView = App.Views.ListView.extend({
+    var SubCategoriesSelectView = App.Views.ListView.extend({
         name: 'subcategories',
         mod: 'select',
         render: function() {
@@ -80,5 +76,12 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             this.collection.selected = val;
             this.collection.trigger('change:selected', this.collection, val);
         }
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.SubCategoryView = {};
+        App.Views.SubCategoriesView = {};
+        App.Views.SubCategoryView.SubCategorySelectView = SubCategorySelectView;
+        App.Views.SubCategoriesView.SubCategoriesSelectView = SubCategoriesSelectView;
     });
 });
