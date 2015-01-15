@@ -77,6 +77,10 @@
     .modifiers_table .modifier {
         width: 270px !important;
     }
+    .mdf_quantity select {
+        width: 48px;
+        padding-left: 10px !important;
+    }
 }
 
 .modifiers_table .modifier .input {
@@ -142,8 +146,7 @@
 .mdf_split select {
     font-size: 14px;
     font-weight: normal;
-    padding-right: 18px;
-    padding-left: 8px;
+    width: 50px;  
 }
 
 .mdf_quantity, .mdf_split {
@@ -156,10 +159,14 @@
     position: relative;      
 }
 
+.mdf_quantity select {
+    padding-right: 18px;
+    padding-left: 8px;
+}
+
 .mdf_split select {
-    width: 50px;
-    padding-right: 28px;
-    padding-left: 18px;
+    padding-right: 28px !important;
+    padding-left: 22px !important;
     opacity: 0.9;
     filter: alpha(opacity=90);
 }
