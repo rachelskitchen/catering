@@ -30,9 +30,16 @@ select[disabled] {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjE1LjIiPjxnPjxwYXRoIGQ9Im00LDBMMSw2TDcsNloiIGZpbGw9IiM2ODY4NjgiLz48cmVjdCBoZWlnaHQ9IjEiIHdpZHRoPSI4IiB5PSI3IiB4PSIwIiBmaWxsPSIjNjg2ODY4Ii8+PHBhdGggZD0ibTQsMTUuMkwxLDkuMkw3LDkuMloiIGZpbGw9IiM2ODY4NjgiLz48L2c+PC9zdmc+');
 }
 .select-wrapper:hover:after {
-    -moz-box-shadow: -3px 0 5px -1px rgba(60, 167, 222, 0.3) inset, 0 0 8px 2px #fff;
-    -webkit-box-shadow: -3px 0 5px -1px rgba(60, 167, 222, 0.3) inset, 0 0 8px 2px #fff;
-    box-shadow: -3px 0 5px -1px rgba(60, 167, 222, 0.3) inset, 0 0 8px 2px #fff;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+.quantity_select.select-wrapper:hover:after,
+.select.year.select-wrapper:hover:after,
+.select.month.select-wrapper:hover:after {
+    -moz-box-shadow: -2px 5px 6px -3px rgba(60, 167, 222, 0.3) inset, -2px -5px 6px -3px rgba(60, 167, 222, 0.3) inset;
+    -webkit-box-shadow: -2px 5px 6px -3px rgba(60, 167, 222, 0.3) inset, -2px -5px 6px -3px rgba(60, 167, 222, 0.3) inset;
+    box-shadow: -2px 5px 6px -3px rgba(60, 167, 222, 0.3) inset, -2px -5px 6px -3px rgba(60, 167, 222, 0.3) inset;
 }
 .select-wrapper.disabled:after  {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjE1LjIiPjxnPjxwYXRoIGQ9Im00LDBMMSw2TDcsNloiIGZpbGw9IiNjY2MiLz48cmVjdCBoZWlnaHQ9IjEiIHdpZHRoPSI4IiB5PSI3IiB4PSIwIiBmaWxsPSIjY2NjIi8+PHBhdGggZD0ibTQsMTUuMkwxLDkuMkw3LDkuMloiIGZpbGw9IiNjY2MiLz48L2c+PC9zdmc+');
