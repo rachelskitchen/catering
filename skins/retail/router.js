@@ -20,13 +20,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "main_router"], function(Backbone) {
+define(["main_router"], function(main_router) {
     'use strict';
-
-    window.DINING_OPTION_NAME = {
-        DINING_OPTION_TOGO: 'Pick up in store',
-        DINING_OPTION_DELIVERY: 'Shipping'
-    };
 
     var headers = {},
         carts = {};
@@ -42,9 +37,7 @@ define(["backbone", "main_router"], function(Backbone) {
         carts.checkout = {mod: 'Checkout', className: 'checkout'};
     }
 
-    defaultRouterData(); // default router data
-
-    App.Routers.Router = App.Routers.MainRouter.extend({
+    var Router = App.Routers.MainRouter.extend({
         routes: {
             "": "index",
             "index(/:data)": "index",
@@ -382,14 +375,12 @@ define(["backbone", "main_router"], function(Backbone) {
         resetEstablishmentData: function() {
             App.Routers.MainRouter.prototype.resetEstablishmentData.apply(this, arguments);
             this.index.initState = null;
-            defaultRouterData(); // default router data
-            this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
         },
         /**
         * Remove HTML and CSS of current establishment in case if establishment ID will change.
         */
         removeHTMLandCSS: function() {
-            Backbone.$('link[href$="colors.css"]').remove();
+            App.Routers.MainRouter.prototype.removeHTMLandCSS.apply(this, arguments);
             this.bodyElement.children('.main-container').remove();
         },
         index: function(data) {
@@ -585,4 +576,13 @@ define(["backbone", "main_router"], function(Backbone) {
         // IE 10: console doesn't have debug method
         typeof console.debug == 'function' && console.debug.apply(console, arguments);
     }
+
+    return new main_router(function() {
+        window.DINING_OPTION_NAME = {
+            DINING_OPTION_TOGO: 'Pick up in store',
+            DINING_OPTION_DELIVERY: 'Shipping'
+        };
+        defaultRouterData();
+        App.Routers.Router = Router;
+    });
 });

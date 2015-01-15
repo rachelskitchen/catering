@@ -25,7 +25,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
     App.Views.CoreMyOrderView = {};
 
-  
     App.Views.CoreMyOrderView.CoreMyOrderModifierView = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'modifier',
@@ -46,7 +45,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.model.get("discount"), 'change', this.render, this);
         },
         render: function() {
-            // this.model is the instance of App.Models.Myorder 
+            // this.model is the instance of App.Models.Myorder
             var model = {},
                 discount = this.model.get("discount");
             model.currency_symbol = App.Settings.currency_symbol;
@@ -56,13 +55,13 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.$el.html(this.template(model));
 
             this.$el.removeClass( function() { // remove classes with pattern /^s\d{1,2}/
-                    return this.className.split(' ').filter(function(className) 
+                    return this.className.split(' ').filter(function(className)
                                         {
                                             return className.match(/^s\d{1,2}/)
                                         }).join(' ');
                 });
             this.$el.addClass('s' + (model.discount_sum.length + 1));
-                
+
             if (discount.get("sum") <= 0) {
                 this.$el.hide();
             }
@@ -171,7 +170,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     model: this.model
                 });
                 self.subViews.push(view);
-                self.$('.discount_place').append(view.el);           
+                self.$('.discount_place').append(view.el);
             }
 
             return this;
@@ -229,10 +228,10 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         render: function() {
             var model = {};
-            // this.model is the instance of App.Models.DiscountItem 
+            // this.model is the instance of App.Models.DiscountItem
             model.currency_symbol = App.Settings.currency_symbol;
             model.discount_sum = this.model.toString();
-            model.discount_name = this.model.get('name');          
+            model.discount_name = this.model.get('name');
             model.price_length = model.discount_sum.length + 1;
             this.$el.html(this.template(model));
             if (this.model.get("sum") <= 0) {
@@ -240,9 +239,9 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             }
             else {
                 this.$el.show();
-            }        
+            }
             return this;
-        }        
+        }
     });
 
     App.Views.CoreMyOrderView.CoreMyOrderListView = App.Views.FactoryView.extend({
@@ -336,19 +335,14 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.MyOrderView = {};
-
-    App.Views.MyOrderView.MyOrderModifierView = App.Views.CoreMyOrderView.CoreMyOrderModifierView;
-
-    App.Views.MyOrderView.MyOrderProductDiscountView = App.Views.CoreMyOrderView.CoreMyOrderProductDiscountView;
-
-    App.Views.MyOrderView.MyOrderDiscountView = App.Views.CoreMyOrderView.CoreMyOrderDiscountView;
-
-    App.Views.MyOrderView.MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView;
-
-    App.Views.MyOrderView.MyOrderListView = App.Views.CoreMyOrderView.CoreMyOrderListView;
-
-    App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView;
-
-    App.Views.MyOrderView.MyOrderNoteView = App.Views.CoreMyOrderView.CoreMyOrderNoteView;
+    return new (require('factory'))(function() {
+        App.Views.MyOrderView = {};
+        App.Views.MyOrderView.MyOrderModifierView = App.Views.CoreMyOrderView.CoreMyOrderModifierView;
+        App.Views.MyOrderView.MyOrderProductDiscountView = App.Views.CoreMyOrderView.CoreMyOrderProductDiscountView;
+        App.Views.MyOrderView.MyOrderDiscountView = App.Views.CoreMyOrderView.CoreMyOrderDiscountView;
+        App.Views.MyOrderView.MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView;
+        App.Views.MyOrderView.MyOrderListView = App.Views.CoreMyOrderView.CoreMyOrderListView;
+        App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView;
+        App.Views.MyOrderView.MyOrderNoteView = App.Views.CoreMyOrderView.CoreMyOrderNoteView;
+    });
 });

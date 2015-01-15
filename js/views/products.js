@@ -183,13 +183,10 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         }
     });
 
-
-    App.Views.ProductView = {};
-
-    App.Views.ProductView.ProductListItemView = App.Views.CoreProductView.CoreProductListItemView;
-
-    App.Views.ProductView.ProductListView = App.Views.CoreProductView.CoreProductListView;
-
-    App.Views.ProductView.ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView;
-
+    return new (require('factory'))(function() {
+        App.Views.ProductView = {};
+        App.Views.ProductView.ProductListItemView = App.Views.CoreProductView.CoreProductListItemView;
+        App.Views.ProductView.ProductListView = App.Views.CoreProductView.CoreProductListView;
+        App.Views.ProductView.ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView;
+    });
 });

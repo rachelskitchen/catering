@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "main_router"], function(Backbone) {
+define(["main_router"], function(main_router) {
     'use strict';
 
     var headerModes = {},
@@ -68,9 +68,7 @@ define(["backbone", "main_router"], function(Backbone) {
         footerModes.Loyalty = {mod: 'Loyalty'};
     }
 
-    defaultRouterData(); // default router data
-
-    App.Routers.Router = App.Routers.MobileRouter.extend({
+    var Router = App.Routers.MobileRouter.extend({
         routes: {
             "": "index",
             "index": "index",
@@ -221,20 +219,6 @@ define(["backbone", "main_router"], function(Backbone) {
                 if (si) si.set('needShowStoreChoice', true);
             };
             App.Routers.MainRouter.prototype.getEstablishments.apply(this, arguments);
-        },
-        /**
-        * Remove establishment data in case if establishment ID will change.
-        */
-        resetEstablishmentData: function() {
-            App.Routers.MobileRouter.prototype.resetEstablishmentData.apply(this, arguments);
-            defaultRouterData(); // default router data
-            this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
-        },
-        /**
-        * Remove HTML and CSS of current establishment in case if establishment ID will change.
-        */
-        removeHTMLandCSS: function() {
-            Backbone.$('link[href$="colors.css"]').remove();
         },
         index: function() {
             var self = this;
@@ -799,4 +783,9 @@ define(["backbone", "main_router"], function(Backbone) {
             App.Data.myorder.trigger('payWithCreditCard');
         }
     }
+
+    return new main_router(function() {
+        defaultRouterData();
+        App.Routers.Router = Router;
+    });
 });

@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "card_view"], function(Backbone) {
+define(["card_view"], function() {
     'use strict';
 
 });

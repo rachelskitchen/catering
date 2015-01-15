@@ -20,10 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "quantity_view"], function(Backbone) {
+define(["quantity_view"], function(quantity_view) {
     'use strict';
 
-    App.Views.QuantityView.QuantityMainView = App.Views.CoreQuantityView.CoreQuantityMainView.extend({
+    var QuantityMainView = App.Views.CoreQuantityView.CoreQuantityMainView.extend({
         events: {
             'click .increase': 'increase',
             'click .decrease': 'decrease',
@@ -59,9 +59,14 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
         }
     });
 
-    App.Views.QuantityView.QuantityWeightView = App.Views.CoreQuantityView.CoreQuantityWeightView.extend({
+    var QuantityWeightView = App.Views.CoreQuantityView.CoreQuantityWeightView.extend({
         update: function() {
             this.$('.weight_edit_input').val(this.model.get('weight').toFixed(this.number_decimal_digits));
         }
+    });
+
+    return new (require('factory'))(quantity_view.initViews.bind(quantity_view), function() {
+        App.Views.QuantityView.QuantityMainView = QuantityMainView;
+        App.Views.QuantityView.QuantityWeightView = QuantityWeightView;
     });
 });

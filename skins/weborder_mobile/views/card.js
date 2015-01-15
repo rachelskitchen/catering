@@ -20,10 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "card_view"], function(Backbone) {
+define(["card_view"], function(card_view) {
     'use strict';
 
-    App.Views.CardView.CardMainView = App.Views.CoreCardView.CoreCardMainView.extend({
+    var CardMainView = App.Views.CoreCardView.CoreCardMainView.extend({
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'add_card', this.onProceed, this);
@@ -32,5 +32,9 @@ define(["backbone", "card_view"], function(Backbone) {
             this.setData();
             App.Data.myorder.trigger('payWithCreditCard');
         }
+    });
+
+    return new (require('factory'))(card_view.initViews.bind(card_view), function() {
+        App.Views.CardView.CardMainView = CardMainView;
     });
 });

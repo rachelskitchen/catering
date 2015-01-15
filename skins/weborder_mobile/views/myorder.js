@@ -20,10 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "myorder_view"], function(Backbone) {
+define(["myorder_view"], function(myorder_view) {
     'use strict';
 
-    App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView.extend({
+    var MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView.extend({
         render: function() {
             App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.render.apply(this, arguments);
 
@@ -53,11 +53,16 @@ define(["backbone", "myorder_view"], function(Backbone) {
         }
     });
 
-    App.Views.MyOrderView.MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
+    var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
         editItem: function(e) {
             e.preventDefault();
             var index = this.model.collection.models.indexOf(this.model);
             App.Data.router.navigate('modifiers_edit/' + index, true);
         }
+    });
+
+    return new (require('factory'))(myorder_view.initViews.bind(myorder_view), function() {
+        App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
+        App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
     });
 });
