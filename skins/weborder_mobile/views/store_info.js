@@ -34,6 +34,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.model = new Backbone.Model({
                 logo: settings_system.logo ? settings.get('host') + settings_system.logo : null,
                 phone: settings_system.phone,
+                email: settings_system.email,
                 location: settings_system.address instanceof Object ? settings_system.address.line_1 : null,
                 phoneFormat: function(phone) {
                     if(phone.length < 10)
@@ -67,11 +68,15 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.checkBlockStoreChoice(); // show the "Store Choice" block if a brand have several stores
         },
         events: {
-            "click .phone": "call",
+            "click .phone": "stopPropagation",
+            'click .email': 'stopPropagation',
             "click .store_info_main_data": "store_info",
             'click .change_establishment': 'change_establishment'
         },
-        call: function(e) {
+        /**
+         * Prevents the event from bubbling up the DOM tree, preventing any parent handlers from being notified of the event.
+         */
+        stopPropagation: function(e) {
             e.stopPropagation();
         },
         store_info: function() {
@@ -107,9 +112,13 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             App.Views.LogoView.prototype.initialize.apply(this, arguments);
         },
         events: {
-            "click .phone": "call"
+            "click .phone": "stopPropagation",
+            'click .email': 'stopPropagation'
         },
-        call: function(e) {
+        /**
+         * Prevents the event from bubbling up the DOM tree, preventing any parent handlers from being notified of the event.
+         */
+        stopPropagation: function(e) {
             e.stopPropagation();
         }
     });
