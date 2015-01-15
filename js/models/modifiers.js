@@ -94,6 +94,9 @@ define(["backbone"], function(Backbone) {
         half_price_koeff: function() {
             //half or full item price for split modifiers
             return this.get('qty_type') > 0 ? 0.5 : 1;
+        },
+        getSum: function() {
+            return this.get('order_price') * this.get('quantity') * this.half_price_koeff();
         }
     });
 
@@ -143,7 +146,7 @@ define(["backbone"], function(Backbone) {
             var sum = 0;
             this.where({selected: true}).forEach(function(modifier) {
                 var free_amount = modifier.get('free_amount'),
-                    price = modifier.get('order_price') * modifier.get('quantity') * modifier.half_price_koeff();
+                    price = modifier.getSum();
                 sum += modifier.isFree() ? parseFloat(free_amount) : price;
             });
             return sum;
@@ -371,18 +374,17 @@ define(["backbone"], function(Backbone) {
 
             selected.forEach(function(model) {
                 var price = model.get('price'),
-                    quantity = model.get('quantity'),
-                    qty_type_koeff = model.half_price_koeff();
-
+                    mdf_price_sum = model.getSum();
+                   
                 if(amount == 0)
                     return model.unset('free_amount');
 
-                if(amount < price * quantity * qty_type_koeff) {
-                    model.set('free_amount', round_monetary_currency(price * quantity * qty_type_koeff - amount));
+                if(amount < mdf_price_sum) {
+                    model.set('free_amount', round_monetary_currency(mdf_price_sum - amount));
                     amount = 0;
                 } else {
                     model.set('free_amount', 0);
-                    amount = round_monetary_currency(amount - price * quantity * qty_type_koeff);
+                    amount = round_monetary_currency(amount - mdf_price_sum);
                 }
             });
         },
