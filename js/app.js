@@ -150,7 +150,6 @@
                     }
                     App.Data.router = new App.Routers.Router;
                     var router = App.Data.router;
-                    router.prepare.initialized = false;
                     router.once('started', function() {
                         win.trigger('hideSpinner');
                         router.trigger('needLoadEstablishments');
