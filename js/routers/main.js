@@ -149,6 +149,10 @@ define(["backbone"], function(Backbone) {
                 App.Data.stateAppData[i] = true;
             }
             // remember state of data of application (end)
+
+            this.listenTo(App.Data.myorder, 'paymentResponse paymentFailed', function() {
+                App.Data.establishments && App.Data.establishments.removeSavedEstablishment();
+            }, this);
         },
         navigate: function() {
             this.started && arguments[0] != location.hash.slice(1) && App.Data.mainModel.trigger('loadStarted');
