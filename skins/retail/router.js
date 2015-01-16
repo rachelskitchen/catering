@@ -562,16 +562,14 @@ define(["backbone", "main_router"], function(Backbone) {
         },
         maintenance: function() {
             var settings = App.Data.settings;
+            if (settings.get('isMaintenance')) {
+                App.Data.mainModel.set({
+                    mod: 'Maintenance',
+                    errMsg: settings.get('maintenanceMessage')
+                });
+            }
             this.change_page();
             App.Routers.MainRouter.prototype.maintenance.apply(this, arguments);
-            window.setTimeout(function() {
-                if (settings.get('isMaintenance')) {
-                    App.Data.mainModel.set({
-                        mod: 'Maintenance',
-                        errMsg: settings.get('maintenanceMessage')
-                    });
-                }
-            }, 0);
         }
     });
 
