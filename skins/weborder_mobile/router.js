@@ -216,9 +216,9 @@ define(["backbone", "main_router"], function(Backbone) {
         * Get a stores list.
         */
         getEstablishments: function() {
-            this.callback = function() {
+            this.getEstablishmentsCallback = function() {
                 var si = App.Data.storeInfo;
-                if (si) si.set('needShowStoreChoice', true);
+                if (/^(index.*)?$/i.test(Backbone.history.fragment) && si) si.set('needShowStoreChoice', true);
             };
             App.Routers.MainRouter.prototype.getEstablishments.apply(this, arguments);
         },
