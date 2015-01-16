@@ -135,7 +135,13 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 } else if(cssua.ua.ios) {
                     args.push(this.get('gObj') + '.handleResponse');
                     args.unshift(method);
-                    window.location.href = '/' + args.join('/');
+                    if(parseInt(cssua.ua, 10) < 8) {
+                        window.location.href = '/' + args.join('/');
+                    } else if(window.webkit instanceof Object && window.webkit.messageHandlers.observe instanceof Object && typeof window.webkit.messageHandlers.observe.postMessage == 'function') {
+                        // postMessage() method is used in iOS8 for communication HTML5 client <-> iOS wrapper
+                        window.webkit.messageHandlers.observe.postMessage(args.join('/'), location.origin);
+                    }
+
                 } else {
                     this.handleResponse({message: 'result string', errorCode: REVEL_API_ERROR_CODES.INTERNAL_ERROR, data: arguments[0]});
                 }
