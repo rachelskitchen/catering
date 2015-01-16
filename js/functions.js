@@ -689,9 +689,19 @@ function processTemplate(templateLoad, callback) {
  * Include CSS file
  */
 function loadCSS(name) {
-    if ($('link[href="' + name + '.css"]').length === 0) {
-        $('head').append('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
+    if (!App.Data.loadModelCSS) App.Data.loadModelCSS = {};
+    if (!App.Data.loadModelCSS.count) App.Data.loadModelCSS.count = 0;
+    if (loadCSS[name] === undefined && $('link[href="' + name + '.css"]').length === 0) {
+        App.Data.loadModelCSS.dfd = $.Deferred();
+        App.Data.loadModelCSS.count++;
+        var style = $('<link rel="stylesheet" href="' + name + '.css" type="text/css">');
+        style.on('load', function() {
+            App.Data.loadModelCSS.count--;
+            if (App.Data.loadModelCSS.count === 0) App.Data.loadModelCSS.dfd.resolve();
+        });
+        $('head').append(style);
     }
+    loadCSS[name] = true;
 }
 
 /**
