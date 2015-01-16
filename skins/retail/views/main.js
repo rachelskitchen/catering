@@ -20,10 +20,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator"], function(Backbone) {
+define(["done_view", "generator"], function(done_view) {
     'use strict';
-
-    App.Views.MainView = {};
 
     var MainMainView = App.Views.FactoryView.extend({
         name: 'main',
@@ -243,9 +241,15 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    return new (require('factory'))(function() {
-        App.Views.MainView = {};
+    var MainDoneView = App.Views.CoreMainView.CoreMainDoneView.extend({
+        getPickupTime: function() {
+            return {};
+        }
+    });
+
+    return new (require('factory'))(done_view.initViews.bind(done_view), function() {
         App.Views.MainView.MainMainView = MainMainView;
         App.Views.MainView.MainMaintenanceView = MainMaintenanceView;
+        App.Views.MainView.MainDoneView = MainDoneView;
     });
 });

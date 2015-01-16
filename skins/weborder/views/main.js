@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator"], function(Backbone) {
+define(["done_view", "generator"], function(done_view) {
     'use strict';
 
     var MainMainView = App.Views.FactoryView.extend({
@@ -287,9 +287,16 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    return new (require('factory'))(function() {
-        App.Views.MainView = {};
+    var MainDoneView = App.Views.CoreMainView.CoreMainDoneView.extend({
+        return_menu: function() {
+            this.model.unset('popup');
+            App.Views.CoreMainView.CoreMainDoneView.prototype.return_menu.apply(this, arguments);
+        }
+    });
+
+    return new (require('factory'))(done_view.initViews.bind(done_view), function() {
         App.Views.MainView.MainMainView = MainMainView;
         App.Views.MainView.MainMaintenanceView = MainMaintenanceView;
+        App.Views.MainView.MainDoneView = MainDoneView;
     });
 });

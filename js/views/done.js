@@ -101,6 +101,7 @@ define(["backbone", "factory"], function(Backbone) {
     });
 
     return new (require('factory'))(function() {
+        App.Views.MainView = {};
         App.Views.MainView.MainDoneView = App.Views.CoreMainView.CoreMainDoneView;
     });
 });

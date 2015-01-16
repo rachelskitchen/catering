@@ -167,7 +167,7 @@ define(["main_router"], function(main_router) {
                     }
                 });
 
-                new App.Views.MainView({
+                new App.Views.MainView.MainMainView({
                     model: mainModel,
                     el: 'body'
                 });
