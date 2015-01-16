@@ -195,7 +195,7 @@ define(["main_router"], function(main_router) {
         */
         getEstablishments: function() {
             this.callback = function() {
-                App.Data.mainModel.set('needShowStoreChoice', true);
+                if (/^(index.*)?$/i.test(Backbone.history.fragment)) App.Data.mainModel.set('needShowStoreChoice', true);
             };
             App.Routers.MainRouter.prototype.getEstablishments.apply(this, arguments);
         },
