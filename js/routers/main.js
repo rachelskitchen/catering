@@ -238,6 +238,7 @@ define(["backbone"], function(Backbone) {
                 if (App.Data.loadModelTemplate && App.Data.loadModelTemplate.dfd) {
                     dependencies.push(App.Data.loadModelTemplate.dfd);
                 }
+                if (App.Data.loadModelCSS && App.Data.loadModelCSS.dfd) dependencies.push(App.Data.loadModelCSS.dfd);
                 if (App.Data.loadModules) {
                     dependencies.push(App.Data.loadModules);
                 }

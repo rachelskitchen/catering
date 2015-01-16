@@ -150,7 +150,6 @@
                     }
                     App.Data.router = new App.Routers.Router;
                     var router = App.Data.router;
-                    router.prepare.initialized = false;
                     router.once('started', function() {
                         // hide a launch spinner & load an establishments list
                         win.trigger('hideSpinner');
