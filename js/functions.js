@@ -689,19 +689,38 @@ function processTemplate(templateLoad, callback) {
  * Include CSS file
  */
 function loadCSS(name) {
+    // cache is used after a return to previous establishment
+    if(!(loadCSS.cache instanceof Object)) {
+        loadCSS.cache = {};
+    }
+
+    var id = typeof btoa == 'function' ? btoa(name) : encodeURIComponent(name),
+        elem;
+
+    if(loadCSS.cache[id] instanceof $) {
+        elem = loadCSS.cache[id];
+    } else {
+        elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
+    }
+
     if (!App.Data.loadModelCSS) App.Data.loadModelCSS = {};
     if (!App.Data.loadModelCSS.count) App.Data.loadModelCSS.count = 0;
-    if (loadCSS[name] === undefined && $('link[href="' + name + '.css"]').length === 0) {
-        App.Data.loadModelCSS.dfd = $.Deferred();
-        App.Data.loadModelCSS.count++;
-        var style = $('<link rel="stylesheet" href="' + name + '.css" type="text/css">');
-        style.on('load', function() {
-            App.Data.loadModelCSS.count--;
-            if (App.Data.loadModelCSS.count === 0) App.Data.loadModelCSS.dfd.resolve();
-        });
-        $('head').append(style);
+
+    if($('link[href="' + name + '.css"]').length === 0) {
+        if (loadCSS[name] === undefined) {
+            App.Data.loadModelCSS.dfd = $.Deferred();
+            App.Data.loadModelCSS.count++;
+            elem.on('load', function() {
+                App.Data.loadModelCSS.count--;
+                if (App.Data.loadModelCSS.count === 0) App.Data.loadModelCSS.dfd.resolve();
+            });
+        }
+        $('head').append(elem);
     }
+
     loadCSS[name] = true;
+
+    return elem;
 }
 
 /**
