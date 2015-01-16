@@ -39,7 +39,8 @@ define(['backbone', 'collection_sort'], function(Backbone) {
             var modelForView = new App.Models.ModelForCoreEstablishmentsMainView();
             this.meta('modelForView', modelForView); // get or set meta data of collection
             this.listenTo(this, 'changeEstablishment', function(establishmentID) {
-                this.meta('establishment', establishmentID * 1); // get or set meta data of collection
+                var est = establishmentID * 1;
+                this.meta('establishment', est); // get or set meta data of collection
             });
         },
         /**
@@ -61,9 +62,10 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         */
         checkGETParameters: function(establishment) {
             var params = parse_get_params(), // get GET-parameters from address line
-                self = this;
+                self = this,
+                savedEst = this.loadEstablishment();
 
-            establishment = establishment || !params.brand && 1;
+            establishment = savedEst ? savedEst : (establishment || !params.brand && 1);
 
             if (establishment) {
                 return changeEstablishment(establishment); // get or set meta data of collection
@@ -146,5 +148,28 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         needShowAlert: function(needShowAlert) {
             this.getModelForView().set('needShowAlert', needShowAlert);
         },
+        /**
+         * Save establishment to session storage.
+         * Used in cases when user perform payment with derirect to another page
+         */
+        saveEstablishment: function(establishment) {
+            setData('establishments', {establishment: establishment});
+        },
+        /**
+         * Load saved establishment from session storage
+         */
+        loadEstablishment: function() {
+            var data = getData('establishments');
+            if(data instanceof Object) {
+                return data.establishment;
+            }
+        },
+        /**
+         * Remove establishment from session storage.
+         * Used in cases when user has performed payment with derirect to another page and return to app
+         */
+        removeSavedEstablishment: function() {
+            removeData('establishments');
+        }
     });
 })

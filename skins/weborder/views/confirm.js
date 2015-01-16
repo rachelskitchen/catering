@@ -20,10 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "confirm_view"], function(Backbone) {
+define(["confirm_view"], function(confirm_view) {
     'use strict';
 
-    App.Views.ConfirmView.ConfirmPayCardView = App.Views.CoreConfirmView.CoreConfirmPayCardView.extend({
+    var ConfirmPayCardView = App.Views.CoreConfirmView.CoreConfirmPayCardView.extend({
         render: function() {
             var new_model = {}, offset,
                 pickup = this.collection.checkout.get("pickupTS"),
@@ -37,12 +37,12 @@ define(["backbone", "confirm_view"], function(Backbone) {
 
             if (isASAP) {
                 if (new_model.isDelivery) {
-                   offset = App.Settings.estimated_delivery_time; 
+                   offset = App.Settings.estimated_delivery_time;
                 } else {
                    offset = App.Settings.estimated_order_preparation_time;
                 }
                 new_model.pickup_time = offset > 0 ? 'Today ASAP (' + offset + ' min)' : 'Today ASAP';
-            } else {   
+            } else {
                 new_model.pickup_time = format_date_3(pickup);
             }
 
@@ -52,5 +52,9 @@ define(["backbone", "confirm_view"], function(Backbone) {
 
             return this;
         }
+    });
+
+    return new (require('factory'))(confirm_view.initViews.bind(confirm_view), function() {
+        App.Views.ConfirmView.ConfirmPayCardView = ConfirmPayCardView;
     });
 });

@@ -20,10 +20,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", 'factory', 'generator', 'list'], function(Backbone) {
+define(["list", "generator"], function(list_view) {
+    'use strict';
+
     App.Views.CoreCategoriesView = {};
 
-       App.Views.CoreCategoriesView.CoreCategoriesItemView = App.Views.ItemView.extend({
+    App.Views.CoreCategoriesView.CoreCategoriesItemView = App.Views.ItemView.extend({
         name: 'categories',
         mod: 'item',
         initialize: function() {
@@ -79,9 +81,9 @@ define(["backbone", 'factory', 'generator', 'list'], function(Backbone) {
         }
     });
 
-    App.Views.CategoriesView = {};
-
-    App.Views.CategoriesView.CategoriesItemView = App.Views.CoreCategoriesView.CoreCategoriesItemView;
-
-    App.Views.CategoriesView.CategoriesMainView = App.Views.CoreCategoriesView.CoreCategoriesMainView;
+    return new (require('factory'))(function() {
+        App.Views.CategoriesView = {};
+        App.Views.CategoriesView.CategoriesItemView = App.Views.CoreCategoriesView.CoreCategoriesItemView;
+        App.Views.CategoriesView.CategoriesMainView = App.Views.CoreCategoriesView.CoreCategoriesMainView;
+    });
 });

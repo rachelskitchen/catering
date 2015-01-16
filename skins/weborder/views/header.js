@@ -20,12 +20,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory"], function(Backbone) {
+define(["backbone", "factory"], function() {
     'use strict';
 
     App.Views.HeaderView = {};
 
-    App.Views.HeaderView.HeaderMainView = App.Views.FactoryView.extend({
+    var HeaderMainView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'main',
         initialize: function() {
@@ -65,7 +65,7 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
-    App.Views.HeaderView.HeaderCheckoutView = App.Views.FactoryView.extend({
+    var HeaderCheckoutView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'checkout',
         render: function() {
@@ -88,12 +88,12 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
-    App.Views.HeaderView.HeaderConfirmationView = App.Views.FactoryView.extend({
+    var HeaderConfirmationView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'confirmation'
     });
 
-    App.Views.HeaderView.HeaderDeliveryView = App.Views.FactoryView.extend({
+    var HeaderDeliveryView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'delivery',
         render: function() {
@@ -115,5 +115,13 @@ define(["backbone", "factory"], function(Backbone) {
             this.model = initial_model;
             App.Views.FactoryView.prototype.render.apply(this, arguments);
         }
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.HeaderView = {};
+        App.Views.HeaderView.HeaderMainView = HeaderMainView;
+        App.Views.HeaderView.HeaderCheckoutView = HeaderCheckoutView;
+        App.Views.HeaderView.HeaderConfirmationView = HeaderConfirmationView;
+        App.Views.HeaderView.HeaderDeliveryView = HeaderDeliveryView;
     });
 });

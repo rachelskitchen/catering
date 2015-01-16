@@ -87,7 +87,8 @@ define(["backbone", "checkout_view"], function(Backbone) {
         }
     });
 
-    App.Views.ConfirmView = {}
-
-    App.Views.ConfirmView.ConfirmPayCardView = App.Views.CoreConfirmView.CoreConfirmPayCardView;
+    return new (require('factory'))(function() {
+        App.Views.ConfirmView = {};
+        App.Views.ConfirmView.ConfirmPayCardView = App.Views.CoreConfirmView.CoreConfirmPayCardView;
+    });
 });

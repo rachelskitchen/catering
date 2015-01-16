@@ -20,10 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator", 'products_view'], function(Backbone) {
+define(["products_view"], function(products_view) {
     'use strict';
 
-    App.Views.ProductView.ProductListItemView = App.Views.CoreProductView.CoreProductListItemView.extend({
+    var ProductListItemView = App.Views.CoreProductView.CoreProductListItemView.extend({
         showModifiers: function() {
             var myorder = new App.Models.Myorder(),
                 def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
@@ -49,7 +49,7 @@ define(["backbone", "factory", "generator", 'products_view'], function(Backbone)
         }
     });
 
-    App.Views.ProductView.ProductListView = App.Views.CoreProductView.CoreProductListView.extend({
+    var ProductListView = App.Views.CoreProductView.CoreProductListView.extend({
         initialize: function() {
             this.listenTo(this.options.filter, 'change', this.sortItems, this);
             this.listenTo(this.options.filter, 'change', this.filterItems, this);
@@ -85,7 +85,7 @@ define(["backbone", "factory", "generator", 'products_view'], function(Backbone)
         }
     });
 
-    App.Views.ProductView.ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView.extend({
+    var ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView.extend({
         render: function() {
             App.Views.CoreProductView.CoreProductModifiersView.prototype.render.apply(this, arguments);
             this.showImage({
@@ -123,5 +123,11 @@ define(["backbone", "factory", "generator", 'products_view'], function(Backbone)
                 this.product.set('price', floatValue);
             }
         }
+    });
+
+    return new (require('factory'))(products_view.initViews.bind(products_view), function() {
+        App.Views.ProductView.ProductListItemView = ProductListItemView;
+        App.Views.ProductView.ProductListView = ProductListView;
+        App.Views.ProductView.ProductModifiersView = ProductModifiersView;
     });
 });

@@ -22,6 +22,7 @@
 
 define(["backbone", "factory"], function(Backbone) {
     'use strict';
+
     App.Views.CoreQuantityView = {};
 
     App.Views.CoreQuantityView.CoreQuantityMainView = App.Views.FactoryView.extend({
@@ -118,8 +119,9 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
-    App.Views.QuantityView = {};
-
-    App.Views.QuantityView.QuantityMainView = App.Views.CoreQuantityView.CoreQuantityMainView;
-    App.Views.QuantityView.QuantityWeightView = App.Views.CoreQuantityView.CoreQuantityWeightView;
+    return new (require('factory'))(function() {
+        App.Views.QuantityView = {};
+        App.Views.QuantityView.QuantityMainView = App.Views.CoreQuantityView.CoreQuantityMainView;
+        App.Views.QuantityView.QuantityWeightView = App.Views.CoreQuantityView.CoreQuantityWeightView;
+    });
 });

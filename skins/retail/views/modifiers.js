@@ -20,10 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", 'modifiers_view'], function(Backbone) {
+define(["modifiers_view"], function(modifiers_view) {
     'use strict';
 
-    App.Views.ModifiersView.ModifiersMatrixView = App.Views.FactoryView.extend({
+    var ModifiersMatrixView = App.Views.FactoryView.extend({
         name: 'modifiers',
         mod: 'matrix',
         initialize: function() {
@@ -68,7 +68,7 @@ define(["backbone", "factory", 'modifiers_view'], function(Backbone) {
         }
     });
 
-    App.Views.ModifiersView.ModifiersMatrixesView = App.Views.CoreModifiersView.CoreModifiersMatrixesView.extend({
+    var ModifiersMatrixesView = App.Views.CoreModifiersView.CoreModifiersMatrixesView.extend({
         initialize: function() {
             this.model = new Backbone.Model;
             App.Views.CoreModifiersView.CoreModifiersMatrixesView.prototype.initialize.apply(this, arguments);
@@ -115,10 +115,16 @@ define(["backbone", "factory", 'modifiers_view'], function(Backbone) {
         }
     });
 
-    App.Views.ModifiersClassesView.ModifiersClassesMatrixesView = App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView.extend({
+    var ModifiersClassesMatrixesView = App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView.extend({
         addItem: function() {
             App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView.prototype.addItem.apply(this, arguments);
             this.$el.parents('.modifiers_table').show();
         }
+    });
+
+    return new (require('factory'))(modifiers_view.initViews.bind(modifiers_view), function() {
+        App.Views.ModifiersView.ModifiersMatrixView = ModifiersMatrixView;
+        App.Views.ModifiersView.ModifiersMatrixesView = ModifiersMatrixesView;
+        App.Views.ModifiersClassesView.ModifiersClassesMatrixesView = ModifiersClassesMatrixesView;
     });
 });
