@@ -34,7 +34,7 @@ require(['app'], function() {
     skins.set('RETAIL', 'retail');
 
     // set REVEL_HOST for getting data from it
-    app.REVEL_HOST = "https://weborder-qa-dev-branch.revelup.com";
+    app.REVEL_HOST = "https://weborder-dev-branch.revelup.com";
 
     // run app
     app.init();
