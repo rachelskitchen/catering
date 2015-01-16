@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator"], function() {
+define(["done_view", "generator"], function(done_view) {
     'use strict';
 
     var MainView = App.Views.FactoryView.extend({
@@ -250,7 +250,7 @@ define(["backbone", "factory", "generator"], function() {
         resize();
     }
 
-    return new (require('factory'))(function() {
-        App.Views.MainView = MainView;
+    return new (require('factory'))(done_view.initViews.bind(done_view), function() {
+        App.Views.MainView.MainMainView = MainView;
     });
 });

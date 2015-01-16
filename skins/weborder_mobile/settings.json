@@ -17,7 +17,7 @@
             "css": ["store_info", "categories"],
             "views": ["store_info", "categories"],
             "templates": ["store_info", "categories"],
-            "core": ["categories", "categories_view"]
+            "core": ["categories"]
         },
         "products": {
             "css": ["products"],
@@ -29,13 +29,13 @@
             "css": ["modifiers", "products", "quantity", "instructions", "myorder"],
             "views": ["products", "quantity", "instructions", "myorder"],
             "templates": ["modifiers", "products", "quantity", "instructions", "myorder"],
-            "core": ["categories", "products", "modifiers", "modifiers_view", "instructions_view"]
+            "core": ["categories", "products", "modifiers", "modifiers_view"]
         },
         "myorder": {
             "css": ["myorder", "total", "checkout"],
             "views": ["myorder", "checkout"],
             "templates": ["myorder", "total", "checkout"],
-            "core": ["myorder_view", "total_view"]
+            "core": ["total_view"]
         },
         "checkout": {
             "css": ["checkout"],
@@ -47,13 +47,13 @@
             "css": ["card"],
             "views": ["card"],
             "templates": ["card"],
-            "core": ["card", "jquery_numbermask", "card_view"]
+            "core": ["card", "jquery_numbermask"]
         },
         "giftcard": {
             "css": ["card"],
             "views": ["giftcard"],
             "templates": ["giftcard"],
-            "core": ["giftcard", "jquery_numbermask", "giftcard_view"]
+            "core": ["giftcard", "jquery_numbermask"]
         },
         "confirm": {
             "css": ["total", "checkout", "card", "tips"],
@@ -63,9 +63,9 @@
         },
         "done": {
             "css": ["done"],
-            "views": ["done"],
+            "views": [],
             "templates": ["done"],
-            "core": ["products", "modifiers", "tip", "checkout", "card", "giftcard", "done_view"]
+            "core": ["products", "modifiers", "tip", "checkout", "card", "giftcard"]
         },
         "store_info": {
             "css": ["store_info"],
