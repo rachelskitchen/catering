@@ -20,13 +20,8 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "main_router"], function(Backbone) {
+define(["main_router"], function(main_router) {
     'use strict';
-
-    window.DINING_OPTION_NAME = {
-        DINING_OPTION_TOGO: 'Pick up in store',
-        DINING_OPTION_DELIVERY: 'Shipping'
-    };
 
     var headers = {},
         carts = {};
@@ -42,9 +37,7 @@ define(["backbone", "main_router"], function(Backbone) {
         carts.checkout = {mod: 'Checkout', className: 'checkout'};
     }
 
-    defaultRouterData(); // default router data
-
-    App.Routers.Router = App.Routers.MainRouter.extend({
+    var Router = App.Routers.MainRouter.extend({
         routes: {
             "": "index",
             "index(/:data)": "index",
@@ -165,8 +158,9 @@ define(["backbone", "main_router"], function(Backbone) {
                 checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
             this.on('route', function() {
-               App.Data.mainModel.trigger('onRoute');
-               App.Data.errors.hide();
+                // can be called when App.Data.mainModel is not initializd yet ('back' btn in browser history control)
+                App.Data.mainModel && App.Data.mainModel.trigger('onRoute');
+                App.Data.errors.hide();
             });
 
             App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
@@ -209,7 +203,8 @@ define(["backbone", "main_router"], function(Backbone) {
                 App.Data.mainModel.trigger('loadCompleted');
 
                 var state = {},
-                    encoded;
+                    hashRE = /#.*$/,
+                    encoded, url;
 
                 if(this.state)
                     state = this.state;
@@ -220,9 +215,9 @@ define(["backbone", "main_router"], function(Backbone) {
                 state.parent_selected = App.Data.categories.parent_selected;
                 state.selected = App.Data.categories.selected;
                 encoded = this.encodeState(state);
+                url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
 
-                // can't use this.navigate() due to it invokes spinner
-                Backbone.Router.prototype.navigate.call(this, 'index/' + encoded);
+                this.updateState(!this.index.initState, url);
 
                 // save state after initialization of views.
                 // second entry in window.history (#index -> #index/<data>).
@@ -243,7 +238,9 @@ define(["backbone", "main_router"], function(Backbone) {
                 if(result.get('products').length == 0)
                     return;
 
-                var state = {};
+                var state = {},
+                    hashRE = /#.*$/,
+                    encoded, url;
 
                 if(this.state)
                     state = this.state;
@@ -251,16 +248,18 @@ define(["backbone", "main_router"], function(Backbone) {
                 delete state.parent_selected;
                 delete state.selected;
                 state.pattern = result.get('pattern');
+                encoded = this.encodeState(state);
+                url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
 
-                // can't use this.navigate() due to it invokes spinner
-                Backbone.Router.prototype.navigate.call(this, 'index/' + this.encodeState(state), true);
+                this.updateState(!this.index.initState, url);
             });
 
             // listen to filter changes and encode it to hash
             this.listenTo(App.Data.filter, 'change', function(model) {
                 var state = {},
                     noChanges = true,
-                    i;
+                    hashRE = /#.*$/,
+                    i, encoded, url;
 
                 if(this.state)
                     state = this.state;
@@ -283,8 +282,10 @@ define(["backbone", "main_router"], function(Backbone) {
                 if(state.attribute1 == 1)
                     delete state.attribute1;
 
-                // can't use this.navigate() due to it invokes spinner
-                Backbone.Router.prototype.navigate.call(this, 'index/' + this.encodeState(state));
+                encoded = this.encodeState(state);
+                url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
+
+                this.updateState(false, url);
             });
 
             // onCheckoutClick event occurs when 'checkout' button is clicked
@@ -352,10 +353,12 @@ define(["backbone", "main_router"], function(Backbone) {
             }
         },
         showPromoMessage: function() {
-            App.Data.header.set('isShowPromoMessage', true);
+            // can be called when App.Data.header is not initializd yet ('back' btn in browser history control)
+            App.Data.header && App.Data.header.set('isShowPromoMessage', true);
         },
         hidePromoMessage: function() {
-            App.Data.header.set('isShowPromoMessage', false);
+            // can be called when App.Data.header is not initializd yet ('back' btn in browser history control)
+            App.Data.header && App.Data.header.set('isShowPromoMessage', false);
         },
         /**
         * Get a stores list.
@@ -371,17 +374,13 @@ define(["backbone", "main_router"], function(Backbone) {
         */
         resetEstablishmentData: function() {
             App.Routers.MainRouter.prototype.resetEstablishmentData.apply(this, arguments);
-            Backbone.history.stop();
-            this.index.initState = undefined;
-            window.location.hash = '';
-            defaultRouterData(); // default router data
-            this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
+            this.index.initState = null;
         },
         /**
         * Remove HTML and CSS of current establishment in case if establishment ID will change.
         */
         removeHTMLandCSS: function() {
-            Backbone.$('link[href$="colors.css"]').remove();
+            App.Routers.MainRouter.prototype.removeHTMLandCSS.apply(this, arguments);
             this.bodyElement.children('.main-container').remove();
         },
         index: function(data) {
@@ -577,4 +576,13 @@ define(["backbone", "main_router"], function(Backbone) {
         // IE 10: console doesn't have debug method
         typeof console.debug == 'function' && console.debug.apply(console, arguments);
     }
+
+    return new main_router(function() {
+        window.DINING_OPTION_NAME = {
+            DINING_OPTION_TOGO: 'Pick up in store',
+            DINING_OPTION_DELIVERY: 'Shipping'
+        };
+        defaultRouterData();
+        App.Routers.Router = Router;
+    });
 });

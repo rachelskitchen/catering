@@ -20,10 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "myorder_view"], function(Backbone) {
+define(["myorder_view"], function(myorder_view) {
     'use strict';
 
-    App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView.extend({
+    var MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView.extend({
         initialize: function() {
             App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.attributes_update);
@@ -157,7 +157,7 @@ define(["backbone", "myorder_view"], function(Backbone) {
         }
     });
 
-    App.Views.MyOrderView.MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
+    var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
         editItem: function(e) {
             e.preventDefault();
             var model = this.model;
@@ -171,7 +171,7 @@ define(["backbone", "myorder_view"], function(Backbone) {
         }
     });
 
-    App.Views.MyOrderView.MyOrderItemSpecialView = App.Views.FactoryView.extend({
+    var MyOrderItemSpecialView = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'itemSpecial',
         render: function() {
@@ -181,5 +181,11 @@ define(["backbone", "myorder_view"], function(Backbone) {
             };
             this.$el.html(this.template(model));
         }
+    });
+
+    return new (require('factory'))(myorder_view.initViews.bind(myorder_view), function() {
+        App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
+        App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
+        App.Views.MyOrderView.MyOrderItemSpecialView = MyOrderItemSpecialView;
     });
 });

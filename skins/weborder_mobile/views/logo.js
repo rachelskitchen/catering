@@ -20,12 +20,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "store_info_view"], function(Backbone) {
+define(["store_info_view"], function(store_info_view) {
     'use strict';
 
     var logoNode, ih;
 
-    App.Views.LogoView = App.Views.CoreStoreInfoView.CoreStoreInfoMainView.extend({
+    var LogoView = App.Views.CoreStoreInfoView.CoreStoreInfoMainView.extend({
         initialize: function() {
             this.resize = logoResize.bind(this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
@@ -104,4 +104,8 @@ define(["backbone", "factory", "store_info_view"], function(Backbone) {
 
         logoNode = logoCont.get(0);
     }
+
+    return new (require('factory'))(store_info_view.initViews.bind(store_info_view), function() {
+        App.Views.LogoView = LogoView;
+    });
 });

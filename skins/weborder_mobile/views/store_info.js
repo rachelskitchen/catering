@@ -23,9 +23,7 @@
 define(["backbone", "factory", "generator"], function(Backbone) {
     'use strict';
 
-    App.Views.StoreInfoView = {};
-
-    App.Views.StoreInfoView.StoreInfoMainView = App.Views.LogoView.extend({
+    var StoreInfoMainView = App.Views.LogoView.extend({
         name: 'store_info',
         mod: 'main',
         initialize: function() {
@@ -103,7 +101,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.StoreInfoView.StoreInfoInDetailsView = App.Views.LogoView.extend({
+    var StoreInfoInDetailsView = App.Views.LogoView.extend({
         name: 'store_info',
         mod: 'details',
         initialize: function() {
@@ -123,7 +121,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.StoreInfoView.StoreInfoMapView = App.Views.CoreStoreInfoView.CoreStoreInfoMainView.extend({
+    var StoreInfoMapView = App.Views.CoreStoreInfoView.CoreStoreInfoMainView.extend({
         name: 'store_info',
         mod: 'map',
         render: function() {
@@ -132,12 +130,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.StoreInfoView.StoreInfoAboutView = App.Views.LogoView.extend({
+    var StoreInfoAboutView = App.Views.LogoView.extend({
         name: 'store_info',
         mod: 'about'
     });
 
-    App.Views.StoreInfoView.StoreInfoGalleryView = App.Views.FactoryView.extend({
+    var StoreInfoGalleryView = App.Views.FactoryView.extend({
         name: 'store_info',
         mod: 'gallery',
         initialize: function() {
@@ -159,5 +157,14 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
             return this;
         }
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.StoreInfoView = {};
+        App.Views.StoreInfoView.StoreInfoMainView = StoreInfoMainView;
+        App.Views.StoreInfoView.StoreInfoInDetailsView = StoreInfoInDetailsView;
+        App.Views.StoreInfoView.StoreInfoMapView = StoreInfoMapView;
+        App.Views.StoreInfoView.StoreInfoAboutView = StoreInfoAboutView;
+        App.Views.StoreInfoView.StoreInfoGalleryView = StoreInfoGalleryView;
     });
 });

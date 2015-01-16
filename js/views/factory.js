@@ -21,6 +21,8 @@
  */
 
 define(['backbone'], function(Backbone) {
+    'use strict';
+
     App.Views.FactoryView = Backbone.View.extend({
         constructor: function() {
             this.subViews = [];
@@ -100,4 +102,21 @@ define(['backbone'], function(Backbone) {
             });
         }
     });
+
+    /**
+     * ViewModule class
+     * Provides global views initialization
+     */
+    function ViewModule() {
+        this.args = arguments;
+        this.initViews();
+    }
+
+    ViewModule.prototype.initViews = function() {
+        Array.prototype.forEach.call(this.args, function(cb) {
+            typeof cb == 'function' && cb();
+        });
+    };
+
+    return ViewModule;
 });

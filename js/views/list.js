@@ -23,14 +23,14 @@
 define(["backbone", "factory"], function(Backbone) {
     'use strict';
 
-    App.Views.ItemView = App.Views.FactoryView.extend({
+    var ItemView = App.Views.FactoryView.extend({
         afterRender: function(sort) {
             this.$el.attr('data-sort', sort);
             loadSpinner(this.$("img"));
         }
     });
 
-    App.Views.ListView = App.Views.FactoryView.extend({
+    var ListView = App.Views.FactoryView.extend({
         render: function() {
             this.initOrderSort();
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -74,7 +74,7 @@ define(["backbone", "factory"], function(Backbone) {
                 var y = my.model.get(attr);
                 var result = x < y ? -1 : x > y ? 1 : 0;
                 if (result == 0 && attr != 'name') {
-                    //for equal attributes sort models by attr 'name': 
+                    //for equal attributes sort models by attr 'name':
                     x = mx.model.get('name');
                     y = my.model.get('name');
                     result = x < y ? -1 : x > y ? 1 : 0;
@@ -89,10 +89,10 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
-    App.Views.LazyItemView = App.Views.FactoryView.extend({
+    var LazyItemView = App.Views.FactoryView.extend({
     });
 
-    App.Views.LazyListView = App.Views.FactoryView.extend({
+    var LazyListView = App.Views.FactoryView.extend({
         initialize: function() {
             this.content_elem = this.options.content_elem || "#content";
             this.parent_elem = this.options.parent_elem || "#content ul";
@@ -180,5 +180,12 @@ define(["backbone", "factory"], function(Backbone) {
             }
             model.set("logo_url_final", logo_url);
         }
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.ItemView = ItemView;
+        App.Views.ListView = ListView;
+        App.Views.LazyItemView = LazyItemView;
+        App.Views.LazyListView = LazyListView;
     });
 });

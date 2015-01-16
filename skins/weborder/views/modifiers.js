@@ -20,20 +20,25 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", 'modifiers_view'], function(Backbone) {
+define(["modifiers_view"], function(modifiers_view) {
     'use strict';
 
-    App.Views.ModifiersClassesView.ModifiersClassesMatrixesView = App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView.extend({
+    var ModifiersClassesMatrixesView = App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView.extend({
         addItem: function() {
             App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView.prototype.addItem.apply(this, arguments);
             this.$el.parents('.modifiers_table').show();
         }
     });
 
-    App.Views.ModifiersClassesView.ModifiersClassesListView = App.Views.CoreModifiersClassesView.CoreModifiersClassesListView.extend({
+    var ModifiersClassesListView = App.Views.CoreModifiersClassesView.CoreModifiersClassesListView.extend({
         addItem: function() {
             App.Views.CoreModifiersClassesView.CoreModifiersClassesListView.prototype.addItem.apply(this, arguments);
             this.$el.parents('.modifiers_table').show();
         }
+    });
+
+    return new (require('factory'))(modifiers_view.initViews.bind(modifiers_view), function() {
+        App.Views.ModifiersClassesView.ModifiersClassesMatrixesView = ModifiersClassesMatrixesView;
+        App.Views.ModifiersClassesView.ModifiersClassesListView = ModifiersClassesListView;
     });
 });

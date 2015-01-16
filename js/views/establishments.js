@@ -22,7 +22,9 @@
 
 define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
     'use strict';
+
     App.Views.CoreEstablishmentsView = {};
+
     App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView = App.Views.FactoryView.extend({
         name: 'establishments',
         mod: 'main',
@@ -63,7 +65,6 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                 message,
                 selectedEstablishmentID = this.$('select').val(),
                 estExist = function() {
-                    self.collection.trigger('resetEstablishmentData');
                     self.collection.trigger('changeEstablishment', selectedEstablishmentID);
                     self.back(); // the "Go Back" button was clicked
                 },
@@ -103,6 +104,7 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
             }
         }
     });
+
     App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectView = App.Views.ListView.extend({
         name: 'establishments',
         mod: 'select',
@@ -131,6 +133,7 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
             }
         }
     });
+
     App.Views.CoreEstablishmentsView.CoreEstablishmentsSelectItemView = App.Views.FactoryView.extend({
         name: 'establishments',
         mod: 'select_item'

@@ -95,9 +95,9 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
-    App.Views.TipsView = {};
-
-    App.Views.TipsView.TipsMainView = App.Views.CoreTipsView.CoreTipsMainView;
-
-    App.Views.TipsView.TipsLineView = App.Views.CoreTipsView.CoreTipsLineView;
+    return new (require('factory'))(function() {
+        App.Views.TipsView = {};
+        App.Views.TipsView.TipsMainView = App.Views.CoreTipsView.CoreTipsMainView;
+        App.Views.TipsView.TipsLineView = App.Views.CoreTipsView.CoreTipsLineView;
+    });
 });

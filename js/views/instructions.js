@@ -35,7 +35,7 @@ define(["backbone", "factory", "jquery_numbermask"], function(Backbone) {
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.inputValue = '';
-                    
+
             var self = this,
                 opts = {
                     pattern: /^[\s\S]{0,255}$/,
@@ -66,7 +66,8 @@ define(["backbone", "factory", "jquery_numbermask"], function(Backbone) {
         }
     });
 
-    App.Views.InstructionsView = {};
-
-    App.Views.InstructionsView.InstructionsModifiersView = App.Views.CoreInstructionsView.CoreInstructionsModifiersView;
+    return new (require('factory'))(function() {
+        App.Views.InstructionsView = {};
+        App.Views.InstructionsView.InstructionsModifiersView = App.Views.CoreInstructionsView.CoreInstructionsModifiersView;
+    });
 });
