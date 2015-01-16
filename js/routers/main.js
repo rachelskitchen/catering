@@ -330,7 +330,7 @@ define(["backbone"], function(Backbone) {
             var ests = App.Data.establishments;
             if (!App.Data.settings.get('isMaintenance') && ests.length === 0) {
                 ests.getEstablishments().then(function() { // get establishments from backend
-                    if (ests.length > 1) self.callback();
+                    if (ests.length > 1) self.getEstablishmentsCallback();
                 });
             }
         },
