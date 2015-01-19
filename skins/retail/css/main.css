@@ -938,14 +938,21 @@ section.maintenance p {
 }
 
 /** confirm page */
-.content_align {
-    height: 99%;
+#content .confirm_order {
+    height: 100%;
+    text-align: center;
+    width: 100%;
+}
+#content .confirm_order:before {
+    content: '';
     display: inline-block;
+    height: 100%;
     vertical-align: middle;
 }
-.confirm_order_wrapper {
+#content .confirm_order > div {
     display: inline-block;
     vertical-align: middle;
+    width: 99%;
 }
 /** confirm page end*/
 
