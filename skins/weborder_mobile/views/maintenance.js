@@ -23,9 +23,7 @@
 define(["backbone", "factory"], function(Backbone) {
     'use strict';
 
-    App.Views.MaintenanceView = {};
-
-    App.Views.MaintenanceView.MaintenanceMainView = App.Views.FactoryView.extend({
+    var MaintenanceMainView = App.Views.FactoryView.extend({
         name: 'maintenance',
         mod: 'main',
         render: function() {
@@ -35,6 +33,11 @@ define(["backbone", "factory"], function(Backbone) {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.listenToOnce(App.Data.mainModel, 'loadCompleted', App.Data.myorder.check_maintenance);
         }
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.MaintenanceView = {};
+        App.Views.MaintenanceView.MaintenanceMainView = MaintenanceMainView;
     });
 
 });

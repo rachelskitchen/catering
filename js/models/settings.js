@@ -326,7 +326,7 @@ define(["backbone", "async"], function(Backbone) {
                             if (settings_system.auto_bag_charge < 0)
                                 settings_system.auto_bag_charge = 0;
 
-                           //for debug: 
+                           //for debug:
                            //settings_system.color_scheme =  "blue_&_white"; // "default", "blue_&_white", "vintage"
                             setData(color_scheme_key, new Backbone.Model({color_scheme: settings_system.color_scheme}), true);
 
@@ -412,7 +412,7 @@ define(["backbone", "async"], function(Backbone) {
             return load;
         },
         load_geoloc: function() {
-            var set_sys = App.Data.settings.get("settings_system");
+            var set_sys = this.get("settings_system");
             var just_load_lib = false;
 
             // if coordinates are set in server then return
@@ -436,7 +436,7 @@ define(["backbone", "async"], function(Backbone) {
 
                 require(["async!https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true"], function() {
                     if (just_load_lib)
-                        return;
+                        return set_sys.geolocation_load.resolve();
                     var geocoder = new google.maps.Geocoder();
                     geocoder.geocode({"address": address_google}, function(results, status) {
                         if (status === google.maps.GeocoderStatus.OK) {

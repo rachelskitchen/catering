@@ -23,9 +23,7 @@
 define(["backbone", "factory"], function(Backbone) {
     'use strict';
 
-    App.Views.HeaderView = {};
-
-    App.Views.HeaderView.HeaderMainView = App.Views.FactoryView.extend({
+    var HeaderMainView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'main',
         initialize: function() {
@@ -189,12 +187,12 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
-    App.Views.HeaderView.HeaderConfirmationView = App.Views.FactoryView.extend({
+    var HeaderConfirmationView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'confirmation'
     });
 
-    App.Views.HeaderView.HeaderCheckoutView = App.Views.HeaderView.HeaderMainView.extend({
+    var HeaderCheckoutView = HeaderMainView.extend({
         name: 'header',
         mod: 'checkout',
         initialize: function() {
@@ -213,5 +211,12 @@ define(["backbone", "factory"], function(Backbone) {
         onSearch: function() {
             return;
         }
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.HeaderView = {};
+        App.Views.HeaderView.HeaderMainView = HeaderMainView;
+        App.Views.HeaderView.HeaderConfirmationView = HeaderConfirmationView;
+        App.Views.HeaderView.HeaderCheckoutView = HeaderCheckoutView;
     });
 });

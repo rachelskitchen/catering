@@ -10,7 +10,7 @@
             "model": ["main", "header"],
             "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "instructions", "quantity"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "instructions", "quantity"],
-            "core": ["generator", "myorder_view", "total_view", "products", "modifiers", "jquery_numbermask", "instructions_view"],
+            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask"],
             "js" : ["jquery.contentarrow"]
         },
         "index": {
@@ -33,12 +33,12 @@
         },
         "checkout": {
             "css": ["checkout", "confirm", "card"],
-            "views": ["cart", "checkout", "cart", "confirm", "card", "giftcard"],
+            "views": ["cart", "checkout", "cart", "confirm"],
             "templates": ["cart", "checkout", "cart", "tips", "confirm", "card", "giftcard"],
-            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "checkout_view", "card_view", "giftcard_view", "tips_view"]
+            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "card_view", "giftcard_view", "tips_view"]
         },
         "confirm": {
-            "views": ["done"],
+            "views": [],
             "templates": [],
             "model": [],
             "core": []

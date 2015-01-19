@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator", "delivery_addresses"], function(Backbone) {
+define(["delivery_addresses", "generator"], function(delivery_addresses) {
     'use strict';
 
     App.Views.CoreCheckoutView = {};
@@ -526,7 +526,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         }
     });
 
-    /*  
+    /*
     *  This DiscountCode view is used by weborder and retail skins.
     */
     App.Views.CoreCheckoutView.CoreCheckoutDiscountCodeView = App.Views.FactoryView.extend({
@@ -544,7 +544,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
 
             return this;
         },
-        events: {            
+        events: {
             'click .btnApply': 'onApplyCode',
             'keyup input[name=discount_code]': 'onChangeDiscountCode'
         },
@@ -554,18 +554,18 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
 
             if (newValue == oldValue)
                 return;
-           
+
             this.model.set({"discount_code":newValue}, {silent: true});
             this.enableApplyBtn();
         },
         onApplyCode: function() {
-            var self = this, 
+            var self = this,
                 myorder = this.options.myorder;
- 
+
             if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
                 App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
                 return;
-            } 
+            }
             myorder.get_discounts({ apply_discount: true})
                 .done(function(data) {
                     if (data.status == "OK") {
@@ -581,7 +581,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         }
     });
 
-    /*  
+    /*
     *  This DiscountCode2 view is used by weborder_mobile and paypal skins.
     */
     App.Views.CoreCheckoutView.CoreCheckoutDiscountCode2View = App.Views.FactoryView.extend({
@@ -593,14 +593,14 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         render: function() {
             var data = this.model.toJSON();
             data.discount_allow = App.Settings.accept_discount_code === true;
-            data.discount_code_applied = this.model.get("last_discount_code"); 
+            data.discount_code_applied = this.model.get("last_discount_code");
             this.$el.html(this.template(data));
             inputTypeStringMask(this.$('input'), /^[\d\w]{0,16}$/, '');
             return this;
         },
         events: {
             'click .dcode_have': 'enterDiscountCode',
-            'click .dcode_remove': 'removeDiscountCode',     
+            'click .dcode_remove': 'removeDiscountCode',
             'click .btnApply': 'onApplyCode',
             'change input[name=discount_code]': 'onChangeDiscountCode'
         },
@@ -610,7 +610,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
 
             if (newValue == oldValue)
                 return;
-           
+
             this.model.set({"discount_code":newValue}, {silent: true});
         },
         enterDiscountCode: function() {
@@ -618,7 +618,7 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             this.$(".dcode_enter").removeClass('hidden');
             this.$('input[name=discount_code]').val(this.model.get("discount_code"));
         },
-        removeDiscountCode: function() {            
+        removeDiscountCode: function() {
             var myorder = this.options.myorder;
             this.$(".dcode_remove").addClass('hidden');
             this.$(".dcode_have").removeClass('hidden');
@@ -627,13 +627,13 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
             myorder.get_discounts();
         },
         onApplyCode: function() {
-            var self = this, 
+            var self = this,
                 myorder = this.options.myorder;
- 
+
             if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
                 App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
                 return;
-            } 
+            }
             myorder.get_discounts({ apply_discount: true})
                 .done(function(data) {
                     if (data.status == "OK") {
@@ -648,23 +648,16 @@ define(["backbone", "factory", "generator", "delivery_addresses"], function(Back
         }
     });
 
-    App.Views.CheckoutView = {};
-
-    App.Views.CheckoutView.CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView;
-
-    App.Views.CheckoutView.CheckoutOrderTypeView = App.Views.CoreCheckoutView.CoreCheckoutOrderTypeView;
-
-    App.Views.CheckoutView.CheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView;
-
-    App.Views.CheckoutView.CheckoutPickupView = App.Views.CoreCheckoutView.CoreCheckoutPickupView;
-
-    App.Views.CheckoutView.CheckoutDiscountCodeView = App.Views.CoreCheckoutView.CoreCheckoutDiscountCodeView;
-
-    App.Views.CheckoutView.CheckoutDiscountCode2View = App.Views.CoreCheckoutView.CoreCheckoutDiscountCode2View;
-
-    App.Views.CheckoutView.CheckoutPayView = App.Views.CoreCheckoutView.CoreCheckoutPayView;
-
-    App.Views.CheckoutView.CheckoutPayButtonView = App.Views.CoreCheckoutView.CoreCheckoutPayButtonView;
-
-    App.Views.CheckoutView.CheckoutPageView = App.Views.CoreCheckoutView.CoreCheckoutPageView;
+    return new (require('factory'))(function() {
+        App.Views.CheckoutView = {};
+        App.Views.CheckoutView.CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView;
+        App.Views.CheckoutView.CheckoutOrderTypeView = App.Views.CoreCheckoutView.CoreCheckoutOrderTypeView;
+        App.Views.CheckoutView.CheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView;
+        App.Views.CheckoutView.CheckoutPickupView = App.Views.CoreCheckoutView.CoreCheckoutPickupView;
+        App.Views.CheckoutView.CheckoutDiscountCodeView = App.Views.CoreCheckoutView.CoreCheckoutDiscountCodeView;
+        App.Views.CheckoutView.CheckoutDiscountCode2View = App.Views.CoreCheckoutView.CoreCheckoutDiscountCode2View;
+        App.Views.CheckoutView.CheckoutPayView = App.Views.CoreCheckoutView.CoreCheckoutPayView;
+        App.Views.CheckoutView.CheckoutPayButtonView = App.Views.CoreCheckoutView.CoreCheckoutPayButtonView;
+        App.Views.CheckoutView.CheckoutPageView = App.Views.CoreCheckoutView.CoreCheckoutPageView;
+    });
 });

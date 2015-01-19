@@ -437,10 +437,26 @@ function setData(name, data, local) {
                     sessionStorage[name] = JSON.stringify(data);
             break;
         case 2:
-            document.cookie += name + '=' + JSON.stringify(data);
+            document.cookie += name + '=' + JSON.stringify(data) + ';';
             break;
     }
     return true;
+}
+/**
+ * remove data from storage (coockie or sessionStorage)
+ */
+function removeData(name, local) {
+    switch (App.Data.settings.get('storage_data')) {
+        case 1:
+            if(local && localStorage instanceof Object)
+                localStorage.removeItem(name);
+            else if(sessionStorage instanceof Object)
+                sessionStorage.removeItem(name);
+            break;
+        case 2:
+            // TODO ;
+            break;
+    }
 }
 /**
  * Helper of template.
@@ -631,28 +647,35 @@ function round_monetary_currency(value, precision, up) {
  */
 
 function loadTemplate2(name, file, isCore) {
+    var id = name ? name + '_' + file : file;
     if (!App.Data.loadModelTemplate) {
         App.Data.loadModelTemplate = {};
     }
     if (!App.Data.loadModelTemplate.count) {
         App.Data.loadModelTemplate.count = 0;
     }
-    if (loadTemplate2[file] === undefined) {
+    if (loadTemplate2[id] === undefined) {
         App.Data.loadModelTemplate.dfd = $.Deferred();
         App.Data.loadModelTemplate.count++;
         $.ajax({
             url: isCore ? 'template/' + file + '.html' : App.Data.settings.get('skinPath') + '/template/' + file + '.html',
             dataType: "html",
             success : function(data) {
-                $("head").append(data);
+                var tmplEl = $(data);
+
+                // add template node to DOM tree and cache it
+                $("head").append(tmplEl);
+                loadTemplate2[id] = tmplEl;
+
                 App.Data.loadModelTemplate.count--;
                 if (App.Data.loadModelTemplate.count === 0) {
                     App.Data.loadModelTemplate.dfd.resolve();
                 }
             }
         });
+    } else if(loadTemplate2[id] instanceof $) {
+        $("head").append(loadTemplate2[id]);
     }
-    loadTemplate2[file] = true;
 }
 /**
  * load template
@@ -1158,11 +1181,14 @@ function clearQueryString(isNotHash) {
  * save all data
  */
 function saveAllData() {
+    var settings = App.Data.settings,
+        ests = App.Data.establishments;
     App.Data.myorder.saveOrders();
     App.Data.card && App.Data.card.saveCard();
     App.Data.customer.saveCustomer();
     App.Data.customer.saveAddresses();
-    App.Data.settings.saveSettings();
+    settings.saveSettings();
+    ests && ests.saveEstablishment(settings.get('establishment'));
 }
 /*
 *  Transfor the first text letter to upper case

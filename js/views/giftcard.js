@@ -98,7 +98,8 @@ define(["backbone", "factory"], function(Backbone) {
 
     });
 
-    App.Views.GiftCardView = {};
-    App.Views.GiftCardView.GiftCardMainView = App.Views.CoreGiftCardView.CoreGiftCardMainView;
-
+    return new (require('factory'))(function() {
+        App.Views.GiftCardView = {};
+        App.Views.GiftCardView.GiftCardMainView = App.Views.CoreGiftCardView.CoreGiftCardMainView;
+    });
 });

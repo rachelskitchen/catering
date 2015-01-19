@@ -48,7 +48,6 @@ define(["backbone"], function(Backbone) {
         end_time: 0, // minutes before end
         delivery_time: 0, // order delivery time
         preparation_time: 0, // order preparation time
-        enable_asap: true,
         format: 'usa',              // pickup time format
         defaults: {
             timetable: [],            // input param is like [{to:'06:00', from:'05:00'}, {to:'19:00', from:'07:00'}, {to:'23:00', from:'21:00'}]
@@ -64,7 +63,6 @@ define(["backbone"], function(Backbone) {
             this.end_time = times.online_order_end_time_offset;
             this.delivery_time = times.estimated_delivery_time;
             this.preparation_time = times.estimated_order_preparation_time;
-            this.enable_asap = times.enable_asap_due_time;
 
         },
         /**
@@ -240,9 +238,7 @@ define(["backbone"], function(Backbone) {
                     i, j;
 
                 while (times[0] <= cur_min) {
-                    if (this.enable_asap) {
-                        asap = true;
-                    }
+                    asap = true;
                     times.shift();
                 }
             }

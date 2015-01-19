@@ -20,10 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "quantity_view"], function(Backbone) {
+define(["quantity_view"], function(quantity_view) {
     'use strict';
 
-    App.Views.QuantityView.QuantityMainView = App.Views.CoreQuantityView.CoreQuantityMainView.extend({
+    var QuantityMainView = App.Views.CoreQuantityView.CoreQuantityMainView.extend({
         events: {
             'change select': 'change',
         },
@@ -60,5 +60,9 @@ define(["backbone", "factory", "quantity_view"], function(Backbone) {
         change: function(e) {
             this.model.set('quantity', e.target.value * 1);
         }
+    });
+
+    return new (require('factory'))(quantity_view.initViews.bind(quantity_view), function() {
+        App.Views.QuantityView.QuantityMainView = QuantityMainView;
     });
 });

@@ -20,18 +20,18 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator", "list", 'products_view'], function(Backbone) {
+define(["products_view"], function(products_view) {
     'use strict';
 
-    App.Views.ProductView.ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView.extend({
-        render: function() {        
+    var ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView.extend({
+        render: function() {
             App.Views.CoreProductView.CoreProductModifiersView.prototype.render.apply(this, arguments);
             $('img', this.$el).attr('src', this.product.get("logo_url_final") ? this.product.get("logo_url_final") : this.product.get("image"));
             this.product.get('is_gift') && this.$el.addClass('is_gift');
         }
     });
 
-    App.Views.ProductView.ProductListItemView = App.Views.LazyItemView.extend({
+    var ProductListItemView = App.Views.LazyItemView.extend({
         name: 'product',
         mod: 'list_item',
         initialize: function() {
@@ -69,7 +69,7 @@ define(["backbone", "factory", "generator", "list", 'products_view'], function(B
         }
     });
 
-    App.Views.ProductView.ProductListView = App.Views.LazyListView.extend({
+    var ProductListView = App.Views.LazyListView.extend({
         name: 'product',
         mod: 'list',
         initialize: function() {
@@ -104,5 +104,11 @@ define(["backbone", "factory", "generator", "list", 'products_view'], function(B
             this.subViews.push(view);
             $(window).resize();
         }
+    });
+
+    return new (require('factory'))(products_view.initViews.bind(products_view), function() {
+        App.Views.ProductView.ProductModifiersView = ProductModifiersView;
+        App.Views.ProductView.ProductListItemView = ProductListItemView;
+        App.Views.ProductView.ProductListView = ProductListView;
     });
 });
