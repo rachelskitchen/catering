@@ -20,12 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "instructions_view"], function(Backbone) {
+define(["instructions_view"], function(instructions_view) {
     'use strict';
 
-    App.Views.InstructionsView = {};
-
-    App.Views.InstructionsView.InstructionsModifiersView = App.Views.CoreInstructionsView.CoreInstructionsModifiersView.extend({
+    var InstructionsModifiersView = App.Views.CoreInstructionsView.CoreInstructionsModifiersView.extend({
         initialize: function() {
             App.Views.CoreInstructionsView.CoreInstructionsModifiersView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.position);
@@ -94,5 +92,10 @@ define(["backbone", "factory", "instructions_view"], function(Backbone) {
                 button.html('Remove Special Instructions');
             }
         }
+    });
+
+    return new (require('factory'))(instructions_view.initViews.bind(instructions_view), function() {
+        App.Views.InstructionsView = {};
+        App.Views.InstructionsView.InstructionsModifiersView = InstructionsModifiersView;
     });
 });

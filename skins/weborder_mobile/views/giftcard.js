@@ -20,10 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "giftcard_view"], function(Backbone) {
+define(["giftcard_view"], function(giftcard_view) {
     'use strict';
 
-    App.Views.GiftCardView.GiftCardMainView = App.Views.CoreGiftCardView.CoreGiftCardMainView.extend({
+    var GiftCardMainView = App.Views.CoreGiftCardView.CoreGiftCardMainView.extend({
         initialize: function() {
             App.Views.CoreGiftCardView.CoreGiftCardMainView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'add_card', this.onProceed, this);
@@ -45,5 +45,9 @@ define(["backbone", "giftcard_view"], function(Backbone) {
                 App.Data.mainModel.trigger('loadStarted');
             });
         }
+    });
+
+    return new (require('factory'))(giftcard_view.initViews.bind(giftcard_view), function() {
+        App.Views.GiftCardView.GiftCardMainView = GiftCardMainView;
     });
 });

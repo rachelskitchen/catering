@@ -7,11 +7,11 @@
     "routing": {
         "main": {
             "css": ["main", "myorder", "jquery.contentarrow", "products", "quantity", "categories"],
-            "model": ["main", "header"],
+            "model": ["main", "header", "filter"],
             "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "quantity", "categories"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "quantity", "categories"],
-            "core": ["generator", "myorder_view", "total_view", "products", "modifiers", "jquery_numbermask", "categories", "search", "subcategories"],
-            "js" : ["jquery.contentarrow", "filter"]
+            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "categories", "search", "subcategories"],
+            "js" : ["jquery.contentarrow"]
         },
         "index": {
             "css": ["categories", "filters"],
@@ -33,15 +33,15 @@
         },
         "checkout": {
             "css": ["checkout", "confirm", "card"],
-            "views": ["cart", "checkout", "cart", "card", "giftcard"],
+            "views": ["cart", "checkout", "cart"],
             "templates": ["cart", "checkout", "cart", "confirm", "card", "giftcard"],
-            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "checkout_view", "card_view", "giftcard_view", "confirm_view"]
+            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "card_view", "giftcard_view", "confirm_view"]
         },
         "confirm": {
-            "views": ["done"],
+            "views": [],
             "templates": [],
             "model": [],
-            "core": ["done_view"]
+            "core": []
         },
         "pay": {
             "core": ["card", "giftcard", "customers"]

@@ -20,12 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
+define(["revel_view", "generator"], function(revel_view) {
     'use strict';
 
-    App.Views.FooterView = {};
-
-    App.Views.FooterView.FooterMainView = App.Views.FactoryView.extend({
+    var FooterMainView = App.Views.FactoryView.extend({
         name: 'footer',
         mod: 'main',
         initialize: function() {
@@ -113,7 +111,7 @@ define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
         }
     });
 
-    App.Views.FooterView.FooterCheckoutView = App.Views.FactoryView.extend({
+    var FooterCheckoutView = App.Views.FactoryView.extend({
         name: 'footer',
         mod: 'checkout',
         events: {
@@ -133,7 +131,7 @@ define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
         profile: setCallback('profile')
     });
 
-    App.Views.FooterView.FooterCardView = App.Views.FactoryView.extend({
+    var FooterCardView = App.Views.FactoryView.extend({
         name: 'footer',
         mod: 'card',
         events: {
@@ -149,14 +147,14 @@ define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
         }
     });
 
-    App.Views.FooterView.FooterGiftCardView = App.Views.FooterView.FooterCardView.extend({
+    var FooterGiftCardView = FooterCardView.extend({
         proceed: function() {
             var model = App.Data.giftcard;
             model && model.trigger('add_card');
         }
     });
 
-    App.Views.FooterView.FooterConfirmView = App.Views.FactoryView.extend({
+    var FooterConfirmView = App.Views.FactoryView.extend({
         name: 'footer',
         mod: 'confirm',
         events: {
@@ -246,7 +244,7 @@ define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
         }
     });
 
-    App.Views.FooterView.FooterDoneView = App.Views.FactoryView.extend({
+    var FooterDoneView = App.Views.FactoryView.extend({
         name: 'footer',
         mod: 'done',
         events: {
@@ -268,7 +266,7 @@ define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
         }
     });
 
-    App.Views.FooterView.FooterMaintenanceView = App.Views.FactoryView.extend({
+    var FooterMaintenanceView = App.Views.FactoryView.extend({
         name: 'footer',
         mod: 'maintenance',
         events: {
@@ -279,14 +277,12 @@ define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
         }
     });
 
-    App.Views.FooterView.FooterMaintenanceDirectoryView = App.Views.FactoryView.extend({
+    var FooterMaintenanceDirectoryView = App.Views.FactoryView.extend({
         name: 'footer',
         mod: 'maintenance_directory'
     });
 
-    App.Views.FooterView.FooterProfileView = App.Views.RevelView.RevelProfileFooterView;
-
-    App.Views.FooterView.FooterLoyaltyView = App.Views.FooterView.FooterMainView.extend({
+    var FooterLoyaltyView = FooterMainView.extend({
         name: 'footer',
         mod: 'loyalty'
     });
@@ -297,4 +293,18 @@ define(["backbone", "factory", "generator", "revel_view"], function(Backbone) {
             typeof tab == 'function' && tab();
         };
     }
+
+    return new (require('factory'))(revel_view.initViews.bind(revel_view), function() {
+        App.Views.FooterView = {};
+        App.Views.FooterView.FooterMainView = FooterMainView;
+        App.Views.FooterView.FooterCheckoutView = FooterCheckoutView;
+        App.Views.FooterView.FooterCardView = FooterCardView;
+        App.Views.FooterView.FooterGiftCardView = FooterGiftCardView;
+        App.Views.FooterView.FooterConfirmView = FooterConfirmView;
+        App.Views.FooterView.FooterDoneView = FooterDoneView;
+        App.Views.FooterView.FooterMaintenanceView = FooterMaintenanceView;
+        App.Views.FooterView.FooterMaintenanceDirectoryView = FooterMaintenanceDirectoryView;
+        App.Views.FooterView.FooterProfileView = App.Views.RevelView.RevelProfileFooterView;
+        App.Views.FooterView.FooterLoyaltyView = FooterLoyaltyView;
+    });
 });

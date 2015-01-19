@@ -23,9 +23,7 @@
 define(["backbone", "factory", "generator", "list", "slider_view", "categories", "products"], function(Backbone) {
     'use strict';
 
-    App.Views.CategoriesView = {};
-
-    App.Views.CategoriesView.CategoriesTabView = App.Views.ItemView.extend({
+    var CategoriesTabView = App.Views.ItemView.extend({
         name: 'categories',
         mod: 'tab',
         initialize: function() {
@@ -104,7 +102,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         }
     });
 
-    App.Views.CategoriesView.CategoriesTabsView = App.Views.SliderView.extend({
+    var CategoriesTabsView = App.Views.SliderView.extend({
         name: 'categories',
         mod: 'tabs',
         initialize: function() {
@@ -167,7 +165,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         }
     });
 
-    App.Views.CategoriesView.CategoriesSubView = App.Views.ItemView.extend({
+    var CategoriesSubView = App.Views.ItemView.extend({
         name: 'categories',
         mod: 'tab',
         initialize: function() {
@@ -227,7 +225,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         }
     });
 
-    App.Views.CategoriesView.CategoriesSubsView = App.Views.SliderView.extend({
+    var CategoriesSubsView = App.Views.SliderView.extend({
         name: 'categories',
         mod: 'tabs',
         initialize: function() {
@@ -274,7 +272,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         }
     });
 
-    App.Views.CategoriesView.CategoriesSubListView = App.Views.FactoryView.extend({
+    var CategoriesSubListView = App.Views.FactoryView.extend({
         name: 'categories',
         mod: 'sublist',
         initialize: function() {
@@ -331,7 +329,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         }
     });
 
-    App.Views.CategoriesView.CategoriesProductsItemView = App.Views.ItemView.extend({
+    var CategoriesProductsItemView = App.Views.ItemView.extend({
         name: 'categories',
         mod: 'products_item',
         initialize: function() {
@@ -378,7 +376,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         }
     });
 
-    App.Views.CategoriesView.CategoriesProductsView = App.Views.ListView.extend({
+    var CategoriesProductsView = App.Views.ListView.extend({
         name: 'categories',
         mod: 'products',
         initialize: function() {
@@ -440,7 +438,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         }
     });
 
-    App.Views.CategoriesView.CategoriesSearchResultsView = App.Views.CategoriesView.CategoriesProductsView.extend({
+    var CategoriesSearchResultsView = CategoriesProductsView.extend({
         name: 'categories',
         mod: 'products',
         initData: function() {
@@ -460,7 +458,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         }
     });
 
-    App.Views.CategoriesView.CategoriesMainProductsView = App.Views.ListView.extend({
+    var CategoriesMainProductsView = App.Views.ListView.extend({
         name: 'categories',
         mod: 'main_products',
         initialize: function() {
@@ -547,5 +545,18 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 delete this.restoreSearch;
             }
         }
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.CategoriesView = {};
+        App.Views.CategoriesView.CategoriesTabView = CategoriesTabView;
+        App.Views.CategoriesView.CategoriesTabsView = CategoriesTabsView;
+        App.Views.CategoriesView.CategoriesSubView = CategoriesSubView;
+        App.Views.CategoriesView.CategoriesSubsView = CategoriesSubsView;
+        App.Views.CategoriesView.CategoriesSubListView = CategoriesSubListView;
+        App.Views.CategoriesView.CategoriesProductsItemView = CategoriesProductsItemView;
+        App.Views.CategoriesView.CategoriesProductsView = CategoriesProductsView;
+        App.Views.CategoriesView.CategoriesSearchResultsView = CategoriesSearchResultsView;
+        App.Views.CategoriesView.CategoriesMainProductsView = CategoriesMainProductsView;
     });
 });

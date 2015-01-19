@@ -279,15 +279,17 @@ define(["backbone", "factory", "checkout_view", "card_view"], function(Backbone)
         };
     }
 
-    App.Views.RevelView = {};
-    App.Views.RevelView.RevelWelcomeView = App.Views.CoreRevelView.CoreRevelWelcomeView;
-    App.Views.RevelView.RevelProfilePersonalView = App.Views.CoreRevelView.CoreRevelProfilePersonalView;
-    App.Views.RevelView.RevelProfilePaymentView = App.Views.CoreRevelView.CoreRevelProfilePaymentView;
-    App.Views.RevelView.RevelProfileSecurityView = App.Views.CoreRevelView.CoreRevelProfileSecurityView;
-    App.Views.RevelView.RevelProfileAddressView = App.Views.CoreRevelView.CoreRevelProfileAddressView;
-    App.Views.RevelView.RevelProfileNotificationView = App.Views.CoreRevelView.CoreRevelProfileNotificationView;
-    App.Views.RevelView.RevelLoyaltyView = App.Views.CoreRevelView.CoreRevelLoyaltyView;
-    App.Views.RevelView.RevelAuthenticationView = App.Views.CoreRevelView.CoreRevelAuthenticationView;
-    App.Views.RevelView.RevelProfileFooterView = App.Views.CoreRevelView.CoreRevelProfileFooterView;
-    App.Views.RevelView.RevelCreditCardView = App.Views.CoreRevelView.CoreRevelCreditCardView;
+    return new (require('factory'))(function() {
+        App.Views.RevelView = {};
+        App.Views.RevelView.RevelWelcomeView = App.Views.CoreRevelView.CoreRevelWelcomeView;
+        App.Views.RevelView.RevelProfilePersonalView = App.Views.CoreRevelView.CoreRevelProfilePersonalView;
+        App.Views.RevelView.RevelProfilePaymentView = App.Views.CoreRevelView.CoreRevelProfilePaymentView;
+        App.Views.RevelView.RevelProfileSecurityView = App.Views.CoreRevelView.CoreRevelProfileSecurityView;
+        App.Views.RevelView.RevelProfileAddressView = App.Views.CoreRevelView.CoreRevelProfileAddressView;
+        App.Views.RevelView.RevelProfileNotificationView = App.Views.CoreRevelView.CoreRevelProfileNotificationView;
+        App.Views.RevelView.RevelLoyaltyView = App.Views.CoreRevelView.CoreRevelLoyaltyView;
+        App.Views.RevelView.RevelAuthenticationView = App.Views.CoreRevelView.CoreRevelAuthenticationView;
+        App.Views.RevelView.RevelProfileFooterView = App.Views.CoreRevelView.CoreRevelProfileFooterView;
+        App.Views.RevelView.RevelCreditCardView = App.Views.CoreRevelView.CoreRevelCreditCardView;
+    });
 });
