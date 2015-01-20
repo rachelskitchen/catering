@@ -1607,6 +1607,7 @@ var AdyenPaymentProcessor = {
             var returnCode = get_parameters.authResult;
             if(pay_get_parameter === 'true' && returnCode == 'AUTHORISED') {
                 payment_info.transaction_id = get_parameters.pspReference;
+                payment_info.order_id = get_parameters.merchantReference
             } else {
                 payment_info.errorMsg = returnCode ? returnCode : 'Payment Canceled';
             }
