@@ -188,7 +188,8 @@
 }
 .btn.paypal {
     border: none;
-    height: 48px;
+    margin-left: auto !important;
+    margin-right: auto !important;
     width: 245px;
     overflow: hidden;
     line-height: 1000px;
@@ -312,6 +313,9 @@
 @media only screen and (max-device-width: 949px) and (orientation: portrait) {
     #content > .checkout .tipBlock {
       height: 116px !important;
-    }   
+    }
+    #cart .checkout .btn.paypal {
+        height: 38px !important;
+        width: 190px;
+    }
 }
-
