@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone"], function(Backbone) {
+define(["backbone", "factory"], function(Backbone) {
     'use strict';
 
     // flag for maintenance mode
