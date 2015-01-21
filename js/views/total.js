@@ -83,7 +83,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.discounts = this.model.get_discounts_str();
             model.deliveryDiscount = this.collection.deliveryItem ? this.collection.deliveryItem.get("discount").get("sum") : 0;
             model.deliveryDiscount = round_monetary_currency(model.deliveryDiscount);
-            
+
             if (this.collection.get_only_product_quantity() == 0) {
                 model.surcharge = round_monetary_currency(0);
                 model.tax = round_monetary_currency(0);
@@ -128,7 +128,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             var delivery = this.model.get_delivery_charge();
             if(value == 'DINING_OPTION_DELIVERY' && delivery * 1 > 0 && this.collection.get_only_product_quantity() > 0) {
                 this.$('span.delivery-charge').text(delivery);
-                this.$('li.delivery-charge').show();               
+                this.$('li.delivery-charge').show();
                 this.$('ul.confirm').addClass('has-delivery');
                 var deliveryDiscount = this.collection.deliveryItem ? this.collection.deliveryItem.get("discount").get("sum") : 0;
                 if (deliveryDiscount > 0) {
@@ -149,9 +149,9 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.TotalView = {};
-
-    App.Views.TotalView.TotalMainView = App.Views.CoreTotalView.CoreTotalMainView;
-
-    App.Views.TotalView.TotalCheckoutView = App.Views.CoreTotalView.CoreTotalCheckoutView;
+    return new (require('factory'))(function() {
+        App.Views.TotalView = {};
+        App.Views.TotalView.TotalMainView = App.Views.CoreTotalView.CoreTotalMainView;
+        App.Views.TotalView.TotalCheckoutView = App.Views.CoreTotalView.CoreTotalCheckoutView;
+    });
 });

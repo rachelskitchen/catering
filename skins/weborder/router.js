@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "main_router"], function(Backbone) {
+define(["main_router"], function(main_router) {
     'use strict';
 
     var headers = {},
@@ -36,9 +36,7 @@ define(["backbone", "main_router"], function(Backbone) {
         carts.checkout = {mod: 'Checkout', className: 'checkout'};
     }
 
-    defaultRouterData(); // default router data
-
-    App.Routers.Router = App.Routers.MainRouter.extend({
+    var Router = App.Routers.MainRouter.extend({
         routes: {
             "": "index",
             "index": "index",
@@ -196,24 +194,16 @@ define(["backbone", "main_router"], function(Backbone) {
         * Get a stores list.
         */
         getEstablishments: function() {
-            this.callback = function() {
-                App.Data.mainModel.set('needShowStoreChoice', true);
+            this.getEstablishmentsCallback = function() {
+                if (/^(index.*)?$/i.test(Backbone.history.fragment)) App.Data.mainModel.set('needShowStoreChoice', true);
             };
             App.Routers.MainRouter.prototype.getEstablishments.apply(this, arguments);
-        },
-        /**
-        * Remove establishment data in case if establishment ID will change.
-        */
-        resetEstablishmentData: function() {
-            App.Routers.MainRouter.prototype.resetEstablishmentData.apply(this, arguments);
-            defaultRouterData(); // default router data
-            this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
         },
         /**
         * Remove HTML and CSS of current establishment in case if establishment ID will change.
         */
         removeHTMLandCSS: function() {
-            Backbone.$('link[href$="colors.css"]').remove();
+            App.Routers.MainRouter.prototype.removeHTMLandCSS.apply(this, arguments);
             this.bodyElement.children('.main-container').remove();
         },
         index: function() {
@@ -366,5 +356,10 @@ define(["backbone", "main_router"], function(Backbone) {
             this.change_page();
             App.Routers.MainRouter.prototype.maintenance.apply(this, arguments);
         }
+    });
+
+    return new main_router(function() {
+        defaultRouterData();
+        App.Routers.Router = Router;
     });
 });

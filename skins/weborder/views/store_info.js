@@ -20,12 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator", "store_info_view"], function(Backbone) {
+define(["store_info_view"], function(store_info_view) {
     'use strict';
 
-    App.Views.StoreInfoView = {};
-
-    App.Views.StoreInfoView.StoreInfoAboutView = App.Views.FactoryView.extend({
+    var StoreInfoAboutView = App.Views.FactoryView.extend({
         name: 'store_info',
         mod: 'about',
         render: function() {
@@ -44,7 +42,7 @@ define(["backbone", "factory", "generator", "store_info_view"], function(Backbon
         }
     });
 
-    App.Views.StoreInfoView.StoreInfoMapView = App.Views.CoreStoreInfoView.CoreStoreInfoMainView.extend({
+    var StoreInfoMapView = App.Views.CoreStoreInfoView.CoreStoreInfoMainView.extend({
         name: 'store_info',
         mod: 'map',
         render: function() {
@@ -53,5 +51,11 @@ define(["backbone", "factory", "generator", "store_info_view"], function(Backbon
             this.map(true, true, true);
             this.$('.info_map_wrapper').contentarrow();
         }
+    });
+
+    return new (require('factory'))(store_info_view.initViews.bind(store_info_view), function() {
+        App.Views.StoreInfoView = {};
+        App.Views.StoreInfoView.StoreInfoAboutView = StoreInfoAboutView;
+        App.Views.StoreInfoView.StoreInfoMapView = StoreInfoMapView;
     });
 });

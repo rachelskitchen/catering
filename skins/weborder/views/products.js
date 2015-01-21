@@ -20,10 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator", 'products_view'], function(Backbone) {
+define(['products_view'], function(products_view) {
     'use strict';
 
-    App.Views.ProductView.ProductListItemView = App.Views.CoreProductView.CoreProductListItemView.extend({
+    var ProductListItemView = App.Views.CoreProductView.CoreProductListItemView.extend({
         showModifiers: function() {
             var myorder = new App.Models.Myorder(),
                 def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
@@ -47,5 +47,9 @@ define(["backbone", "factory", "generator", 'products_view'], function(Backbone)
                 this.parent.append(this.$el);
             }
         }
+    });
+
+    return new (require('factory'))(products_view.initViews.bind(products_view), function() {
+        App.Views.ProductView.ProductListItemView = ProductListItemView;
     });
 });

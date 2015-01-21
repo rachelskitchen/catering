@@ -149,6 +149,10 @@ define(["backbone"], function(Backbone) {
                 App.Data.stateAppData[i] = true;
             }
             // remember state of data of application (end)
+
+            this.listenTo(App.Data.myorder, 'paymentResponse paymentFailed', function() {
+                App.Data.establishments && App.Data.establishments.removeSavedEstablishment();
+            }, this);
         },
         navigate: function() {
             this.started && arguments[0] != location.hash.slice(1) && App.Data.mainModel.trigger('loadStarted');
@@ -190,6 +194,11 @@ define(["backbone"], function(Backbone) {
                 js = core,
                 i, j;
 
+            // contain list of skin css specified
+            if(!Array.isArray(this.skinCSS)) {
+                this.skinCSS = [];
+            }
+
             callback = typeof callback == 'function' ? callback.bind(this) : new Function;
 
             dependencies = Array.isArray(dependencies) ? dependencies : [];
@@ -200,27 +209,36 @@ define(["backbone"], function(Backbone) {
                 js.push(skin + "/js/" + scripts[i]);
 
             for (i = 0, j = templates.length; i < j; i++)
-                loadTemplate2(null, templates[i]);
+                loadTemplate2(skin, templates[i]);
 
             for(i = 0, j = views.length; i < j; i++)
                 js.push(skin + "/views/" + views[i]);
 
             for(i = 0, j = css.length; i < j; i++)
-                loadCSS(skinPath + "/css/" + css[i]);
+                this.skinCSS.push(loadCSS(skinPath + "/css/" + css[i]));
 
             for(i = 0, j = models.length; i < j; i++)
                 js.push(skin + "/models/" + models[i]);
 
             for(i = 0, j = cssCore.length; i < j; i++)
-                loadCSS(basePath + "/css/" + cssCore[i]);
+                this.skinCSS.push(loadCSS(basePath + "/css/" + cssCore[i]));
 
             for (i = 0, j = templatesCore.length; i < j; i++)
                 loadTemplate2(null, templatesCore[i], true); // sync load template
 
             require(js, function() {
+                // init Views (#18015)
+                var ViewModule = require('factory');
+                Array.prototype.forEach.call(arguments, function(module) {
+                    if(module instanceof ViewModule) {
+                        module.initViews();
+                    }
+                });
+
                 if (App.Data.loadModelTemplate && App.Data.loadModelTemplate.dfd) {
                     dependencies.push(App.Data.loadModelTemplate.dfd);
                 }
+                if (App.Data.loadModelCSS && App.Data.loadModelCSS.dfd) dependencies.push(App.Data.loadModelCSS.dfd);
                 if (App.Data.loadModules) {
                     dependencies.push(App.Data.loadModules);
                 }
@@ -258,6 +276,7 @@ define(["backbone"], function(Backbone) {
                 App.Data.customer.loadCustomer();
                 App.Data.customer.loadAddresses();
                 App.Data.myorder.loadOrders();
+                App.Data.establishments && App.Data.establishments.removeSavedEstablishment();
                 load.resolve();
             });
 
@@ -311,7 +330,7 @@ define(["backbone"], function(Backbone) {
             var ests = App.Data.establishments;
             if (!App.Data.settings.get('isMaintenance') && ests.length === 0) {
                 ests.getEstablishments().then(function() { // get establishments from backend
-                    if (ests.length > 1) self.callback();
+                    if (ests.length > 1) self.getEstablishmentsCallback();
                 });
             }
         },
@@ -326,29 +345,43 @@ define(["backbone"], function(Backbone) {
                     delete App.Data[i];
                 }
             }
+
+            var history = Backbone.history;
+
+            history.stop(); // stop tracking browser history changes
+            typeof history.stopStateTracking == 'function' && history.stopStateTracking(); // stop tracking state changes
+            this.stopListening(); // stop listening all handlers
+            this.removeHTMLandCSS(); // remove css and templates from DOM tree
+        },
+        removeHTMLandCSS: function() {
+            Backbone.$('script[type="text/template"]').remove();
+            Array.isArray(this.skinCSS) && this.skinCSS.forEach(function(el) {
+                el.remove();
+            });
         },
         /*
          * Push data changes to session history entry.
          * Tracking state data is stored in `stateData` property of session history entry's data object.
          */
-        updateState: function(replaceState) {
+        updateState: function(replaceState, url) {
             if(typeof this.updateState.counter == 'undefined') {
                 this.updateState.counter = 0;
             }
 
             var title = 'State' + (++this.updateState.counter);
+            url = url || location.href;
 
             if(replaceState) {
-                window.history.replaceState({stateData: this.getState()}, title);
+                window.history.replaceState({stateData: this.getState()}, title, url);
             } else {
-                window.history.pushState({stateData: this.getState()}, title);
+                window.history.pushState({stateData: this.getState()}, title, url);
             }
         },
         /*
          * Create and return session history state-object.
          */
         getState: function() {
-            return {};
+            return {establishment: App.Data.settings.get('establishment')};
         },
         /*
          * Restore state data from session history entry.
@@ -357,7 +390,12 @@ define(["backbone"], function(Backbone) {
          * @return event.state.stateData object
          */
         restoreState: function(event) {
-            return event.state instanceof Object ? event.state.stateData : undefined;
+            var data = event.state instanceof Object ? event.state.stateData : undefined,
+                ests = App.Data.establishments;
+            if(data && ests) {
+                ests.trigger('changeEstablishment', data.establishment, true); // 3rd parameter is flag of restoring
+            }
+            return data;
         },
         /*
          * Start tracking of application state changes
@@ -366,9 +404,20 @@ define(["backbone"], function(Backbone) {
             if(!(typeof window.addEventListener == 'function') || !(typeof window.history == 'object') || !(typeof window.history.pushState == 'function')) {
                 return;
             }
-            var cb = this.restoreState.bind(this);
+            var cb = this.restoreState.bind(this),
+                ests = App.Data.establishments;
             window.addEventListener('popstate', cb, false);
             Backbone.history.stopStateTracking = window.removeEventListener.bind(window, 'popstate', cb, false);
+            if(ests) {
+                // Listen to establishment changes to track in session history.
+                this.listenTo(ests, 'changeEstablishment', function(id, isRestoring) {
+                    if(isRestoring) {
+                        return;
+                    }
+                    // need clear hash when user changes establishment
+                    this.updateState(false, location.href.replace(/#.*/, ''));
+                }, this);
+            }
             return true;
         }
     });
@@ -384,13 +433,32 @@ define(["backbone"], function(Backbone) {
                 views;
 
             views = [{
-                footer: {next: RevelAPI.processPersonalInfo.bind(RevelAPI, next), prev: null, save: null},
+                footer: {
+                    next: RevelAPI.processPersonalInfo.bind(RevelAPI, function() {
+                        if(RevelAPI.get('profileExists')) {
+                            RevelAPI.getProfile(next);
+                        } else {
+                            next();
+                        }
+                    }),
+                    prev: null,
+                    save: null},
                 content: {mod: 'ProfilePersonal', cacheId: 'ProfilePersonal'}
             }, {
                 footer: {next: RevelAPI.processPaymentInfo.bind(RevelAPI, next, creditCardValidationAlert), prev: prev, save: null},
                 content: {mod: 'ProfilePayment', cacheId: 'ProfilePayment'}
             }, {
-                footer: {next: null, prev: prev, save: RevelAPI.saveProfile.bind(RevelAPI, save)},
+                footer: {
+                    next: null,
+                    prev: function() {
+                        if(RevelAPI.get('profileExists')) {
+                            RevelAPI.getProfile(prev);
+                        } else {
+                            prev();
+                        }
+                    },
+                    save: RevelAPI.saveProfile.bind(RevelAPI, save)
+                },
                 content: {mod: 'ProfileSecurity', cacheId: 'ProfileSecurity'}
             }];
 
@@ -502,10 +570,15 @@ define(["backbone"], function(Backbone) {
                 mainModel.trigger('hideRevelPopup', RevelAPI);
             }, this);
 
-            this.listenTo(RevelAPI, 'onProfileCancel onAuthenticationCancel', function() {
+            this.listenTo(RevelAPI, 'onProfileCancel', function() {
                 typeof profileCancelCallback == 'function' && profileCancelCallback();
                 profileCancelCallback = undefined;
                 profileSaveCallback = undefined;
+                RevelAPI.unset('forceCreditCard');
+                mainModel.trigger('hideRevelPopup', RevelAPI);
+            }, this);
+
+            this.listenTo(RevelAPI, 'onAuthenticationCancel', function() {
                 RevelAPI.unset('forceCreditCard');
                 mainModel.trigger('hideRevelPopup', RevelAPI);
             }, this);
@@ -559,10 +632,10 @@ define(["backbone"], function(Backbone) {
 
                 RevelAPI.set('forceCreditCard', true);
                 RevelAPI.set('useAsDefaultCard', true); // need for case when profile doesn't exist
-                RevelAPI.checkProfile(function() {
+                RevelAPI.checkProfile(RevelAPI.getProfile.bind(RevelAPI, function() {
                     RevelAPI.set('useAsDefaultCard', true); // need for case when profile exists and credit card is invalid
                     RevelAPI.processPaymentInfo(success, fail);
-                });
+                }));
             }, this);
 
             this.listenTo(RevelAPI, 'onPayWithSavedCreditCard', function() {
@@ -581,4 +654,19 @@ define(["backbone"], function(Backbone) {
             }
         }
     });
+
+    /**
+     * Router Module class
+     */
+    function RouterModule() {
+        this.args = arguments;
+    }
+
+    RouterModule.prototype.initRouter = function() {
+        Array.prototype.forEach.call(this.args, function(cb) {
+            typeof cb == 'function' && cb();
+        });
+    };
+
+    return RouterModule;
 });

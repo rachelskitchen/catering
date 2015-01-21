@@ -144,19 +144,18 @@
                 load_styles_and_scripts(); // load styles and scripts
                 var myorder = App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
-                require([settings.get('skin') + '/router'], function() {
-                    if(typeof Backbone.history.stopStateTracking == 'function') {
-                        Backbone.history.stopStateTracking();
+                require([settings.get('skin') + '/router'], function(module) {
+                    if(module instanceof require('main_router')) {
+                        module.initRouter();
                     }
                     App.Data.router = new App.Routers.Router;
                     var router = App.Data.router;
-                    router.prepare.initialized = false;
                     router.once('started', function() {
+                        // hide a launch spinner & load an establishments list
                         win.trigger('hideSpinner');
                         router.trigger('needLoadEstablishments');
-                    }); // hide a launch spinner & load an establishments list
+                    });
                     if (settings.get('isMaintenance')) window.location.hash = '#maintenance';
-                    if (Backbone.History.started) Backbone.history.stop();
                     Backbone.history.start();
 
                     // invoke afterStart callback
@@ -247,6 +246,12 @@
             ests.on('loadStoresList', App.Routers.MainRouter.prototype.loadViewEstablishments.bind(window)); // status code = 1 (app should load view with stores list)
             ests.on('showError', showError); // status code = 2 (app reported about error)
             ests.on('changeEstablishment', function(estID) {
+                // Need stop execution if establishment id is same.
+                // It's important for restoring from session history.
+                if(settings.get('establishment') == estID) {
+                    return;
+                }
+                ests.trigger('resetEstablishmentData');
                 win.trigger('showSpinner');
                 App.Views.GeneratorView.clearCache(); // clear cache if store was changed
                 settings.set('establishment', estID);

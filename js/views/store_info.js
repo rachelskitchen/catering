@@ -160,4 +160,5 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
+    return new (require('factory'))();
 });
