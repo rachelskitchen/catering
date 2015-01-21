@@ -125,7 +125,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                     if (App.Settings.enable_quantity_modifiers) {
                         this.$(".mdf_quantity").css("display", "inline-block");
                         
-                        $('.mdf_quantity option:selected').removeAttr('selected');
+                        this.$('.mdf_quantity option:selected').removeAttr('selected');
                         if (this.model.get('quantity') > 0) {
                             this.$(".mdf_quantity select").val(this.model.get('quantity'));
                         }
@@ -137,6 +137,11 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                         var elem = this.$(".mdf_split .selected_option")
                         removeClassRegexp(elem, "option_\\d+");
                         elem.addClass("option_"+this.model.get('qty_type'));
+                    }
+                    if (App.Settings.enable_quantity_modifiers ? !App.Settings.enable_split_modifiers : App.Settings.enable_split_modifiers) {
+                        this.$(".split-qty-wrapper").addClass('single')
+                    } else {
+                        this.$(".split-qty-wrapper").removeClass('single')
                     }
                 }
                 else {

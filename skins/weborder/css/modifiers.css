@@ -104,7 +104,7 @@
 
 .modifiers_table .modifier label {
     cursor: inherit;
-    display: inline-block;
+    display: inline !important;
     width: 100%;
 }
 
