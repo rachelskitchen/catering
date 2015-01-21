@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "main_router"], function(Backbone) {
+define(["main_router"], function(main_router) {
     'use strict';
 
     var headerModes = {},
@@ -68,9 +68,7 @@ define(["backbone", "main_router"], function(Backbone) {
         footerModes.Loyalty = {mod: 'Loyalty'};
     }
 
-    defaultRouterData(); // default router data
-
-    App.Routers.Router = App.Routers.MobileRouter.extend({
+    var Router = App.Routers.MobileRouter.extend({
         routes: {
             "": "index",
             "index": "index",
@@ -169,15 +167,15 @@ define(["backbone", "main_router"], function(Backbone) {
                     }
                 });
 
-                new App.Views.MainView({
+                new App.Views.MainView.MainMainView({
                     model: mainModel,
                     el: 'body'
                 });
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
-                this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
-                this.listenToOnce(ests, 'resetEstablishmentData', mainModel.trigger.bind(mainModel, 'showSpinnerAndHideContent'), this);
+                this.listenTo(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
+                this.listenTo(ests, 'resetEstablishmentData', mainModel.trigger.bind(mainModel, 'showSpinnerAndHideContent'), this);
                 this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
                 // emit 'initialized' event
@@ -216,25 +214,11 @@ define(["backbone", "main_router"], function(Backbone) {
         * Get a stores list.
         */
         getEstablishments: function() {
-            this.callback = function() {
+            this.getEstablishmentsCallback = function() {
                 var si = App.Data.storeInfo;
-                if (si) si.set('needShowStoreChoice', true);
+                if (/^(index.*)?$/i.test(Backbone.history.fragment) && si) si.set('needShowStoreChoice', true);
             };
             App.Routers.MainRouter.prototype.getEstablishments.apply(this, arguments);
-        },
-        /**
-        * Remove establishment data in case if establishment ID will change.
-        */
-        resetEstablishmentData: function() {
-            App.Routers.MobileRouter.prototype.resetEstablishmentData.apply(this, arguments);
-            defaultRouterData(); // default router data
-            this.removeHTMLandCSS(); // remove HTML and CSS of current establishment in case if establishment ID will change
-        },
-        /**
-        * Remove HTML and CSS of current establishment in case if establishment ID will change.
-        */
-        removeHTMLandCSS: function() {
-            Backbone.$('link[href$="colors.css"]').remove();
         },
         index: function() {
             var self = this;
@@ -460,14 +444,16 @@ define(["backbone", "main_router"], function(Backbone) {
         },
         checkout: function() {
             this.prepare('checkout', function() {
+                var RevelAPI = App.Data.RevelAPI;
+
                 if(!App.Data.card)
-                    App.Data.card = new App.Models.Card({RevelAPI: App.Data.RevelAPI});
+                    App.Data.card = new App.Models.Card({RevelAPI: RevelAPI});
 
                 if(!App.Data.giftcard)
                     App.Data.giftcard = new App.Models.GiftCard;
 
                 if(!App.Data.customer) {
-                    App.Data.customer =  new App.Models.Customer({RevelAPI: App.Data.RevelAPI});
+                    App.Data.customer =  new App.Models.Customer({RevelAPI: RevelAPI});
                     App.Data.customer.loadAddresses();
                 }
 
@@ -508,9 +494,6 @@ define(["backbone", "main_router"], function(Backbone) {
                 });
 
                 this.change_page();
-
-                var RevelAPI = App.Data.RevelAPI;
-                RevelAPI.isAvailable() && RevelAPI.get('token') === null && RevelAPI.requireAuthentication(); // Bug 16425
             });
         },
         card: function() {
@@ -800,4 +783,9 @@ define(["backbone", "main_router"], function(Backbone) {
             App.Data.myorder.trigger('payWithCreditCard');
         }
     }
+
+    return new main_router(function() {
+        defaultRouterData();
+        App.Routers.Router = Router;
+    });
 });

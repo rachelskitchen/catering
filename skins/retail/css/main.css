@@ -427,13 +427,13 @@ footer {
     border-style: solid;
 }
 .btn {
+    font-size: 27px;
     position: relative;
     height: 40px;
     border-width: 5px;
     border-style: solid;
     border-radius: 30px;
     text-align: center;
-    font-size: 30px;
     font-weight: bold;
     line-height: 38px;
     cursor: pointer;
@@ -747,11 +747,29 @@ section.maintenance p {
         min-width: 748px;
     }
 }
+@media only screen and (max-device-width: 949px) and (orientation : portrait) {
+    #cart .checkout .btn {
+        font-size: 16px;
+    }
+}
+@media only screen and (max-device-width: 949px) and (orientation : landscape) {
+    #cart .checkout .btn {
+        font-size: 24px;
+    }
+}
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
+    #cart .checkout .btn {
+        font-size: 16px;
+    }
+}
 @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
     html.ipad {
         height: 672px !important;
         position: absolute;
         top: 0;
+    }
+    #cart .checkout .btn {
+        font-size: 24px;
     }
 }
 
@@ -938,14 +956,21 @@ section.maintenance p {
 }
 
 /** confirm page */
-.content_align {
-    height: 99%;
+#content .confirm_order {
+    height: 100%;
+    text-align: center;
+    width: 100%;
+}
+#content .confirm_order:before {
+    content: '';
     display: inline-block;
+    height: 100%;
     vertical-align: middle;
 }
-.confirm_order_wrapper {
+#content .confirm_order > div {
     display: inline-block;
     vertical-align: middle;
+    width: 99%;
 }
 /** confirm page end*/
 

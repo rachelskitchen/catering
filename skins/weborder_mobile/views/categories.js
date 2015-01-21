@@ -20,9 +20,9 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(['backbone', 'categories_view'], function(Backbone) {
+define(["categories_view"], function(categories_view) {
 
-  App.Views.CategoriesView.CategoriesItemView = App.Views.LazyItemView.extend({
+    var CategoriesItemView = App.Views.LazyItemView.extend({
         name: 'categories',
         mod: 'item',
         initialize: function() {
@@ -54,7 +54,7 @@ define(['backbone', 'categories_view'], function(Backbone) {
         }
     });
 
-    App.Views.CategoriesView.CategoriesMainView = App.Views.LazyListView.extend({
+    var CategoriesMainView = App.Views.LazyListView.extend({
         name: 'categories',
         mod: 'main',
         initialize: function() {
@@ -72,14 +72,19 @@ define(['backbone', 'categories_view'], function(Backbone) {
                 mod: 'Item',
                 model: model
             }, model.cid);
-           
+
             //trace("AddItem=>",model.get('name'),model.cid, model.escape('parent_sort'), model.escape('sort'), model.get("sort_val"));
             App.Views.LazyListView.prototype.addItem.call(this, view, this.$('.categories'));
-            
-            // Right now culcImageSize() is useless because category images can't be download to Revel servers, 
-            // images are accessed via external url only 
+
+            // Right now culcImageSize() is useless because category images can't be download to Revel servers,
+            // images are accessed via external url only
             //this.culcImageSize(model);
             this.subViews.push(view);
         }
+    });
+
+    return new (require('factory'))(categories_view.initViews.bind(categories_view), function() {
+        App.Views.CategoriesView.CategoriesItemView = CategoriesItemView;
+        App.Views.CategoriesView.CategoriesMainView = CategoriesMainView;
     });
 });

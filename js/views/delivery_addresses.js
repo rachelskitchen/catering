@@ -28,7 +28,7 @@ define(['backbone', 'factory'], function(Backbone) {
         creates model using address data from customer.addresses array,
         updates address in customer.addresses array
      */
-    App.Views.AddressView = App.Views.FactoryView.extend({
+    var AddressView = App.Views.FactoryView.extend({
         initialize: function() {
             var model = _.extend({}, this.options.customer.toJSON()),
                 defaultAddress = App.Settings.address,
@@ -154,7 +154,7 @@ define(['backbone', 'factory'], function(Backbone) {
         }
     });
 
-    App.Views.DeliveryAddressesView = App.Views.AddressView.extend({
+    var DeliveryAddressesView = AddressView.extend({
         initialize: function() {
             this.isShippingServices = App.skin == App.Skins.RETAIL;
 
@@ -563,4 +563,9 @@ define(['backbone', 'factory'], function(Backbone) {
     function getInitialAddresses(i) {
         return !i.street_1;
     }
+
+    return new (require('factory'))(function() {
+        App.Views.AddressView = AddressView;
+        App.Views.DeliveryAddressesView = DeliveryAddressesView;
+    });
 });

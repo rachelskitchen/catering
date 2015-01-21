@@ -46,7 +46,7 @@ define(["backbone", "list"], function(Backbone) {
      *
      * All listed above properties should be set during extending of App.Views.SliderView class
      */
-    App.Views.SliderView = App.Views.ListView.extend({
+    var SliderView = App.Views.ListView.extend({
         initialize: function() {
             App.Views.ListView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection, 'add', this.addItem, this);
@@ -139,5 +139,9 @@ define(["backbone", "list"], function(Backbone) {
 
             this.update_slider();
         }
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.SliderView = SliderView;
     });
 });

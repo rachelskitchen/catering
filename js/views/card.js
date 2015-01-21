@@ -142,6 +142,8 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
-    App.Views.CardView = {};
-    App.Views.CardView.CardMainView = App.Views.CoreCardView.CoreCardMainView;
+    return new (require('factory'))(function() {
+        App.Views.CardView = {};
+        App.Views.CardView.CardMainView = App.Views.CoreCardView.CoreCardMainView;
+    });
 });

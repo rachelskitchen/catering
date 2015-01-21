@@ -20,12 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator", "list"], function(Backbone) {
+define(["generator", "list"], function() {
     'use strict';
 
-    App.Views.CategoriesView = {};
-
-    App.Views.CategoriesView.CategoriesSliderItemView = App.Views.ItemView.extend({
+    var CategoriesSliderItemView = App.Views.ItemView.extend({
         name: 'categories',
         mod: 'item',
         initialize: function() {
@@ -65,7 +63,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         }
     });
 
-    App.Views.CategoriesView.CategoriesSliderView = App.Views.ListView.extend({
+    var CategoriesSliderView = App.Views.ListView.extend({
         name: 'categories',
         mod: 'slider',
         initialize: function() {
@@ -187,7 +185,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         }
     });
 
-    App.Views.CategoriesView.CategoriesProductsItemView = App.Views.ItemView.extend({
+    var CategoriesProductsItemView = App.Views.ItemView.extend({
         name: 'categories',
         mod: 'products_item',
         initialize: function() {
@@ -225,7 +223,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         }
     });
 
-    App.Views.CategoriesView.CategoriesProductsView = App.Views.ListView.extend({
+    var CategoriesProductsView = App.Views.ListView.extend({
         name: 'categories',
         mod: 'products',
         initialize: function() {
@@ -264,7 +262,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         }
     });
 
-    App.Views.CategoriesView.CategoriesMainProductsView = App.Views.ListView.extend({
+    var CategoriesMainProductsView = App.Views.ListView.extend({
         name: 'categories',
         mod: 'main_products',
         initialize: function() {
@@ -305,5 +303,14 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             this.$('.categories_products_wrapper').contentarrow('destroy');
             App.Views.ListView.prototype.remove.apply(this, arguments);
         }
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.CategoriesView = {};
+        App.Views.CategoriesView.CategoriesSliderItemView = CategoriesSliderItemView;
+        App.Views.CategoriesView.CategoriesSliderView = CategoriesSliderView;
+        App.Views.CategoriesView.CategoriesProductsItemView = CategoriesProductsItemView;
+        App.Views.CategoriesView.CategoriesProductsView = CategoriesProductsView;
+        App.Views.CategoriesView.CategoriesMainProductsView = CategoriesMainProductsView;
     });
 });

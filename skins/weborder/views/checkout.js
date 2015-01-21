@@ -20,10 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "checkout_view", "generator"], function(Backbone) {
+define(["checkout_view"], function(checkout_view) {
     'use strict';
 
-    App.Views.CheckoutView.CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView.extend({
+    var CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView.extend({
         controlAddress: function(model, value) {
             var arrAdd= this.$('.arrival_address');
             App.Views.CoreCheckoutView.CoreCheckoutMainView.prototype.controlAddress.apply(this, arguments);
@@ -35,7 +35,7 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.CheckoutView.CheckoutPageView = App.Views.CoreCheckoutView.CoreCheckoutPageView.extend({
+    var CheckoutPageView = App.Views.CoreCheckoutView.CoreCheckoutPageView.extend({
         render: function() {
             var data = {
                 noteAllow: this.options.noteAllow,
@@ -95,5 +95,10 @@ define(["backbone", "checkout_view", "generator"], function(Backbone) {
 
             return this;
         }
+    });
+
+    return new (require('factory'))(checkout_view.initViews.bind(checkout_view), function() {
+        App.Views.CheckoutView.CheckoutMainView = CheckoutMainView;
+        App.Views.CheckoutView.CheckoutPageView = CheckoutPageView;
     });
 });

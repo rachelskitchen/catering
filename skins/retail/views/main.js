@@ -20,12 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator"], function(Backbone) {
+define(["done_view", "generator"], function(done_view) {
     'use strict';
 
-    App.Views.MainView = {};
-
-    App.Views.MainView.MainMainView = App.Views.FactoryView.extend({
+    var MainMainView = App.Views.FactoryView.extend({
         name: 'main',
         mod: 'main',
         initialize: function() {
@@ -47,7 +45,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            if (App.Data.establishments.length > 1) this.model.set('needShowStoreChoice', true);
             !this.iPad7Feature.init && this.iPad7Feature();
 
             var spinner = this.$('#main-spinner');
@@ -228,7 +225,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.MainView.MainMaintenanceView = App.Views.FactoryView.extend({
+    var MainMaintenanceView = App.Views.FactoryView.extend({
         name: 'main',
         mod: 'maintenance',
         render: function() {
@@ -241,5 +238,17 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         reload: function() {
             window.location.replace(window.location.href.replace(/#.*$/, ''));
         }
+    });
+
+    var MainDoneView = App.Views.CoreMainView.CoreMainDoneView.extend({
+        getPickupTime: function() {
+            return {};
+        }
+    });
+
+    return new (require('factory'))(done_view.initViews.bind(done_view), function() {
+        App.Views.MainView.MainMainView = MainMainView;
+        App.Views.MainView.MainMaintenanceView = MainMaintenanceView;
+        App.Views.MainView.MainDoneView = MainDoneView;
     });
 });
