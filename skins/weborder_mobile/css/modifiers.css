@@ -34,7 +34,6 @@
 
 #content .modifier {
     width: 100%;
-    height: 2.43em;
     font-size: 2.8em;
 }
 
@@ -46,9 +45,9 @@
 
 #content .modifier label {
     position: relative;
-    display: inline-block;
+    display: inline-block !important;
     width: 100%;
-    height: 100%;
+    height: 2.3em;
     cursor: pointer;
 }
 
@@ -84,7 +83,7 @@
     width: 2em;
     height: 2em;
     left: 0.5em;
-    top: 0.2em;
+    top: 0.25em;
     bottom: 0;
     font-size: inherit;
 }
@@ -196,3 +195,48 @@
     margin: 0.5em;
 }
 /* product attribute header end*/
+
+#content .modifier .split-qty-wrapper {
+    width: 11em;
+    margin: 0px auto;
+}
+#content .modifier .split-qty-wrapper.single {
+    width: 6em;
+}
+#content .modifier .mdf_quantity, 
+#content .modifier .mdf_split {
+    display: inline-block;
+    vertical-align: middle;
+    margin-top: -8px;
+    height: 2.2em;
+    width: 5em;
+    position: relative;
+    border-radius: 1.3em;
+    margin-bottom: 0.4em;      
+}
+#content .modifier .mdf_quantity select,
+#content .modifier .mdf_split select {
+    font-size: 1em;
+    font-weight: normal;
+}
+#content .modifier .select:before {
+   top: 0em;
+}
+#content .modifier .mdf_quantity select {
+    padding-right: 4em;
+    padding-left: 0.9em;;
+}
+#content .modifier .mdf_split select {
+    padding-right: 7em !important;
+    padding-left: 1em !important;
+    opacity: 0.9;
+    filter: alpha(opacity=90);
+}
+#content .modifier .mdf_split .selected_option {
+    position: absolute;
+    top: 0.45em;
+    left: 0.6em;
+    width: 1.5em;
+    height: 1.5em;
+    background-size: 100% 100%;
+}
