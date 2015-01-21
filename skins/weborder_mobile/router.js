@@ -94,7 +94,6 @@ define(["main_router"], function(main_router) {
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
         initialize: function() {
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
-            clearQueryString();
             var self = this;
 
             // used for footer view

@@ -1302,7 +1302,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             // process payment type
-            var pt = this.processPaymentType(payment_type);
+            var pt = PaymentProcessor.processPaymentType(payment_type, myorder);
             if(pt instanceof Object)
                 $.extend(payment_info, pt);
             else
@@ -1342,52 +1342,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
                             break;
                         case "REDIRECT": // need to complete payment on external site
-                            if(data.data && data.data.payment_id) {
-                                myorder.checkout.set('payment_id', data.data.payment_id);
-                            }
-
-                            myorder.checkout.set('payment_type', payment_type);
-                            myorder.checkout.saveCheckout();
-
-                            var qStr = location.search;
-                            if (qStr) {
-                                qStr += "&";
-                            } else {
-                                qStr = "?";
-                            }
-                            qStr += "pay=false";
-                            var url = window.location.origin + window.location.pathname + qStr;
-                            window.history.replaceState('Return','', url);
-
-                            if (data.data.url) {
-                                window.location = data.data.url;
-                            } else if (data.data.action && data.data.query) {
-                                doFormRedirect(data.data.action, data.data.query);
-                            }
-                            return;
-                        case "PAYMENT_INFO_REQUIRED":
-                            if(data.data && data.data.app_token && data.data.token_url) {
-                                $.ajax({
-                                    type: "POST",
-                                    beforeSend: function(xhr){xhr.setRequestHeader('Authorization', "Intuit_APIKey intuit_apikey=ipp-" + data.data.app_token);},
-                                    url: data.data.token_url + "?apptoken=" + data.data.app_token,
-                                    data: JSON.stringify({card: {
-                                            number: card.cardNumber,
-                                            expMonth: card.expMonth,
-                                            expYear: card.expDate,
-                                            cvc: card.securityCode}}),
-                                    dataType: "json",
-                                    contentType: "application/json; charset=utf-8",
-                                    success: function (data) {
-                                        myorder.checkout.set('token', data.value);
-                                        myorder.submit_order_and_pay(payment_type, validationOnly, capturePhase);
-                                    },
-                                    error: function (data) {
-                                        data.errorMsg = MSG.ERROR_OCCURRED + "Error during tokenization";
-                                        reportErrorFrm(data.errorMsg);
-                                    }
-                                });
-                            }
+                            PaymentProcessor.handleRedirect(payment_type, myorder, data);
+                            break;
+                        case "PAYMENT_INFO_REQUIRED": //need to make ajax call payment gateway
+                            PaymentProcessor.handlePaymentDataRequest(payment_type, myorder, data);
                             break;
                         case "INSUFFICIENT_STOCK":
                             var message = '<span style="color: red;"> <b>' + MSG.ERROR_INSUFFICIENT_STOCK + '</b> </span> <br />';
@@ -1459,163 +1417,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     myorder.trigger('paymentFailed', [message]);
                 }
             }
-
-            function doFormRedirect(action, query) {
-                var newForm= $('<form>', {
-                    'action': action,
-                    'method': 'post'
-                });
-                for(var i in query) {
-                    newForm.append($('<input>', {
-                        name: i,
-                        value: processValue(query[i]),
-                        type: 'hidden'
-                    }));
-                }
-
-              newForm.appendTo(document.body).submit();
-            }
-
-            function processValue(value) {
-                var card = App.Data.card && App.Data.card.toJSON();
-                var map = {
-                    '$cardNumber': card.cardNumber,
-                    '$expMonth': card.expMonth,
-                    '$expDate': card.expDate,
-                    '$expYYYY': card.expDate,
-                    '$expYY': card.expDate ? card.expDate.substring(2) : undefined,
-                    '$securityCode': card.securityCode
-                };
-
-                for(var key in map) {
-                    if(value && (typeof value === 'string' || value instanceof String)) {
-                        value = replaceAll(key, map[key], value);
-                    }
-                }
-
-                return value;
-            }
-        },
-        processPaymentType: function(payment_type) {
-            var checkout = this.checkout.toJSON(),
-                card = App.Data.card && App.Data.card.toJSON(),
-                giftcard = App.Data.giftcard && App.Data.giftcard.toJSON(),
-                customer = App.Data.customer.toJSON(),
-                get_parameters = App.Data.get_parameters,
-                payment_info = {},
-                myorder = this,
-                pay_get_parameter = typeof get_parameters.pay != 'undefined' ? get_parameters.pay : get_parameters[MONERIS_PARAMS.PAY];
-
-            // Clear pay flag, it should not affect next payments
-            delete get_parameters.pay;
-            delete get_parameters[MONERIS_PARAMS.PAY];
-
-            switch(payment_type) {
-                case PAYMENT_TYPE.CREDIT: // pay with card
-                    var address = null;
-                    if (card.street) {
-                        address = {
-                            street: card.street,
-                            city: card.city,
-                            state: card.state,
-                            zip: card.zip
-                        };
-                    }
-
-                    var cardNumber = $.trim(card.cardNumber);
-                    payment_info.cardInfo = {
-                        firstDigits: cardNumber.substring(0, 4),
-                        lastDigits: cardNumber.substring(cardNumber.length - 4),
-                        firstName: card.firstName,
-                        lastName: card.secondName,
-                        address: address
-                    };
-                    var payment = App.Data.settings.get_payment_process();
-                    if (pay_get_parameter) {
-                        if(pay_get_parameter === 'true') {
-                            if (payment.paypal_direct_credit_card) {
-                                payment_info.payment_id = checkout.payment_id;
-                            } else if (payment.usaepay) {
-                                payment_info.transaction_id = get_parameters.UMrefNum;
-                            } else if (payment.mercury) {
-                                var returnCode = Number(get_parameters.ReturnCode);
-                                if (returnCode != MERCURY_RETURN_CODE.SUCCESS) {
-                                    myorder.paymentResponse = {status: 'error', errorMsg: getMercuryErrorMessage(returnCode)};
-                                    myorder.trigger('paymentResponse');
-                                    return;
-                                }
-                                payment_info.transaction_id = get_parameters.PaymentID;
-                            } else if (payment.moneris) {
-                                var returnCode = Number(get_parameters.response_code);
-                                if (returnCode >= MONERIS_RETURN_CODE.DECLINE) {
-                                    myorder.paymentResponse = {status: 'error', errorMsg: getMonerisErrorMessage(returnCode)};
-                                    myorder.trigger('paymentResponse');
-                                    return;
-                                }
-                                payment_info.transaction_id = get_parameters[MONERIS_PARAMS.TRANSACTION_ID];
-                                payment_info.response_order_id = get_parameters[MONERIS_PARAMS.RESPONSE_ORDER_ID];
-                            } else if (payment.adyen) {
-                                var authResult = get_parameters.authResult;
-                                if (authResult != 'AUTHORISED') {
-                                    myorder.paymentResponse = {status: 'error', errorMsg: authResult};
-                                    myorder.trigger('paymentResponse');
-                                    return;
-                                }
-                                payment_info.transaction_id = get_parameters.pspReference;
-                            }
-                        } else {
-                            if (payment.paypal_direct_credit_card) {
-                                myorder.paymentResponse = {status: 'error', errorMsg: 'Payment Canceled'};
-                            } else if (payment.usaepay) {
-                                myorder.paymentResponse = {status: 'error', errorMsg: get_parameters.UMerror};
-                            } else if (payment.mercury) {
-                                myorder.paymentResponse = {status: 'error', errorMsg: getMercuryErrorMessage(Number(get_parameters.ReturnCode))};
-                            } else if (payment.moneris) {
-                                myorder.paymentResponse = {status: 'error', errorMsg: getMonerisErrorMessage(Number(get_parameters.response_code))};
-                            } else if (payment.adyen) {
-                                myorder.paymentResponse = {status: 'error', errorMsg: 'Payment Canceled'};
-                            }
-                            myorder.trigger('paymentResponse');
-                            return;
-                        }
-                    } else {
-                        if (payment.paypal_direct_credit_card) {
-                            payment_info.cardInfo.expMonth = card.expMonth,
-                            payment_info.cardInfo.expDate = card.expDate,
-                            payment_info.cardInfo.cardNumber = cardNumber;
-                            payment_info.cardInfo.securityCode = card.securityCode;
-                        }
-                        if  (checkout.token) {
-                            payment_info.cardInfo.token = checkout.token;
-                            myorder.checkout.unset("token");
-                        }
-
-                    }
-                    break;
-                case PAYMENT_TYPE.PAYPAL: // pay with paypal account
-                    if (pay_get_parameter) {
-                        if(pay_get_parameter === 'true') {
-                            payment_info.payer_id = get_parameters.PayerID;
-                            payment_info.payment_id = checkout.payment_id;
-                        }  else {
-                            myorder.paymentResponse = {status: 'error', errorMsg: 'Payment Canceled'};
-                            myorder.trigger('paymentResponse');
-                            return;
-                        }
-                    }
-                    break;
-                case PAYMENT_TYPE.NO_PAYMENT: // pay with cash
-                    break;
-                case PAYMENT_TYPE.GIFT: // pay with gift card
-                    payment_info.cardInfo = {
-                        cardNumber: $.trim(giftcard.cardNumber),
-                        captchaKey: giftcard.captchaKey,
-                        captchaValue: giftcard.captchaValue
-                    };
-                    break;
-            }
-
-            return payment_info;
         },
         getOrderSeatCallName: function(phone) {
             var checkout = this.checkout.toJSON(),
