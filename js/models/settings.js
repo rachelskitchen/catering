@@ -451,30 +451,15 @@ define(["backbone", "async"], function(Backbone) {
         },
         get_payment_process: function() {
             var settings_system = this.get('settings_system'),
-                processor = settings_system.payment_processor;
+                processor = settings_system.payment_processor,
+                skin = this.get("skin"),
+                config = PaymentProcessor.getConfig(processor, skin);
 
-            var skin = this.get("skin");
-
-            if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
-                && !processor.usaepay && !processor.mercury && !processor.paypal && !processor.cash && !processor.gift_card && !processor.moneris && !processor.quickbooks && !processor.adyen) {
+            if (!config) {
                 return undefined;
             }
 
-            var credit_card_button = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury || processor.moneris || processor.quickbooks ||  processor.adyen || false;
-            var credit_card_dialog = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.moneris || processor.quickbooks || false;
-            var payment_count = 0;
-            processor.paypal && payment_count++;
-            if((processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury || processor.moneris || processor.quickbooks || processor.adyen) {
-                payment_count++;
-            }
-            processor.cash && payment_count++;
-            processor.gift_card && payment_count++;
-
-            return Backbone.$.extend(processor, {
-                payment_count: payment_count,
-                credit_card_button: credit_card_button,
-                credit_card_dialog: credit_card_dialog
-            });
+            return Backbone.$.extend(processor, config);
         },
         get_img_default: function(index) {
             var img = this.get('settings_skin').img_default;
