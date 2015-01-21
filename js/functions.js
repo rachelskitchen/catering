@@ -1172,7 +1172,14 @@ function clearQueryString(isNotHash) {
     qStr = qStr.replace(/rvarSkin=/, 'skin=');
     qStr = qStr.replace(/rvarEstablishment=/, 'establishment=');
     qStr = qStr.replace(/\?&/, '?');
-
+    //Remove Adyen params
+    qStr = qStr.replace(/&?merchantReference=[^&]*/, '');
+    qStr = qStr.replace(/&?skinCode=[^&]*/, '');
+    qStr = qStr.replace(/&?shopperLocale=[^&]*/, '');
+    qStr = qStr.replace(/&?paymentMethod=[^&]*/, '');
+    qStr = qStr.replace(/&?authResult=[^&]*/, '');
+    qStr = qStr.replace(/&?pspReference=[^&]*/, '');
+    qStr = qStr.replace(/&?merchantSig=[^&]*/, '');
 
     var url = host + path + qStr + hash;
     window.history.replaceState('Return','', url);
