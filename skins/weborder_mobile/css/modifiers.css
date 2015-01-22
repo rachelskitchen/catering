@@ -207,7 +207,7 @@
 #content .modifier .mdf_split {
     display: inline-block;
     vertical-align: middle;
-    margin-top: -8px;
+    margin-top: -0.5em;
     height: 2.2em;
     width: 5em;
     position: relative;
