@@ -371,12 +371,17 @@ define(["backbone", "async"], function(Backbone) {
                                 }
                             }
 
-                            if (settings_system.online_orders && settings_system.dining_options.length == 0) {
-                                self.set({
-                                    'isMaintenance': true,
-                                    'maintenanceMessage': ERROR[MAINTENANCE.DINING_OPTION]
-                                });
+                            if (settings_system.dining_options.length == 0) {
+                                if (App.Data.dirMode) { // app accessed via Directory app (bug #17552)
+                                    settings_system.online_orders = false; // if all dining options are disabled this case looks like 'online_orders' is checked off because 'online_orders' affects only order creating functionality
+                                } else { // app accessed directly from browser (bug #17552)
+                                    self.set({
+                                        'isMaintenance': true,
+                                        'maintenanceMessage': ERROR[MAINTENANCE.DINING_OPTION]
+                                    });
+                                }
                             }
+
                             break;
                         // DISALLOW_ONLINE status doesn't use now. Instead we get 404 HTTP-status now from a backend.
                         /*
