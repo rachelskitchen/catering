@@ -1191,7 +1191,7 @@ var PaymentProcessor = {
             return undefined;
         }
 
-        var credit_card_dialog = creditCardPaymentProcessor.showCreditCardDialog();
+        var credit_card_dialog = credit_card_button && creditCardPaymentProcessor.showCreditCardDialog();
         var payment_count = 0;
         credit_card_button && payment_count++;
         processors.paypal && payment_count++;
