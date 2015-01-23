@@ -89,9 +89,10 @@ define(["main_router"], function(main_router) {
             this.prepare('main', function() {
                 App.Views.Generator.enableCache = true;
                 // set header, cart, main models
-                App.Data.header = new App.Models.HeaderModel();debugger
+                App.Data.header = new App.Models.HeaderModel();
                 var mainModel = App.Data.mainModel = new App.Models.MainModel({
-                    goToDirectory: App.Data.dirMode ? this.navigateDirectory.bind(this) : new Function
+                    goToDirectory: App.Data.dirMode ? this.navigateDirectory.bind(this) : new Function,
+                    isDirMode: App.Data.dirMode
                 });
                 var ests = App.Data.establishments;
                 App.Data.categories = new App.Collections.Categories();
