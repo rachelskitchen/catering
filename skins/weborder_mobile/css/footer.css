@@ -105,11 +105,11 @@
 }
 
 #myorder.btn1 .count {
+    font-size: 1.7em;
     position: absolute;
     top: 12%;
     width: 100%;
     border-radius: 2.3em;
-    font-size: 2em;
     display: block;
     font-weight: bold;
     text-align: center;

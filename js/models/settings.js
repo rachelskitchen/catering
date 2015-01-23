@@ -371,12 +371,17 @@ define(["backbone", "async"], function(Backbone) {
                                 }
                             }
 
-                            if (settings_system.online_orders && settings_system.dining_options.length == 0) {
-                                self.set({
-                                    'isMaintenance': true,
-                                    'maintenanceMessage': ERROR[MAINTENANCE.DINING_OPTION]
-                                });
+                            if (settings_system.dining_options.length == 0) {
+                                if (App.Data.dirMode) { // app accessed via Directory app (bug #17552)
+                                    settings_system.online_orders = false; // if all dining options are disabled this case looks like 'online_orders' is checked off because 'online_orders' affects only order creating functionality
+                                } else { // app accessed directly from browser (bug #17552)
+                                    self.set({
+                                        'isMaintenance': true,
+                                        'maintenanceMessage': ERROR[MAINTENANCE.DINING_OPTION]
+                                    });
+                                }
                             }
+
                             break;
                         // DISALLOW_ONLINE status doesn't use now. Instead we get 404 HTTP-status now from a backend.
                         /*
@@ -451,30 +456,15 @@ define(["backbone", "async"], function(Backbone) {
         },
         get_payment_process: function() {
             var settings_system = this.get('settings_system'),
-                processor = settings_system.payment_processor;
+                processor = settings_system.payment_processor,
+                skin = this.get("skin"),
+                config = PaymentProcessor.getConfig(processor, skin);
 
-            var skin = this.get("skin");
-
-            if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
-                && !processor.usaepay && !processor.mercury && !processor.paypal && !processor.cash && !processor.gift_card && !processor.moneris && !processor.quickbooks) {
+            if (!config) {
                 return undefined;
             }
 
-            var credit_card_button = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury || processor.moneris || processor.quickbooks|| false;
-            var credit_card_dialog = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.moneris || processor.quickbooks || false;
-            var payment_count = 0;
-            processor.paypal && payment_count++;
-            if((processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury || processor.moneris || processor.quickbooks) {
-                payment_count++;
-            }
-            processor.cash && payment_count++;
-            processor.gift_card && payment_count++;
-
-            return Backbone.$.extend(processor, {
-                payment_count: payment_count,
-                credit_card_button: credit_card_button,
-                credit_card_dialog: credit_card_dialog
-            });
+            return Backbone.$.extend(processor, config);
         },
         get_img_default: function(index) {
             var img = this.get('settings_skin').img_default;

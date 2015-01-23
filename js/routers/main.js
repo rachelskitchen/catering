@@ -288,7 +288,6 @@ define(["backbone", "factory"], function(Backbone) {
                 var card = App.Data.card;
 
                 App.Data.settings.usaepayBack = true;
-                clearQueryString(true);
                 App.Data.get_parameters = parse_get_params();
 
                 if(myorder.paymentResponse.status.toLowerCase() == 'ok') {
