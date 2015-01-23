@@ -71,7 +71,7 @@ define(["backbone"], function(Backbone) {
                 return {
                     modifier: this.get('id'),
                     modifier_cost: (this.get('cost') === null) ? 0 : this.get('cost'),
-                    modifier_price: this.isFree() ? this.get('free_amount') * 1 : this.get('order_price') * 1,
+                    modifier_price: this.get('order_price') * 1,
                     qty: this.get('quantity'),
                     qty_type: this.get('qty_type')
                 };
