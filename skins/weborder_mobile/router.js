@@ -721,7 +721,7 @@ define(["main_router"], function(main_router) {
             App.Routers.MobileRouter.prototype.maintenance.apply(this, arguments);
 
             this.prepare('maintenance', function() {
-                var header = {page_title: ''};
+                var header = {page_title: '&nbsp;'};
                 if(App.Data.dirMode)
                     header = Backbone.$.extend(header, {
                         back_title: 'Directory',
