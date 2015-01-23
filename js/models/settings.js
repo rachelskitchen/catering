@@ -32,7 +32,6 @@ define(["backbone", "async"], function(Backbone) {
             this.set('hostname', /^http[s]*:\/\/(.+)/.exec(app.REVEL_HOST)[1]); //it's the host w/o "http[s]://" substring
             this.ajaxSetup(); // AJAX-requests settings
             this.listenTo(this, 'change:establishment', this.load, this); // load app
-
         },
         load: function() {
             var self = this;
