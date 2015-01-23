@@ -802,7 +802,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             if (total < 0) total = 0;
             if (tax < 0) tax = 0;
-            if (surcharge < 0) surcharge = 0;          
+            if (surcharge < 0) surcharge = 0;
 
             this.total.set({
                 total: total,
@@ -1554,6 +1554,15 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                 }
                                 payment_info.transaction_id = get_parameters[MONERIS_PARAMS.TRANSACTION_ID];
                                 payment_info.response_order_id = get_parameters[MONERIS_PARAMS.RESPONSE_ORDER_ID];
+                            } else if (payment.adyen) {
+                                var authResult = get_parameters.authResult;
+                                if (authResult != 'AUTHORISED') {
+                                    myorder.paymentResponse = {status: 'error', errorMsg: authResult};
+                                    myorder.trigger('paymentResponse');
+                                    return;
+                                }
+                                payment_info.transaction_id = get_parameters.pspReference;
+                                payment_info.order_id = get_parameters.merchantReference;
                             }
                         } else {
                             if (payment.paypal_direct_credit_card) {
@@ -1564,6 +1573,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                                 myorder.paymentResponse = {status: 'error', errorMsg: getMercuryErrorMessage(Number(get_parameters.ReturnCode))};
                             } else if (payment.moneris) {
                                 myorder.paymentResponse = {status: 'error', errorMsg: getMonerisErrorMessage(Number(get_parameters.response_code))};
+                            } else if (payment.adyen) {
+                                myorder.paymentResponse = {status: 'error', errorMsg: 'Payment Canceled'};
                             }
                             myorder.trigger('paymentResponse');
                             return;
