@@ -23,7 +23,7 @@
 define(["backbone"], function(Backbone) {
     'use strict';
 
-    App.Models.MainModel=Backbone.Model.extend({
+    App.Models.MainModel = Backbone.Model.extend({
         defaults: {
             header: {},
             content: {},
@@ -31,6 +31,10 @@ define(["backbone"], function(Backbone) {
             img: App.Data.settings.get("img_path"),
             needShowStoreChoice: false,
             isBlurContent: false
+        },
+        initialize: function() {
+            this.set('isDirMode', App.Data.dirMode);
+            return Backbone.Model.prototype.initialize.apply(this, arguments);
         }
     });
 });

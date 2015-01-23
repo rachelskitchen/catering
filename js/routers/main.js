@@ -419,6 +419,18 @@ define(["backbone", "factory"], function(Backbone) {
                 }, this);
             }
             return true;
+        },
+        navigateDirectory: function() {
+            if(App.Data.dirMode) {
+                var directoryState = getData('directory.state'),
+                    directoryHash = '';
+
+                if(directoryState instanceof Object && directoryState.hash) {
+                    directoryHash = directoryState.hash;
+                }
+
+                return window.location.href = getData('directoryReferrer').referrer + directoryHash;
+            }
         }
     });
 

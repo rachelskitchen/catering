@@ -190,18 +190,6 @@ define(["main_router"], function(main_router) {
 
             App.Routers.MobileRouter.prototype.initialize.apply(this, arguments);
         },
-        navigateDirectory: function() {
-            if(App.Data.dirMode) {
-                var directoryState = getData('directory.state'),
-                    directoryHash = '';
-
-                if(directoryState instanceof Object && directoryState.hash) {
-                    directoryHash = directoryState.hash;
-                }
-
-                return window.location.href = getData('directoryReferrer').referrer + directoryHash;
-            }
-        },
         showPromoMessage: function() {
             App.Data.footer.set('isShowPromoMessage', true);
             App.Data.mainModel.trigger('showPromoMessage');
