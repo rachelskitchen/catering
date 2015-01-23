@@ -113,7 +113,9 @@ define(["backbone", "factory"], function(Backbone) {
 
             // listen to hash changes
             this.listenTo(this, 'route', function(route, params) {
-                if(App.Data.settings.get('isMaintenance'))
+                var settings = App.Data.settings;
+
+                if(settings.get('isMaintenance'))
                     if (location.hash.slice(1) !== 'maintenance') {
                         location.reload();
                     }
@@ -130,7 +132,7 @@ define(["backbone", "factory"], function(Backbone) {
                     });
 
                 if (needGoogleMaps)
-                    App.Data.settings.load_geoloc();
+                    settings.load_geoloc();
 
                 // update session history state-object
                 this.updateState(true);
@@ -158,7 +160,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.started && arguments[0] != location.hash.slice(1) && App.Data.mainModel.trigger('loadStarted');
             if(App.Data.settings.get('isMaintenance') && arguments[0] != 'maintenance')
                 arguments[0] = 'maintenance';
-            return Backbone.Router.prototype.navigate.apply(this, arguments);
+            return Backbone.Router.prototype.navigate.apply(this, arguments); // TODO: can be useful {replace: true} 3rd argument
         },
         change_page: function(cb) {
             App.Data.mainModel.trigger('loadCompleted');
@@ -348,6 +350,11 @@ define(["backbone", "factory"], function(Backbone) {
             var history = Backbone.history;
 
             history.stop(); // stop tracking browser history changes
+
+            // reset isMaintenance
+            isMaintenance = false;
+            App.Data.settings.set('isMaintenance', isMaintenance);
+
             typeof history.stopStateTracking == 'function' && history.stopStateTracking(); // stop tracking state changes
             this.stopListening(); // stop listening all handlers
             this.removeHTMLandCSS(); // remove css and templates from DOM tree
