@@ -1045,6 +1045,19 @@ function iPad() {
 }
 
 /**
+ * Check if is iOS device
+ */
+function isIOS() {
+    if (iPad.retval) {
+        return iPad.retval;
+    }
+    else {
+        iPad.retval = /iPad|iPod|iPhone/.test(window.navigator.userAgent);
+        return iPad.retval;
+    }
+}   
+
+/**
  * Pickup time to string
  */
 function pickupToString(date) {
