@@ -46,7 +46,10 @@ define(["main_router"], function(main_router) {
         headerModes.Map = headerModes.OneButton;
         headerModes.About = {mod: 'TwoButton', className: 'two_button'};
         headerModes.Gallery = headerModes.Map;
-        headerModes.Maintenance = {mod: 'Maintenance', className: 'maintenance'};
+        headerModes.Maintenance = {
+            WithoutButtons: {mod: 'Maintenance', className: 'maintenance'},
+            WithButtons: headerModes.OneButton
+        };
         headerModes.Profile = {mod: 'OneButton', className: 'one_button profile'};
 
         footerModes.Main = {mod: 'Main'};
@@ -721,17 +724,28 @@ define(["main_router"], function(main_router) {
             App.Routers.MobileRouter.prototype.maintenance.apply(this, arguments);
 
             this.prepare('maintenance', function() {
-                var header = {page_title: '&nbsp;'};
-                if(App.Data.dirMode)
-                    header = Backbone.$.extend(header, {
-                        back_title: 'Directory',
-                        back: this.navigateDirectory.bind(this)
-                    });
+                var back_title, back;
+                if (App.Data.dirMode) {
+                    back_title = 'Directory';
+                    back = this.navigateDirectory.bind(this);
+                } else {
+                    back_title = 'Back';
+                    back = function() { window.history.back() };
+                }
+                var header = {
+                    back: back,
+                    back_title: back_title,
+                    page_title: '&nbsp;'
+                };
 
                 App.Data.header.set(header);
 
                 App.Data.mainModel.set({
-                    header: !App.Data.dirMode ? headerModes.Maintenance : headerModes.Products,
+                    header: !App.Data.dirMode ?
+                        this.isNotFirstLaunchRouter.value ?
+                            headerModes.Maintenance.WithButtons :
+                            headerModes.Maintenance.WithoutButtons :
+                        headerModes.Maintenance.WithButtons,
                     footer: App.Data.dirMode ? footerModes.MaintenanceDirectory : footerModes.Maintenance,
                     content: {
                         modelName: 'Maintenance',
