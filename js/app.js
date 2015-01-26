@@ -139,7 +139,7 @@
                 supported_skins: app.skins.available
             });
             var settings = App.Data.settings,
-                isNotFirstLaunchRouter = {'value': false};
+                isNotFirstLaunchRouter = false;
 
             settings.on('changeSettingsSkin', function() {
                 load_styles_and_scripts(); // load styles and scripts
@@ -151,14 +151,18 @@
                     }
                     App.Data.router = new App.Routers.Router;
                     var router = App.Data.router;
-                    router.isNotFirstLaunchRouter = isNotFirstLaunchRouter;
                     router.once('started', function() {
                         // hide a launch spinner & load an establishments list
                         win.trigger('hideSpinner');
                         router.trigger('needLoadEstablishments');
                     });
 
-                    if (settings.get('isMaintenance')) location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
+                    if (settings.get('isMaintenance')) {
+                        location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
+                    } else {
+                        isNotFirstLaunchRouter = true;
+                    }
+                    router.isNotFirstLaunchRouter = isNotFirstLaunchRouter;
                     Backbone.history.start();
 
                     // invoke afterStart callback

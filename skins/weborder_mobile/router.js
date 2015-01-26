@@ -742,7 +742,7 @@ define(["main_router"], function(main_router) {
 
                 App.Data.mainModel.set({
                     header: !App.Data.dirMode ?
-                        this.isNotFirstLaunchRouter.value ?
+                        this.isNotFirstLaunchRouter ?
                             headerModes.Maintenance.WithButtons :
                             headerModes.Maintenance.WithoutButtons :
                         headerModes.Maintenance.WithButtons,
