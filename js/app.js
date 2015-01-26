@@ -157,7 +157,8 @@
                         win.trigger('hideSpinner');
                         router.trigger('needLoadEstablishments');
                     });
-                    if (settings.get('isMaintenance')) window.location.hash = '#maintenance';
+
+                    if (settings.get('isMaintenance')) location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
                     Backbone.history.start();
 
                     // invoke afterStart callback
@@ -253,6 +254,7 @@
                 if(settings.get('establishment') == estID) {
                     return;
                 }
+
                 ests.trigger('resetEstablishmentData');
                 win.trigger('showSpinner');
                 App.Views.GeneratorView.clearCache(); // clear cache if store was changed
