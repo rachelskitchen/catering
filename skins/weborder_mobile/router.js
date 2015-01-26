@@ -46,10 +46,9 @@ define(["main_router"], function(main_router) {
         headerModes.Map = headerModes.OneButton;
         headerModes.About = {mod: 'TwoButton', className: 'two_button'};
         headerModes.Gallery = headerModes.Map;
-        headerModes.Maintenance = {
-            WithoutButtons: {mod: 'Maintenance', className: 'maintenance'},
-            WithButtons: headerModes.OneButton
-        };
+        headerModes.Maintenance = {};
+        headerModes.Maintenance.WithoutButtons = {mod: 'Maintenance', className: 'maintenance'};
+        headerModes.Maintenance.WithButtons = headerModes.OneButton
         headerModes.Profile = {mod: 'OneButton', className: 'one_button profile'};
 
         footerModes.Main = {mod: 'Main'};
@@ -742,7 +741,7 @@ define(["main_router"], function(main_router) {
 
                 App.Data.mainModel.set({
                     header: !App.Data.dirMode ?
-                        this.isNotFirstLaunchRouter ?
+                        this.isNotFirstLaunch ?
                             headerModes.Maintenance.WithButtons :
                             headerModes.Maintenance.WithoutButtons :
                         headerModes.Maintenance.WithButtons,
