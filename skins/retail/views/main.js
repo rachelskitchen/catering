@@ -231,7 +231,7 @@ define(["done_view", "generator"], function(done_view) {
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.listenToOnce(App.Data.mainModel, 'loadCompleted', App.Data.myorder.check_maintenance);
-            if (!App.Data.router.isNotFirstLaunchRouter) this.$('.back').hide();
+            if (!App.Data.router.isNotFirstLaunch) this.$('.back').hide();
         },
         events: {
             'click .back': 'back',
