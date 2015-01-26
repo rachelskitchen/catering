@@ -138,7 +138,8 @@
             App.Data.settings = new App.Models.Settings({
                 supported_skins: app.skins.available
             });
-            var settings = App.Data.settings;
+            var settings = App.Data.settings,
+                isNotFirstLaunchRouter = {'value': false};
 
             settings.on('changeSettingsSkin', function() {
                 load_styles_and_scripts(); // load styles and scripts
@@ -150,6 +151,7 @@
                     }
                     App.Data.router = new App.Routers.Router;
                     var router = App.Data.router;
+                    router.isNotFirstLaunchRouter = isNotFirstLaunchRouter;
                     router.once('started', function() {
                         // hide a launch spinner & load an establishments list
                         win.trigger('hideSpinner');
