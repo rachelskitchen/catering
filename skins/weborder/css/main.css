@@ -452,12 +452,19 @@ footer {
 }
 section.maintenance .btn {
     margin: 50px auto;
-    width: 160px;
+    width: 160px !important;
 }
 section.maintenance p {
     margin-top: 120px;
     text-align: center;
     font-size: 30px;
+}
+section.maintenance #header * {
+    height: auto;
+    width: auto;
+}
+section.maintenance #header .btn {
+    margin: 26.5px auto auto 26.5px;
 }
 #main-spinner {
     background-color: rgba(170, 170, 170, 0.8);

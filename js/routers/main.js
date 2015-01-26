@@ -140,7 +140,6 @@ define(["backbone"], function(Backbone) {
 
             this.once('started', function() {
                 self.started = true;
-                if (!isMaintenance) this.isNotFirstLaunchRouter.value = true;
             });
 
             // start listen to state changes
