@@ -606,6 +606,9 @@ function loadTemplate2(name, file, isCore) {
                 if (App.Data.loadModelTemplate.count === 0) {
                     App.Data.loadModelTemplate.dfd.resolve();
                 }
+            },
+            error: function(xhr) {
+                App.Data.errors.alert(ERROR[RESOURCES.TEMPLATES], true); // user notification
             }
         });
     } else if(loadTemplate2[id] instanceof $) {
