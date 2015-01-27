@@ -241,9 +241,13 @@ define(["backbone"], function(Backbone) {
                     dependencies.push(App.Data.loadModelTemplate.dfd);
                 }
                 if (App.Data.loadModelCSS && App.Data.loadModelCSS.dfd) dependencies.push(App.Data.loadModelCSS.dfd);
+
+                // now App.Data.loadModules doesn't use in app nowhere
+                /*
                 if (App.Data.loadModules) {
                     dependencies.push(App.Data.loadModules);
                 }
+                */
 
                 $.when.apply($, dependencies).then(function() {
                     callback();
