@@ -67,6 +67,14 @@ var MAINTENANCE = {
     ORDER_TYPE: 'MAINTENANCE_ORDER_TYPE'
 };
 
+ERROR.RESOURCES_CSS = 'Unable to load CSS resources. Now the page is reloaded.';
+ERROR.RESOURCES_TEMPLATES = 'Unable to load template resources. Now the page is reloaded.';
+
+var RESOURCES = {
+    CSS: 'RESOURCES_CSS',
+    TEMPLATES: 'RESOURCES_TEMPLATES'
+}
+
 //write messages here
 MSG.ERROR_STORE_IS_CLOSED = "We're sorry, your order cannot be processed because the store is closed for selected pickup day/time";
 MSG.ERROR_GEOLOCATION = [ "There was an error while retrieving your location.",
@@ -656,9 +664,36 @@ function loadCSS(name) {
         elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
         App.Data.loadModelCSS.dfd = $.Deferred();
         App.Data.loadModelCSS.count++;
+
+        // bug #18285 - no timeout for app assets
+        /**
+         * User notification.
+         */
+        var error = function() {
+            var designAlertCSS = [];
+            if (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL || App.skin == App.Skins.WEBORDER_MOBILE) {
+                designAlertCSS.push('main', 'colors');
+            } else if (App.skin = App.Skins.DIRECTORY_MOBILE) {
+                designAlertCSS.push('main');
+            }
+            var arr = name.split('/');
+            var nameCSS = arr[arr.length - 1];
+            if ( ~designAlertCSS.indexOf(nameCSS) ) $('#alert-template').remove();
+            App.Data.errors.alert(ERROR[RESOURCES.CSS], true); // user notification
+        };
+        var timer = window.setTimeout(function() {
+            elem.remove();
+            error(); // user notification
+        }, App.Data.settings.get('timeout'));
+
         elem.on('load', function() {
+            clearTimeout(timer);
             App.Data.loadModelCSS.count--;
             if (App.Data.loadModelCSS.count === 0) App.Data.loadModelCSS.dfd.resolve();
+        });
+        elem.on('error', function() {
+            clearTimeout(timer);
+            error(); // user notification
         });
     }
 
