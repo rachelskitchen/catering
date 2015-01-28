@@ -51,7 +51,6 @@ define(["main_router"], function(main_router) {
         hashForGoogleMaps: ['map', 'checkout'],//for #index we start preload api after main screen reached
         initialize: function() {
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
-            clearQueryString();
             this.bodyElement = Backbone.$('body');
             this.bodyElement.append('<div class="main-container"></div>');
 
