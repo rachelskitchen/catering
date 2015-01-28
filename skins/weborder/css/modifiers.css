@@ -167,8 +167,6 @@
 .mdf_split select {
     padding-right: 28px !important;
     padding-left: 22px !important;
-    opacity: 0.9;
-    filter: alpha(opacity=90);
 }
 
 .mdf_split .selected_option {
@@ -177,4 +175,5 @@
     left: 8px;
     width: 18px;
     height: 17px;
+    pointer-events:none;
 }

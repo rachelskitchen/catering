@@ -203,9 +203,11 @@ define(["backbone"], function(Backbone) {
             this.listenTo(this, 'change:modifiers', function(model) {
                 var prevModifiers = model.previousAttributes().modifiers;
                 prevModifiers instanceof Backbone.Collection && this.stopListening(prevModifiers);
-                this.set('amount_free_selected', []);
-                this.initFreeModifiers();
-                this.listenToModifiers();
+                if (!App.Data.loadFromLocalStorage) {
+                    this.set('amount_free_selected', []);
+                    this.initFreeModifiers();
+                    this.listenToModifiers();
+                }
             }, this);
 
             this.set({
