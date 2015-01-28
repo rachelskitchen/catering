@@ -282,10 +282,18 @@ define(["done_view", "generator"], function(done_view) {
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.listenToOnce(App.Data.mainModel, 'loadCompleted', App.Data.myorder.check_maintenance);
+            if (!App.Data.router.isNotFirstLaunch) this.$('.back').hide();
         },
         events: {
             "click .btn": 'reload',
-            'click .go-to-directory': 'goToDirectory'
+            'click .go-to-directory': 'goToDirectory',
+            'click .back': 'back'
+        },
+        /**
+         * Go to the previous establishment.
+         */
+        back: function() {
+            window.history.back();
         },
         reload: function() {
             window.location.replace(window.location.href.replace(/#.*$/, ''));

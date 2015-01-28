@@ -70,12 +70,13 @@
 </script>
 
 <script type="text/template" id="main_maintenance-template">
-<section class="maintenance">
-    <div id="content">
-        <p> <%= errMsg %> </p>
-        <div class="btn">Restart</div>
-    </div>
-</section>
+    <section class="maintenance">
+        <a href="javascript: void(0);" class="back"> Back </a>
+        <div id="content">
+            <p> <%= errMsg %> </p>
+            <div class="btn reload"> Restart </div>
+        </div>
+    </section>
 <footer>
     <% if(isDirMode) { %>
         <a class='go-to-directory link1' href='javascript: void(0);'>Go To Directory</a>

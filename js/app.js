@@ -138,7 +138,8 @@
             App.Data.settings = new App.Models.Settings({
                 supported_skins: app.skins.available
             });
-            var settings = App.Data.settings;
+            var settings = App.Data.settings,
+                isNotFirstLaunch = false;
 
             settings.on('changeSettingsSkin', function() {
                 load_styles_and_scripts(); // load styles and scripts
@@ -156,7 +157,13 @@
                         router.trigger('needLoadEstablishments');
                     });
 
-                    if (settings.get('isMaintenance')) location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
+                    if (settings.get('isMaintenance')) {
+                        location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
+                    } else {
+                        // TODO: shouldn't depend on the isMaintenance mode if the 'Change Store' functionality is implemented on '#maintenance' page
+                        isNotFirstLaunch = true;
+                    }
+                    router.isNotFirstLaunch = isNotFirstLaunch;
                     Backbone.history.start();
 
                     // invoke afterStart callback
