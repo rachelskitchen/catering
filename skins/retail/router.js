@@ -53,7 +53,6 @@ define(["main_router"], function(main_router) {
         initialize: function() {
             var settings = App.Settings;
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
-            clearQueryString();
             this.bodyElement = Backbone.$('body');
             this.bodyElement.append('<div class="main-container"></div>');
 
