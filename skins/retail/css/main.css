@@ -522,6 +522,12 @@ section.maintenance p {
     text-align: center;
     font-size: 30px;
 }
+section.maintenance .back {
+    left: 20px;
+    position: relative;
+    text-decoration: none;
+    top: -40px;
+}
 #main-spinner {
     background-color: rgba(170, 170, 170, 0.8);
     width: 100%;

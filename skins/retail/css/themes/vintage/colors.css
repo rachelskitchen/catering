@@ -583,3 +583,7 @@ aside:after, aside:before {
 .promo_message {
     color: #373b40;
 }
+
+section.maintenance .back {
+    color: #611500;
+}
