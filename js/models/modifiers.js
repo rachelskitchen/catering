@@ -361,14 +361,24 @@ define(["backbone"], function(Backbone) {
                 this.update_free_quantity(model);
         },
         update_free_quantity: function(model) {
-            var amount = this.get('amount_free'),
+            var free_qty_amount = this.get('amount_free'),
                 selected = this.get('amount_free_selected');
-
+            
+            var qty, delta,
+                qty_total = 0;
             selected.forEach(function(model, index) {
-                if(index > amount - 1)
-                    model.unset('free_amount');
-                else
+                qty = model.get("quantity") * model.half_price_koeff();
+                qty_total += qty;
+
+                if (qty_total <= free_qty_amount)
                     model.set('free_amount', 0);
+                else {
+                  delta = qty_total - free_qty_amount;
+                  if (delta.toFixed(1)*1 < qty)
+                    model.set('free_amount', round_monetary_currency(delta * model.get('order_price')));
+                  else
+                    model.unset('free_amount');
+                }               
             });
         },
         update_free_price: function(model) {
