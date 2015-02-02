@@ -108,6 +108,11 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 }
                 this.model.set('selected', checked);
             }
+
+            if (this.model.get('selected') == false) {
+                this.model.unset('free_amount');
+                this.model.unset('max_price_amount');
+            }
         },
         update: function() {
             if(this.options.type === SIZE || this.options.type === SPECIAL) {

@@ -72,7 +72,8 @@ define(["backbone"], function(Backbone) {
                     modifier: this.get('id'),
                     modifier_cost: (this.get('cost') === null) ? 0 : this.get('cost'),
                     modifier_price: this.get('order_price') * 1,
-                    free_mod_price: this.isFree() ? this.get('free_amount') * 1 : undefined,
+                    free_mod_price: this.isFree() ? this.get('free_amount') : undefined,
+                    max_price_amount: this.isMaxPriceFree() ? this.get('max_price_amount') : undefined,
                     qty: this.get('quantity'),
                     qty_type: this.get('qty_type')
                 };
@@ -82,12 +83,19 @@ define(["backbone"], function(Backbone) {
          * update modifiers price due to max feature
          */
         update_prices: function(max_price) {
-            var price = Math.min(this.get('price'), max_price);
-            this.set('order_price', price, {silent: true});
+            var price = this.get('free_amount') != undefined ? this.get('free_amount') : this.getSum();
+            if (price > max_price ) {
+                this.set('max_price_amount', max_price);//modifier price with feature max price 6137
+            } else {
+                this.unset('max_price_amount');
+            }            
             return max_price > price ? max_price - price : 0;
         },
         isFree: function() {
             return typeof this.get('free_amount') != 'undefined';
+        },
+        isMaxPriceFree: function() {
+            return typeof this.get('max_price_amount') != 'undefined';
         },
         removeFreeModifier: function() {
             this.unset('free_amount');
@@ -147,8 +155,11 @@ define(["backbone"], function(Backbone) {
             var sum = 0;
             this.where({selected: true}).forEach(function(modifier) {
                 var free_amount = modifier.get('free_amount'),
+                    max_price_amount = modifier.get('max_price_amount'),
                     price = modifier.getSum();
-                sum += modifier.isFree() ? parseFloat(free_amount) : price;
+                
+                sum += modifier.isMaxPriceFree() ? max_price_amount : 
+                                (modifier.isFree() ? free_amount : price);
             });
             return sum;
         },
@@ -375,7 +386,7 @@ define(["backbone"], function(Backbone) {
                 else {
                   delta = qty_total - free_qty_amount;
                   if (delta.toFixed(1)*1 < qty)
-                    model.set('free_amount', round_monetary_currency(delta * model.get('order_price')));
+                    model.set('free_amount', round_monetary_currency(delta * model.get('order_price'))*1 );
                   else
                     model.unset('free_amount');
                 }               
@@ -393,7 +404,7 @@ define(["backbone"], function(Backbone) {
                     return model.unset('free_amount');
 
                 if(amount < mdf_price_sum) {
-                    model.set('free_amount', round_monetary_currency(mdf_price_sum - amount));
+                    model.set('free_amount', round_monetary_currency(mdf_price_sum - amount)*1);
                     amount = 0;
                 } else {
                     model.set('free_amount', 0);
@@ -420,7 +431,7 @@ define(["backbone"], function(Backbone) {
             var amount_free_selected = this.get('amount_free_selected'),
                 restored = [];
             amount_free_selected.forEach(function(modifier, index) {
-                var copiedModifier = this.get('modifiers').where({id: modifier.get('id'), selected: true});
+                var copiedModifier = this.get('modifiers').where({id: modifier.id, selected: true}); //modifier.get('id')
                 if(copiedModifier.length && copiedModifier[0])
                     restored.push(copiedModifier[0]);
             }, this);
@@ -444,6 +455,7 @@ define(["backbone"], function(Backbone) {
             this.listenTo(modifiers, 'change:qty_type', cb2, this);
             function cb2(model, opts) {
                 this.update_free_quantity_change(model);
+                this.trigger('change', this, _.extend({modifier: model}, opts));
             }
         },
         checkAmountFree: function() {
@@ -479,9 +491,9 @@ define(["backbone"], function(Backbone) {
 
                 if (isSpecialSelection) {
                     this.trigger('modifiers_special');
-                } else if (isSizeSelection) {
-                    this.trigger('modifiers_changed');
+                } else if (isSizeSelection) {                    
                     this.trigger('modifiers_size', this.getSizeModel().get('order_price'));
+                    this.trigger('modifiers_changed');
                 } else {
                     this.trigger('modifiers_changed');
                 }

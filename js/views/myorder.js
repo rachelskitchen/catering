@@ -29,9 +29,15 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         name: 'myorder',
         mod: 'modifier',
         render: function() {
-            var model = this.model.toJSON();
+            var price, model = this.model.toJSON();
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
-            model.price = round_monetary_currency(this.model.isFree() ? model.free_amount : this.model.getSum());
+            
+            if (this.model.isMaxPriceFree())
+                price = model.max_price_amount;
+            else
+                price = this.model.isFree() ? model.free_amount : this.model.getSum();
+            
+            model.price = round_monetary_currency( price );
             model.half_price_str = MSG.HALF_PRICE_STR[this.model.get('qty_type')];
             this.$el.html(this.template(model));
             return this;
