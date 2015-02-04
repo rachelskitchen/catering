@@ -28,7 +28,6 @@ define(["backbone"], function(Backbone) {
             id: null,
             name: null,
             price: null, // base modifier price
-            order_price: null, // modifier price with feature max price 6137
             selected: false,
             sort: null,
             cost: null, // only for order send.
@@ -40,9 +39,6 @@ define(["backbone"], function(Backbone) {
             this.set('img', App.Data.settings.get('img_path'));
         },
         addJSON: function(data) {
-            if (!data.order_price) {
-                data.order_price = data.price;
-            }
             this.set(data);
             return this;
         },
@@ -71,7 +67,7 @@ define(["backbone"], function(Backbone) {
                 return {
                     modifier: this.get('id'),
                     modifier_cost: (this.get('cost') === null) ? 0 : this.get('cost'),
-                    modifier_price: this.get('order_price') * 1,
+                    modifier_price: this.get('price') * 1,
                     free_mod_price: this.isFree() ? this.get('free_amount') : undefined,
                     max_price_amount: this.isMaxPriceFree() ? this.get('max_price_amount') : undefined,
                     qty: this.get('quantity'),
@@ -105,7 +101,7 @@ define(["backbone"], function(Backbone) {
             return this.get('qty_type') > 0 ? 0.5 : 1;
         },
         getSum: function() {
-            return this.get('order_price') * this.get('quantity') * this.half_price_koeff();
+            return this.get('price') * this.get('quantity') * this.half_price_koeff();
         }
     });
 
@@ -386,7 +382,7 @@ define(["backbone"], function(Backbone) {
                 else {
                   delta = qty_total - free_qty_amount;
                   if (delta.toFixed(1)*1 < qty)
-                    model.set('free_amount', round_monetary_currency(delta * model.get('order_price'))*1 );
+                    model.set('free_amount', round_monetary_currency(delta * model.get('price'))*1 );
                   else
                     model.unset('free_amount');
                 }               
@@ -492,7 +488,7 @@ define(["backbone"], function(Backbone) {
                 if (isSpecialSelection) {
                     this.trigger('modifiers_special');
                 } else if (isSizeSelection) {                    
-                    this.trigger('modifiers_size', this.getSizeModel().get('order_price'));
+                    this.trigger('modifiers_size', this.getSizeModel().get('price'));
                     this.trigger('modifiers_changed');
                 } else {
                     this.trigger('modifiers_changed');
