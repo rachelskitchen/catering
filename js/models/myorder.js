@@ -54,7 +54,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                size = modifiers && modifiers.getSizeModel();
 
             if(size) {
-               return size.get('order_price');
+               return size.get('price');
             } else {
                return this.get_product().get('price');
             }
