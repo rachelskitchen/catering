@@ -676,12 +676,17 @@ function loadCSS(name) {
         var error = function() {
             var checkSkins = [App.Skins.WEBORDER, App.Skins.RETAIL, App.Skins.WEBORDER_MOBILE];
             if ( ~checkSkins.indexOf(App.skin) ) {
-                var arr = name.split('/'),
-                    nameCSS = arr[arr.length - 1];
-                if ( ~['main', 'colors'].indexOf(nameCSS) ) {
-                    if ((App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL)) {
-                        $('#alert-template').remove();
-                    }
+                switch (App.skin) {
+                    case App.Skins.WEBORDER:
+                    case App.Skins.RETAIL:
+                        var arr = name.split('/'),
+                            nameCSS = arr[arr.length - 1];
+                        if ( ~['main', 'colors'].indexOf(nameCSS) ) $('#alert-template').remove();
+                        break;
+                    case App.Skins.WEBORDER_MOBILE:
+                        $('link[href*="main"]').remove();
+                        $('link[href*="colors"]').remove();
+                        break;
                 }
             }
             App.Data.errors.alert(ERROR[RESOURCES.CSS], true); // user notification
