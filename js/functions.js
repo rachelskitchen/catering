@@ -673,15 +673,16 @@ function loadCSS(name) {
          * User notification.
          */
         var error = function() {
-            var designAlertCSS = [];
-            if (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL || App.skin == App.Skins.WEBORDER_MOBILE) {
-                designAlertCSS.push('main', 'colors');
-            } else if (App.skin = App.Skins.DIRECTORY_MOBILE) {
-                designAlertCSS.push('main');
+            var checkSkins = [App.Skins.WEBORDER, App.Skins.RETAIL, App.Skins.WEBORDER_MOBILE];
+            if ( ~checkSkins.indexOf(App.skin) ) {
+                var arr = name.split('/'),
+                    nameCSS = arr[arr.length - 1];
+                if ( ~['main', 'colors'].indexOf(nameCSS) ) {
+                    if ((App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL)) {
+                        $('#alert-template').remove();
+                    }
+                }
             }
-            var arr = name.split('/');
-            var nameCSS = arr[arr.length - 1];
-            if ( ~designAlertCSS.indexOf(nameCSS) ) $('#alert-template').remove();
             App.Data.errors.alert(ERROR[RESOURCES.CSS], true); // user notification
         };
         var timer = window.setTimeout(function() {
