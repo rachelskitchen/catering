@@ -29,9 +29,16 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         name: 'myorder',
         mod: 'modifier',
         render: function() {
-            var model = this.model.toJSON();
+            var price, model = this.model.toJSON();
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
-            model.price = round_monetary_currency(this.model.isFree() ? model.free_amount : model.order_price);
+            
+            if (this.model.isMaxPriceFree())
+                price = model.max_price_amount;
+            else
+                price = this.model.isFree() ? model.free_amount : this.model.getSum();
+            
+            model.price = round_monetary_currency( price );
+            model.half_price_str = MSG.HALF_PRICE_STR[this.model.get('qty_type')];
             this.$el.html(this.template(model));
             return this;
         }
@@ -54,12 +61,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.price_length = model.discount_sum.length + 1;
             this.$el.html(this.template(model));
 
-            this.$el.removeClass( function() { // remove classes with pattern /^s\d{1,2}/
-                    return this.className.split(' ').filter(function(className)
-                                        {
-                                            return className.match(/^s\d{1,2}/)
-                                        }).join(' ');
-                });
+            removeClassRegexp(this.$el, "s\\d{1,2}");
             this.$el.addClass('s' + (model.discount_sum.length + 1));
 
             if (discount.get("sum") <= 0) {
@@ -157,7 +159,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                         model: modifier
                     });
                     self.subViews.push(view);
-                    view.$el.addClass('s' + (round_monetary_currency(modifier.get('price')).length + 1));
+                    view.$el.addClass('s' + (round_monetary_currency(modifier.getSum()).length + 1));
 
                     self.$('.modifier_place').append(view.el);
                 });

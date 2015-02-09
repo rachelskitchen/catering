@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone"], function(Backbone) {
+define(["backbone", "factory"], function(Backbone) {
     'use strict';
 
     // flag for maintenance mode
@@ -274,6 +274,7 @@ define(["backbone"], function(Backbone) {
             var load = $.Deferred();
 
             this.prepare('pay', function() {
+                App.Data.loadFromLocalStorage = true;
                 App.Data.card = new App.Models.Card({RevelAPI: App.Data.RevelAPI});
                 App.Data.card.loadCard();
                 App.Data.giftcard = new App.Models.GiftCard();
@@ -283,6 +284,7 @@ define(["backbone"], function(Backbone) {
                 App.Data.customer.loadAddresses();
                 App.Data.myorder.loadOrders();
                 App.Data.establishments && App.Data.establishments.removeSavedEstablishment();
+                App.Data.loadFromLocalStorage = false;
                 load.resolve();
             });
 

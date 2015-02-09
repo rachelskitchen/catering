@@ -151,6 +151,7 @@ MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_MOBILE = 'Ok';
 MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_DESKTOP = 'Go Back';
 MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_MOBILE = 'Back';
 // page 'Establishments' (end)
+MSG.HALF_PRICE_STR =  ["Full", "First Half","Second Half"];            
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
@@ -1010,6 +1011,19 @@ function iPad() {
 }
 
 /**
+ * Check if is iOS device
+ */
+function isIOS() {
+    if (iPad.retval) {
+        return iPad.retval;
+    }
+    else {
+        iPad.retval = /iPad|iPod|iPhone/.test(window.navigator.userAgent);
+        return iPad.retval;
+    }
+}   
+
+/**
  * Pickup time to string
  */
 function pickupToString(date) {
@@ -1709,3 +1723,18 @@ var GiftCardPaymentProcessor = {
         return payment_info;
     }
 };
+// End of timetable functions
+
+/*
+* removeClassRegexp: removes all classes by regular expression
+*           example: removeClassRegexp($('#element_id'), "s\\d+")
+*/
+function removeClassRegexp(jq_elem, exp_str) {
+    var regexpStr = "(\\s+)?" + exp_str + "(?=\\s|$)";
+    var regexp = new RegExp(regexpStr, "g");
+    jq_elem.each(function(index, elem){
+       $(elem).prop('className', $(elem).prop('className').replace(regexp, ''));
+    });
+}
+
+               
