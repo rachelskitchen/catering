@@ -657,7 +657,7 @@ define(["main_router"], function(main_router) {
             var settings = App.Data.settings,
                 settings_system = settings.get('settings_system'),
                 model = new Backbone.Model({
-                    logo: settings_system.logo ? settings.get('host') + settings_system.logo : null,
+                    logo: settings_system.logo_img ? settings.get('host') + settings_system.logo_img : null,
                     text: settings_system.about_description || 'No information',
                     title: settings_system.about_title || '',
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1]
