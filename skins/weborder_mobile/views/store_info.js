@@ -30,7 +30,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             var settings = App.Data.settings,
                 settings_system = settings.get('settings_system');
             this.model = new Backbone.Model({
-                logo: settings_system.logo ? settings.get('host') + settings_system.logo : null,
+                logo: settings_system.logo_img ? settings.get('host') + settings_system.logo_img : null,
                 phone: settings_system.phone,
                 email: settings_system.email,
                 location: settings_system.address instanceof Object ? settings_system.address.line_1 : null,
