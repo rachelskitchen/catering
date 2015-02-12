@@ -435,6 +435,12 @@ define(["backbone", "factory"], function(Backbone) {
     });
 
     App.Routers.MobileRouter = App.Routers.MainRouter.extend({
+        change_page: function() {
+            App.Routers.MainRouter.prototype.change_page.apply(this, arguments); 
+            if (cssua.ua.revelsystemswebview && cssua.ua.ios) {
+                $("body")[0].scrollIntoView(); //workaround for #18586, #18130  
+            }
+        },
         profile: function(step, header, footer) {
             step = step <= 2 && step >= 0 ? Math.ceil(step) : 0;
 
