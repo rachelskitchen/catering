@@ -958,7 +958,7 @@ function loadSpinner(logo, anim_params, cb) {
         img.on('load', function() { //load method - deprecated
             spinner.replaceWith(img);
             anim ? img.fadeIn() : img.show();
-            App.Data.images[makeImageName(logo)] = img.clone().css('opacity', '100');
+            App.Data.images[makeImageName(logo)] = img.clone().css('opacity', '1');
             typeof cb == 'function' && cb(img);
         }).error(function(e) {
             logo.prop('src', defImage);
