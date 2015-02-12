@@ -135,7 +135,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             }
 
             return {
-                logo: settings_system.logo ? settings.get('host') + settings_system.logo : null,
+                logo: settings_system.logo_img ? settings.get('host') + settings_system.logo_img : null,
                 phone: settings_system.phone,
                 email: settings_system.email,
                 access_to_location: settings_system.about_access_to_location,
