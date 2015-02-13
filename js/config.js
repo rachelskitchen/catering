@@ -116,7 +116,7 @@ define({
             exports: "_"
         },
         "functions": {
-            deps: ["underscore", "jquery"]
+            deps: ["underscore", "jquery", "cssua"]
         },
         "customers": {
             deps: ["backbone"]

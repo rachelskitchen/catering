@@ -712,6 +712,17 @@ function loadCSS(name) {
 }
 
 /**
+ * Include CSS file for Safari on OS Windows 
+ */
+if (cssua && cssua.ua.safari && cssua.ua.windows_nt) {
+    loadCSS = function(name) {
+        var elem = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
+        $('head').append(elem);
+        // 'load' event on the link element does not fire on Safari at least 5.1.7
+    }
+}
+
+/**
  * Include common CSS file
  */
 function loadCommonCSS(name) {
