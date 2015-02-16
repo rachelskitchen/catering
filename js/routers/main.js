@@ -207,6 +207,14 @@ define(["backbone", "factory"], function(Backbone) {
 
             color_schemes.length > 0 && !this.prepare.initialized && initTheme.call(this);
 
+            var countCSS = css.length + cssCore.length;
+            if (countCSS) {
+                var loadModelCSS = {
+                    count: countCSS,
+                    dfd: $.Deferred()
+                };
+            }
+
             for(i = 0, j = scripts.length; i < j; i++)
                 js.push(skin + "/js/" + scripts[i]);
 
@@ -217,13 +225,13 @@ define(["backbone", "factory"], function(Backbone) {
                 js.push(skin + "/views/" + views[i]);
 
             for(i = 0, j = css.length; i < j; i++)
-                this.skinCSS.push(loadCSS(skinPath + "/css/" + css[i]));
+                this.skinCSS.push(loadCSS(skinPath + '/css/' + css[i], loadModelCSS));
 
             for(i = 0, j = models.length; i < j; i++)
                 js.push(skin + "/models/" + models[i]);
 
             for(i = 0, j = cssCore.length; i < j; i++)
-                this.skinCSS.push(loadCSS(basePath + "/css/" + cssCore[i]));
+                this.skinCSS.push(loadCSS(basePath + '/css/' + cssCore[i], loadModelCSS));
 
             for (i = 0, j = templatesCore.length; i < j; i++)
                 loadTemplate2(null, templatesCore[i], true); // sync load template
@@ -240,7 +248,7 @@ define(["backbone", "factory"], function(Backbone) {
                 if (App.Data.loadModelTemplate && App.Data.loadModelTemplate.dfd) {
                     dependencies.push(App.Data.loadModelTemplate.dfd);
                 }
-                if (App.Data.loadModelCSS && App.Data.loadModelCSS.dfd) dependencies.push(App.Data.loadModelCSS.dfd);
+                if (loadModelCSS && loadModelCSS.dfd) dependencies.push(loadModelCSS.dfd);
 
                 // now App.Data.loadModules doesn't use in app nowhere
                 /*
