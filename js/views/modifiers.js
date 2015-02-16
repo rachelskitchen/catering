@@ -33,7 +33,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         mod: 'item',
         events: {
             'change input': 'change',
-            'click .special_label': 'add_special'
+            'click .special_label': 'add_special',
+            'change .mdf_quantity select': 'change_quantity',
+            'change .mdf_split select': 'change_split_modifier'
         },
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
@@ -57,6 +59,21 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             }
 
             this.$el.html(this.template(model));
+            
+            var option_el, 
+                mdf_qauntity_el = this.$(".mdf_quantity select");
+            for (var i=1; i <= 5; i++) {
+                option_el = $('<option>').val(i).text("x" + i);
+                mdf_qauntity_el.append(option_el);
+            }
+
+            var mdf_split_el = this.$(".mdf_split select");
+            var index = [1, 2, 0];//this change the order of options as First Half, Second Half and Full.
+            for (var i=0; i < 3; i++) {
+                option_el = $('<option>').val(index[i]).text(MSG.HALF_PRICE_STR[index[i]]);
+                mdf_split_el.append(option_el);
+            }
+
             this.afterRender(model.sort);
             this.update();
             this.update_free();
@@ -91,6 +108,11 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 }
                 this.model.set('selected', checked);
             }
+
+            if (this.model.get('selected') == false) {
+                this.model.unset('free_amount');
+                this.model.unset('max_price_amount');
+            }
         },
         update: function() {
             if(this.options.type === SIZE || this.options.type === SPECIAL) {
@@ -104,10 +126,34 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 if(this.model.get('selected')) {
                     this.$('input').attr('checked', 'checked');
                     this.$('.input').addClass('checked');
+
+                    if (App.Settings.enable_quantity_modifiers) {
+                        this.$(".mdf_quantity").css("display", "inline-block");
+                        
+                        this.$('.mdf_quantity option:selected').removeAttr('selected');
+                        if (this.model.get('quantity') > 0) {
+                            this.$(".mdf_quantity select").val(this.model.get('quantity'));
+                        }
+                    }
+                    if (App.Settings.enable_split_modifiers) {
+                        this.$(".mdf_split").css("display", "inline-block");
+                        
+                        this.$(".mdf_split select").val(this.model.get('qty_type'));
+                        var elem = this.$(".mdf_split .selected_option")
+                        removeClassRegexp(elem, "option_\\d+");
+                        elem.addClass("option_"+this.model.get('qty_type'));
+                    }
+                    if (App.Settings.enable_quantity_modifiers ? !App.Settings.enable_split_modifiers : App.Settings.enable_split_modifiers) {
+                        this.$(".split-qty-wrapper").addClass('single')
+                    } else {
+                        this.$(".split-qty-wrapper").removeClass('single')
+                    }
                 }
                 else {
                     this.$('input').removeAttr('checked');
                     this.$('.input').removeClass('checked');
+                    this.$(".mdf_quantity").hide();
+                    this.$(".mdf_split").hide();
                 }
             }
         },
@@ -136,6 +182,21 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
 
             function hide() {
                 $(this).removeClass('visible').addClass('hidden');
+            }
+        },
+        change_quantity: function() {
+            var quantity = this.$(".mdf_quantity select").val();
+            if (quantity) {
+                this.model.set('quantity', quantity*1);
+            }
+        },
+        change_split_modifier: function() {
+            var qty_type = this.$(".mdf_split select").val();
+            if (qty_type != undefined) {
+                this.model.set('qty_type', qty_type*1);
+                var selopt = this.$(".mdf_split .selected_option");
+                removeClassRegexp(selopt, "option_\\d+");
+                selopt.addClass("option_" + qty_type);
             }
         }
     });
@@ -278,11 +339,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         mod: 'item',
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
-            this.listenLocked = setInterval(this.controlCheckboxes.bind(this), 300);
-
+            this.listenTo(this.model, 'change', this.controlCheckboxes, this);
         },
         remove: function() {
-            clearInterval(this.listenLocked);
             App.Views.ItemView.prototype.remove.apply(this, arguments);
         },
         render: function() {
@@ -322,6 +381,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             this.afterRender(this.model.escape('sort'));
             this.subViews.push(view);
 
+            this.controlCheckboxes();
             return this;
         },
         controlCheckboxes: function() {

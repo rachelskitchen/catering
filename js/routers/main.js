@@ -241,9 +241,13 @@ define(["backbone", "factory"], function(Backbone) {
                     dependencies.push(App.Data.loadModelTemplate.dfd);
                 }
                 if (App.Data.loadModelCSS && App.Data.loadModelCSS.dfd) dependencies.push(App.Data.loadModelCSS.dfd);
+
+                // now App.Data.loadModules doesn't use in app nowhere
+                /*
                 if (App.Data.loadModules) {
                     dependencies.push(App.Data.loadModules);
                 }
+                */
 
                 $.when.apply($, dependencies).then(function() {
                     callback();
@@ -270,6 +274,7 @@ define(["backbone", "factory"], function(Backbone) {
             var load = $.Deferred();
 
             this.prepare('pay', function() {
+                App.Data.loadFromLocalStorage = true;
                 App.Data.card = new App.Models.Card({RevelAPI: App.Data.RevelAPI});
                 App.Data.card.loadCard();
                 App.Data.giftcard = new App.Models.GiftCard();
@@ -279,6 +284,7 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.customer.loadAddresses();
                 App.Data.myorder.loadOrders();
                 App.Data.establishments && App.Data.establishments.removeSavedEstablishment();
+                App.Data.loadFromLocalStorage = false;
                 load.resolve();
             });
 
@@ -441,6 +447,12 @@ define(["backbone", "factory"], function(Backbone) {
     });
 
     App.Routers.MobileRouter = App.Routers.MainRouter.extend({
+        change_page: function() {
+            App.Routers.MainRouter.prototype.change_page.apply(this, arguments); 
+            if (cssua.ua.revelsystemswebview && cssua.ua.ios) {
+                $("body")[0].scrollIntoView(); //workaround for #18586, #18130  
+            }
+        },
         profile: function(step, header, footer) {
             step = step <= 2 && step >= 0 ? Math.ceil(step) : 0;
 

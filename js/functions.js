@@ -67,6 +67,14 @@ var MAINTENANCE = {
     ORDER_TYPE: 'MAINTENANCE_ORDER_TYPE'
 };
 
+ERROR.RESOURCES_CSS = 'Unable to load CSS resources. Now the page is reloaded.';
+ERROR.RESOURCES_TEMPLATES = 'Unable to load template resources. Now the page is reloaded.';
+
+var RESOURCES = {
+    CSS: 'RESOURCES_CSS',
+    TEMPLATES: 'RESOURCES_TEMPLATES'
+}
+
 //write messages here
 MSG.ERROR_STORE_IS_CLOSED = "We're sorry, your order cannot be processed because the store is closed for selected pickup day/time";
 MSG.ERROR_GEOLOCATION = [ "There was an error while retrieving your location.",
@@ -143,6 +151,7 @@ MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_MOBILE = 'Ok';
 MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_DESKTOP = 'Go Back';
 MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_MOBILE = 'Back';
 // page 'Establishments' (end)
+MSG.HALF_PRICE_STR =  ["Full", "First Half","Second Half"];            
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
@@ -598,6 +607,9 @@ function loadTemplate2(name, file, isCore) {
                 if (App.Data.loadModelTemplate.count === 0) {
                     App.Data.loadModelTemplate.dfd.resolve();
                 }
+            },
+            error: function(xhr) {
+                App.Data.errors.alert(ERROR[RESOURCES.TEMPLATES], true); // user notification
             }
         });
     } else if(loadTemplate2[id] instanceof $) {
@@ -656,9 +668,39 @@ function loadCSS(name) {
         elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
         App.Data.loadModelCSS.dfd = $.Deferred();
         App.Data.loadModelCSS.count++;
+
+        // bug #18285 - no timeout for app assets
+        /**
+         * User notification.
+         */
+        var error = function() {
+            switch (App.skin) {
+                case App.Skins.WEBORDER:
+                case App.Skins.RETAIL:
+                    var arr = name.split('/'),
+                        nameCSS = arr[arr.length - 1];
+                    if ( ~['main', 'colors'].indexOf(nameCSS) ) $('#alert-template').remove();
+                    break;
+                case App.Skins.WEBORDER_MOBILE:
+                    $('link[href*="main"]').remove();
+                    $('link[href*="colors"]').remove();
+                    break;
+            }
+            App.Data.errors.alert(ERROR[RESOURCES.CSS], true); // user notification
+        };
+        var timer = window.setTimeout(function() {
+            elem.remove();
+            error(); // user notification
+        }, App.Data.settings.get('timeout'));
+
         elem.on('load', function() {
+            clearTimeout(timer);
             App.Data.loadModelCSS.count--;
             if (App.Data.loadModelCSS.count === 0) App.Data.loadModelCSS.dfd.resolve();
+        });
+        elem.on('error', function() {
+            clearTimeout(timer);
+            error(); // user notification
         });
     }
 
@@ -667,6 +709,17 @@ function loadCSS(name) {
     }
 
     return elem;
+}
+
+/**
+ * Include CSS file for Safari on OS Windows 
+ */
+if (cssua && cssua.ua.safari && cssua.ua.windows_nt) {
+    loadCSS = function(name) {
+        var elem = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
+        $('head').append(elem);
+        // 'load' event on the link element does not fire on Safari at least 5.1.7
+    }
 }
 
 /**
@@ -969,6 +1022,19 @@ function iPad() {
         return iPad.retval;
     }
 }
+
+/**
+ * Check if is iOS device
+ */
+function isIOS() {
+    if (iPad.retval) {
+        return iPad.retval;
+    }
+    else {
+        iPad.retval = /iPad|iPod|iPhone/.test(window.navigator.userAgent);
+        return iPad.retval;
+    }
+}   
 
 /**
  * Pickup time to string
@@ -1670,3 +1736,18 @@ var GiftCardPaymentProcessor = {
         return payment_info;
     }
 };
+// End of timetable functions
+
+/*
+* removeClassRegexp: removes all classes by regular expression
+*           example: removeClassRegexp($('#element_id'), "s\\d+")
+*/
+function removeClassRegexp(jq_elem, exp_str) {
+    var regexpStr = "(\\s+)?" + exp_str + "(?=\\s|$)";
+    var regexp = new RegExp(regexpStr, "g");
+    jq_elem.each(function(index, elem){
+       $(elem).prop('className', $(elem).prop('className').replace(regexp, ''));
+    });
+}
+
+               

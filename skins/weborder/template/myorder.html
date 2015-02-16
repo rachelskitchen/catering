@@ -47,7 +47,7 @@
 </script>
 
 <script type="text/template" id="myorder_modifier-template">
-    <span class="name">w/ <%= name %></span>
+    <span class="name"><% if(_settings.enable_quantity_modifiers) { print(quantity+'x') }%> <%if(qty_type>0) { print("("+half_price_str+")") }%> w/ <%= name %></span>
     <span class="cost">
         <span class="plus">+</span>
         <span class="currency_symbol"><%= currency_symbol %></span>
