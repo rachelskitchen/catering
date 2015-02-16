@@ -582,17 +582,18 @@ function round_monetary_currency(value, precision, up) {
  *  Sync load template
  */
 
-function loadTemplate2(name, file, isCore) {
+function loadTemplate2(name, file, isCore, loadModelTemplate) {
     var id = name ? name + '_' + file : file;
-    if (!App.Data.loadModelTemplate) {
-        App.Data.loadModelTemplate = {};
+
+    /**
+     * Resolve current CSS file.
+     */
+    var resolve = function() {
+        loadModelTemplate.count--;
+        if (loadModelTemplate.count === 0) loadModelTemplate.dfd.resolve();
     }
-    if (!App.Data.loadModelTemplate.count) {
-        App.Data.loadModelTemplate.count = 0;
-    }
+
     if (loadTemplate2[id] === undefined) {
-        App.Data.loadModelTemplate.dfd = $.Deferred();
-        App.Data.loadModelTemplate.count++;
         $.ajax({
             url: isCore ? 'template/' + file + '.html' : App.Data.settings.get('skinPath') + '/template/' + file + '.html',
             dataType: "html",
@@ -603,10 +604,7 @@ function loadTemplate2(name, file, isCore) {
                 $("head").append(tmplEl);
                 loadTemplate2[id] = tmplEl;
 
-                App.Data.loadModelTemplate.count--;
-                if (App.Data.loadModelTemplate.count === 0) {
-                    App.Data.loadModelTemplate.dfd.resolve();
-                }
+                resolve(); // resolve current CSS file
             },
             error: function(xhr) {
                 App.Data.errors.alert(ERROR[RESOURCES.TEMPLATES], true); // user notification
@@ -614,6 +612,7 @@ function loadTemplate2(name, file, isCore) {
         });
     } else if(loadTemplate2[id] instanceof $) {
         $("head").append(loadTemplate2[id]);
+        resolve(); // resolve current CSS file
     }
 }
 /**
