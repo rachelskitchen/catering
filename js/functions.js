@@ -650,7 +650,7 @@ function processTemplate(templateLoad, callback) {
 /**
  * Include CSS file
  */
-function loadCSS(name) {
+function loadCSS(name, loadModelCSS) {
     // cache is used after a return to previous establishment
     if(!(loadCSS.cache instanceof Object)) {
         loadCSS.cache = {};
@@ -659,15 +659,20 @@ function loadCSS(name) {
     var id = typeof btoa == 'function' ? btoa(name) : encodeURIComponent(name),
         elem;
 
-    if (!App.Data.loadModelCSS) App.Data.loadModelCSS = {};
-    if (!App.Data.loadModelCSS.count) App.Data.loadModelCSS.count = 0;
+    /**
+     * Resolve current CSS file.
+     */
+    var resolve = function() {
+        loadModelCSS.count--;
+        if (loadModelCSS.count === 0) loadModelCSS.dfd.resolve();
+    }
+    var cache = false;
 
     if(loadCSS.cache[id] instanceof $) {
+        cache = true;
         elem = loadCSS.cache[id];
     } else {
         elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
-        App.Data.loadModelCSS.dfd = $.Deferred();
-        App.Data.loadModelCSS.count++;
 
         // bug #18285 - no timeout for app assets
         /**
@@ -695,8 +700,7 @@ function loadCSS(name) {
 
         elem.on('load', function() {
             clearTimeout(timer);
-            App.Data.loadModelCSS.count--;
-            if (App.Data.loadModelCSS.count === 0) App.Data.loadModelCSS.dfd.resolve();
+            resolve(); // resolve current CSS file
         });
         elem.on('error', function() {
             clearTimeout(timer);
@@ -706,6 +710,9 @@ function loadCSS(name) {
 
     if($('link[href="' + name + '.css"]').length === 0) {
         $('head').append(elem);
+        if (cache) resolve(); // resolve current CSS file
+    } else {
+        resolve(); // resolve current CSS file
     }
 
     return elem;
