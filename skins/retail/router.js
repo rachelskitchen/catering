@@ -180,6 +180,10 @@ define(["main_router"], function(main_router) {
             container.append(mainView.el);
             this.mainView = mainView;
         },
+        navigate: function() {
+            App.Data.mainModel.set("mode", undefined);
+            App.Routers.MainRouter.prototype.navigate.apply(this, arguments);
+        },
         navigationControl: function() {
             // change:parent_selected event occurs when any category tab is clicked
             this.listenTo(App.Data.categories, 'change:parent_selected', function() {
@@ -224,17 +228,10 @@ define(["main_router"], function(main_router) {
                     this.index.initState = encoded;
             }, this);
 
-            // onSearchStart event occurs when 'search' form is submitted
-            this.listenTo(App.Data.search, 'onSearchStart', function(search) {
-                App.Data.mainModel.trigger('loadStarted');
-            }, this);
-
             // onSearchComplete event occurs when search results are ready
             this.listenTo(App.Data.search, 'onSearchComplete', function(result) {
-                App.Data.mainModel.trigger('loadCompleted');
-
                 // ingnore cases when no products found
-                if(result.get('products').length == 0)
+                if(!result.get('products') || result.get('products').length == 0)
                     return;
 
                 var state = {},
@@ -419,6 +416,7 @@ define(["main_router"], function(main_router) {
                 App.Data.mainModel.set({
                     header: headers.main,
                     cart: carts.main,
+                    mode: "Main",
                     content: [
                         {
                             modelName: 'Categories',

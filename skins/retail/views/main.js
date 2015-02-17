@@ -33,6 +33,8 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:popup', this.popup_change, this);
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
+            this.listenTo(App.Data.search, 'onSearchStart', this.onSearchStart, this);
+            this.listenTo(App.Data.search, 'onSearchComplete', this.onSearchComplete, this);
             this.listenTo(this.model, 'onRoute', this.hide_popup, this);
             this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
             this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
@@ -181,14 +183,32 @@ define(["done_view", "generator"], function(done_view) {
                 }
             }
         },
+        loadStarted: function() {
+            var self = this;            
+            this.spinner = setTimeout(function() {
+                if (self.spinner != undefined) { 
+                    self.showSpinner(); 
+                }
+            }, 50);
+        },
         loadCompleted: function() {
             $(window).trigger('loadCompleted');
             clearTimeout(this.spinner);
-            delete this.spinner;
+            delete this.spinner;            
             this.hideSpinner();
         },
-        loadStarted: function() {
-            this.spinner = setTimeout(this.showSpinner.bind(this), 50);
+        onSearchStart: function() {
+            var self = this;
+            this.searchSpinner = setTimeout(function() {
+                if (self.searchSpinner != undefined) { 
+                    self.showSpinner(); 
+                }
+            }, 50);
+        },
+        onSearchComplete: function() {            
+            clearTimeout(this.searchSpinner);
+            delete this.searchSpinner;            
+            this.hideSpinner();            
         },
         showSpinner: function() {
             this.$('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
