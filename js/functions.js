@@ -1259,7 +1259,7 @@ var PaymentProcessor = {
         var credit_card_button = creditCardPaymentProcessor != null;
 
         if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
-            && !credit_card_dialog && !processors.paypal && !processors.cash && !processors.gift_card) {
+            && !credit_card_button && !processors.paypal && !processors.cash && !processors.gift_card) {
             return undefined;
         }
 
