@@ -195,13 +195,15 @@ define(["done_view", "generator"], function(done_view) {
             $(window).trigger('loadCompleted');
             clearTimeout(this.spinner);
             delete this.spinner;            
-            this.hideSpinner();
+            setTimeout((function() {
+                this.hideSpinner();
+            }).bind(this), 50);
         },
         onSearchStart: function() {
             var self = this;
             this.searchSpinner = setTimeout(function() {
                 if (self.searchSpinner != undefined) { 
-                    self.showSpinner(); 
+                    self.showSpinner();
                 }
             }, 50);
         },
