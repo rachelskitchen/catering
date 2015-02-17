@@ -82,8 +82,12 @@ define(["backbone", "factory"], function(Backbone) {
         onSearch: function(event) {
             event.preventDefault();
             var search = this.$('input[name=search]').val();
-            if(search.length > 0)
+            if(search.length > 0) {
+                if (App.Data.mainModel.get("mode") != "Main") {
+                    this.model.trigger('onShop');
+                }
                 this.options.search.search(search);
+            }
         },
         searchComplete: function(result) {
             this.$('.search').get(0).reset();
