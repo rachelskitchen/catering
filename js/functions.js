@@ -1408,7 +1408,6 @@ var PaymentProcessor = {
     getCreditCardPaymentProcessor: function() {
         var payment_processor = null;
         var payment = App.Settings.payment_processor;
-;
         if (payment.usaepay) {
             payment_processor = USAePayPaymentProcessor;
         } else if (payment.mercury) {
