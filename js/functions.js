@@ -714,7 +714,7 @@ function loadCSS(name, loadModelCSS) {
 
     if($('link[href="' + name + '.css"]').length === 0) {
         $('head').append(elem);
-        if (safariForWindows || (!safariForWindows && cache)) resolve(); // resolve current CSS file
+        if (safariForWindows || cache) resolve(); // resolve current CSS file
     } else {
         resolve(); // resolve current CSS file
     }
