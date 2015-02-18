@@ -41,7 +41,7 @@
 }
 #content ul.categories .block_img img {
     border: none;
-    display: block;
+    display: block !important;
     width: auto;
     height: auto;
     margin-left: auto;
