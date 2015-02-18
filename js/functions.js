@@ -721,10 +721,12 @@ function loadCSS(name, loadModelCSS) {
  * Include CSS file for Safari on OS Windows 
  */
 if (cssua && cssua.ua.safari && cssua.ua.windows_nt) {
-    loadCSS = function(name) {
+    loadCSS = function(name, loadModelCSS) {
         var elem = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
         $('head').append(elem);
         // 'load' event on the link element does not fire on Safari at least 5.1.7
+        loadModelCSS.count--;
+        if (loadModelCSS.count === 0) loadModelCSS.dfd.resolve();
     }
 }
 
