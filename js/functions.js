@@ -1660,6 +1660,7 @@ var WorldPayPaymentProcessor = {
         qStr = qStr.replace(/&?transid=[^&]*/, '');
         qStr = qStr.replace(/&?transresult=[^&]*/, '');
         qStr = qStr.replace(/&?AuthNo=[^&]*/, '');
+        qStr = qStr.replace(/&?DUPLICATE=[^&]*/, '');
         qStr = qStr.replace(/\?&/, '?');
 
         return qStr;
