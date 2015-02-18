@@ -658,6 +658,10 @@ function loadCSS(name, loadModelCSS) {
     var id = typeof btoa == 'function' ? btoa(name) : encodeURIComponent(name),
         elem;
 
+    // 'load' event on the LINK element doesn't fire on Safari at least 5.1.7 (the latest version for Windows OS)
+    var safariForWindows = false;
+    if (cssua && cssua.ua.safari && cssua.ua.windows_nt) safariForWindows = true;
+
     /**
      * Resolve current CSS file.
      */
@@ -672,62 +676,50 @@ function loadCSS(name, loadModelCSS) {
         elem = loadCSS.cache[id];
     } else {
         elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
+        if (!safariForWindows) {
+            // bug #18285 - no timeout for app assets
+            /**
+             * User notification.
+             */
+            var error = function() {
+                switch (App.skin) {
+                    case App.Skins.WEBORDER:
+                    case App.Skins.RETAIL:
+                        var arr = name.split('/'),
+                            nameCSS = arr[arr.length - 1];
+                        if ( ~['main', 'colors'].indexOf(nameCSS) ) $('#alert-template').remove();
+                        break;
+                    case App.Skins.WEBORDER_MOBILE:
+                        $('link[href*="main"]').remove();
+                        $('link[href*="colors"]').remove();
+                        break;
+                }
+                App.Data.errors.alert(ERROR[RESOURCES.CSS], true); // user notification
+            };
+            var timer = window.setTimeout(function() {
+                elem.remove();
+                error(); // user notification
+            }, App.Data.settings.get('timeout'));
 
-        // bug #18285 - no timeout for app assets
-        /**
-         * User notification.
-         */
-        var error = function() {
-            switch (App.skin) {
-                case App.Skins.WEBORDER:
-                case App.Skins.RETAIL:
-                    var arr = name.split('/'),
-                        nameCSS = arr[arr.length - 1];
-                    if ( ~['main', 'colors'].indexOf(nameCSS) ) $('#alert-template').remove();
-                    break;
-                case App.Skins.WEBORDER_MOBILE:
-                    $('link[href*="main"]').remove();
-                    $('link[href*="colors"]').remove();
-                    break;
-            }
-            App.Data.errors.alert(ERROR[RESOURCES.CSS], true); // user notification
-        };
-        var timer = window.setTimeout(function() {
-            elem.remove();
-            error(); // user notification
-        }, App.Data.settings.get('timeout'));
-
-        elem.on('load', function() {
-            clearTimeout(timer);
-            resolve(); // resolve current CSS file
-        });
-        elem.on('error', function() {
-            clearTimeout(timer);
-            error(); // user notification
-        });
+            elem.on('load', function() {
+                clearTimeout(timer);
+                resolve(); // resolve current CSS file
+            });
+            elem.on('error', function() {
+                clearTimeout(timer);
+                error(); // user notification
+            });
+        }
     }
 
     if($('link[href="' + name + '.css"]').length === 0) {
         $('head').append(elem);
-        if (cache) resolve(); // resolve current CSS file
+        if (safariForWindows || (!safariForWindows && cache)) resolve(); // resolve current CSS file
     } else {
         resolve(); // resolve current CSS file
     }
 
     return elem;
-}
-
-/**
- * Include CSS file for Safari on OS Windows 
- */
-if (cssua && cssua.ua.safari && cssua.ua.windows_nt) {
-    loadCSS = function(name, loadModelCSS) {
-        var elem = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
-        $('head').append(elem);
-        // 'load' event on the link element does not fire on Safari at least 5.1.7
-        loadModelCSS.count--;
-        if (loadModelCSS.count === 0) loadModelCSS.dfd.resolve();
-    }
 }
 
 /**
