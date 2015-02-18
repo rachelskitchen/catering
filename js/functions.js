@@ -582,17 +582,18 @@ function round_monetary_currency(value, precision, up) {
  *  Sync load template
  */
 
-function loadTemplate2(name, file, isCore) {
+function loadTemplate2(name, file, isCore, loadModelTemplate) {
     var id = name ? name + '_' + file : file;
-    if (!App.Data.loadModelTemplate) {
-        App.Data.loadModelTemplate = {};
+
+    /**
+     * Resolve current CSS file.
+     */
+    var resolve = function() {
+        loadModelTemplate.count--;
+        if (loadModelTemplate.count === 0) loadModelTemplate.dfd.resolve();
     }
-    if (!App.Data.loadModelTemplate.count) {
-        App.Data.loadModelTemplate.count = 0;
-    }
+
     if (loadTemplate2[id] === undefined) {
-        App.Data.loadModelTemplate.dfd = $.Deferred();
-        App.Data.loadModelTemplate.count++;
         $.ajax({
             url: isCore ? 'template/' + file + '.html' : App.Data.settings.get('skinPath') + '/template/' + file + '.html',
             dataType: "html",
@@ -603,10 +604,7 @@ function loadTemplate2(name, file, isCore) {
                 $("head").append(tmplEl);
                 loadTemplate2[id] = tmplEl;
 
-                App.Data.loadModelTemplate.count--;
-                if (App.Data.loadModelTemplate.count === 0) {
-                    App.Data.loadModelTemplate.dfd.resolve();
-                }
+                resolve(); // resolve current CSS file
             },
             error: function(xhr) {
                 App.Data.errors.alert(ERROR[RESOURCES.TEMPLATES], true); // user notification
@@ -614,6 +612,7 @@ function loadTemplate2(name, file, isCore) {
         });
     } else if(loadTemplate2[id] instanceof $) {
         $("head").append(loadTemplate2[id]);
+        resolve(); // resolve current CSS file
     }
 }
 /**
@@ -650,7 +649,7 @@ function processTemplate(templateLoad, callback) {
 /**
  * Include CSS file
  */
-function loadCSS(name) {
+function loadCSS(name, loadModelCSS) {
     // cache is used after a return to previous establishment
     if(!(loadCSS.cache instanceof Object)) {
         loadCSS.cache = {};
@@ -659,15 +658,20 @@ function loadCSS(name) {
     var id = typeof btoa == 'function' ? btoa(name) : encodeURIComponent(name),
         elem;
 
-    if (!App.Data.loadModelCSS) App.Data.loadModelCSS = {};
-    if (!App.Data.loadModelCSS.count) App.Data.loadModelCSS.count = 0;
+    /**
+     * Resolve current CSS file.
+     */
+    var resolve = function() {
+        loadModelCSS.count--;
+        if (loadModelCSS.count === 0) loadModelCSS.dfd.resolve();
+    }
+    var cache = false;
 
     if(loadCSS.cache[id] instanceof $) {
+        cache = true;
         elem = loadCSS.cache[id];
     } else {
         elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
-        App.Data.loadModelCSS.dfd = $.Deferred();
-        App.Data.loadModelCSS.count++;
 
         // bug #18285 - no timeout for app assets
         /**
@@ -695,8 +699,7 @@ function loadCSS(name) {
 
         elem.on('load', function() {
             clearTimeout(timer);
-            App.Data.loadModelCSS.count--;
-            if (App.Data.loadModelCSS.count === 0) App.Data.loadModelCSS.dfd.resolve();
+            resolve(); // resolve current CSS file
         });
         elem.on('error', function() {
             clearTimeout(timer);
@@ -706,6 +709,9 @@ function loadCSS(name) {
 
     if($('link[href="' + name + '.css"]').length === 0) {
         $('head').append(elem);
+        if (cache) resolve(); // resolve current CSS file
+    } else {
+        resolve(); // resolve current CSS file
     }
 
     return elem;
@@ -969,7 +975,7 @@ function loadSpinner(logo, anim_params, cb) {
         img.on('load', function() { //load method - deprecated
             spinner.replaceWith(img);
             anim ? img.fadeIn() : img.show();
-            App.Data.images[makeImageName(logo)] = img.clone().css('opacity', '100');
+            App.Data.images[makeImageName(logo)] = img.clone().css('opacity', '1');
             typeof cb == 'function' && cb(img);
         }).error(function(e) {
             logo.prop('src', defImage);
@@ -1253,7 +1259,7 @@ var PaymentProcessor = {
         var credit_card_button = creditCardPaymentProcessor != null;
 
         if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
-            && !credit_card_dialog && !processors.paypal && !processors.cash && !processors.gift_card) {
+            && !credit_card_button && !processors.paypal && !processors.cash && !processors.gift_card) {
             return undefined;
         }
 
@@ -1402,7 +1408,6 @@ var PaymentProcessor = {
     getCreditCardPaymentProcessor: function() {
         var payment_processor = null;
         var payment = App.Settings.payment_processor;
-;
         if (payment.usaepay) {
             payment_processor = USAePayPaymentProcessor;
         } else if (payment.mercury) {
