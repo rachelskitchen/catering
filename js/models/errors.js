@@ -26,7 +26,7 @@ define(["backbone"], function(Backbone) {
     App.Models.Errors = Backbone.Model.extend({
         defaults: {
             message: "",
-            random_number: generate_random_number(1, 1000000), // generate the random number
+            random_number: 0,
             reload_page: false
         },
         /**
@@ -37,7 +37,7 @@ define(["backbone"], function(Backbone) {
             message = message && message.toString() || '';
             this.set({
                 message: message,
-                random_number: generate_random_number(1, 1000000), // generate the random number
+                random_number: this.random(), // generate a random number
                 reload_page: reload_page
             });
             return this;
@@ -50,7 +50,7 @@ define(["backbone"], function(Backbone) {
             message = message && message.toString() || '';
             this.set({
                 message: '<span style="color: red;"> <b>' + message + '</b> </span> <br />',
-                random_number: generate_random_number(1, 1000000), // generate the random number
+                random_number: this.random(), // generate a random number
                 reload_page: reload_page,
                 type: "warning"
             });
@@ -68,6 +68,14 @@ define(["backbone"], function(Backbone) {
         },
         hide: function() {
             this.view instanceof Backbone.$ && this.view.removeClass('ui-visible');
+        },
+        /**
+         * Generate a random number.
+         *
+         * @return {number} a random number from 1 to 1000000.
+         */
+        random: function() {
+            return generate_random_number(1, 1000000); // generate the random number
         }
     });
 });
