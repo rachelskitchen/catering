@@ -109,6 +109,7 @@ define(["backbone", "factory"], function(Backbone) {
             setTimeout((function() {
                 this.sortedModels.forEach(this.addItem.bind(this));
                 this.onScroll();
+                this.trigger('itemsInserted'); // need trigger event to notify when items is inserted to DOM
             }).bind(this), 0);
             return this;
         },
