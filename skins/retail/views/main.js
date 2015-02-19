@@ -31,10 +31,10 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:header', this.header_change, this);
             this.listenTo(this.model, 'change:cart', this.cart_change, this);
             this.listenTo(this.model, 'change:popup', this.popup_change, this);
-            this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
-            this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
-            this.listenTo(App.Data.search, 'onSearchStart', this.onSearchStart, this);
-            this.listenTo(App.Data.search, 'onSearchComplete', this.onSearchComplete, this);
+            this.listenTo(this.model, 'loadStarted', this.showSpinner.bind(this, EVENT.NAVIGATE), this);
+            this.listenTo(this.model, 'loadCompleted', this.hideSpinner.bind(this, EVENT.NAVIGATE), this);
+            this.listenTo(App.Data.search, 'onSearchStart', this.showSpinner.bind(this, EVENT.SEARCH), this);
+            this.listenTo(App.Data.search, 'onSearchComplete', this.hideSpinner.bind(this, EVENT.SEARCH, true), this);
             this.listenTo(this.model, 'onRoute', this.hide_popup, this);
             this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
             this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
@@ -183,40 +183,11 @@ define(["done_view", "generator"], function(done_view) {
                 }
             }
         },
-        loadStarted: function() {
-            var self = this;            
-            this.spinner = setTimeout(function() {
-                if (self.spinner != undefined) { 
-                    self.showSpinner(); 
-                }
-            }, 50);
+        showSpinner: function(event) {
+            $(window).trigger('showSpinner', {startEvent: event});
         },
-        loadCompleted: function() {
-            $(window).trigger('loadCompleted');
-            clearTimeout(this.spinner);
-            delete this.spinner;            
-            setTimeout((function() {
-                this.hideSpinner();
-            }).bind(this), 50);
-        },
-        onSearchStart: function() {
-            var self = this;
-            this.searchSpinner = setTimeout(function() {
-                if (self.searchSpinner != undefined) { 
-                    self.showSpinner();
-                }
-            }, 50);
-        },
-        onSearchComplete: function() {            
-            clearTimeout(this.searchSpinner);
-            delete this.searchSpinner;            
-            this.hideSpinner();            
-        },
-        showSpinner: function() {
-            this.$('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
-        },
-        hideSpinner: function() {
-            this.$('#main-spinner').addClass('ui-visible').removeClass('ui-visible');
+        hideSpinner: function(event, isLast) {
+            $(window).trigger('hideSpinner', {startEvent: event, isLastEvent: isLast});
         },
         /**
          * Show the "Store Choice" block if a brand have several stores.
