@@ -20,17 +20,38 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone"], function(Backbone) {
+define(['backbone'], function(Backbone) {
     'use strict';
 
     App.Models.Errors = Backbone.Model.extend({
         defaults: {
-            message: "",
+            message: '',
             random_number: 0,
             reload_page: false
         },
+        initialize: function() {
+            this.on('change', function(model) {
+                this.view = alert_message({
+                    message: model.get('message'),
+                    reload_page: model.get('reload_page'),
+                    type: model.get('type')
+                }); // user notification
+            }, this);
+        },
+        /**
+         * Generate a random number.
+         *
+         * @return {number} a random number from 1 to 1000000.
+         */
+        random: function() {
+            return generate_random_number(1, 1000000); // generate the random number
+        },
         /**
          * User notification.
+         *
+         * @param {string} message Alert message.
+         * @param {boolean} reload_page If TRUE - reload page after pressing button.
+         * @return {object} This model.
          */
         alert: function(message, reload_page) {
             reload_page = !!reload_page || false;
@@ -43,7 +64,11 @@ define(["backbone"], function(Backbone) {
             return this;
         },
         /**
-         * User notification. Server return HTTP status 200, but data.status is error
+         * User notification. Server return HTTP status 200, but data.status is error.
+         *
+         * @param {string} message Alert message.
+         * @param {boolean} reload_page If TRUE - reload page after pressing button.
+         * @return {object} This model.
          */
         alert_red: function(message, reload_page) {
             reload_page = !!reload_page || false;
@@ -52,30 +77,15 @@ define(["backbone"], function(Backbone) {
                 message: '<span style="color: red;"> <b>' + message + '</b> </span> <br />',
                 random_number: this.random(), // generate a random number
                 reload_page: reload_page,
-                type: "warning"
+                type: 'warning'
             });
             return this;
         },
-        initialize: function() {
-            this.on("change", function(model) {
-                // user notification
-                this.view = alert_message({
-                    message: model.get("message"),
-                    reload_page: model.get("reload_page"),
-                    type: model.get("type")
-                });
-            }, this);
-        },
+        /**
+         * Hide alert message.
+         */
         hide: function() {
             this.view instanceof Backbone.$ && this.view.removeClass('ui-visible');
-        },
-        /**
-         * Generate a random number.
-         *
-         * @return {number} a random number from 1 to 1000000.
-         */
-        random: function() {
-            return generate_random_number(1, 1000000); // generate the random number
         }
     });
 });
