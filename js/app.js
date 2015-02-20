@@ -116,13 +116,45 @@
             // invoke beforeStart onfig
             app.beforeInit();
 
+            App.Data.spinnerStartEvents = [];
             // init spinner
             var spinner = app.initSpinner(app.addSpinner, app.getFontSize);
-            win.on('hideSpinner', function() {
-                spinner.style.display = 'none';
+
+            App.Data.spinnerEvents = [];
+            win.on('hideSpinner', function(event, data) {
+                if (!data || !data.startEvent) {
+                    data = {startEvent: EVENT.START};
+                }
+                //trace("win spinner Hide ==> ", data.startEvent);
+                if (App.Data.spinnerEvents.indexOf(data.startEvent) >= 0){
+                    App.Data.spinnerEvents = _.without(App.Data.spinnerEvents, data.startEvent);
+                }
+
+                if (data.isLastEvent) {
+                    spinner.style.display = 'none';
+                    return;
+                }
+                setTimeout( function() {
+                    //#19303 we should wait in the case of a events series e.g. Start -> Navigate -> Search,
+                    //only the last event (isLastEvent flag) should hide the spinner immediately.
+                    if (App.Data.spinnerEvents.length == 0) {
+                        spinner.style.display = 'none';
+                    }
+                }, 50);
             });
-            win.on('showSpinner', function() {
-                spinner.style.display = 'block';
+            win.on('showSpinner', function(evt, data) {
+                if (!data || !data.startEvent) {
+                    data = {startEvent: EVENT.START};
+                }
+                //trace("win spinner Show ==> ", data.startEvent);
+                if (App.Data.spinnerEvents.indexOf(data.startEvent) == -1) {
+                    App.Data.spinnerEvents.push(data.startEvent);
+                }
+                setTimeout( function() {
+                    if (App.Data.spinnerEvents.indexOf(data.startEvent) >= 0) {
+                        spinner.style.display = 'block';
+                    }
+                }, 50);
             });
 
             // init errors object and check browser version
