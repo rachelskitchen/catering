@@ -413,146 +413,153 @@ function template_helper(name,mod) {
 function template_helper2(name) {
     return _.template($('#' + name).html());
 }
+
 /**
  * User notification.
- * options: {
- *     message - alert message
- *     reload_page - if true - reload page after press button
- *     is_confirm - true if confirm message
- *     confirm - object with confirm messages (two button): {
- *         ok - text in ok button,
- *         cancel - text in cancel button,
- *         cancel_hide - hide cancel button
- *     callback - callback for confirm messages
+ *
+ * @param {object} options Options of alert message:
+ *      message: alert message;
+ *      reload_page: if TRUE - reload page after pressing button;
+ *      template: template ID;
+ *      type: type of icon;
+ *      is_confirm: if THUE - show confirm message;
+ *      confirm: object for confirm message (two button):
+ *          ok: text of OK button;
+ *          cancel: text of CANCEL button;
+ *          cancel_hide: if TRUE - hide CANCEL button;
+ *      callback: callback for confirm message.
  */
-function jq_alert_message(options) {
-    if (options.is_confirm) {
-        var confirm = options.confirm || {};
-        jConfirm(options.message, confirm.ok || 'OK', confirm.cancel || 'Cancel', options.callback);
-        confirm.cancel_hide && $('#popup_cancel').hide();
-    } else {
-        jAlert(options.message, "OK");
-    }
-    var wnd_width = $( window ).width(),
-        wnd_height =  $( window ).height(),
-        alert = $("#popup_container"),
-        border_width = alert.outerWidth() - alert.width(),
-        min_width = wnd_height > wnd_width ? wnd_width : wnd_height;
+function alertMessage(options) {
+    var NO_MESSAGE = 'No alert message';
 
-    min_width -= border_width;
+    if (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL)
+        return customAlertMessage(options); // custom alert message
+    jQueryAlertMessage(options); // jQuery alert message
 
-    if (alert.width() < min_width) {
-        alert.css("min-width", alert.width());
-    } else {
-        alert.css("min-width", min_width);
-    }
-
-    position_alert();
-
-    $("#popup_panel input").click(function() {
-        $( window ).off("resize", position_alert );
-        if (options.reload_page) {
-            location.reload();
+    /**
+     * jQuery alert message.
+     */
+    function jQueryAlertMessage(options) {
+        if (options.is_confirm) {
+            var confirm = options.confirm || {};
+            jConfirm(options.message || NO_MESSAGE, confirm.ok || 'OK', confirm.cancel || 'Cancel', options.callback);
+            confirm.cancel_hide && $('#popup_cancel').hide();
+        } else {
+            jAlert(options.message, 'OK');
         }
-    });
+        setStyles(); // settings of styles for alert message
+        setMinWidth(); // setting of minimum width for the block
+        centrePositionAlert(); // centering of alert message
 
-    $( window ).on("resize", position_alert );
+        $(window).on('resize', centrePositionAlert); // centering of alert message
+        $('#popup_ok').click(function() {
+            $(window).off('resize', centrePositionAlert); // centering of alert message
+            options.reload_page && window.location.reload();
+        });
+
+        /**
+         * Setting of minimum width for the block.
+         */
+        function setMinWidth() {
+            var wndWidth = $(window).width(),
+                wndHeight =  $(window).height(),
+                alert = $('#popup_container'),
+                alertWidth = alert.width(),
+                borderWidth = alert.outerWidth() - alert.width(),
+                minWidth = (wndHeight > wndWidth) ? wndWidth : wndHeight;
+
+            minWidth -= borderWidth;
+
+            if (alertWidth < minWidth) {
+                alert.css('min-width', alertWidth);
+            } else {
+                alert.css('min-width', minWidth);
+            }
+        }
+        /**
+         * Settings of styles for alert message.
+         */
+        function setStyles() {
+            var alert = $('#popup_container');
+            alert.find('#popup_panel > input[type="button"]').css({
+                'cursor': 'pointer',
+                'padding': '3px 20px'
+            });
+        }
+    }
+    /**
+     * Custom alert message.
+     */
+    function customAlertMessage(options) {
+        var alert = $('#alert'),
+            confirm = options.confirm || {},
+            template = options.template ? options.template : 'alert';
+
+        if ( $('#' + template + '-template' ).length == 0) {
+            jQueryAlertMessage(options);
+            return;
+        }
+
+        if (alert.length == 0) {
+            alert = $('<div id="alert"> </div>').appendTo('body');
+        }
+
+        var data = {
+            icon_type: options.is_confirm ? 'warning' : options.type || 'info',
+            message: options.message || NO_MESSAGE,
+            is_confirm: options.is_confirm,
+            btnText1: confirm.ok || 'OK',
+            btnText2: confirm.cancel || 'Cancel'
+        };
+
+        var tmpl = template_helper2(template + '-template'); // helper of template for PayPal
+        alert.html(tmpl(data));
+        alert.addClass('ui-visible');
+        $(".alert_block").addClass("alert-background");
+
+        if (options.is_confirm) {
+            $('.btnOk', alert).on('click', function() { options.callback && options.callback(true); });
+            $('.btnCancel,.cancel', alert).on('click', function() { options.callback && options.callback(false); });
+            confirm.cancel_hide && $('.btnCancel', alert).hide();
+        }
+
+        $('.btnOk,.btnCancel,.cancel', alert).on('click', function() {
+            $('.alert_block').removeClass('alert-background');
+            alert.removeClass('ui-visible');
+            options.reload_page && window.location.reload();
+        });
+
+        return alert;
+    }
 }
 
-function position_alert() {
-    var wnd = $( window ),
-        alert = $("#popup_container"),
-        alert_content = $('#popup_content'),
+/**
+ * Centering of alert message.
+ */
+function centrePositionAlert() {
+    var wnd = $(window),
+        alert = $('#popup_container'),
+        alertContent = $('#popup_content'),
         left = ( wnd.width() / 2 ) - ( alert.outerWidth() / 2 ),
         top;
 
-    if(/iPad;.*CPU.*OS 7_\d/i.test(window.navigator.userAgent)) {
-        top = ( window.innerHeight / 2 ) - ( alert_content.outerHeight(true) / 2 ) - (window.outerHeight - window.innerHeight) / 2;
+    if (/iPad;.*CPU.*OS 7_\d/i.test(window.navigator.userAgent)) {
+        top = ( window.innerHeight / 2 ) - ( alertContent.outerHeight(true) / 2 ) - (window.outerHeight - window.innerHeight) / 2;
     } else {
-        top = ( wnd.height() / 2 ) - ( alert_content.outerHeight(true) / 2 );
+        top = ( wnd.height() / 2 ) - ( alertContent.outerHeight(true) / 2 );
     }
 
     top = top > 0 ? top : 0;
     left = left > 0 ? left : 0;
 
-    alert.css( {
-      'left': left,
-      'top': top,
-      'right': left,
-      'bottom': top
+    alert.css({
+        'bottom': top,
+        'left': left,
+        'right': left,
+        'top': top
     });
 }
 
-function alert_message(options) {
-
-    if (App.Data.settings.get && (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL)) {
-        return tmpl_alert_message(options);
-    } else {
-        jq_alert_message(options);
-    }
-}
-
-/**
- * User customized alerts for weborder skin.
- * options: {
- *     template - template ID
- *     message - alert message
- *     reload_page - if true - reload page after press button
- *     is_confirm - true if confirm message
- *     confirm - object with confirm messages (two button): {
- *         ok - text in ok button,
- *         cancel - text in cancel button,
- *         cancel_hide - hide cancel button
- *     callback - callback for confirm messages
- */
-function tmpl_alert_message(options) {
-    var alert = $('#alert'),
-        confirm = options.confirm || {};
-
-    var template = options.template ? options.template : 'alert';
-
-    if ($('#' + template + '-template').length == 0) {
-        jq_alert_message(options);
-        return;
-    }
-    if (alert.length == 0) {
-        alert = $("<div id='alert'></div>").appendTo("body");
-    }
-
-    var data = {
-        btnText1: confirm.ok || "OK",
-        btnText2: confirm.cancel || "Cancel",
-        icon_type: options.is_confirm ? "warning" : options.type || "info",
-        message: options.message || "No alert message",
-        is_confirm: options.is_confirm
-    };
-
-    var tmpl = template_helper2(template + '-template'); // helper of template for PayPal
-    alert.html(tmpl(data));
-    alert.addClass('ui-visible');
-    $(".alert_block").addClass("alert-background");
-
-    $(".btnOk,.btnCancel,.cancel", alert).on("click", function() {
-        $(".alert_block").removeClass("alert-background");
-        alert.removeClass('ui-visible');
-        if (options.reload_page) {
-            location.reload();
-        }
-    });
-    if (options.is_confirm === true) {
-        $(".btnOk", alert).on("click", function() {
-            if(options.callback)
-                options.callback(true);
-        });
-        $(".btnCancel,.cancel", alert).on("click", function() {
-            if(options.callback)
-                options.callback(false);
-        });
-        confirm.cancel_hide && $(".btnCancel", alert).hide();
-    }
-
-    return alert;
-}
 /**
  * Generate the random number.
  */

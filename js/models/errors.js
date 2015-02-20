@@ -31,7 +31,7 @@ define(['backbone'], function(Backbone) {
         },
         initialize: function() {
             this.on('change', function(model) {
-                this.view = alert_message({
+                this.view = alertMessage({
                     message: model.get('message'),
                     reload_page: model.get('reload_page'),
                     type: model.get('type')
