@@ -183,6 +183,12 @@ var ServiceType = {
     DONATION : 6
 };
 
+var EVENT = {
+    START:     "Start",
+    NAVIGATE:  "Navigate",    
+    SEARCH:    "Search"
+};
+
 /**
 *  format message by formatting string and params.
 *  example: msgFrm("Message text param1 = %s, param2 = %s", 10, 20) returns the string "Message text param1 = 10, param2 = 20"
