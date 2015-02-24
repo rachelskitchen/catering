@@ -232,7 +232,7 @@ define(["backbone", "factory"], function(Backbone) {
             for(i = 0, j = views.length; i < j; i++)
                 js.push(skin + "/views/" + views[i]);
 
-            for(i = 0, j = css.length; i < j; i++)
+            for (i = 0, j = css.length; i < j; i++)
                 this.skinCSS.push(loadCSS(skinPath + '/css/' + css[i], loadModelCSS));
 
             for(i = 0, j = models.length; i < j; i++)

@@ -426,6 +426,7 @@ function template_helper2(name) {
  * @param {object} options Options of alert message:
  *      message: alert message;
  *      reload_page: if TRUE - reload page after pressing button;
+ *      defaultView: use jQuery alert message;
  *      template: template ID;
  *      type: type of icon;
  *      is_confirm: if THUE - show confirm message;
@@ -438,7 +439,7 @@ function template_helper2(name) {
 function alertMessage(options) {
     var NO_MESSAGE = 'No alert message';
 
-    if (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL)
+    if (!options.defaultView && (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL))
         return customAlertMessage(options); // custom alert message
     jQueryAlertMessage(options); // jQuery alert message
 
@@ -695,19 +696,7 @@ function loadCSS(name, loadModelCSS) {
              * User notification.
              */
             var error = function() {
-                switch (App.skin) {
-                    case App.Skins.WEBORDER:
-                    case App.Skins.RETAIL:
-                        var arr = name.split('/'),
-                            nameCSS = arr[arr.length - 1];
-                        if ( ~['main', 'colors'].indexOf(nameCSS) ) $('#alert-template').remove();
-                        break;
-                    case App.Skins.WEBORDER_MOBILE:
-                        $('link[href*="main"]').remove();
-                        $('link[href*="colors"]').remove();
-                        break;
-                }
-                App.Data.errors.alert(ERROR[RESOURCES.CSS], true); // user notification
+                App.Data.errors.alert(ERROR[RESOURCES.CSS], true, true); // user notification
             };
             var timer = window.setTimeout(function() {
                 elem.remove();

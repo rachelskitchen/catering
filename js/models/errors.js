@@ -30,12 +30,14 @@ define(['backbone'], function(Backbone) {
             reload_page: false
         },
         initialize: function() {
-            this.on('change', function(model) {
+            this.on('change:random_number', function(model) {
                 this.view = alertMessage({
+                    defaultView:  model.get('defaultView'),
                     message: model.get('message'),
                     reload_page: model.get('reload_page'),
                     type: model.get('type')
                 }); // user notification
+                this.set('defaultView', false);
             }, this);
         },
         /**
@@ -53,10 +55,12 @@ define(['backbone'], function(Backbone) {
          * @param {boolean} reload_page If TRUE - reload page after pressing button.
          * @return {object} This model.
          */
-        alert: function(message, reload_page) {
-            reload_page = !!reload_page || false;
+        alert: function(message, reload_page, defaultView) {
             message = message && message.toString() || '';
+            reload_page = !!reload_page || false;
+            defaultView = !!defaultView || false;
             this.set({
+                defaultView: defaultView,
                 message: message,
                 random_number: this.random(), // generate a random number
                 reload_page: reload_page
