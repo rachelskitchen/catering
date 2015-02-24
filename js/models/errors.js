@@ -31,13 +31,7 @@ define(['backbone'], function(Backbone) {
         },
         initialize: function() {
             this.on('change:random_number', function(model) {
-                this.view = alertMessage({
-                    defaultView:  model.get('defaultView'),
-                    message: model.get('message'),
-                    reload_page: model.get('reload_page'),
-                    type: model.get('type')
-                }); // user notification
-                this.set('defaultView', false);
+                model.trigger('alertMessage', model.toJSON());
             }, this);
         },
         /**
