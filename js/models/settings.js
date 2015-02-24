@@ -55,6 +55,10 @@ define(["backbone", "async"], function(Backbone) {
             skin: "", // weborder by default
             settings_skin: {
                 routing: {
+                    errors: {
+                        cssCore: [],
+                        templatesCore: []
+                    },
                     establishments: {
                         cssCore: ['establishments'],
                         templatesCore: ['establishments']
