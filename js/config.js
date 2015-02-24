@@ -40,6 +40,7 @@ define({
         customers: "js/models/customers",
         childproducts: "js/models/childproducts",
         errors : "js/models/errors",
+        errors_view: 'js/views/errors',
         myorder: "js/models/myorder",
         settings: "js/models/settings",
         timetable: "js/models/timetable",
@@ -123,6 +124,9 @@ define({
         },
         "errors" : {
             deps: ["backbone", "functions"]
+        },
+        'errors_view': {
+            deps: ['backbone', 'factory']
         },
         "myorder": {
             deps: ["backbone"]

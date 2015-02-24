@@ -86,7 +86,7 @@ define(['backbone'], function(Backbone) {
             return this;
         },
         /**
-         * Hide alert message.
+         * Hide custom alert message.
          */
         hide: function() {
             this.view instanceof Backbone.$ && this.view.removeClass('ui-visible');
