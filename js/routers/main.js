@@ -447,33 +447,14 @@ define(["backbone", "factory"], function(Backbone) {
             return true;
         },
         /**
-        * Test.
+        * User notification.
         */
         alertMessage: function() {
-            var errors = App.Data.errors;
-
-            /*
-            App.Routers.MainRouter.prototype.prepare('establishments', function() {
-                var view = App.Views.GeneratorView.create('CoreEstablishments', {
-                    mod: 'Main',
-                    className: 'establishments_view',
-                    collection: ests,
-                    model: modelForView
-                }, 'ContentEstablishmentsCore');
-                Backbone.$('body').append(view.el);
-                Backbone.$(window).trigger('hideSpinner');
-            });
-            */
             App.Routers.MainRouter.prototype.prepare('errors', function() {
-                var view = App.Views.GeneratorView.create('CoreErrors', {
+                App.Views.GeneratorView.create('CoreErrors', {
                     mod: 'Main',
-                    model: errors
+                    model: App.Data.errors
                 }, 'ContentErrorsCore');
-                console.log(view);
-                /*
-                Backbone.$('body').append(view.el);
-                Backbone.$(window).trigger('hideSpinner');
-                */
             });
         }
     });

@@ -159,7 +159,7 @@
 
             // init errors object and check browser version
             var errors = App.Data.errors = new App.Models.Errors;
-            errors.on('alertMessage', App.Routers.MainRouter.prototype.alertMessage);
+            errors.on('alertMessage', App.Routers.MainRouter.prototype.alertMessage); // user notification
 
             // init log object and listen to ajax errors
             App.Data.log = new App.Models.Log({init: window.initErrors});

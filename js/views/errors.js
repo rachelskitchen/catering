@@ -29,9 +29,9 @@ define(['backbone', 'factory'], function(Backbone) {
         name: 'errors',
         mod: 'main',
         initialize: function() {
-            alert('123');
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            // this.listenTo(this.model, 'alertMessage', this.alertMessage, this);
+            this.listenTo(this.model, 'alertMessage', this.alertMessage); // user notification
+            this.alertMessage(this.model.toJSON()); // user notification
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -54,7 +54,6 @@ define(['backbone', 'factory'], function(Backbone) {
          *      callback: callback for confirm message.
          */
         alertMessage: function(options) {
-            console.log('ALERT MESSAGE');
             var NO_MESSAGE = 'No alert message';
 
             if (!options.defaultView && (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL))
