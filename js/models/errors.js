@@ -31,7 +31,7 @@ define(['backbone'], function(Backbone) {
         },
         initialize: function() {
             this.on('change:random_number', function(model) {
-                model.trigger('alertMessage', model.toJSON());
+                model.trigger('alertMessage');
             }, this);
         },
         /**
@@ -43,22 +43,34 @@ define(['backbone'], function(Backbone) {
             return generate_random_number(1, 1000000); // generate the random number
         },
         /**
+         * Clear options.
+         */
+        clearOptions: function() {
+            var options = ['template', 'type', 'is_confirm', 'confirm', 'callback'];
+            for (var i = 0; i < options.length; i++) {
+                this.unset(options[i]);
+            }
+        },
+        /**
          * User notification.
          *
          * @param {string} message Alert message.
          * @param {boolean} reload_page If TRUE - reload page after pressing button.
          * @return {object} This model.
          */
-        alert: function(message, reload_page, defaultView) {
+        alert: function(message, reload_page, defaultView, options) {
             message = message && message.toString() || '';
             reload_page = !!reload_page || false;
             defaultView = !!defaultView || false;
             this.set({
-                defaultView: defaultView,
                 message: message,
-                random_number: this.random(), // generate a random number
-                reload_page: reload_page
+                reload_page: reload_page,
+                defaultView: defaultView
             });
+            if (options instanceof Object) {
+                for (var key in options) this.set(key, options[key]);
+            }
+            this.set('random_number', this.random()); // generate a random number
             return this;
         },
         /**
