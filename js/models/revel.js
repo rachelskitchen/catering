@@ -128,7 +128,6 @@ define(["backbone", "card", "customers"], function(Backbone) {
             try {
                 if(cssua.ua.android) {
                     var obj = window[REVEL_INTERFACE_NAME];
-                    trace("RevelAPI-createCridantials", window["RevelAPI"]["createCredentials"]);
                     this.handleResponse(obj[method].apply(obj, args));
                 } else if(cssua.ua.ios) {
                     args.push(this.get('gObj') + '.handleResponse');
