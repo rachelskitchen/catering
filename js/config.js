@@ -26,10 +26,7 @@ define({
         app: "js/app",
         config: "js/config",
         jquery: "js/libs/jquery/jquery",
-        jquery_ui_draggable: "js/libs/jquery/jquery.ui.draggable",
-        jquery_alerts: "js/libs/jquery/jquery.alerts",
         jquery_gallery: 'js/libs/jquery/jquery.gallery',
-        jquery_migrate: "js/libs/jquery/jquery-migrate.min",
         jquery_numbermask: "js/libs/jquery/jquery.number_mask",
         backbone: "js/libs/backbone",
         cssua: "js/libs/cssua",
@@ -89,18 +86,6 @@ define({
     shim: {
         "jquery": {
             exports: "$"
-        },
-        "jquery_ui_draggable": {
-            deps: ["jquery"],
-            exports: "$.ui.draggable"
-        },
-        "jquery_alerts": {
-            deps: ["jquery", "jquery_migrate", "jquery_ui_draggable"],
-            exports: "$.alerts"
-        },
-        "jquery_migrate": {
-            deps: ["jquery"],
-            exports: "$.migrate"
         },
         "jquery_numbermask": {
             deps: ["jquery"],

@@ -49,24 +49,6 @@
     <% } %>
 </script>
 
-<script type="text/template" id="alert-template">
-    <div class='alert_align'>
-    </div>
-    <div class='alert_wrapper'>
-        <div class="alert_block">
-            <div class="no-cancel"></div>
-            <div class="icon <%= icon_type %>"></div>
-            <div class='message'><%= message %></div>
-            <div class='btn_wrapper'>
-                <div class='btn btnOk'><%= btnText1 %></div>
-                <% if (is_confirm === true) { %>
-                   <div class='btn btnCancel'><%= btnText2 %></div>
-                <% } %>
-            </div>
-        </div>
-    </div>
-</script>
-
 <script type="text/template" id="main_maintenance-template">
 <section class="maintenance">
     <header id="header"> <div class="btn back"> Back </div> </header>
