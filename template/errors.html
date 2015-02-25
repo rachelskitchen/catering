@@ -1,4 +1,30 @@
-<script type="text/template" id="errors_main-template"> </script>
+<script type="text/template" id="errors_main-template">
+    <style type="text/css">
+        #popup_overlay {
+            position: absolute,
+            z-index: 99998,
+            top: 0px,
+            left: 0px,
+            width: 100%,
+            /* height: $(document).height(), */
+            background: #fff,
+            opacity: .01
+        }
+        #popup_container {
+            /* position: pos, */
+            z-index: 99999,
+            padding: 0,
+            margin: 0
+        }
+    </style>
+    <div id="popup_overlay"> </div>
+    <div id="popup_container">
+        <div id="popup_content">
+            <div id="popup_message"> </div>
+            <div id="popup_panel"> <input type="button" value="OK 123" id="popup_ok" /> </div>
+        </div>
+    </div>
+</script>
 <script type="text/template" id="alert-establishments-template">
     <div class="alert_align"> </div>
     <div class="alert_wrapper">
@@ -11,6 +37,22 @@
                    <div class="btn btnCancel"> <%= btnText2 %> </div>
                 <% } %>
                 <div class="btn btnOk"> <%= btnText1 %> </div>
+            </div>
+        </div>
+    </div>
+</script>
+<script type="text/template" id="alert-template">
+    <div class="alert_align"> </div>
+    <div class="alert_wrapper">
+        <div class="alert_block">
+            <div class="no-cancel"> </div>
+            <div class="icon <%= icon_type %>"> </div>
+            <div class="message"> <%= message %> </div>
+            <div class="btn_wrapper">
+                <div class="btn btnOk"> <%= btnText1 %> </div>
+                <% if (is_confirm === true) { %>
+                   <div class="btn btnCancel"> <%= btnText2 %> </div>
+                <% } %>
             </div>
         </div>
     </div>

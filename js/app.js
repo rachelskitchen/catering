@@ -110,7 +110,7 @@
         // set config for require
         require.config(app.config);
 
-        require(['jquery_alerts', 'cssua', 'functions', 'errors', 'errors_view', 'myorder', 'settings', 'timetable', 'log', 'tax', 'main_router'], function() {
+        require(['cssua', 'functions', 'errors', 'errors_view', 'myorder', 'settings', 'timetable', 'log', 'tax', 'main_router'], function() {
             var win = Backbone.$(window);
 
             // invoke beforeStart onfig

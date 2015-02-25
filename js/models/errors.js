@@ -56,6 +56,16 @@ define(['backbone'], function(Backbone) {
          *
          * @param {string} message Alert message.
          * @param {boolean} reload_page If TRUE - reload page after pressing button.
+         * @param {boolean} defaultView Use jQuery alert message.
+         * @param {object} options Options of alert message:
+         *      template: template ID;
+         *      type: type of icon;
+         *      is_confirm: if THUE - show confirm message;
+         *      confirm: object for confirm message (two button):
+         *          ok: text of OK button;
+         *          cancel: text of CANCEL button;
+         *          cancel_hide: if TRUE - hide CANCEL button;
+         *      callback: callback for confirm message.
          * @return {object} This model.
          */
         alert: function(message, reload_page, defaultView, options) {
