@@ -102,7 +102,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             var errorCode = this.get('errorCode'),
                 isAuthentication = errorCode == REVEL_API_ERROR_CODES.AUTHENTICATION_FAILED || errorCode == REVEL_API_ERROR_CODES.SESSION_EXPIRED;
             console.log('Perform request "%s"', arguments[0]);
-
+            trace("errorCode=", errorCode, "isAuthentication=", isAuthentication);
             // add request to queue
             if(isAuthentication) {
                 this.pendingRequests.unshift(arguments);
@@ -128,8 +128,11 @@ define(["backbone", "card", "customers"], function(Backbone) {
 
             try {
                 if(cssua.ua.android) {
+                    trace("REVEL_INTERFACE_NAME=", REVEL_INTERFACE_NAME, method);
                     var obj = window[REVEL_INTERFACE_NAME];
+                    trace("window[REVEL_INTERFACE_NAME]=", window[REVEL_INTERFACE_NAME], "obj[method]=", obj[method]);
                     this.handleResponse(obj[method].apply(obj, args));
+                    trace("call done.");
                 } else if(cssua.ua.ios) {
                     args.push(this.get('gObj') + '.handleResponse');
                     args.unshift(method);
@@ -165,13 +168,17 @@ define(["backbone", "card", "customers"], function(Backbone) {
             try {
                 // convert response to object if it isn't
                 if(!(response instanceof Object)) {
+
                     response = JSON.parse(decodeURIComponent(response.replace(/(%22)/g, '\\$1'))); // %22 is symbol " encoded
+                    trace("#1: response=", response);
                 }
+                trace("#2: args / errorCode=", args, response.errorCode);
 
                 // set response errorCode
                 this.set('errorCode', response.errorCode);
 
                 if(!response.errorCode) {
+                    trace("#3: response.errorCode=", response.errorCode);
                     args[args.length - 1](response.data);
                     console.log('Request "%s" performed', args[0]);
                     this.pendingRequests.shift();
@@ -180,6 +187,8 @@ define(["backbone", "card", "customers"], function(Backbone) {
                     console.log('Request "%s" failed. %s', args[0], response.message);
                 }
             } catch(e) {
+                trace("#2: Exception: ", e);
+
                 this.set('errorCode', REVEL_API_ERROR_CODES.INTERNAL_ERROR);
                 console.log('Unable to handle a response', response, 'for request', args, '\n', e);
             }
