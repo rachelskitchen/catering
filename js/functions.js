@@ -1665,6 +1665,7 @@ var WorldPayPaymentProcessor = {
         qStr = qStr.replace(/&?Declined=[^&]*/, '');
         qStr = qStr.replace(/&?rcode=[^&]*/, '');
         qStr = qStr.replace(/\?&/, '?');
+        qStr = qStr.replace(/&#/, '#');
 
         return qStr;
     },
