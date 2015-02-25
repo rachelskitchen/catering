@@ -973,18 +973,15 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
                 if (check_order.status === 'ERROR_QUANTITY') {
                     if (!arguments[2]) { // if we don't set error callback, use usuall two button alert message or if we on the first page
-                        return alert_message({
-                            message: check_order.errorMsg,
+                        App.Data.errors.alert(check_order.errorMsg, false, false, {
                             is_confirm: true,
                             confirm: {
-                                cancel: 'Add Items',
                                 ok: 'Ok',
+                                cancel: 'Add Items',
                                 cancel_hide: options.first_page
                             },
                             callback: function(result) {
-                                if(!result) {
-                                    App.Data.router.navigate('index', true);
-                                }
+                                if (!result) App.Data.router.navigate('index', true);
                             }
                         });
                     } else {
