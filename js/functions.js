@@ -151,7 +151,7 @@ MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_MOBILE = 'Ok';
 MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_DESKTOP = 'Go Back';
 MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_MOBILE = 'Back';
 // page 'Establishments' (end)
-MSG.HALF_PRICE_STR =  ["Full", "First Half","Second Half"];            
+MSG.HALF_PRICE_STR =  ["Full", "First Half","Second Half"];
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
@@ -185,7 +185,7 @@ var ServiceType = {
 
 var EVENT = {
     START:     "Start",
-    NAVIGATE:  "Navigate",    
+    NAVIGATE:  "Navigate",
     SEARCH:    "Search"
 };
 
@@ -1040,7 +1040,7 @@ function isIOS() {
         iPad.retval = /iPad|iPod|iPhone/.test(window.navigator.userAgent);
         return iPad.retval;
     }
-}   
+}
 
 /**
  * Pickup time to string
@@ -1418,6 +1418,8 @@ var PaymentProcessor = {
             payment_processor = QuickBooksPaymentProcessor;
         } else if (payment.adyen) {
             payment_processor = AdyenPaymentProcessor;
+        } else if (payment.worldpay) {
+            payment_processor = WorldPayPaymentProcessor;
         }
         return payment_processor;
     }
@@ -1615,6 +1617,82 @@ var MonerisPaymentProcessor = {
     }
 };
 
+WORLDPAY_RETURN_MESSAGE_DEFAULT = "Unknown error";
+var WORLDPAY_PARAMS = {
+    ORDER_ID: 'orderid',
+    TRANSACTION_ID: 'transid',
+    REFCODE: 'refcode',
+    REASON: 'Reason'
+};
+
+var WorldPayPaymentProcessor = {
+    clearQueryString: function(queryString) {
+
+        qStr = queryString.replace(/&?Accepted=[^&]*/, '');
+        qStr = qStr.replace(/&?ACCOUNTNUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?authcode=[^&]*/, '');
+        qStr = qStr.replace(/&?AVS_RESULT=[^&]*/, '');
+        qStr = qStr.replace(/&?BALANCE=[^&]*/, '');
+        qStr = qStr.replace(/&?BATCHNUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?CVV2_RESULT=[^&]*/, '');
+        qStr = qStr.replace(/&?DEBIT_TRACE_NUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?ENTRYMETHOD=[^&]*/, '');
+        qStr = qStr.replace(/&?historyid=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_ADDR=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_CITY=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_NAME=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_PHONE=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_STATE=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANTID=[^&]*/, '');
+        qStr = qStr.replace(/&?orderid=[^&]*/, '');
+        qStr = qStr.replace(/&?PAYTYPE=[^&]*/, '');
+        qStr = qStr.replace(/&?PRODUCT_DESCRIPTION=[^&]*/, '');
+        qStr = qStr.replace(/&?Reason=[^&]*/, '');
+        qStr = qStr.replace(/&?RECEIPT_FOOTER=[^&]*/, '');
+        qStr = qStr.replace(/&?recurid=[^&]*/, '');
+        qStr = qStr.replace(/&?refcode=[^&]*/, '');
+        qStr = qStr.replace(/&?result=[^&]*/, '');
+        qStr = qStr.replace(/&?SEQUENCE_NUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?Status=[^&]*/, '');
+        qStr = qStr.replace(/&?SYSTEMAUDITTRACENUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?TERMINALID=[^&]*/, '');
+        qStr = qStr.replace(/&?TRANSGUID=[^&]*/, '');
+        qStr = qStr.replace(/&?transid=[^&]*/, '');
+        qStr = qStr.replace(/&?transresult=[^&]*/, '');
+        qStr = qStr.replace(/&?AuthNo=[^&]*/, '');
+        qStr = qStr.replace(/&?DUPLICATE=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANTORDERNUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?Declined=[^&]*/, '');
+        qStr = qStr.replace(/&?rcode=[^&]*/, '');
+        qStr = qStr.replace(/\?&/, '?');
+        qStr = qStr.replace(/&#/, '#');
+
+        return qStr;
+    },
+    showCreditCardDialog: function() {
+        return true;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        var get_parameters = App.Data.get_parameters;
+
+        if (pay_get_parameter) {
+            var status = get_parameters['Status']
+            if(pay_get_parameter === 'true' && status === 'Accepted') {
+                payment_info.transaction_id = get_parameters[WORLDPAY_PARAMS.TRANSACTION_ID];
+                payment_info.order_id = get_parameters[WORLDPAY_PARAMS.ORDER_ID];
+                payment_info.refcode = get_parameters[WORLDPAY_PARAMS.REFCODE];
+            } else {
+                payment_info.errorMsg = get_parameters[WORLDPAY_PARAMS.REASON];
+                if (!payment_info.errorMsg) {
+                    payment_info.errorMsg = WORLDPAY_RETURN_MESSAGE_DEFAULT;
+                }
+            }
+        }
+        return payment_info;
+    }
+};
+
+
 var QuickBooksPaymentProcessor = {
     clearQueryString: function(queryString) {
         return queryString;
@@ -1755,4 +1833,3 @@ function removeClassRegexp(jq_elem, exp_str) {
     });
 }
 
-               
