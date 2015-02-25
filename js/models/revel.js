@@ -102,7 +102,6 @@ define(["backbone", "card", "customers"], function(Backbone) {
             var errorCode = this.get('errorCode'),
                 isAuthentication = errorCode == REVEL_API_ERROR_CODES.AUTHENTICATION_FAILED || errorCode == REVEL_API_ERROR_CODES.SESSION_EXPIRED;
             console.log('Perform request "%s"', arguments[0]);
-
             // add request to queue
             if(isAuthentication) {
                 this.pendingRequests.unshift(arguments);
