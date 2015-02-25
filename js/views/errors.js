@@ -31,7 +31,7 @@ define(['backbone', 'factory'], function(Backbone) {
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'alertMessage', this.alertMessage); // user notification
-            this.alertMessage(this.model.toJSON()); // user notification
+            this.alertMessage(); // user notification
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -53,8 +53,11 @@ define(['backbone', 'factory'], function(Backbone) {
          *          cancel_hide: if TRUE - hide CANCEL button;
          *      callback: callback for confirm message.
          */
-        alertMessage: function(options) {
-            var NO_MESSAGE = 'No alert message';
+        alertMessage: function() {
+            var options = this.model.toJSON(),
+                NO_MESSAGE = 'No alert message';
+
+            this.model.clearOptions(); // clear options
 
             if (!options.defaultView && (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL))
                 return customAlertMessage(options); // custom alert message
