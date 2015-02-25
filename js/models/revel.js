@@ -131,6 +131,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
                     trace("REVEL_INTERFACE_NAME=", REVEL_INTERFACE_NAME, method);
                     var obj = window[REVEL_INTERFACE_NAME];
                     trace("window[REVEL_INTERFACE_NAME]=", window[REVEL_INTERFACE_NAME], "obj[method]=", obj[method]);
+                    trace("RevelAPI-createCridantials", window["RevelAPI"]["createCredentials"]);
                     this.handleResponse(obj[method].apply(obj, args));
                     trace("call done.");
                 } else if(cssua.ua.ios) {
