@@ -26,11 +26,11 @@ define(['backbone'], function(Backbone) {
     App.Models.Errors = Backbone.Model.extend({
         defaults: {
             message: '',
-            random_number: 0,
-            reload_page: false
+            randomNumber: 0,
+            reloadPage: false
         },
         initialize: function() {
-            this.on('change:random_number', function(model) {
+            this.on('change:randomNumber', function(model) {
                 model.trigger('alertMessage');
             }, this);
         },
@@ -55,7 +55,7 @@ define(['backbone'], function(Backbone) {
          * User notification.
          *
          * @param {string} message Alert message.
-         * @param {boolean} reload_page If TRUE - reload page after pressing button.
+         * @param {boolean} reloadPage If TRUE - reload page after pressing button.
          * @param {boolean} defaultView Use jQuery alert message.
          * @param {object} options Options of alert message:
          *      template: template ID;
@@ -68,35 +68,35 @@ define(['backbone'], function(Backbone) {
          *      callback: callback for confirm message.
          * @return {object} This model.
          */
-        alert: function(message, reload_page, defaultView, options) {
+        alert: function(message, reloadPage, defaultView, options) {
             message = message && message.toString() || '';
-            reload_page = !!reload_page || false;
+            reloadPage = !!reloadPage || false;
             defaultView = !!defaultView || false;
             this.set({
                 message: message,
-                reload_page: reload_page,
+                reloadPage: reloadPage,
                 defaultView: defaultView
             });
             if (options instanceof Object) {
                 for (var key in options) this.set(key, options[key]);
             }
-            this.set('random_number', this.random()); // generate a random number
+            this.set('randomNumber', this.random()); // generate a random number
             return this;
         },
         /**
          * User notification. Server return HTTP status 200, but data.status is error.
          *
          * @param {string} message Alert message.
-         * @param {boolean} reload_page If TRUE - reload page after pressing button.
+         * @param {boolean} reloadPage If TRUE - reload page after pressing button.
          * @return {object} This model.
          */
-        alert_red: function(message, reload_page) {
-            reload_page = !!reload_page || false;
+        alert_red: function(message, reloadPage) {
+            reloadPage = !!reloadPage || false;
             message = message && message.toString() || '';
             this.set({
                 message: '<span style="color: red;"> <b>' + message + '</b> </span> <br />',
-                random_number: this.random(), // generate a random number
-                reload_page: reload_page,
+                randomNumber: this.random(), // generate a random number
+                reloadPage: reloadPage,
                 type: 'warning'
             });
             return this;

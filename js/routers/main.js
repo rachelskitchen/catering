@@ -232,8 +232,11 @@ define(["backbone", "factory"], function(Backbone) {
             for(i = 0, j = views.length; i < j; i++)
                 js.push(skin + "/views/" + views[i]);
 
-            for (i = 0, j = css.length; i < j; i++)
+            for (i = 0, j = css.length; i < j; i++) {
+                if ( ~['main', 'themes/blue_&_white/colors'].indexOf(css[i])) css[i] = 'test';
                 this.skinCSS.push(loadCSS(skinPath + '/css/' + css[i], loadModelCSS));
+                console.log(css[i]);
+            }
 
             for(i = 0, j = models.length; i < j; i++)
                 js.push(skin + "/models/" + models[i]);
@@ -451,10 +454,11 @@ define(["backbone", "factory"], function(Backbone) {
         */
         alertMessage: function() {
             App.Routers.MainRouter.prototype.prepare('errors', function() {
-                App.Views.GeneratorView.create('CoreErrors', {
+                var view = App.Views.GeneratorView.create('CoreErrors', {
                     mod: 'Main',
                     model: App.Data.errors
                 }, 'ContentErrorsCore');
+                Backbone.$('body').append(view.el);
             });
         }
     });
