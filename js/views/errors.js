@@ -70,7 +70,6 @@ define(['backbone', 'factory'], function(Backbone) {
              * Default alert message.
              */
             function defaultAlertMessage(options) {
-                console.log('123');
                 /*
                 if (options.is_confirm) {
                     var confirm = options.confirm || {};
@@ -79,8 +78,10 @@ define(['backbone', 'factory'], function(Backbone) {
                 } else {
                     jAlert(options.message, 'OK');
                 }
-                setStyles(); // settings of styles for alert message
+                */
+                // setStyles(); // settings of styles for alert message
                 setMinWidth(); // setting of minimum width for the block
+                /*
                 centrePositionAlert(); // centering of alert message
 
                 $(window).on('resize', centrePositionAlert); // centering of alert message
@@ -96,13 +97,15 @@ define(['backbone', 'factory'], function(Backbone) {
                 function setMinWidth() {
                     var wndWidth = $(window).width(),
                         wndHeight =  $(window).height(),
-                        alert = $('#popup_container'),
+                        alert = this.$('#popup_container'),
+                        // alert = $('#popup_container'),
                         alertWidth = alert.width(),
                         borderWidth = alert.outerWidth() - alert.width(),
                         minWidth = (wndHeight > wndWidth) ? wndWidth : wndHeight;
 
                     minWidth -= borderWidth;
 
+                    debugger;
                     if (alertWidth < minWidth) {
                         alert.css('min-width', alertWidth);
                     } else {
