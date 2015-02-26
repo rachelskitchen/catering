@@ -31,6 +31,7 @@ define(['backbone', 'factory'], function(Backbone) {
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'alertMessage', this.alertMessage); // user notification
+            this.listenTo(this.model, 'hideAlertMessage', this.removeFromDOMTree); // remove view from DOM tree
             this.alertMessage(); // user notification
         },
         render: function() {
@@ -59,14 +60,18 @@ define(['backbone', 'factory'], function(Backbone) {
 
             this.model.clearOptions(); // clear options
 
+            /*
             if (!options.defaultView && (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL))
                 return customAlertMessage(options); // custom alert message
-            jQueryAlertMessage(options); // jQuery alert message
+            */
+            defaultAlertMessage(options); // jQuery alert message
 
             /**
-             * jQuery alert message.
+             * Default alert message.
              */
-            function jQueryAlertMessage(options) {
+            function defaultAlertMessage(options) {
+                console.log('123');
+                /*
                 if (options.is_confirm) {
                     var confirm = options.confirm || {};
                     jConfirm(options.message || NO_MESSAGE, confirm.ok || 'OK', confirm.cancel || 'Cancel', options.callback);
@@ -83,6 +88,7 @@ define(['backbone', 'factory'], function(Backbone) {
                     $(window).off('resize', centrePositionAlert); // centering of alert message
                     options.reload_page && window.location.reload();
                 });
+                */
 
                 /**
                  * Setting of minimum width for the block.
@@ -123,7 +129,7 @@ define(['backbone', 'factory'], function(Backbone) {
                     template = options.template ? options.template : 'alert';
 
                 if ( $('#' + template + '-template' ).length == 0) {
-                    jQueryAlertMessage(options);
+                    defaultAlertMessage(options);
                     return;
                 }
 
