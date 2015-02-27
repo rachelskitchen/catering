@@ -172,7 +172,7 @@ define(["revel_view", "generator"], function(revel_view) {
             }, this);
             this.listenTo(App.Data.myorder, "paymentFailed", function(message) {
                 App.Data.mainModel.trigger("loadCompleted");
-                message && App.Data.errors.alert(message);
+                message && App.Data.errors.alert(message); // user notification
             }, this);
         },
         render: function() {

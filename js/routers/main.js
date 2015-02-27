@@ -455,9 +455,9 @@ define(["backbone", "factory"], function(Backbone) {
                 var view = App.Views.GeneratorView.create('CoreErrors', {
                     mod: 'Main',
                     model: errors
-                }, 'ContentErrorsCore');
+                }, 'ContentErrorsCore'); // generation of view
                 Backbone.$('body').append(view.el);
-                errors.trigger('showAlertMessage');
+                errors.trigger('showAlertMessage'); // user notification
             });
         }
     });
@@ -523,7 +523,7 @@ define(["backbone", "factory"], function(Backbone) {
             });
 
             function creditCardValidationAlert(result) {
-                App.Data.errors.alert(result.errorMsg);
+                App.Data.errors.alert(result.errorMsg); // user notification
             }
         },
         loyalty: function(header, footer) {
@@ -669,7 +669,9 @@ define(["backbone", "factory"], function(Backbone) {
                     success = RevelAPI.saveProfile.bind(RevelAPI, RevelAPI.trigger.bind(RevelAPI, 'onPayWithSavedCreditCard')),
                     fail = function() {
                         self.navigate('profile/1', true);
-                        RevelAPI.processPaymentInfo(null, function(result) {App.Data.errors.alert(result.errorMsg);});
+                        RevelAPI.processPaymentInfo(null, function(result) {
+                            App.Data.errors.alert(result.errorMsg); // user notification
+                        });
                     };
 
                 profileSaveCallback = RevelAPI.trigger.bind(RevelAPI, 'onPayWithSavedCreditCard');
