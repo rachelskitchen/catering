@@ -419,34 +419,6 @@ function template_helper(name,mod) {
 function template_helper2(name) {
     return _.template($('#' + name).html());
 }
-
-/**
- * Centering of alert message.
- */
-function centrePositionAlert() {
-    var wnd = $(window),
-        alert = $('#popup_container'),
-        alertContent = $('#popup_content'),
-        left = ( wnd.width() / 2 ) - ( alert.outerWidth() / 2 ),
-        top;
-
-    if (/iPad;.*CPU.*OS 7_\d/i.test(window.navigator.userAgent)) {
-        top = ( window.innerHeight / 2 ) - ( alertContent.outerHeight(true) / 2 ) - (window.outerHeight - window.innerHeight) / 2;
-    } else {
-        top = ( wnd.height() / 2 ) - ( alertContent.outerHeight(true) / 2 );
-    }
-
-    top = top > 0 ? top : 0;
-    left = left > 0 ? left : 0;
-
-    alert.css({
-        'bottom': top,
-        'left': left,
-        'right': left,
-        'top': top
-    });
-}
-
 /**
  * Generate the random number.
  */
