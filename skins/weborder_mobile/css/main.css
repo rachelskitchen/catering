@@ -150,60 +150,50 @@ textarea, input {
     display: none;
 }
 
-#popup_content {
-    background: transparent !important;
-    font-size: 1em !important;
-}
-
-#popup_content:before {
-    content: '\f06a';
-    font-family: FontAwesome;
-    font-size: 5em;
-    position: absolute;
-}
-
+/* user notification (begin) */
 #popup_container{
     font-size: 1.2em !important;
-    padding-bottom: 8em !important;
 }
-
-#popup_message {
-    font-size: 2.4em !important;
-    padding-left: 2.5em !important;
-    overflow: hidden;
-    padding-bottom: 2.5em;
+#popup_content {
+    background: transparent !important;
+    font-size: 1em;
 }
-
-#popup_panel {
+#popup_content:before {
+    content: '\f06a';
+    font-family: fontawesome;
+    font-size: 5em;
+    left: 0.25em;
     position: absolute;
-    bottom: 1em;
-    left: 50%;
-    margin-left: -2em;
 }
-
+#popup_message {
+    font-size: 2.4em;
+    overflow: hidden;
+    text-align: left;
+    padding-left: 2.5em !important;
+}
 #popup_panel input {
-    font-size: 2.4em !important;
-    padding: 0.2em 0.3em;
-    border: none;
-    border-radius: 0.4em;
-    -webkit-appearance: none;
     -moz-appearance: none;
+    -webkit-appearance: none;
     appearance: none;
-    cursor: pointer;
+    border: none;
+    font-size: 2.4em;
+    padding: 0.2em 0.3em !important;
+    border-radius: 0.4em;
 }
-
 #popup_panel input:active {
-    -webkit-transform-origin: 50%;
     -moz-transform-origin: 50%;
     -ms-transform-origin: 50%;
     -o-transform-origin: 50%;
-    transform-origin: 50%;
-    -webkit-transform: scale(0.95);
     -moz-transform: scale(0.95);
     -ms-transform: scale(0.95);
     -o-transform: scale(0.95);
+    -webkit-transform: scale(0.95);
+    -webkit-transform-origin: 50%;
+    transform-origin: 50%;
     transform: scale(0.95);
 }
+/* user notification (end) */
+
 /* content block end */
 
 /* footer block start */

@@ -28,7 +28,6 @@ define(['backbone'], function(Backbone) {
             randomNumber: 0,
             message: 'No alert message',
             reloadPage: false,
-            defaultView: false,
             errorServer: false,
             typeIcon: 'info',
             isConfirm: false,
@@ -58,7 +57,6 @@ define(['backbone'], function(Backbone) {
         clearModel: function() {
             this.set('message', this.defaults.message);
             this.set('reloadPage', this.defaults.reloadPage);
-            this.set('defaultView', this.defaults.defaultView);
             this.set('errorServer', this.defaults.errorServer);
             this.set('typeIcon', this.defaults.typeIcon);
             this.set('isConfirm', this.defaults.isConfirm);
@@ -88,12 +86,13 @@ define(['backbone'], function(Backbone) {
          */
         alert: function(message, reloadPage, defaultView, options) {
             this.clearModel(); // clear model (set default values)
-            var defaultView = !!defaultView || false;
-            if (!defaultView && (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL)) defaultView = false;
+            var dView = (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL) ?
+                (defaultView === undefined) ? false : !!defaultView :
+                true;
             this.set({
                 message: message && message.toString() || this.defaults.message,
                 reloadPage: !!reloadPage || false,
-                defaultView: defaultView
+                defaultView: dView
             });
             if (options instanceof Object) {
                 for (var key in options) this.set(key, options[key]);
