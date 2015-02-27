@@ -25,9 +25,17 @@ define(['backbone'], function(Backbone) {
 
     App.Models.Errors = Backbone.Model.extend({
         defaults: {
-            message: '',
             randomNumber: 0,
-            reloadPage: false
+            defaultView: false,
+            message: 'No alert message',
+            reloadPage: false,
+            typeIcon: 'info',
+            isConfirm: false,
+            confirm: {
+                ok: 'OK',
+                cancel: 'Cancel',
+                cancelHide: false
+            }
         },
         initialize: function() {
             this.on('change:randomNumber', function(model) {
@@ -43,10 +51,16 @@ define(['backbone'], function(Backbone) {
             return generate_random_number(1, 1000000); // generate the random number
         },
         /**
-         * Clear options.
+         * Clear model (set default values).
          */
-        clearOptions: function() {
-            var options = ['template', 'type', 'is_confirm', 'confirm', 'callback'];
+        clearModel: function() {
+            this.set('defaultView', this.defaults.defaultView);
+            this.set('message', this.defaults.message);
+            this.set('reloadPage', this.defaults.reloadPage);
+            this.set('typeIcon', this.defaults.typeIcon);
+            this.set('isConfirm', this.defaults.isConfirm);
+            this.set('confirm', this.defaults.confirm);
+            var options = ['template', 'callback'];
             for (var i = 0; i < options.length; i++) {
                 this.unset(options[i]);
             }
@@ -58,54 +72,39 @@ define(['backbone'], function(Backbone) {
          * @param {boolean} reloadPage If TRUE - reload page after pressing button.
          * @param {boolean} defaultView Use jQuery alert message.
          * @param {object} options Options of alert message:
-         *      template: template ID;
-         *      type: type of icon;
-         *      is_confirm: if THUE - show confirm message;
+         *      template: template ID (apply if uses custom alert message);
+         *      typeIcon: type of icon (info or warning);
+         *      isConfirm: if THUE - show confirm message;
          *      confirm: object for confirm message (two button):
          *          ok: text of OK button;
          *          cancel: text of CANCEL button;
-         *          cancel_hide: if TRUE - hide CANCEL button;
+         *          cancelHide: if TRUE - hide CANCEL button.
          *      callback: callback for confirm message.
-         * @return {object} This model.
          */
         alert: function(message, reloadPage, defaultView, options) {
-            message = message && message.toString() || '';
-            reloadPage = !!reloadPage || false;
-            defaultView = !!defaultView || false;
+            this.clearModel(); // clear model (set default values)
+            var defaultView = !!defaultView || false;
+            if (!defaultView && (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL)) defaultView = false;
             this.set({
-                message: message,
-                reloadPage: reloadPage,
+                message: message && message.toString() || this.defaults.message,
+                reloadPage: !!reloadPage || false,
                 defaultView: defaultView
             });
             if (options instanceof Object) {
                 for (var key in options) this.set(key, options[key]);
             }
+            // buttons (begin)
+            var btnText1 = 'OK';
+            var btnText2 = 'Cancel';
+            if (this.get('isConfirm')) {
+                var confirm = this.get('confirm');
+                if (confirm.ok) btnText1 = confirm.ok;
+                if (confirm.cancel) btnText2 = confirm.cancel;
+            }
+            this.set('btnText1', btnText1);
+            this.set('btnText2', btnText2);
+            // buttons (end)
             this.set('randomNumber', this.random()); // generate a random number
-            return this;
-        },
-        /**
-         * User notification. Server return HTTP status 200, but data.status is error.
-         *
-         * @param {string} message Alert message.
-         * @param {boolean} reloadPage If TRUE - reload page after pressing button.
-         * @return {object} This model.
-         */
-        alert_red: function(message, reloadPage) {
-            reloadPage = !!reloadPage || false;
-            message = message && message.toString() || '';
-            this.set({
-                message: '<span style="color: red;"> <b>' + message + '</b> </span> <br />',
-                randomNumber: this.random(), // generate a random number
-                reloadPage: reloadPage,
-                type: 'warning'
-            });
-            return this;
-        },
-        /**
-         * Hide custom alert message.
-         */
-        hide: function() {
-            this.view instanceof Backbone.$ && this.view.removeClass('ui-visible');
         }
     });
 });
