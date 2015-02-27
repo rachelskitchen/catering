@@ -963,7 +963,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     check_checkout = checkout.check();
 
                 if (check_checkout.status === 'ERROR') {
-                    return error(check_checkout.errorMsg); // user notification
+                    error(check_checkout.errorMsg); // user notification
+                    return;
                 } else if (check_checkout.status === 'ERROR_EMPTY_FIELDS') {
                     fields = fields.concat(check_checkout.errorList);
                 }
@@ -986,11 +987,13 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                             }
                         }); // user notification
                     } else {
-                        return error(check_order.errorMsg); // user notification
+                        error(check_order.errorMsg); // user notification
+                        return;
                     }
                 }
                 if (check_order.status !== 'OK') {
-                    return error(check_order.errorMsg); // user notification
+                    error(check_order.errorMsg); // user notification
+                    return;
                 }
             }
 
@@ -1010,9 +1013,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             if (fields.length) {
-                return error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, fields.join(', '))); // user notification
+                error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, fields.join(', '))); // user notification
+                return;
             } else if (errorMsg) {
-                return error(errorMsg); // user notification
+                error(errorMsg); // user notification
+                return;
             } else if (options.customer && dining_option === 'DINING_OPTION_DELIVERY') {
                 customer.validate_address(_success.bind(this), error);
             } else {
