@@ -82,7 +82,8 @@ define({
         revel_api: "js/models/revel",
         revel_view: 'js/views/revel',
         establishments: 'js/models/establishments',
-        establishments_view: 'js/views/establishments'
+        establishments_view: 'js/views/establishments',
+        filters: 'js/models/filters'
     },
     waitSeconds: 30,
     shim: {
@@ -210,6 +211,9 @@ define({
         },
         'establishments_view': {
             deps: ['backbone', 'factory', 'generator', 'list']
+        },
+        'filters': {
+            deps: ['backbone']
         }
     },
     map: {
