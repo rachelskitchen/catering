@@ -84,11 +84,11 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                         message = this.model.get('ALERT_MESSAGE');
                     }
                     App.Data.errors.alert(message, false, false, {
-                        template: 'alert-establishments',
                         isConfirm: true,
                         confirm: {
                             ok: this.model.get('ALERT_PROCEED_BUTTON'),
-                            cancel: this.model.get('ALERT_BACK_BUTTON')
+                            cancel: this.model.get('ALERT_BACK_BUTTON'),
+                            btnsSwap: true
                         },
                         callback: function(result) {
                             if (result) estExist();

@@ -69,7 +69,6 @@ define(['backbone', 'factory'], function(Backbone) {
                 this.hideAlertMessage(2); // hide user notification
                 this.render();
             } else {
-                this.hideAlertMessage(1); // hide user notification
                 customAlertMessage.call(this); // custom alert message
             }
 
@@ -83,8 +82,10 @@ define(['backbone', 'factory'], function(Backbone) {
 
                 if ( $('#' + template + '-template' ).length == 0) {
                     this.model.set('defaultView', true);
-                    this.render();
+                    this.alertMessage(); // user notification
                     return;
+                } else {
+                    this.hideAlertMessage(1); // hide user notification
                 }
 
                 if (alert.length == 0) {
@@ -96,6 +97,7 @@ define(['backbone', 'factory'], function(Backbone) {
                     typeIcon: (options.typeIcon == 'info') ? 'info' : 'warning',
                     message: options.message,
                     isConfirm: options.isConfirm,
+                    btnsSwap: options.confirm.btnsSwap,
                     cancelHide: options.confirm.cancelHide,
                     btnText1: options.btnText1,
                     btnText2: options.btnText2

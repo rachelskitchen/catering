@@ -35,6 +35,7 @@ define(['backbone'], function(Backbone) {
             confirm: {
                 ok: 'OK',
                 cancel: 'Cancel',
+                btnsSwap: false,
                 cancelHide: false
             }
         },
@@ -74,15 +75,16 @@ define(['backbone'], function(Backbone) {
          * @param {boolean} reloadPage If TRUE - reload page after pressing button.
          * @param {boolean} defaultView Use jQuery alert message.
          * @param {object} options Options of alert message:
-         *      template: template ID (apply if uses custom alert message);
-         *      errorServer: server return HTTP status 200, but data.status is error;
-         *      typeIcon: type of icon (info or warning);
-         *      isConfirm: if THUE - show confirm message;
-         *      confirm: object for confirm message (two button):
-         *          ok: text of OK button;
-         *          cancel: text of CANCEL button;
-         *          cancelHide: if TRUE - hide CANCEL button.
-         *      callback: callback for confirm message.
+         *      template: template ID (apply if uses custom alert message) (string);
+         *      errorServer: server return HTTP status 200, but data.status is error (boolean);
+         *      typeIcon: type of icon (info or warning) (string);
+         *      isConfirm: if THUE - show confirm message (boolean);
+         *      confirm: object for confirm message (two button) (object):
+         *          ok: text of OK button (string);
+         *          cancel: text of CANCEL button (string);
+         *          btnsSwap: buttons swap (boolean);
+         *          cancelHide: if TRUE - hide CANCEL button (boolean).
+         *      callback: callback for confirm message (function).
          */
         alert: function(message, reloadPage, defaultView, options) {
             this.clearModel(); // clear model (set default values)

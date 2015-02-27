@@ -9,9 +9,16 @@
                     <% if (errorServer) { %> </span> <% } %>
                 </div>
                 <div id="popup_panel">
-                    <input type="button" value="<%= btnText1 %>" id="popup_ok">
-                    <% if (isConfirm && !confirm.cancelHide) { %>
-                        <input type="button" value="<%= btnText2 %>" id="popup_cancel">
+                    <% if (!confirm.btnsSwap) { %>
+                        <input type="button" value="<%= btnText1 %>" id="popup_ok">
+                        <% if (isConfirm && !confirm.cancelHide) { %>
+                            <input type="button" value="<%= btnText2 %>" id="popup_cancel">
+                        <% } %>
+                    <% } else { %>
+                        <% if (isConfirm && !confirm.cancelHide) { %>
+                            <input type="button" value="<%= btnText2 %>" id="popup_cancel">
+                        <% } %>
+                        <input type="button" value="<%= btnText1 %>" id="popup_ok">
                     <% } %>
                 </div>
             </div>
@@ -93,30 +100,18 @@
                 <% if (errorServer) { %> </span> <% } %>
             </div>
             <div class="btn_wrapper">
-                <div class="btn btnOk"> <%= btnText1 %> </div>
-                <% if (isConfirm && !cancelHide) { %>
-                   <div class="btn btnCancel"> <%= btnText2 %> </div>
+            
+                <% if (!btnsSwap) { %>
+                    <div class="btn btnOk"> <%= btnText1 %> </div>
+                    <% if (isConfirm && !cancelHide) { %>
+                       <div class="btn btnCancel"> <%= btnText2 %> </div>
+                    <% } %>
+                <% } else { %>
+                    <% if (isConfirm && !cancelHide) { %>
+                       <div class="btn btnCancel"> <%= btnText2 %> </div>
+                    <% } %>
+                    <div class="btn btnOk"> <%= btnText1 %> </div>
                 <% } %>
-            </div>
-        </div>
-    </div>
-</script>
-<script type="text/template" id="alert-establishments-template">
-    <div class="alert_align"> </div>
-    <div class="alert_wrapper">
-        <div class="alert_block">
-            <div class="no-cancel"> </div>
-            <div class="icon <%= typeIcon %>"> </div>
-            <div class="message">
-                <% if (errorServer) { %> <span style="color: red; font-weight: bold;"> <% } %>
-                    <%= message %>
-                <% if (errorServer) { %> </span> <% } %>
-            </div>
-            <div class="btn_wrapper">
-                <% if (isConfirm && !cancelHide) { %>
-                   <div class="btn btnCancel"> <%= btnText2 %> </div>
-                <% } %>
-                <div class="btn btnOk"> <%= btnText1 %> </div>
             </div>
         </div>
     </div>
