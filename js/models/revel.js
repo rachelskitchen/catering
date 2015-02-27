@@ -185,7 +185,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
         },
         listenToErrorCode: function() {
             var errorCode = this.get('errorCode'),
-            errors = App.Data.errors;
+                errors = App.Data.errors;
 
             switch(this.get('errorCode')) {
                 case REVEL_API_ERROR_CODES.AUTHENTICATION_FAILED:
