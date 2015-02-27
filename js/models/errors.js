@@ -26,9 +26,10 @@ define(['backbone'], function(Backbone) {
     App.Models.Errors = Backbone.Model.extend({
         defaults: {
             randomNumber: 0,
-            defaultView: false,
             message: 'No alert message',
             reloadPage: false,
+            defaultView: false,
+            errorServer: false,
             typeIcon: 'info',
             isConfirm: false,
             confirm: {
@@ -54,9 +55,10 @@ define(['backbone'], function(Backbone) {
          * Clear model (set default values).
          */
         clearModel: function() {
-            this.set('defaultView', this.defaults.defaultView);
             this.set('message', this.defaults.message);
             this.set('reloadPage', this.defaults.reloadPage);
+            this.set('defaultView', this.defaults.defaultView);
+            this.set('errorServer', this.defaults.errorServer);
             this.set('typeIcon', this.defaults.typeIcon);
             this.set('isConfirm', this.defaults.isConfirm);
             this.set('confirm', this.defaults.confirm);
@@ -73,6 +75,7 @@ define(['backbone'], function(Backbone) {
          * @param {boolean} defaultView Use jQuery alert message.
          * @param {object} options Options of alert message:
          *      template: template ID (apply if uses custom alert message);
+         *      errorServer: server return HTTP status 200, but data.status is error;
          *      typeIcon: type of icon (info or warning);
          *      isConfirm: if THUE - show confirm message;
          *      confirm: object for confirm message (two button):

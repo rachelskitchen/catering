@@ -3,7 +3,11 @@
     <div id="popup_alert">
         <div id="popup_container">
             <div id="popup_content" class="<% if (typeIcon == 'info') { %> info <% } else { %> warning <% } %>">
-                <div id="popup_message"> <%= message %> </div>
+                <div id="popup_message">
+                    <% if (errorServer) { %> <span style="color: red; font-weight: bold;"> <% } %>
+                        <%= message %>
+                    <% if (errorServer) { %> </span> <% } %>
+                </div>
                 <div id="popup_panel">
                     <input type="button" value="<%= btnText1 %>" id="popup_ok">
                     <% if (isConfirm && !confirm.cancelHide) { %>
@@ -83,7 +87,11 @@
         <div class="alert_block">
             <div class="no-cancel"> </div>
             <div class="icon <%= typeIcon %>"> </div>
-            <div class="message"> <%= message %> </div>
+            <div class="message">
+                <% if (errorServer) { %> <span style="color: red; font-weight: bold;"> <% } %>
+                    <%= message %>
+                <% if (errorServer) { %> </span> <% } %>
+            </div>
             <div class="btn_wrapper">
                 <div class="btn btnOk"> <%= btnText1 %> </div>
                 <% if (isConfirm && !cancelHide) { %>
@@ -99,7 +107,11 @@
         <div class="alert_block">
             <div class="no-cancel"> </div>
             <div class="icon <%= typeIcon %>"> </div>
-            <div class="message"> <%= message %> </div>
+            <div class="message">
+                <% if (errorServer) { %> <span style="color: red; font-weight: bold;"> <% } %>
+                    <%= message %>
+                <% if (errorServer) { %> </span> <% } %>
+            </div>
             <div class="btn_wrapper">
                 <% if (isConfirm && !cancelHide) { %>
                    <div class="btn btnCancel"> <%= btnText2 %> </div>

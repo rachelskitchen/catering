@@ -324,10 +324,10 @@ define(["main_router"], function(main_router) {
                                     App.Data.myorder.add(order);
                                     App.Data.router.navigate("index", true);
                                 }, function(errorMsg) {
-                                    App.Data.errors.alert(errorMsg);
+                                    App.Data.errors.alert(errorMsg); // user notification
                                 });
                             } else {
-                                App.Data.errors.alert(check.errorMsg);
+                                App.Data.errors.alert(check.errorMsg); // user notification
                             }
                         },
                         order: order
@@ -373,10 +373,10 @@ define(["main_router"], function(main_router) {
                                 App.Data.myorder.add(order, {at: index});
                                 App.Data.router.navigate("index", true);
                             }, function(errorMsg) {
-                                App.Data.errors.alert(errorMsg);
+                                App.Data.errors.alert(errorMsg); // user notification
                             });
                         } else {
-                            App.Data.errors.alert(check.errorMsg);
+                            App.Data.errors.alert(check.errorMsg); // user notification
                         }
                     }
                 });

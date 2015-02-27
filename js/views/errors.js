@@ -31,6 +31,7 @@ define(['backbone', 'factory'], function(Backbone) {
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'showAlertMessage', this.alertMessage); // user notification
+            this.listenTo(this.model, 'hideAlertMessage', this.hideAlertMessage); // hide user notification
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -91,6 +92,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 }
 
                 var data = {
+                    errorServer: options.errorServer,
                     typeIcon: (options.typeIcon == 'info') ? 'info' : 'warning',
                     message: options.message,
                     isConfirm: options.isConfirm,

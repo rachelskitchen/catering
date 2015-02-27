@@ -85,7 +85,7 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                     }
                     App.Data.errors.alert(message, false, false, {
                         template: 'alert-establishments',
-                        is_confirm: true,
+                        isConfirm: true,
                         confirm: {
                             ok: this.model.get('ALERT_PROCEED_BUTTON'),
                             cancel: this.model.get('ALERT_BACK_BUTTON')
@@ -93,7 +93,7 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                         callback: function(result) {
                             if (result) estExist();
                         }
-                    });
+                    }); // user notification
                 } else {
                     estExist();
                 }
