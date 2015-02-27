@@ -151,7 +151,7 @@ MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_MOBILE = 'Ok';
 MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_DESKTOP = 'Go Back';
 MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_MOBILE = 'Back';
 // page 'Establishments' (end)
-MSG.HALF_PRICE_STR =  ["Full", "First Half","Second Half"];            
+MSG.HALF_PRICE_STR =  ["Full", "First Half","Second Half"];
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
@@ -368,9 +368,8 @@ function setData(name, data, local) {
         case 1:
             if(local && localStorage instanceof Object)
                 localStorage[name] = JSON.stringify(data);
-            else
-                if (sessionStorage instanceof Object)
-                    sessionStorage[name] = JSON.stringify(data);
+            else if (sessionStorage instanceof Object)
+                sessionStorage[name] = JSON.stringify(data);
             break;
         case 2:
             document.cookie += name + '=' + JSON.stringify(data) + ';';
@@ -712,7 +711,7 @@ function loadCSS(name) {
 }
 
 /**
- * Include CSS file for Safari on OS Windows 
+ * Include CSS file for Safari on OS Windows
  */
 if (cssua && cssua.ua.safari && cssua.ua.windows_nt) {
     loadCSS = function(name) {
@@ -1034,7 +1033,7 @@ function isIOS() {
         iPad.retval = /iPad|iPod|iPhone/.test(window.navigator.userAgent);
         return iPad.retval;
     }
-}   
+}
 
 /**
  * Pickup time to string
@@ -1750,4 +1749,4 @@ function removeClassRegexp(jq_elem, exp_str) {
     });
 }
 
-               
+
