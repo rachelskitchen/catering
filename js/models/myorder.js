@@ -1408,8 +1408,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 } else {
                     myorder.trigger('paymentFailed');
                     App.Data.errors.alert(message, false, false, {
-                        typeIcon: 'warning',
-                        errorServer: true
+                        errorServer: true,
+                        typeIcon: 'warning'
                     }); // user notification
                 }
             }
