@@ -222,9 +222,6 @@ textarea, input {
 }
 #alert .alert_wrapper {
     display: inline-block;
-    margin-left: 0px;
-    margin-right: 5px;
-    margin-top: 10px;
     max-height: 95%;
     max-width: 91.5%;
     vertical-align: middle;
@@ -253,8 +250,8 @@ textarea, input {
     color: #686868;
     font-size: 19.2px;
     font-weight: bold;
-    line-height: 26px;
-    margin: 15px 30px;
+    line-height: 22px;
+    margin: 5px 20px;
     max-width: 440px;
     text-align: center;
     text-shadow: none;
