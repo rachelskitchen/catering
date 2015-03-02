@@ -154,7 +154,7 @@ textarea, input {
 #popup_container{
     font-size: 1.2em !important;
     max-width: 290px !important;
-    min-width: 160px !important;
+    min-width: 250px !important;
 }
 #popup_content {
     background: transparent !important;
