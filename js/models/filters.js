@@ -87,7 +87,8 @@ define(['backbone'], function() {
         defaults: {
             title: '',
             filterItems: null,  // collection of filters models
-            compare: null       // should be function that accepts `item`, `filter` params
+            compare: null,      // should be function that accepts `item`, `filter` params
+            radio: false
         },
         initialize: function() {
             var filterItems = this.get('filterItems'),
@@ -129,7 +130,7 @@ define(['backbone'], function() {
                 if(!(item instanceof Backbone.Model)) {
                     return console.error('Item', item, 'is not Backbone model');
                 }
-                var valid = selected.every(function(filter) {
+                var valid = selected.some(function(filter) {
                     return compare(item, filter);
                 });
                 if(valid) {
@@ -174,7 +175,7 @@ define(['backbone'], function() {
             if(value === true) {
                 this.applyFilters('valid');
             } else if(value === false) {
-                this.applyFilters('invalid');
+                this.applyFilters('invalid', model.get('radio'));
             }
         },
         /**
@@ -182,7 +183,7 @@ define(['backbone'], function() {
          * Original models order may be changed after any filter passing.
          * Emit 'onFiltered' event after completion with `valid`, `invalid` arguments.
          */
-        applyFilters: function(src) {
+        applyFilters: function(src, silent) {
             src = src || 'valid';
             var antiSrc = src == 'valid' ? 'invalid' : 'valid',
                 result;
@@ -205,7 +206,7 @@ define(['backbone'], function() {
             this[antiSrc] = result[antiSrc];
             this[src] = result[src];
 
-            this.trigger('onFiltered', this.valid, this.invalid);
+            !silent && this.trigger('onFiltered', this.valid, this.invalid);
         },
         setData: function(data) {
             if(!Array.isArray(data)) {
