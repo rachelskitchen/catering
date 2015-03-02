@@ -86,7 +86,10 @@ define(['backbone'], function(Backbone) {
          */
         alert: function(message, reloadPage, defaultView, options) {
             this.clearModel(); // clear model (set default values)
-            var dView = (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL) ?
+            if (options instanceof Object) {
+                for (var key in options) this.set(key, options[key]);
+            }
+            var dView = (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL || (App.skin == App.Skins.WEBORDER_MOBILE && this.get('isConfirm'))) ?
                 (defaultView === undefined) ? false : !!defaultView :
                 true;
             this.set({
@@ -94,9 +97,6 @@ define(['backbone'], function(Backbone) {
                 reloadPage: !!reloadPage || false,
                 defaultView: dView
             });
-            if (options instanceof Object) {
-                for (var key in options) this.set(key, options[key]);
-            }
             // buttons (begin)
             var btnText1 = 'OK';
             var btnText2 = 'Cancel';
