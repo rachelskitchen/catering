@@ -1317,6 +1317,19 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 payment_info.reward_card = checkout.rewardCard ? checkout.rewardCard.toString() : '';
             }
 
+            // bug #18410: "Web Orders: double customer name is displayed for the order on iPad if enter the first name with the space"
+            // before sending data to the server we remove the gaps in some values
+            if (!validationOnly) {
+                var firstName = $.trim(order.paymentInfo.cardInfo.firstName);
+                var lastName = $.trim(order.paymentInfo.cardInfo.lastName);
+                var phone = order.paymentInfo.phone;
+                order.orderInfo.call_name = firstName + ' ' + lastName + ' / ' + phone;
+                order.paymentInfo.cardInfo.firstName = firstName;
+                order.paymentInfo.cardInfo.lastName = lastName;
+                order.paymentInfo.first_name = $.trim(order.paymentInfo.first_name);
+                order.paymentInfo.last_name = $.trim(order.paymentInfo.last_name);
+            }
+
             var myorder_json = JSON.stringify(order),
                 successValidation;
             $.ajax({
