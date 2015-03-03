@@ -190,13 +190,25 @@ define(['filters'], function() {
             });
 
             it('`items` argument isn\'t passed', function() {
-                expect(filter1.applyFilter([])).toBe(emptyResult);
+                expect(filter2.applyFilter()).toBe(emptyResult);
+            });
+
+            it('`items` argument is empty array', function() {
+                expect(filter2.applyFilter([])).toEqual({
+                    valid: [],
+                    invalid: []
+                });
+            });
+
+            it('no selected filter items', function() {
+                // check when filter doesn't have selected items or items at all
+                expect(filter1.applyFilter(items)).toEqual({
+                    valid: [],
+                    invalid: items
+                });
             });
 
             it('`items` argument is passed', function() {
-                // check when filter doesn't have selected items or items at all
-                expect(filter1.applyFilter(items)).toEqual(emptyResult);
-
                 // check existing property
                 expect(filter2.applyFilter(items)).toEqual({
                     valid: [item2],
@@ -256,6 +268,7 @@ define(['filters'], function() {
 
         describe('listenToChanges()', function() {
             var filters = new App.Collections.Filters([{filterItems: [{selected: true}]}]),
+                filter = filters.at(0),
                 filterItem = filters.at(0).get('filterItems').at(0);
 
             beforeEach(function() {
@@ -264,7 +277,7 @@ define(['filters'], function() {
 
             it('changed on `true`', function() {
                 filterItem.set('selected', false);
-                expect(filters.applyFilters).toHaveBeenCalledWith('invalid');
+                expect(filters.applyFilters).toHaveBeenCalledWith('invalid', false);
             });
 
             it('changed on `false`', function() {
@@ -274,7 +287,7 @@ define(['filters'], function() {
 
             it('no parameters', function() {
                 filterItem.set('selected', false);
-                expect(filters.applyFilters).toHaveBeenCalledWith('invalid');
+                expect(filters.applyFilters).toHaveBeenCalledWith('invalid', false);
             });
         });
 
@@ -307,7 +320,8 @@ define(['filters'], function() {
                     item2 = new Backbone.Model({price: 1, cost: 3}),
                     item3 = new Backbone.Model({price: 2, cost: 2}),
                     item4 = new Backbone.Model({price: 1, cost: 2}), //true
-                    items = [item1, item2, item3, item4];
+                    items = [item1, item2, item3, item4],
+                    filters = new App.Collections.Filters([filter2, filter3]);
 
                 filters.valid = items;
                 filters.applyFilters(); // result filters.valid == [item4], filters.invalid == [item1, item2, item3]

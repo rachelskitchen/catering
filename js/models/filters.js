@@ -122,8 +122,13 @@ define(['backbone'], function() {
                 return errorResult;
             }
 
-            if(selected.length == 0 || typeof compare != 'function') {
+            if(typeof compare != 'function') {
                 return errorResult;
+            }
+
+            if(selected.length == 0) {
+                result.invalid = items;
+                return result;
             }
 
             items.forEach(function(item) {
