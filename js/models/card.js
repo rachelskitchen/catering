@@ -124,6 +124,9 @@ define(["backbone"], function(Backbone) {
             !cardPattern.test(card.cardNumber) && err.push('Card Number');
             return err;
         },
+        /**
+         * Removal of information about credit card.
+         */
         clearData: function() {
             this.empty_card_number();
             this.saveCard();
