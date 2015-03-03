@@ -1603,6 +1603,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         isBagChargeAvailable: function() {
             return this.checkout.isBagChargeAvailable();
         },
+        /**
+         * Cleaning of the cart.
+         */
         clearData: function() {
             this.empty_myorder();
             this.saveOrders();
