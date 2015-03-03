@@ -126,6 +126,8 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         /**
          * Hide user notification.
+         *
+         * @param {number} id Type of user notification (1 - default alert message; 2 - custom alert message).
          */
         hideAlertMessage: function(id) {
             var func1 = function() {
