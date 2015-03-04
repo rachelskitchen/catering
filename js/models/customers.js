@@ -196,17 +196,14 @@ define(["backbone", "geopoint"], function(Backbone) {
                         if(settings.max_delivery_distance >= dist) {
                             return success();
                         } else {
-                            error(MSG.ERROR_DELIVERY_EXCEEDED); // user notification
-                            return;
+                            return error(MSG.ERROR_DELIVERY_EXCEEDED); // user notification
                         }
                     } else {
-                        error(MSG.ERROR_DELIVERY_ADDRESS); // user notification
-                        return;
+                        return error(MSG.ERROR_DELIVERY_ADDRESS); // user notification
                     }
                 });
             } catch(e) {
-                error(MSG.ERROR_DELIVERY_ADDRESS); // user notification
-                return;
+                return error(MSG.ERROR_DELIVERY_ADDRESS); // user notification
             }
         },
         get_shipping_services: function() {

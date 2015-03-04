@@ -420,14 +420,6 @@ function template_helper2(name) {
     return _.template($('#' + name).html());
 }
 /**
- * Generate the random number.
- */
-function generate_random_number(min, max) {
-    var rand = min + Math.random() * (max + 1 - min);
-    rand = rand ^ 0;
-    return rand;
-}
-/**
  * Rounding monetary currency.
  */
 function round_monetary_currency(value, precision, up) {

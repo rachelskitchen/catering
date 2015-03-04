@@ -25,7 +25,6 @@ define(['backbone'], function(Backbone) {
 
     App.Models.Errors = Backbone.Model.extend({
         defaults: {
-            randomNumber: 0,
             message: 'No alert message',
             reloadPage: false,
             errorServer: false,
@@ -38,29 +37,11 @@ define(['backbone'], function(Backbone) {
                 cancelHide: false
             }
         },
-        initialize: function() {
-            this.on('change:randomNumber', function(model) {
-                model.trigger('alertMessage');
-            }, this);
-        },
-        /**
-         * Generate a random number.
-         *
-         * @return {number} a random number from 1 to 1000000.
-         */
-        random: function() {
-            return generate_random_number(1, 1000000); // generate the random number
-        },
         /**
          * Clear model (set default values).
          */
         clearModel: function() {
-            this.set('message', this.defaults.message);
-            this.set('reloadPage', this.defaults.reloadPage);
-            this.set('errorServer', this.defaults.errorServer);
-            this.set('typeIcon', this.defaults.typeIcon);
-            this.set('isConfirm', this.defaults.isConfirm);
-            this.set('confirm', this.defaults.confirm);
+            this.set(this.defaults);
             var options = ['template', 'callback'];
             for (var i = 0; i < options.length; i++) {
                 this.unset(options[i]);
@@ -86,9 +67,7 @@ define(['backbone'], function(Backbone) {
          */
         alert: function(message, reloadPage, defaultView, options) {
             this.clearModel(); // clear model (set default values)
-            if (options instanceof Object) {
-                for (var key in options) this.set(key, options[key]);
-            }
+            if (options instanceof Object) this.set(options);
             var dView = (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL || (App.skin == App.Skins.WEBORDER_MOBILE && this.get('isConfirm'))) ?
                 (defaultView === undefined) ? false : !!defaultView :
                 true;
@@ -98,17 +77,19 @@ define(['backbone'], function(Backbone) {
                 defaultView: dView
             });
             // buttons (begin)
-            var btnText1 = 'OK';
-            var btnText2 = 'Cancel';
+            var btnText1 = this.defaults.confirm.ok;
+            var btnText2 = this.defaults.confirm.cancel;
             if (this.get('isConfirm')) {
                 var confirm = this.get('confirm');
                 if (confirm.ok) btnText1 = confirm.ok;
                 if (confirm.cancel) btnText2 = confirm.cancel;
             }
-            this.set('btnText1', btnText1);
-            this.set('btnText2', btnText2);
+            this.set({
+                btnText1: btnText1,
+                btnText2: btnText2
+            });
             // buttons (end)
-            this.set('randomNumber', this.random()); // generate a random number
+            this.trigger('alertMessage');
         }
     });
 });

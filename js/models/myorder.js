@@ -963,8 +963,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     check_checkout = checkout.check();
 
                 if (check_checkout.status === 'ERROR') {
-                    error(check_checkout.errorMsg); // user notification
-                    return;
+                    return error(check_checkout.errorMsg); // user notification
                 } else if (check_checkout.status === 'ERROR_EMPTY_FIELDS') {
                     fields = fields.concat(check_checkout.errorList);
                 }
@@ -975,7 +974,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
                 if (check_order.status === 'ERROR_QUANTITY') {
                     if (!arguments[2]) { // if we don't set error callback, use usuall two button alert message or if we on the first page
-                        App.Data.errors.alert(check_order.errorMsg, false, false, {
+                        return errors(check_order.errorMsg, false, false, {
                             isConfirm: true,
                             confirm: {
                                 ok: 'Ok',
@@ -987,13 +986,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                             }
                         }); // user notification
                     } else {
-                        error(check_order.errorMsg); // user notification
-                        return;
+                        return error(check_order.errorMsg); // user notification
                     }
                 }
                 if (check_order.status !== 'OK') {
-                    error(check_order.errorMsg); // user notification
-                    return;
+                    return error(check_order.errorMsg); // user notification
                 }
             }
 
@@ -1013,11 +1010,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             if (fields.length) {
-                error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, fields.join(', '))); // user notification
-                return;
+                return error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, fields.join(', '))); // user notification
             } else if (errorMsg) {
-                error(errorMsg); // user notification
-                return;
+                return error(errorMsg); // user notification
             } else if (options.customer && dining_option === 'DINING_OPTION_DELIVERY') {
                 customer.validate_address(_success.bind(this), error);
             } else {
