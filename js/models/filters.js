@@ -100,6 +100,9 @@ define(['backbone'], function() {
 
             return Backbone.Model.prototype.initialize.apply(this, arguments);
         },
+        /**
+         * Trigger 'change:selected' event when any filter item is selected/unselected
+         */
         onChanged: function(model, value) {
             this.trigger('change:selected', this, value);
         },
@@ -108,7 +111,7 @@ define(['backbone'], function() {
          */
         applyFilter: function(items) {
             var errorResult = null,
-                selected = this.get('filterItems').where({selected: true}),
+                selected = this.getSelected(),
                 compare = this.get('compare'),
                 result;
 
@@ -128,6 +131,9 @@ define(['backbone'], function() {
 
             if(selected.length == 0) {
                 result.invalid = items;
+                items.forEach(function(item) {
+                    item.set('filterResult', false);
+                });
                 return result;
             }
 
@@ -149,6 +155,9 @@ define(['backbone'], function() {
 
             return result;
         },
+        /**
+         * Set attributes values from simple object (including nested filter items)
+         */
         setData: function(data) {
             if(!(data instanceof Object)) {
                 return;
@@ -161,10 +170,19 @@ define(['backbone'], function() {
                 }
             }
         },
+        /**
+         * Get attributes values as simple object (including nested filter items)
+         */
         getData: function() {
             var data = this.toJSON();
             data.filterItems = this.get('filterItems').toJSON();
             return data;
+        },
+        /**
+         * Return array of selected filter items
+         */
+        getSelected: function() {
+            return this.get('filterItems').where({selected: true});
         }
     });
 
@@ -190,23 +208,46 @@ define(['backbone'], function() {
          */
         applyFilters: function(src, silent) {
             src = src || 'valid';
+
+            // if need check only valid items and it's empty array
+            // then need start checking invalid
+            if(src == 'valid' && !this.valid.length && this.invalid.length) {
+                this.valid = this.invalid;
+                this.invalid = [];
+            }
+
             var antiSrc = src == 'valid' ? 'invalid' : 'valid',
-                result;
+                filters = this.models,
+                valid = this.valid,
+                invalid = this.invalid,
+                result = {valid: valid, invalid: invalid};
 
             if(!this.length) {
                 return;
             }
 
-            result = this.reduce(function(result, filter) {
-                var iterResult = filter.applyFilter(result[src]);
+            for(var ind = 0, length = filters.length; ind < length; ind++) {
+                if(!filters[ind].getSelected().length) {
+                    result.valid = [];
+                    result.invalid = valid.concat(invalid);
+                    result.invalid.forEach(function(item) {
+                        item.set('filterResult', false);
+                    });
+                    break;
+                }
+                applyFilter(filters[ind]);
+            }
 
+            function applyFilter(filter) {
+                var _result = _.extend({}, result),
+                    iterResult = filter.applyFilter(result[src]);
                 if(iterResult) {
                     iterResult[antiSrc].push.apply(iterResult[antiSrc], result[antiSrc]);
-                    return iterResult;
+                    result = iterResult
                 } else {
-                    return result;
+                    result = _result;
                 }
-            }, {valid: this.valid, invalid: this.invalid});
+            }
 
             this[antiSrc] = result[antiSrc];
             this[src] = result[src];
