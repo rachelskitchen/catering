@@ -1313,19 +1313,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 payment_info.reward_card = checkout.rewardCard ? checkout.rewardCard.toString() : '';
             }
 
-            // bug #18410: "Web Orders: double customer name is displayed for the order on iPad if enter the first name with the space"
-            // before sending data to the server we remove the gaps in some values
-            if (!validationOnly) {
-                var firstName = $.trim(order.paymentInfo.cardInfo.firstName);
-                var lastName = $.trim(order.paymentInfo.cardInfo.lastName);
-                var phone = order.paymentInfo.phone;
-                order.orderInfo.call_name = firstName + ' ' + lastName + ' / ' + phone;
-                order.paymentInfo.cardInfo.firstName = firstName;
-                order.paymentInfo.cardInfo.lastName = lastName;
-                order.paymentInfo.first_name = $.trim(order.paymentInfo.first_name);
-                order.paymentInfo.last_name = $.trim(order.paymentInfo.last_name);
-            }
-
             var myorder_json = JSON.stringify(order),
                 successValidation;
             $.ajax({
@@ -1447,9 +1434,17 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             return call_name;
         },
         getCustomerData: function() {
+            // bug #18410: "Web Orders: double customer name is displayed for the order on iPad if enter the first name with the space"
+            // before sending data to the server we remove the gaps in some values
+            var customerModel = App.Data.customer;
+            customerModel.set({
+                first_name: Backbone.$.trim( customerModel.get('first_name') ),
+                last_name: Backbone.$.trim( customerModel.get('last_name') )
+            });
+            
             var checkout = this.checkout.toJSON(),
-                customer = App.Data.customer.toJSON(),
-                contactName = $.trim(customer.first_name + ' ' + customer.last_name),
+                customer = customerModel.toJSON(),
+                contactName = customer.first_name + ' ' + customer.last_name,
                 call_name = [],
                 payment_info = {};
 
