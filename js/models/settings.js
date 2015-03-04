@@ -57,7 +57,7 @@ define(["backbone", "async"], function(Backbone) {
                 routing: {
                     errors: {
                         cssCore: [],
-                        templatesCore: ['errors']
+                        templatesCore: ['errors_core']
                     },
                     establishments: {
                         cssCore: ['establishments'],
