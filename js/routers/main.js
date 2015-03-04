@@ -304,6 +304,11 @@ define(["backbone", "factory"], function(Backbone) {
 
             return load;
         },
+        /**
+         * Handler of a payment response.
+         *
+         * @param {function} cb Function callback.
+         */
         initPaymentResponseHandler: function(cb) {
             var myorder = App.Data.myorder;
             this.listenTo(myorder, 'paymentResponse', function() {
@@ -312,9 +317,15 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.settings.usaepayBack = true;
                 App.Data.get_parameters = parse_get_params();
 
-                if(myorder.paymentResponse.status.toLowerCase() == 'ok') {
-                    myorder.clearData();
-                    card && card.clearData();
+                var status = myorder.paymentResponse.status.toLowerCase();
+                switch (status) {
+                    case 'ok':
+                        myorder.clearData(); // cleaning of the cart
+                        card && card.clearData(); // removal of information about credit card
+                        break;
+                    case 'error':
+                        card && card.clearData(); // removal of information about credit card
+                        break;
                 }
 
                 typeof cb == 'function' && cb();
