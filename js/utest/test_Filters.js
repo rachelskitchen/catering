@@ -206,6 +206,9 @@ define(['filters'], function() {
                     valid: [],
                     invalid: items
                 });
+                expect(items[0].get('filterResult')).toBe(false);
+                expect(items[1].get('filterResult')).toBe(false);
+                expect(items[2].get('filterResult')).toBe(false);
             });
 
             it('`items` argument is passed', function() {
@@ -245,6 +248,17 @@ define(['filters'], function() {
             var result = filter3.toJSON();
             result.filterItems = result.filterItems.toJSON();
             expect(filter3.getData()).toEqual(result);
+        });
+
+        it('getSelected()', function() {
+            var item1 = new App.Models.FilterItem({selected: false}),
+                item2 = new App.Models.FilterItem({selected: true}),
+                item3 = new App.Models.FilterItem({selected: false}),
+                filter = new App.Models.Filter({filterItems: [item1, item2, item3]});
+
+            expect(filter.getSelected()).toEqual([item2]);
+            item2.set('selected', false);
+            expect(filter.getSelected()).toEqual([]);
         });
     });
 
@@ -337,16 +351,17 @@ define(['filters'], function() {
 
                 // reset one filter
                 var selected = filter2.get('filterItems').where({selected: true})[0];
-                selected.set('selected', false); // result filters.valid == [item3, item4], filters.invalid == [item1, item2]
+                selected.set('selected', false); // result filters.valid == [], filters.invalid == [item1, item2, item3, item4]
 
                 expect(filters.invalid.indexOf(item1)).toBeGreaterThan(-1);
                 expect(filters.invalid.indexOf(item2)).toBeGreaterThan(-1);
-                expect(filters.valid.indexOf(item3)).toBeGreaterThan(-1);
-                expect(filters.valid.indexOf(item4)).toBeGreaterThan(-1);
+                expect(filters.invalid.indexOf(item3)).toBeGreaterThan(-1);
+                expect(filters.invalid.indexOf(item4)).toBeGreaterThan(-1);
+                expect(filters.valid.length).toBe(0);
                 expect(item1.get('filterResult')).toBe(false);
                 expect(item2.get('filterResult')).toBe(false);
-                expect(item3.get('filterResult')).toBe(true);
-                expect(item4.get('filterResult')).toBe(true);
+                expect(item3.get('filterResult')).toBe(false);
+                expect(item4.get('filterResult')).toBe(false);
 
                 // apply one filter
                 selected.set('selected', true); // result filters.valid == [item4], filters.invalid == [item1, item2, item3]
@@ -355,6 +370,10 @@ define(['filters'], function() {
                 expect(filters.invalid.indexOf(item2)).toBeGreaterThan(-1);
                 expect(filters.invalid.indexOf(item3)).toBeGreaterThan(-1);
                 expect(filters.valid.indexOf(item4)).toBeGreaterThan(-1);
+                expect(item1.get('filterResult')).toBe(false);
+                expect(item2.get('filterResult')).toBe(false);
+                expect(item3.get('filterResult')).toBe(false);
+                expect(item4.get('filterResult')).toBe(true);
 
                 // 'onFiltered' event
                 spyOn(filters, 'trigger');
