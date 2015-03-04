@@ -35,7 +35,7 @@ define(['products'], function() {
                 results = new App.Collections.Products;
 
             results.onProductsError = function() {
-                App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT);
+                App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT); // user notification
                 load.resolve();
             }
 

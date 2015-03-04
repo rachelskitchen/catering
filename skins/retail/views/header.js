@@ -93,7 +93,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.$('.search').get(0).reset();
             var products = result.get('products');
             if(!products || products.length == 0)
-                App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT);
+                App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT); // user notification
         },
         searchStart: function() {
             // reset selections in App.Data.categories

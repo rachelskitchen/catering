@@ -78,10 +78,10 @@ define(["myorder_view"], function(myorder_view) {
 
                     $('#popup .cancel').trigger('click');
                 }, function(errorMsg) {
-                    App.Data.errors.alert(errorMsg);
+                    App.Data.errors.alert(errorMsg); // user notification
                 });
             } else {
-                App.Data.errors.alert(check.errorMsg);
+                App.Data.errors.alert(check.errorMsg); // user notification
             }
         },
         check: function () {
@@ -100,10 +100,10 @@ define(["myorder_view"], function(myorder_view) {
 
                     $('#popup .cancel').trigger('click');
                 }, function(errorMsg) {
-                    App.Data.errors.alert(errorMsg);
+                    App.Data.errors.alert(errorMsg); // user notification
                 });
             } else {
-                App.Data.errors.alert(check.errorMsg);
+                App.Data.errors.alert(check.errorMsg); // user notification
             }
         },
         renderModifiers: function() {
