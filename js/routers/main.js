@@ -232,7 +232,7 @@ define(["backbone", "factory"], function(Backbone) {
             for(i = 0, j = views.length; i < j; i++)
                 js.push(skin + "/views/" + views[i]);
 
-            for(i = 0, j = css.length; i < j; i++)
+            for (i = 0, j = css.length; i < j; i++)
                 this.skinCSS.push(loadCSS(skinPath + '/css/' + css[i], loadModelCSS));
 
             for(i = 0, j = models.length; i < j; i++)
@@ -304,6 +304,11 @@ define(["backbone", "factory"], function(Backbone) {
 
             return load;
         },
+        /**
+         * Handler of a payment response.
+         *
+         * @param {function} cb Function callback.
+         */
         initPaymentResponseHandler: function(cb) {
             var myorder = App.Data.myorder;
             this.listenTo(myorder, 'paymentResponse', function() {
@@ -312,9 +317,15 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.settings.usaepayBack = true;
                 App.Data.get_parameters = parse_get_params();
 
-                if(myorder.paymentResponse.status.toLowerCase() == 'ok') {
-                    myorder.clearData();
-                    card && card.clearData();
+                var status = myorder.paymentResponse.status.toLowerCase();
+                switch (status) {
+                    case 'ok':
+                        myorder.clearData(); // cleaning of the cart
+                        card && card.clearData(); // removal of information about credit card
+                        break;
+                    case 'error':
+                        card && card.clearData(); // removal of information about credit card
+                        break;
                 }
 
                 typeof cb == 'function' && cb();
@@ -445,6 +456,20 @@ define(["backbone", "factory"], function(Backbone) {
                 }, this);
             }
             return true;
+        },
+        /**
+        * User notification.
+        */
+        alertMessage: function() {
+            var errors = App.Data.errors;
+            App.Routers.MainRouter.prototype.prepare('errors', function() {
+                var view = App.Views.GeneratorView.create('CoreErrors', {
+                    mod: 'Main',
+                    model: errors
+                }, 'ContentErrorsCore'); // generation of view
+                Backbone.$('body').append(view.el);
+                errors.trigger('showAlertMessage'); // user notification
+            });
         }
     });
 
@@ -509,7 +534,7 @@ define(["backbone", "factory"], function(Backbone) {
             });
 
             function creditCardValidationAlert(result) {
-                App.Data.errors.alert(result.errorMsg);
+                App.Data.errors.alert(result.errorMsg); // user notification
             }
         },
         loyalty: function(header, footer) {
@@ -655,7 +680,9 @@ define(["backbone", "factory"], function(Backbone) {
                     success = RevelAPI.saveProfile.bind(RevelAPI, RevelAPI.trigger.bind(RevelAPI, 'onPayWithSavedCreditCard')),
                     fail = function() {
                         self.navigate('profile/1', true);
-                        RevelAPI.processPaymentInfo(null, function(result) {App.Data.errors.alert(result.errorMsg);});
+                        RevelAPI.processPaymentInfo(null, function(result) {
+                            App.Data.errors.alert(result.errorMsg); // user notification
+                        });
                     };
 
                 profileSaveCallback = RevelAPI.trigger.bind(RevelAPI, 'onPayWithSavedCreditCard');

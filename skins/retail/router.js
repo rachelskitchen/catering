@@ -150,7 +150,7 @@ define(["main_router"], function(main_router) {
 
             this.listenTo(App.Data.myorder, "paymentFailed cancelPayment", function(message) {
                 App.Data.mainModel.trigger('loadCompleted');
-                message && App.Data.errors.alert(message);
+                message && App.Data.errors.alert(message); // user notification
             }, this);
 
             var checkout = App.Data.myorder.checkout;
@@ -159,7 +159,7 @@ define(["main_router"], function(main_router) {
             this.on('route', function() {
                 // can be called when App.Data.mainModel is not initializd yet ('back' btn in browser history control)
                 App.Data.mainModel && App.Data.mainModel.trigger('onRoute');
-                App.Data.errors.hide();
+                App.Data.errors.trigger('hideAlertMessage'); // hide user notification
             });
 
             App.Routers.MainRouter.prototype.initialize.apply(this, arguments);

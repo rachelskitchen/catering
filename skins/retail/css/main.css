@@ -825,7 +825,7 @@ section.maintenance .back {
 }
 /* End confirm page */
 
-/* for alert message */
+/* user notification (begin) */
 #alert {
     position: absolute;
     top: 0;
@@ -922,6 +922,8 @@ section.maintenance .back {
     padding: 0px 20px 0px 20px;
     font-size: 24px;
 }
+/* user notification (end) */
+
 /* start input beauty */
 .input_beauty {
     position: absolute;

@@ -184,11 +184,12 @@ define(["backbone", "card", "customers"], function(Backbone) {
             }
         },
         listenToErrorCode: function() {
-            var errorCode = this.get('errorCode');
+            var errorCode = this.get('errorCode'),
+                errors = App.Data.errors;
 
             switch(this.get('errorCode')) {
                 case REVEL_API_ERROR_CODES.AUTHENTICATION_FAILED:
-                    App.Data.errors.alert(MSG.ERROR_REVEL_AUTHENTICATION_FAILED);
+                    errors.alert(MSG.ERROR_REVEL_AUTHENTICATION_FAILED); // user notification
                     this.pendingRequests.shift(); // remove authentication request from pending
                     this.trigger('onAuthenticate');
                     break;
@@ -199,22 +200,22 @@ define(["backbone", "card", "customers"], function(Backbone) {
 
                 case REVEL_API_ERROR_CODES.USER_ALREADY_EXISTS:
                     this.clearRequests();
-                    App.Data.errors.alert(MSG.ERROR_REVEL_USER_EXISTS.replace('%s', this.getUsername() || ''));
+                    errors.alert(MSG.ERROR_REVEL_USER_EXISTS.replace('%s', this.getUsername() || '')); // user notification
                     break;
 
                 case REVEL_API_ERROR_CODES.INTERNAL_ERROR:
-                    App.Data.errors.alert(MSG.ERROR_REVEL_UNABLE_TO_PERFORM);
+                    errors.alert(MSG.ERROR_REVEL_UNABLE_TO_PERFORM); // user notification
                     this.clearRequests();
                     break;
 
                 case REVEL_API_ERROR_CODES.MAX_NUM_AUTH_ATTEMPTS_EXCEDEED:
                     this.set('profileExists', null);
                     this.trigger('onAuthenticationCancel');
-                    App.Data.errors.alert(MSG.ERROR_REVEL_ATTEMPTS_EXCEEDED);
+                    errors.alert(MSG.ERROR_REVEL_ATTEMPTS_EXCEEDED); // user notification
                     break;
 
                 case REVEL_API_ERROR_CODES.PASSWORD_UPDATE_FAILED:
-                    App.Data.errors.alert(MSG.ERROR_REVEL_PASSWORD_UPDATE_FAILED);
+                    errors.alert(MSG.ERROR_REVEL_PASSWORD_UPDATE_FAILED); // user notification
                     this.clearRequests();
                     break;
 
@@ -303,12 +304,13 @@ define(["backbone", "card", "customers"], function(Backbone) {
             }
 
             // alerts regarding to password validation
+            var errors = App.Data.errors;
             if((!profileExists && !newPassword) || (!newPassword && oldPassword && profileExists)) {
-                App.Data.errors.alert(MSG.ERROR_REVEL_EMPTY_NEW_PASSWORD);
+                errors.alert(MSG.ERROR_REVEL_EMPTY_NEW_PASSWORD); // user notification
             } else if(newPassword && !oldPassword && profileExists) {
-                App.Data.errors.alert(MSG.ERROR_REVEL_EMPTY_OLD_PASSWORD);
+                errors.alert(MSG.ERROR_REVEL_EMPTY_OLD_PASSWORD); // user notification
             } else if (newPassword !== repeatPassword) {
-                App.Data.errors.alert(MSG.ERROR_REVEL_NOT_MATCH_PASSWORDS);
+                errors.alert(MSG.ERROR_REVEL_NOT_MATCH_PASSWORDS); // user notification
             }
 
             function saveData() {
@@ -374,7 +376,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             if(result && /ok/i.test(result.status)) {
                 typeof cb == 'function' && cb();
             } else {
-                App.Data.errors.alert(result.errorMsg);
+                App.Data.errors.alert(result.errorMsg); // user notification
             }
         },
         processPaymentInfo: function(success, fail) {

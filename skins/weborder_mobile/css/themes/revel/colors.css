@@ -27,10 +27,8 @@ body {
 .modifiers-bottom-line:before {
     border-color: #2699ca;
 }
-#popup_content {
-    background-position: 1.5em 1em;
-    background: transparent !important;
-}
+
+/* user notification (begin) */
 #popup_content:before {
     color: #3f7ca4;
     text-shadow: 0 0 1px #3f7ca4;
@@ -43,6 +41,8 @@ body {
 #popup_panel input:active {
     box-shadow: none;
 }
+/* user notification (end) */
+
 #footer {
     border-top-color: #000;
     background-image: linear-gradient(bottom, #000000 0%, #232323 60%, #2f2f2f 70%, #4d4d4d 100%);

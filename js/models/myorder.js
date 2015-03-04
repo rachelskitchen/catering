@@ -602,14 +602,15 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     index = 0;
                 App.Settings.email && mess.push(App.Settings.email);
                 App.Settings.phone && mess.push(App.Settings.phone);
+                var errors = App.Data.errors;
                 if (mess.length) {
-                    App.Data.errors.alert(MSG.ERROR_HAS_OCCURRED_WITH_CONTACT.replace(/%([^%]*)%/g, function(match, group) {
+                    errors.alert(MSG.ERROR_HAS_OCCURRED_WITH_CONTACT.replace(/%([^%]*)%/g, function(match, group) {
                         var data = mess[index];
                         index ++;
                         return data ? '<br>' + group + data + ',' : '';
-                    }).replace(/,$/, ''));
+                    }).replace(/,$/, '')); // user notification
                 } else {
-                    App.Data.errors.alert(MSG.ERROR_HAS_OCCURRED);
+                    errors.alert(MSG.ERROR_HAS_OCCURRED); // user notification
                 }
             }
         },
@@ -929,7 +930,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          * error - callback or alert if checked is ERROR
          */
         check_order: function(options, success, error) {
-            error = error || App.Data.errors.alert.bind(App.Data.errors);
+            error = error || App.Data.errors.alert.bind(App.Data.errors); // user notification
             var fields = [],
                 errorMsg = '',
                 self = this,
@@ -962,7 +963,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     check_checkout = checkout.check();
 
                 if (check_checkout.status === 'ERROR') {
-                    return error(check_checkout.errorMsg);
+                    return error(check_checkout.errorMsg); // user notification
                 } else if (check_checkout.status === 'ERROR_EMPTY_FIELDS') {
                     fields = fields.concat(check_checkout.errorList);
                 }
@@ -973,26 +974,23 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
                 if (check_order.status === 'ERROR_QUANTITY') {
                     if (!arguments[2]) { // if we don't set error callback, use usuall two button alert message or if we on the first page
-                        return alert_message({
-                            message: check_order.errorMsg,
-                            is_confirm: true,
+                        return errors(check_order.errorMsg, false, false, {
+                            isConfirm: true,
                             confirm: {
-                                cancel: 'Add Items',
                                 ok: 'Ok',
-                                cancel_hide: options.first_page
+                                cancel: 'Add Items',
+                                cancelHide: options.first_page
                             },
                             callback: function(result) {
-                                if(!result) {
-                                    App.Data.router.navigate('index', true);
-                                }
+                                if (!result) App.Data.router.navigate('index', true);
                             }
-                        });
+                        }); // user notification
                     } else {
-                        return error(check_order.errorMsg);
+                        return error(check_order.errorMsg); // user notification
                     }
                 }
                 if (check_order.status !== 'OK') {
-                    return error(check_order.errorMsg);
+                    return error(check_order.errorMsg); // user notification
                 }
             }
 
@@ -1012,9 +1010,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             if (fields.length) {
-                return error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, fields.join(', ')));
+                return error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, fields.join(', '))); // user notification
             } else if (errorMsg) {
-                return error(errorMsg);
+                return error(errorMsg); // user notification
             } else if (options.customer && dining_option === 'DINING_OPTION_DELIVERY') {
                 customer.validate_address(_success.bind(this), error);
             } else {
@@ -1069,7 +1067,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if (App.skin != App.Skins.RETAIL && (!pickup || !App.Data.timetables.checking_work_shop(pickup, delivery)) ) { //pickup may be null or string
                     this.trigger('cancelPayment');
                     delete this.paymentInProgress;
-                    App.Data.errors.alert(MSG.ERROR_STORE_IS_CLOSED);
+                    App.Data.errors.alert(MSG.ERROR_STORE_IS_CLOSED); // user notification
                     return 0;
                 }
 
@@ -1199,9 +1197,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             });
 
             function reportErrorFrm(message) {
-                if (is_apply_discount) {
-                    App.Data.errors.alert(message);
-                }
+                if (is_apply_discount) App.Data.errors.alert(message); // user notification
             }
         },
         process_discounts: function(json) {
@@ -1419,7 +1415,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     myorder.trigger('paymentResponse');
                 } else {
                     myorder.trigger('paymentFailed');
-                    App.Data.errors.alert_red(message);
+                    App.Data.errors.alert(message, false, false, {
+                        errorServer: true,
+                        typeIcon: 'warning'
+                    }); // user notification
                 }
             }
 
@@ -1616,6 +1615,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         isBagChargeAvailable: function() {
             return this.checkout.isBagChargeAvailable();
         },
+        /**
+         * Cleaning of the cart.
+         */
         clearData: function() {
             this.empty_myorder();
             this.saveOrders();
