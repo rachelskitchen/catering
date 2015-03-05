@@ -476,7 +476,7 @@ footer {
 .popup.ui-visible {
     opacity: 1;
     filter: alpha(opacity=100);
-    z-index: 10002;
+    z-index: 1000;
 }
 .popoup_align {
     display: inline-block;
