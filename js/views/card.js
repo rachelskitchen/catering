@@ -116,6 +116,25 @@ define(["backbone", "factory"], function(Backbone) {
                     return g1 ? g1.toUpperCase() : ' ' + g2.toUpperCase();
                 });
                 this.value = new_value;
+
+                var isGapsLeft = false;
+                if (new_value.charCodeAt(0) == 32) { // if gaps at the beginning of the line then save length of line
+                    isGapsLeft = true;
+                    var lWithoutTrim = new_value.length;
+                }
+                if ( ~this.className.indexOf('first_name') ) {
+                    self.model.set('firstName', new_value);
+                    new_value = self.model.get('firstName');
+                } else {
+                    self.model.set('secondName', new_value);
+                    new_value = self.model.get('secondName');
+                }
+                if (isGapsLeft) {
+                    var lWithTrim = new_value.length,
+                        offset = lWithoutTrim - lWithTrim;
+                    start -= offset, end -= offset;
+                }
+
                 try {
                     event.target.setSelectionRange(start, end, direction);
                 } catch(e) {}
