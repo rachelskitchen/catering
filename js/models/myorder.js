@@ -1434,16 +1434,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             return call_name;
         },
         getCustomerData: function() {
-            // bug #18410: "Web Orders: double customer name is displayed for the order on iPad if enter the first name with the space"
-            // before sending data to the server we remove the gaps in some values
-            var customerModel = App.Data.customer;
-            customerModel.set({
-                first_name: Backbone.$.trim( customerModel.get('first_name') ),
-                last_name: Backbone.$.trim( customerModel.get('last_name') )
-            });
-            
             var checkout = this.checkout.toJSON(),
-                customer = customerModel.toJSON(),
+                customer = App.Data.customer.toJSON(),
                 contactName = customer.first_name + ' ' + customer.last_name,
                 call_name = [],
                 payment_info = {};
