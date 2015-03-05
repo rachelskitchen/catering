@@ -47,6 +47,18 @@ define(["backbone", "geopoint"], function(Backbone) {
         },
         initialize: function() {
             this.syncWithRevelAPI();
+            this.listenTo(this, 'change:first_name', function() {
+                var firstName = this.get('first_name');
+                (typeof(firstName) == 'string') ?
+                    this.set('first_name', Backbone.$.trim(firstName)) :
+                    this.set('first_name', this.defaults.first_name);
+            }, this);
+            this.listenTo(this, 'change:last_name', function() {
+                var lastName = this.get('last_name');
+                (typeof(lastName) == 'string') ?
+                    this.set('last_name', Backbone.$.trim(lastName)) :
+                    this.set('last_name', this.defaults.last_name);
+            }, this);
         },
         /**
          * Get customer name in the format "Smith M.".
@@ -57,9 +69,9 @@ define(["backbone", "geopoint"], function(Backbone) {
 
             first_name = typeof first_name == 'string' && first_name.length ? first_name : '';
             last_name = typeof last_name == 'string' && last_name.length ? last_name : '';
-            last_name = last_name.trim().replace(/(\w).*/, function(m, g) {return ' ' + g + '.';});
+            last_name = last_name.replace(/(\w).*/, function(m, g) {return ' ' + g + '.';});
 
-            return (first_name + last_name).trim();
+            return (first_name + last_name);
         },
         saveCustomer: function() {
             setData('customer', this);
