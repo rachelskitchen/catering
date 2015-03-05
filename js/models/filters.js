@@ -195,10 +195,12 @@ define(['backbone'], function() {
             Backbone.Collection.prototype.initialize.apply(this, arguments);
         },
         listenToChanges: function(model, value) {
+            // if `selected` changed on `true` need check invalid items because a new valid condition is added that affects only invalid items
+            // if `selected` changed on `false` need check valid items because one valid condition is removed that affects only valid items
             if(value === true) {
-                this.applyFilters('valid');
+                this.applyFilters('invalid');
             } else if(value === false) {
-                this.applyFilters('invalid', model.get('radio'));
+                this.applyFilters('valid', model.get('radio'));
             }
         },
         /**
@@ -207,20 +209,16 @@ define(['backbone'], function() {
          * Emit 'onFiltered' event after completion with `valid`, `invalid` arguments.
          */
         applyFilters: function(src, silent) {
-            src = src || 'valid';
-
-            // if need check only valid items and it's empty array
-            // then need start checking invalid
-            if(src == 'valid' && !this.valid.length && this.invalid.length) {
-                this.valid = this.invalid;
-                this.invalid = [];
-            }
+            src = src || 'invalid';
 
             var antiSrc = src == 'valid' ? 'invalid' : 'valid',
                 filters = this.models,
                 valid = this.valid,
                 invalid = this.invalid,
-                result = {valid: valid, invalid: invalid};
+                result = {
+                    valid: (src == 'valid' ? valid : invalid),
+                    invalid: []
+                };
 
             if(!this.length) {
                 return;
@@ -235,21 +233,18 @@ define(['backbone'], function() {
                     });
                     break;
                 }
-                applyFilter(filters[ind]);
+                applyFilter(filters[ind], result.valid);
             }
 
-            function applyFilter(filter) {
-                var _result = _.extend({}, result),
-                    iterResult = filter.applyFilter(result[src]);
+            function applyFilter(filter, data) {
+                var iterResult = filter.applyFilter(data);
                 if(iterResult) {
-                    iterResult[antiSrc].push.apply(iterResult[antiSrc], result[antiSrc]);
-                    result = iterResult
-                } else {
-                    result = _result;
+                    result.invalid.push.apply(result.invalid, iterResult.invalid);
+                    result.valid = iterResult.valid;
                 }
             }
 
-            this[antiSrc] = result[antiSrc];
+            this[antiSrc].push.apply(this[antiSrc], result[antiSrc]);
             this[src] = result[src];
 
             !silent && this.trigger('onFiltered', this.valid, this.invalid);
