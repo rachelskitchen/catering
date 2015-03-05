@@ -117,6 +117,7 @@ define(["backbone", "factory"], function(Backbone) {
                 });
                 this.value = new_value;
 
+                // bug #18410: "Web Orders: double customer name is displayed for the order on iPad if enter the first name with the space"
                 var isGapsLeft = false;
                 if (new_value.charCodeAt(0) == 32) { // if gaps at the beginning of the line then save length of line
                     isGapsLeft = true;
@@ -124,10 +125,10 @@ define(["backbone", "factory"], function(Backbone) {
                 }
                 if ( ~this.className.indexOf('first_name') ) {
                     self.model.set('firstName', new_value);
-                    new_value = self.model.get('firstName');
+                    new_value = self.model.get('firstName'); // get a new value that it was trimmed at model
                 } else {
                     self.model.set('secondName', new_value);
-                    new_value = self.model.get('secondName');
+                    new_value = self.model.get('secondName'); // get a new value that it was trimmed at model
                 }
                 if (isGapsLeft) {
                     var lWithTrim = new_value.length,
