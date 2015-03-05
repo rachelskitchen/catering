@@ -282,7 +282,6 @@ define(['filters'], function() {
 
         describe('listenToChanges()', function() {
             var filters = new App.Collections.Filters([{filterItems: [{selected: true}]}]),
-                filter = filters.at(0),
                 filterItem = filters.at(0).get('filterItems').at(0);
 
             beforeEach(function() {
@@ -291,17 +290,17 @@ define(['filters'], function() {
 
             it('changed on `true`', function() {
                 filterItem.set('selected', false);
-                expect(filters.applyFilters).toHaveBeenCalledWith('invalid', false);
+                expect(filters.applyFilters).toHaveBeenCalledWith('valid', false);
             });
 
             it('changed on `false`', function() {
                 filterItem.set('selected', true);
-                expect(filters.applyFilters).toHaveBeenCalledWith('valid');
+                expect(filters.applyFilters).toHaveBeenCalledWith('invalid');
             });
 
             it('no parameters', function() {
                 filterItem.set('selected', false);
-                expect(filters.applyFilters).toHaveBeenCalledWith('invalid', false);
+                expect(filters.applyFilters).toHaveBeenCalledWith('valid', false);
             });
         });
 
@@ -329,7 +328,7 @@ define(['filters'], function() {
                 expect(filters.invalid).toEqual([]);
             });
 
-            it('filters length > 0, unselect/select a filter', function() {
+            it('filters length > 0, unselect/select a filter item', function() {
                 var item1 = new Backbone.Model({price: 2, cost: 1}),
                     item2 = new Backbone.Model({price: 1, cost: 3}),
                     item3 = new Backbone.Model({price: 2, cost: 2}),
@@ -337,9 +336,9 @@ define(['filters'], function() {
                     items = [item1, item2, item3, item4],
                     filters = new App.Collections.Filters([filter2, filter3]);
 
-                filters.valid = items;
+                filters.invalid = items;
                 filters.applyFilters(); // result filters.valid == [item4], filters.invalid == [item1, item2, item3]
-
+console.log('valid', filters.valid, 'invalid', filters.invalid)
                 expect(filters.valid).toEqual([item4]);
                 expect(filters.invalid.indexOf(item1)).toBeGreaterThan(-1);
                 expect(filters.invalid.indexOf(item2)).toBeGreaterThan(-1);
