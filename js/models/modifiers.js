@@ -561,7 +561,7 @@ define(["backbone"], function(Backbone) {
                     fetching.resolve();
                 },
                 error: function() {
-                    App.Data.errors.alert(MSG.ERROR_MODIFIERS_LOAD, true);
+                    App.Data.errors.alert(MSG.ERROR_MODIFIERS_LOAD, true); // user notification
                 }
             });
 
@@ -634,7 +634,7 @@ define(["backbone"], function(Backbone) {
                     fetching.resolve();
                 },
                 error: function() {
-                    App.Data.errors.alert(MSG.ERROR_MODIFIERS_LOAD, true);
+                    App.Data.errors.alert(MSG.ERROR_MODIFIERS_LOAD, true); // user notification
                 }
             });
 

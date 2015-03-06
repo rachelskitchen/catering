@@ -183,6 +183,12 @@ var ServiceType = {
     DONATION : 6
 };
 
+var EVENT = {
+    START:     "Start",
+    NAVIGATE:  "Navigate",
+    SEARCH:    "Search"
+};
+
 /**
 *  format message by formatting string and params.
 *  example: msgFrm("Message text param1 = %s, param2 = %s", 10, 20) returns the string "Message text param1 = 10, param2 = 20"
@@ -413,154 +419,6 @@ function template_helper2(name) {
     return _.template($('#' + name).html());
 }
 /**
- * User notification.
- * options: {
- *     message - alert message
- *     reload_page - if true - reload page after press button
- *     is_confirm - true if confirm message
- *     confirm - object with confirm messages (two button): {
- *         ok - text in ok button,
- *         cancel - text in cancel button,
- *         cancel_hide - hide cancel button
- *     callback - callback for confirm messages
- */
-function jq_alert_message(options) {
-    if (options.is_confirm) {
-        var confirm = options.confirm || {};
-        jConfirm(options.message, confirm.ok || 'OK', confirm.cancel || 'Cancel', options.callback);
-        confirm.cancel_hide && $('#popup_cancel').hide();
-    } else {
-        jAlert(options.message, "OK");
-    }
-    var wnd_width = $( window ).width(),
-        wnd_height =  $( window ).height(),
-        alert = $("#popup_container"),
-        border_width = alert.outerWidth() - alert.width(),
-        min_width = wnd_height > wnd_width ? wnd_width : wnd_height;
-
-    min_width -= border_width;
-
-    if (alert.width() < min_width) {
-        alert.css("min-width", alert.width());
-    } else {
-        alert.css("min-width", min_width);
-    }
-
-    position_alert();
-
-    $("#popup_panel input").click(function() {
-        $( window ).off("resize", position_alert );
-        if (options.reload_page) {
-            location.reload();
-        }
-    });
-
-    $( window ).on("resize", position_alert );
-}
-
-function position_alert() {
-    var wnd = $( window ),
-        alert = $("#popup_container"),
-        alert_content = $('#popup_content'),
-        left = ( wnd.width() / 2 ) - ( alert.outerWidth() / 2 ),
-        top;
-
-    if(/iPad;.*CPU.*OS 7_\d/i.test(window.navigator.userAgent)) {
-        top = ( window.innerHeight / 2 ) - ( alert_content.outerHeight(true) / 2 ) - (window.outerHeight - window.innerHeight) / 2;
-    } else {
-        top = ( wnd.height() / 2 ) - ( alert_content.outerHeight(true) / 2 );
-    }
-
-    top = top > 0 ? top : 0;
-    left = left > 0 ? left : 0;
-
-    alert.css( {
-      'left': left,
-      'top': top,
-      'right': left,
-      'bottom': top
-    });
-}
-
-function alert_message(options) {
-
-    if (App.Data.settings.get && (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL)) {
-        return tmpl_alert_message(options);
-    } else {
-        jq_alert_message(options);
-    }
-}
-
-/**
- * User customized alerts for weborder skin.
- * options: {
- *     template - template ID
- *     message - alert message
- *     reload_page - if true - reload page after press button
- *     is_confirm - true if confirm message
- *     confirm - object with confirm messages (two button): {
- *         ok - text in ok button,
- *         cancel - text in cancel button,
- *         cancel_hide - hide cancel button
- *     callback - callback for confirm messages
- */
-function tmpl_alert_message(options) {
-    var alert = $('#alert'),
-        confirm = options.confirm || {};
-
-    var template = options.template ? options.template : 'alert';
-
-    if ($('#' + template + '-template').length == 0) {
-        jq_alert_message(options);
-        return;
-    }
-    if (alert.length == 0) {
-        alert = $("<div id='alert'></div>").appendTo("body");
-    }
-
-    var data = {
-        btnText1: confirm.ok || "OK",
-        btnText2: confirm.cancel || "Cancel",
-        icon_type: options.is_confirm ? "warning" : options.type || "info",
-        message: options.message || "No alert message",
-        is_confirm: options.is_confirm
-    };
-
-    var tmpl = template_helper2(template + '-template'); // helper of template for PayPal
-    alert.html(tmpl(data));
-    alert.addClass('ui-visible');
-    $(".alert_block").addClass("alert-background");
-
-    $(".btnOk,.btnCancel,.cancel", alert).on("click", function() {
-        $(".alert_block").removeClass("alert-background");
-        alert.removeClass('ui-visible');
-        if (options.reload_page) {
-            location.reload();
-        }
-    });
-    if (options.is_confirm === true) {
-        $(".btnOk", alert).on("click", function() {
-            if(options.callback)
-                options.callback(true);
-        });
-        $(".btnCancel,.cancel", alert).on("click", function() {
-            if(options.callback)
-                options.callback(false);
-        });
-        confirm.cancel_hide && $(".btnCancel", alert).hide();
-    }
-
-    return alert;
-}
-/**
- * Generate the random number.
- */
-function generate_random_number(min, max) {
-    var rand = min + Math.random() * (max + 1 - min);
-    rand = rand ^ 0;
-    return rand;
-}
-/**
  * Rounding monetary currency.
  */
 function round_monetary_currency(value, precision, up) {
@@ -581,17 +439,18 @@ function round_monetary_currency(value, precision, up) {
  *  Sync load template
  */
 
-function loadTemplate2(name, file, isCore) {
+function loadTemplate2(name, file, isCore, loadModelTemplate) {
     var id = name ? name + '_' + file : file;
-    if (!App.Data.loadModelTemplate) {
-        App.Data.loadModelTemplate = {};
+
+    /**
+     * Resolve current CSS file.
+     */
+    var resolve = function() {
+        loadModelTemplate.count--;
+        if (loadModelTemplate.count === 0) loadModelTemplate.dfd.resolve();
     }
-    if (!App.Data.loadModelTemplate.count) {
-        App.Data.loadModelTemplate.count = 0;
-    }
+
     if (loadTemplate2[id] === undefined) {
-        App.Data.loadModelTemplate.dfd = $.Deferred();
-        App.Data.loadModelTemplate.count++;
         $.ajax({
             url: isCore ? 'template/' + file + '.html' : App.Data.settings.get('skinPath') + '/template/' + file + '.html',
             dataType: "html",
@@ -602,10 +461,7 @@ function loadTemplate2(name, file, isCore) {
                 $("head").append(tmplEl);
                 loadTemplate2[id] = tmplEl;
 
-                App.Data.loadModelTemplate.count--;
-                if (App.Data.loadModelTemplate.count === 0) {
-                    App.Data.loadModelTemplate.dfd.resolve();
-                }
+                resolve(); // resolve current CSS file
             },
             error: function(xhr) {
                 App.Data.errors.alert(ERROR[RESOURCES.TEMPLATES], true); // user notification
@@ -613,6 +469,7 @@ function loadTemplate2(name, file, isCore) {
         });
     } else if(loadTemplate2[id] instanceof $) {
         $("head").append(loadTemplate2[id]);
+        resolve(); // resolve current CSS file
     }
 }
 /**
@@ -649,7 +506,7 @@ function processTemplate(templateLoad, callback) {
 /**
  * Include CSS file
  */
-function loadCSS(name) {
+function loadCSS(name, loadModelCSS) {
     // cache is used after a return to previous establishment
     if(!(loadCSS.cache instanceof Object)) {
         loadCSS.cache = {};
@@ -658,67 +515,56 @@ function loadCSS(name) {
     var id = typeof btoa == 'function' ? btoa(name) : encodeURIComponent(name),
         elem;
 
-    if (!App.Data.loadModelCSS) App.Data.loadModelCSS = {};
-    if (!App.Data.loadModelCSS.count) App.Data.loadModelCSS.count = 0;
+    // 'load' event on the LINK element doesn't fire on Safari at least 5.1.7 (the latest version for Windows OS)
+    var safariForWindows = false;
+    if (cssua && cssua.ua.safari && cssua.ua.windows_nt) safariForWindows = true;
+
+    /**
+     * Resolve current CSS file.
+     */
+    var resolve = function() {
+        loadModelCSS.count--;
+        if (loadModelCSS.count === 0) loadModelCSS.dfd.resolve();
+    }
+    var cache = false;
 
     if(loadCSS.cache[id] instanceof $) {
+        cache = true;
         elem = loadCSS.cache[id];
     } else {
         elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
-        App.Data.loadModelCSS.dfd = $.Deferred();
-        App.Data.loadModelCSS.count++;
+        if (!safariForWindows) {
+            // bug #18285 - no timeout for app assets
+            /**
+             * User notification.
+             */
+            var error = function() {
+                App.Data.errors.alert(ERROR[RESOURCES.CSS], true, true); // user notification
+            };
+            var timer = window.setTimeout(function() {
+                elem.remove();
+                error(); // user notification
+            }, App.Data.settings.get('timeout'));
 
-        // bug #18285 - no timeout for app assets
-        /**
-         * User notification.
-         */
-        var error = function() {
-            switch (App.skin) {
-                case App.Skins.WEBORDER:
-                case App.Skins.RETAIL:
-                    var arr = name.split('/'),
-                        nameCSS = arr[arr.length - 1];
-                    if ( ~['main', 'colors'].indexOf(nameCSS) ) $('#alert-template').remove();
-                    break;
-                case App.Skins.WEBORDER_MOBILE:
-                    $('link[href*="main"]').remove();
-                    $('link[href*="colors"]').remove();
-                    break;
-            }
-            App.Data.errors.alert(ERROR[RESOURCES.CSS], true); // user notification
-        };
-        var timer = window.setTimeout(function() {
-            elem.remove();
-            error(); // user notification
-        }, App.Data.settings.get('timeout'));
-
-        elem.on('load', function() {
-            clearTimeout(timer);
-            App.Data.loadModelCSS.count--;
-            if (App.Data.loadModelCSS.count === 0) App.Data.loadModelCSS.dfd.resolve();
-        });
-        elem.on('error', function() {
-            clearTimeout(timer);
-            error(); // user notification
-        });
+            elem.on('load', function() {
+                clearTimeout(timer);
+                resolve(); // resolve current CSS file
+            });
+            elem.on('error', function() {
+                clearTimeout(timer);
+                error(); // user notification
+            });
+        }
     }
 
     if($('link[href="' + name + '.css"]').length === 0) {
         $('head').append(elem);
+        if (safariForWindows || cache) resolve(); // resolve current CSS file
+    } else {
+        resolve(); // resolve current CSS file
     }
 
     return elem;
-}
-
-/**
- * Include CSS file for Safari on OS Windows
- */
-if (cssua && cssua.ua.safari && cssua.ua.windows_nt) {
-    loadCSS = function(name) {
-        var elem = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
-        $('head').append(elem);
-        // 'load' event on the link element does not fire on Safari at least 5.1.7
-    }
 }
 
 /**
@@ -968,7 +814,7 @@ function loadSpinner(logo, anim_params, cb) {
         img.on('load', function() { //load method - deprecated
             spinner.replaceWith(img);
             anim ? img.fadeIn() : img.show();
-            App.Data.images[makeImageName(logo)] = img.clone().css('opacity', '100');
+            App.Data.images[makeImageName(logo)] = img.clone().css('opacity', '1');
             typeof cb == 'function' && cb(img);
         }).error(function(e) {
             logo.prop('src', defImage);
@@ -1252,7 +1098,7 @@ var PaymentProcessor = {
         var credit_card_button = creditCardPaymentProcessor != null;
 
         if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
-            && !credit_card_dialog && !processors.paypal && !processors.cash && !processors.gift_card) {
+            && !credit_card_button && !processors.paypal && !processors.cash && !processors.gift_card) {
             return undefined;
         }
 
@@ -1401,7 +1247,6 @@ var PaymentProcessor = {
     getCreditCardPaymentProcessor: function() {
         var payment_processor = null;
         var payment = App.Settings.payment_processor;
-;
         if (payment.usaepay) {
             payment_processor = USAePayPaymentProcessor;
         } else if (payment.mercury) {
@@ -1412,6 +1257,8 @@ var PaymentProcessor = {
             payment_processor = QuickBooksPaymentProcessor;
         } else if (payment.adyen) {
             payment_processor = AdyenPaymentProcessor;
+        } else if (payment.worldpay) {
+            payment_processor = WorldPayPaymentProcessor;
         }
         return payment_processor;
     }
@@ -1609,6 +1456,82 @@ var MonerisPaymentProcessor = {
     }
 };
 
+WORLDPAY_RETURN_MESSAGE_DEFAULT = "Unknown error";
+var WORLDPAY_PARAMS = {
+    ORDER_ID: 'orderid',
+    TRANSACTION_ID: 'transid',
+    REFCODE: 'refcode',
+    REASON: 'Reason'
+};
+
+var WorldPayPaymentProcessor = {
+    clearQueryString: function(queryString) {
+
+        qStr = queryString.replace(/&?Accepted=[^&]*/, '');
+        qStr = qStr.replace(/&?ACCOUNTNUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?authcode=[^&]*/, '');
+        qStr = qStr.replace(/&?AVS_RESULT=[^&]*/, '');
+        qStr = qStr.replace(/&?BALANCE=[^&]*/, '');
+        qStr = qStr.replace(/&?BATCHNUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?CVV2_RESULT=[^&]*/, '');
+        qStr = qStr.replace(/&?DEBIT_TRACE_NUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?ENTRYMETHOD=[^&]*/, '');
+        qStr = qStr.replace(/&?historyid=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_ADDR=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_CITY=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_NAME=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_PHONE=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_STATE=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANTID=[^&]*/, '');
+        qStr = qStr.replace(/&?orderid=[^&]*/, '');
+        qStr = qStr.replace(/&?PAYTYPE=[^&]*/, '');
+        qStr = qStr.replace(/&?PRODUCT_DESCRIPTION=[^&]*/, '');
+        qStr = qStr.replace(/&?Reason=[^&]*/, '');
+        qStr = qStr.replace(/&?RECEIPT_FOOTER=[^&]*/, '');
+        qStr = qStr.replace(/&?recurid=[^&]*/, '');
+        qStr = qStr.replace(/&?refcode=[^&]*/, '');
+        qStr = qStr.replace(/&?result=[^&]*/, '');
+        qStr = qStr.replace(/&?SEQUENCE_NUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?Status=[^&]*/, '');
+        qStr = qStr.replace(/&?SYSTEMAUDITTRACENUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?TERMINALID=[^&]*/, '');
+        qStr = qStr.replace(/&?TRANSGUID=[^&]*/, '');
+        qStr = qStr.replace(/&?transid=[^&]*/, '');
+        qStr = qStr.replace(/&?transresult=[^&]*/, '');
+        qStr = qStr.replace(/&?AuthNo=[^&]*/, '');
+        qStr = qStr.replace(/&?DUPLICATE=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANTORDERNUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?Declined=[^&]*/, '');
+        qStr = qStr.replace(/&?rcode=[^&]*/, '');
+        qStr = qStr.replace(/\?&/, '?');
+        qStr = qStr.replace(/&#/, '#');
+
+        return qStr;
+    },
+    showCreditCardDialog: function() {
+        return true;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        var get_parameters = App.Data.get_parameters;
+
+        if (pay_get_parameter) {
+            var status = get_parameters['Status']
+            if(pay_get_parameter === 'true' && status === 'Accepted') {
+                payment_info.transaction_id = get_parameters[WORLDPAY_PARAMS.TRANSACTION_ID];
+                payment_info.order_id = get_parameters[WORLDPAY_PARAMS.ORDER_ID];
+                payment_info.refcode = get_parameters[WORLDPAY_PARAMS.REFCODE];
+            } else {
+                payment_info.errorMsg = get_parameters[WORLDPAY_PARAMS.REASON];
+                if (!payment_info.errorMsg) {
+                    payment_info.errorMsg = WORLDPAY_RETURN_MESSAGE_DEFAULT;
+                }
+            }
+        }
+        return payment_info;
+    }
+};
+
+
 var QuickBooksPaymentProcessor = {
     clearQueryString: function(queryString) {
         return queryString;
@@ -1748,5 +1671,3 @@ function removeClassRegexp(jq_elem, exp_str) {
        $(elem).prop('className', $(elem).prop('className').replace(regexp, ''));
     });
 }
-
-

@@ -83,19 +83,17 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                     } else {
                         message = this.model.get('ALERT_MESSAGE');
                     }
-                    tmpl_alert_message({
-                        template: 'alert-establishments',
-                        message: message,
-                        reload_page: false,
-                        is_confirm: true,
+                    App.Data.errors.alert(message, false, false, {
+                        isConfirm: true,
                         confirm: {
                             ok: this.model.get('ALERT_PROCEED_BUTTON'),
-                            cancel: this.model.get('ALERT_BACK_BUTTON')
+                            cancel: this.model.get('ALERT_BACK_BUTTON'),
+                            btnsSwap: true
                         },
                         callback: function(result) {
                             if (result) estExist();
                         }
-                    }); // user customized alerts for Weborder skin
+                    }); // user notification
                 } else {
                     estExist();
                 }

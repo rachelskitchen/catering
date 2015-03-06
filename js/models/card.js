@@ -40,6 +40,18 @@ define(["backbone"], function(Backbone) {
         },
         initialize: function() {
             this.syncWithRevelAPI();
+            this.listenTo(this, 'change:firstName', function() {
+                var firstName = this.get('firstName');
+                (typeof(firstName) == 'string') ?
+                    this.set('firstName', Backbone.$.trim(firstName)) :
+                    this.set('firstName', this.defaults.firstName);
+            }, this);
+            this.listenTo(this, 'change:secondName', function() {
+                var secondName = this.get('secondName');
+                (typeof(secondName) == 'string') ?
+                    this.set('secondName', Backbone.$.trim(secondName)) :
+                    this.set('secondName', this.defaults.secondName);
+            }, this);
         },
         /**
         * Save current state model in storage (detected automatic).
@@ -124,6 +136,9 @@ define(["backbone"], function(Backbone) {
             !cardPattern.test(card.cardNumber) && err.push('Card Number');
             return err;
         },
+        /**
+         * Removal of information about credit card.
+         */
         clearData: function() {
             this.empty_card_number();
             this.saveCard();

@@ -82,14 +82,18 @@ define(["backbone", "factory"], function(Backbone) {
         onSearch: function(event) {
             event.preventDefault();
             var search = this.$('input[name=search]').val();
-            if(search.length > 0)
+            if(search.length > 0) {
+                if (location.hash.indexOf("#index") == -1) {
+                    this.model.trigger('onShop');
+                }
                 this.options.search.search(search);
+            }
         },
         searchComplete: function(result) {
             this.$('.search').get(0).reset();
             var products = result.get('products');
             if(!products || products.length == 0)
-                App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT);
+                App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT); // user notification
         },
         searchStart: function() {
             // reset selections in App.Data.categories

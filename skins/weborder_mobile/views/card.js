@@ -25,7 +25,7 @@ define(["card_view"], function(card_view) {
 
     var CardMainView = App.Views.CoreCardView.CoreCardMainView.extend({
         initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            App.Views.CoreCardView.CoreCardMainView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'add_card', this.onProceed, this);
         },
         onProceed: function() {

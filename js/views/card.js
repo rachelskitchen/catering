@@ -31,6 +31,7 @@ define(["backbone", "factory"], function(Backbone) {
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'add_card', this.setData, this);
+            this.listenTo(this.model, 'change:firstName change:secondName', this.updateData, this); // update first name & last name of view
         },
         render: function() {
             var expYear, expMonth, cardNumber, securityCode, model = {}, self = this;
@@ -115,15 +116,50 @@ define(["backbone", "factory"], function(Backbone) {
                     return g1 ? g1.toUpperCase() : ' ' + g2.toUpperCase();
                 });
                 this.value = new_value;
-                if (this.className === 'first_name') {
+
+                // bug #18410: "Web Orders: double customer name is displayed for the order on iPad if enter the first name with the space"
+                var isGapsLeft = false;
+                if (new_value.charCodeAt(0) == 32) { // if gaps at the beginning of the line then save length of line
+                    isGapsLeft = true;
+                    var lWithoutTrim = new_value.length;
+                }
+                if ( ~this.className.indexOf('first_name') ) {
                     self.model.set('firstName', new_value);
+                    new_value = self.model.get('firstName'); // get a new value that it was trimmed at model
                 } else {
                     self.model.set('secondName', new_value);
+                    new_value = self.model.get('secondName'); // get a new value that it was trimmed at model
                 }
+                if (isGapsLeft) {
+                    var lWithTrim = new_value.length,
+                        offset = lWithoutTrim - lWithTrim;
+                    start -= offset, end -= offset;
+                }
+
                 try {
                     event.target.setSelectionRange(start, end, direction);
                 } catch(e) {}
             });
+        },
+        events: {
+            'blur .first_name': 'changeFirstName',
+            'blur .last_name': 'changeLastName',
+        },
+        /**
+         * Change the firstName property of model.
+         *
+         * @param {object} e Event object.
+         */
+        changeFirstName: function(e) {
+            this.model.set('firstName', e.target.value);
+        },
+        /**
+         * Change the secondName property of model.
+         *
+         * @param {object} e Event object.
+         */
+        changeLastName: function(e) {
+            this.model.set('secondName', e.target.value);
         },
         setData: function() {
             var data = {
@@ -139,6 +175,13 @@ define(["backbone", "factory"], function(Backbone) {
                     zip: this.$('.zip').val()
                 };
             this.model.set(data);
+        },
+        /**
+         * Update first name & last name of view.
+         */
+        updateData: function() {
+            this.$('.first_name').val(this.model.get('firstName'));
+            this.$('.last_name').val(this.model.get('secondName'));
         }
     });
 
