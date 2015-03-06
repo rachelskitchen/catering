@@ -40,17 +40,25 @@ define(["backbone"], function(Backbone) {
         },
         initialize: function() {
             this.syncWithRevelAPI();
-            this.listenTo(this, 'change:firstName', function() {
+            this.listeners(); // listeners of model
+        },
+        /**
+         * Listeners of model.
+         */
+        listeners: function() {
+            this.listenTo(this, 'change:firstName', function(model, val, opts) {
+                opts = (opts instanceof Object) ? opts : {};
                 var firstName = this.get('firstName');
                 (typeof(firstName) == 'string') ?
-                    this.set('firstName', Backbone.$.trim(firstName)) :
-                    this.set('firstName', this.defaults.firstName);
+                    this.set('firstName', Backbone.$.trim(firstName), opts) :
+                    this.set('firstName', this.defaults.firstName, opts);
             }, this);
-            this.listenTo(this, 'change:secondName', function() {
+            this.listenTo(this, 'change:secondName', function(model, val, opts) {
+                opts = (opts instanceof Object) ? opts : {};
                 var secondName = this.get('secondName');
                 (typeof(secondName) == 'string') ?
-                    this.set('secondName', Backbone.$.trim(secondName)) :
-                    this.set('secondName', this.defaults.secondName);
+                    this.set('secondName', Backbone.$.trim(secondName), opts) :
+                    this.set('secondName', this.defaults.secondName, opts);
             }, this);
         },
         /**
