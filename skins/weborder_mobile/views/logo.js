@@ -47,10 +47,18 @@ define(["store_info_view"], function(store_info_view) {
                 $(window).on('resize', self.resize);
             } else {
                 var logo = this.$('img#logo');
-                loadSpinner(logo, false, function() {
-                    self.resize();
-                    $(window).on('resize', self.resize);
-                }); // loading img spinner
+
+                // bug #18603: screen is corrupted on mobile devices after switching store then going back
+                // CSS does not yet apply therefore this delay is required here
+                var timer = window.setInterval(function() {
+                    if (logo.is(':hidden')) {
+                        loadSpinner(logo, false, function() {
+                            self.resize();
+                            $(window).on('resize', self.resize);
+                        }); // loading img spinner
+                        clearInterval(timer);
+                    }
+                }, 5);
             }
 
             el.addEventListener('DOMNodeInserted', function(e) {

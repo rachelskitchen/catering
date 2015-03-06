@@ -207,26 +207,42 @@ define(["backbone", "factory"], function(Backbone) {
 
             color_schemes.length > 0 && !this.prepare.initialized && initTheme.call(this);
 
+            var countCSS = css.length + cssCore.length;
+            if (countCSS) {
+                var loadModelCSS = {
+                    count: countCSS,
+                    dfd: $.Deferred()
+                };
+            }
+
+            var countTemplates = templates.length + templatesCore.length;
+            if (countTemplates) {
+                var loadModelTemplate = {
+                    count: countTemplates,
+                    dfd: $.Deferred()
+                };
+            }
+
             for(i = 0, j = scripts.length; i < j; i++)
                 js.push(skin + "/js/" + scripts[i]);
 
             for (i = 0, j = templates.length; i < j; i++)
-                loadTemplate2(skin, templates[i]);
+                loadTemplate2(skin, templates[i], false, loadModelTemplate);
 
             for(i = 0, j = views.length; i < j; i++)
                 js.push(skin + "/views/" + views[i]);
 
-            for(i = 0, j = css.length; i < j; i++)
-                this.skinCSS.push(loadCSS(skinPath + "/css/" + css[i]));
+            for (i = 0, j = css.length; i < j; i++)
+                this.skinCSS.push(loadCSS(skinPath + '/css/' + css[i], loadModelCSS));
 
             for(i = 0, j = models.length; i < j; i++)
                 js.push(skin + "/models/" + models[i]);
 
             for(i = 0, j = cssCore.length; i < j; i++)
-                this.skinCSS.push(loadCSS(basePath + "/css/" + cssCore[i]));
+                this.skinCSS.push(loadCSS(basePath + '/css/' + cssCore[i], loadModelCSS));
 
             for (i = 0, j = templatesCore.length; i < j; i++)
-                loadTemplate2(null, templatesCore[i], true); // sync load template
+                loadTemplate2(null, templatesCore[i], true, loadModelTemplate); // sync load template
 
             require(js, function() {
                 // init Views (#18015)
@@ -237,10 +253,8 @@ define(["backbone", "factory"], function(Backbone) {
                     }
                 });
 
-                if (App.Data.loadModelTemplate && App.Data.loadModelTemplate.dfd) {
-                    dependencies.push(App.Data.loadModelTemplate.dfd);
-                }
-                if (App.Data.loadModelCSS && App.Data.loadModelCSS.dfd) dependencies.push(App.Data.loadModelCSS.dfd);
+                if (loadModelTemplate && loadModelTemplate.dfd) dependencies.push(loadModelTemplate.dfd);
+                if (loadModelCSS && loadModelCSS.dfd) dependencies.push(loadModelCSS.dfd);
 
                 // now App.Data.loadModules doesn't use in app nowhere
                 /*
@@ -290,6 +304,11 @@ define(["backbone", "factory"], function(Backbone) {
 
             return load;
         },
+        /**
+         * Handler of a payment response.
+         *
+         * @param {function} cb Function callback.
+         */
         initPaymentResponseHandler: function(cb) {
             var myorder = App.Data.myorder;
             this.listenTo(myorder, 'paymentResponse', function() {
@@ -298,9 +317,15 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.settings.usaepayBack = true;
                 App.Data.get_parameters = parse_get_params();
 
-                if(myorder.paymentResponse.status.toLowerCase() == 'ok') {
-                    myorder.clearData();
-                    card && card.clearData();
+                var status = myorder.paymentResponse.status.toLowerCase();
+                switch (status) {
+                    case 'ok':
+                        myorder.clearData(); // cleaning of the cart
+                        card && card.clearData(); // removal of information about credit card
+                        break;
+                    case 'error':
+                        card && card.clearData(); // removal of information about credit card
+                        break;
                 }
 
                 typeof cb == 'function' && cb();
@@ -443,6 +468,20 @@ define(["backbone", "factory"], function(Backbone) {
 
                 return window.location.href = getData('directoryReferrer').referrer + directoryHash;
             }
+        },
+        /**
+        * User notification.
+        */
+        alertMessage: function() {
+            var errors = App.Data.errors;
+            App.Routers.MainRouter.prototype.prepare('errors', function() {
+                var view = App.Views.GeneratorView.create('CoreErrors', {
+                    mod: 'Main',
+                    model: errors
+                }, 'ContentErrorsCore'); // generation of view
+                Backbone.$('body').append(view.el);
+                errors.trigger('showAlertMessage'); // user notification
+            });
         }
     });
 
@@ -507,7 +546,7 @@ define(["backbone", "factory"], function(Backbone) {
             });
 
             function creditCardValidationAlert(result) {
-                App.Data.errors.alert(result.errorMsg);
+                App.Data.errors.alert(result.errorMsg); // user notification
             }
         },
         loyalty: function(header, footer) {
@@ -653,7 +692,9 @@ define(["backbone", "factory"], function(Backbone) {
                     success = RevelAPI.saveProfile.bind(RevelAPI, RevelAPI.trigger.bind(RevelAPI, 'onPayWithSavedCreditCard')),
                     fail = function() {
                         self.navigate('profile/1', true);
-                        RevelAPI.processPaymentInfo(null, function(result) {App.Data.errors.alert(result.errorMsg);});
+                        RevelAPI.processPaymentInfo(null, function(result) {
+                            App.Data.errors.alert(result.errorMsg); // user notification
+                        });
                     };
 
                 profileSaveCallback = RevelAPI.trigger.bind(RevelAPI, 'onPayWithSavedCreditCard');

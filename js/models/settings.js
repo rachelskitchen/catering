@@ -42,7 +42,7 @@ define(["backbone", "async"], function(Backbone) {
 
             // fix for Bug 9344. Chrome v34.0.1847.131 crashes when reload page
             if(/Chrome\/34\.0\.1847\.(131|137)/i.test(window.navigator.userAgent))
-                return App.Data.errors.alert(MSG.ERROR_CHROME_CRASH, true);
+                return App.Data.errors.alert(MSG.ERROR_CHROME_CRASH, true); // user notification
 
             // load settings system for directory app, only for maintenance page allow
             return $.when(self.get_settings_system());
@@ -55,6 +55,10 @@ define(["backbone", "async"], function(Backbone) {
             skin: "", // weborder by default
             settings_skin: {
                 routing: {
+                    errors: {
+                        cssCore: [],
+                        templatesCore: ['errors_core']
+                    },
                     establishments: {
                         cssCore: ['establishments'],
                         templatesCore: ['establishments']
@@ -80,7 +84,10 @@ define(["backbone", "async"], function(Backbone) {
                 cache: true,
                 success: function(data) {
                     if (!data.status) {
-                        errors.alert_red(MSG.ERROR_INCORRECT_AJAX_DATA, true); // user notification (server return HTTP status 200, but data.status is error)
+                        errors.alert(MSG.ERROR_INCORRECT_AJAX_DATA, true, false, {
+                            errorServer: true,
+                            typeIcon: 'warning'
+                        }); // user notification
                     } else {
                         switch (data.status) {
                             case 'OK':
@@ -90,7 +97,10 @@ define(["backbone", "async"], function(Backbone) {
                                 if (typeof this.errorResp === 'function') {
                                     this.errorResp(data.data);
                                 } else {
-                                    errors.alert_red(data.errorMsg, true); // user notification (server return HTTP status 200, but data.status is error)
+                                    errors.alert(data.errorMsg, true, false, {
+                                        errorServer: true,
+                                        typeIcon: 'warning'
+                                    }); // user notification
                                 }
                                 break;
                         }
@@ -406,7 +416,10 @@ define(["backbone", "async"], function(Backbone) {
                             break;
                         */
                         default:
-                            App.Data.errors.alert_red(response.errorMsg, true);
+                            App.Data.errors.alert(response.errorMsg, true, false, {
+                                errorServer: true,
+                                typeIcon: 'warning'
+                            }); // user notification
                             recoverColorScheme();
                     }
 

@@ -110,7 +110,7 @@ define(["main_router"], function(main_router) {
 
             this.listenTo(App.Data.myorder, "paymentFailed cancelPayment", function(message) {
                 App.Data.mainModel.trigger('loadCompleted');
-                message && App.Data.errors.alert(message);
+                message && App.Data.errors.alert(message); // user notification
             }, this);
 
             var checkout = App.Data.myorder.checkout;
