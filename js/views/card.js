@@ -167,7 +167,6 @@ define(["backbone", "factory"], function(Backbone) {
          * Update first name & last name of view.
          */
         updateData: function(model, val, opts) {
-            opts = (opts instanceof Object) ? opts : {};
             if (!opts.doNotUpdateView) {
                 this.$('.first_name').val(this.model.get('firstName'));
                 this.$('.last_name').val(this.model.get('secondName'));
