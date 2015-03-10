@@ -7,9 +7,15 @@
     <footer class='main_el'>
         <span class='current_establishment'>
             Current Store: <%= _settings.business_name %>
-            <a class='change_establishment' href='javascript: void(0);'> Change? </a>
+            <a class='change_establishment link1' href='javascript: void(0);'> Change? </a>
+            <% if(isDirMode) { %>
+            or
+            <% } %>
         </span>
-        <a class="powered-by" target="_blank" href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"> </a>
+        <% if(isDirMode) { %>
+        <a class='go-to-directory link1' href='javascript: void(0);'>Go To Directory</a>
+        <% } %>
+        <a class="powered-by" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
     </footer>
     <div class="popup">
         <div class='popoup_align'>
@@ -53,9 +59,12 @@
             <div class="btn reload"> Restart </div>
         </div>
     </section>
-    <footer>
-        <a class="powered-by" target="_blank" href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"> </a>
-    </footer>
+<footer>
+    <% if(isDirMode) { %>
+        <a class='go-to-directory link1' href='javascript: void(0);'>Go To Directory</a>
+    <% } %>
+    <a class="powered-by" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
+</footer>
 </script>
 
 <script type="text/template" id="main_done-template">

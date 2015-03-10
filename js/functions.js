@@ -374,9 +374,8 @@ function setData(name, data, local) {
         case 1:
             if(local && localStorage instanceof Object)
                 localStorage[name] = JSON.stringify(data);
-            else
-                if (sessionStorage instanceof Object)
-                    sessionStorage[name] = JSON.stringify(data);
+            else if (sessionStorage instanceof Object)
+                sessionStorage[name] = JSON.stringify(data);
             break;
         case 2:
             document.cookie += name + '=' + JSON.stringify(data) + ';';
@@ -1672,4 +1671,3 @@ function removeClassRegexp(jq_elem, exp_str) {
        $(elem).prop('className', $(elem).prop('className').replace(regexp, ''));
     });
 }
-
