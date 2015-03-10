@@ -51,7 +51,6 @@ define(["main_router"], function(main_router) {
         hashForGoogleMaps: ['map', 'checkout'],//for #index we start preload api after main screen reached
         initialize: function() {
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
-            clearQueryString();
             this.bodyElement = Backbone.$('body');
             this.bodyElement.append('<div class="main-container"></div>');
 
@@ -65,7 +64,10 @@ define(["main_router"], function(main_router) {
                 App.Views.Generator.enableCache = true;
                 // set header, cart, main models
                 App.Data.header = new App.Models.HeaderModel();
-                var mainModel = App.Data.mainModel = new App.Models.MainModel();
+                var mainModel = App.Data.mainModel = new App.Models.MainModel({
+                    goToDirectory: App.Data.dirMode ? this.navigateDirectory.bind(this) : new Function,
+                    isDirMode: App.Data.dirMode
+                });
                 var ests = App.Data.establishments;
 
                 this.listenTo(mainModel, 'change:mod', this.createMainView);
@@ -108,7 +110,7 @@ define(["main_router"], function(main_router) {
 
             this.listenTo(App.Data.myorder, "paymentFailed cancelPayment", function(message) {
                 App.Data.mainModel.trigger('loadCompleted');
-                message && App.Data.errors.alert(message);
+                message && App.Data.errors.alert(message); // user notification
             }, this);
 
             var checkout = App.Data.myorder.checkout;

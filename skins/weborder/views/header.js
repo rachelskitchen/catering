@@ -23,8 +23,6 @@
 define(["backbone", "factory"], function() {
     'use strict';
 
-    App.Views.HeaderView = {};
-
     var HeaderMainView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'main',

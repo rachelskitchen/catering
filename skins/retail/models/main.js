@@ -23,7 +23,7 @@
 define(["backbone"], function(Backbone) {
     'use strict';
 
-    App.Models.MainModel=Backbone.Model.extend({
+    App.Models.MainModel = Backbone.Model.extend({
         defaults: {
             header: {},
             content: {},

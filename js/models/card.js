@@ -40,6 +40,25 @@ define(["backbone"], function(Backbone) {
         },
         initialize: function() {
             this.syncWithRevelAPI();
+
+            // trim the changed value
+            this.listenTo(this, 'change:firstName', this.trim, this);
+            this.listenTo(this, 'change:secondName', this.trim, this);
+        },
+        /**
+         * Trim the changed value.
+         *
+         * @param {object} model Current model.
+         * @param {string} val The changed value.
+         * @param {object} opts Additional options.
+         */
+        trim: function(model, val, opts) {
+            var type = (model.changedAttributes().firstName) ? 'firstName' : 'secondName';
+            opts = (opts instanceof Object) ? opts : {};
+            var value = this.get(type);
+            (typeof(value) == 'string') ?
+                this.set(type, Backbone.$.trim(value), opts) :
+                this.set(type, this.defaults[type], opts);
         },
         /**
         * Save current state model in storage (detected automatic).
@@ -124,6 +143,9 @@ define(["backbone"], function(Backbone) {
             !cardPattern.test(card.cardNumber) && err.push('Card Number');
             return err;
         },
+        /**
+         * Removal of information about credit card.
+         */
         clearData: function() {
             this.empty_card_number();
             this.saveCard();

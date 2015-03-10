@@ -245,6 +245,10 @@ define(["done_view", "generator"], function(done_view) {
 
         $(window).resize(function() {
             !resizing && resize();
+            
+            if (document.activeElement.tagName.toLowerCase() == "input") {
+                document.activeElement.scrollIntoView(); // #18707
+            }
         });
 
         resize();

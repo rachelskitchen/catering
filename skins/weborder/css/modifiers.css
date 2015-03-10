@@ -70,11 +70,16 @@
     word-break: break-all;
     margin:0 7px 7px 0;
     cursor: pointer;
+    min-height: 30px;
 }
 
 @media only screen and (max-device-width: 949px) {
     .modifiers_table .modifier {
         width: 270px !important;
+    }
+    .mdf_quantity select {
+        width: 48px;
+        padding-left: 10px !important;
     }
 }
 
@@ -99,7 +104,7 @@
 
 .modifiers_table .modifier label {
     cursor: inherit;
-    display: inline-block;
+    display: inline !important;
     width: 100%;
 }
 
@@ -135,4 +140,40 @@
 
 .modifiers_table .no-controls .special_button {
     display: none;
+}
+
+.mdf_quantity select,
+.mdf_split select {
+    font-size: 14px;
+    font-weight: normal;
+    width: 50px;  
+}
+
+.mdf_quantity, .mdf_split {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: bold;    
+    margin-top: -2px;
+    height: 26px; 
+    position: relative;      
+}
+
+.mdf_quantity select {
+    padding-right: 18px;
+    padding-left: 8px;
+}
+
+.mdf_split select {
+    padding-right: 28px !important;
+    padding-left: 22px !important;
+}
+
+.mdf_split .selected_option {
+    position: absolute;
+    top: 5px;
+    left: 8px;
+    width: 18px;
+    height: 17px;
+    pointer-events:none;
 }

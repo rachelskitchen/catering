@@ -326,8 +326,8 @@ footer {
     float: left;
     padding-left: 0.65em;
 }
-.current_establishment a {
-    margin-left: 2em;
+.link1 {
+    margin: 0 20px;
     text-decoration: none;
 }
 .powered-by {
@@ -427,13 +427,13 @@ footer {
     border-style: solid;
 }
 .btn {
+    font-size: 27px;
     position: relative;
     height: 40px;
     border-width: 5px;
     border-style: solid;
     border-radius: 30px;
     text-align: center;
-    font-size: 30px;
     font-weight: bold;
     line-height: 38px;
     cursor: pointer;
@@ -476,7 +476,7 @@ footer {
 .popup.ui-visible {
     opacity: 1;
     filter: alpha(opacity=100);
-    z-index: 10002;
+    z-index: 1000;
 }
 .popoup_align {
     display: inline-block;
@@ -521,6 +521,12 @@ section.maintenance p {
     margin-top: 120px;
     text-align: center;
     font-size: 30px;
+}
+section.maintenance .back {
+    left: 20px;
+    position: relative;
+    text-decoration: none;
+    top: -40px;
 }
 #main-spinner {
     background-color: rgba(170, 170, 170, 0.8);
@@ -747,11 +753,29 @@ section.maintenance p {
         min-width: 748px;
     }
 }
+@media only screen and (max-device-width: 949px) and (orientation : portrait) {
+    #cart .checkout .btn {
+        font-size: 16px;
+    }
+}
+@media only screen and (max-device-width: 949px) and (orientation : landscape) {
+    #cart .checkout .btn {
+        font-size: 24px;
+    }
+}
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
+    #cart .checkout .btn {
+        font-size: 16px;
+    }
+}
 @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
     html.ipad {
         height: 672px !important;
         position: absolute;
         top: 0;
+    }
+    #cart .checkout .btn {
+        font-size: 24px;
     }
 }
 
@@ -801,7 +825,7 @@ section.maintenance p {
 }
 /* End confirm page */
 
-/* for alert message */
+/* user notification (begin) */
 #alert {
     position: absolute;
     top: 0;
@@ -898,6 +922,8 @@ section.maintenance p {
     padding: 0px 20px 0px 20px;
     font-size: 24px;
 }
+/* user notification (end) */
+
 /* start input beauty */
 .input_beauty {
     position: absolute;
@@ -938,14 +964,21 @@ section.maintenance p {
 }
 
 /** confirm page */
-.content_align {
-    height: 99%;
+#content .confirm_order {
+    height: 100%;
+    text-align: center;
+    width: 100%;
+}
+#content .confirm_order:before {
+    content: '';
     display: inline-block;
+    height: 100%;
     vertical-align: middle;
 }
-.confirm_order_wrapper {
+#content .confirm_order > div {
     display: inline-block;
     vertical-align: middle;
+    width: 99%;
 }
 /** confirm page end*/
 

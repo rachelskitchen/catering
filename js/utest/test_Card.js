@@ -31,6 +31,15 @@ define(['card'], function() {
             expect(model.toJSON()).toEqual(def);
         });
 
+        it('First Name and Second Name contains gaps at the beginning and at the end of both values', function() {
+            model.set({
+                firstName: ' first ',
+                secondName: ' second '
+            });
+            expect(model.get('firstName')).toBe('first');
+            expect(model.get('secondName')).toBe('second');
+        });
+
         it("SaveCard Function", function() {
             model.saveCard(); // save current state model in storage (detected automatic)
             expect(setData).toHaveBeenCalledWith('card', model);

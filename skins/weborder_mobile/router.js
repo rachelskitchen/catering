@@ -46,7 +46,9 @@ define(["main_router"], function(main_router) {
         headerModes.Map = headerModes.OneButton;
         headerModes.About = {mod: 'TwoButton', className: 'two_button'};
         headerModes.Gallery = headerModes.Map;
-        headerModes.Maintenance = {mod: 'Maintenance', className: 'maintenance'};
+        headerModes.Maintenance = {};
+        headerModes.Maintenance.WithoutButtons = {mod: 'Maintenance', className: 'maintenance'};
+        headerModes.Maintenance.WithButtons = headerModes.OneButton
         headerModes.Profile = {mod: 'OneButton', className: 'one_button profile'};
 
         footerModes.Main = {mod: 'Main'};
@@ -94,7 +96,6 @@ define(["main_router"], function(main_router) {
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
         initialize: function() {
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
-            clearQueryString();
             var self = this;
 
             // used for footer view
@@ -189,18 +190,6 @@ define(["main_router"], function(main_router) {
             this.initPaymentResponseHandler(this.navigate.bind(this, "done", true));
 
             App.Routers.MobileRouter.prototype.initialize.apply(this, arguments);
-        },
-        navigateDirectory: function() {
-            if(App.Data.dirMode) {
-                var directoryState = getData('directory.state'),
-                    directoryHash = '';
-
-                if(directoryState instanceof Object && directoryState.hash) {
-                    directoryHash = directoryState.hash;
-                }
-
-                return window.location.href = getData('directoryReferrer').referrer + directoryHash;
-            }
         },
         showPromoMessage: function() {
             App.Data.footer.set('isShowPromoMessage', true);
@@ -323,10 +312,10 @@ define(["main_router"], function(main_router) {
                                     App.Data.myorder.add(order);
                                     App.Data.router.navigate("index", true);
                                 }, function(errorMsg) {
-                                    App.Data.errors.alert(errorMsg);
+                                    App.Data.errors.alert(errorMsg); // user notification
                                 });
                             } else {
-                                App.Data.errors.alert(check.errorMsg);
+                                App.Data.errors.alert(check.errorMsg); // user notification
                             }
                         },
                         order: order
@@ -372,10 +361,10 @@ define(["main_router"], function(main_router) {
                                 App.Data.myorder.add(order, {at: index});
                                 App.Data.router.navigate("index", true);
                             }, function(errorMsg) {
-                                App.Data.errors.alert(errorMsg);
+                                App.Data.errors.alert(errorMsg); // user notification
                             });
                         } else {
-                            App.Data.errors.alert(check.errorMsg);
+                            App.Data.errors.alert(check.errorMsg); // user notification
                         }
                     }
                 });
@@ -656,7 +645,7 @@ define(["main_router"], function(main_router) {
             var settings = App.Data.settings,
                 settings_system = settings.get('settings_system'),
                 model = new Backbone.Model({
-                    logo: settings_system.logo ? settings.get('host') + settings_system.logo : null,
+                    logo: settings_system.logo_img ? settings.get('host') + settings_system.logo_img : null,
                     text: settings_system.about_description || 'No information',
                     title: settings_system.about_title || '',
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1]
@@ -722,17 +711,28 @@ define(["main_router"], function(main_router) {
             App.Routers.MobileRouter.prototype.maintenance.apply(this, arguments);
 
             this.prepare('maintenance', function() {
-                var header = {page_title: ''};
-                if(App.Data.dirMode)
-                    header = Backbone.$.extend(header, {
-                        back_title: 'Directory',
-                        back: this.navigateDirectory.bind(this)
-                    });
+                var back_title, back;
+                if (App.Data.dirMode) {
+                    back_title = 'Directory';
+                    back = this.navigateDirectory.bind(this);
+                } else {
+                    back_title = 'Back';
+                    back = function() { window.history.back() };
+                }
+                var header = {
+                    back: back,
+                    back_title: back_title,
+                    page_title: '&nbsp;'
+                };
 
                 App.Data.header.set(header);
 
                 App.Data.mainModel.set({
-                    header: !App.Data.dirMode ? headerModes.Maintenance : headerModes.Products,
+                    header: !App.Data.dirMode ?
+                        this.isNotFirstLaunch ?
+                            headerModes.Maintenance.WithButtons :
+                            headerModes.Maintenance.WithoutButtons :
+                        headerModes.Maintenance.WithButtons,
                     footer: App.Data.dirMode ? footerModes.MaintenanceDirectory : footerModes.Maintenance,
                     content: {
                         modelName: 'Maintenance',

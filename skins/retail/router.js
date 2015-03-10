@@ -53,7 +53,6 @@ define(["main_router"], function(main_router) {
         initialize: function() {
             var settings = App.Settings;
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
-            clearQueryString();
             this.bodyElement = Backbone.$('body');
             this.bodyElement.append('<div class="main-container"></div>');
 
@@ -91,7 +90,10 @@ define(["main_router"], function(main_router) {
                 App.Views.Generator.enableCache = true;
                 // set header, cart, main models
                 App.Data.header = new App.Models.HeaderModel();
-                var mainModel = App.Data.mainModel = new App.Models.MainModel();
+                var mainModel = App.Data.mainModel = new App.Models.MainModel({
+                    goToDirectory: App.Data.dirMode ? this.navigateDirectory.bind(this) : new Function,
+                    isDirMode: App.Data.dirMode
+                });
                 var ests = App.Data.establishments;
                 App.Data.categories = new App.Collections.Categories();
                 App.Data.subCategories = new App.Collections.SubCategories();
@@ -151,7 +153,7 @@ define(["main_router"], function(main_router) {
 
             this.listenTo(App.Data.myorder, "paymentFailed cancelPayment", function(message) {
                 App.Data.mainModel.trigger('loadCompleted');
-                message && App.Data.errors.alert(message);
+                message && App.Data.errors.alert(message); // user notification
             }, this);
 
             var checkout = App.Data.myorder.checkout;
@@ -160,7 +162,7 @@ define(["main_router"], function(main_router) {
             this.on('route', function() {
                 // can be called when App.Data.mainModel is not initializd yet ('back' btn in browser history control)
                 App.Data.mainModel && App.Data.mainModel.trigger('onRoute');
-                App.Data.errors.hide();
+                App.Data.errors.trigger('hideAlertMessage'); // hide user notification
             });
 
             App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
@@ -225,17 +227,10 @@ define(["main_router"], function(main_router) {
                     this.index.initState = encoded;
             }, this);
 
-            // onSearchStart event occurs when 'search' form is submitted
-            this.listenTo(App.Data.search, 'onSearchStart', function(search) {
-                App.Data.mainModel.trigger('loadStarted');
-            }, this);
-
             // onSearchComplete event occurs when search results are ready
             this.listenTo(App.Data.search, 'onSearchComplete', function(result) {
-                App.Data.mainModel.trigger('loadCompleted');
-
                 // ingnore cases when no products found
-                if(result.get('products').length == 0)
+                if(!result.get('products') || result.get('products').length == 0)
                     return;
 
                 var state = {},
