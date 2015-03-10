@@ -57,7 +57,8 @@ define(["done_view", "generator"], function(done_view) {
         },
         events: {
             'click #popup .cancel': 'hide_popup',
-            'click .change_establishment': 'change_establishment'
+            'click .change_establishment': 'change_establishment',
+            'click .go-to-directory': 'goToDirectory'
         },
         content_change: function() {
             var content = this.$('#content'),
@@ -215,6 +216,10 @@ define(["done_view", "generator"], function(done_view) {
             // http://caniuse.com/#search=filter
             var mainEl = this.$('.main_el');
             this.model.get('isBlurContent') ? mainEl.addClass('blur') : mainEl.removeClass('blur');
+        },
+        goToDirectory: function() {
+            var goToDirectory = this.model.get('goToDirectory');
+            typeof goToDirectory == 'function' && goToDirectory();
         }
     });
 
@@ -227,6 +232,7 @@ define(["done_view", "generator"], function(done_view) {
             if (!App.Data.router.isNotFirstLaunch) this.$('.back').hide();
         },
         events: {
+            'click .go-to-directory': 'goToDirectory',
             'click .back': 'back',
             'click .reload': 'reload'
         },
@@ -238,6 +244,10 @@ define(["done_view", "generator"], function(done_view) {
         },
         reload: function() {
             window.location.replace(window.location.href.replace(/#.*$/, ''));
+        },
+        goToDirectory: function() {
+            var goToDirectory = this.model.get('goToDirectory');
+            typeof goToDirectory == 'function' && goToDirectory();
         }
     });
 

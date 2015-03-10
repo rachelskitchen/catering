@@ -326,8 +326,8 @@ footer {
     float: left;
     padding-left: 0.65em;
 }
-.current_establishment a {
-    margin-left: 2em;
+.link1 {
+    margin: 0 20px;
     text-decoration: none;
 }
 .powered-by {

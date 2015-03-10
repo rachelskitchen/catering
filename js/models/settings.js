@@ -164,14 +164,24 @@ define(["backbone", "async"], function(Backbone) {
                 isUnknownSkin = !(skin && this.get('supported_skins').indexOf(skin) > -1),
                 defaultSkin = (settings.type_of_service == ServiceType.RETAIL) ? App.Skins.RETAIL : App.Skins.DEFAULT;
 
-            App.skin = isUnknownSkin ? defaultSkin : skin; // set alias to current skin
+            // set alias to current skin
+            App.skin = isUnknownSkin ? defaultSkin : skin;
 
-            if ((App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL) && this.isMobileVersion())
-                App.skin = App.Skins.WEBORDER_MOBILE;
+            // convert skin to mobile version if necessary
+            this.checkIfMobile(); //
+
             if (App.skin == App.Skins.RETAIL) settings.delivery_charge = 0; // if Retail skin set delivery_charge to 0
 
             this.set('skin', App.skin);
             this.trigger('changeSkin');
+        },
+        /*
+         * Convert desktop version of skin to mobile
+         */
+        checkIfMobile: function() {
+            // convert `WEBORDER` skin to 'WEBORDER_MOBILE' for mobile devices
+            if ((App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL) && this.isMobileVersion())
+                App.skin = App.Skins.WEBORDER_MOBILE;
         },
         /**
          * Get settings from file "settings.json" for current skin.
