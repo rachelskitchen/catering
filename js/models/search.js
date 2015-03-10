@@ -35,7 +35,7 @@ define(['products'], function() {
                 results = new App.Collections.Products;
 
             results.onProductsError = function() {
-                App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT);
+                App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT); // user notification
                 load.resolve();
             }
 
@@ -52,15 +52,20 @@ define(['products'], function() {
         model: App.Models.Search,
         search: function(pattern) {
             var cache = this.where({pattern: pattern});
+            if (cache.length && cache[0].get('completed') == undefined) {
+                return this;
+            }
             this.trigger('onSearchStart', search);
-            if(cache.length > 0)
+            if(cache.length > 0) {                
                 return this.trigger('onSearchComplete', cache[0]);
+            }
 
             var search = new App.Models.Search({pattern: pattern}),
                 self = this;
 
             this.add(search);
             search.get_products().then(function() {
+                search.set('completed', true, {silent: true}); 
                 self.trigger('onSearchComplete', search);
             });
         }

@@ -67,6 +67,14 @@ var MAINTENANCE = {
     ORDER_TYPE: 'MAINTENANCE_ORDER_TYPE'
 };
 
+ERROR.RESOURCES_CSS = 'Unable to load CSS resources. Now the page is reloaded.';
+ERROR.RESOURCES_TEMPLATES = 'Unable to load template resources. Now the page is reloaded.';
+
+var RESOURCES = {
+    CSS: 'RESOURCES_CSS',
+    TEMPLATES: 'RESOURCES_TEMPLATES'
+}
+
 //write messages here
 MSG.ERROR_STORE_IS_CLOSED = "We're sorry, your order cannot be processed because the store is closed for selected pickup day/time";
 MSG.ERROR_GEOLOCATION = [ "There was an error while retrieving your location.",
@@ -143,6 +151,7 @@ MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_MOBILE = 'Ok';
 MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_DESKTOP = 'Go Back';
 MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_MOBILE = 'Back';
 // page 'Establishments' (end)
+MSG.HALF_PRICE_STR =  ["Full", "First Half","Second Half"];
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
@@ -174,78 +183,11 @@ var ServiceType = {
     DONATION : 6
 };
 
-
-var MONERIS_RETURN_CODE = {
-    DECLINE: 50
+var EVENT = {
+    START:     "Start",
+    NAVIGATE:  "Navigate",
+    SEARCH:    "Search"
 };
-
-
-var MERCURY_RETURN_CODE = {
-    SUCCESS : 0,
-    AUTH_FAIL : 100,
-    CARD_DECLINED : 101,
-    CANCEL : 102,
-    SESSION_TIMEOUT : 103,
-    MAINTENANCE_MODE : 104,
-    SAVE_CARD_INFO_FAIL : 206,
-    LOAD_CARD_INFO_FAIL : 207,
-    PROCESS_CARD_INFO_FAIL : 208,
-    VALIDATION_CC_FAIL : 301,
-    VALIDATION_SERVER_SIDE_FAILURE :302,
-    VALIDATE_NAME_FAIL : 302
-};
-
-var MERCURY_RETURN_MESSAGE = {};
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SUCCESS] = "Success";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.AUTH_FAIL] = "Auth Fail";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.CARD_DECLINED] = "Card Declined";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.CANCEL] = "Payment Canceled";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SESSION_TIMEOUT] = "Session Timeout";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.MAINTENANCE_MODE] = "Maintenance Mode";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SAVE_CARD_INFO_FAIL] = "Save Card Info Fail";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.LOAD_CARD_INFO_FAIL] = "Load Card Info Fail";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.PROCESS_CARD_INFO_FAIL] = "Process Card Info Fail";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_CC_FAIL] = "Credit Card failed Mod10 check multiple times";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_SERVER_SIDE_FAILURE] = "Possible tampering suspected";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATE_NAME_FAIL] = "Invalid data entered in cardholder name field";
-MERCURY_RETURN_MESSAGE_DEFAULT = "Unknown error";
-
-var MONERIS_RETURN_MESSAGE = {
-    50: "Decline",
-    51: "Expired Card",
-    52: "PIN retries exceeded",
-    53: "No sharing",
-    54: "No security module",
-    55: "Invalid transaction",
-    56: "Card not supported",
-    57: "Lost or stolen card",
-    58: "Card use limited",
-    59: "Restricted Card",
-    60: "No Chequing account"
-};
-MONERIS_RETURN_MESSAGE_DEFAULT = "Unknown error";
-
-var MONERIS_PARAMS = {
-    PAY: 'rvarPay',
-    RESPONSE_ORDER_ID: 'response_order_id',
-    TRANSACTION_ID: 'txn_num'
-};
-
-function getMercuryErrorMessage(returnCode) {
-	var msg = MERCURY_RETURN_MESSAGE[returnCode];
-	if (!msg) {
-		msg = MERCURY_RETURN_MESSAGE_DEFAULT;
-	}
-	return msg;
-}
-
-function getMonerisErrorMessage(returnCode) {
-	var msg = MONERIS_RETURN_MESSAGE[returnCode];
-	if (!msg) {
-		msg = MONERIS_RETURN_MESSAGE_DEFAULT;
-	}
-	return msg;
-}
 
 /**
 *  format message by formatting string and params.
@@ -432,9 +374,8 @@ function setData(name, data, local) {
         case 1:
             if(local && localStorage instanceof Object)
                 localStorage[name] = JSON.stringify(data);
-            else
-                if (sessionStorage instanceof Object)
-                    sessionStorage[name] = JSON.stringify(data);
+            else if (sessionStorage instanceof Object)
+                sessionStorage[name] = JSON.stringify(data);
             break;
         case 2:
             document.cookie += name + '=' + JSON.stringify(data) + ';';
@@ -478,154 +419,6 @@ function template_helper2(name) {
     return _.template($('#' + name).html());
 }
 /**
- * User notification.
- * options: {
- *     message - alert message
- *     reload_page - if true - reload page after press button
- *     is_confirm - true if confirm message
- *     confirm - object with confirm messages (two button): {
- *         ok - text in ok button,
- *         cancel - text in cancel button,
- *         cancel_hide - hide cancel button
- *     callback - callback for confirm messages
- */
-function jq_alert_message(options) {
-    if (options.is_confirm) {
-        var confirm = options.confirm || {};
-        jConfirm(options.message, confirm.ok || 'OK', confirm.cancel || 'Cancel', options.callback);
-        confirm.cancel_hide && $('#popup_cancel').hide();
-    } else {
-        jAlert(options.message, "OK");
-    }
-    var wnd_width = $( window ).width(),
-        wnd_height =  $( window ).height(),
-        alert = $("#popup_container"),
-        border_width = alert.outerWidth() - alert.width(),
-        min_width = wnd_height > wnd_width ? wnd_width : wnd_height;
-
-    min_width -= border_width;
-
-    if (alert.width() < min_width) {
-        alert.css("min-width", alert.width());
-    } else {
-        alert.css("min-width", min_width);
-    }
-
-    position_alert();
-
-    $("#popup_panel input").click(function() {
-        $( window ).off("resize", position_alert );
-        if (options.reload_page) {
-            location.reload();
-        }
-    });
-
-    $( window ).on("resize", position_alert );
-}
-
-function position_alert() {
-    var wnd = $( window ),
-        alert = $("#popup_container"),
-        alert_content = $('#popup_content'),
-        left = ( wnd.width() / 2 ) - ( alert.outerWidth() / 2 ),
-        top;
-
-    if(/iPad;.*CPU.*OS 7_\d/i.test(window.navigator.userAgent)) {
-        top = ( window.innerHeight / 2 ) - ( alert_content.outerHeight(true) / 2 ) - (window.outerHeight - window.innerHeight) / 2;
-    } else {
-        top = ( wnd.height() / 2 ) - ( alert_content.outerHeight(true) / 2 );
-    }
-
-    top = top > 0 ? top : 0;
-    left = left > 0 ? left : 0;
-
-    alert.css( {
-      'left': left,
-      'top': top,
-      'right': left,
-      'bottom': top
-    });
-}
-
-function alert_message(options) {
-
-    if (App.Data.settings.get && (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL)) {
-        return tmpl_alert_message(options);
-    } else {
-        jq_alert_message(options);
-    }
-}
-
-/**
- * User customized alerts for weborder skin.
- * options: {
- *     template - template ID
- *     message - alert message
- *     reload_page - if true - reload page after press button
- *     is_confirm - true if confirm message
- *     confirm - object with confirm messages (two button): {
- *         ok - text in ok button,
- *         cancel - text in cancel button,
- *         cancel_hide - hide cancel button
- *     callback - callback for confirm messages
- */
-function tmpl_alert_message(options) {
-    var alert = $('#alert'),
-        confirm = options.confirm || {};
-
-    var template = options.template ? options.template : 'alert';
-
-    if ($('#' + template + '-template').length == 0) {
-        jq_alert_message(options);
-        return;
-    }
-    if (alert.length == 0) {
-        alert = $("<div id='alert'></div>").appendTo("body");
-    }
-
-    var data = {
-        btnText1: confirm.ok || "OK",
-        btnText2: confirm.cancel || "Cancel",
-        icon_type: options.is_confirm ? "warning" : options.type || "info",
-        message: options.message || "No alert message",
-        is_confirm: options.is_confirm
-    };
-
-    var tmpl = template_helper2(template + '-template'); // helper of template for PayPal
-    alert.html(tmpl(data));
-    alert.addClass('ui-visible');
-    $(".alert_block").addClass("alert-background");
-
-    $(".btnOk,.btnCancel,.cancel", alert).on("click", function() {
-        $(".alert_block").removeClass("alert-background");
-        alert.removeClass('ui-visible');
-        if (options.reload_page) {
-            location.reload();
-        }
-    });
-    if (options.is_confirm === true) {
-        $(".btnOk", alert).on("click", function() {
-            if(options.callback)
-                options.callback(true);
-        });
-        $(".btnCancel,.cancel", alert).on("click", function() {
-            if(options.callback)
-                options.callback(false);
-        });
-        confirm.cancel_hide && $(".btnCancel", alert).hide();
-    }
-
-    return alert;
-}
-/**
- * Generate the random number.
- */
-function generate_random_number(min, max) {
-    var rand = min + Math.random() * (max + 1 - min);
-    rand = rand ^ 0;
-    return rand;
-}
-/**
  * Rounding monetary currency.
  */
 function round_monetary_currency(value, precision, up) {
@@ -646,17 +439,18 @@ function round_monetary_currency(value, precision, up) {
  *  Sync load template
  */
 
-function loadTemplate2(name, file, isCore) {
+function loadTemplate2(name, file, isCore, loadModelTemplate) {
     var id = name ? name + '_' + file : file;
-    if (!App.Data.loadModelTemplate) {
-        App.Data.loadModelTemplate = {};
+
+    /**
+     * Resolve current CSS file.
+     */
+    var resolve = function() {
+        loadModelTemplate.count--;
+        if (loadModelTemplate.count === 0) loadModelTemplate.dfd.resolve();
     }
-    if (!App.Data.loadModelTemplate.count) {
-        App.Data.loadModelTemplate.count = 0;
-    }
+
     if (loadTemplate2[id] === undefined) {
-        App.Data.loadModelTemplate.dfd = $.Deferred();
-        App.Data.loadModelTemplate.count++;
         $.ajax({
             url: isCore ? 'template/' + file + '.html' : App.Data.settings.get('skinPath') + '/template/' + file + '.html',
             dataType: "html",
@@ -667,14 +461,15 @@ function loadTemplate2(name, file, isCore) {
                 $("head").append(tmplEl);
                 loadTemplate2[id] = tmplEl;
 
-                App.Data.loadModelTemplate.count--;
-                if (App.Data.loadModelTemplate.count === 0) {
-                    App.Data.loadModelTemplate.dfd.resolve();
-                }
+                resolve(); // resolve current CSS file
+            },
+            error: function(xhr) {
+                App.Data.errors.alert(ERROR[RESOURCES.TEMPLATES], true); // user notification
             }
         });
     } else if(loadTemplate2[id] instanceof $) {
         $("head").append(loadTemplate2[id]);
+        resolve(); // resolve current CSS file
     }
 }
 /**
@@ -711,7 +506,7 @@ function processTemplate(templateLoad, callback) {
 /**
  * Include CSS file
  */
-function loadCSS(name) {
+function loadCSS(name, loadModelCSS) {
     // cache is used after a return to previous establishment
     if(!(loadCSS.cache instanceof Object)) {
         loadCSS.cache = {};
@@ -720,23 +515,53 @@ function loadCSS(name) {
     var id = typeof btoa == 'function' ? btoa(name) : encodeURIComponent(name),
         elem;
 
-    if (!App.Data.loadModelCSS) App.Data.loadModelCSS = {};
-    if (!App.Data.loadModelCSS.count) App.Data.loadModelCSS.count = 0;
+    // 'load' event on the LINK element doesn't fire on Safari at least 5.1.7 (the latest version for Windows OS)
+    var safariForWindows = false;
+    if (cssua && cssua.ua.safari && cssua.ua.windows_nt) safariForWindows = true;
+
+    /**
+     * Resolve current CSS file.
+     */
+    var resolve = function() {
+        loadModelCSS.count--;
+        if (loadModelCSS.count === 0) loadModelCSS.dfd.resolve();
+    }
+    var cache = false;
 
     if(loadCSS.cache[id] instanceof $) {
+        cache = true;
         elem = loadCSS.cache[id];
     } else {
         elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
-        App.Data.loadModelCSS.dfd = $.Deferred();
-        App.Data.loadModelCSS.count++;
-        elem.on('load', function() {
-            App.Data.loadModelCSS.count--;
-            if (App.Data.loadModelCSS.count === 0) App.Data.loadModelCSS.dfd.resolve();
-        });
+        if (!safariForWindows) {
+            // bug #18285 - no timeout for app assets
+            /**
+             * User notification.
+             */
+            var error = function() {
+                App.Data.errors.alert(ERROR[RESOURCES.CSS], true, true); // user notification
+            };
+            var timer = window.setTimeout(function() {
+                elem.remove();
+                error(); // user notification
+            }, App.Data.settings.get('timeout'));
+
+            elem.on('load', function() {
+                clearTimeout(timer);
+                resolve(); // resolve current CSS file
+            });
+            elem.on('error', function() {
+                clearTimeout(timer);
+                error(); // user notification
+            });
+        }
     }
 
     if($('link[href="' + name + '.css"]').length === 0) {
         $('head').append(elem);
+        if (safariForWindows || cache) resolve(); // resolve current CSS file
+    } else {
+        resolve(); // resolve current CSS file
     }
 
     return elem;
@@ -989,7 +814,7 @@ function loadSpinner(logo, anim_params, cb) {
         img.on('load', function() { //load method - deprecated
             spinner.replaceWith(img);
             anim ? img.fadeIn() : img.show();
-            App.Data.images[makeImageName(logo)] = img.clone().css('opacity', '100');
+            App.Data.images[makeImageName(logo)] = img.clone().css('opacity', '1');
             typeof cb == 'function' && cb(img);
         }).error(function(e) {
             logo.prop('src', defImage);
@@ -1039,6 +864,19 @@ function iPad() {
     }
     else {
         iPad.retval = /ipad/i.test(window.navigator.userAgent) ? true : false;
+        return iPad.retval;
+    }
+}
+
+/**
+ * Check if is iOS device
+ */
+function isIOS() {
+    if (iPad.retval) {
+        return iPad.retval;
+    }
+    else {
+        iPad.retval = /iPad|iPod|iPhone/.test(window.navigator.userAgent);
         return iPad.retval;
     }
 }
@@ -1129,60 +967,6 @@ function inputTypeNumberMask(el, pattern, initial, dontChangeType) {
     function change() {
         el.trigger('change');
     }
-}
-/**
-* Clear query string after return from redirect
- */
-function clearQueryString(isNotHash) {
-    var hash = isNotHash ? '' : location.hash,
-        qStr = location.search,
-        path = window.location.pathname,
-        host = window.location.origin;
-
-    qStr = qStr.replace(/&?pay=[^&]*/, '');
-    //Remove PayPal params
-    qStr = qStr.replace(/&?token=[^&]*/, '');
-    qStr = qStr.replace(/&?PayerID=[^&]*/, '');
-    //Remove USAePay params
-    qStr = qStr.replace(/&?UM[^=]*=[^&]*/g, '');
-    //Remove Mercury params
-    //Mercury replaces "&" in original url with "&amp;"
-    qStr = qStr.replace(/&amp;/g, '&');
-    qStr = qStr.replace(/&&/g, '&');
-    qStr = qStr.replace(/&?PaymentID=[^&]*/, '');
-    qStr = qStr.replace(/&?ReturnCode=[^&]*/, '');
-    //Remove Moneris params
-    qStr = qStr.replace(/&?response_order_id=[^&]*/, '');
-    qStr = qStr.replace(/&?date_stamp=[^&]*/, '');
-    qStr = qStr.replace(/&?time_stamp=[^&]*/, '');
-    qStr = qStr.replace(/&?bank_transaction_id=[^&]*/, '');
-    qStr = qStr.replace(/&?charge_total=[^&]*/, '');
-    qStr = qStr.replace(/&?bank_approval_code=[^&]*/, '');
-    qStr = qStr.replace(/&?response_code=[^&]*/, '');
-    qStr = qStr.replace(/&?iso_code=[^&]*/, '');
-    qStr = qStr.replace(/&?txn_num=[^&]*/, '');
-    qStr = qStr.replace(/&?message=[^&]*/, '');
-    qStr = qStr.replace(/&?trans_name=[^&]*/, '');
-    qStr = qStr.replace(/&?cardholder=[^&]*/, '');
-    qStr = qStr.replace(/&?f4l4=[^&]*/, '');
-    qStr = qStr.replace(/&?card=[^&]*/, '');
-    qStr = qStr.replace(/&?expiry_date=[^&]*/, '');
-    qStr = qStr.replace(/&?result=[^&]*/, '');
-    qStr = qStr.replace(/&?rvarPay=[^&]*/, '');
-    qStr = qStr.replace(/rvarSkin=/, 'skin=');
-    qStr = qStr.replace(/rvarEstablishment=/, 'establishment=');
-    qStr = qStr.replace(/\?&/, '?');
-    //Remove Adyen params
-    qStr = qStr.replace(/&?merchantReference=[^&]*/, '');
-    qStr = qStr.replace(/&?skinCode=[^&]*/, '');
-    qStr = qStr.replace(/&?shopperLocale=[^&]*/, '');
-    qStr = qStr.replace(/&?paymentMethod=[^&]*/, '');
-    qStr = qStr.replace(/&?authResult=[^&]*/, '');
-    qStr = qStr.replace(/&?pspReference=[^&]*/, '');
-    qStr = qStr.replace(/&?merchantSig=[^&]*/, '');
-
-    var url = host + path + qStr + hash;
-    window.history.replaceState('Return','', url);
 }
 /**
  * save all data
@@ -1294,4 +1078,596 @@ function format_timetables(timetables, separator) {
         separator = ', ';
     }
     return res.join(separator);
+}
+
+var PaymentProcessor = {
+    clearQueryString: function(payment_type, isNotHash) {
+        var hash = isNotHash ? '' : location.hash,
+            qStr = location.search,
+            path = window.location.pathname,
+            host = window.location.origin;
+
+        qStr = qStr.replace(/&?pay=[^&]*/, '');
+        qStr = this.getPaymentProcessor(payment_type).clearQueryString(qStr);
+
+        var url = host + path + qStr + hash;
+        window.history.replaceState('Return','', url);
+    },
+    getConfig: function(processors, skin) {
+        var creditCardPaymentProcessor = this.getCreditCardPaymentProcessor();
+        var credit_card_button = creditCardPaymentProcessor != null;
+
+        if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
+            && !credit_card_button && !processors.paypal && !processors.cash && !processors.gift_card) {
+            return undefined;
+        }
+
+        var credit_card_dialog = credit_card_button && creditCardPaymentProcessor.showCreditCardDialog();
+        var payment_count = 0;
+        credit_card_button && payment_count++;
+        processors.paypal && payment_count++;
+        processors.cash && payment_count++;
+        processors.gift_card && payment_count++;
+
+        return {
+            payment_count: payment_count,
+            credit_card_button: credit_card_button,
+            credit_card_dialog: credit_card_dialog
+        };
+    },
+    processPaymentType: function(payment_type, myorder) {
+        var get_parameters = App.Data.get_parameters,
+            payment_info = {},
+            pay_get_parameter = get_parameters.pay;
+
+        // Clear pay flag, it should not affect next payments
+        delete get_parameters.pay;
+
+        if (payment_type == PAYMENT_TYPE.CREDIT) {
+            var card = App.Data.card && App.Data.card.toJSON()
+            var address = null;
+            if (card.street) {
+                address = {
+                    street: card.street,
+                    city: card.city,
+                    state: card.state,
+                    zip: card.zip
+                };
+            }
+
+            var cardNumber = $.trim(card.cardNumber);
+            payment_info.cardInfo = {
+                firstDigits: cardNumber.substring(0, 4),
+                lastDigits: cardNumber.substring(cardNumber.length - 4),
+                firstName: card.firstName,
+                lastName: card.secondName,
+                address: address
+            };
+        }
+
+        payment_info = this.getPaymentProcessor(payment_type).processPayment(myorder, payment_info, pay_get_parameter);
+        this.clearQueryString(payment_type);
+        if (!payment_info.errorMsg) {
+            return payment_info;
+        } else {
+            myorder.paymentResponse = {status: 'error', errorMsg: payment_info.errorMsg};
+            myorder.trigger('paymentResponse');
+            return null;
+        }
+    },
+    handleRedirect: function(payment_type, myorder, data) {
+        var processor = this.getPaymentProcessor(payment_type);
+        if (processor.handleRedirect) {
+            processor.handleRedirect(myorder, data);
+        }
+
+        myorder.checkout.set('payment_type', payment_type);
+        myorder.checkout.saveCheckout();
+
+        var qStr = location.search;
+        if (qStr) {
+            qStr += "&";
+        } else {
+            qStr = "?";
+        }
+        qStr += "pay=false";
+        var url = window.location.origin + window.location.pathname + qStr;
+        window.history.replaceState('Return','', url);
+
+        function doFormRedirect(action, query) {
+            var newForm= $('<form>', {
+                'action': action,
+                'method': 'post'
+            });
+            for(var i in query) {
+                newForm.append($('<input>', {
+                    name: i,
+                    value: processValue(query[i]),
+                    type: 'hidden'
+                }));
+            }
+
+          newForm.appendTo(document.body).submit();
+        }
+
+        function processValue(value) {
+            var card = App.Data.card && App.Data.card.toJSON();
+            var map = {
+                '$cardNumber': card.cardNumber,
+                '$expMonth': card.expMonth,
+                '$expDate': card.expDate,
+                '$expYYYY': card.expDate,
+                '$expYY': card.expDate ? card.expDate.substring(2) : undefined,
+                '$securityCode': card.securityCode
+            };
+
+            for(var key in map) {
+                if(value && (typeof value === 'string' || value instanceof String)) {
+                    value = replaceAll(key, map[key], value);
+                }
+            }
+
+            return value;
+        }
+
+        if (data.data.url) {
+            window.location = data.data.url;
+        } else if (data.data.action && data.data.query) {
+            doFormRedirect(data.data.action, data.data.query);
+        }
+        return;
+    },
+    handlePaymentDataRequest: function(payment_type, myorder, data) {
+        var processor = this.getPaymentProcessor(payment_type);
+        if (processor.handlePaymentDataRequest) {
+            processor.handlePaymentDataRequest(myorder, data);
+        }
+    },
+    getPaymentProcessor: function(payment_type) {
+        var payment_processor = null;
+        switch (payment_type) {
+            case PAYMENT_TYPE.CREDIT:
+                payment_processor = this.getCreditCardPaymentProcessor()
+                break;
+            case PAYMENT_TYPE.PAYPAL:
+                payment_processor = PayPalPaymentProcessor;
+                break;
+            case PAYMENT_TYPE.PAYPAL_MOBILE:
+                payment_processor = PayPalMobilePaymentProcessor;
+                break;
+            case PAYMENT_TYPE.GIFT:
+                payment_processor = GiftCardPaymentProcessor;
+                break;
+            case PAYMENT_TYPE.NO_PAYMENT:
+                payment_processor = NoPaymentPaymentProcessor;
+                break;
+        }
+        return payment_processor;
+    },
+    getCreditCardPaymentProcessor: function() {
+        var payment_processor = null;
+        var payment = App.Settings.payment_processor;
+        if (payment.usaepay) {
+            payment_processor = USAePayPaymentProcessor;
+        } else if (payment.mercury) {
+            payment_processor = MercuryPaymentProcessor;
+        } else if (payment.moneris) {
+            payment_processor = MonerisPaymentProcessor;
+        } else if (payment.quickbooks) {
+            payment_processor = QuickBooksPaymentProcessor;
+        } else if (payment.adyen) {
+            payment_processor = AdyenPaymentProcessor;
+        } else if (payment.worldpay) {
+            payment_processor = WorldPayPaymentProcessor;
+        }
+        return payment_processor;
+    }
+};
+
+/*
+* Template for any payment processor
+* */
+var NoPaymentPaymentProcessor = {
+    /*
+    *  Removes query string parameters added by payment gateway when returning back to our app
+    */
+    clearQueryString: function(queryString) {
+        return queryString;
+    },
+    /*
+    *  That is for credit card processors only. Defines where credit card data can be enter in
+    *  our form or payment gateway hosted page.
+    */
+    showCreditCardDialog: function() {
+        return false;
+    },
+    /*
+    *  Implement this method to store any data to local storage before before redirect.
+    */
+    handleRedirect: function(myorder, data) {
+    },
+    /*
+    *  Implement this method to make direct ajax calls to payment gateway.
+    *  Gateway must support CORS.
+    */
+    handlePaymentDataRequest: function(myorder, data) {
+    },
+    /*
+    *  Adds any processor specific data from get_parameters or model to payment_info.
+    *  Set 'errorMsg' property for return object to trigger error
+    */
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        return payment_info;
+    }
+};
+
+var USAePayPaymentProcessor = {
+    clearQueryString: function(queryString) {
+        return queryString.replace(/&?UM[^=]*=[^&]*/g, '');
+    },
+    showCreditCardDialog: function() {
+        return true;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        if (pay_get_parameter) {
+            var get_parameters = App.Data.get_parameters;
+            if(pay_get_parameter === 'true') {
+                payment_info.transaction_id = get_parameters.UMrefNum;
+            } else {
+                payment_info.errorMsg = get_parameters.UMerror;
+            }
+        }
+        return payment_info;
+    }
+};
+
+var MERCURY_RETURN_CODE = {
+    SUCCESS : 0,
+    AUTH_FAIL : 100,
+    CARD_DECLINED : 101,
+    CANCEL : 102,
+    SESSION_TIMEOUT : 103,
+    MAINTENANCE_MODE : 104,
+    SAVE_CARD_INFO_FAIL : 206,
+    LOAD_CARD_INFO_FAIL : 207,
+    PROCESS_CARD_INFO_FAIL : 208,
+    VALIDATION_CC_FAIL : 301,
+    VALIDATION_SERVER_SIDE_FAILURE :302,
+    VALIDATE_NAME_FAIL : 302
+};
+
+var MERCURY_RETURN_MESSAGE = {};
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SUCCESS] = "Success";
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.AUTH_FAIL] = "Auth Fail";
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.CARD_DECLINED] = "Card Declined";
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.CANCEL] = "Payment Canceled";
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SESSION_TIMEOUT] = "Session Timeout";
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.MAINTENANCE_MODE] = "Maintenance Mode";
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SAVE_CARD_INFO_FAIL] = "Save Card Info Fail";
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.LOAD_CARD_INFO_FAIL] = "Load Card Info Fail";
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.PROCESS_CARD_INFO_FAIL] = "Process Card Info Fail";
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_CC_FAIL] = "Credit Card failed Mod10 check multiple times";
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_SERVER_SIDE_FAILURE] = "Possible tampering suspected";
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATE_NAME_FAIL] = "Invalid data entered in cardholder name field";
+MERCURY_RETURN_MESSAGE_DEFAULT = "Unknown error";
+
+var MercuryPaymentProcessor = {
+    clearQueryString: function(queryString) {
+        qStr = queryString.replace(/&amp;/g, '&');
+        qStr = qStr.replace(/&&/g, '&');
+        qStr = qStr.replace(/&?PaymentID=[^&]*/, '');
+        qStr = qStr.replace(/&?ReturnCode=[^&]*/, '');
+
+        return qStr;
+    },
+    showCreditCardDialog: function() {
+        return false;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        if (pay_get_parameter) {
+            var get_parameters = App.Data.get_parameters;
+            var returnCode = Number(get_parameters.ReturnCode);
+            if (pay_get_parameter === 'true' && returnCode == MERCURY_RETURN_CODE.SUCCESS) {
+                payment_info.transaction_id = get_parameters.PaymentID;
+            } else {
+                payment_info.errorMsg = MERCURY_RETURN_MESSAGE[returnCode];
+                if (!payment_info.errorMsg) {
+                    payment_info.errorMsg = MERCURY_RETURN_MESSAGE_DEFAULT;
+                }
+            }
+        }
+        return payment_info;
+    }
+};
+
+var MONERIS_RETURN_CODE = {
+    DECLINE: 50
+};
+
+var MONERIS_RETURN_MESSAGE = {
+    50: "Decline",
+    51: "Expired Card",
+    52: "PIN retries exceeded",
+    53: "No sharing",
+    54: "No security module",
+    55: "Invalid transaction",
+    56: "Card not supported",
+    57: "Lost or stolen card",
+    58: "Card use limited",
+    59: "Restricted Card",
+    60: "No Chequing account"
+};
+MONERIS_RETURN_MESSAGE_DEFAULT = "Unknown error";
+
+var MONERIS_PARAMS = {
+    PAY: 'rvarPay',
+    RESPONSE_ORDER_ID: 'response_order_id',
+    TRANSACTION_ID: 'txn_num'
+};
+
+var MonerisPaymentProcessor = {
+    clearQueryString: function(queryString) {
+        qStr = queryString.replace(/&?response_order_id=[^&]*/, '');
+        qStr = qStr.replace(/&?date_stamp=[^&]*/, '');
+        qStr = qStr.replace(/&?time_stamp=[^&]*/, '');
+        qStr = qStr.replace(/&?bank_transaction_id=[^&]*/, '');
+        qStr = qStr.replace(/&?charge_total=[^&]*/, '');
+        qStr = qStr.replace(/&?bank_approval_code=[^&]*/, '');
+        qStr = qStr.replace(/&?response_code=[^&]*/, '');
+        qStr = qStr.replace(/&?iso_code=[^&]*/, '');
+        qStr = qStr.replace(/&?txn_num=[^&]*/, '');
+        qStr = qStr.replace(/&?message=[^&]*/, '');
+        qStr = qStr.replace(/&?trans_name=[^&]*/, '');
+        qStr = qStr.replace(/&?cardholder=[^&]*/, '');
+        qStr = qStr.replace(/&?f4l4=[^&]*/, '');
+        qStr = qStr.replace(/&?card=[^&]*/, '');
+        qStr = qStr.replace(/&?expiry_date=[^&]*/, '');
+        qStr = qStr.replace(/&?result=[^&]*/, '');
+        qStr = qStr.replace(/&?rvarPay=[^&]*/, '');
+        qStr = qStr.replace(/rvarSkin=/, 'skin=');
+        qStr = qStr.replace(/rvarEstablishment=/, 'establishment=');
+        qStr = qStr.replace(/\?&/, '?');
+
+        return qStr;
+    },
+    showCreditCardDialog: function() {
+        return true;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        var get_parameters = App.Data.get_parameters;
+
+        //redefine it, Moneris allow to pass custom args only having rvar prefix
+        pay_get_parameter = get_parameters[MONERIS_PARAMS.PAY];
+        delete get_parameters[MONERIS_PARAMS.PAY];
+
+        if (pay_get_parameter) {
+            var returnCode = Number(get_parameters.response_code);
+            if(pay_get_parameter === 'true' && returnCode < MONERIS_RETURN_CODE.DECLINE) {
+                payment_info.transaction_id = get_parameters[MONERIS_PARAMS.TRANSACTION_ID];
+                payment_info.response_order_id = get_parameters[MONERIS_PARAMS.RESPONSE_ORDER_ID];
+            } else {
+                payment_info.errorMsg = MONERIS_RETURN_MESSAGE[returnCode];
+                if (!payment_info.errorMsg) {
+                    payment_info.errorMsg = MONERIS_RETURN_MESSAGE_DEFAULT;
+                }
+            }
+        }
+        return payment_info;
+    }
+};
+
+WORLDPAY_RETURN_MESSAGE_DEFAULT = "Unknown error";
+var WORLDPAY_PARAMS = {
+    ORDER_ID: 'orderid',
+    TRANSACTION_ID: 'transid',
+    REFCODE: 'refcode',
+    REASON: 'Reason'
+};
+
+var WorldPayPaymentProcessor = {
+    clearQueryString: function(queryString) {
+
+        qStr = queryString.replace(/&?Accepted=[^&]*/, '');
+        qStr = qStr.replace(/&?ACCOUNTNUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?authcode=[^&]*/, '');
+        qStr = qStr.replace(/&?AVS_RESULT=[^&]*/, '');
+        qStr = qStr.replace(/&?BALANCE=[^&]*/, '');
+        qStr = qStr.replace(/&?BATCHNUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?CVV2_RESULT=[^&]*/, '');
+        qStr = qStr.replace(/&?DEBIT_TRACE_NUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?ENTRYMETHOD=[^&]*/, '');
+        qStr = qStr.replace(/&?historyid=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_ADDR=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_CITY=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_NAME=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_PHONE=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANT_DBA_STATE=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANTID=[^&]*/, '');
+        qStr = qStr.replace(/&?orderid=[^&]*/, '');
+        qStr = qStr.replace(/&?PAYTYPE=[^&]*/, '');
+        qStr = qStr.replace(/&?PRODUCT_DESCRIPTION=[^&]*/, '');
+        qStr = qStr.replace(/&?Reason=[^&]*/, '');
+        qStr = qStr.replace(/&?RECEIPT_FOOTER=[^&]*/, '');
+        qStr = qStr.replace(/&?recurid=[^&]*/, '');
+        qStr = qStr.replace(/&?refcode=[^&]*/, '');
+        qStr = qStr.replace(/&?result=[^&]*/, '');
+        qStr = qStr.replace(/&?SEQUENCE_NUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?Status=[^&]*/, '');
+        qStr = qStr.replace(/&?SYSTEMAUDITTRACENUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?TERMINALID=[^&]*/, '');
+        qStr = qStr.replace(/&?TRANSGUID=[^&]*/, '');
+        qStr = qStr.replace(/&?transid=[^&]*/, '');
+        qStr = qStr.replace(/&?transresult=[^&]*/, '');
+        qStr = qStr.replace(/&?AuthNo=[^&]*/, '');
+        qStr = qStr.replace(/&?DUPLICATE=[^&]*/, '');
+        qStr = qStr.replace(/&?MERCHANTORDERNUMBER=[^&]*/, '');
+        qStr = qStr.replace(/&?Declined=[^&]*/, '');
+        qStr = qStr.replace(/&?rcode=[^&]*/, '');
+        qStr = qStr.replace(/\?&/, '?');
+        qStr = qStr.replace(/&#/, '#');
+
+        return qStr;
+    },
+    showCreditCardDialog: function() {
+        return true;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        var get_parameters = App.Data.get_parameters;
+
+        if (pay_get_parameter) {
+            var status = get_parameters['Status']
+            if(pay_get_parameter === 'true' && status === 'Accepted') {
+                payment_info.transaction_id = get_parameters[WORLDPAY_PARAMS.TRANSACTION_ID];
+                payment_info.order_id = get_parameters[WORLDPAY_PARAMS.ORDER_ID];
+                payment_info.refcode = get_parameters[WORLDPAY_PARAMS.REFCODE];
+            } else {
+                payment_info.errorMsg = get_parameters[WORLDPAY_PARAMS.REASON];
+                if (!payment_info.errorMsg) {
+                    payment_info.errorMsg = WORLDPAY_RETURN_MESSAGE_DEFAULT;
+                }
+            }
+        }
+        return payment_info;
+    }
+};
+
+
+var QuickBooksPaymentProcessor = {
+    clearQueryString: function(queryString) {
+        return queryString;
+    },
+    showCreditCardDialog: function() {
+        return true;
+    },
+    handlePaymentDataRequest: function(myorder, data) {
+        if(data.data && data.data.app_token && data.data.token_url) {
+            $.ajax({
+                type: "POST",
+                beforeSend: function(xhr){xhr.setRequestHeader('Authorization', "Intuit_APIKey intuit_apikey=ipp-" + data.data.app_token);},
+                url: data.data.token_url + "?apptoken=" + data.data.app_token,
+                data: JSON.stringify({card: {
+                        number: card.cardNumber,
+                        expMonth: card.expMonth,
+                        expYear: card.expDate,
+                        cvc: card.securityCode}}),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    myorder.checkout.set('token', data.value);
+                    myorder.submit_order_and_pay(payment_type, validationOnly, capturePhase);
+                },
+                error: function (data) {
+                    data.errorMsg = MSG.ERROR_OCCURRED + "Error during tokenization";
+                    myorder.paymentResponse = {status: 'error', errorMsg: data.errorMsg};
+                    myorder.trigger('paymentResponse');
+                }
+            });
+        }
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        var checkout = myorder.checkout.toJSON();
+        if  (checkout.token) {
+            payment_info.cardInfo.token = checkout.token;
+            myorder.checkout.unset("token");
+        }
+        return payment_info;
+    }
+};
+
+var AdyenPaymentProcessor = {
+    clearQueryString: function(queryString) {
+        qStr = queryString.replace(/&?merchantReference=[^&]*/, '');
+        qStr = qStr.replace(/&?skinCode=[^&]*/, '');
+        qStr = qStr.replace(/&?shopperLocale=[^&]*/, '');
+        qStr = qStr.replace(/&?paymentMethod=[^&]*/, '');
+        qStr = qStr.replace(/&?authResult=[^&]*/, '');
+        qStr = qStr.replace(/&?pspReference=[^&]*/, '');
+        qStr = qStr.replace(/&?merchantSig=[^&]*/, '');
+
+        return qStr;
+    },
+    showCreditCardDialog: function() {
+        return false;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        if (pay_get_parameter) {
+            var get_parameters = App.Data.get_parameters;
+            var returnCode = get_parameters.authResult;
+            if(pay_get_parameter === 'true' && returnCode == 'AUTHORISED') {
+                payment_info.transaction_id = get_parameters.pspReference;
+                payment_info.order_id = get_parameters.merchantReference
+            } else {
+                payment_info.errorMsg = returnCode ? returnCode : 'Payment Canceled';
+            }
+        }
+        return payment_info;
+    }
+};
+
+var PayPalPaymentProcessor = {
+    clearQueryString: function(queryString) {
+        res = queryString.replace(/&?token=[^&]*/, '');
+        res = res.replace(/&?PayerID=[^&]*/, '');
+        return res;
+    },
+    handleRedirect: function(myorder, data) {
+        if (data.data && data.data.payment_id) {
+            myorder.checkout.set('payment_id', data.data.payment_id);
+        }
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        if (pay_get_parameter) {
+            if(pay_get_parameter === 'true') {
+                var get_parameters = App.Data.get_parameters;
+                var checkout = myorder.checkout.toJSON()
+                payment_info.payer_id = get_parameters.PayerID;
+                payment_info.payment_id = checkout.payment_id;
+            }  else {
+                payment_info.errorMsg = 'Payment Canceled';
+            }
+        }
+        return payment_info;
+    }
+};
+
+var PayPalMobilePaymentProcessor = {
+    clearQueryString: function(queryString) {
+        return queryString;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        var get_parameters = App.Data.get_parameters;
+        payment_info.tabId = get_parameters.tabId;
+        payment_info.locationId = get_parameters.locationId;
+        payment_info.customerId = get_parameters.customerId;
+        payment_info.phone = App.Data.customer.phone;
+        return payment_info;
+    }
+};
+
+var GiftCardPaymentProcessor = {
+    clearQueryString: function(queryString) {
+        return queryString;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        var giftcard = App.Data.giftcard && App.Data.giftcard.toJSON();
+        payment_info.cardInfo = {
+            cardNumber: $.trim(giftcard.cardNumber),
+            captchaKey: giftcard.captchaKey,
+            captchaValue: giftcard.captchaValue
+        };
+        return payment_info;
+    }
+};
+// End of timetable functions
+
+/*
+* removeClassRegexp: removes all classes by regular expression
+*           example: removeClassRegexp($('#element_id'), "s\\d+")
+*/
+function removeClassRegexp(jq_elem, exp_str) {
+    var regexpStr = "(\\s+)?" + exp_str + "(?=\\s|$)";
+    var regexp = new RegExp(regexpStr, "g");
+    jq_elem.each(function(index, elem){
+       $(elem).prop('className', $(elem).prop('className').replace(regexp, ''));
+    });
 }

@@ -31,8 +31,10 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:header', this.header_change, this);
             this.listenTo(this.model, 'change:cart', this.cart_change, this);
             this.listenTo(this.model, 'change:popup', this.popup_change, this);
-            this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
-            this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
+            this.listenTo(this.model, 'loadStarted', this.showSpinner.bind(this, EVENT.NAVIGATE), this);
+            this.listenTo(this.model, 'loadCompleted', this.hideSpinner.bind(this, EVENT.NAVIGATE), this);
+            this.listenTo(App.Data.search, 'onSearchStart', this.showSpinner.bind(this, EVENT.SEARCH), this);
+            this.listenTo(App.Data.search, 'onSearchComplete', this.hideSpinner.bind(this, EVENT.SEARCH, true), this);
             this.listenTo(this.model, 'onRoute', this.hide_popup, this);
             this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
             this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
@@ -55,7 +57,8 @@ define(["done_view", "generator"], function(done_view) {
         },
         events: {
             'click #popup .cancel': 'hide_popup',
-            'click .change_establishment': 'change_establishment'
+            'click .change_establishment': 'change_establishment',
+            'click .go-to-directory': 'goToDirectory'
         },
         content_change: function() {
             var content = this.$('#content'),
@@ -181,20 +184,11 @@ define(["done_view", "generator"], function(done_view) {
                 }
             }
         },
-        loadCompleted: function() {
-            $(window).trigger('loadCompleted');
-            clearTimeout(this.spinner);
-            delete this.spinner;
-            this.hideSpinner();
+        showSpinner: function(event) {
+            $(window).trigger('showSpinner', {startEvent: event});
         },
-        loadStarted: function() {
-            this.spinner = setTimeout(this.showSpinner.bind(this), 50);
-        },
-        showSpinner: function() {
-            this.$('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
-        },
-        hideSpinner: function() {
-            this.$('#main-spinner').addClass('ui-visible').removeClass('ui-visible');
+        hideSpinner: function(event, isLast) {
+            $(window).trigger('hideSpinner', {startEvent: event, isLastEvent: isLast});
         },
         /**
          * Show the "Store Choice" block if a brand have several stores.
@@ -222,6 +216,10 @@ define(["done_view", "generator"], function(done_view) {
             // http://caniuse.com/#search=filter
             var mainEl = this.$('.main_el');
             this.model.get('isBlurContent') ? mainEl.addClass('blur') : mainEl.removeClass('blur');
+        },
+        goToDirectory: function() {
+            var goToDirectory = this.model.get('goToDirectory');
+            typeof goToDirectory == 'function' && goToDirectory();
         }
     });
 
@@ -231,12 +229,25 @@ define(["done_view", "generator"], function(done_view) {
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.listenToOnce(App.Data.mainModel, 'loadCompleted', App.Data.myorder.check_maintenance);
+            if (!App.Data.router.isNotFirstLaunch) this.$('.back').hide();
         },
         events: {
-            "click .btn": 'reload'
+            'click .go-to-directory': 'goToDirectory',
+            'click .back': 'back',
+            'click .reload': 'reload'
+        },
+        /**
+         * Go to the previous establishment.
+         */
+        back: function() {
+            window.history.back();
         },
         reload: function() {
             window.location.replace(window.location.href.replace(/#.*$/, ''));
+        },
+        goToDirectory: function() {
+            var goToDirectory = this.model.get('goToDirectory');
+            typeof goToDirectory == 'function' && goToDirectory();
         }
     });
 

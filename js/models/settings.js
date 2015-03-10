@@ -42,7 +42,7 @@ define(["backbone", "async"], function(Backbone) {
 
             // fix for Bug 9344. Chrome v34.0.1847.131 crashes when reload page
             if(/Chrome\/34\.0\.1847\.(131|137)/i.test(window.navigator.userAgent))
-                return App.Data.errors.alert(MSG.ERROR_CHROME_CRASH, true);
+                return App.Data.errors.alert(MSG.ERROR_CHROME_CRASH, true); // user notification
 
             // load settings system for directory app, only for maintenance page allow
             return $.when(self.get_settings_system());
@@ -55,6 +55,10 @@ define(["backbone", "async"], function(Backbone) {
             skin: "", // weborder by default
             settings_skin: {
                 routing: {
+                    errors: {
+                        cssCore: [],
+                        templatesCore: ['errors_core']
+                    },
                     establishments: {
                         cssCore: ['establishments'],
                         templatesCore: ['establishments']
@@ -80,7 +84,10 @@ define(["backbone", "async"], function(Backbone) {
                 cache: true,
                 success: function(data) {
                     if (!data.status) {
-                        errors.alert_red(MSG.ERROR_INCORRECT_AJAX_DATA, true); // user notification (server return HTTP status 200, but data.status is error)
+                        errors.alert(MSG.ERROR_INCORRECT_AJAX_DATA, true, false, {
+                            errorServer: true,
+                            typeIcon: 'warning'
+                        }); // user notification
                     } else {
                         switch (data.status) {
                             case 'OK':
@@ -90,7 +97,10 @@ define(["backbone", "async"], function(Backbone) {
                                 if (typeof this.errorResp === 'function') {
                                     this.errorResp(data.data);
                                 } else {
-                                    errors.alert_red(data.errorMsg, true); // user notification (server return HTTP status 200, but data.status is error)
+                                    errors.alert(data.errorMsg, true, false, {
+                                        errorServer: true,
+                                        typeIcon: 'warning'
+                                    }); // user notification
                                 }
                                 break;
                         }
@@ -154,14 +164,24 @@ define(["backbone", "async"], function(Backbone) {
                 isUnknownSkin = !(skin && this.get('supported_skins').indexOf(skin) > -1),
                 defaultSkin = (settings.type_of_service == ServiceType.RETAIL) ? App.Skins.RETAIL : App.Skins.DEFAULT;
 
-            App.skin = isUnknownSkin ? defaultSkin : skin; // set alias to current skin
+            // set alias to current skin
+            App.skin = isUnknownSkin ? defaultSkin : skin;
 
-            if ((App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL) && this.isMobileVersion())
-                App.skin = App.Skins.WEBORDER_MOBILE;
+            // convert skin to mobile version if necessary
+            this.checkIfMobile(); //
+
             if (App.skin == App.Skins.RETAIL) settings.delivery_charge = 0; // if Retail skin set delivery_charge to 0
 
             this.set('skin', App.skin);
             this.trigger('changeSkin');
+        },
+        /*
+         * Convert desktop version of skin to mobile
+         */
+        checkIfMobile: function() {
+            // convert `WEBORDER` skin to 'WEBORDER_MOBILE' for mobile devices
+            if ((App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL) && this.isMobileVersion())
+                App.skin = App.Skins.WEBORDER_MOBILE;
         },
         /**
          * Get settings from file "settings.json" for current skin.
@@ -240,7 +260,9 @@ define(["backbone", "async"], function(Backbone) {
                     },
                     type_of_service: ServiceType.TABLE_SERVICE,
                     default_dining_option: 'DINING_OPTION_TOGO',
-                    accept_discount_code: true
+                    accept_discount_code: true,
+                    enable_quantity_modifiers: true,
+                    enable_split_modifiers: true
                 },
                 load = $.Deferred();
 
@@ -370,12 +392,17 @@ define(["backbone", "async"], function(Backbone) {
                                 }
                             }
 
-                            if (settings_system.online_orders && settings_system.dining_options.length == 0) {
-                                self.set({
-                                    'isMaintenance': true,
-                                    'maintenanceMessage': ERROR[MAINTENANCE.DINING_OPTION]
-                                });
+                            if (settings_system.dining_options.length == 0) {
+                                if (App.Data.dirMode) { // app accessed via Directory app (bug #17552)
+                                    settings_system.online_orders = false; // if all dining options are disabled this case looks like 'online_orders' is checked off because 'online_orders' affects only order creating functionality
+                                } else { // app accessed directly from browser (bug #17552)
+                                    self.set({
+                                        'isMaintenance': true,
+                                        'maintenanceMessage': ERROR[MAINTENANCE.DINING_OPTION]
+                                    });
+                                }
                             }
+
                             break;
                         // DISALLOW_ONLINE status doesn't use now. Instead we get 404 HTTP-status now from a backend.
                         /*
@@ -389,7 +416,10 @@ define(["backbone", "async"], function(Backbone) {
                             break;
                         */
                         default:
-                            App.Data.errors.alert_red(response.errorMsg, true);
+                            App.Data.errors.alert(response.errorMsg, true, false, {
+                                errorServer: true,
+                                typeIcon: 'warning'
+                            }); // user notification
                             recoverColorScheme();
                     }
 
@@ -450,30 +480,15 @@ define(["backbone", "async"], function(Backbone) {
         },
         get_payment_process: function() {
             var settings_system = this.get('settings_system'),
-                processor = settings_system.payment_processor;
+                processor = settings_system.payment_processor,
+                skin = this.get("skin"),
+                config = PaymentProcessor.getConfig(processor, skin);
 
-            var skin = this.get("skin");
-
-            if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
-                && !processor.usaepay && !processor.mercury && !processor.paypal && !processor.cash && !processor.gift_card && !processor.moneris && !processor.quickbooks && !processor.adyen) {
+            if (!config) {
                 return undefined;
             }
 
-            var credit_card_button = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury || processor.moneris || processor.quickbooks ||  processor.adyen || false;
-            var credit_card_dialog = (processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.moneris || processor.quickbooks || false;
-            var payment_count = 0;
-            processor.paypal && payment_count++;
-            if((processor.paypal && processor.paypal_direct_credit_card) || processor.usaepay || processor.mercury || processor.moneris || processor.quickbooks || processor.adyen) {
-                payment_count++;
-            }
-            processor.cash && payment_count++;
-            processor.gift_card && payment_count++;
-
-            return Backbone.$.extend(processor, {
-                payment_count: payment_count,
-                credit_card_button: credit_card_button,
-                credit_card_dialog: credit_card_dialog
-            });
+            return Backbone.$.extend(processor, config);
         },
         get_img_default: function(index) {
             var img = this.get('settings_skin').img_default;

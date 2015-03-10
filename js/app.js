@@ -110,23 +110,56 @@
         // set config for require
         require.config(app.config);
 
-        require(["jquery_alerts", "cssua", "functions", "errors", "myorder", "settings", "timetable", "log", "tax", "main_router"], function() {
+        require(['cssua', 'functions', 'generator', 'errors', 'errors_view', 'myorder', 'settings', 'timetable', 'log', 'tax', 'main_router'], function() {
             var win = Backbone.$(window);
 
             // invoke beforeStart onfig
             app.beforeInit();
 
+            App.Data.spinnerStartEvents = [];
             // init spinner
             var spinner = app.initSpinner(app.addSpinner, app.getFontSize);
-            win.on('hideSpinner', function() {
-                spinner.style.display = 'none';
+
+            App.Data.spinnerEvents = [];
+            win.on('hideSpinner', function(event, data) {
+                if (!data || !data.startEvent) {
+                    data = {startEvent: EVENT.START};
+                }
+                //trace("win spinner Hide ==> ", data.startEvent);
+                if (App.Data.spinnerEvents.indexOf(data.startEvent) >= 0){
+                    App.Data.spinnerEvents = _.without(App.Data.spinnerEvents, data.startEvent);
+                }
+
+                if (data.isLastEvent) {
+                    spinner.style.display = 'none';
+                    return;
+                }
+                setTimeout( function() {
+                    //#19303 we should wait in the case of a events series e.g. Start -> Navigate -> Search,
+                    //only the last event (isLastEvent flag) should hide the spinner immediately.
+                    if (App.Data.spinnerEvents.length == 0) {
+                        spinner.style.display = 'none';
+                    }
+                }, 50);
             });
-            win.on('showSpinner', function() {
-                spinner.style.display = 'block';
+            win.on('showSpinner', function(evt, data) {
+                if (!data || !data.startEvent) {
+                    data = {startEvent: EVENT.START};
+                }
+                //trace("win spinner Show ==> ", data.startEvent);
+                if (App.Data.spinnerEvents.indexOf(data.startEvent) == -1) {
+                    App.Data.spinnerEvents.push(data.startEvent);
+                }
+                setTimeout( function() {
+                    if (App.Data.spinnerEvents.indexOf(data.startEvent) >= 0) {
+                        spinner.style.display = 'block';
+                    }
+                }, 50);
             });
 
             // init errors object and check browser version
-            App.Data.errors = new App.Models.Errors;
+            var errors = App.Data.errors = new App.Models.Errors;
+            errors.on('alertMessage', App.Routers.MainRouter.prototype.alertMessage); // user notification
 
             // init log object and listen to ajax errors
             App.Data.log = new App.Models.Log({init: window.initErrors});
@@ -138,7 +171,8 @@
             App.Data.settings = new App.Models.Settings({
                 supported_skins: app.skins.available
             });
-            var settings = App.Data.settings;
+            var settings = App.Data.settings,
+                isNotFirstLaunch = false;
 
             settings.on('changeSettingsSkin', function() {
                 load_styles_and_scripts(); // load styles and scripts
@@ -156,7 +190,13 @@
                         router.trigger('needLoadEstablishments');
                     });
 
-                    if (settings.get('isMaintenance')) location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
+                    if (settings.get('isMaintenance')) {
+                        location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
+                    } else {
+                        // TODO: shouldn't depend on the isMaintenance mode if the 'Change Store' functionality is implemented on '#maintenance' page
+                        isNotFirstLaunch = true;
+                    }
+                    router.isNotFirstLaunch = isNotFirstLaunch;
                     Backbone.history.start();
 
                     // invoke afterStart callback

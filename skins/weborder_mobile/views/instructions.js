@@ -32,7 +32,7 @@ define(["instructions_view"], function(instructions_view) {
                 var $self = $(this);
                 setTimeout(function() {
                     var $scroll = $self.parents('.ps-container');
-                    if ($self.position().top + $self.outerHeight() > $scroll.height()) {
+                    if ($scroll.length > 0 && $self.position().top + $self.outerHeight() > $scroll.height()) {
                         $scroll.scrollTop($scroll.scrollTop() + $self.position().top + $self.outerHeight() - $scroll.height());
                     }
                     $self[0].scrollIntoView();

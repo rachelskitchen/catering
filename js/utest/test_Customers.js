@@ -15,6 +15,15 @@ define(['customers', 'revel_api'], function() {
             expect(model.toJSON() instanceof Object).toEqual(true);
         });
 
+        it('First Name and Last Name contains gaps at the beginning and at the end of both values', function() {
+            model.set({
+                first_name: ' firstName ',
+                last_name: ' lastName '
+            });
+            expect(model.get('first_name')).toBe('firstName');
+            expect(model.get('last_name')).toBe('lastName');
+        });
+
         it("Call syncWithRevelAPI() method", function() {
             spyOn(model, 'syncWithRevelAPI');
             model.initialize();
@@ -41,7 +50,7 @@ define(['customers', 'revel_api'], function() {
             it("2. 'first_name' is invalid string data (null, undefined, empty string, not string type data). 'last_name' is valid string data.", function() {
                 testValues.forEach(function(first_name) {
                     model.set({first_name: first_name, last_name: 'lastName'});
-                    expect(model.get_customer_name()).toBe('l.');
+                    expect(model.get_customer_name()).toBe(' l.');
                 });
             });
 

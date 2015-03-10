@@ -26,10 +26,7 @@ define({
         app: "js/app",
         config: "js/config",
         jquery: "js/libs/jquery/jquery",
-        jquery_ui_draggable: "js/libs/jquery/jquery.ui.draggable",
-        jquery_alerts: "js/libs/jquery/jquery.alerts",
         jquery_gallery: 'js/libs/jquery/jquery.gallery',
-        jquery_migrate: "js/libs/jquery/jquery-migrate.min",
         jquery_numbermask: "js/libs/jquery/jquery.number_mask",
         backbone: "js/libs/backbone",
         cssua: "js/libs/cssua",
@@ -40,6 +37,7 @@ define({
         customers: "js/models/customers",
         childproducts: "js/models/childproducts",
         errors : "js/models/errors",
+        errors_view: 'js/views/errors',
         myorder: "js/models/myorder",
         settings: "js/models/settings",
         timetable: "js/models/timetable",
@@ -82,24 +80,13 @@ define({
         revel_api: "js/models/revel",
         revel_view: 'js/views/revel',
         establishments: 'js/models/establishments',
-        establishments_view: 'js/views/establishments'
+        establishments_view: 'js/views/establishments',
+        filters: 'js/models/filters'
     },
     waitSeconds: 30,
     shim: {
         "jquery": {
             exports: "$"
-        },
-        "jquery_ui_draggable": {
-            deps: ["jquery"],
-            exports: "$.ui.draggable"
-        },
-        "jquery_alerts": {
-            deps: ["jquery", "jquery_migrate", "jquery_ui_draggable"],
-            exports: "$.alerts"
-        },
-        "jquery_migrate": {
-            deps: ["jquery"],
-            exports: "$.migrate"
         },
         "jquery_numbermask": {
             deps: ["jquery"],
@@ -116,13 +103,16 @@ define({
             exports: "_"
         },
         "functions": {
-            deps: ["underscore", "jquery"]
+            deps: ["underscore", "jquery", "cssua"]
         },
         "customers": {
             deps: ["backbone"]
         },
         "errors" : {
             deps: ["backbone", "functions"]
+        },
+        'errors_view': {
+            deps: ['backbone', 'factory']
         },
         "myorder": {
             deps: ["backbone"]
@@ -210,6 +200,9 @@ define({
         },
         'establishments_view': {
             deps: ['backbone', 'factory', 'generator', 'list']
+        },
+        'filters': {
+            deps: ['backbone']
         }
     },
     map: {

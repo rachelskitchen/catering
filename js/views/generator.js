@@ -36,6 +36,7 @@ define(['backbone'], function(Backbone) {
             if(App.Views.Generator.enableCache && id in cache) {
                 var view = cache[id];
             } else {
+                options.dbgClassName = ViewClass + 'View.' + ViewClass + options.mod + 'View';
                 view = new App.Views[ViewClass + 'View'][ViewClass + options.mod + 'View'](options);
                 if(App.Views.Generator.enableCache && id)
                     cache[id] = view;

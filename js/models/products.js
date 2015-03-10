@@ -238,7 +238,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                                 def.resolve();
                                 break;
                             default:
-                                App.Data.errors.alert(MSG.ERROR_GET_CHILD_PRODUCTS, true);
+                                App.Data.errors.alert(MSG.ERROR_GET_CHILD_PRODUCTS, true); // user notification
                                 def.resolve();
                         }
                     }

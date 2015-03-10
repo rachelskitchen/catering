@@ -563,7 +563,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 myorder = this.options.myorder;
 
             if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
-                App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
+                App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
                 return;
             }
             myorder.get_discounts({ apply_discount: true})
@@ -631,7 +631,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 myorder = this.options.myorder;
 
             if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
-                App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
+                App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
                 return;
             }
             myorder.get_discounts({ apply_discount: true})
