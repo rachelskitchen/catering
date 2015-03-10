@@ -40,18 +40,25 @@ define(["backbone"], function(Backbone) {
         },
         initialize: function() {
             this.syncWithRevelAPI();
-            this.listenTo(this, 'change:firstName', function() {
-                var firstName = this.get('firstName');
-                (typeof(firstName) == 'string') ?
-                    this.set('firstName', Backbone.$.trim(firstName)) :
-                    this.set('firstName', this.defaults.firstName);
-            }, this);
-            this.listenTo(this, 'change:secondName', function() {
-                var secondName = this.get('secondName');
-                (typeof(secondName) == 'string') ?
-                    this.set('secondName', Backbone.$.trim(secondName)) :
-                    this.set('secondName', this.defaults.secondName);
-            }, this);
+
+            // trim the changed value
+            this.listenTo(this, 'change:firstName', this.trim, this);
+            this.listenTo(this, 'change:secondName', this.trim, this);
+        },
+        /**
+         * Trim the changed value.
+         *
+         * @param {object} model Current model.
+         * @param {string} val The changed value.
+         * @param {object} opts Additional options.
+         */
+        trim: function(model, val, opts) {
+            var type = (model.changedAttributes().firstName) ? 'firstName' : 'secondName';
+            opts = (opts instanceof Object) ? opts : {};
+            var value = this.get(type);
+            (typeof(value) == 'string') ?
+                this.set(type, Backbone.$.trim(value), opts) :
+                this.set(type, this.defaults[type], opts);
         },
         /**
         * Save current state model in storage (detected automatic).
