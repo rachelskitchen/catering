@@ -31,9 +31,7 @@ define(["backbone", "factory"], function(Backbone) {
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'add_card', this.setData, this);
-            this.listenTo(this.model, 'change:firstName change:secondName', function(model, val, opts) {
-                this.updateData.apply(this, arguments);
-            }, this); // update first name & last name of view
+            this.listenTo(this.model, 'change:firstName change:secondName', this.updateData, this); // update first name & last name of view
         },
         render: function() {
             var expYear, expMonth, cardNumber, securityCode, model = {}, self = this;
