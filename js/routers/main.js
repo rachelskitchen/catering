@@ -350,6 +350,7 @@ define(["backbone", "factory"], function(Backbone) {
                     collection: ests,
                     model: modelForView
                 }, 'ContentEstablishmentsCore');
+                Backbone.history.on('all', view.back, view);
                 Backbone.$('body').append(view.el);
                 Backbone.$(window).trigger('hideSpinner');
             });

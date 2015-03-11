@@ -65,7 +65,7 @@ define(['backbone', 'factory'], function(Backbone) {
          * User notification.
          */
         alertMessage: function() {
-            Backbone.history.on('all', this.hideAlertMessage.bind(this, null, true)); // hide user notification
+            Backbone.history.on('all', this.hideAlertMessage.bind(this, null, true), this); // hide user notification
             if (this.model.get('defaultView')) {
                 this.hideAlertMessage(2); // hide user notification
                 this.render();
@@ -141,7 +141,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 }
             }
             removeHistoryListener = removeHistoryListener || false;
-            if (removeHistoryListener) Backbone.history.off('all');
+            if (removeHistoryListener) Backbone.history.off('all', null, this);
             switch (id) {
                 case 1:
                     func1();
