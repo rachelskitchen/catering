@@ -31,7 +31,7 @@ define(['backbone', 'factory'], function(Backbone) {
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'showAlertMessage', this.alertMessage); // user notification
-            this.listenTo(this.model, 'hideAlertMessage', this.hideAlertMessage); // hide user notification
+            this.listenTo(this.model, 'hideAlertMessage', this.hideAlertMessage.bind(this, null, true)); // hide user notification
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -48,7 +48,7 @@ define(['backbone', 'factory'], function(Backbone) {
             if (this.model.get('isConfirm') && this.model.get('callback')) {
                 this.model.get('callback')(true);
             }
-            this.hideAlertMessage(); // hide user notification
+            this.hideAlertMessage(null, true); // hide user notification
             this.model.get('reloadPage') && window.location.reload();
         },
         /**
@@ -58,13 +58,14 @@ define(['backbone', 'factory'], function(Backbone) {
             if (this.model.get('isConfirm') && this.model.get('callback')) {
                 this.model.get('callback')(false);
             }
-            this.hideAlertMessage(); // hide user notification
+            this.hideAlertMessage(null, true); // hide user notification
             this.model.get('reloadPage') && window.location.reload();
         },
         /**
          * User notification.
          */
         alertMessage: function() {
+            Backbone.history.on('all', this.hideAlertMessage.bind(this, null, true)); // hide user notification
             if (this.model.get('defaultView')) {
                 this.hideAlertMessage(2); // hide user notification
                 this.render();
@@ -118,10 +119,9 @@ define(['backbone', 'factory'], function(Backbone) {
                 }
 
                 $('.btnOk, .btnCancel', alert).on('click', function() {
-                    alert.find('.alert_block').removeClass('alert-background');
-                    alert.removeClass('ui-visible');
+                    this.hideAlertMessage(null, true); // hide user notification
                     options.reloadPage && window.location.reload();
-                });
+                }.bind(this));
             }
         },
         /**
@@ -129,7 +129,7 @@ define(['backbone', 'factory'], function(Backbone) {
          *
          * @param {number} id Type of user notification (1 - default alert message; 2 - custom alert message).
          */
-        hideAlertMessage: function(id) {
+        hideAlertMessage: function(id, removeHistoryListener) {
             var func1 = function() {
                 this.removeFromDOMTree(); // remove the view from the DOM tree
             }.bind(this);
@@ -140,6 +140,8 @@ define(['backbone', 'factory'], function(Backbone) {
                     alert.removeClass('ui-visible');
                 }
             }
+            removeHistoryListener = removeHistoryListener || false;
+            if (removeHistoryListener) Backbone.history.off('all');
             switch (id) {
                 case 1:
                     func1();
