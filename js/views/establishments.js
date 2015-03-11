@@ -54,6 +54,7 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
         * The "Go Back" button was clicked.
         */
         back: function() {
+            Backbone.history.off('all', null, this);
             this.collection.trigger('clickButtonBack');
             this.removeFromDOMTree(); // remove a view from DOM
         },
