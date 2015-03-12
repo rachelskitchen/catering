@@ -52,7 +52,11 @@ define(["done_view", "generator"], function(done_view) {
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             initSizes();
-            this.$('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').spinner();
+            this.$('#main-spinner').css({
+                'font-size': App.Data.getSpinnerSize() + 'px',
+                'height': '100%',
+                'width': '100%'
+            }).spinner();
             this.showSpinner();
             // #fix for bug 9841
             this.$el.on('touchend', 'input[type=text], input[type=number], input[type=tel]', function(e) {
