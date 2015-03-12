@@ -31,7 +31,7 @@ define(['backbone', 'factory'], function(Backbone) {
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'showAlertMessage', this.alertMessage); // user notification
-            this.listenTo(this.model, 'hideAlertMessage', this.hideAlertMessage.bind(this, null, true)); // hide user notification
+            this.listenTo(this.model, 'hideAlertMessage', this.hideAlertMessage); // hide user notification
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -48,7 +48,7 @@ define(['backbone', 'factory'], function(Backbone) {
             if (this.model.get('isConfirm') && this.model.get('callback')) {
                 this.model.get('callback')(true);
             }
-            this.hideAlertMessage(1, true); // hide user notification
+            this.hideAlertMessage(1); // hide user notification
             this.model.get('reloadPage') && window.location.reload();
         },
         /**
@@ -58,14 +58,13 @@ define(['backbone', 'factory'], function(Backbone) {
             if (this.model.get('isConfirm') && this.model.get('callback')) {
                 this.model.get('callback')(false);
             }
-            this.hideAlertMessage(1, true); // hide user notification
+            this.hideAlertMessage(1); // hide user notification
             this.model.get('reloadPage') && window.location.reload();
         },
         /**
          * User notification.
          */
         alertMessage: function() {
-            Backbone.history.on('all', this.hideAlertMessage.bind(this, null, true), this); // hide user notification
             if (this.model.get('defaultView')) {
                 this.hideAlertMessage(2); // hide user notification
                 this.render();
@@ -119,7 +118,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 }
 
                 $('.btnOk, .btnCancel', alert).on('click', function() {
-                    this.hideAlertMessage(2, true); // hide user notification
+                    this.hideAlertMessage(2); // hide user notification
                     options.reloadPage && window.location.reload();
                 }.bind(this));
             }
@@ -129,9 +128,13 @@ define(['backbone', 'factory'], function(Backbone) {
          *
          * @param {number} id Type of user notification (1 - default alert message; 2 - custom alert message).
          */
-        hideAlertMessage: function(id, removeHistoryListener) {
+        hideAlertMessage: function(id) {
             var func1 = function() {
-                this.removeFromDOMTree(); // remove the view from the DOM tree
+                if (App.Views.Generator.enableCache) {
+                    this.removeFromDOMTree(); // remove the view from the DOM tree
+                } else {
+                    this.remove(); // remove the view
+                }
             }.bind(this);
             var func2 = function() {
                 var alert = $('#alert');
@@ -140,8 +143,6 @@ define(['backbone', 'factory'], function(Backbone) {
                     alert.removeClass('ui-visible');
                 }
             }
-            removeHistoryListener = removeHistoryListener || false;
-            if (removeHistoryListener) Backbone.history.off('all', null, this);
             switch (id) {
                 case 1:
                     func1();
