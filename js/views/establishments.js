@@ -28,6 +28,10 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
     App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView = App.Views.FactoryView.extend({
         name: 'establishments',
         mod: 'main',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(App.Data.establishments, 'hideEstsView', this.back); // the "Go Back" button was clicked
+        },
         render: function() {
             var type = this.model.get('isMobileVersion') ? 'MOBILE' : 'DESKTOP';
             if (type === 'DESKTOP') this.model.set('showFooter', true);
@@ -54,7 +58,6 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
         * The "Go Back" button was clicked.
         */
         back: function() {
-            Backbone.history.off('all', null, this);
             this.collection.trigger('clickButtonBack');
             this.removeFromDOMTree(); // remove a view from DOM
         },
