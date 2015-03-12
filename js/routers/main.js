@@ -350,7 +350,6 @@ define(["backbone", "factory"], function(Backbone) {
                     collection: ests,
                     model: modelForView
                 }, 'ContentEstablishmentsCore');
-                Backbone.history.on('all', view.back, view);
                 Backbone.$('body').append(view.el);
                 Backbone.$(window).trigger('hideSpinner');
             });
@@ -430,6 +429,11 @@ define(["backbone", "factory"], function(Backbone) {
         restoreState: function(event) {
             var data = event.state instanceof Object ? event.state.stateData : undefined,
                 ests = App.Data.establishments;
+
+            // hide establishments view & alert message
+            ests && ests.trigger('hideEstsView');
+            App.Data.errors.trigger('hideAlertMessage');
+
             if(data && ests) {
                 ests.trigger('changeEstablishment', data.establishment, true); // 3rd parameter is flag of restoring
             }
