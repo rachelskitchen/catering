@@ -48,7 +48,7 @@ define(['backbone', 'factory'], function(Backbone) {
             if (this.model.get('isConfirm') && this.model.get('callback')) {
                 this.model.get('callback')(true);
             }
-            this.hideAlertMessage(null, true); // hide user notification
+            this.hideAlertMessage(1, true); // hide user notification
             this.model.get('reloadPage') && window.location.reload();
         },
         /**
@@ -58,7 +58,7 @@ define(['backbone', 'factory'], function(Backbone) {
             if (this.model.get('isConfirm') && this.model.get('callback')) {
                 this.model.get('callback')(false);
             }
-            this.hideAlertMessage(null, true); // hide user notification
+            this.hideAlertMessage(1, true); // hide user notification
             this.model.get('reloadPage') && window.location.reload();
         },
         /**
@@ -119,7 +119,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 }
 
                 $('.btnOk, .btnCancel', alert).on('click', function() {
-                    this.hideAlertMessage(null, true); // hide user notification
+                    this.hideAlertMessage(2, true); // hide user notification
                     options.reloadPage && window.location.reload();
                 }.bind(this));
             }
