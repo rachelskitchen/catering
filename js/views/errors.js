@@ -48,7 +48,7 @@ define(['backbone', 'factory'], function(Backbone) {
             if (this.model.get('isConfirm') && this.model.get('callback')) {
                 this.model.get('callback')(true);
             }
-            this.hideAlertMessage(); // hide user notification
+            this.hideAlertMessage(1); // hide user notification
             this.model.get('reloadPage') && window.location.reload();
         },
         /**
@@ -58,7 +58,7 @@ define(['backbone', 'factory'], function(Backbone) {
             if (this.model.get('isConfirm') && this.model.get('callback')) {
                 this.model.get('callback')(false);
             }
-            this.hideAlertMessage(); // hide user notification
+            this.hideAlertMessage(1); // hide user notification
             this.model.get('reloadPage') && window.location.reload();
         },
         /**
@@ -118,10 +118,9 @@ define(['backbone', 'factory'], function(Backbone) {
                 }
 
                 $('.btnOk, .btnCancel', alert).on('click', function() {
-                    alert.find('.alert_block').removeClass('alert-background');
-                    alert.removeClass('ui-visible');
+                    this.hideAlertMessage(2); // hide user notification
                     options.reloadPage && window.location.reload();
-                });
+                }.bind(this));
             }
         },
         /**
@@ -131,7 +130,11 @@ define(['backbone', 'factory'], function(Backbone) {
          */
         hideAlertMessage: function(id) {
             var func1 = function() {
-                this.removeFromDOMTree(); // remove the view from the DOM tree
+                if (App.Views.Generator.enableCache) {
+                    this.removeFromDOMTree(); // remove the view from the DOM tree
+                } else {
+                    this.remove(); // remove the view
+                }
             }.bind(this);
             var func2 = function() {
                 var alert = $('#alert');
