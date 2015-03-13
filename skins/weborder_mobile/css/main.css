@@ -431,16 +431,16 @@ textarea, input {
 }
 
 .btn:before {
+    bottom: 2px;
     content: '';
     display: block;
+    left: 2px;
     position: absolute;
-    top: 0.1em;
-    bottom: 0.1em;
-    left: 0.1em;
-    right: 0.1em;
     border-width: 1px;
     border-style: solid;
     border-radius: 0.9em;
+    right: 2px;
+    top: 2px;
 }
 
 .btn.btn-disabled, .btn.btn-disabled:link, .btn.btn-disabled:visited, .btn.btn-disabled:hover,
