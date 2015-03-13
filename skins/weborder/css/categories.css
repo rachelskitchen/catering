@@ -78,11 +78,13 @@
 .categories label {
     display: block;
     padding: 0 5px;
-    cursor: pointer;
     line-height: 23px; /* minus border*/
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+.categories label:not(.checked) {
+    cursor: pointer;
 }
 
 .categories input {
