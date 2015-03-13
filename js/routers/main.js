@@ -674,7 +674,7 @@ define(["backbone", "factory"], function(Backbone) {
                 RevelAPI.checkProfile(RevelAPI.trigger.bind(RevelAPI, 'onProfileShow'));
             }, this);
 
-            this.listenTo(App.Data.header, 'onProfileCancel', function() {
+            App.Data.header && this.listenTo(App.Data.header, 'onProfileCancel', function() {
                 RevelAPI.trigger('onProfileCancel');
             });
 
