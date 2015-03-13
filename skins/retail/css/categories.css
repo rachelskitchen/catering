@@ -47,6 +47,9 @@
     cursor: pointer;
     position: relative;
 }
+#header .categories .tabs input:checked + label {
+    cursor: default;
+}
 #header .categories .tabs li {
     bottom: -8px;
 }
@@ -197,6 +200,9 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+.subcategories input:checked + label {
+    cursor: default;
 }
 /* Hack for safari. background color out of border radius*/
 .subcategories li label {

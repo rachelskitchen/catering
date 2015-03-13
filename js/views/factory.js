@@ -55,10 +55,18 @@ define(['backbone'], function(Backbone) {
             this.$el.html(this.template(this.model ? (this.model.toJSON ? this.model.toJSON() : this.model) : undefined));
             return this;
         },
+        /**
+         * Remove the view.
+         *
+         * @return {object} Deleted view.
+         */
         remove: function() {
             this.subViews.remove();
             return Backbone.View.prototype.remove.apply(this, arguments);
         },
+        /**
+         * Remove the view from the DOM tree.
+         */
         removeFromDOMTree: function() {
             this.$el.detach();
         },
