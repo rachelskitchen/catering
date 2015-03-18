@@ -53,12 +53,17 @@ define(["backbone"], function(Backbone) {
          * @param {object} opts Additional options.
          */
         trim: function(model, val, opts) {
-            var type = (model.changedAttributes().firstName) ? 'firstName' : 'secondName';
-            opts = (opts instanceof Object) ? opts : {};
-            var value = this.get(type);
-            (typeof(value) == 'string') ?
-                this.set(type, Backbone.$.trim(value), opts) :
-                this.set(type, this.defaults[type], opts);
+            var changedValues = [];
+            model.changedAttributes().firstName && changedValues.push('firstName');
+            model.changedAttributes().secondName && changedValues.push('secondName');
+            for (var i = 0; i < changedValues.length; i++) {
+                var type = changedValues[i];
+                opts = (opts instanceof Object) ? opts : {};
+                var value = this.get(type);
+                (typeof(value) == 'string') ?
+                    this.set(type, Backbone.$.trim(value), opts) :
+                    this.set(type, this.defaults[type], opts);
+            }
         },
         /**
         * Save current state model in storage (detected automatic).
@@ -66,6 +71,9 @@ define(["backbone"], function(Backbone) {
         saveCard: function() {
             setData('card',this);
         },
+        /**
+         * Removing card information.
+         */
         empty_card_number: function() {
             this.set({cardNumber: '', expMonth: 0, expDate: 0, securityCode: ''});
         },
@@ -150,6 +158,9 @@ define(["backbone"], function(Backbone) {
             this.empty_card_number();
             this.saveCard();
         },
+        /**
+         * Synchronization with Revel API.
+         */
         syncWithRevelAPI: function() {
             var RevelAPI = this.get('RevelAPI');
 

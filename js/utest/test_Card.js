@@ -1,4 +1,4 @@
-define(['card'], function() {
+define(['card', 'revel_api'], function() {
     describe("App.Models.Card", function() {
 
         var model, def;
@@ -45,9 +45,57 @@ define(['card'], function() {
             expect(setData).toHaveBeenCalledWith('card', model);
         });
 
+        it('Empty_card_number Function', function() {
+            model.set({
+                cardNumber: '4234567890123456',
+                expDate: 2999,
+                expMonth: 12,
+                securityCode: '777'
+            });
+            model.empty_card_number(); // removing card information
+            expect(model.toJSON()).toEqual(def);
+        });
+
         it("LoadCard Function", function() {
             model.loadCard(); // load state model from storage (detected automatic)
             expect(getData).toHaveBeenCalledWith('card');
+        });
+
+        it('ClearData Function', function() {
+            model.set({
+                cardNumber: '4234567890123456',
+                expDate: 2999,
+                expMonth: 12,
+                securityCode: '777'
+            });
+            model.clearData(); // removal of information about credit card
+            expect(model.toJSON()).toEqual(def);
+            expect(setData).toHaveBeenCalledWith('card', model);
+        });
+
+        it('SyncWithRevelAPI Function', function() {
+            // Revel API isn't available
+            var func = model.syncWithRevelAPI; // synchronization with Revel API
+            var result = func.call(model);
+            expect(result).toEqual(undefined);
+
+            // Revel API is available
+            var revel = new App.Models.RevelAPI;
+            model.set('RevelAPI', revel);
+            cssua.ua.revelsystemswebview = '1.0';
+            revel.set('profileExists', true);
+            func.call(model);
+            var customer = revel.get('customer');
+            var objForTest = {
+                first_name: 'John',
+                last_name: 'Smith'
+            }
+            customer.set(objForTest);
+            var result = {
+                first_name: model.get('firstName'),
+                last_name: model.get('secondName')
+            }
+            expect(result).toEqual(objForTest);
         });
 
         describe("Functions check", function() {
