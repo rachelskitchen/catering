@@ -234,13 +234,13 @@ define(["backbone", "card", "customers"], function(Backbone) {
             setData('token', {token: this.get('token')});
         },
         getUseAsDefaultCardSession: function() {
-            var obj = getData('useAsDefaultCardSession');
-            obj instanceof Object && this.set('useAsDefaultCardSession', obj.useAsDefaultCardSession);
+            var obj = getData('useAsDefaultCardSession', true);
+            obj instanceof Object && this.set('useAsDefaultCard', obj.useAsDefaultCardSession);
         },
         saveUseAsDefaultCardSession: function() {
             var value = Boolean(this.get('useAsDefaultCard'));
             this.set('useAsDefaultCardSession', value);
-            setData('useAsDefaultCardSession', {useAsDefaultCardSession: value});
+            setData('useAsDefaultCardSession', {useAsDefaultCardSession: value}, true);
         },
         getProfileExists: function() {
             var obj = getData('profileExists', true);
