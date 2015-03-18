@@ -515,9 +515,18 @@ function loadCSS(name, loadModelCSS) {
     var id = typeof btoa == 'function' ? btoa(name) : encodeURIComponent(name),
         elem;
 
-    // 'load' event on the LINK element doesn't fire on Safari at least 5.1.7 (the latest version for Windows OS)
-    var safariForWindows = false;
-    if (cssua && cssua.ua.safari && cssua.ua.windows_nt) safariForWindows = true;
+    // 'load' event on the LINK element doesn't fire on:
+    //     *) Safari at least 5.1.7 (the latest version for Windows OS): Safari/534.57.2;
+    //     *) Samsung tablet GT-P5210 with Android 4.4.2: Safari/534.30;
+    //     *) Other browsers which browser installed with version less Safari/536.25 (Safari 6).
+    // More information:
+    //     1) https://bugs.webkit.org/show_bug.cgi?id=38995 - the bug in WebKit Bugzilla;
+    //     2) http://trac.webkit.org/changeset/108809 - the changeset #108809.
+    //     3) http://en.wikipedia.org/wiki/Safari_version_history - Safari version history.
+    // The web-team decided that the 'load' event on the LINK element doesn't fire on browser version less Safari/536.25 because it is not exactly known version which was fixed this browser bug but it is known approximate date.
+    var loadEventUnsupported = false,
+        safariClientBrowser = /Safari\/(\d+(.\d+)?)/.exec(window.navigator.userAgent);
+    if (safariClientBrowser && safariClientBrowser[1] < 536.25) loadEventUnsupported = true;
 
     /**
      * Resolve current CSS file.
@@ -533,7 +542,7 @@ function loadCSS(name, loadModelCSS) {
         elem = loadCSS.cache[id];
     } else {
         elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
-        if (!safariForWindows) {
+        if (!loadEventUnsupported) {
             // bug #18285 - no timeout for app assets
             /**
              * User notification.
@@ -559,7 +568,7 @@ function loadCSS(name, loadModelCSS) {
 
     if($('link[href="' + name + '.css"]').length === 0) {
         $('head').append(elem);
-        if (safariForWindows || cache) resolve(); // resolve current CSS file
+        if (loadEventUnsupported || cache) resolve(); // resolve current CSS file
     } else {
         resolve(); // resolve current CSS file
     }
