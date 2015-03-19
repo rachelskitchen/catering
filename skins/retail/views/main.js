@@ -47,7 +47,7 @@ define(["done_view", "generator"], function(done_view) {
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            !this.iPad7Feature.init && this.iPad7Feature();
+            this.iPad7Feature();
 
             var spinner = this.$('#main-spinner');
             spinner.spinner();
@@ -165,24 +165,6 @@ define(["done_view", "generator"], function(done_view) {
         iOSFeatures: function() {
             if (/iPad|iPod|iPhone/.test(window.navigator.userAgent))
                 document.addEventListener('touchstart', new Function, false); // enable css :active pseudo-class for all elements
-        },
-        iPad7Feature: function() {
-            if (/iPad;.*CPU.*OS 7_\d/i.test(window.navigator.userAgent))
-                this.$el.on('orientationchange', listen);
-            else
-                return;
-
-            this.iPad7Feature.init = true;
-            listen();
-
-            function listen() {
-                if (matchMedia('(orientation:landscape)').matches && window.innerHeight != window.outerHeight) {
-                    $('html').addClass('ipad');
-                    $(window).scrollTop(0, 0);
-                } else {
-                    $('html').removeClass('ipad');
-                }
-            }
         },
         showSpinner: function(event) {
             $(window).trigger('showSpinner', {startEvent: event});
