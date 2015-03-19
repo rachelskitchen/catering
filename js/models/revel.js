@@ -24,7 +24,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
     'use strict';
 
     var REVEL_INTERFACE_NAME = 'RevelAPI',
-        REVEL_API_ERROR_CODES, RevelAPI;
+        REVEL_API_ERROR_CODES;
 
     REVEL_API_ERROR_CODES = {
         SUCCESS: 0,
