@@ -593,12 +593,7 @@ define(["backbone", "factory"], function(Backbone) {
                 // If rewardCard is not set yet need set its value from profile.
                 // Reward card may be set by this moment after checkout restoring from localStorage.
                 !checkout.get('rewardCard') && updateReward();
-
-                var revelAPIAvailable = Boolean(App.Settings.RevelAPI),
-                    isDirectoryMobileSkin = (App.Data.settings.get('skin') == App.Skins.DIRECTORY_MOBILE);
-                if (isDirectoryMobileSkin || (!isDirectoryMobileSkin && revelAPIAvailable)) {
-                    RevelAPI.run(); // controls of Welcome screen
-                }
+                RevelAPI.run(); // controls of Welcome screen
             });
 
             this.listenTo(RevelAPI, 'onWelcomeShow', function() {
