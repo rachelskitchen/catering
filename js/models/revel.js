@@ -87,6 +87,9 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 this.set('token', null);
             }
         },
+        /**
+         * Controls of Welcome screen.
+         */
         run: function() {
             this.initFirstTime();
         },
