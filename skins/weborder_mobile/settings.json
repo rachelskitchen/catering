@@ -7,10 +7,10 @@
     "routing": {
         "main": {
             "css": [ "main", "header", "footer", "perfect-scrollbar", "revel"],
-            "model": ["main","header", "footer"],
+            "model": ["main", "header", "footer", "revel"],
             "templates": ["main", "header", "footer", "revel"],
             "views": ["main", "header", "footer", "logo"],
-            "core": ["geopoint", "jquery_numbermask", "revel_view", "revel_api"],
+            "core": ["geopoint", "jquery_numbermask", "revel_view"],
             "js": ["perfect-scrollbar-0.4.5.with-mousewheel.min"]
         },
         "index": {
