@@ -526,7 +526,7 @@ function loadCSS(name, loadModelCSS) {
     // The web-team decided that the 'load' event on the LINK element doesn't fire on browser version less Safari/536.25 because it is not exactly known version which was fixed this browser bug but it is known approximate date.
     var loadEventUnsupported = false,
         safariClientBrowser = /Safari\/(\d+(.\d+)?)/.exec(window.navigator.userAgent);
-    if (safariClientBrowser && safariClientBrowser[1] < 536.25) loadEventUnsupported = true;
+    if (safariClientBrowser && parseFloat(safariClientBrowser[1]) < 536.25) loadEventUnsupported = true;
 
     /**
      * Resolve current CSS file.
