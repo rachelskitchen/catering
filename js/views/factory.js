@@ -109,6 +109,31 @@ define(['backbone'], function(Backbone) {
                         field.hide();
                 });
             });
+        },
+        /*
+         * Fix for Bug 20541
+         * Issue discussion http://stackoverflow.com/questions/19012135/ios-7-ipad-safari-landscape-innerheight-outerheight-layout-issue
+         */
+        iPad7Feature: function() {
+            if(this.iPad7Feature.initialized)
+                return;
+
+            if (/iPad;.*CPU.*OS 7_\d/i.test(window.navigator.userAgent))
+                this.$el.on('orientationchange', listen);
+            else
+                return;
+
+            this.iPad7Feature.initialized = true;
+            listen();
+
+            function listen() {
+                if (matchMedia('(orientation:landscape)').matches && window.innerHeight != window.outerHeight) {
+                    $('html').addClass('ipad');
+                    $(window).scrollTop(0, 0);
+                } else {
+                    $('html').removeClass('ipad');
+                }
+            }
         }
     });
 
