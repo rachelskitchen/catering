@@ -65,10 +65,10 @@
 }
 
 .modifiers_table .modifier {
-    width: 345px;
+    min-width: 345px;
     float: left;
     word-break: break-all;
-    margin:0 7px 7px 0;
+    margin: 0 15px 15px 0;
     cursor: pointer;
     min-height: 30px;
 }
@@ -146,17 +146,17 @@
 .mdf_split select {
     font-size: 14px;
     font-weight: normal;
-    width: 50px;  
+    width: 50px;
 }
 
 .mdf_quantity, .mdf_split {
     display: inline-block;
     vertical-align: middle;
     font-size: 14px;
-    font-weight: bold;    
+    font-weight: bold;
     margin-top: -2px;
-    height: 26px; 
-    position: relative;      
+    height: 26px;
+    position: relative;
 }
 
 .mdf_quantity select {
