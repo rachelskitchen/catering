@@ -75,7 +75,7 @@
 
 @media only screen and (max-device-width: 949px) {
     .modifiers_table .modifier {
-        width: 270px !important;
+        min-width: 270px !important;
     }
     .mdf_quantity select {
         width: 48px;
