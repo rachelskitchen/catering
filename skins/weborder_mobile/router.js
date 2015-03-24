@@ -760,6 +760,10 @@ define(["main_router"], function(main_router) {
 
             var RevelAPI = App.Data.RevelAPI;
 
+            if(!App.Data.dirMode) {
+                RevelAPI.set('appName', App.Data.get_parameters.appName || App.Settings.business_name);
+            }
+
             if(!RevelAPI.isAvailable()) {
                 return;
             }
