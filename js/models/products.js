@@ -257,6 +257,10 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             return child && this.set('active', child.check_active());
         },
         check_selected: function() {
+            if(!this.isParent()) {
+                return true;
+            }
+
             var attr1 = this.get('attribute_1_selected'),
                 attr2 = this.get('attribute_2_selected'),
                 attr1enable = this.get('attribute_1_enable'),
