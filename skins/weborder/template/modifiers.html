@@ -37,25 +37,25 @@
 <script type="text/template" id="modifiers_classes_item-template">
     <div class='modifiers_classes_title'>
         <%= name %>
-        <% if(_settings.online_orders) { %>
-        <div class='modifiers_classes_subtitle'>
-        <% if (type === 0 && typeof maximum_amount != 'number' && typeof minimum_amount != 'number') { %>
-            Optional <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
-        <% } else if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) { %>
-            Choose <%=  minimum_amount %> <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
-        <% } else if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount == 'number') { %>
-            Choose <%=  minimum_amount %> to <%= maximum_amount %> <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
-        <% } else if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount != 'number') { %>
-            Optional (up to <%= maximum_amount %>) <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
-        <% } else if (type === 0 && typeof maximum_amount != 'number' && typeof minimum_amount == 'number') { %>
-            Choose at least <%=  minimum_amount %> <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
-        <% } else if (type === 1) { %>
-            Choose one <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
-        <% } else if (type === 2) { %>
-            Optional <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+        <% if (_settings.online_orders) { %>
+            <div class='modifiers_classes_subtitle'>
+            <% if (type === 0 && (typeof maximum_amount != 'number' || maximum_amount === 0) && (typeof minimum_amount != 'number' || minimum_amount === 0)) { %>
+                Optional <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+            <% } else if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) { %>
+                Choose <%=  minimum_amount %> <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+            <% } else if (type === 0 && typeof maximum_amount == 'number' && maximum_amount != 0 && typeof minimum_amount == 'number' && minimum_amount != 0) { %>
+                Choose <%=  minimum_amount %> to <%= maximum_amount %> <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+            <% } else if (type === 0 && typeof maximum_amount == 'number' && (typeof minimum_amount != 'number' || minimum_amount === 0)) { %>
+                Optional (up to <%= maximum_amount %>) <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+            <% } else if (type === 0 && typeof maximum_amount != 'number' && typeof minimum_amount == 'number') { %>
+                Choose at least <%=  minimum_amount %> <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+            <% } else if (type === 1) { %>
+                Choose one <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+            <% } else if (type === 2) { %>
+                Optional <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+            <% } %>
+            </div>
         <% } %>
-        <% } %>
-        </div>
     </div>
     <div class="modifier_class_list">
     </div>
