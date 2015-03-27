@@ -50,13 +50,25 @@ define(['products'], function() {
 
     App.Collections.Search = Backbone.Collection.extend({
         model: App.Models.Search,
+        initialize: function() {
+            this.listenTo(this, 'onSearchComplete', this.setLastPattern, this);
+        },
+        setLastPattern: function(result) {
+            if(!(result instanceof App.Models.Search)) {
+                return;
+            }
+            this.lastPattern = result.get('pattern');
+        },
+        clearLastPattern: function() {
+            this.lastPattern = '';
+        },
         search: function(pattern) {
             var cache = this.where({pattern: pattern});
             if (cache.length && cache[0].get('completed') == undefined) {
                 return this;
             }
             this.trigger('onSearchStart', search);
-            if(cache.length > 0) {                
+            if(cache.length > 0) {
                 return this.trigger('onSearchComplete', cache[0]);
             }
 
@@ -65,7 +77,7 @@ define(['products'], function() {
 
             this.add(search);
             search.get_products().then(function() {
-                search.set('completed', true, {silent: true}); 
+                search.set('completed', true, {silent: true});
                 self.trigger('onSearchComplete', search);
             });
         }

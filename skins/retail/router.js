@@ -51,6 +51,7 @@ define(["main_router"], function(main_router) {
         },
         hashForGoogleMaps: ['map', 'checkout'],//for #index we start preload api after main screen reached
         initialize: function() {
+console.log('app init state', history.length);
             var settings = App.Settings;
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
             this.bodyElement = Backbone.$('body');
@@ -203,84 +204,84 @@ define(["main_router"], function(main_router) {
             // change:selected event occurs when any subcategory is clicked
             this.listenTo(App.Data.categories, 'change:selected', function() {
                 App.Data.mainModel.trigger('loadCompleted');
+                App.Data.search.clearLastPattern();
+                // var state = {},
+                //     hashRE = /#.*$/,
+                //     encoded, url;
 
-                var state = {},
-                    hashRE = /#.*$/,
-                    encoded, url;
+                // if(this.state)
+                //     state = this.state;
 
-                if(this.state)
-                    state = this.state;
+                // delete state.pattern;
+                // delete state.attribute1;
 
-                delete state.pattern;
-                delete state.attribute1;
+                // state.parent_selected = App.Data.categories.parent_selected;
+                // state.selected = App.Data.categories.selected;
+                // encoded = this.encodeState(state);
+                // url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
 
-                state.parent_selected = App.Data.categories.parent_selected;
-                state.selected = App.Data.categories.selected;
-                encoded = this.encodeState(state);
-                url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
+                // this.updateState(!this.index.initState, url);
 
-                this.updateState(!this.index.initState, url);
-
-                // save state after initialization of views.
-                // second entry in window.history (#index -> #index/<data>).
-                if(encoded && this.index.initState === null)
-                    this.index.initState = encoded;
+                // // save state after initialization of views.
+                // // second entry in window.history (#index -> #index/<data>).
+                // if(encoded && this.index.initState === null)
+                //     this.index.initState = encoded;
             }, this);
 
             // onSearchComplete event occurs when search results are ready
             this.listenTo(App.Data.search, 'onSearchComplete', function(result) {
-                // ingnore cases when no products found
-                if(!result.get('products') || result.get('products').length == 0)
-                    return;
+                // // ingnore cases when no products found
+                // if(!result.get('products') || result.get('products').length == 0)
+                //     return;
 
-                var state = {},
-                    hashRE = /#.*$/,
-                    encoded, url;
+                // var state = {},
+                //     hashRE = /#.*$/,
+                //     encoded, url;
 
-                if(this.state)
-                    state = this.state;
+                // if(this.state)
+                //     state = this.state;
 
-                delete state.parent_selected;
-                delete state.selected;
-                state.pattern = result.get('pattern');
-                encoded = this.encodeState(state);
-                url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
+                // delete state.parent_selected;
+                // delete state.selected;
+                // state.pattern = result.get('pattern');
+                // encoded = this.encodeState(state);
+                // url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
 
-                this.updateState(!this.index.initState, url);
+                // this.updateState(!this.index.initState, url);
             });
 
             // listen to filter changes and encode it to hash
             this.listenTo(App.Data.filter, 'change', function(model) {
-                var state = {},
-                    noChanges = true,
-                    hashRE = /#.*$/,
-                    i, encoded, url;
+//                 var state = {},
+//                     noChanges = true,
+//                     hashRE = /#.*$/,
+//                     i, encoded, url;
 
-                if(this.state)
-                    state = this.state;
+//                 if(this.state)
+//                     state = this.state;
 
-                for(i in model.changed) {
-                    if(state[i] == model.changed[i])
-                        continue;
-                    noChanges = false;
-                }
+//                 for(i in model.changed) {
+//                     if(state[i] == model.changed[i])
+//                         continue;
+//                     noChanges = false;
+//                 }
 
-                if(noChanges)
-                    return;
+//                 if(noChanges)
+//                     return;
 
-                Object.keys(model.changed).forEach(function(key) {
-                    delete state[key];
-                });
+//                 Object.keys(model.changed).forEach(function(key) {
+//                     delete state[key];
+//                 });
 
-                state = Backbone.$.extend(state, model.changed);
+//                 state = Backbone.$.extend(state, model.changed);
+// console.log(model.changed)
+//                 if(state.attribute1 == 1)
+//                     delete state.attribute1;
 
-                if(state.attribute1 == 1)
-                    delete state.attribute1;
+//                 encoded = this.encodeState(state);
+//                 url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
 
-                encoded = this.encodeState(state);
-                url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
-
-                this.updateState(false, url);
+//                 this.updateState(false, url);
             });
 
             // onCheckoutClick event occurs when 'checkout' button is clicked
@@ -339,13 +340,140 @@ define(["main_router"], function(main_router) {
             return btoa(enc);
         },
         decodeState: function(data) {
-            this.state = null;
+            var state = null;
             try {
                 // decode data from hash and restore
-                this.state = JSON.parse(atob(data));
+                state = JSON.parse(atob(data));
             } catch(e) {
                 log('Unable to decode state for string "%s"', data);
             }
+            return state;
+        },
+        runStateTracking: function() {
+            if(!App.Routers.MainRouter.prototype.runStateTracking.apply(this, arguments)) {
+                return;
+            }
+
+            var filter = App.Data.filter,
+                categories = App.Data.categories,
+                search = App.Data.search,
+                subCategoryIsNotSelected = true;
+
+            // listen to filter change
+            this.listenTo(filter, 'change', function(model, opts) {
+                updateState.call(this, filter, opts);
+            }, this);
+
+            // listen to subcategory change and add entry to browser history
+            this.listenTo(categories, 'change:selected', function() {
+                updateState.call(this, categories, {replaceState: subCategoryIsNotSelected});
+                // handle case when subcategory is selected at first time (hash changes on #index/<base64 string>)
+                subCategoryIsNotSelected = false;
+            }, this);
+
+            // listen to onSearchComplete and add entry to browser history
+            this.listenTo(search, 'onSearchComplete', function(result) {
+                // ingnore cases when no products found
+                if(!result.get('products') || result.get('products').length == 0)
+                    return;
+                updateState.call(this, search, {});
+            }, this);
+
+            function updateState(obj, opts) {
+                if(obj.isRestoring || !(opts instanceof Object)) {
+                    return;
+                }
+
+                var state = this.getState(),
+                    encoded = this.encodeState(state),
+                    hashRE = /#.*$/,
+                    url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
+
+                this.updateState(Boolean(opts.replaceState), url);
+console.log('update State', /*JSON.stringify(state), */history.length);
+            }
+        },
+        restoreState: function(event, data) {
+            var filter = App.Data.filter,
+                search = App.Data.search,
+                categories = App.Data.categories,
+                hashData = location.hash.match(/#index\/(\w+)/), // parse decoded state string from hash
+                isSearchPatternPresent, state;
+
+            if(Array.isArray(hashData) && hashData[1].length) {
+                state = this.decodeState(hashData[1]);
+            }
+
+            data = data || state || App.Routers.MainRouter.prototype.restoreState.apply(this, arguments);
+
+            if(!(data instanceof Object)) {
+                return;
+            }
+
+            // define pattern is present is data or not
+            isSearchPatternPresent = typeof data.searchPattern == 'string' && data.searchPattern.length;
+
+// console.log('restore data', JSON.stringify(data));
+
+            // If data.categories is object restore 'selected', 'parent_selected' props of App.Data.categories and set restoring mode.
+            // If search pattern is present categories shouldn't be restored
+            if(data.categories instanceof Object && !isSearchPatternPresent) {
+                categories.isRestoring = true;
+                categories.selected = data.categories.selected;
+                categories.parent_selected = data.categories.parent_selected;
+                categories.trigger('change:parent_selected', categories, categories.parent_selected);
+                categories.trigger('change:selected', categories, categories.selected);
+                // remove restoring mode
+                delete categories.isRestoring;
+                // restore filter
+                restoreFilter();
+            };
+
+            // If data.searchPattern is string restore last searched pattern and set restoring mode
+            if(isSearchPatternPresent) {
+                search.isRestoring = true;
+                search.lastPattern = data.searchPattern;
+                // set callback on event onSearchComplete (products received)
+                this.listenToOnce(search, 'onSearchComplete', function() {
+                    // remove restoring mode
+                    delete search.isRestoring;
+                    // restore filter
+                    restoreFilter();
+                }, this);
+                search.trigger('onRestore');
+                // due to 'onRestore' handler in header view changes categories.selected, categories.parent_selected on 0
+                // need override this value to avoid a selection of first category and subcategory
+                // that is triggered in categories views after receiving data from server
+                categories.selected = -1;
+                categories.parent_selected = -1;
+            }
+
+            function restoreFilter() {
+                // If data.filter is object resore App.Data.filter attributes and set restoring mode
+                if(data.filter instanceof Object) {
+                    filter.isRestoring = true;
+                    filter.set(data.filter);
+                    delete filter.isRestoring;
+                };
+            }
+        },
+        getState: function() {
+            var filter = App.Data.filter.toJSON(),
+                categories = App.Data.categories,
+                searchPattern = App.Data.search.lastPattern,
+                data = {filter: filter};
+
+            // search pattern and categories data cannot be in one state due to views implementation
+            if(searchPattern) {
+                data.searchPattern = searchPattern;
+            } else {
+                data.categories = {
+                    parent_selected: categories.parent_selected,
+                    selected: categories.selected
+                };
+            }
+
+            return _.extend(App.Routers.MobileRouter.prototype.getState.apply(this, arguments), data);
         },
         showPromoMessage: function() {
             // can be called when App.Data.header is not initializd yet ('back' btn in browser history control)
@@ -379,16 +507,16 @@ define(["main_router"], function(main_router) {
             this.bodyElement.children('.main-container').remove();
         },
         index: function(data) {
-            // init origin state for case when page is loaded without any data (#index or hash is not assigned)
-            if(!data && typeof this.index.initState == 'undefined')
-                this.index.initState = null;
+            // // init origin state for case when page is loaded without any data (#index or hash is not assigned)
+            // if(!data && typeof this.index.initState == 'undefined')
+            //     this.index.initState = null;
 
-            // restore state for first entry in window.history (#index/<data> -> #index)
-            if(!data && this.index.initState)
-                data = this.index.initState;
+            // // restore state for first entry in window.history (#index/<data> -> #index)
+            // if(!data && this.index.initState)
+            //     data = this.index.initState;
 
-            // decode data from url
-            this.decodeState(data);
+            // // decode data from url
+            // this.decodeState(data);
 
             this.prepare('index', function() {
                 var categories = App.Data.categories,
@@ -403,10 +531,9 @@ define(["main_router"], function(main_router) {
 
                 categories.receiving.then(function() {
                     dfd.resolve();
-                    if(self.state) {
-                        self.restore = $.Deferred();
-                        categories.trigger('onRestoreState', self.state);
-                    }
+                    self.restore = $.Deferred();
+                    self.restoreState({}); // restore with empty event
+                    // categories.trigger('onRestoreState', self.state);
                 });
 
                 App.Data.header.set('menu_index', 0);
