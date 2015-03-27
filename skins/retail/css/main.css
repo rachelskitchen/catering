@@ -257,6 +257,9 @@ footer {
     display: inline-block;
     margin: 22px 10px 0;
 }
+#header .main ul.menu li.active {
+    cursor: default;
+}
 #header .main ul.menu li.active,
 #header .main ul.menu li:not(.cart):hover {
     border-bottom-width: 1px;
