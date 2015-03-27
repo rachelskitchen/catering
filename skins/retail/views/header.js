@@ -31,7 +31,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(this.options.cart, 'add remove', this.update, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.searchComplete, this);
             this.listenTo(this.options.search, 'onSearchStart', this.searchStart, this);
-            this.listenTo(this.collection, 'onRestoreState', this.restoreState, this);
+            this.listenTo(this.options.search, 'onRestore', this.restoreState, this);
             this.listenTo(this.model, 'change:isShowPromoMessage', this.calculatePromoMessageWidth, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
@@ -109,8 +109,8 @@ define(["backbone", "factory"], function(Backbone) {
             else
                 cart.text('');
         },
-        restoreState: function(state) {
-            var pattern = state.pattern,
+        restoreState: function() {
+            var pattern = this.options.search.lastPattern,
                 input = this.$('input[name=search]');
             pattern && input.attr('disabled', 'disabled').val(pattern);
             input.removeAttr('disabled');

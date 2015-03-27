@@ -29,7 +29,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection, 'change:active', this.show_hide, this);
-            this.listenTo(this.collection, 'onRestoreState', this.restoreState, this);
+            this.listenTo(this.collection, 'change:parent_selected', this.restoreState, this);
             this.show_hide();
         },
         render: function() {
@@ -89,6 +89,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         },
         restoreState: function(state) {
             if(typeof state.pattern == 'string') {
+// TODO
                 // if this is search restoring
                 // need avoid default tab selection and products loading
                 return this.collection.parent_selected = -1;
@@ -96,8 +97,8 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
 
             if(this.model.get('parent_name') == state.parent_selected){
                 this.$('input').prop('checked', true);
-                this.collection.trigger('onRestoreTab');
-                this.change({stopPropagation: new Function}, state.selected);
+                // this.collection.trigger('onRestoreTab');
+                // this.change({stopPropagation: new Function}, state.selected);
             }
         }
     });
@@ -171,7 +172,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.options.categories, 'change:active', this.show_hide, this);
-            this.listenTo(this.options.categories, 'onRestoreState', this.restoreState, this);
+            this.listenTo(this.options.categories, 'change:selected', this.restoreState, this);
             this.listenTo(this.options.self, 'onRestore', this.restore, this);
             this.show_hide();
         },
@@ -277,7 +278,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         mod: 'sublist',
         initialize: function() {
             this.listenTo(this.collection, 'onSubs', this.update, this);
-            this.listenTo(this.collection, 'onRestoreTab', this.skipRestore, this);
+            // this.listenTo(this.collection, 'onRestoreTab', this.skipRestore, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.hide, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
@@ -304,7 +305,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             sublist.append(view.el);
             this.subViews.push(view);
 
-            if(view.collection.receiving.state() == 'resolved' && !this.restoreState)
+            if(view.collection.receiving.state() == 'resolved'/* && !this.restoreState*/)
                 view.trigger('onRestore');       // restore the latest subcategory selection
             else
                 view.collection.receiving.resolve();  // select first subcategory
@@ -323,10 +324,10 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         hide: function(result) {
             var products = result.get('products');
             products && products.length && this.$el.addClass('hide');
-        },
+        }/*,
         skipRestore: function() {
             this.restoreState = 1;
-        }
+        }*/
     });
 
     var CategoriesProductsItemView = App.Views.ItemView.extend({
@@ -464,7 +465,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         initialize: function() {
             App.Views.ListView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection, 'change:selected', this.update_table, this);
-            this.listenTo(this.collection, 'onRestoreState', this.restoreState, this);
+            // this.listenTo(this.collection, 'onRestoreState', this.restoreState, this);
             this.listenTo(this.collection, 'onLoadProductsStarted', this.showSpinner, this);
             this.listenTo(this.collection, 'onLoadProductsComplete', this.hideSpinner, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.update_table, this);
@@ -505,7 +506,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             if(view.searchComplete)
                 this.restoreSearch = this.collection.trigger.bind(this.collection, 'onSearchComplete', data);
 
-            if(App.Data.router.restore && App.Data.router.restore.state() == 'resolved')
+            // if(App.Data.router.restore && App.Data.router.restore.state() == 'resolved')
                 this.restoreSearchState();
 
             if(view.status == 'onLoadProductsComplete')
@@ -527,6 +528,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             App.Views.ListView.prototype.remove.apply(this, arguments);
         },
         restoreState: function(state) {
+// TODO ????
             var self = this;
             if(state.selected) {
                 this.collection.receiving.then(function() {

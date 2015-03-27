@@ -24,6 +24,11 @@ define(["backbone"], function(Backbone) {
     'use strict';
 
     App.Models.Filter = Backbone.Model.extend({
+        defaults: {
+            attribute1: 1,    // show all
+            sort: 'sort',     // default sorting
+            order: 0       // default sorting order
+        },
         saveSort: function() {
             // save only `sort` and `order` properties
             setData('filter', {
@@ -34,7 +39,7 @@ define(["backbone"], function(Backbone) {
         loadSort: function() {
             var data = getData('filter');
             data = data instanceof Object ? data : {};
-            this.set(data);
+            this.set(data, {replaceState: true});
         }
     });
 });
