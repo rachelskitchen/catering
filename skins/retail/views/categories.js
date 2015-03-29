@@ -89,7 +89,6 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         },
         restoreState: function(state) {
             if(typeof state.pattern == 'string') {
-// TODO
                 // if this is search restoring
                 // need avoid default tab selection and products loading
                 return this.collection.parent_selected = -1;
@@ -97,8 +96,6 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
 
             if(this.model.get('parent_name') == state.parent_selected){
                 this.$('input').prop('checked', true);
-                // this.collection.trigger('onRestoreTab');
-                // this.change({stopPropagation: new Function}, state.selected);
             }
         }
     });
@@ -278,7 +275,6 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         mod: 'sublist',
         initialize: function() {
             this.listenTo(this.collection, 'onSubs', this.update, this);
-            // this.listenTo(this.collection, 'onRestoreTab', this.skipRestore, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.hide, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
@@ -305,7 +301,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             sublist.append(view.el);
             this.subViews.push(view);
 
-            if(view.collection.receiving.state() == 'resolved'/* && !this.restoreState*/)
+            if(view.collection.receiving.state() == 'resolved')
                 view.trigger('onRestore');       // restore the latest subcategory selection
             else
                 view.collection.receiving.resolve();  // select first subcategory
@@ -324,10 +320,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         hide: function(result) {
             var products = result.get('products');
             products && products.length && this.$el.addClass('hide');
-        }/*,
-        skipRestore: function() {
-            this.restoreState = 1;
-        }*/
+        }
     });
 
     var CategoriesProductsItemView = App.Views.ItemView.extend({
@@ -465,7 +458,6 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         initialize: function() {
             App.Views.ListView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection, 'change:selected', this.update_table, this);
-            // this.listenTo(this.collection, 'onRestoreState', this.restoreState, this);
             this.listenTo(this.collection, 'onLoadProductsStarted', this.showSpinner, this);
             this.listenTo(this.collection, 'onLoadProductsComplete', this.hideSpinner, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.update_table, this);
@@ -502,12 +494,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             view.loadDone && this.collection.trigger('onLoadProductsComplete');
 
             // restore filters for search
-            // onSearchComplete invokes before onRestoreState if search result is received from cache
-            if(view.searchComplete)
-                this.restoreSearch = this.collection.trigger.bind(this.collection, 'onSearchComplete', data);
-
-            // if(App.Data.router.restore && App.Data.router.restore.state() == 'resolved')
-                this.restoreSearchState();
+            view.searchComplete && this.collection.trigger('onSearchComplete', data);
 
             if(view.status == 'onLoadProductsComplete')
                 this.hideSpinner(this.collection.selected, 0);
@@ -526,26 +513,6 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         remove: function() {
             this.$('.categories_products_wrapper').contentarrow('destroy');
             App.Views.ListView.prototype.remove.apply(this, arguments);
-        },
-        restoreState: function(state) {
-// TODO ????
-            var self = this;
-            if(state.selected) {
-                this.collection.receiving.then(function() {
-                    self.collection.selected = state.selected;
-                    self.update_table(self.collection, state.selected);
-                });
-            } else if(state.pattern) {
-                this.restoreSearchState();
-            }
-
-            App.Data.router.restore.resolve();
-        },
-        restoreSearchState: function() {
-            if(typeof this.restoreSearch == 'function') {
-                this.restoreSearch();
-                delete this.restoreSearch;
-            }
         }
     });
 

@@ -33,7 +33,6 @@ define(["factory"], function() {
             this.listenTo(this.options.categories, 'change:selected', this.onCategorySelected, this);
             this.listenTo(this.options.categories, 'onLoadProductsStarted', this.disable, this);
             this.listenTo(this.options.categories, 'onLoadProductsComplete', this.onProductsLoaded, this);
-            // this.listenTo(this.options.categories, 'onRestoreState', this.restoreState, this);
             this.listenTo(this.model, this.options.updateEvent || 'change:sort change:order', this.update, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
@@ -98,12 +97,8 @@ define(["factory"], function() {
             this.cache = {};
             this.options.updateEvent = 'change:attribute1';
             App.Views.FilterView.FilterSortView.prototype.initialize.apply(this, arguments);
-            // this.stateProps = ['attribute1', 'selected', 'pattern'];
         },
         search: function(result) {
-            // set attribute1 to 1 if there is not restoring state
-            // if(!this.isSearchRestore())
-            //     this.model.set('attribute1', 1);
             this.reset();
 
             var products = result.get('products'),
@@ -114,18 +109,11 @@ define(["factory"], function() {
             count = this.setAttributes(products, pattern);
             this.control(count);
 
-            // restore filter and clear restoring state
-            // if(this.isSearchRestore()) {
-            //     this.restoreData();
-            //     this.clearRestoreState();
-            // }
+            // update selected option (required for restoring after reload page)
+            this.update();
         },
         onProductsLoaded: function() {
             var count = 0;
-
-            // set attribute1 to 1 if there is not restoring state
-            // if(!this.isCategoriesRestore())
-            //     this.model.set('attribute1', 1);
 
             // add attributes to select element
             if(Array.isArray(this.options.categories.selected)) {
@@ -148,11 +136,6 @@ define(["factory"], function() {
 
             // update selected option (required for restoring after reload page)
             this.update();
-            // restore filter and clear restoring state
-            // if(this.isCategoriesRestore()) {
-            //     this.restoreData();
-            //     this.clearRestoreState();
-            // }
         },
         setAttributes: function(products, id) {
             if(!products || !products.length)
@@ -173,36 +156,7 @@ define(["factory"], function() {
             this.$('select').append('<option value="' + value + '">' + value + '</option>');
         },
         onCategorySelected: function(categories, selected) {
-            // if restoring state includes `pattern` and `attribute1`
-            // need reset restoring state due to user has selected any category
-            // if(this.isSearchRestore())
-            //     return this.clearRestoreState();
-
-            // if restoring state includes `selected` and `attribute1`
-            // need reset restoring state if user has selected another category
-            // if(this.isCategoriesRestore() && categories.selected.toString() != this.selected.toString())
-            //     return this.clearRestoreState();
-
-            // ignore any change:selected when filter is not restored
-            // if(this.isCategoriesRestore())
-            //     return;
-
-            // var count = 0;
-
-            // clear all attributes from select element
-            // this.$('option:not([value=1])').remove();
-
-            // add available attributes to select element
-            // this.options.categories.selected.forEach(function(category) {
-            //     if(category in this.cache && this.cache[category].length) {
-            //         this.cache[category].forEach(this.addItem, this);
-            //         count++;
-            //     }
-            // }, this);
-
             this.reset();
-
-            // this.control(count);
         },
         /**
          * Reset filter of previous subcategory. `Attribute1` should be set with options replaceState to avoid creation a new entry in browser history.
@@ -217,7 +171,6 @@ define(["factory"], function() {
         },
         change: function(event) {
             this.model.set('attribute1', event.target.value);
-            // this.clearRestoreState();
         },
         control: function(count) {
             if(count == 0)
@@ -225,35 +178,6 @@ define(["factory"], function() {
             else
                 this.enable();
         },
-        /*
-        restoreState: function(state) {
-            var props = state instanceof Object ? Object.keys(state) : [];
-
-            // add pairs of properties
-            // attribute1, selected and attribute1, pattern
-            props.forEach(function(prop) {
-                if(this.stateProps.indexOf(prop) == -1)
-                    return;
-                this[prop] = state[prop];
-            }, this);
-        },
-        restoreData: function() {
-            var attr = this.attribute1;
-            this.$('option[value="' + attr + '"]').prop('selected', true);
-            this.model.set('attribute1', undefined, {silent: true});
-            this.model.set('attribute1', attr);
-        },
-        isCategoriesRestore: function() {
-            return typeof this.attribute1 != 'undefined' && typeof this.selected != 'undefined';
-        },
-        isSearchRestore: function() {
-            return typeof this.attribute1 != 'undefined' && typeof this.pattern != 'undefined';
-        },
-        clearRestoreState: function() {
-            this.stateProps.forEach(function(key) {
-                delete this[key];
-            }, this);
-        },*/
         update: function() {
             this.$('option[value="' + this.model.get('attribute1') + '"]').prop('selected', true);
         }
