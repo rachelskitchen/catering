@@ -51,6 +51,7 @@ define(["main_router"], function(main_router) {
         },
         hashForGoogleMaps: ['map', 'checkout'],//for #index we start preload api after main screen reached
         initialize: function() {
+console.log('app init state', history.length);
             var settings = App.Settings;
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
             this.bodyElement = Backbone.$('body');
@@ -204,7 +205,84 @@ define(["main_router"], function(main_router) {
             this.listenTo(App.Data.categories, 'change:selected', function() {
                 App.Data.mainModel.trigger('loadCompleted');
                 App.Data.search.clearLastPattern();
+                // var state = {},
+                //     hashRE = /#.*$/,
+                //     encoded, url;
+
+                // if(this.state)
+                //     state = this.state;
+
+                // delete state.pattern;
+                // delete state.attribute1;
+
+                // state.parent_selected = App.Data.categories.parent_selected;
+                // state.selected = App.Data.categories.selected;
+                // encoded = this.encodeState(state);
+                // url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
+
+                // this.updateState(!this.index.initState, url);
+
+                // // save state after initialization of views.
+                // // second entry in window.history (#index -> #index/<data>).
+                // if(encoded && this.index.initState === null)
+                //     this.index.initState = encoded;
             }, this);
+
+            // onSearchComplete event occurs when search results are ready
+            this.listenTo(App.Data.search, 'onSearchComplete', function(result) {
+                // // ingnore cases when no products found
+                // if(!result.get('products') || result.get('products').length == 0)
+                //     return;
+
+                // var state = {},
+                //     hashRE = /#.*$/,
+                //     encoded, url;
+
+                // if(this.state)
+                //     state = this.state;
+
+                // delete state.parent_selected;
+                // delete state.selected;
+                // state.pattern = result.get('pattern');
+                // encoded = this.encodeState(state);
+                // url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
+
+                // this.updateState(!this.index.initState, url);
+            });
+
+            // listen to filter changes and encode it to hash
+            this.listenTo(App.Data.filter, 'change', function(model) {
+//                 var state = {},
+//                     noChanges = true,
+//                     hashRE = /#.*$/,
+//                     i, encoded, url;
+
+//                 if(this.state)
+//                     state = this.state;
+
+//                 for(i in model.changed) {
+//                     if(state[i] == model.changed[i])
+//                         continue;
+//                     noChanges = false;
+//                 }
+
+//                 if(noChanges)
+//                     return;
+
+//                 Object.keys(model.changed).forEach(function(key) {
+//                     delete state[key];
+//                 });
+
+//                 state = Backbone.$.extend(state, model.changed);
+// console.log(model.changed)
+//                 if(state.attribute1 == 1)
+//                     delete state.attribute1;
+
+//                 encoded = this.encodeState(state);
+//                 url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
+
+//                 this.updateState(false, url);
+            });
 
             // onCheckoutClick event occurs when 'checkout' button is clicked
             this.listenTo(App.Data.myorder, 'onCheckoutClick', this.navigate.bind(this, 'checkout', true));
@@ -310,13 +388,14 @@ define(["main_router"], function(main_router) {
                     hashRE = /#.*$/,
                     url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
                 this.updateState(Boolean(opts.replaceState), url);
+console.log('update State %s: %s', history.length, JSON.stringify(this.getState()));
             }
         },
         restoreState: function(event, data) {
             var filter = App.Data.filter,
                 search = App.Data.search,
                 categories = App.Data.categories,
-                hashData = location.hash.match(/^#index\/(\w+)/), // parse decoded state string from hash
+                hashData = location.hash.match(/#index\/(\w+)/), // parse decoded state string from hash
                 isSearchPatternPresent, state;
 
             if(Array.isArray(hashData) && hashData[1].length) {
@@ -328,15 +407,11 @@ define(["main_router"], function(main_router) {
             if(!(data instanceof Object)) {
                 return;
             }
-
+console.log('restore', JSON.stringify(data));
             // define pattern is present is data or not
             isSearchPatternPresent = typeof data.searchPattern == 'string' && data.searchPattern.length;
 
-            // If data.filter is object resore App.Data.filter attributes and set restoring mode
-            if(data.filter instanceof Object) {
-                filter.isRestoring = true;
-                filter.set(data.filter);
-            };
+// console.log('restore data', JSON.stringify(data));
 
             // If data.categories is object restore 'selected', 'parent_selected' props of App.Data.categories and set restoring mode.
             // If search pattern is present categories shouldn't be restored
@@ -348,7 +423,8 @@ define(["main_router"], function(main_router) {
                 categories.trigger('change:selected', categories, categories.selected);
                 // remove restoring mode
                 delete categories.isRestoring;
-                delete filter.isRestoring;
+                // restore filter
+                restoreFilter();
             };
 
             // If data.searchPattern is string restore last searched pattern and set restoring mode
@@ -359,7 +435,8 @@ define(["main_router"], function(main_router) {
                 this.listenToOnce(search, 'onSearchComplete', function() {
                     // remove restoring mode
                     delete search.isRestoring;
-                    delete filter.isRestoring;
+                    // restore filter
+                    restoreFilter();
                 }, this);
                 search.trigger('onRestore');
                 // due to 'onRestore' handler in header view changes categories.selected, categories.parent_selected on 0
@@ -368,16 +445,25 @@ define(["main_router"], function(main_router) {
                 categories.selected = -1;
                 categories.parent_selected = -1;
             }
+
+            function restoreFilter() {
+                // If data.filter is object resore App.Data.filter attributes and set restoring mode
+                if(data.filter instanceof Object) {
+                    filter.isRestoring = true;
+                    filter.set(data.filter);
+                    delete filter.isRestoring;
+                };
+            }
         },
         getState: function() {
             var filter = App.Data.filter.toJSON(),
                 categories = App.Data.categories,
                 searchPattern = App.Data.search.lastPattern,
                 data = {filter: filter},
-                hash = location.hash;
+                hash = location.hash.match(/#\w+/);
 
             // if hash isn't index and is present need return default value
-            if(hash && !/^#index/i.test(hash)) {
+            if(location.hash.indexOf('#index') ) {
                 return App.Routers.MobileRouter.prototype.getState.apply(this, arguments);
             }
 
@@ -425,6 +511,17 @@ define(["main_router"], function(main_router) {
             this.bodyElement.children('.main-container').remove();
         },
         index: function(data) {
+            // // init origin state for case when page is loaded without any data (#index or hash is not assigned)
+            // if(!data && typeof this.index.initState == 'undefined')
+            //     this.index.initState = null;
+
+            // // restore state for first entry in window.history (#index/<data> -> #index)
+            // if(!data && this.index.initState)
+            //     data = this.index.initState;
+
+            // // decode data from url
+            // this.decodeState(data);
+
             this.prepare('index', function() {
                 var categories = App.Data.categories,
                     dfd = $.Deferred(),
@@ -442,6 +539,8 @@ define(["main_router"], function(main_router) {
                 categories.receiving.then(function() {
                     dfd.resolve();
                     self.restore = $.Deferred();
+                    // s; // restore with empty event
+                    // categories.trigger('onRestoreState', self.state);
                 });
 
                 App.Data.header.set('menu_index', 0);
