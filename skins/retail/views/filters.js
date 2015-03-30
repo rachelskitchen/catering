@@ -165,8 +165,6 @@ define(["factory"], function() {
         reset: function() {
             if(!this.model.isRestoring) {
                 this.model.set('attribute1', 1, {replaceState: true});
-            } else {
-                console.log('filter is being restored')
             }
         },
         change: function(event) {
