@@ -120,6 +120,11 @@ textarea, input {
     border-bottom-right-radius: 2em 1.5em;
     overflow-x: hidden;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;    
+}
+
+#content li {
+    -webkit-transform: translate3d(0,0,0); /*it's for scrolling, fixes the issue when blank space can appear on first time quick scroll */
 }
 
 #content .modifiers-list {

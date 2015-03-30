@@ -424,8 +424,7 @@ define(["main_router"], function(main_router) {
                             mod: 'Note',
                             className: 'myorderNote'
                         }
-                    ],
-                    no_perfect_scroll: true
+                    ]
                 });
 
                 this.change_page();
@@ -478,8 +477,7 @@ define(["main_router"], function(main_router) {
                             mod: 'Pickup',
                             className: 'checkout'
                         }
-                    ],
-                    no_perfect_scroll: true
+                    ]
                 });
 
                 this.change_page();
