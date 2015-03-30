@@ -7,17 +7,17 @@
     "routing": {
         "main": {
             "css": ["main", "myorder", "jquery.contentarrow", "products", "quantity", "categories"],
-            "model": ["main", "header", "filter"],
+            "model": ["main", "header", "filter", "categories"],
             "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "quantity", "categories"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "quantity", "categories"],
-            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "categories", "search", "subcategories"],
+            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "search", "subcategories"],
             "js" : ["jquery.contentarrow"]
         },
         "index": {
             "css": ["categories", "filters"],
             "views": ["categories", "filters"],
             "templates": ["categories", "filters"],
-            "core": ["categories", "slider_view"]
+            "core": ["slider_view"]
         },
         "about": {
             "views": ["store_info"],

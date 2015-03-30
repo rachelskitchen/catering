@@ -20,26 +20,20 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone"], function(Backbone) {
+define(['categories'], function(Backbone) {
     'use strict';
 
-    App.Models.Filter = Backbone.Model.extend({
-        defaults: {
-            attribute1: 1,    // show all
-            sort: 'sort',     // default sorting
-            order: 0       // default sorting order
-        },
-        saveSort: function() {
-            // save only `sort` and `order` properties
-            setData('filter', {
-                sort: this.get('sort'),
-                order: this.get('order')
-            });
-        },
-        loadSort: function() {
-            var data = getData('filter');
-            data = data instanceof Object ? data : {};
-            this.set(data, {replaceState: true});
-        }
-    });
+    var coreCategories = App.Collections.Categories,
+        Categories = coreCategories.extend({
+            setSelected: function(selected) {
+                this.selected = selected;
+                this.trigger('change:selected', this, selected);
+            },
+            setParentSelected: function(parent_selected) {
+                this.parent_selected = parent_selected;
+                this.trigger('change:parent_selected', this, parent_selected);
+            }
+        });
+
+    App.Collections.Categories = Categories
 });

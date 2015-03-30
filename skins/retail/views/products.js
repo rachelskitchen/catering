@@ -58,6 +58,7 @@ define(["products_view"], function(products_view) {
         render: function() {
             App.Views.CoreProductView.CoreProductListView.prototype.render.apply(this, arguments);
             this.sortItems(this.options.filter, 1);
+            this.filterItems(this.options.filter);
             return this;
         },
         sortItems: function(model, force) {
