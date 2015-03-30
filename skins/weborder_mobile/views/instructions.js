@@ -36,9 +36,6 @@ define(["instructions_view"], function(instructions_view) {
                         $scroll.scrollTop($scroll.scrollTop() + $self.position().top + $self.outerHeight() - $scroll.height());
                     }
                     $self[0].scrollIntoView();
-                    if (!isIEMobile() && !isAndroidWebKit()) {
-                        $scroll.perfectScrollbar('update');
-                    }
                     $self.focus();
                 }, 500);
             });
