@@ -71,6 +71,7 @@
             taxes: {},
             paypal_iOS: /device=ios/.test(location.search),
             devMode: /dev=true/.test(location.search),
+            devPath: /\/dev\//.test(location.href),
             images: {},
             log: {}
         },
