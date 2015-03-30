@@ -44,9 +44,8 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         change: function(e, selected) {
             e.stopPropagation();
             var value = this.model.get('parent_name');
-            this.collection.parent_selected = value;
             this.collection.selected = selected || 0;
-            this.collection.trigger('change:parent_selected', this.collection, value);
+            this.collection.setParentSelected(value);
         },
         show_hide: function() {
             var value = this.model.get('parent_name');
@@ -170,7 +169,6 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.options.categories, 'change:active', this.show_hide, this);
             this.listenTo(this.options.categories, 'change:selected', this.restoreState, this);
-            this.listenTo(this.options.self, 'onRestore', this.restore, this);
             this.show_hide();
         },
         render: function() {
@@ -187,8 +185,8 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
         change: function() {
             var categories = this.options.categories,
                 value = this.getSelected();
-            this.options.self.selected = categories.selected = value;
-            categories.trigger('change:selected', categories, value);
+            this.options.self.selected = value;
+            categories.setSelected(value);
         },
         show_hide: function() {
             var value = this.model.get('parent_name');
@@ -206,14 +204,6 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             if(value.toString() == selected.toString()) {
                 this.options.self.selected = selected;
                 this.$('input').prop('checked', true);
-            }
-        },
-        restore: function() {
-            var selected = this.options.self.selected,
-                value = this.getSelected();
-            if(value.toString() == selected.toString()) {
-                this.$('input').prop('checked', true);
-                this.change();
             }
         },
         getSelected: function() {
@@ -301,10 +291,11 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
             sublist.append(view.el);
             this.subViews.push(view);
 
-            if(view.collection.receiving.state() == 'resolved')
-                view.trigger('onRestore');       // restore the latest subcategory selection
-            else
+            if(view.collection.receiving.state() == 'resolved') {
+                cats.setSelected(view.selected);      // restore the latest subcategory selection
+            } else {
                 view.collection.receiving.resolve();  // select first subcategory
+            }
 
             delete this.restoreState;
 

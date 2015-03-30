@@ -312,23 +312,31 @@ define(["main_router"], function(main_router) {
                 this.updateState(Boolean(opts.replaceState), url);
             }
         },
-        restoreState: function(event, data) {
+        restoreState: function(event) {
             var filter = App.Data.filter,
                 search = App.Data.search,
                 categories = App.Data.categories,
+                est = App.Data.settings.get('establishment'),
                 hashData = location.hash.match(/^#index\/(\w+)/), // parse decoded state string from hash
-                isSearchPatternPresent, state;
+                mainRouterData, isSearchPatternPresent, state, data;
 
             if(Array.isArray(hashData) && hashData[1].length) {
                 state = this.decodeState(hashData[1]);
             }
 
-            data = data || state || App.Routers.MainRouter.prototype.restoreState.apply(this, arguments);
+            // set data as parsed state
+            data = state;
 
-            if(!(data instanceof Object)) {
+            // need execute App.Routers.MainRouter.prototype.restoreState to handle establishment changing
+            mainRouterData = event instanceof Object && event.state
+                ? App.Routers.MainRouter.prototype.restoreState.apply(this, arguments)
+                : App.Routers.MainRouter.prototype.restoreState.call(this, {state: {stateData: data}});
+
+            data = data || mainRouterData;
+
+            if(!(data instanceof Object) || est != data.establishment) {
                 return;
             }
-
             // define pattern is present is data or not
             isSearchPatternPresent = typeof data.searchPattern == 'string' && data.searchPattern.length;
 
@@ -342,10 +350,8 @@ define(["main_router"], function(main_router) {
             // If search pattern is present categories shouldn't be restored
             if(data.categories instanceof Object && !isSearchPatternPresent) {
                 categories.isRestoring = true;
-                categories.selected = data.categories.selected;
-                categories.parent_selected = data.categories.parent_selected;
-                categories.trigger('change:parent_selected', categories, categories.parent_selected);
-                categories.trigger('change:selected', categories, categories.selected);
+                categories.setParentSelected(data.categories.parent_selected);
+                categories.setSelected(data.categories.selected);
                 // remove restoring mode
                 delete categories.isRestoring;
                 delete filter.isRestoring;
@@ -370,16 +376,20 @@ define(["main_router"], function(main_router) {
             }
         },
         getState: function() {
-            var filter = App.Data.filter.toJSON(),
+            var filter = App.Data.filter,
                 categories = App.Data.categories,
-                searchPattern = App.Data.search.lastPattern,
-                data = {filter: filter},
-                hash = location.hash;
+                search = App.Data.search,
+                data = {},
+                hash = location.hash,
+                searchPattern;
 
-            // if hash isn't index and is present need return default value
-            if(hash && !/^#index/i.test(hash)) {
+            // if hash isn't index and is present need return default valu,
+            if(hash && !/^#index/i.test(hash) || !filter || !categories || !search) {
                 return App.Routers.MobileRouter.prototype.getState.apply(this, arguments);
             }
+
+            data.filter = filter.toJSON();
+            searchPattern = search.lastPattern;
 
             // search pattern and categories data cannot be in one state due to views implementation
             if(searchPattern) {
@@ -427,6 +437,7 @@ define(["main_router"], function(main_router) {
         index: function(data) {
             this.prepare('index', function() {
                 var categories = App.Data.categories,
+                    restoreState = new Function,
                     dfd = $.Deferred(),
                     self = this;
 
@@ -440,6 +451,11 @@ define(["main_router"], function(main_router) {
                 }
 
                 categories.receiving.then(function() {
+                    // After restoring state an establishment may be changed.
+                    // In this case need abort execution of this callback to avoid exceptions in console
+                    if(!Backbone.History.started) {
+                        return;
+                    }
                     dfd.resolve();
                     self.restore = $.Deferred();
                 });
@@ -488,9 +504,10 @@ define(["main_router"], function(main_router) {
                 });
 
                 dfd.then(function() {
+                    // change page
                     self.change_page(function() {
                         App.Data.mainModel.set('needShowStoreChoice', true);
-                    }); // change page
+                    });
                     //start preload google maps api:
                     App.Data.settings.load_geoloc();
                 });
