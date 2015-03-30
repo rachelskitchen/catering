@@ -177,7 +177,6 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
             if (value !== oldValue) {
                 this.model.set('dining_option', value);
-                this.collection.recalculate_tax();
             }
         },
         set_type : function() {
@@ -566,7 +565,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
                 return;
             }
-            myorder.get_discounts({ apply_discount: true})
+            myorder.get_cart_totals({ apply_discount: true})
                 .done(function(data) {
                     if (data.status == "OK") {
                         self.disableApplyBtn();
@@ -624,7 +623,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.$(".dcode_have").removeClass('hidden');
             this.model.set({last_discount_code: '',
                             discount_code: ''}, {silent: true});
-            myorder.get_discounts();
+            myorder.get_cart_totals();
         },
         onApplyCode: function() {
             var self = this,
@@ -634,7 +633,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
                 return;
             }
-            myorder.get_discounts({ apply_discount: true})
+            myorder.get_cart_totals({ apply_discount: true})
                 .done(function(data) {
                     if (data.status == "OK") {
                         self.discountApplied();
