@@ -35,6 +35,9 @@ define(["backbone"], function(Backbone) {
                 set = {
                     charge: settings.delivery_charge,
                     enable: settings.delivery_for_online_orders,
+                    delivery_post_code_lookup_enabled: settings.delivery_post_code_lookup[0],
+                    delivery_post_codes: settings.delivery_post_code_lookup[1],
+                    delivery_geojson_enabled: settings.delivery_geojson[0],
                     max_distance: settings.max_delivery_distance,
                     min_amount: settings.min_delivery_amount
                 };

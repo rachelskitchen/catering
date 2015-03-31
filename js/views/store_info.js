@@ -38,10 +38,11 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     title = settings.business_name || '',
                     coords = new google.maps.LatLng(address.coordinates.lat, address.coordinates.lng),
                     popup = new google.maps.InfoWindow({
-                        content: '<div id="googlemaps_popup">'+
-                                    '<div> <strong>' + title + '</strong> </div>'+
-                                    '<div>' + address.full_address + '</div>'+
-                                '</div>',
+                        content: '<div id="googlemaps_popup">' +
+                            '<div> <strong>' + title + '</strong> </div>' +
+                            '<div>' + address.full_address + '</div>' +
+                            '</div>' + ((!settings.delivery_post_code_lookup[0] && settings.delivery_geojson[0]) ?
+                            '<div> *Delivery area is marked with grey</div>': ''),
                         position: coords
                     }),
                     map = new google.maps.Map(self.$('#mapBox')[0], {
@@ -64,11 +65,21 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                             ]
                         }
                     }),
+
                     marker = new google.maps.Marker({
                         position: coords,
                         map: map,
                         title: title
                     });
+
+                if (!settings.delivery_post_code_lookup[0] && settings.delivery_geojson[0]) {
+                    try {
+                        map.data.addGeoJson(JSON.parse(settings.delivery_geojson[1]));
+                        map.data.setStyle({"strokeWeight": 1});
+                    } catch (e) {
+                        console.error("Can't parse delivery area GeoJson: " + e);
+                    }
+                }
 
                 google.maps.event.addListener(popup, "domready", function() {
                     self.$("#googlemaps_popup").parent().parent().css({

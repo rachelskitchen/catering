@@ -172,52 +172,6 @@ define(["backbone", "geopoint"], function(Backbone) {
                 status: "OK"
             };
         },
-        validate_address: function(success, error) {
-            try {
-                var geocoder = new google.maps.Geocoder(),
-                    settings = App.Data.settings.get('settings_system'),
-                    lat, lon,
-                    address = this.get('addresses'),
-                    shipping_address = this.get('shipping_address') === -1 ? address.length - 1 : this.get('shipping_address'),
-                    street2 = address[shipping_address].street_2;
-
-                address = address[shipping_address].address;
-
-                if(street2) {
-                    address = address.replace(', ' + street2, '');
-                }
-
-                // if max_delivery_distance isn't set or `0` need perform success result without distance checking
-                if(!settings.max_delivery_distance) {
-                    return success();
-                }
-
-                geocoder.geocode({"address": address}, function(results, status) {
-                    if (status === google.maps.GeocoderStatus.OK) {
-                        var location = results[0]['geometry']['location'],
-                            store_location = settings.address.coordinates,
-                            geopoint, dist;
-
-                        lat = location.lat();
-                        lon = location.lng();
-                        geopoint = new GeoPoint(store_location.lat, store_location.lng);
-                        dist = typeof settings.distance_mearsure == 'string' && /^km$/i.test(settings.distance_mearsure)
-                            ? geopoint.getDistanceKm(lat, lon)
-                            : geopoint.getDistanceMi(lat, lon);
-
-                        if(settings.max_delivery_distance >= dist) {
-                            return success();
-                        } else {
-                            return error(MSG.ERROR_DELIVERY_EXCEEDED); // user notification
-                        }
-                    } else {
-                        return error(MSG.ERROR_DELIVERY_ADDRESS); // user notification
-                    }
-                });
-            } catch(e) {
-                return error(MSG.ERROR_DELIVERY_ADDRESS); // user notification
-            }
-        },
         get_shipping_services: function() {
             var self = this,
                 data = {},

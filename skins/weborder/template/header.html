@@ -31,11 +31,15 @@
             Minimum: <%= currency_symbol + min_delivery_amount %>
         </span>
         <span>
-            Delivery Radius: <%= max_delivery_distance %>
-            <% if(distance_mearsure.toLowerCase() == 'km') { %>
-                km
-            <% } else { %>
-                Mile<% if(max_delivery_distance > 1) { %>s<% } %>
+            <% if(delivery_post_code_lookup_enabled) { %>
+                Delivery Area: <%= delivery_post_codes %>
+            <% } else if (!delivery_geojson_enabled){ %>
+                Delivery Radius: <%= max_delivery_distance %>
+                <% if(distance_mearsure.toLowerCase() == 'km') { %>
+                    km
+                <% } else { %>
+                    Mile<% if(max_delivery_distance > 1) { %>s<% } %>
+                <% } %>
             <% } %>
         </span>
     </div>
