@@ -891,8 +891,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 return error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, fields.join(', '))); // user notification
             } else if (errorMsg) {
                 return error(errorMsg); // user notification
-            } else if (options.customer && dining_option === 'DINING_OPTION_DELIVERY') {
-                customer.validate_address(_success.bind(this), error);
             } else {
                 _success.call(this);
             }
@@ -1244,6 +1242,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                             break;
                         case "REWARD CARD UNDEFINED":
                             reportErrorFrm(MSG.REWARD_CARD_UNDEFINED);
+                            break;
+                        case "DELIVERY_ADDRESS_ERROR":
+                            reportErrorFrm(data.errorMsg);
                             break;
                         case "PRODUCTS_NOT_AVAILABLE_FOR_SELECTED_TIME":
                             reportErrorFrm(data.errorMsg + " " + MSG.PRODUCTS_VALID_TIME + "<br/>" + format_timetables(data.responseJSON["timetables"], ",<br/>"));
