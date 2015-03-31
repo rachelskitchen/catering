@@ -974,7 +974,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
                 if (check_order.status === 'ERROR_QUANTITY') {
                     if (!arguments[2]) { // if we don't set error callback, use usuall two button alert message or if we on the first page
-                        return errors(check_order.errorMsg, false, false, {
+                        return error(check_order.errorMsg, false, false, {
                             isConfirm: true,
                             confirm: {
                                 ok: 'Ok',
