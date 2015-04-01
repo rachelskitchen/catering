@@ -727,9 +727,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if (this.deliveryItem)
                     this.deliveryItem.get("product").set(delivery_data);
             }
-            
+
             var total  = _.find(orders, function(item) {
-                return item.total instanceof Object; 
+                return item.total instanceof Object;
             });
 
             if (total) {
@@ -741,7 +741,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     discounts: total.discounts
                 });
             }
-        
+
             this.discount.loadDiscount();
         },
         /**
@@ -852,7 +852,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
                 if (check_order.status === 'ERROR_QUANTITY') {
                     if (!arguments[2]) { // if we don't set error callback, use usuall two button alert message or if we on the first page
-                        return errors(check_order.errorMsg, false, false, {
+                        return error(check_order.errorMsg, false, false, {
                             isConfirm: true,
                             confirm: {
                                 ok: 'Ok',
