@@ -175,6 +175,9 @@
 #popup .order-items ul.discount > li {
     margin-top: 10px;
 }
+#popup .order-items .service_fees {
+    margin-top: 8px;
+}
 #popup .order-items .s4 .name {
     right: 53px;
 }

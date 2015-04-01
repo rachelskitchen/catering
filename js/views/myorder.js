@@ -197,6 +197,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.label_manual_weights = App.Data.settings.get("settings_system").scales.label_for_manual_weights;
             model.image = product.get_product().get('image');
             model.id = product.get_product().get('id');
+            model.is_service_fee = this.model.isServiceFee();
             if (model.sold_by_weight) {
                 num_digits = App.Data.settings.get("settings_system").scales.number_of_digits_to_right_of_decimal;
                 model.weight = model.weight.toFixed(num_digits);
@@ -256,6 +257,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         render: function() {
             this.$el.html(this.template());
+            
             this.collection.each(this.addItem.bind(this));
         },
         addItem: function(model) {
@@ -269,6 +271,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 el: $('<li></li>'),
                 collection: this.collection
             });
+
+            if (model.isServiceFee()) {
+                this.subViews.push(view);
+                this.$('.service_fees').append(view.el);
+                return;
+            }
 
             if (model === App.Data.myorder.bagChargeItem) {
                 this.bagChargeItemView = view;

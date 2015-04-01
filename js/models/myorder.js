@@ -335,8 +335,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             var currency_symbol = App.Data.settings.get('settings_system').currency_symbol,
                 uom = App.Data.settings.get("settings_system").scales.default_weighing_unit,
                 product = this.get_product().toJSON(),
-                price = Number(this.get('initial_price')) >= 0 ? this.get('initial_price') : product.price,//model.get('sum');
-                //item_tax = this.get_myorder_tax(),
+                price = Number(this.get('initial_price')) >= 0 ? this.get('initial_price') : product.price,
                 item_obj = {
                     modifieritems: modifiers,
                     special_request: special,
@@ -375,6 +374,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         restoreTax: function() {
             var product = this.get_product();
             product && product.restoreTax();
+        },
+        isServiceFee: function() {
+            return this.get("isServiceFee") === true;
         }
     });
 
@@ -445,6 +447,18 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                         id: null,
                         type: 1
                     });
+        }
+    });
+
+    App.Models.ServiceFeeItem = App.Models.Myorder.extend({
+        initialize: function() {
+            App.Models.Myorder.prototype.initialize.apply(this, arguments);
+            this.set({
+                product: new App.Models.Product({
+                    name: "default fee"        
+                }),
+                isServiceFee: true
+            });
         }
     });
 
@@ -552,12 +566,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          * get quantity without delivery charge and bag charge items
          */
         get_only_product_quantity: function() {
-            var quantity = this.quantity;
-
-            this.get(this.deliveryItem) && quantity--;
-            this.get(this.bagChargeItem) && quantity--;
-
-            return quantity;
+            var array = this.filter(function(model) { 
+                    return model.get("id_product") != null;
+                });
+            return array.length;
         },
         /**
          *  create orders from JSON.
@@ -639,7 +651,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.change_only_gift_dining_option();
             this.isShippingOrderType() && this.getDestinationBasedTaxes(model);
 
-            this.update_cart_totals();
+            if (!model.isServiceFee()) {
+                this.update_cart_totals();
+            }
         },
         /**
          *  Recalculate total when model remove
@@ -655,7 +669,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 this.deliveryItem && this.deliveryItem.get("discount").zero_discount();
             }
 
-            this.update_cart_totals();
+            if (!model.isServiceFee()) {
+                this.update_cart_totals();
+            }
         },
         /**
          *  Recalculate total when model change
@@ -675,7 +691,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             model.changedAttributes() && model.changedAttributes().sum && model.trigger('update:sum', model);
 
-            this.update_cart_totals();
+            if (!model.isServiceFee()) {
+                this.update_cart_totals();
+            }
         },
         findDeliveryItem: function() {
             return this.find(function(model) {
@@ -1020,7 +1038,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             myorder.each(function(model) {
-                items.push(model.item_submit(true));
+                if (!model.isServiceFee())
+                  items.push(model.item_submit(true));
             });
 
             order_info.pickup_time = checkout.pickupTimeToServer;
@@ -1103,6 +1122,51 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 }
             });
 
+            if (myorder.debug_counter) 
+                myorder.debug_counter = ++myorder.debug_counter;
+            else
+                myorder.debug_counter = 1;            
+            
+            json.service_fees =[{
+                 id: 1000,
+                 name: "ServiceFee_1",
+                 sum: 10.1
+            },
+            {
+                 id: 1001,
+                 name: "ServiceFee_2",
+                 sum: 2.12 + myorder.debug_counter
+            },
+            {
+                 id: 1002 + myorder.debug_counter,
+                 name: "ServiceFee_3 long long long long long long ",
+                 sum: 3.0 + myorder.debug_counter
+            }];
+            if (Array.isArray(json.service_fees)) {
+                var myorder_fees = myorder.filter(function(obj){ return obj.isServiceFee(); });
+                
+                //console.log(myorder_fees); 
+                var diff = myorder_fees.filter(function(obj){ 
+                           return !_.findWhere(json.service_fees, {id: obj.id}); 
+                       });
+               
+                myorder.remove(diff);        
+ 
+                json.service_fees.forEach(function(item){
+                    var fee = myorder.findWhere({id: item.id});
+                    if (!fee) {
+                        //console.log("add ", item.name, item.id, fee);
+                        fee = new App.Models.ServiceFeeItem({id: item.id});
+                        myorder.add(fee);
+                        //console.log("after add : ", myorder.models.length);
+                    }
+                    //console.log("length ", myorder.models.length);
+                    fee.get("product").set({name: item.name, price: item.sum});
+                    fee.set({ initial_price: item.sum, 
+                              sum: item.sum });
+                });                
+            }
+
             /*json.discount = { name: '10% All/Order/Untaxed',
                               sum: 1.00,
                               taxed: true,
@@ -1146,7 +1210,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 };
 
             myorder.each(function(model) {
-                items.push(model.item_submit());
+                if (!model.isServiceFee())
+                    items.push(model.item_submit());
             });
 
             var call_name = [],
