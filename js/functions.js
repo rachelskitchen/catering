@@ -75,6 +75,8 @@ var RESOURCES = {
     TEMPLATES: 'RESOURCES_TEMPLATES'
 }
 
+ERROR.LOAD_LANGUAGE_PACK = 'Unable to load a language pack. Now the page is reloaded.';
+
 //write messages here
 MSG.ERROR_STORE_IS_CLOSED = "We're sorry, your order cannot be processed because the store is closed for selected pickup day/time";
 MSG.ERROR_GEOLOCATION = [ "There was an error while retrieving your location.",
@@ -363,7 +365,7 @@ function getData(name, local) {
     return data;
 }
 /**
- * save data to storage (coockie or sessionStorage)
+ * Save data to storage (cookie, sessionStorage, localStorage).
  * Return true if successfully saved
  */
 function setData(name, data, local) {

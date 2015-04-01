@@ -262,7 +262,13 @@ define(["backbone", "async"], function(Backbone) {
                     default_dining_option: 'DINING_OPTION_TOGO',
                     accept_discount_code: true,
                     enable_quantity_modifiers: true,
-                    enable_split_modifiers: true
+                    enable_split_modifiers: true,
+                    // for test (begin)
+                    locales: {
+                        en: 1427802271098,
+                        ru: 1427802447190
+                    }
+                    // for test (end)
                 },
                 load = $.Deferred();
 

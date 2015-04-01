@@ -111,7 +111,7 @@
         // set config for require
         require.config(app.config);
 
-        require(['cssua', 'functions', 'generator', 'errors', 'errors_view', 'myorder', 'settings', 'timetable', 'log', 'tax', 'main_router'], function() {
+        require(['cssua', 'functions', 'generator', 'errors', 'errors_view', 'myorder', 'settings', 'timetable', 'log', 'tax', 'main_router', 'locale'], function() {
             var win = Backbone.$(window);
 
             // invoke beforeStart onfig
@@ -169,11 +169,23 @@
             });
 
             // init settings object
-            App.Data.settings = new App.Models.Settings({
+            var settings = App.Data.settings = new App.Models.Settings({
                 supported_skins: app.skins.available
-            });
-            var settings = App.Data.settings,
+            }),
                 isNotFirstLaunch = false;
+
+            var langPack = $.Deferred();
+            settings.on('changeSkin', function() {
+                var locale = App.Data.locale = new App.Models.Locale;
+                (locale.keys().length) && langPack.resolve();
+
+                locale.on('showError', function() {
+                    errors.alert(ERROR.LOAD_LANGUAGE_PACK, true); // user notification
+                });
+                locale.on('loadCompleted', function() {
+                    langPack.resolve();
+                });
+            });
 
             settings.on('changeSettingsSkin', function() {
                 load_styles_and_scripts(); // load styles and scripts
@@ -198,7 +210,10 @@
                         isNotFirstLaunch = true;
                     }
                     router.isNotFirstLaunch = isNotFirstLaunch;
-                    Backbone.history.start();
+
+                    langPack.then(function() {
+                        Backbone.history.start();
+                    });
 
                     // invoke afterStart callback
                     app.afterInit();
