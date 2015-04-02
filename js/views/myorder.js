@@ -317,9 +317,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     view.remove();
                     self.subViews.splice(i, 1);
                     var bag_charge_index = self.subViews.indexOf(self.bagChargeItemView);
-                    if (self.collection.get_only_product_quantity() < 1 && bag_charge_index != -1) {
-                        Backbone.View.prototype.remove.call(self.bagChargeItemView);
-                        self.subViews.splice(bag_charge_index, 1);
+                    if (self.collection.get_only_product_quantity() < 1) {
+                        if (bag_charge_index != -1) { 
+                            Backbone.View.prototype.remove.call(self.bagChargeItemView);
+                            self.subViews.splice(bag_charge_index, 1);
+                        }
+                        self.collection.removeServiceFees();
                     }
                     return true;
                 }
