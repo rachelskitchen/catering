@@ -4,7 +4,7 @@
         <input type="<%= type %>" id="modifier<%= id %>" name="modifier<%= modifierClassName %>">
         <span class="input <%= type %>"></span>
         <% } else { %>
-            <span class="special_button">Add</span>
+            <span class="special_button"> <%= _lp.__modifiers_button_add %> </span>
         <% } %>
         <span class="title <% if(isSpecial) { %>special<% } %>"><%= name %></span>
         <% if(isSize) { %>
@@ -40,19 +40,40 @@
         <% if (_settings.online_orders) { %>
             <div class='modifiers_classes_subtitle'>
             <% if (type === 0 && (typeof maximum_amount != 'number' || maximum_amount === 0) && (typeof minimum_amount != 'number' || minimum_amount === 0)) { %>
-                Optional <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+                <%= _lp.__modifiers_optional %>
+                <% if (free_modifiers) { %>
+                    <span class="free">(<%= free_modifiers %>)</span>
+                <% } %>
             <% } else if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) { %>
-                Choose <%=  minimum_amount %> <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+                <%= _lp.__modifiers_choose %> <%= minimum_amount %>
+                <% if (free_modifiers) { %>
+                    <span class="free">(<%= free_modifiers %>)</span>
+                <% } %>
             <% } else if (type === 0 && typeof maximum_amount == 'number' && maximum_amount != 0 && typeof minimum_amount == 'number' && minimum_amount != 0) { %>
-                Choose <%=  minimum_amount %> to <%= maximum_amount %> <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+                <%= _lp.__modifiers_choose %> <%= minimum_amount %> <%= _lp.__modifiers_choose_to %> <%= maximum_amount %>
+                <% if (free_modifiers) { %>
+                    <span class="free">(<%= free_modifiers %>)</span>
+                <% } %>
             <% } else if (type === 0 && typeof maximum_amount == 'number' && (typeof minimum_amount != 'number' || minimum_amount === 0)) { %>
-                Optional (up to <%= maximum_amount %>) <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+                <%= _lp.__modifiers_optional %> (<%= _lp.__modifiers_optional_up %> <%= maximum_amount %>)
+                <% if (free_modifiers) { %>
+                    <span class="free">(<%= free_modifiers %>)</span>
+                <% } %>
             <% } else if (type === 0 && typeof maximum_amount != 'number' && typeof minimum_amount == 'number') { %>
-                Choose at least <%=  minimum_amount %> <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+                <%= _lp.__modifiers_choose %> <%= _lp.__modifiers_choose_least %> <%= minimum_amount %>
+                <% if (free_modifiers) { %>
+                    <span class="free">(<%= free_modifiers %>)</span>
+                <% } %>
             <% } else if (type === 1) { %>
-                Choose one <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+                <%= _lp.__modifiers_choose %> <%= _lp.__modifiers_choose_one %>
+                <% if (free_modifiers) { %>
+                    <span class="free">(<%= free_modifiers %>)</span>
+                <% } %>
             <% } else if (type === 2) { %>
-                Optional <% if(free_modifiers) { %><span class="free">(<%= free_modifiers %>)</span><% } %>
+                <%= _lp.__modifiers_optional %>
+                <% if (free_modifiers) { %>
+                    <span class="free">(<%= free_modifiers %>)</span>
+                <% } %>
             <% } %>
             </div>
         <% } %>
@@ -66,6 +87,6 @@
 </script>
 
 <script type="text/template" id="modifiers_classes_matrix-template">
-    <h2> Please select: <%= attributes %> </h2>
+    <h2> <%= _lp.__modifiers_select %>: <%= attributes %> </h2>
     <div class="modifier_classes"></div>
 </script>
