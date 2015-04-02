@@ -1,11 +1,11 @@
 <script type="text/template" id="tips_line-template">
-        <label class="tip-label"><span class="bold">Add a Tip:</span></label>
+        <label class="tip-label"> <span class="bold"> <%= _lp.__tips_add_tip %>: </span> </label>
         <div class="tips">
-            <span class="btn animation " data-amount="None">None</span>
+            <span class="btn animation" data-amount="None"> <%= _lp.__tips_none %> </span>
             <span class="btn animation " data-amount="10">10%</span>
             <span class="btn animation " data-amount="15">15%</span>
             <span class="btn animation " data-amount="20">20%</span>
-            <span class="btn animation " data-amount="Other">Other</span>
+            <span class="btn animation" data-amount="Other"> <%= _lp.__tips_other %> </span>
             <span class="currency_sym"> <span> <%=currency_symbol%> </span> </span>
             <span class="number-wrap">
                 <div class="number">
