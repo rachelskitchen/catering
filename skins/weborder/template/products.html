@@ -22,7 +22,7 @@
             <%= description %>
         <% } %>
         </dd>
-        <dt class="hide">Price</dt>
+        <dt class="hide"> <%= _lp.__products_price %> </dt>
         <dd class='cost_block'>
             <div class='cost'>
                 <span class="currency_symbol"><%= currency_symbol %></span>
@@ -61,13 +61,13 @@
         </dt>
         <dd><%= description %></dd>
         <% if (timetables) { %>
-        <dd class="vertical-scrollbar timetables">Available: <%= timetables %></dd>
+            <dd class="vertical-scrollbar timetables"> <%= _lp.__products_available %>: <%= timetables %> </dd>
         <% } %>
     </dl>
 
     <% if (is_gift && _settings.online_orders) { %>
     <div class='gift_card'>
-        <span>Gift Card Number: </span>
+        <span> <%= _lp.__products_gift_card %>: </span>
         <div class="input_beauty">
             <input type="text" name="gift_card_number" value='<%= gift_card_number %>' class="gift_card_number" />
         </div>
