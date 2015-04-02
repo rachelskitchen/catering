@@ -1,6 +1,6 @@
 <script type="text/template" id="total_main-template">
     <li>
-        Subtotal:
+        <%= _lp.__total_sub_total %>:
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="total"><%= subTotal %></span>
@@ -11,7 +11,7 @@
 <script type="text/template" id="total_checkout-template">
     <% if(discount_allow) { %>
     <li>
-        <span class="title">Discounts:</span>
+        <span class="title"> <%= _lp.__total_discounts %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="discount"><%= discounts %></span>
@@ -19,7 +19,7 @@
     </li>
     <% } %>
     <li>
-        <span class="title">Subtotal:</span>
+        <span class="title"> <%= _lp.__total_subtotal %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="subtotal"><%= subTotal %></span>
@@ -27,7 +27,7 @@
     </li>
 <% if (deliveryCharge) { %>
     <li class="delivery-charge">
-        <span class="title">Delivery Charge:</span>
+        <span class="title"> <%= _lp.__total_delivery_charge %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="delivery-charge"><%= deliveryCharge %></span>
@@ -40,7 +40,7 @@
      <% } else { %>
        <li class="delivery_discount_item hide">
     <% } %>
-        <span class="title">Delivery Discount:</span>
+        <span class="title"> <%= _lp.__total_delivery_discount %>: </span>
         <span class="cost">
             <span class="currency_symbol">-<%= currency_symbol %></span>
             <span class="delivery-discount"><%= deliveryDiscount %></span>
@@ -52,14 +52,14 @@
     <% }else{ %>
       <li class="surcharge_item hide">
     <% } %>
-        <span class="title">Surcharge:</span>
+        <span class="title"> <%= _lp.__total_surcharge %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="surcharge"><%= surcharge %></span>
         </span>
     </li>
     <li>
-        <span class="title">Tax:</span>
+        <span class="title"> <%= _lp.__total_tax %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="tax"><%= tax %></span>
@@ -67,7 +67,7 @@
     </li>
 <% if(tip_allow) { %>
     <li>
-        <span class="title">Tip:</span>
+        <span class="title"> <%= _lp.__total_tip %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="tip"><%= tip %></span>
@@ -75,7 +75,7 @@
     </li>
 <% } %>
     <li>
-        <span class="title bold">Grand Total:</span>
+        <span class="title bold"> <%= _lp.__total_grand_total %>: </span>
         <span class="cost">
             <span class="currency_symbol bold"><%= currency_symbol %></span>
             <span class="grandtotal bold"><%= grandTotal %></span>
