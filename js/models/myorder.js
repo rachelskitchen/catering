@@ -706,6 +706,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                        model.get('product').get('name') == MSG.BAG_CHARGE_ITEM;
             });
         },
+        removeServiceFees: function() {
+            var fees = this.filter(function(obj){ return obj.isServiceFee(); });
+            this.remove(fees);
+        },
         /**
          * save order to localstorage
          */
@@ -1142,6 +1146,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                  name: "ServiceFee_3 long long long long long long ",
                  sum: 3.0 + myorder.debug_counter
             }];
+            
+            if (myorder.get_only_product_quantity() == 0) 
+                json.service_fees = [];
+
             if (Array.isArray(json.service_fees)) {
                 var myorder_fees = myorder.filter(function(obj){ return obj.isServiceFee(); });
                 
