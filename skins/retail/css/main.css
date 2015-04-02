@@ -594,6 +594,8 @@ section.maintenance .back {
 }
 #cart .order-items .myorder > li {
     min-height: 75px;
+}
+#cart .order-items > ul > li {
     margin-bottom: 10px;
 }
 #cart .order-items .image, .confirmPayCard .order-items .image {
@@ -605,13 +607,12 @@ section.maintenance .back {
     float: left;
     margin-right: 10px;
 }
-#cart .order-items .myorder > li.no_image .image {
-     height: 35px;
-}
-#cart .order-items .myorder > li.no_image img {
+#cart .order-items .myorder > li.no_image .image,
+#cart .order-items .service_fees .image {
     display: none;
 }
-#cart .order-items .myorder > li.no_image {
+#cart .order-items .myorder > li.no_image,
+#cart .order-items .service_fees > li {
     min-height: 35px;
 }
 
