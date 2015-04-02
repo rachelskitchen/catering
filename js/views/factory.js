@@ -43,7 +43,10 @@ define(['backbone'], function(Backbone) {
         initialize: function() {
             this.template = function(params) {
                 var template = template_helper(this.name, this.mod),
-                    baseParams = {_settings: App.Settings};
+                    baseParams = {
+                        _settings: App.Settings,
+                        _lp: App.Data.locale.toJSON()
+                    };
                 params = params instanceof Object ? _.extend(baseParams, params) : baseParams;
                 return template(params);
             };

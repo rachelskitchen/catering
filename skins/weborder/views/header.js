@@ -31,7 +31,6 @@ define(["backbone", "factory"], function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
-            this.model.set(App.Data.locale.toJSON()); // use locale
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             if (App.Data.settings.get('settings_system').delivery_for_online_orders) {
                 var view = App.Views.GeneratorView.create('Header', {
@@ -68,7 +67,6 @@ define(["backbone", "factory"], function() {
         name: 'header',
         mod: 'checkout',
         render: function() {
-            this.model.set(App.Data.locale.toJSON()); // use locale
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             if (App.Data.settings.get('settings_system').delivery_for_online_orders) {
                 var view = App.Views.GeneratorView.create('Header', {
@@ -98,7 +96,7 @@ define(["backbone", "factory"], function() {
         mod: 'delivery',
         render: function() {
             var settings = App.Data.settings.get('settings_system'),
-                initial_model = this.model.set(App.Data.locale.toJSON()).toJSON(); // use locale
+                initial_model = this.model.toJSON();
 
             $.extend(initial_model, {
                 delivery_charge: round_monetary_currency(settings.delivery_charge),
