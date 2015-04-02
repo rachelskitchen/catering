@@ -1,5 +1,5 @@
 <script type="text/template" id="quantity_main-template">
-    <span class="title">How many?</span>
+    <span class="title"> <%= _lp.__quantity_how_many %> </span>
     <div class='quantity_select select-wrapper'>
         <select>
         </select>
@@ -8,12 +8,12 @@
 
 <script type="text/template" id="quantity_weight-template">
     <div class="quantity_weight_wrapper">
-    <span class="title">Enter weight:</span>
-    <div class='weight_edit'>
-        <div class='weight_edit_inner input_beauty'>
-            <input class="weight_edit_input" value="<%= weight %>">
-            </input>
+        <span class="title"> <%= _lp.__quantity_enter_weight %>: </span>
+        <div class='weight_edit'>
+            <div class='weight_edit_inner input_beauty'>
+                <input class="weight_edit_input" value="<%= weight %>">
+                </input>
+            </div>
         </div>
-    </div>
     </div>
 </script>
