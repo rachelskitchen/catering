@@ -1,11 +1,6 @@
 <script type="text/template" id="store_info_about-template">
         
     <div class='about_content'>
-        <% if (title.length == 0 && content.length == 0 && images.length == 0) {
-                content = "No information";    
-           }
-        %>
-
         <% if (title.length > 0) { %>
            <h2><%= title %></h2>
         <% } %>   
@@ -15,20 +10,30 @@
             </div>
        <% } %>
 
-       <p><%= content %></p>
+        <p>
+        <% if (title.length == 0 && content.length == 0 && images.length == 0) { %>
+            <%= _lp.__store_info_no_information %>
+        <% } else { %>
+            <%= content %>
+        <% } %>
+        </p>
    </div>
 </script>
 
 <script type="text/template" id="store_info_map-template">
     <div class='info_map_wrapper'>
         <div id="mapBox"></div>
-        <div class="view_larger_map"> View <a href="" target="_blank" class='map_url'> </a> in a larger map </div>
+        <div class="view_larger_map">
+            <%= _lp.__store_info_view_map1 %>
+            <a href="" target="_blank" class="map_url"> </a>
+            <%= _lp.__store_info_view_map2 %>
+        </div>
         <% if (phone || email || address || access) { %>
             <table class="info_location">
 
                 <% if(address instanceof Object) { %>
                     <tr>
-                        <td>Address:</td>
+                        <td> <%= _lp.__store_info_address %>: </td>
                         <td>
                             <address class="desc">
                                 <div><%= address.business_name %></div>
@@ -41,7 +46,7 @@
 
                 <% if(timetable) { %>
                 <tr class="hours">
-                    <td>Hours:</td>
+                    <td> <%= _lp.__store_info_hours %>: </td>
                     <td>
                         <ul>
                             <% _.each(timetable, function(day, i) { %>
@@ -55,10 +60,10 @@
                                     </span>
                                 <% } else if(day.hours) { %>
                                     <span class="weekDay"><%= day.weekDay %></span>
-                                    <span class="time">Round the clock</span>
+                                    <span class="time"> <%= _lp.__store_info_round_the_clock %> </span>
                                 <% } else { %>
                                     <span class="weekDay"><%= day.weekDay %></span>
-                                    <span class="time closed">Closed</span>
+                                    <span class="time closed"> <%= _lp.__store_info_closed %> </span>
                                 <% } %>
                                 <div class='clear'></div>
                             </li>
@@ -70,7 +75,7 @@
 
                 <% if(phone) { %>
                 <tr>
-                    <td>Phone:</td>
+                    <td> <%= _lp.__store_info_phone %>: </td>
                     <td>
                         <a class="phone" href="tel:<%= phone %>"><%= phoneFormat(phone) %></a>
                     </td>
@@ -79,14 +84,14 @@
 
                 <% if (email) { %>
                     <tr>
-                        <td> Email: </td>
+                        <td> <%= _lp.__store_info_email %>: </td>
                         <td> <a class="email" href="mailto:<%= email %>"> <%= email %> </a> </td>
                     </tr>
                 <% } %>
 
                 <% if(access_to_location) { %>
                 <tr>
-                    <td>Access:</td>
+                    <td> <%= _lp.__store_info_access %>: </td>
                     <td><%= access_to_location %></td>
                 </tr>
                 <% } %>
