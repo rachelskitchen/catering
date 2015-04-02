@@ -8,13 +8,22 @@
     </div>
     <div class="right-panel-wrap">
         <div class="panel right-panel">
-            <div class="cart_title">Review your Order</div>
-            <div class="pickup_time"> <b> <% if(isDelivery) { %>Delivery Time:<% } else { %>Arrival Time:<% } %> </b> <%=pickup_time%> </div>
+            <div class="cart_title"> <%= _lp.__confirm_review_order %> </div>
+            <div class="pickup_time">
+                <b>
+                    <% if (isDelivery) { %>
+                        <%= _lp.__confirm_delivery_time %>:
+                    <% } else { %>
+                        <%= _lp.__confirm_arrival_time %>:
+                    <% } %>
+                </b>
+                <%= pickup_time %>
+            </div>
             <div class="order-items-wrap">
                  <div class="order-items"></div>
             </div>
             <ul class="total_block"></ul>
-            <div class="btn btn-submit">Submit</div>
+            <div class="btn btn-submit"> <%= _lp.__confirm_submit %> </div>
         </div>
     </div>
 </script>
