@@ -31,14 +31,7 @@ define(["backbone", "factory"], function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
-            // use locale (begin)
-            var locale = App.Data.locale.toJSON();
-            this.model.set({
-                '__header_menu': locale.__header_menu,
-                '__header_about': locale.__header_about,
-                '__header_map': locale.__header_map
-            });
-
+            this.model.set(App.Data.locale.toJSON()); // use locale
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             if (App.Data.settings.get('settings_system').delivery_for_online_orders) {
                 var view = App.Views.GeneratorView.create('Header', {
@@ -75,12 +68,7 @@ define(["backbone", "factory"], function() {
         name: 'header',
         mod: 'checkout',
         render: function() {
-            // use locale (begin)
-            var locale = App.Data.locale.toJSON();
-            this.model.set({
-                '__header_delivery_back': locale.__header_delivery_back
-            });
-
+            this.model.set(App.Data.locale.toJSON()); // use locale
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             if (App.Data.settings.get('settings_system').delivery_for_online_orders) {
                 var view = App.Views.GeneratorView.create('Header', {
@@ -110,7 +98,7 @@ define(["backbone", "factory"], function() {
         mod: 'delivery',
         render: function() {
             var settings = App.Data.settings.get('settings_system'),
-                initial_model = this.model.toJSON();
+                initial_model = this.model.set(App.Data.locale.toJSON()).toJSON(); // use locale
 
             $.extend(initial_model, {
                 delivery_charge: round_monetary_currency(settings.delivery_charge),
@@ -125,23 +113,6 @@ define(["backbone", "factory"], function() {
             });
 
             this.model = initial_model;
-
-            // use locale (begin)
-            var locale = App.Data.locale.toJSON();
-            this.model.set({
-                '__header_delivery': locale.__header_delivery,
-                '__header_delivery_free': locale.__header_delivery_free,
-                '__header_delivery_time': locale.__header_delivery_time,
-                '__header_delivery_hour': locale.__header_delivery_hour,
-                '__header_delivery_minutes': locale.__header_delivery_minutes,
-                '__header_delivery_asap': locale.__header_delivery_asap,
-                '__header_delivery_minimum': locale.__header_delivery_minimum,
-                '__header_delivery_radius': locale.__header_delivery_radius,
-                '__header_delivery_km': locale.__header_delivery_km,
-                '__header_delivery_mile': locale.__header_delivery_mile,
-                '__header_delivery_mile_end': locale.__header_delivery_mile_end
-            });
-
             App.Views.FactoryView.prototype.render.apply(this, arguments);
         }
     });
