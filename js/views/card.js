@@ -34,7 +34,9 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(this.model, 'change:firstName change:secondName', this.updateData, this); // update first name & last name of view
         },
         render: function() {
-            var expYear, expMonth, cardNumber, securityCode, model = {}, self = this;
+            var self = this,
+                model = App.Data.locale.toJSON(), // use locale
+                cardNumber, expYear, expMonth, securityCode;
             model.firstName = this.model.escape('firstName');
             model.secondName = this.model.escape('secondName');
             model.cardNumber = this.model.escape('cardNumber');
