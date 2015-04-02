@@ -164,8 +164,18 @@
     width: 2px !important;
 }
 
-#popup .order-items ul.discount > li {
+#popup .order-items ul.discount > li,
+#popup .order-items ul.service_fees > li {
     margin-top: 10px;
+}
+
+#popup .order-items .myorder > li.no_image .image,
+#popup .order-items .service_fees .image {
+    display: none;
+}
+#popup .order-items .myorder > li.no_image,
+#popup .order-items .service_fees > li {
+    min-height: 35px;
 }
 
 #popup .order-items .remove,
