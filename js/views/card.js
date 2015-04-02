@@ -35,7 +35,7 @@ define(["backbone", "factory"], function(Backbone) {
         },
         render: function() {
             var self = this,
-                model = App.Data.locale.toJSON(), // use locale
+                model = {},
                 cardNumber, expYear, expMonth, securityCode;
             model.firstName = this.model.escape('firstName');
             model.secondName = this.model.escape('secondName');
