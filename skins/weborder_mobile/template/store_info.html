@@ -40,14 +40,19 @@
                         ASAP
                     <% } %>
                     </dd>
-                    <dt>Delivery Radius</dt>
-                    <dd><%= delivery_radius %>
-                    <% if(distance_mearsure.toLowerCase() == 'km') { %>
-                        km
-                    <% } else { %>
-                        Mile<% if(delivery_radius > 1) { %>s<% } %>
+                    <% if(delivery_post_code_lookup_enabled) { %>
+                        <dt>Delivery Area</dt>
+                        <dd><%= delivery_post_codes %></dd>
+                    <% } else if(!delivery_geojson_enabled) { %>
+                        <dt>Delivery Radius</dt>
+                        <dd><%= delivery_radius %>
+                        <% if(distance_mearsure.toLowerCase() == 'km') { %>
+                            km
+                        <% } else { %>
+                            Mile<% if(delivery_radius > 1) { %>s<% } %>
+                        <% } %>
+                        </dd>
                     <% } %>
-                    </dd>
                 <% } %>
             </dl>
             <div class='clear_both'> </div>

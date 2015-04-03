@@ -741,6 +741,9 @@ section.maintenance #header .btn {
 .delivery_info span:nth-child(2n) {
     width: 184px;
     padding-left: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 /* End delivery info block*/
 
