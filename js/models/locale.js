@@ -25,12 +25,13 @@ define(['backbone'], function(Backbone) {
 
     App.Models.Locale = Backbone.Model.extend({
         initialize: function() {
-            this.loadLanguagePack(); // load a language pack (localStorage or the backend system)
+            this.loadCompleted = $.Deferred();
         },
         /**
          * Load a language pack (localStorage or the backend system).
          */
         loadLanguagePack: function() {
+            this.clear();
             var self = this,
                 settings = App.Data.settings,
                 skin = settings.get('skin'),
@@ -63,7 +64,7 @@ define(['backbone'], function(Backbone) {
                                     json.placeholders[skin] = response.data;
                                     if (setData('currentLocale', json, true)) { // save data to storage (cookie, sessionStorage, localStorage)
                                         self.set(response.data.placeholders);
-                                        self.trigger('loadCompleted');
+                                        self.loadCompleted.resolve();
                                     } else {
                                         self.trigger('showError');
                                     }
@@ -94,16 +95,17 @@ define(['backbone'], function(Backbone) {
                             response = {
                                 status: 'OK',
                                 data: {
-                                    version: 1427802447190,
                                     placeholders: response
                                 }
                             }
+                            if (curLocale == 'ru') response.data.version = 1427802447190;
+                            if (curLocale == 'en') response.data.version = 1427802271098;
                             switch (response.status) {
                                 case 'OK':
                                     json.placeholders[skin] = response.data;
                                     if (setData('currentLocale', json, true)) { // save data to storage (cookie, sessionStorage, localStorage)
                                         self.set(response.data.placeholders);
-                                        self.trigger('loadCompleted');
+                                        self.loadCompleted.resolve();
                                     } else {
                                         self.trigger('showError');
                                     }
@@ -120,6 +122,7 @@ define(['backbone'], function(Backbone) {
                     // for test (end)
             } else {
                 this.set(stateLocale.placeholders[skin].placeholders);
+                this.loadCompleted.resolve();
             }
         }
     });

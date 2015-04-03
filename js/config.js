@@ -110,7 +110,7 @@ define({
             deps: ["backbone"]
         },
         "errors" : {
-            deps: ["backbone", "functions"]
+            deps: ["backbone"]
         },
         'errors_view': {
             deps: ['backbone', 'factory']
