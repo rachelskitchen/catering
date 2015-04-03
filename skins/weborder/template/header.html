@@ -35,11 +35,15 @@
         </span>
         <span> <%= _lp.__header_delivery_minimum %>: <%= currency_symbol + min_delivery_amount %> </span>
         <span>
-            <%= _lp.__header_delivery_radius %>: <%= max_delivery_distance %>
-            <% if (distance_mearsure.toLowerCase() == 'km') { %>
-                <%= _lp.__header_delivery_km %>
-            <% } else { %>
-                <%= _lp.__header_delivery_mile %><% if (max_delivery_distance > 1) { %><%= _lp.__header_delivery_mile_end %><% } %>
+            <% if(delivery_post_code_lookup_enabled) { %>
+                <%= _lp.__header_delivery_area %>: <%= delivery_post_codes %>
+            <% } else if (!delivery_geojson_enabled){ %>
+                <%= _lp.__header_delivery_radius %>: <%= max_delivery_distance %>
+                <% if(distance_mearsure.toLowerCase() == 'km') { %>
+                    <%= _lp.__header_delivery_km %>
+                <% } else { %>
+                    <%= _lp.__header_delivery_mile %><% if (max_delivery_distance > 1) { %><%= _lp.__header_delivery_mile_end %><% } %>
+                <% } %>
             <% } %>
         </span>
     </div>

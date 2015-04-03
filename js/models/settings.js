@@ -353,6 +353,14 @@ define(["backbone", "async"], function(Backbone) {
                             if (settings_system.auto_bag_charge < 0)
                                 settings_system.auto_bag_charge = 0;
 
+                            if (settings_system.delivery_post_code_lookup[0]) {
+                                //format codes for better presentation
+                                var  codes = settings_system.delivery_post_code_lookup[1];
+                                if (codes) {
+                                    codes = $.map(codes.split(","), $.trim);
+                                    settings_system.delivery_post_code_lookup[1] = codes.join(", ");
+                                }
+                            }
                            //for debug:
                            //settings_system.color_scheme =  "blue_&_white"; // "default", "blue_&_white", "vintage"
                             setData(color_scheme_key, new Backbone.Model({color_scheme: settings_system.color_scheme}), true);
