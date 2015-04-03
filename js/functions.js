@@ -77,67 +77,9 @@ var RESOURCES = {
 
 ERROR.LOAD_LANGUAGE_PACK = 'Unable to load a language pack. Now the page is reloaded.';
 
-//write messages here
-MSG.ERROR_STORE_IS_CLOSED = "We're sorry, your order cannot be processed because the store is closed for selected pickup day/time";
-MSG.ERROR_GEOLOCATION = [ "There was an error while retrieving your location.",
-                          "Your current location retrieval is disallowed. Reset location settings if you want to allow it.",
-                          "The browser was unable to determine your location.",
-                          "The browser timed out while retrieving your location." ];
-MSG.ERROR_GEOLOCATION_NOAPI = "Geolocation API is not supported in your browser.";
-MSG.ERROR_SUBMIT_ORDER = "Failed to submit an order. Please try again.";
-MSG.ERROR_ORDERS_PICKUPTIME_LIMIT = "Maximum number of orders for this pickup time exceeded. Please select different pickup time.";
-MSG.ERROR_INSUFFICIENT_STOCK = "Some products have insufficient stock.";
-MSG.ERROR_OCCURRED = "Error occurred: ";
-MSG.ERROR_HAS_OCCURRED = "The error has occurred";
-MSG.ERROR_HAS_OCCURRED_WITH_CONTACT = "The error has occurred, please contact: %email: %%phone: %";
-MSG.ERROR_MIN_ITEMS_LIMIT = "Please select at least %s items to place an order.";
-MSG.ERROR_INCORRECT_AJAX_DATA = "Incorrect data in server responce.";
-MSG.ERROR_SERVER_UNREACHED = 'The server cannot be reached at this time.';
-MSG.ERROR_DELIVERY_ADDRESS_INPUT = "The following necessary fields are blank: %s";
-MSG.ERROR_DELIVERY_EXCEEDED = "Exceeded maximum delivery distance";
-MSG.ERROR_DELIVERY_ADDRESS = "Couldn't verify delivery address";
-MSG.ERROR_CATEGORY_LOAD = 'Unable to get the menu from backend. Now the page is reloaded';
-MSG.ERROR_MODIFIERS_LOAD = 'Unable to get the list modifiers of product from backend. Now the page is reloaded.';
-MSG.ERROR_RECENT_LOAD = 'Unable to get a list of recent orders.';
-MSG.ERROR_PRODUCTS_LOAD = 'Unable to get the list products of menu from backend. Now the page is reloaded.';
-MSG.ERROR_STORES_LOAD = 'Unable to get the list of stores.';
-MSG.DELIVERY_ITEM = 'Delivery Charge';
-MSG.BAG_CHARGE_ITEM = 'Bag Charge';
-MSG.REPEAT_ORDER_NOTIFICATION = "Some items have changed or no longer available. Please review items before placing your order.";
-MSG.REWARD_CARD_UNDEFINED = "Invalid Reward Card Number.";
-MSG.ADD_MORE_FOR_DELIVERY = "Please add %s more for delivery";
-MSG.ADD_MORE_FOR_SHIPPING = "Please add %s more for shipping";
-MSG.ERROR_PRODUCT_NOT_SELECTED = "You have not selected any product";
-MSG.ERROR_EMPTY_NOT_VALID_DATA = "Following required fields are blank or contain incorrect data: %s";
-MSG.ERROR_GRATUITY_EXCEEDS = "Gratuity amount can't exceed the receipt amount";
-MSG.ERROR_CARD_EXP = "Exp. Date less then current date";
-MSG.ERROR_FORCED_MODIFIER = "This modifier is required";
-MSG.ERROR_CHROME_CRASH = "This version of Chrome is unstable and unsupported. Please update to the latest version or use different browser.";
-MSG.ERROR_UNSUPPORTED_BROWSER = "The current browser version is not supported. Please update it to the latest release.";
-MSG.PAY_AT_STORE = "Pay at Store";
-MSG.PAY_AT_DELIVERY = "Pay at Delivery";
-MSG.ERROR_GET_CHILD_PRODUCTS = "Unable to get the information about the product from backend. Now the page is reloaded.";
-MSG.ERROR_SHIPPING_SERVICES_NOT_FOUND = "No shipping services found";
-MSG.SHIPPING_SERVICES_RETRIVE_IN_PROGRESS = "Retriving shipping services...";
-MSG.SHIPPING_SERVICES_SET_ADDRESS = "Fill required address fields above";
-MSG.PRODUCTS_EMPTY_RESULT = "No products found";
-MSG.FILTER_SHOW_ALL = "Show All";
-MSG.FREE_MODIFIERS_PRICE = "Modifiers for up to %s will be free";
-MSG.FREE_MODIFIERS_QUANTITY = "First %s modifiers selected will be free";
-MSG.FREE_MODIFIERS_QUANTITY1 = "First modifier selected will be free";
-MSG.PRODUCTS_VALID_TIME = "Available: ";
-MSG.ERROR_REVEL_EMPTY_NEW_PASSWORD = 'Please enter new password.';
-MSG.ERROR_REVEL_EMPTY_OLD_PASSWORD = 'Please enter old password.';
-MSG.ERROR_REVEL_NOT_MATCH_PASSWORDS = 'New Password & Repeat Password values don\'t match';
-MSG.ERROR_REVEL_USER_EXISTS = 'User %s already exists.';
-MSG.ERROR_REVEL_UNABLE_TO_PERFORM = 'Unable to perform action. Please ask about this problem at ask.revelsystems.com.';
-MSG.ERROR_REVEL_ATTEMPTS_EXCEEDED = 'Max number of authentication attempts exceeded. Account deleted.';
-MSG.ERROR_REVEL_PASSWORD_UPDATE_FAILED = 'Password update failed. Old password is invalid.';
-MSG.ERROR_REVEL_AUTHENTICATION_FAILED = 'Authentication failed. Please enter valid email & password.';
-MSG.ERROR_NO_MSG_FROM_SERVER = "No message about the error";
-MSG.ERROR_GET_DISCOUNTS = "Failed request to get discounts";
-MSG.ERROR_INCORRECT_DISCOUNT_CODE = "Type correct discount code from 4 to 16 characters";
-MSG.DISCOUNT_CODE_NOT_FOUND = "The typed discount code hasn't been found. Automatic discounts can be applied only.";
+App.Data.locale.loadCompleted.done(function() {
+    _.extend(MSG, App.Data.locale.get('MSG'));
+});
 // page 'Establishments' (begin)
 MSG.ESTABLISHMENTS_ERROR_NOSTORE = 'No store is available for the specified brand';
 MSG.ESTABLISHMENTS_CHOOSE_BRAND_DESKTOP = 'Choose which %s you are looking for:';

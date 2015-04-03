@@ -348,7 +348,7 @@ define(["backbone", "factory"], function(Backbone) {
             !settings.get('settings_skin').name_app && pageTitle('Revel Systems');
 
             App.Routers.MainRouter.prototype.prepare('establishments', function() {
-                App.Data.locale.loadCompleted.then(function() {
+                App.Data.locale.loadCompleted.done(function() {
                     var view = App.Views.GeneratorView.create('CoreEstablishments', {
                         mod: 'Main',
                         className: 'establishments_view',
