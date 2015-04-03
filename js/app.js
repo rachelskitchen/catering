@@ -174,16 +174,16 @@
             }),
                 isNotFirstLaunch = false;
 
-            var langPack = $.Deferred();
-            settings.on('changeSkin', function() {
+            settings.on('change:skin', function() {
                 var locale = App.Data.locale = new App.Models.Locale;
-                (locale.keys().length) && langPack.resolve();
+                locale.loadCompleted = $.Deferred();
+                (locale.keys().length) && locale.loadCompleted.resolve();
 
                 locale.on('showError', function() {
                     errors.alert(ERROR.LOAD_LANGUAGE_PACK, true); // user notification
                 });
                 locale.on('loadCompleted', function() {
-                    langPack.resolve();
+                    locale.loadCompleted.resolve();
                 });
             });
 
@@ -211,7 +211,7 @@
                     }
                     router.isNotFirstLaunch = isNotFirstLaunch;
 
-                    langPack.then(function() {
+                    App.Data.locale.loadCompleted.then(function() {
                         Backbone.history.start();
                     });
 

@@ -36,9 +36,13 @@ define(['backbone'], function(Backbone) {
                 skin = settings.get('skin'),
                 curLocale = window.navigator.language,
                 stateLocale = getData('currentLocale', true); // load data from storage (cookie, sessionStorage, localStorage)
+            // for test (begin)
+            curLocale = 'ru';
+            // for test (end)
             if (!stateLocale ||
                 stateLocale.locale != curLocale ||
                 !stateLocale.placeholders[skin] ||
+                $.isEmptyObject(settings.get('settings_system')) || // if the app was not loaded (Establishments View)
                 stateLocale.placeholders[skin].version != settings.get('settings_system').locales[curLocale]) {
                     var json = {
                         locale: curLocale,
@@ -75,8 +79,12 @@ define(['backbone'], function(Backbone) {
                     });
                     */
                     // for test (begin)
+                    var url;
+                    if (curLocale == 'ru') url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/ru.placeholders.json';
+                    if (curLocale == 'en') url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.placeholders.json';
+
                     $.ajax({
-                        url: 'http://localhost/directory/HTML5/Web_ordering_app/placeholders.json',
+                        url: url,
                         data: {
                             locale: curLocale,
                             skin: skin
