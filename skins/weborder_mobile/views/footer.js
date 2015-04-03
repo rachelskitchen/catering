@@ -258,7 +258,6 @@ define(["revel_view", "generator"], function(revel_view) {
         returnToMenu: function() {
             if (this.model.get('success_payment')) {
                 App.Data.myorder.empty_myorder();
-                App.Data.card.empty_card_number();
                 App.Data.router.navigate('index', true);
             } else {
                 App.Data.router.navigate('confirm', true);
