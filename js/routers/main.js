@@ -339,18 +339,25 @@ define(["backbone", "factory"], function(Backbone) {
                 settings = App.Data.settings,
                 cssCore = settings.get('settings_skin').routing.establishments.cssCore;
 
-            modelForView.get('isMobileVersion') && cssCore.indexOf('establishments_mobile') && cssCore.push('establishments_mobile');
+            if (modelForView.get('isMobileVersion')) {
+                cssCore.indexOf('establishments_mobile') && cssCore.push('establishments_mobile');
+                settings.set('skin', App.Skins.WEBORDER_MOBILE);
+            } else {
+                settings.set('skin', App.Skins.WEBORDER);
+            }
             !settings.get('settings_skin').name_app && pageTitle('Revel Systems');
 
             App.Routers.MainRouter.prototype.prepare('establishments', function() {
-                var view = App.Views.GeneratorView.create('CoreEstablishments', {
-                    mod: 'Main',
-                    className: 'establishments_view',
-                    collection: ests,
-                    model: modelForView
-                }, 'ContentEstablishmentsCore');
-                Backbone.$('body').append(view.el);
-                Backbone.$(window).trigger('hideSpinner');
+                App.Data.locale.loadCompleted.then(function() {
+                    var view = App.Views.GeneratorView.create('CoreEstablishments', {
+                        mod: 'Main',
+                        className: 'establishments_view',
+                        collection: ests,
+                        model: modelForView
+                    }, 'ContentEstablishmentsCore');
+                    Backbone.$('body').append(view.el);
+                    Backbone.$(window).trigger('hideSpinner');
+                });
             });
         },
         /**
