@@ -1100,13 +1100,8 @@ var PaymentProcessor = {
 
         payment_info = this.getPaymentProcessor(payment_type).processPayment(myorder, payment_info, pay_get_parameter);
         this.clearQueryString(payment_type);
-        if (!payment_info.errorMsg) {
-            return payment_info;
-        } else {
-            myorder.paymentResponse = {status: 'error', errorMsg: payment_info.errorMsg};
-            myorder.trigger('paymentResponse');
-            return null;
-        }
+
+        return payment_info;
     },
     handleRedirect: function(payment_type, myorder, data) {
         var processor = this.getPaymentProcessor(payment_type);
@@ -1117,15 +1112,11 @@ var PaymentProcessor = {
         myorder.checkout.set('payment_type', payment_type);
         myorder.checkout.saveCheckout();
 
-        var qStr = location.search;
-        if (qStr) {
-            qStr += "&";
-        } else {
-            qStr = "?";
-        }
-        qStr += "pay=false";
-        var url = window.location.origin + window.location.pathname + qStr;
-        window.history.replaceState('Return','', url);
+        // Put flag pay=false to storage to handle a return from another site via history.back() method.
+        this.saveDefaultState();
+
+        // Start payment transaction. It will be completed when payment capture phase is processed.
+        this.startTransaction();
 
         function doFormRedirect(action, query) {
             var newForm= $('<form>', {
@@ -1214,6 +1205,63 @@ var PaymentProcessor = {
             payment_processor = WorldPayPaymentProcessor;
         }
         return payment_processor;
+    },
+    /**
+     * Save default state of payment (string 'false') of app in storage before redirect to another page.
+     */
+    saveDefaultState: function() {
+        if(App.Data.router) {
+            setData(App.Data.router.getUID() + '.pay', 'false');
+        }
+    },
+    /**
+     * Restore default state for app if exists and remove it from storage.
+     */
+    loadDefaultState: function() {
+        var key = App.Data.router.getUID() + '.pay',
+            result;
+        if(App.Data.router) {
+            result = getData(key);
+        }
+        removeData(key);
+        return result;
+    },
+    /**
+     * Method adds a flag for app which means redirection to another site has been performed.
+     * Put {'<App UID>.isTransactionInProcess': true} record to a storage.
+     *
+     * App.Routers.MainRouter.prototype.getUID() method is used to define App UID.
+     * So if App.Data.router is undefined this method cannot be executed.
+     */
+    startTransaction: function() {
+        if(!App.Data.router) {
+            return;
+        }
+        setData(App.Data.router.getUID() + '.isTransactionInProcess', true);
+    },
+    /**
+     * Method returns value of '<App UID>.isTransactionInProcess' record in a storage.
+     *
+     * App.Routers.MainRouter.prototype.getUID() method is used to define App UID.
+     * So if App.Data.router is undefined this method cannot be executed.
+     */
+    isTransactionInProcess: function() {
+        if(!App.Data.router) {
+            return;
+        }
+        return getData(App.Data.router.getUID() + '.isTransactionInProcess');
+    },
+    /**
+     * Method removes '<App UID>.isTransactionInProcess' record from a storage.
+     *
+     * App.Routers.MainRouter.prototype.getUID() method is used to define App UID.
+     * So if App.Data.router is undefined this method cannot be executed.
+     */
+    completeTransaction: function() {
+        if(!App.Data.router) {
+            return;
+        }
+        removeData(App.Data.router.getUID() + '.isTransactionInProcess');
     }
 };
 
@@ -1561,6 +1609,7 @@ var PayPalPaymentProcessor = {
     clearQueryString: function(queryString) {
         res = queryString.replace(/&?token=[^&]*/, '');
         res = res.replace(/&?PayerID=[^&]*/, '');
+        res = res.replace(/&?paymentId=[^&]*/, '');
         return res;
     },
     handleRedirect: function(myorder, data) {

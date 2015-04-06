@@ -37,7 +37,7 @@ define(["main_router"], function(main_router) {
         carts.checkout = {mod: 'Checkout', className: 'checkout'};
     }
 
-    var Router = App.Routers.MainRouter.extend({
+    var Router = App.Routers.RevelOrderingRouter.extend({
         routes: {
             "": "index",
             "index(/:data)": "index",
@@ -110,12 +110,16 @@ define(["main_router"], function(main_router) {
                     this.constructor.prototype.loadOrders.apply(this, arguments);
                     App.Data.filter.loadSort();
                 }
-
+//common
                 this.listenTo(mainModel, 'change:mod', this.createMainView);
+//common
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
+//common
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
+//common
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
                 this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
+//common
                 this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
                 mainModel.set({
@@ -131,17 +135,9 @@ define(["main_router"], function(main_router) {
                 // listen to navigation control
                 this.navigationControl();
 
-                // check if we here from paypal payment page
-                if (App.Data.get_parameters.pay || App.Data.get_parameters[MONERIS_PARAMS.PAY]) {
-                    window.location.hash = "#pay";
-                }
-
-                // emit 'initialized' event
-                this.trigger('initialized');
-                this.initialized = true;
+                // run history tracking
+                this.triggerInitializedEvent();
             });
-
-            this.initPaymentResponseHandler(this.navigate.bind(this, 'confirm',  true));
 
             this.listenTo(App.Data.myorder, "paymentInProcess", function() {
                 App.Data.mainModel.trigger('loadStarted');
@@ -165,14 +161,14 @@ define(["main_router"], function(main_router) {
                 App.Data.errors.trigger('hideAlertMessage'); // hide user notification
             });
 
-            App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
         },
         /**
          * Change page.
          */
         change_page: function(callback) {
             (callback instanceof Function && App.Data.establishments.length > 1) ? callback() : App.Data.mainModel.set('needShowStoreChoice', false);
-            App.Routers.MainRouter.prototype.change_page.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.change_page.apply(this, arguments);
         },
         createMainView: function() {
             var data = App.Data.mainModel.toJSON(),
@@ -272,7 +268,7 @@ define(["main_router"], function(main_router) {
             return state;
         },
         runStateTracking: function() {
-            if(!App.Routers.MainRouter.prototype.runStateTracking.apply(this, arguments)) {
+            if(!App.Routers.RevelOrderingRouter.prototype.runStateTracking.apply(this, arguments)) {
                 return;
             }
 
@@ -329,8 +325,8 @@ define(["main_router"], function(main_router) {
 
             // need execute App.Routers.MainRouter.prototype.restoreState to handle establishment changing
             mainRouterData = event instanceof Object && event.state
-                ? App.Routers.MainRouter.prototype.restoreState.apply(this, arguments)
-                : App.Routers.MainRouter.prototype.restoreState.call(this, {state: {stateData: data}});
+                ? App.Routers.RevelOrderingRouter.prototype.restoreState.apply(this, arguments)
+                : App.Routers.RevelOrderingRouter.prototype.restoreState.call(this, {state: {stateData: data}});
 
             data = data || mainRouterData;
 
@@ -418,20 +414,20 @@ define(["main_router"], function(main_router) {
             this.getEstablishmentsCallback = function() {
                 if (/^(index.*)?$/i.test(Backbone.history.fragment)) App.Data.mainModel.set('needShowStoreChoice', true);
             };
-            App.Routers.MainRouter.prototype.getEstablishments.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.getEstablishments.apply(this, arguments);
         },
         /**
         * Remove establishment data in case if establishment ID will change.
         */
         resetEstablishmentData: function() {
-            App.Routers.MainRouter.prototype.resetEstablishmentData.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.resetEstablishmentData.apply(this, arguments);
             this.index.initState = null;
         },
         /**
         * Remove HTML and CSS of current establishment in case if establishment ID will change.
         */
         removeHTMLandCSS: function() {
-            App.Routers.MainRouter.prototype.removeHTMLandCSS.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.removeHTMLandCSS.apply(this, arguments);
             this.bodyElement.children('.main-container').remove();
         },
         index: function(data) {
@@ -594,12 +590,22 @@ define(["main_router"], function(main_router) {
                 this.change_page();
             });
         },
+        /**
+         * Handler for #confirm. Set `mod` attribute of App.Data.mainModel to 'Done'.
+         * If App.Data.myorder.paymentResponse is null this handler isn't executed and run #index handler.
+         */
         confirm: function() {
-            if(!App.Data.settings.usaepayBack) {
+            // if App.Data.myorder.paymentResponse isn't defined navigate to #index
+            if(!(App.Data.myorder.paymentResponse instanceof Object)) {
                 return this.navigate('index', true);
             }
-
             this.prepare('confirm', function() {
+                // if App.Data.customer doesn't exist (success payment -> history.back() to #checkout -> history.forward() to #confirm)
+                // need to init it.
+                if(!App.Data.customer) {
+                    this.loadCustomer();
+                }
+
                 App.Data.mainModel.set({
                     mod: 'Done'
                 });
@@ -615,7 +621,7 @@ define(["main_router"], function(main_router) {
                 });
             }
             this.change_page();
-            App.Routers.MainRouter.prototype.maintenance.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         }
     });
 

@@ -36,7 +36,7 @@ define(["main_router"], function(main_router) {
         carts.checkout = {mod: 'Checkout', className: 'checkout'};
     }
 
-    var Router = App.Routers.MainRouter.extend({
+    var Router = App.Routers.RevelOrderingRouter.extend({
         routes: {
             "": "index",
             "index": "index",
@@ -88,26 +88,18 @@ define(["main_router"], function(main_router) {
                 // listen to navigation control
                 this.navigationControl();
 
-                // check if we here from paypal payment page
-                if (App.Data.get_parameters.pay || App.Data.get_parameters[MONERIS_PARAMS.PAY]) {
-                    window.location.hash = "#pay";
-                }
-
-                // emit 'initialized' event
-                this.trigger('initialized');
-                this.initialized = true;
+                // run history tracking
+                this.triggerInitializedEvent();
             });
-
-            this.initPaymentResponseHandler(this.navigate.bind(this, 'confirm',  true));
-
+//retail, weborder
             this.listenTo(App.Data.myorder, "paymentInProcess", function() {
                 App.Data.mainModel.trigger('loadStarted');
             }, this);
-
+//retail, weborder
             this.listenTo(App.Data.myorder, "paymentInProcessValid", function() {
                 App.Data.mainModel.trigger('loadCompleted');
             }, this);
-
+//retail, weborder
             this.listenTo(App.Data.myorder, "paymentFailed cancelPayment", function(message) {
                 App.Data.mainModel.trigger('loadCompleted');
                 message && App.Data.errors.alert(message); // user notification
@@ -116,14 +108,23 @@ define(["main_router"], function(main_router) {
             var checkout = App.Data.myorder.checkout;
                 checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
-            App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
+        },
+        /**
+         * Navigate on #confirm when payment is completed.
+         */
+        onPayHandler: function(capturePhase) {
+            this.navigate('confirm',  {
+                trigger: true,
+                replace: capturePhase
+            });
         },
         /**
          * Change page.
          */
         change_page: function(callback) {
             (callback instanceof Function && App.Data.establishments.length > 1) ? callback() : App.Data.mainModel.set('needShowStoreChoice', false);
-            App.Routers.MainRouter.prototype.change_page.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.change_page.apply(this, arguments);
         },
         createMainView: function() {
             var data = App.Data.mainModel.toJSON(),
@@ -199,13 +200,13 @@ define(["main_router"], function(main_router) {
             this.getEstablishmentsCallback = function() {
                 if (/^(index.*)?$/i.test(Backbone.history.fragment)) App.Data.mainModel.set('needShowStoreChoice', true);
             };
-            App.Routers.MainRouter.prototype.getEstablishments.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.getEstablishments.apply(this, arguments);
         },
         /**
         * Remove HTML and CSS of current establishment in case if establishment ID will change.
         */
         removeHTMLandCSS: function() {
-            App.Routers.MainRouter.prototype.removeHTMLandCSS.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.removeHTMLandCSS.apply(this, arguments);
             this.bodyElement.children('.main-container').remove();
         },
         index: function() {
@@ -335,12 +336,21 @@ define(["main_router"], function(main_router) {
                 this.change_page();
             });
         },
+        /**
+         * Handler for #confirm. Set `mod` attribute of App.Data.mainModel to 'Done'.
+         * If App.Data.myorder.paymentResponse is null this handler isn't executed and run #index handler.
+         */
         confirm: function() {
-            if(!App.Data.settings.usaepayBack) {
+            // if App.Data.myorder.paymentResponse isn't defined navigate to #index
+            if(!(App.Data.myorder.paymentResponse instanceof Object)) {
                 return this.navigate('index', true);
             }
-
             this.prepare('confirm', function() {
+                // if App.Data.customer doesn't exist (success payment -> history.back() to #checkout -> history.forward() to #confirm)
+                // need to init it.
+                if(!App.Data.customer) {
+                    this.loadCustomer();
+                }
                 App.Data.mainModel.set({
                     mod: 'Done'
                 });
@@ -356,7 +366,7 @@ define(["main_router"], function(main_router) {
                 });
             }
             this.change_page();
-            App.Routers.MainRouter.prototype.maintenance.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         }
     });
 
