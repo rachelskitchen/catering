@@ -8,13 +8,13 @@
     </div>
     <div class="right-panel-wrap">
         <div class="panel right-panel">
-            <div class="cart_title"> <%= _lp.__confirm_review_order %> </div>
+            <div class="cart_title"> <%= _lp.CONFIRM_REVIEW_ORDER %> </div>
             <div class="pickup_time">
                 <b>
                     <% if (isDelivery) { %>
-                        <%= _lp.__confirm_delivery_time %>:
+                        <%= _lp.CONFIRM_DELIVERY_TIME %>:
                     <% } else { %>
-                        <%= _lp.__confirm_arrival_time %>:
+                        <%= _lp.CONFIRM_ARRIVAL_TIME %>:
                     <% } %>
                 </b>
                 <%= pickup_time %>
@@ -23,7 +23,7 @@
                  <div class="order-items"></div>
             </div>
             <ul class="total_block"></ul>
-            <div class="btn btn-submit"> <%= _lp.__confirm_submit %> </div>
+            <div class="btn btn-submit"> <%= _lp.CONFIRM_SUBMIT %> </div>
         </div>
     </div>
 </script>

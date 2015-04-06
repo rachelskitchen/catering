@@ -5,13 +5,13 @@
     </div>
     <ul class="tabs">
         <li class="menu <% if (typeof tab_index == 'number' && tab_index === 0) { %> active <% } %>">
-            <%= _lp.__header_menu %>
+            <%= _lp.HEADER_MENU %>
         </li>
         <li class="about <% if (typeof tab_index == 'number' && tab_index === 1) { %> active <% } %>">
-            <%= _lp.__header_about %>
+            <%= _lp.HEADER_ABOUT %>
         </li>
         <li class="map <% if (typeof tab_index == 'number' && tab_index === 2) { %> active <% } %>">
-            <%= _lp.__header_map %>
+            <%= _lp.HEADER_MAP %>
         </li>
     </ul>
 </script>
@@ -19,30 +19,30 @@
 <script type="text/template" id="header_delivery-template">
     <div class='delivery_info'>
         <span>
-            <%= _lp.__header_delivery %>: <% if (delivery_charge > 0) { %> <%= currency_symbol + delivery_charge %> <% } else { %> <%= _lp.__header_delivery_free %> <% } %>
+            <%= _lp.HEADER_DELIVERY %>: <% if (delivery_charge > 0) { %> <%= currency_symbol + delivery_charge %> <% } else { %> <%= _lp.HEADER_DELIVERY_FREE %> <% } %>
         </span>
         <span>
-            <%= _lp.__header_delivery_time %>:
+            <%= _lp.HEADER_DELIVERY_TIME %>:
             <% if (delivery_time.hour > 0) { %>
-                <%= delivery_time.hour %> <%= _lp.__header_delivery_hour %>
+                <%= delivery_time.hour %> <%= _lp.HEADER_DELIVERY_HOUR %>
             <% } %>
             <% if (delivery_time.minutes > 0) { %>
-                <%= delivery_time.minutes %> <%= _lp.__header_delivery_minutes %>
+                <%= delivery_time.minutes %> <%= _lp.HEADER_DELIVERY_MINUTES %>
             <% } %>
             <% if (delivery_time.minutes == 0 && delivery_time.hour == 0) { %>
-                <%= _lp.__header_delivery_asap %>
+                <%= _lp.HEADER_DELIVERY_ASAP %>
             <% } %>
         </span>
-        <span> <%= _lp.__header_delivery_minimum %>: <%= currency_symbol + min_delivery_amount %> </span>
+        <span> <%= _lp.HEADER_DELIVERY_MINIMUM %>: <%= currency_symbol + min_delivery_amount %> </span>
         <span>
             <% if(delivery_post_code_lookup_enabled) { %>
-                <%= _lp.__header_delivery_area %>: <%= delivery_post_codes %>
+                <%= _lp.HEADER_DELIVERY_AREA %>: <%= delivery_post_codes %>
             <% } else if (!delivery_geojson_enabled){ %>
-                <%= _lp.__header_delivery_radius %>: <%= max_delivery_distance %>
+                <%= _lp.HEADER_DELIVERY_RADIUS %>: <%= max_delivery_distance %>
                 <% if(distance_mearsure.toLowerCase() == 'km') { %>
-                    <%= _lp.__header_delivery_km %>
+                    <%= _lp.HEADER_DELIVERY_KM %>
                 <% } else { %>
-                    <%= _lp.__header_delivery_mile %><% if (max_delivery_distance > 1) { %><%= _lp.__header_delivery_mile_end %><% } %>
+                    <%= _lp.HEADER_DELIVERY_MILE %><% if (max_delivery_distance > 1) { %><%= _lp.HEADER_DELIVERY_MILE_END %><% } %>
                 <% } %>
             <% } %>
         </span>
@@ -50,7 +50,7 @@
 </script>
 
 <script type="text/template" id="header_checkout-template">
-    <div class="btn unselectable"> <%= _lp.__header_delivery_back %> </div>
+    <div class="btn unselectable"> <%= _lp.HEADER_DELIVERY_BACK %> </div>
     <div class='delivery_wrapper'></div>
     <div class="logo">
         <img src='<%= logo %>' alt="<%= business_name %> logo" class="logo" data-default-index="1">
