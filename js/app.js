@@ -182,6 +182,7 @@ var ERROR = {},
                 locale.loadLanguagePack(); // load a language pack (localStorage or the backend system)
                 locale.loadCompleted.done(function() {
                     _.extend(MSG, locale.get('MSG'));
+                    _.extend(ERROR, locale.get('ERRORS'));
                 });
                 locale.on('showError', function() {
                     errors.alert(ERROR.LOAD_LANGUAGE_PACK, true); // user notification

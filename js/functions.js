@@ -45,33 +45,16 @@ var EMAIL_VALIDATION_REGEXP = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:
 
 //write errors here
 
-ERROR.STORE_IS_CLOSED = "Error: Store is closed";
-ERROR.BLOCK_STORE_IS_CLOSED = "We're sorry, your order cannot be processed because the store is closed";
-ERROR.FORCED_MODIFIER = "Please select at least | %d modifier(s) in %s";
-ERROR.SELECT_SIZE_MODIFIER = "Select a size please";
-ERROR.SELECT_PRODUCT_ATTRIBUTES = "Please select all attributes";
-ERROR.BLOCK_WEIGHT_IS_NOT_VALID = "The product weight is not set or zero";
-
-ERROR.MAINTENANCE_CONFIGURATION = 'Can\'t get application configuration. Please check backend settings.';
-ERROR.MAINTENANCE_PAYMENT = 'Please setup at least one payment option'; // for app accessed directly from browser (not via Directory app)
-ERROR.MAINTENANCE_DINING = 'Please setup at least one dining option'; // for QSR
-ERROR.MAINTENANCE_ORDER_TYPE = 'Please setup at least one order type (in-store pickup or shipping)'; // for Retail
-
 var MAINTENANCE = {
     BACKEND_CONFIGURATION: 'MAINTENANCE_CONFIGURATION',
     PAYMENT_OPTION: 'MAINTENANCE_PAYMENT',
     DINING_OPTION: 'MAINTENANCE_DINING',
     ORDER_TYPE: 'MAINTENANCE_ORDER_TYPE'
 };
-
-ERROR.RESOURCES_CSS = 'Unable to load CSS resources. Now the page is reloaded.';
-ERROR.RESOURCES_TEMPLATES = 'Unable to load template resources. Now the page is reloaded.';
-
 var RESOURCES = {
     CSS: 'RESOURCES_CSS',
     TEMPLATES: 'RESOURCES_TEMPLATES'
 }
-
 ERROR.LOAD_LANGUAGE_PACK = 'Unable to load a language pack. Now the page is reloaded.';
 
 var PAYMENT_TYPE = {
