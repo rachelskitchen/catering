@@ -26,7 +26,7 @@
 
 var array_day_of_week = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
 
-var array_month = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+var ARRAY_MONTH = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 var TIMETABLE_WEEK_DAYS = {
     "monday": "Mon",
@@ -210,10 +210,9 @@ function format_date_3(date) {
         result += "Tomorrow";
     }
     else {
-        var array_month = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
         var current_date_month = js_date.getMonth() + 1;
         var current_date_day = js_date.getDate();
-        result += array_month[current_date_month-1] + " " + current_date_day;
+        result += ARRAY_MONTH[current_date_month - 1] + ' ' + current_date_day;
         switch (current_date_day) {
             case 1:
                 result += "st";
