@@ -26,17 +26,6 @@ define(["backbone", "factory"], function(Backbone) {
     // flag for maintenance mode
     var isMaintenance;
 
-    window.DINING_OPTION_NAME = {
-        DINING_OPTION_TOGO: 'Take Out',
-        DINING_OPTION_EATIN: 'Eat In',
-        DINING_OPTION_DELIVERY: 'Delivery',
-        DINING_OPTION_CATERING : 'Catering',
-        DINING_OPTION_DRIVETHROUGH: 'Drive Through',
-        DINING_OPTION_ONLINE : 'Online Ordering',
-        DINING_OPTION_OTHER: 'Other',
-        DINING_OPTION_DELIVERY_SEAT: 'Deliver to Seat'
-    };
-
     App.Routers.MainRouter = Backbone.Router.extend({
         initialize: function() {
             var self = this;

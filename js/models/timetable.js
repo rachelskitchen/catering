@@ -24,7 +24,7 @@ define(["backbone"], function(Backbone) {
     'use strict';
 
     var weekDays = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"],
-        months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        months = ARRAY_MONTH;
 
     var MILLISECONDS_A_DAY = 86400000;//24*60*60*1000
 //
