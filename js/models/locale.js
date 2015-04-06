@@ -43,7 +43,7 @@ define(['backbone'], function(Backbone) {
             if (!stateLocale ||
                 stateLocale.locale != curLocale ||
                 !stateLocale.placeholders[skin] ||
-                $.isEmptyObject(settings.get('settings_system')) || // if the app was not loaded (Establishments View)
+                Backbone.$.isEmptyObject(settings.get('settings_system')) || // if the app was not loaded (Establishments View)
                 stateLocale.placeholders[skin].version != settings.get('settings_system').locales[curLocale]) {
                     var json = {
                         locale: curLocale,
@@ -51,7 +51,7 @@ define(['backbone'], function(Backbone) {
                     }
                     if (stateLocale && stateLocale.locale == curLocale && stateLocale.placeholders) json.placeholders = stateLocale.placeholders;
                     /*
-                    $.ajax({
+                    Backbone.$.ajax({
                         url: settings.get('host') + '/weborders/lang/',
                         data: {
                             locale: curLocale,
@@ -84,7 +84,7 @@ define(['backbone'], function(Backbone) {
                     if (curLocale == 'ru') url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/ru.placeholders.json';
                     if (curLocale == 'en') url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.placeholders.json';
 
-                    $.ajax({
+                    Backbone.$.ajax({
                         url: url,
                         data: {
                             locale: curLocale,
