@@ -1170,10 +1170,12 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             // process payment type
             var pt = PaymentProcessor.processPaymentType(payment_type, myorder);
-            if(pt instanceof Object)
-                $.extend(payment_info, pt);
-            else
-                return;
+            $.extend(payment_info, pt);
+
+            // if payment has failed need emit 'paymentResponse' event and abort execution
+            if (payment_info.errorMsg) {
+                return reportPaymentError(payment_info.errorMsg);
+            }
 
             var notifications = this.getNotifications();
             order_info.call_name = call_name.join(' / ');
@@ -1197,6 +1199,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                         return;
                     }
                     myorder.paymentResponse = data instanceof Object ? data : {};
+                    myorder.paymentResponse.capturePhase = capturePhase;
 
                     switch(data.status) {
                         case "OK":
@@ -1272,8 +1275,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if (validationOnly) {
                     myorder.trigger('paymentFailedValid', [message]);
                 } else if (capturePhase) {
-                    myorder.paymentResponse = {status: 'error', errorMsg: message};
-                    myorder.trigger('paymentResponse');
+                    reportPaymentError(message);
                 } else {
                     myorder.trigger('paymentFailed');
                     App.Data.errors.alert(message, false, false, {
@@ -1289,6 +1291,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 } else {
                     myorder.trigger('paymentFailed', [message]);
                 }
+            }
+
+            function reportPaymentError(message) {
+                myorder.paymentResponse = {status: 'error', errorMsg: message, capturePhase: capturePhase};
+                myorder.trigger('paymentResponse');
             }
         },
         getOrderSeatCallName: function(phone) {
@@ -1482,6 +1489,31 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         clearData: function() {
             this.empty_myorder();
             this.saveOrders();
+        },
+        /**
+         * Save paymentResponse in sessionStorage. An amount of payment responses may be more than 1 per session. Need use unique id for each.
+         *
+         * @param {string} uid - Unique identificator
+         */
+        savePaymentResponse: function(uid) {
+            if(typeof uid == 'string' && uid.length && this.paymentResponse) {
+                setData(uid, this.paymentResponse);
+            }
+        },
+        /**
+         * Restore paymentResponse and remove it from sessionStorage. An amount of payment responses may be more than 1 per session. Need use unique id for each.
+         *
+         * @param {string} uid - Unique identificator
+         */
+        restorePaymentResponse: function(uid) {
+            if(typeof uid != 'string' || !uid.length) {
+                return;
+            }
+            var paymentResponse = getData(uid);
+            if(paymentResponse) {
+                removeData(uid);
+                return this.paymentResponse = paymentResponse;
+            }
         }
     });
 });
