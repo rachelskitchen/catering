@@ -20,6 +20,9 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+var ERROR = {},
+    MSG = {};
+
 (function() {
     'use strict';
     if (is_browser_unsupported) {
@@ -111,7 +114,7 @@
         // set config for require
         require.config(app.config);
 
-        require(['cssua', 'generator', 'errors', 'errors_view', 'myorder', 'settings', 'timetable', 'log', 'tax', 'main_router', 'locale'], function() {
+        require(['cssua', 'functions', 'generator', 'errors', 'errors_view', 'myorder', 'settings', 'timetable', 'log', 'tax', 'main_router', 'locale'], function() {
             var win = Backbone.$(window);
 
             // invoke beforeStart onfig
@@ -175,52 +178,53 @@
                 locale = App.Data.locale = new App.Models.Locale,
                 isNotFirstLaunch = false;
 
-            require(['functions'], function() {
-                settings.on('change:skin', function() {
-                    locale.loadLanguagePack(); // load a language pack (localStorage or the backend system)
-                    locale.on('showError', function() {
-                        errors.alert(ERROR.LOAD_LANGUAGE_PACK, true); // user notification
-                    });
+            settings.on('change:skin', function() {
+                locale.loadLanguagePack(); // load a language pack (localStorage or the backend system)
+                locale.loadCompleted.done(function() {
+                    _.extend(MSG, locale.get('MSG'));
                 });
-
-                settings.on('changeSettingsSkin', function() {
-                    load_styles_and_scripts(); // load styles and scripts
-                    var myorder = App.Data.myorder = new App.Collections.Myorders;
-                    App.Data.timetables = new App.Models.Timetable;
-                    require([settings.get('skin') + '/router'], function(module) {
-                        if(module instanceof require('main_router')) {
-                            module.initRouter();
-                        }
-                        App.Data.router = new App.Routers.Router;
-                        var router = App.Data.router;
-                        router.once('started', function() {
-                            // hide a launch spinner & load an establishments list
-                            win.trigger('hideSpinner');
-                            router.trigger('needLoadEstablishments');
-                        });
-
-                        if (settings.get('isMaintenance')) {
-                            location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
-                        } else {
-                            // TODO: shouldn't depend on the isMaintenance mode if the 'Change Store' functionality is implemented on '#maintenance' page
-                            isNotFirstLaunch = true;
-                        }
-                        router.isNotFirstLaunch = isNotFirstLaunch;
-
-                        locale.loadCompleted.done(function() {
-                            Backbone.history.start();
-                        });
-
-                        // invoke afterStart callback
-                        app.afterInit();
-                    });
-                    myorder.on('reset add remove', function() {
-                        var ests = App.Data.establishments;
-                        if (ests) ests.needShowAlert(myorder.get_only_product_quantity() > 0);
-                    });
+                locale.on('showError', function() {
+                    errors.alert(ERROR.LOAD_LANGUAGE_PACK, true); // user notification
                 });
-                app.loadApp(); // loading application
             });
+
+            settings.on('changeSettingsSkin', function() {
+                load_styles_and_scripts(); // load styles and scripts
+                var myorder = App.Data.myorder = new App.Collections.Myorders;
+                App.Data.timetables = new App.Models.Timetable;
+                require([settings.get('skin') + '/router'], function(module) {
+                    if(module instanceof require('main_router')) {
+                        module.initRouter();
+                    }
+                    App.Data.router = new App.Routers.Router;
+                    var router = App.Data.router;
+                    router.once('started', function() {
+                        // hide a launch spinner & load an establishments list
+                        win.trigger('hideSpinner');
+                        router.trigger('needLoadEstablishments');
+                    });
+
+                    if (settings.get('isMaintenance')) {
+                        location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
+                    } else {
+                        // TODO: shouldn't depend on the isMaintenance mode if the 'Change Store' functionality is implemented on '#maintenance' page
+                        isNotFirstLaunch = true;
+                    }
+                    router.isNotFirstLaunch = isNotFirstLaunch;
+
+                    locale.loadCompleted.done(function() {
+                        Backbone.history.start();
+                    });
+
+                    // invoke afterStart callback
+                    app.afterInit();
+                });
+                myorder.on('reset add remove', function() {
+                    var ests = App.Data.establishments;
+                    if (ests) ests.needShowAlert(myorder.get_only_product_quantity() > 0);
+                });
+            });
+            app.loadApp(); // loading application
         });
     }
 

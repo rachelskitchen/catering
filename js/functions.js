@@ -43,9 +43,6 @@ var MonthByStr = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "J
 // http://www.w3.org/TR/html5/forms.html#valid-e-mail-address
 var EMAIL_VALIDATION_REGEXP = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
-var ERROR = {},
-    MSG = {};
-
 //write errors here
 
 ERROR.STORE_IS_CLOSED = "Error: Store is closed";
@@ -76,26 +73,6 @@ var RESOURCES = {
 }
 
 ERROR.LOAD_LANGUAGE_PACK = 'Unable to load a language pack. Now the page is reloaded.';
-
-App.Data.locale.loadCompleted.done(function() {
-    _.extend(MSG, App.Data.locale.get('MSG'));
-});
-// page 'Establishments' (begin)
-MSG.ESTABLISHMENTS_ERROR_NOSTORE = 'No store is available for the specified brand';
-MSG.ESTABLISHMENTS_CHOOSE_BRAND_DESKTOP = 'Choose which %s you are looking for:';
-MSG.ESTABLISHMENTS_CHOOSE_BRAND_MOBILE = 'Choose which %s you\'re looking for:';
-MSG.ESTABLISHMENTS_PROCEED_BUTTON = 'Proceed';
-MSG.ESTABLISHMENTS_BACK_BUTTON = 'Go Back';
-MSG.ESTABLISHMENTS_ALERT_MESSAGE_DESKTOP = 'If you choose a different store location, your order will be canceled. Cancel Order?';
-MSG.ESTABLISHMENTS_ALERT_MESSAGE_TITLE_MOBILE = 'Warning';
-MSG.ESTABLISHMENTS_ALERT_MESSAGE_MOBILE = 'If you switch stores, your order will be discarded.';
-MSG.ESTABLISHMENTS_ALERT_MESSAGE_QUESTION_MOBILE = 'Continue?';
-MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_DESKTOP = 'Proceed';
-MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_MOBILE = 'Ok';
-MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_DESKTOP = 'Go Back';
-MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_MOBILE = 'Back';
-// page 'Establishments' (end)
-MSG.HALF_PRICE_STR =  ["Full", "First Half","Second Half"];
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
