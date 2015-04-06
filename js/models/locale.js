@@ -25,7 +25,7 @@ define(['backbone'], function(Backbone) {
 
     App.Models.Locale = Backbone.Model.extend({
         initialize: function() {
-            this.loadCompleted = $.Deferred();
+            this.loadCompleted = Backbone.$.Deferred();
         },
         /**
          * Load a language pack (localStorage or the backend system).
@@ -81,8 +81,18 @@ define(['backbone'], function(Backbone) {
                     */
                     // for test (begin)
                     var url;
-                    if (curLocale == 'ru') url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/ru.placeholders.json';
-                    if (curLocale == 'en') url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.placeholders.json';
+                    switch (skin) {
+                        case App.Skins.WEBORDER:
+                            switch (curLocale) {
+                                case 'en':
+                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.weborder.placeholders.json';
+                                    break;
+                                case 'ru':
+                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/ru.weborder.placeholders.json';
+                                    break;
+                            }
+                            break;
+                    }
 
                     Backbone.$.ajax({
                         url: url,

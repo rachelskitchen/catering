@@ -10,14 +10,14 @@
     <aside id='cart' class='main_el'> </aside>
     <footer class='main_el'>
         <span class='current_establishment'>
-            <%= _lp.__main_current_store %>: <%= _settings.business_name %>
-            <a class="change_establishment link1" href="javascript: void(0);"> <%= _lp.__main_change %> </a>
+            <%= _lp.MAIN_CURRENT_STORE %>: <%= _settings.business_name %>
+            <a class="change_establishment link1" href="javascript: void(0);"> <%= _lp.MAIN_CHANGE %> </a>
             <% if(isDirMode) { %>
-                <%= _lp.__main_or %>
+                <%= _lp.MAIN_OR %>
             <% } %>
         </span>
         <% if(isDirMode) { %>
-            <a class="go-to-directory link1" href="javascript: void(0);"><%= _lp.__main_goto_directory %></a>
+            <a class="go-to-directory link1" href="javascript: void(0);"><%= _lp.MAIN_GOTO_DIRECTORY %></a>
         <% } %>
         <a class="powered-by" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
     </footer>
@@ -57,15 +57,15 @@
 
 <script type="text/template" id="main_maintenance-template">
     <section class="maintenance">
-        <header id="header"> <div class="btn back"> <%= _lp.__main_back %> </div> </header>
+        <header id="header"> <div class="btn back"> <%= _lp.MAIN_BACK %> </div> </header>
         <div id="content">
             <p> <%= errMsg %> </p>
-            <div class="btn reload"> <%= _lp.__main_restart %> </div>
+            <div class="btn reload"> <%= _lp.MAIN_RESTART %> </div>
         </div>
     </section>
     <footer>
         <% if(isDirMode) { %>
-            <a class="go-to-directory link1" href="javascript: void(0);"><%= _lp.__main_goto_directory %></a>
+            <a class="go-to-directory link1" href="javascript: void(0);"><%= _lp.MAIN_GOTO_DIRECTORY %></a>
         <% } %>
         <a class="powered-by" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
     </footer>
@@ -82,22 +82,22 @@
             <div class="confirm_order">
                 <div>
                     <% if (status !== 'error') { %>
-                        <h2 class="confirmed_order_title"> <%= _lp.__main_order_submitted %>. </h2>
+                        <h2 class="confirmed_order_title"> <%= _lp.MAIN_ORDER_SUBMITTED %>. </h2>
                     <% } else { %>
-                        <h2 class="confirmed_order_title confirmed_title_red"> <%= _lp.__main_order_not_submitted %>. </h2>
+                        <h2 class="confirmed_order_title confirmed_title_red"> <%= _lp.MAIN_ORDER_NOT_SUBMITTED %>. </h2>
                     <% } %>
                      <% if (status === 'error') { %>
                         <p class="confirmed-order-txt">
                             <%=message%>
                         </p>
-                        <div class="btn btn-long btnReturn"> <%= _lp.__main_return_order_summary %> </div>
+                        <div class="btn btn-long btnReturn"> <%= _lp.MAIN_RETURN_ORDER_SUMMARY %> </div>
                      <% } else { %>
                         <table class="order-confirmed-detail">
                             <tr>
-                                <td colspan="2" class="email"> <%= _lp.__main_receipt_sent_to %> <%= email %> </td>
+                                <td colspan="2" class="email"> <%= _lp.MAIN_RECEIPT_SENT_TO %> <%= email %> </td>
                             </tr>
                             <tr>
-                                <td> <%= _lp.__main_order_id %>: </td>
+                                <td> <%= _lp.MAIN_ORDER_ID %>: </td>
                                 <td><%= order_id %></td>
                             </tr>
                             <% if (!isOnlyGift && !isOrderFromSeat) { %>
@@ -108,27 +108,27 @@
                             <% } %>
                             <% if(isDeliverToSeat) { %>
                             <tr>
-                                <td> <%= _lp.__main_delivery_info %>: </td>
+                                <td> <%= _lp.MAIN_DELIVERY_INFO %>: </td>
                                 <td>
-                                    <% if (level) { %> <%= _lp.__main_level %> <span><%= level %></span>, <% } %>
-                                    <% if (section) { %> <%= _lp.__main_section %> <span><%= section %></span>, <% } %>
-                                    <% if (row) { %> <%= _lp.__main_row %> <span><%= row %></span>, <% } %>
-                                    <% if (seat) { %> <%= _lp.__main_seat %> <span><%= seat %></span> <% } %>
+                                    <% if (level) { %> <%= _lp.MAIN_LEVEL %> <span><%= level %></span>, <% } %>
+                                    <% if (section) { %> <%= _lp.MAIN_SECTION %> <span><%= section %></span>, <% } %>
+                                    <% if (row) { %> <%= _lp.MAIN_ROW %> <span><%= row %></span>, <% } %>
+                                    <% if (seat) { %> <%= _lp.MAIN_SEAT %> <span><%= seat %></span> <% } %>
                                 </td>
                             </tr>
                             <% } %>
                             <% if(reward_points) { %>
                             <tr>
-                                <td> <%= _lp.__main_reward_card_points %>: </td>
+                                <td> <%= _lp.MAIN_REWARD_CARD_POINTS %>: </td>
                                 <td><%= reward_points %></td>
                             </tr>
                             <% } %>
                             <tr>
-                                <td> <%= _lp.__main_total_amout_charged %>: </td>
+                                <td> <%= _lp.MAIN_TOTAL_AMOUNT_CHARGED %>: </td>
                                 <td class='bold'><%= symbol %><%= total %></td>
                             </tr>
                         </table>
-                        <div class="btn btnReturn"> <%= _lp.__main_return_to_menu %> </div>
+                        <div class="btn btnReturn"> <%= _lp.MAIN_RETURN_TO_MENU %> </div>
                     <% } %>
                 </div>
             </div>
