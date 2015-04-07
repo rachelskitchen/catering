@@ -1,14 +1,14 @@
 <script type="text/template" id="filter_sort-template">
     <select class="select">
-        <option value="sort" selected="selected">Default Sorting</option>
-        <option value="created_date|1">New Arrivals</option>
-        <option value="price">Price: Low to High</option>
-        <option value="price|1">Price: High to Low</option>
+        <option value="sort" selected="selected"> <%= _lp.FILTERS_DEFAULT_SORTING %> </option>
+        <option value="created_date|1"> <%= _lp.FILTERS_NEW_ARRIVALS %> </option>
+        <option value="price"> <%= _lp.FILTERS_LOW_TO_HIGH %> </option>
+        <option value="price|1"> <%= _lp.FILTERS_HIGH_TO_LOW %> </option>
     </select>
 </script>
 
 <script type="text/template" id="filter_attribute-template">
     <select class="select">
-        <option value="1" selected="selected">Show All</option>
+        <option value="1" selected="selected"> <%= _lp.FILTERS_SHOW_ALL %> </option>
     </select>
 </script>

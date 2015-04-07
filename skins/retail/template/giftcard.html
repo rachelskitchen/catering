@@ -1,13 +1,13 @@
 <script type="text/template" id="giftcard_main-template">
-    <div class="card_title">Enter your Gift Card Information</div>
+    <div class="card_title"> <%= _lp.GIFTCARD_TITLE %> </div>
     <div>
-        <label for="cardNumber"><span class="bold required">Card Number:</span></label>
+        <label for="cardNumber"> <span class="bold required"><%= _lp.GIFTCARD_NUMBER %>:</span> </label>
         <div class="input_beauty">
             <input type="text" id="cardNumber" class="number" value="<%= cardNumber %>" min="0">
         </div>
     </div>
     <div>
-        <label for="cardNumber"><span class="bold required">Captcha:</span></label>
+        <label for="cardNumber"> <span class="bold required"><%= _lp.GIFTCARD_CAPTCHA %>:</span> </label>
         <div class="input_beauty">
             <input autocomplete="off" id="id_captcha_key" name="captcha_key" type="hidden">
             <input autocomplete="off" id="id_captcha_value" name="captcha_value" type="text">
@@ -17,6 +17,6 @@
         <div class="captcha_wrap">
             <img alt="captcha" class="captcha">
         </div>
-        <div class="btn btn-reload">Reload</div>
+        <div class="btn btn-reload"> <%= _lp.GIFTCARD_RELOAD %> </div>
     </div>
 </script>

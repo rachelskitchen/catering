@@ -1,18 +1,18 @@
 <script type="text/template" id="cart_main-template">
-    <h2 class="cart_title">Your Shopping Bag</h2>
+    <h2 class="cart_title"> <%= _lp.CART_MAIN_TITLE %> </h2>
     <div class="order-items vertical-scrollbar"></div>
     <div class="subtotal"></div>
-    <div class="checkout">Checkout</div>
+    <div class="checkout"> <%= _lp.CART_CHECKOUT %> </div>
     <div class="cancel"></div>
 </script>
 
 <script type="text/template" id="cart_checkout-template">
-    <h2 class="cart_title">Your Shopping Bag</h2>
+    <h2 class="cart_title"> <%= _lp.CART_CHECKOUT_TITLE %> </h2>
     <div class="order-items_wrapper">
         <div class="order-items vertical-scrollbar"></div>
     </div>
     <ul class="total_block"></ul>
     <div class='pay_button'>
-    <div class="btn pay unselectable">Pay</div>
+        <div class="btn pay unselectable"> <%= _lp.CART_PAY %> </div>
     </div>
 </script>

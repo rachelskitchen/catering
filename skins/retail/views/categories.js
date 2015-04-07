@@ -432,7 +432,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 id = categories.selected;
 
             this.addItem(this.model.get('products'), new Backbone.Model({
-                parent_name: 'Search',
+                parent_name: App.Data.locale.get('CATEGORIES_SEARCH'),
                 name: this.model.get('pattern'),
                 description: '',
                 active: true

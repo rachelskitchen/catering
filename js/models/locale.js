@@ -92,6 +92,16 @@ define(['backbone'], function(Backbone) {
                                     break;
                             }
                             break;
+                        case App.Skins.RETAIL:
+                            switch (curLocale) {
+                                case 'en':
+                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.retail.placeholders.json';
+                                    break;
+                                case 'ru':
+                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/ru.retail.placeholders.json';
+                                    break;
+                            }
+                            break;
                     }
 
                     Backbone.$.ajax({
