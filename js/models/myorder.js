@@ -1003,7 +1003,16 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 delete this.getDiscountsTimeout;
             }
 
-            if (!App.Settings.accept_discount_code || self.get_only_product_quantity() < 1 || self.NoRequestDiscounts === true) {
+            if (self.get_only_product_quantity() < 1) {
+                self.total.set({
+                    total: 0,
+                    tax: 0,
+                    surcharge: 0,
+                    discounts: 0
+                });
+            }
+
+            if (self.get_only_product_quantity() < 1 || self.NoRequestDiscounts === true) {
                 self.trigger("NoRequestDiscountsComplete");
                 return (new $.Deferred()).reject();
             }
@@ -1166,9 +1175,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                         //console.log("add ", item.name, item.id, fee);
                         fee = new App.Models.ServiceFeeItem({id: item.id});
                         myorder.add(fee);
-                        //console.log("after add : ", myorder.models.length);
                     }
-                    //console.log("length ", myorder.models.length);
                     fee.get("product").set({name: item.name, price: item.sum});
                     fee.set({ initial_price: item.sum, 
                               sum: item.sum });

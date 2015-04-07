@@ -278,25 +278,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 return;
             }
 
+            this.subViews.push(view);
             if (model === App.Data.myorder.bagChargeItem) {
                 this.bagChargeItemView = view;
-                if (this.subViews.indexOf(this.bagChargeItemView) == -1 &&
-                    App.Data.myorder.get_only_product_quantity() > 0 && bag_charge) {
-
-                    this.subViews.push(this.bagChargeItemView);
-                    this.$('.myorder').append(this.bagChargeItemView.el);
-                }
-            }
-            else {
-                this.subViews.push(view);
-                if (this.subViews.indexOf(this.bagChargeItemView) == -1 && this.bagChargeItemView && bag_charge) {
-                    this.subViews.push(this.bagChargeItemView);
-                }
-
+                this.$(".bag_charge").append(view.el);
+            } else {
                 this.$('.myorder').append(view.el);
-                if (this.bagChargeItemView && bag_charge) {
-                    this.$('.myorder').append(this.bagChargeItemView.el);
-                }
             }
 
             if (this.subViews.indexOf(this.discountItemView) == -1 && this.collection.discount && !this.discountItemView ) {
