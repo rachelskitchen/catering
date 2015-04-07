@@ -1135,7 +1135,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 }
             });
 
-            if (myorder.debug_counter) 
+/*            if (myorder.debug_counter) 
                 myorder.debug_counter = ++myorder.debug_counter;
             else
                 myorder.debug_counter = 1;            
@@ -1143,21 +1143,24 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             json.service_fees =[{
                  id: 1000,
                  name: "ServiceFee_1",
-                 sum: 10.1
+                 amount: 10.1
             },
             {
                  id: 1001,
                  name: "ServiceFee_2",
-                 sum: 2.12 + myorder.debug_counter
+                 amount: 2.12 + myorder.debug_counter
             },
             {
                  id: 1002 + myorder.debug_counter,
                  name: "ServiceFee_3 long long long long long long ",
-                 sum: 3.0 + myorder.debug_counter
+                 amount: 3.0 + myorder.debug_counter
             }];
             
             if (myorder.get_only_product_quantity() == 0) 
-                json.service_fees = [];
+                json.service_fees = []; */
+
+            if (json.service_fees == undefined) 
+                 json.service_fees = [];
 
             if (Array.isArray(json.service_fees)) {
                 var myorder_fees = myorder.filter(function(obj){ return obj.isServiceFee(); });
@@ -1176,9 +1179,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                         fee = new App.Models.ServiceFeeItem({id: item.id});
                         myorder.add(fee);
                     }
-                    fee.get("product").set({name: item.name, price: item.sum});
-                    fee.set({ initial_price: item.sum, 
-                              sum: item.sum });
+                    fee.get("product").set({name: item.name, price: item.amount});
+                    fee.set({ initial_price: item.amount, 
+                              sum: item.amount });
                 });                
             }
 
