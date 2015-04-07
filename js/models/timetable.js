@@ -23,8 +23,7 @@
 define(["backbone"], function(Backbone) {
     'use strict';
 
-    var weekDays = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"],
-        months = ARRAY_MONTH;
+    var weekDays = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 
     var MILLISECONDS_A_DAY = 86400000;//24*60*60*1000
 //
@@ -317,8 +316,8 @@ define(["backbone"], function(Backbone) {
          * Get ID of month in format JS.
          */
         _get_month_id: function(month_text) { //Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
-            for (var i = 0; i < months.length; i++) {
-                if (month_text === months[i].substr(0, 3)) {
+            for (var i = 0; i < ARRAY_MONTH.length; i++) {
+                if (month_text === ARRAY_MONTH[i].substr(0, 3)) {
                     return i;
                 }
             }
@@ -507,7 +506,7 @@ define(["backbone"], function(Backbone) {
             return days.map(function(day, i) {
                 var date = new Date(now.getTime() + i * MILLISECONDS_A_DAY),
                     weekDay = i >= 2 ? day : i ? 'tomorrow' : 'today',
-                    month = months[date.getMonth()],
+                    month = ARRAY_MONTH[date.getMonth()],
                     _date = date.getDate();
                 switch (_date.toString().match(/1?\d$/)[0]) {
                     case "1":

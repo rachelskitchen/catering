@@ -24,8 +24,6 @@
 * Constants
 */
 
-var ARRAY_MONTH = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
 var TIMETABLE_WEEK_DAYS = {
     "monday": "Mon",
     "tuesday": "Tue",

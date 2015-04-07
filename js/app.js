@@ -183,7 +183,8 @@ var ERROR = {},
                 locale.loadCompleted.done(function() {
                     _.extend(MSG, locale.get('MSG'));
                     _.extend(ERROR, locale.get('ERRORS'));
-                    window.DINING_OPTION_NAME = locale.get('CORE')['ROUTER'];
+                    window.ARRAY_MONTH = locale.get('CORE')['ARRAY_MONTHS'];
+                    window.DINING_OPTION_NAME = locale.get('CORE')['DINING_OPTIONS'];
                 });
                 locale.on('showError', function() {
                     errors.alert(ERROR.LOAD_LANGUAGE_PACK, true); // user notification
