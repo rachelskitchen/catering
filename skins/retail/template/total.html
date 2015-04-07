@@ -1,5 +1,5 @@
 <script type="text/template" id="total_main-template">
-    <span>Subtotal:</span>
+    <span> <%= _lp.TOTAL_SUBTOTAL %>: </span>
     <span class="currency_symbol"><%= currency_symbol %></span>
     <span class="total"><%= subTotal %></span>
 </script>
@@ -7,7 +7,7 @@
 <script type="text/template" id="total_checkout-template">
     <% if(discount_allow) { %>
     <li>
-        <span class="title">Discounts:</span>
+        <span class="title"> <%= _lp.TOTAL_DISCOUNTS %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="discount"><%= discounts %></span>
@@ -15,7 +15,7 @@
     </li>
     <% } %>
     <li>
-        <span class="title">Subtotal:</span>
+        <span class="title"> <%= _lp.TOTAL_SUBTOTAL %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="subtotal"><%= subTotal %></span>
@@ -23,7 +23,7 @@
     </li>
 <% if (deliveryCharge) { %>
     <li class="delivery-charge">
-        <span class="title">Shipping:</span>
+        <span class="title"> <%= _lp.TOTAL_SHIPPING %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="delivery-charge"><%= deliveryCharge %></span>
@@ -36,7 +36,7 @@
     <% } else { %>
        <li class="delivery_discount_item hide">
     <% } %>
-        <span class="title">Shipping Discount:</span>
+        <span class="title"> <%= _lp.TOTAL_SHIPPING_DISCOUNT %>: </span>
         <span class="cost">
             <span class="currency_symbol">-<%= currency_symbol %></span>
             <span class="delivery-discount"><%= deliveryDiscount %></span>
@@ -48,21 +48,21 @@
     <% }else{ %>
       <li class="surcharge_item hide">
     <% } %>
-        <span class="title">Surcharge:</span>
+        <span class="title"> <%= _lp.TOTAL_SURCHARGE %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="surcharge"><%= surcharge %></span>
         </span>
     </li>
     <li>
-        <span class="title">Tax:</span>
+        <span class="title"> <%= _lp.TOTAL_TAX %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="tax"><%= tax %></span>
         </span>
     </li>
     <li>
-        <span class="title bold">Grand Total:</span>
+        <span class="title bold"> <%= _lp.TOTAL_GRAND_TOTAL %>: </span>
         <span class="cost">
             <span class="currency_symbol bold"><%= currency_symbol %></span>
             <span class="grandtotal bold"><%= grandTotal %></span>

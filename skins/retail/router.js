@@ -631,10 +631,6 @@ define(["main_router"], function(main_router) {
     }
 
     return new main_router(function() {
-        window.DINING_OPTION_NAME = {
-            DINING_OPTION_TOGO: 'Pick up in store',
-            DINING_OPTION_DELIVERY: 'Shipping'
-        };
         defaultRouterData();
         App.Routers.Router = Router;
     });
