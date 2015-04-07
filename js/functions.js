@@ -24,8 +24,6 @@
 * Constants
 */
 
-var array_day_of_week = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
-
 var ARRAY_MONTH = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 var TIMETABLE_WEEK_DAYS = {
