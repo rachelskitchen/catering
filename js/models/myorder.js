@@ -1497,7 +1497,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          */
         savePaymentResponse: function(uid) {
             if(typeof uid == 'string' && uid.length && this.paymentResponse) {
-                setData(uid, this.paymentResponse);
+                setData(uid + '.paymentResponse', this.paymentResponse);
             }
         },
         /**
@@ -1511,7 +1511,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
             var paymentResponse = getData(uid);
             if(paymentResponse) {
-                removeData(uid);
+                removeData(uid + '.paymentResponse');
                 return this.paymentResponse = paymentResponse;
             }
         }

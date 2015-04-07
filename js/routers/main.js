@@ -784,6 +784,13 @@ define(["backbone", "factory"], function(Backbone) {
             // set navigation to #confirm as callback parameter
             this.initPaymentResponseHandler(this.onPayHandler.bind(this));
 
+            // clear payment transaction record in a session storage when user clears cart
+            this.listenTo(App.Data.myorder, 'remove', function() {
+                if(!App.Data.myorder.get_only_product_quantity()) {
+                    PaymentProcessor.completeTransaction();
+                }
+            });
+
             // If payment transaction is in process need restore models at first.
             if(PaymentProcessor.isTransactionInProcess()) {
                 this.loadData().then(fireInitializedEvent.bind(this));
@@ -802,6 +809,14 @@ define(["backbone", "factory"], function(Backbone) {
                 trigger: true,
                 replace: capturePhase
             });
+        },
+        /**
+         * Implement removing of payment transaction record in a session storage
+         * when user changes establishment.
+         */
+        resetEstablishmentData: function() {
+            PaymentProcessor.completeTransaction();
+            return App.Routers.MobileRouter.prototype.resetEstablishmentData.apply(this, arguments);
         },
         /**
          * Save paymentResponse before app close.
