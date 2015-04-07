@@ -777,17 +777,26 @@ define(["backbone", "factory"], function(Backbone) {
      */
     App.Routers.RevelOrderingRouter = App.Routers.MobileRouter.extend({
         triggerInitializedEvent: function() {
+            var myorder = App.Data.myorder;
+
             // Restore App.Data.myorder.paymentResponse if exists in session storage.
-            App.Data.myorder.restorePaymentResponse(this.getUID());
+            myorder.restorePaymentResponse(this.getUID());
 
             // init payment response handler,
             // set navigation to #confirm as callback parameter
             this.initPaymentResponseHandler(this.onPayHandler.bind(this));
 
-            // clear payment transaction record in a session storage when user clears cart
-            this.listenTo(App.Data.myorder, 'remove', function() {
-                if(!App.Data.myorder.get_only_product_quantity()) {
+            // If a payment transaction is in process need to save any changes of cart to a session storage.
+            // If user clears the cart the payment transaction record should be removed.
+            // Bug #21653
+            this.listenTo(myorder, 'remove change add', function() {
+                if(!PaymentProcessor.isTransactionInProcess()) {
+                    return;
+                }
+                if(!myorder.get_only_product_quantity()) {
                     PaymentProcessor.completeTransaction();
+                } else {
+                    myorder.saveOrders();
                 }
             });
 
