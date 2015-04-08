@@ -667,6 +667,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 this.discount.zero_discount();
                 this.bagChargeItem && this.bagChargeItem.get("discount").zero_discount();
                 this.deliveryItem && this.deliveryItem.get("discount").zero_discount();
+                this.removeServiceFees();
             }
 
             if (!model.isServiceFee()) {
