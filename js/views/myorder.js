@@ -309,7 +309,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                             Backbone.View.prototype.remove.call(self.bagChargeItemView);
                             self.subViews.splice(bag_charge_index, 1);
                         }
-                        self.collection.removeServiceFees();
                     }
                     return true;
                 }
