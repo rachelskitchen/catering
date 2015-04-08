@@ -1,6 +1,8 @@
 <script type="text/template" id="myorder_list-template">
     <ul class="myorder"></ul>
+    <ul class="bag_charge"></ul>    
     <ul class="discount"></ul>
+    <ul class="service_fees"></ul>    
 </script>
 
 <script type="text/template" id="myorder_item-template">
@@ -8,7 +10,7 @@
         <% if(sold_by_weight) { %>
             <span class="name"><%= sizeModifier %> <%= name %></span>
         <% } else { %>
-            <span class="name"><%= quantity %>x <%= sizeModifier %> <%= name %></span>
+            <span class="name"><% if(!is_service_fee) { print(quantity + "x") }%> <%= sizeModifier %> <%= name %></span>
         <% } %>
             <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>

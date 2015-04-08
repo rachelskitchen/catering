@@ -10,7 +10,7 @@
             "model": ["main", "header", "footer", "revel"],
             "templates": ["main", "header", "footer", "revel"],
             "views": ["main", "header", "footer", "logo"],
-            "core": ["geopoint", "jquery_numbermask", "revel_view"]            
+            "core": ["geopoint", "jquery_numbermask", "revel_view"]
         },
         "index": {
             "css": ["store_info", "categories"],
@@ -64,7 +64,7 @@
             "css": ["done"],
             "views": [],
             "templates": ["done"],
-            "core": ["products", "modifiers", "tip", "checkout", "card", "giftcard"]
+            "core": ["products", "modifiers", "tip", "checkout", "card", "giftcard", "customers"]
         },
         "store_info": {
             "css": ["store_info"],

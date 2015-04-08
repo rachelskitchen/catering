@@ -41,7 +41,7 @@
             "views": [],
             "templates": [],
             "model": [],
-            "core": []
+            "core": ["customers"]
         },
         "pay": {
             "core": ["card", "giftcard", "customers"]
