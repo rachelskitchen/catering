@@ -4,7 +4,7 @@
         <input type="<%= type %>" id="modifier<%= id %>" name="modifier<%= modifierClassName %>">
         <span class="input <%= type %>"></span>
         <% } else { %>
-            <div class="input special_button btn">Add</div>
+            <div class="input special_button btn"> <%= _lp.MODIFIERS_ADD %> </div>
         <% } %>
         <span class="title <% if(isSpecial) { %>special<% } %>"><%= name %></span>
         <% if(isSize) { %>
@@ -50,6 +50,6 @@
 </script>
 
 <script type="text/template" id="modifiers_classes_matrix-template">
-    <h2> Please select: <%= attributes %> </h2>
+    <h2> <%= _lp.MODIFIERS_PLEASE_SELECT %>: <%= attributes %> </h2>
     <dl class="modifier_classes modifiers-bottom-line"></dl>
 </script>
