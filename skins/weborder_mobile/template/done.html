@@ -1,8 +1,8 @@
 <script type="text/template" id="main_done-template">
   <% if(status == "success") { %>
-    <span class="thanks color-style1">Thank You!</span>
+    <span class="thanks color-style1"> <%= _lp.DONE_THANK_YOU %>! </span>
     <dl class="orderCompleted">
-        <dt><span>Order ID:</span></dt>
+        <dt> <span> <%= _lp.DONE_ORDER_ID %>: </span> </dt>
         <dd>
             <span><%= order_id %></span>
         </dd>
@@ -16,23 +16,23 @@
             </dd>
         <% } %>
         <% if(isDeliverToSeat) { %>
-            <dt><span>Delivery Info:</span></dt>
+            <dt> <span> <%= _lp.DONE_DELIVERY_INFO %>: </span> </dt>
             <dd>
-                <% if(level) { %> Level <span><%= level %></span>,<% } %>
-                <% if(section) { %> Section <span><%= section %></span>,<% } %>
-                <% if(row) { %> Row <span><%= row %></span>,<% } %>
-                <% if(seat) { %> Seat <span><%= seat %></span><% } %>
+                <% if (level) { %> <%= _lp.DONE_LEVEL %> <span> <%= level %>, </span> <% } %>
+                <% if (section) { %> <%= _lp.DONE_SECTION %> <span> <%= section %>, </span> <% } %>
+                <% if (row) { %> <%= _lp.DONE_ROW %> <span> <%= row %>, </span> <% } %>
+                <% if (seat) { %> <%= _lp.DONE_SEAT %> <span> <%= seat %> </span> <% } %>
             </dd>
         <% } %>
         <% if(reward_points) { %>
-        <dt><span>Reward Card Points:</span></dt>
+        <dt> <span> <%= _lp.DONE_REWARD_CARD_POINTS %>: </span> </dt>
         <dd>
             <span>
                 <%= reward_points %>
             </span>
         </dd>
         <% } %>
-        <dt><span>Amount Charged:</span></dt>
+        <dt> <span> <%= _lp.DONE_AMOUNT_CHARGED %>: </span> </dt>
         <dd>
             <span>
                 <strong>

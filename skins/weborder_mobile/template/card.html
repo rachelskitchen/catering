@@ -1,19 +1,19 @@
 <script type="text/template" id="card_main-template">
     <ul class="card <% if(isFirefox) { %>firefox<% } %>">
         <li class="<% if(paypal_direct_credit_card) { %>required<% } %> border">
-            <input type="text" placeholder="First Name" value="<%= firstName %>" class="first_name ios-safari-caret" maxlength="20">
+            <input type="text" placeholder="<%= _lp.CARD_FIRST_NAME %>" value="<%= firstName %>" class="first_name ios-safari-caret" maxlength="20">
         </li>
         <li class="<% if(paypal_direct_credit_card) { %>required<% } %> border">
-            <input type="text" placeholder="Last Name" value="<%= secondName %>" class="last_name ios-safari-caret"  maxlength="20">
+            <input type="text" placeholder="<%= _lp.CARD_LAST_NAME %>" value="<%= secondName %>" class="last_name ios-safari-caret"  maxlength="20">
         </li>
         <li class="required border">
-            <input type="text" placeholder="Card Number" class="number ios-safari-caret" value="<%=cardNumber%>" min="0" />
+            <input type="text" placeholder="<%= _lp.CARD_NUMBER %>" class="number ios-safari-caret" value="<%= cardNumber %>" min="0">
         </li>
         <li class="required border">
-            <input type="text" placeholder="Security Code" class="secure ios-safari-caret" value="<%=securityCode%>" min="0" />
+            <input type="text" placeholder="<%= _lp.CARD_SECURITY_CODE %>" class="secure ios-safari-caret" value="<%= securityCode %>" min="0">
         </li>
         <li class="required exp">
-            <span>Exp. Date:</span>
+            <span> <%= _lp.CARD_EXP_DATE %>: </span>
             <div class="border label">
                 <label class="bg-style1">
                     <select id="exp-month">
@@ -40,16 +40,16 @@
             </div>
         </li>
         <li class="border">
-            <input type="text" placeholder="Street Address" class="address ios-safari-caret" value="<%= street %>" maxlength="40">
+            <input type="text" placeholder="<%= _lp.CARD_STREET_ADDRESS %>" class="address ios-safari-caret" value="<%= street %>" maxlength="40">
         </li>
         <li class="border">
-            <input type="text" placeholder="City" class="city ios-safari-caret" value="<%= city %>" maxlength="40">
+            <input type="text" placeholder="<%= _lp.CARD_CITY %>" class="city ios-safari-caret" value="<%= city %>" maxlength="40">
         </li>
         <li class="border">
-            <input type="text" placeholder="State" class="state ios-safari-caret" value="<%= state %>" maxlength="40">
+            <input type="text" placeholder="<%= _lp.CARD_STATE %>" class="state ios-safari-caret" value="<%= state %>" maxlength="40">
         </li>
         <li class="border">
-            <input type="text" placeholder="Zip Code" class="zip ios-safari-caret" value="<%= zip %>" maxlength="12">
+            <input type="text" placeholder="<%= _lp.CARD_ZIP_CODE %>" class="zip ios-safari-caret" value="<%= zip %>" maxlength="12">
         </li>
     </ul>
 </script>

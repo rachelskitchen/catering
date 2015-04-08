@@ -355,9 +355,9 @@ define(["backbone", "factory"], function(Backbone) {
 
             if (modelForView.get('isMobileVersion')) {
                 cssCore.indexOf('establishments_mobile') && cssCore.push('establishments_mobile');
-                settings.set('skin', App.Skins.WEBORDER_MOBILE);
+                (!App.skin) && settings.set('skin', App.Skins.WEBORDER_MOBILE);
             } else {
-                settings.set('skin', App.Skins.WEBORDER);
+                (!App.skin) && settings.set('skin', App.Skins.WEBORDER);
             }
             !settings.get('settings_skin').name_app && pageTitle('Revel Systems');
 

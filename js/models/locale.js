@@ -24,13 +24,11 @@ define(['backbone'], function(Backbone) {
     'use strict';
 
     App.Models.Locale = Backbone.Model.extend({
-        initialize: function() {
-            this.loadCompleted = Backbone.$.Deferred();
-        },
         /**
          * Load a language pack (localStorage or the backend system).
          */
         loadLanguagePack: function() {
+            this.loadCompleted = Backbone.$.Deferred();
             this.clear();
             var self = this,
                 settings = App.Data.settings,
@@ -38,7 +36,7 @@ define(['backbone'], function(Backbone) {
                 curLocale = window.navigator.language,
                 stateLocale = getData('currentLocale', true); // load data from storage (cookie, sessionStorage, localStorage)
             // for test (begin)
-            curLocale = 'ru';
+            curLocale = 'en';
             // for test (end)
             if (!stateLocale ||
                 stateLocale.locale != curLocale ||
@@ -87,9 +85,6 @@ define(['backbone'], function(Backbone) {
                                 case 'en':
                                     url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.weborder.placeholders.json';
                                     break;
-                                case 'ru':
-                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/ru.weborder.placeholders.json';
-                                    break;
                             }
                             break;
                         case App.Skins.RETAIL:
@@ -97,8 +92,12 @@ define(['backbone'], function(Backbone) {
                                 case 'en':
                                     url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.retail.placeholders.json';
                                     break;
-                                case 'ru':
-                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/ru.retail.placeholders.json';
+                            }
+                            break;
+                        case App.Skins.WEBORDER_MOBILE:
+                            switch (curLocale) {
+                                case 'en':
+                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.weborder_mobile.placeholders.json';
                                     break;
                             }
                             break;

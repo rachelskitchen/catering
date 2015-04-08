@@ -59,13 +59,13 @@
         <dd>
             <%= description %>
             <% if (timetables) { %>
-            <span class="timetables"> Available: <%=timetables%></span>
+                <span class="timetables"> <%= _lp.PRODUCTS_AVAILABLE %>: <%= timetables %> </span>
             <% } %>
         </dd>
     </dl>
     <% if (is_gift && _settings.online_orders) { %>
     <div class='gift_card <%if (hide_images) print('noimage');%>'>
-        <p>Gift Card Number: </p>
+        <p> <%= _lp.PRODUCTS_GIFT_CARD_NUMBER %>: </p>
         <div class="input_beauty border2">
             <input type="text" name="gift_card_number" value='<%= gift_card_number %>' class="gift_card_number" />
         </div>
