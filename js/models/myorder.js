@@ -1509,9 +1509,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             if(typeof uid != 'string' || !uid.length) {
                 return;
             }
+            uid = uid + '.paymentResponse';
             var paymentResponse = getData(uid);
             if(paymentResponse) {
-                removeData(uid + '.paymentResponse');
+                removeData(uid);
                 return this.paymentResponse = paymentResponse;
             }
         }
