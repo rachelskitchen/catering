@@ -564,7 +564,7 @@ define(["main_router"], function(main_router) {
 
                 if(typeof App.Data.customer.shipping_serives == 'undefined') {
                     App.Data.customer.shipping_serives = true;
-                    App.Data.myorder.listenTo(App.Data.customer, 'change:shipping_services', App.Data.myorder.addDestinationBasedTaxes, App.Data.myorder);
+                    App.Data.myorder.listenTo(App.Data.customer, 'change:shipping_services', App.Data.myorder.update_cart_totals, App.Data.myorder);
                 }
 
                 var settings = App.Data.settings.get('settings_system');

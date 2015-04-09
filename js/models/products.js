@@ -53,7 +53,6 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             checked_gift_cards: null,
             stock_amount: 10,
             active: true,
-            isDeliveryItem: false,
             created_date: null,
             original_tax: null, // used to save origin tax rate to restore in Retail mode
             timetables: null

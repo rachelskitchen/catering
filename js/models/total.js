@@ -56,7 +56,7 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             this.listenTo(this.get('delivery'), 'change:price', function() {
                 var deliveryItem = App.Data.myorder.find(function(model) {
                         return model.get('product').id == null &&
-                               model.get('product').get('isDeliveryItem') === true;
+                               model.isDeliveryItem() === true;
                     });
                 if (deliveryItem)
                     App.Data.myorder.onModelChange(deliveryItem);
