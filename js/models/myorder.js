@@ -381,6 +381,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         isDeliveryItem: function() {
             return this.get("isDeliveryItem") === true;
         },
+        isShippingItem: function() {
+            return this.get("isDeliveryItem") === true && App.skin == App.Skins.RETAIL;
+        },
     });
 
     App.Models.DeliveryChargeItem = App.Models.Myorder.extend({
@@ -655,7 +658,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.change_only_gift_dining_option();
 //            this.isShippingOrderType() && this.getDestinationBasedTaxes(model);
 
-            if (!model.isServiceFee()) {
+            if (!model.isServiceFee() && !model.isShippingItem()) {
                 this.update_cart_totals();
             }
         },
@@ -674,7 +677,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 this.removeServiceFees();
             }
 
-            if (!model.isServiceFee()) {
+            if (!model.isServiceFee() && !model.isShippingItem()) {
                 this.update_cart_totals();
             }
         },
@@ -696,7 +699,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             model.changedAttributes() && model.changedAttributes().sum && model.trigger('update:sum', model);
 
-            if (!model.isServiceFee()) {
+            if (!model.isServiceFee() && !model.isShippingItem()) {
                 this.update_cart_totals();
             }
         },
@@ -1054,7 +1057,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             myorder.each(function(model) {
-                if (!model.isServiceFee() && !model.isDeliveryItem())
+                if (!model.isServiceFee() && !model.isShippingItem())
                   items.push(model.item_submit(true));
             });
 
@@ -1068,8 +1071,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     && myorder.deliveryItem.get("product").get("name") != MSG.DELIVERY_ITEM) {
                     order_info.address = customer.addresses[customer.shipping_address === -1 ? customer.addresses.length - 1 : customer.shipping_address];
                     order_info.shipping = {
-                        service_name: myorder.deliveryItem.get("product").get("name"),
-                        service_code: myorder.deliveryItem.get("product").get("service_code")          
+                        service_code: myorder.deliveryItem.get("product").get("service_code"),          
+                        shipment_company: myorder.deliveryItem.get("product").get("shipment_company")
                     }
                 }
             }
