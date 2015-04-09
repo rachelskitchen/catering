@@ -174,9 +174,9 @@
             });
 
             // if `storage_data` attribute isn't the web storage need to show a message
-            // that blocks any user actions with UI except a click on 'OK' button to reload the app
+            // that blocks further the app initialization
             if(App.Data.settings.get('storage_data') !== 1) {
-                App.Data.errors.alert(ERROR.WEBSTORAGES_ARE_DISABLED, true);
+                return App.Data.errors.alert(ERROR.WEBSTORAGES_ARE_DISABLED, true);
             }
 
             var settings = App.Data.settings,
