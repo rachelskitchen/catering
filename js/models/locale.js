@@ -109,6 +109,13 @@ define(['backbone'], function(Backbone) {
                                     break;
                             }
                             break;
+                        case App.Skins.DIRECTORY_MOBILE:
+                            switch (curLocale) {
+                                case 'en':
+                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.directory_mobile.placeholders.json';
+                                    break;
+                            }
+                            break;
                     }
 
                     Backbone.$.ajax({
