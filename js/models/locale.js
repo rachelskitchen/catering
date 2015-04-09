@@ -42,6 +42,7 @@ define(['backbone'], function(Backbone) {
                 stateLocale.locale != curLocale ||
                 !stateLocale.placeholders[skin] ||
                 Backbone.$.isEmptyObject(settings.get('settings_system')) || // if the app was not loaded (Establishments View)
+                !settings.get('settings_system').locales || // for Directory skin (skin shouldn't depend on settings_system)
                 stateLocale.placeholders[skin].version != settings.get('settings_system').locales[curLocale]) {
                     var json = {
                         locale: curLocale,
@@ -98,6 +99,13 @@ define(['backbone'], function(Backbone) {
                             switch (curLocale) {
                                 case 'en':
                                     url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.weborder_mobile.placeholders.json';
+                                    break;
+                            }
+                            break;
+                        case App.Skins.DIRECTORY:
+                            switch (curLocale) {
+                                case 'en':
+                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.directory.placeholders.json';
                                     break;
                             }
                             break;
