@@ -34,7 +34,8 @@ define(["backbone", "factory"], function(Backbone) {
         DINING_OPTION_DRIVETHROUGH: 'Drive Through',
         DINING_OPTION_ONLINE : 'Online Ordering',
         DINING_OPTION_OTHER: 'Other',
-        DINING_OPTION_DELIVERY_SEAT: 'Deliver to Seat'
+        DINING_OPTION_DELIVERY_SEAT: 'Deliver to Seat',
+        DINING_OPTION_SHIPPING: 'Shipping'
     };
 
     App.Routers.MainRouter = Backbone.Router.extend({

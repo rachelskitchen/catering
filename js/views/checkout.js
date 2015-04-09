@@ -36,8 +36,12 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.customer = this.options.customer;
             this.card = App.Data.card;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+
             this.model.get('dining_option') === 'DINING_OPTION_DELIVERY' &&
                  this.controlAddress(null, 'DINING_OPTION_DELIVERY');
+
+            this.model.get('dining_option') === 'DINING_OPTION_SHIPPING' &&
+                 this.controlAddress(null, 'DINING_OPTION_SHIPPING');
 
             this.model.get('dining_option') === 'DINING_OPTION_DELIVERY_SEAT' &&
                  this.controlDeliverySeat(null, 'DINING_OPTION_DELIVERY_SEAT');
@@ -108,7 +112,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.model.set('rewardCard', e.target.value);
         },
         controlAddress: function(model, value) {
-            if(value === 'DINING_OPTION_DELIVERY') {
+            if(value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING') {
                 this.customer.set('shipping_address', -1);
                 var address = new App.Views.CheckoutView.CheckoutAddressView({customer: this.customer});
                 this.subViews.push(address);
@@ -396,7 +400,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             }
         },
         change_cash_text: function() {
-            var isDelivery = this.collection.checkout.get("dining_option") === 'DINING_OPTION_DELIVERY';
+            var dining_option = this.collection.checkout.get("dining_option"),
+                isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING';
             this.$('.cash').html(isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE);
         },
         gift_card: function() {

@@ -473,7 +473,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 delivery_charge = this.total.get_delivery_charge() * 1;
 
             if(typeof opts !== 'object'  || !opts.avoid_delivery) {
-                if (value === 'DINING_OPTION_DELIVERY' && (delivery_charge !== 0 || App.skin == App.Skins.RETAIL)) {
+                if ((value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING') && (delivery_charge !== 0 || App.skin == App.Skins.RETAIL)) {
                     if (!this.deliveryItem) {
                         this.deliveryItem = new App.Models.DeliveryChargeItem({total: this.total});
                     }
@@ -1164,7 +1164,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             call_name = call_name.concat(customerData.call_name);
             $.extend(payment_info, customerData.payment_info);
 
-            if(checkout.dining_option === 'DINING_OPTION_DELIVERY') {
+            if(checkout.dining_option === 'DINING_OPTION_DELIVERY' || checkout.dining_option === 'DINING_OPTION_SHIPPING') {
                 payment_info.address = customer.addresses[customer.shipping_address === -1 ? customer.addresses.length - 1 : customer.shipping_address];
             }
 
@@ -1473,7 +1473,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.getDestinationBasedTaxes();
         },
         isShippingOrderType: function() {
-            return App.Skins.RETAIL == App.skin && this.checkout.get('dining_option') == 'DINING_OPTION_DELIVERY';
+            return this.checkout.get('dining_option') == 'DINING_OPTION_SHIPPING';
         },
         restoreTaxes: function() {
             this.each(function(item) {
