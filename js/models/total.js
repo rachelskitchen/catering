@@ -63,9 +63,10 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             });
 
             this.listenTo(this, 'change:total', function() {
-                var total_wo_delivery = App.Data.myorder.checkout.get('dining_option') != 'DINING_OPTION_DELIVERY' ? this.get('total')
+                var dining_option = App.Data.myorder.checkout.get('dining_option'),
+                    total_wo_delivery = dining_option != 'DINING_OPTION_DELIVERY' && dining_option != 'DINING_OPTION_SHIPPING' ? this.get('total')
                      : this.get('total') - this.get_delivery_charge()*1;
-                this.set("total_wo_delivery", total_wo_delivery, {silent: true});                
+                this.set("total_wo_delivery", total_wo_delivery, {silent: true});
             });
         },
         /**

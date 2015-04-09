@@ -149,14 +149,15 @@ define(["backbone", "geopoint"], function(Backbone) {
             return empty;
         },
         check: function(dining_option) {
-            var err = [];
+            var err = [],
+                isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING';
 
             !this.get('first_name') && err.push('First Name');
             !this.get('last_name') && err.push('Last Name');
             !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push('Email');
             !this.get('phone') && err.push('Phone Number');
 
-            if (dining_option === 'DINING_OPTION_DELIVERY' && this.get('shipping_address') === -1) {
+            if (isDelivery && this.get('shipping_address') === -1) {
                 err = err.concat(this._check_delivery_fields());
             }
 
