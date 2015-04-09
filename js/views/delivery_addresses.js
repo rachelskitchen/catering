@@ -225,7 +225,7 @@ define(['backbone', 'factory'], function(Backbone) {
             this.options.customer.set('load_shipping_status', '');
         },
         changeShipping: function(e) {
-            var price, name,
+            var shipping, price, name, service_code,
                 value = parseInt(e.currentTarget.value),
                 myorder = App.Data.myorder,
                 checkout = myorder.checkout,
@@ -233,18 +233,21 @@ define(['backbone', 'factory'], function(Backbone) {
 
             this.options.customer.set('shipping_selected', value);
             if (value >= 0) {
-                price = parseFloat(this.options.customer.get("shipping_services")[value].shipping_charge).toFixed(2) * 1;
-                name = this.options.customer.get("shipping_services")[value].class_of_service;
+                shipping = this.options.customer.get("shipping_services")[value];
+                price = parseFloat(shipping.shipping_charge).toFixed(2) * 1;
+                name = shipping.class_of_service;
+                service_code = shipping.service_code; 
             }
             else {
                 price = 0;
+                service_code = 0;
                 name = MSG.DELIVERY_ITEM;
             }
 
             myorder.change_dining_option(checkout, checkout.get("dining_option"));
             if (e.shipping_status != "pending") {
                 myorder.total.set_delivery_charge(price/*, {silent: App.Data.updateDiscountsStatus == "pending" }*/);
-                myorder.deliveryItem.get("product").set({"price": price, "name": name});
+                myorder.deliveryItem.get("product").set({"price": price, "name": name, "service_code": service_code});
             }
         },
         updateAddress: function() {
