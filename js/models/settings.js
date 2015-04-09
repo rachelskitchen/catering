@@ -125,7 +125,6 @@ define(["backbone", "async"], function(Backbone) {
                 sessionStorage.private_browsing=false;
                 this.set("storage_data", 1);
             } catch(error) {
-                App.Data.errors.alert(ERROR.WEBSTORAGES_ARE_DISABLED, true);
                 if (document.cookie) {
                     this.set("storage_data", 2);
                 } else {
