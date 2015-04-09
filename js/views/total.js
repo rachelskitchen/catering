@@ -48,8 +48,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             if (this.collection.get_only_product_quantity() == 0) {
                 return round_monetary_currency(0);
             }
-
-            return this.collection.checkout.get('dining_option') != 'DINING_OPTION_DELIVERY' ? this.collection.total.get_total()
+            var dining_option = this.collection.checkout.get('dining_option');
+            return dining_option != 'DINING_OPTION_DELIVERY' && dining_option != 'DINING_OPTION_SHIPPING' ? this.collection.total.get_total()
                 : round_monetary_currency(this.collection.total.get_total() - this.collection.total.get_delivery_charge());
         }
     });
@@ -126,7 +126,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         updateDeliveryCharge: function(model, value) {
             var delivery = this.model.get_delivery_charge();
-            if(value == 'DINING_OPTION_DELIVERY' && delivery * 1 > 0 && this.collection.get_only_product_quantity() > 0) {
+            if((value == 'DINING_OPTION_DELIVERY' || value == 'DINING_OPTION_SHIPPING') && delivery * 1 > 0 && this.collection.get_only_product_quantity() > 0) {
                 this.$('span.delivery-charge').text(delivery);
                 this.$('li.delivery-charge').show();
                 this.$('ul.confirm').addClass('has-delivery');
