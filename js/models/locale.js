@@ -116,6 +116,13 @@ define(['backbone'], function(Backbone) {
                                     break;
                             }
                             break;
+                        case App.Skins.MLB:
+                            switch (curLocale) {
+                                case 'en':
+                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.mlb.placeholders.json';
+                                    break;
+                            }
+                            break;
                     }
 
                     Backbone.$.ajax({
