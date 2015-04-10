@@ -178,6 +178,12 @@ var ERROR = {},
                 locale = App.Data.locale = new App.Models.Locale,
                 isNotFirstLaunch = false;
 
+            // if `storage_data` attribute isn't the web storage need to show a message
+            // that blocks further the app initialization
+            if (settings.get('storage_data') !== 1) {
+                return errors.alert(ERROR.WEBSTORAGES_ARE_DISABLED, true);
+            }
+
             settings.on('change:skin', function() {
                 locale.loadLanguagePack(); // load a language pack (localStorage or the backend system)
                 locale.loadCompleted.done(function() {

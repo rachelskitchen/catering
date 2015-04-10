@@ -131,14 +131,14 @@ define(["backbone", "async"], function(Backbone) {
             2: the data warehouse is "Cookie (HTML 4)".
             */
             try {
-                   sessionStorage.private_browsing=false;
-                   this.set("storage_data", 1);
+                sessionStorage.private_browsing=false;
+                this.set("storage_data", 1);
             } catch(error) {
-                   if (document.cookie) {
-                        this.set("storage_data", 2);
-                   } else {
-                        this.set("storage_data", 0);
-                   }
+                if (document.cookie) {
+                    this.set("storage_data", 2);
+                } else {
+                    this.set("storage_data", 0);
+                }
              }
         },
         /**
