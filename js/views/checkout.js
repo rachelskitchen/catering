@@ -114,7 +114,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         controlAddress: function(model, value) {
             if(value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING') {
                 this.customer.set('shipping_address', -1);
-                var address = new App.Views.CheckoutView.CheckoutAddressView({customer: this.customer});
+                var address = new App.Views.CheckoutView.CheckoutAddressView({
+                    customer: this.customer,
+                    checkout: this.model
+                });
                 this.subViews.push(address);
                 this.$('.delivery_address').append(address.el);
                 if(address.model.state || address.model.province)
