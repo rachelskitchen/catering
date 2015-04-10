@@ -54,6 +54,7 @@ ERROR.FORCED_MODIFIER = "Please select at least | %d modifier(s) in %s";
 ERROR.SELECT_SIZE_MODIFIER = "Select a size please";
 ERROR.SELECT_PRODUCT_ATTRIBUTES = "Please select all attributes";
 ERROR.BLOCK_WEIGHT_IS_NOT_VALID = "The product weight is not set or zero";
+ERROR.WEBSTORAGES_ARE_DISABLED = "Web storages are disabled or not supported in your browser"
 
 ERROR.MAINTENANCE_CONFIGURATION = 'Can\'t get application configuration. Please check backend settings.';
 ERROR.MAINTENANCE_PAYMENT = 'Please setup at least one payment option'; // for app accessed directly from browser (not via Directory app)

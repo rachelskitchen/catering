@@ -38,9 +38,9 @@ define(["products_view"], function(Backbone) {
         },
         onChangeOrder: function() {
             if (this.collection.get_only_product_quantity() > 0)
-                this.$(".order-items-wrapper, .checkout").show();
+                this.$(".order-items_wrapper, .total_block").show();
             else
-                this.$(".order-items-wrapper, .checkout").hide();
+                this.$(".order-items_wrapper, .total_block").hide();
         },
         resize: function() {
             var self = this;

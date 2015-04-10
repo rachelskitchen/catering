@@ -172,6 +172,13 @@
             App.Data.settings = new App.Models.Settings({
                 supported_skins: app.skins.available
             });
+
+            // if `storage_data` attribute isn't the web storage need to show a message
+            // that blocks further the app initialization
+            if(App.Data.settings.get('storage_data') !== 1) {
+                return App.Data.errors.alert(ERROR.WEBSTORAGES_ARE_DISABLED, true);
+            }
+
             var settings = App.Data.settings,
                 isNotFirstLaunch = false;
 
