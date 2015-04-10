@@ -395,7 +395,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     name: MSG.DELIVERY_ITEM,
                     price: charge,
                     service_code: 0,
-                    tax: this.get('total').get('prevailing_tax')                    
+                    tax: this.get('total').get('prevailing_tax')
                 }),
                 isDeliveryItem: true,
                 initial_price: charge,
@@ -462,7 +462,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             App.Models.Myorder.prototype.initialize.apply(this, arguments);
             this.set({
                 product: new App.Models.Product({
-                    name: "default fee"        
+                    name: "default fee"
                 }),
                 isServiceFee: true
             });
@@ -494,7 +494,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 delivery_charge = this.total.get_delivery_charge() * 1;
 
             if(typeof opts !== 'object'  || !opts.avoid_delivery) {
-                if ((value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING') && (delivery_charge !== 0 || App.skin == App.Skins.RETAIL)) {
+                if ((value === 'DINING_OPTION_DELIVERY' && delivery_charge !== 0) || value === 'DINING_OPTION_SHIPPING') {
                     if (!this.deliveryItem) {
                         this.deliveryItem = new App.Models.DeliveryChargeItem({total: this.total});
                     }
@@ -573,7 +573,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          * get quantity without delivery charge and bag charge items
          */
         get_only_product_quantity: function() {
-            var array = this.filter(function(model) { 
+            var array = this.filter(function(model) {
                     return model.get("id_product") != null;
                 });
             return array.length;
@@ -1067,11 +1067,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             if (App.Data.customer && myorder.deliveryItem) {
                 var customer = App.Data.customer.toJSON();
-                if (App.skin == App.Skins.RETAIL && checkout.dining_option === 'DINING_OPTION_DELIVERY' 
+                if (App.skin == App.Skins.RETAIL && checkout.dining_option === 'DINING_OPTION_DELIVERY'
                     && myorder.deliveryItem.get("product").get("name") != MSG.DELIVERY_ITEM) {
                     order_info.address = customer.addresses[customer.shipping_address === -1 ? customer.addresses.length - 1 : customer.shipping_address];
                     order_info.shipping = {
-                        service_code: myorder.deliveryItem.get("product").get("service_code"),          
+                        service_code: myorder.deliveryItem.get("product").get("service_code"),
                         shipment_company: myorder.deliveryItem.get("product").get("shipment_company")
                     }
                 }
@@ -1155,11 +1155,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 }
             });
 
-/*            if (myorder.debug_counter) 
+/*            if (myorder.debug_counter)
                 myorder.debug_counter = ++myorder.debug_counter;
             else
-                myorder.debug_counter = 1;            
-            
+                myorder.debug_counter = 1;
+
             json.service_fees =[{
                  id: 1000,
                  name: "ServiceFee_1",
@@ -1175,22 +1175,22 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                  name: "ServiceFee_3 long long long long long long ",
                  amount: 3.0 + myorder.debug_counter
             }];
-            
-            if (myorder.get_only_product_quantity() == 0) 
+
+            if (myorder.get_only_product_quantity() == 0)
                 json.service_fees = []; */
 
-            if (json.service_fees == undefined) 
+            if (json.service_fees == undefined)
                  json.service_fees = [];
 
             if (Array.isArray(json.service_fees)) {
                 var myorder_fees = myorder.filter(function(obj){ return obj.isServiceFee(); });
-                
-                var diff = myorder_fees.filter(function(obj){ 
-                           return !_.findWhere(json.service_fees, {id: obj.id}); 
+
+                var diff = myorder_fees.filter(function(obj){
+                           return !_.findWhere(json.service_fees, {id: obj.id});
                        });
                 //remove all service fees from myorder which aren't present in the responce now
-                myorder.remove(diff);        
-                
+                myorder.remove(diff);
+
                 //we create new service fee if needed or update old one:
                 json.service_fees.forEach(function(item){
                     var fee = myorder.findWhere({id: item.id});
@@ -1199,24 +1199,24 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                         myorder.add(fee);
                     }
                     fee.get("product").set({name: item.name, price: item.amount});
-                    fee.set({ initial_price: item.amount, 
+                    fee.set({ initial_price: item.amount,
                               sum: item.amount });
-                });                
+                });
             }
 
             if (!json.shipping) {
                 json.shipping = {
-                    service_code: "03", 
-                    service_name: "UPS Ground", 
-                    shipment_company: 1, 
+                    service_code: "03",
+                    service_name: "UPS Ground",
+                    shipment_company: 1,
                     amount: 10.00,
                     tax_amount: 0.7,
                     tax_rate:  7,
                     discount: {
-                       taxed: true, 
-                       sum: 1, 
-                       type: 1, 
-                       name: "Item 10%" 
+                       taxed: true,
+                       sum: 1,
+                       type: 1,
+                       name: "Item 10%"
                     }
                 }
             }
@@ -1286,7 +1286,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             if (checkout.last_discount_code) {
                 order.discount_code = checkout.last_discount_code;
-            }    
+            }
             order_info.created_date = checkout.createDate;
             order_info.pickup_time = checkout.pickupTimeToServer;
             order_info.lastPickupTime = checkout.lastPickupTime;
