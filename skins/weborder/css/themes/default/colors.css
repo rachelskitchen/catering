@@ -512,3 +512,11 @@ ul.categories {
 #modifiers_popup .modifier .select-wrapper {
     border-color: #cecece;
 }
+
+#content > .checkout .shipping-select[data-status=pending] {
+  color: #838383;
+}
+
+#content > .checkout .shipping-select[data-status=error] {
+  color: #ff0000;
+}

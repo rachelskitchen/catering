@@ -156,7 +156,7 @@ define(['backbone', 'factory'], function(Backbone) {
 
     var DeliveryAddressesView = AddressView.extend({
         initialize: function() {
-            this.isShippingServices = App.skin == App.Skins.RETAIL;
+            this.isShippingServices = this.options.checkout && this.options.checkout.get('dining_option') === 'DINING_OPTION_SHIPPING';
 
             if (this.isShippingServices)
                 this.listenTo(this.options.customer, 'change:shipping_services', this.updateShippingServices, this);
@@ -164,6 +164,8 @@ define(['backbone', 'factory'], function(Backbone) {
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
+            this.model.isShippingServices = this.isShippingServices;
+
             App.Views.AddressView.prototype.render.apply(this, arguments);
 
             if (this.isShippingServices)

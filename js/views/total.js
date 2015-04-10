@@ -125,8 +125,10 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.$('.grandtotal').text(data.grandTotal);
         },
         updateDeliveryCharge: function(model, value) {
-            var delivery = this.model.get_delivery_charge();
-            if((value == 'DINING_OPTION_DELIVERY' || value == 'DINING_OPTION_SHIPPING') && delivery * 1 > 0 && this.collection.get_only_product_quantity() > 0) {
+            var delivery = this.model.get_delivery_charge(),
+                isShippingDiningOption = value == 'DINING_OPTION_SHIPPING';
+            if((value == 'DINING_OPTION_DELIVERY' || isShippingDiningOption) && delivery * 1 > 0 && this.collection.get_only_product_quantity() > 0) {
+                this.$('.delivery-charge-title').text(isShippingDiningOption ? 'Shipping:' : 'Delivery Charge:');
                 this.$('span.delivery-charge').text(delivery);
                 this.$('li.delivery-charge').show();
                 this.$('ul.confirm').addClass('has-delivery');
