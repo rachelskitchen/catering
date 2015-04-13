@@ -240,7 +240,6 @@ define(['backbone', 'factory'], function(Backbone) {
             
             myorder.change_dining_option(checkout, checkout.get("dining_option"));
             if (e.shipping_status != "pending") {
-                myorder.total.set_delivery_charge(price /*, {silent: App.Data.updateDiscountsStatus == "pending" }*/);
                 myorder.deliveryItem.get("product").set({"price": price, 
                                                          "name": name ? name : MSG.DELIVERY_ITEM, 
                                                          "service_code": shipping.service_code ? shipping.service_code : "", 
