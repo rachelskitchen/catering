@@ -64,7 +64,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.listenTo(this, 'onPayWithCustomCreditCard onPayWithSavedCreditCard', this.trigger.bind(this, 'startListeningToCustomer'), this);
 
             this.set('card', new App.Models.Card());
-            this.set('customer', new App.Models.Customer({shipping_address: -1}));
+            this.set('customer', new App.Models.Customer());
 
             // Queue of requests. Used if middleware action is required.
             // For instance, if `getData` request responds the error 'Session expired' need automatically get a new token and continue `getData` performing.

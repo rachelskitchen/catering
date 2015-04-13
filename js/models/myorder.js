@@ -399,12 +399,12 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     name: MSG.DELIVERY_ITEM,
                     price: charge,
                     service_code: 0,
-                    tax: this.get('total').get('prevailing_tax')                    
+                    tax: this.get('total').get('prevailing_tax')
                 }),
                 isDeliveryItem: true,
                 initial_price: charge,
                 sum: charge
-            });            
+            });
 
             this.listenTo(this.get("product"), "change:price", function() {
                 if (self.get('total')) {
@@ -541,7 +541,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 this.restoreTaxes();
 
             if(App.Skins.RETAIL == App.skin && value !== 'DINING_OPTION_DELIVERY' && !this.paymentInProgress) {
-                this.update_cart_totals(); //for Shipping case update_cart_totals will be called from DeliveryAddressView::changeShipping func. 
+                this.update_cart_totals(); //for Shipping case update_cart_totals will be called from DeliveryAddressView::changeShipping func.
             }
         },
         // check if user get maintenance after payment
@@ -1079,11 +1079,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             if (App.Data.customer && myorder.deliveryItem) {
                 var customer = App.Data.customer.toJSON();
-                if (checkout.dining_option === 'DINING_OPTION_SHIPPING' 
+                if (checkout.dining_option === 'DINING_OPTION_SHIPPING'
                     && myorder.deliveryItem.get("product").get("name") != MSG.DELIVERY_ITEM) { //check that shipping service was selected
                     order_info.address = customer.addresses[customer.shipping_address === -1 ? customer.addresses.length - 1 : customer.shipping_address];
                     order_info.shipping = {
-                        service_code: myorder.deliveryItem.get("product").get("service_code"),          
+                        service_code: myorder.deliveryItem.get("product").get("service_code"),
                         shipment_company: myorder.deliveryItem.get("product").get("shipment_company")
                     }
                 }
@@ -1165,7 +1165,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 }
             });
 
-         /* if (myorder.debug_counter) 
+         /* if (myorder.debug_counter)
                 myorder.debug_counter = ++myorder.debug_counter;
             else
                 myorder.debug_counter = 1;
@@ -1190,12 +1190,12 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             if (Array.isArray(json.service_fees)) {
                 var myorder_fees = myorder.filter(function(obj){ return obj.isServiceFee(); });
 
-                var diff = myorder_fees.filter(function(obj){ 
-                           return !_.findWhere(json.service_fees, {id: obj.id}); 
+                var diff = myorder_fees.filter(function(obj){
+                           return !_.findWhere(json.service_fees, {id: obj.id});
                        });
                 //remove all service fees from myorder which aren't present in the responce now
                 myorder.remove(diff);
-                
+
                 //we create new service fee if needed or update old one:
                 json.service_fees.forEach(function(item){
                     var fee = myorder.findWhere({id: item.id});
@@ -1211,9 +1211,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             /*if (!json.shipping && App.skin == App.Skins.RETAIL) {
                 json.shipping = {
-                    service_code: "03", 
-                    service_name: "UPS Ground", 
-                    shipment_company: 1, 
+                    service_code: "03",
+                    service_name: "UPS Ground",
+                    shipment_company: 1,
                     amount: 10.00,
                     tax_amount: 0.7,
                     tax_rate:  7,
@@ -1293,7 +1293,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             $.extend(payment_info, customerData.payment_info);
 
             if(checkout.dining_option === 'DINING_OPTION_DELIVERY' || checkout.dining_option === 'DINING_OPTION_SHIPPING') {
-                payment_info.address = customer.addresses[customer.shipping_address === -1 ? customer.addresses.length - 1 : customer.shipping_address];
+                payment_info.address = customer.addresses[App.Data.customer.isDefaultShippingAddress() ? customer.addresses.length - 1 : customer.shipping_address];
             }
 
             // process payment type

@@ -52,10 +52,15 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         getAddress: function() {
             var customer = this.options.customer.toJSON(),
-                lastIndex = customer.addresses.length - 1;
+                shipping_address = customer.shipping_address;
+
+            // if shipping address isn't selected take last index
+            if(this.options.customer.isDefaultShippingAddress()) {
+                shipping_address = customer.addresses.length - 1;
+            }
 
             // return last address
-            return customer.addresses.length && typeof customer.addresses[lastIndex].street_1 === 'string' ? customer.addresses[lastIndex] : undefined;
+            return customer.addresses[shipping_address] && typeof customer.addresses[shipping_address].street_1 === 'string' ? customer.addresses[shipping_address] : undefined;
         },
         events: {
             'change select.country': 'countryChange',
@@ -129,8 +134,14 @@ define(['backbone', 'factory'], function(Backbone) {
         updateAddress: function() {
             var customer = this.options.customer,
                 shipping_address = customer.get('shipping_address'),
+                addresses = customer.get('addresses'),
                 model = this.model,
                 address;
+
+            // if shipping_address isn't selected take last index
+            if(customer.isDefaultShippingAddress()) {
+                shipping_address = addresses.length ? addresses.length - 1 : 0;
+            }
 
             address = {
                 street_1: model.street_1,
@@ -142,15 +153,8 @@ define(['backbone', 'factory'], function(Backbone) {
                 country: model.country
             };
 
-            var addresses = customer.get('addresses');
-
-            if (addresses.length === 0 || typeof addresses[addresses.length - 1].street_1 !== 'string') {
-                addresses.push(address);
-            } else if (shipping_address === -1) {
-                addresses[addresses.length - 1] = address;
-            }
-
-            addresses[addresses.length - 1].address = customer.address_str();
+            addresses[shipping_address] = address;
+            addresses[shipping_address].address = customer.address_str(shipping_address);
         }
     });
 
