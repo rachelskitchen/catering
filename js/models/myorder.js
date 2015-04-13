@@ -384,11 +384,15 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         isShippingItem: function() {
             return this.get("isDeliveryItem") === true && App.skin == App.Skins.RETAIL;
         },
+        isRealProduct: function() {
+            return this.get("id_product") !== null;
+        }
     });
 
     App.Models.DeliveryChargeItem = App.Models.Myorder.extend({
         initialize: function() {
-            var charge = this.get('total').get_delivery_charge() * 1;
+            var self = this,
+                charge = this.get('total').get_delivery_charge() * 1;
             App.Models.Myorder.prototype.initialize.apply(this, arguments);
             this.set({
                 product: new App.Models.Product({
@@ -400,6 +404,12 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 isDeliveryItem: true,
                 initial_price: charge,
                 sum: charge
+            });
+
+            this.listenTo(this.get("product"), "change:price", function() {
+                if (self.get('total')) {
+                    self.get('total').set_delivery_charge(self.get("product").get("price"));
+                }
             });
         }
     });
@@ -656,9 +666,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }, {silent: true});
 
             this.change_only_gift_dining_option();
-//            this.isShippingOrderType() && this.getDestinationBasedTaxes(model);
 
-            if (!model.isServiceFee() && !model.isShippingItem()) {
+            if (model.isRealProduct()) {
                 this.update_cart_totals();
             }
         },
@@ -677,7 +686,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 this.removeServiceFees();
             }
 
-            if (!model.isServiceFee() && !model.isShippingItem()) {
+            if (model.isRealProduct()) {
                 this.update_cart_totals();
             }
         },
@@ -699,7 +708,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             model.changedAttributes() && model.changedAttributes().sum && model.trigger('update:sum', model);
 
-            if (!model.isServiceFee() && !model.isShippingItem()) {
+            if (model.isRealProduct()) {
                 this.update_cart_totals();
             }
         },
@@ -805,7 +814,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if (remain > 0 ) {
                     return {
                         status: 'ERROR',
-                        errorMsg: (App.skin == App.Skins.RETAIL ? MSG.ADD_MORE_FOR_SHIPPING : MSG.ADD_MORE_FOR_DELIVERY).replace('%s', App.Data.settings.get('settings_system').currency_symbol + remain)
+                        errorMsg: (MSG.ADD_MORE_FOR_DELIVERY).replace('%s', App.Data.settings.get('settings_system').currency_symbol + remain)
                     };
                 }
             }
@@ -1204,7 +1213,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 });
             }
 
-            if (!json.shipping) {
+            /*if (!json.shipping && App.skin == App.Skins.RETAIL) {
                 json.shipping = {
                     service_code: "03",
                     service_name: "UPS Ground",
@@ -1218,17 +1227,14 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                        type: 1,
                        name: "Item 10%"
                     }
+                    discount_sum: 1.5
                 }
-            }
+            }*/
 
             if (json.shipping && myorder.deliveryItem) {
-                myorder.deliveryItem.get("product").set({"price": json.shipping.amount});
-                myorder.total.set_delivery_charge(json.shipping.amount);
-                myorder.deliveryItem.get("discount").set({ name: json.shipping.discount.name,
-                                        sum: json.shipping.discount.sum,
-                                        taxed: json.shipping.discount.taxed,
-                                        id: json.shipping.discount.id,
-                                        type: json.shipping.discount.type
+                myorder.deliveryItem.get("product").set({"price": json.shipping.service_charge});
+                myorder.deliveryItem.get("discount").set({ sum: json.shipping.discount_sum,
+                                                           name: "Shipping Discount"
                                     });
             }
 
@@ -1510,103 +1516,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 item.removeFreeModifiers();
             });
         },
-        /*
-         * Avalara service http://www.avalara.com/
-         * Bag charge should not be processed by Avalara
-         */
-/*        getDestinationBasedTaxes: function(item) {
-            if(!App.Data.customer) {
-                return;
-            }
-
-            var self = this,
-                addresses = App.Data.customer.get('addresses'),
-                post = {
-                    establishment: App.Data.settings.get('establishment'),
-                    items: [],
-                    address: {}
-                },
-                data, address, isPresent;
-
-            if(!Array.isArray(addresses) || addresses.length == 0)
-                return;
-
-            address = encodeStr(addresses[0].address);
-            post.address = addresses[0]; // 0 index due to this method is used only in retail skin that has to have single address
-
-            if(!(this.destinationBasedTaxes instanceof Object) || !Array.isArray(this.destinationBasedTaxes[address]))
-                return;
-
-            if(!item) {
-                this.each(function(item) {
-                    if(item instanceof App.Models.BagChargeItem)
-                        return;
-
-                    data = item.item_submit();
-                    post.items.push({
-                        price: data.price,
-                        quantity: data.quantity,
-                        product: data.product
-                    });
-                });
-            } else {
-                data = item.item_submit();
-                post.items.push({
-                    price: data.price,
-                    quantity: data.quantity,
-                    product: data.product
-                });
-                isPresent = this.destinationBasedTaxes[address].some(function(taxItem) {
-                    return taxItem.product == item.get('id_product');
-                });
-            }
-
-            if(isPresent) {
-                return updateTaxes();
-            }
-
-            $.ajax({
-                type: 'POST',
-                url: App.Data.settings.get('host') + '/weborders/shipping_taxes/',
-                data: JSON.stringify(post),
-                contentType: 'application/json',
-                success: function(response) {
-                    if(response.status == 'OK' && response.data instanceof Object && Array.isArray(response.data.items)) {
-                        Array.prototype.push.apply(self.destinationBasedTaxes[address], response.data.items);
-                        updateTaxes();
-                    }
-                }
-            });
-
-            function updateTaxes() {
-                self.destinationBasedTaxes[address].forEach(function(item) {
-                    self.where({id_product: item.product}).forEach(function(orderItem) {
-                        if(orderItem instanceof App.Models.BagChargeItem)
-                            return;
-
-                        var product = orderItem.get_product();
-                        product.set('tax', item.tax_rate);
-                    });
-                });
-                self.update_cart_totals();
-            }
-        },*/
-    /*    addDestinationBasedTaxes: function() {
-            if(typeof this.destinationBasedTaxes == 'undefined')
-                this.destinationBasedTaxes = {};
-
-            var address = App.Data.customer.get('addresses');
-
-            if(!Array.isArray(address) || address.length == 0)
-                return;
-
-            address = encodeStr(address[0].address);
-            if(address in this.destinationBasedTaxes)
-                return;
-
-            this.destinationBasedTaxes[address] = [];
-            this.getDestinationBasedTaxes();
-        }, */
         isShippingOrderType: function() {
             return this.checkout.get('dining_option') == 'DINING_OPTION_SHIPPING';
         },
