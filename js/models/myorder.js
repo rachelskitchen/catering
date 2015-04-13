@@ -1167,7 +1167,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 }
             });
 
-/*            if (myorder.debug_counter)
+         /* if (myorder.debug_counter)
                 myorder.debug_counter = ++myorder.debug_counter;
             else
                 myorder.debug_counter = 1;
@@ -1304,7 +1304,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             $.extend(payment_info, customerData.payment_info);
 
             if(checkout.dining_option === 'DINING_OPTION_DELIVERY' || checkout.dining_option === 'DINING_OPTION_SHIPPING') {
-                payment_info.address = customer.addresses[customer.shipping_address === -1 ? customer.addresses.length - 1 : customer.shipping_address];
+                payment_info.address = customer.addresses[App.Data.customer.isDefaultShippingAddress() ? customer.addresses.length - 1 : customer.shipping_address];
             }
 
             // process payment type
