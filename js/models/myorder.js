@@ -379,10 +379,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             return this.get("isServiceFee") === true;
         },
         isDeliveryItem: function() {
-            return this.get("isDeliveryItem") === true;
+            return this.get("isDeliveryItem") === true && this.collection.checkout.get('dining_option') == 'DINING_OPTION_DELIVERY';
         },
         isShippingItem: function() {
-            return this.get("isDeliveryItem") === true && App.skin == App.Skins.RETAIL;
+            return this.get("isDeliveryItem") === true && this.collection.checkout.get('dining_option') == 'DINING_OPTION_SHIPPING';
         },
         isRealProduct: function() {
             return this.get("id_product") !== null;
@@ -1079,8 +1079,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             if (App.Data.customer && myorder.deliveryItem) {
                 var customer = App.Data.customer.toJSON();
-                if (App.skin == App.Skins.RETAIL && checkout.dining_option === 'DINING_OPTION_DELIVERY' 
-                    && myorder.deliveryItem.get("product").get("name") != MSG.DELIVERY_ITEM) {
+                if (checkout.dining_option === 'DINING_OPTION_SHIPPING' 
+                    && myorder.deliveryItem.get("product").get("name") != MSG.DELIVERY_ITEM) { //check that shipping service was selected
                     order_info.address = customer.addresses[customer.shipping_address === -1 ? customer.addresses.length - 1 : customer.shipping_address];
                     order_info.shipping = {
                         service_code: myorder.deliveryItem.get("product").get("service_code"),          
