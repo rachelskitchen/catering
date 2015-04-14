@@ -540,6 +540,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 && model.previousAttributes().dining_option != value)
                 this.restoreTaxes();
 
+            if(App.Skins.RETAIL == App.skin && value !== 'DINING_OPTION_DELIVERY' && !this.paymentInProgress) {
+                this.update_cart_totals(); //for Shipping case update_cart_totals will be called from DeliveryAddressView::changeShipping func. 
+            }
         },
         // check if user get maintenance after payment
         check_maintenance: function() {
@@ -686,7 +689,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 this.removeServiceFees();
             }
 
-            if (model.isRealProduct()) {
+            if (model.isRealProduct() && !this.paymentInProgress) {
                 this.update_cart_totals();
             }
         },
@@ -1162,7 +1165,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 }
             });
 
-/*            if (myorder.debug_counter) 
+         /* if (myorder.debug_counter) 
                 myorder.debug_counter = ++myorder.debug_counter;
             else
                 myorder.debug_counter = 1;            
@@ -1176,11 +1179,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                  id: 1001,
                  name: "ServiceFee_2",
                  amount: 2.12 + myorder.debug_counter
-            },
-            {
-                 id: 1002 + myorder.debug_counter,
-                 name: "ServiceFee_3 long long long long long long ",
-                 amount: 3.0 + myorder.debug_counter
             }];
             
             if (myorder.get_only_product_quantity() == 0) 
