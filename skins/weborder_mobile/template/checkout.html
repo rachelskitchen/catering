@@ -20,7 +20,7 @@
             </div>
         </dd>
         <% if(enableRewardCard) { %>
-        <dt class="color-style1">Reward Card</dt>
+        <dt class="color-style1 rewardCard">Reward Card</dt>
         <dd class="rewardCard">
             <label class="input rewardCard border">
                 <input type="<%= rewardCardType %>" placeholder="Reward Card #" class="rewardCard ios-safari-caret bg-style1" value="<%= rewardCard %>">
@@ -110,6 +110,17 @@
 </script>
 
 <script type="text/template" id="checkout_address-template">
+    <% if(isShippingServices) { %>
+    <div class="label select-wrapper">
+        <label class="select" for="countries">
+            <select class="country" id="countries">
+            <% for (var i in countries) { %>
+                <option value="<%= i %>" <% if(i.toLowerCase() == country.toLowerCase()) { %>selected="selected"<% } %>><%= countries[i] %></option>
+            <% } %>
+            </select>
+        </label>
+    </div>
+    <% } %>
     <label class="input label required border">
         <input type="text" placeholder="Address Line 1" name="street_1" value="<%= street_1 %>" class="ios-safari-caret bg-style1">
     </label>
@@ -120,7 +131,7 @@
         <input type="text" placeholder="City" name="city" value="<%= city %>" class="ios-safari-caret bg-style1">
     </label>
     <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
-    <div class="label select-wrapper">
+    <div class="label select-wrapper shipping-state">
         <label class="select">
             <select class="states">
             <% for(var i in states) { %>
@@ -131,11 +142,19 @@
     </div>
     <% } %>
     <% if(typeof province == 'string') { %>
-       <label class="input label required border">
+       <label class="input label required border province">
            <input type="text" placeholder="Province" name="province" value="<%= province %>" class="ios-safari-caret bg-style1">
        </label>
     <% } %>
     <label class="input label required border">
         <input type="text" placeholder="Zip Code" name="zipcode" value="<%= zipcode %>" class="ios-safari-caret bg-style1">
     </label>
+    <% if(isShippingServices) { %>
+    <div class="label select-wrapper shipping-services">
+        <label class="select shipping">
+            <select class="shipping-select"></select>
+            <span class="shipping-status img-spinner"></span>
+        </label>
+    </div>
+    <% } %>
 </script>
