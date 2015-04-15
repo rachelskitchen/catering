@@ -72,10 +72,6 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
                     total_wo_delivery -= this.get_delivery_charge() * 1;
                 }
 
-                if(dining_option != 'DINING_OPTION_SHIPPING') {
-                    total_wo_delivery -= this.get_shipping_charge() * 1;
-                }
-
                 this.set("total_wo_delivery", total_wo_delivery, {silent: true});
             });
         },
@@ -136,7 +132,8 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
         get_grand: function() { // total + surcharge + tax + tip
             var subtotal = this.get_subtotal() * 1, // get total sum of order (subtotal + tax) without tip
                 tip = this.get_tip() * 1, // get tip
-                grand_total = subtotal + tip;
+                shipping = this.get_shipping_charge() * 1,
+                grand_total = subtotal + tip + shipping;
 
             return round_monetary_currency(grand_total);
         },

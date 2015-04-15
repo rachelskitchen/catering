@@ -193,8 +193,8 @@ define(['backbone', 'factory'], function(Backbone) {
             }
 
             for (var index in shipping_services) {
-                var name = shipping_services[index].class_of_service + " (" + App.Settings.currency_symbol +
-                           parseFloat(shipping_services[index].shipping_charge).toFixed(2) +")";
+                var name = shipping_services[index].service_name + " (" + App.Settings.currency_symbol +
+                           parseFloat(shipping_services[index].shipping_and_handling_charge).toFixed(2) +")";
                 shipping.append('<option value="' + index + '" ' + (customer.get('shipping_selected') == index ? 'selected="selected"' : '') + '>' + name + '</option>');
             };
 
@@ -239,11 +239,11 @@ define(['backbone', 'factory'], function(Backbone) {
             this.options.customer.set('shipping_selected', value);
             if (value >= 0) {
                 shipping = this.options.customer.get("shipping_services")[value];
-                myorder.total.set('shipping', shipping.shipping_charge);
+                myorder.total.set('shipping', shipping.shipping_and_handling_charge);
             }
 
             myorder.change_dining_option(checkout, checkout.get("dining_option"));
-            if (e.shipping_status != "pending") {
+            if (e.shipping_status != "pending" && !isNaN(value) && value != this.options.customer.defaults.shipping_selected) {
                 myorder.update_cart_totals();
             }
         },
