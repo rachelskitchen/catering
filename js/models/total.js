@@ -35,7 +35,8 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             tax_country: '',
             prevailing_surcharge: null,
             prevailing_tax: null,
-            total_wo_delivery: 0
+            total_wo_delivery: 0,
+            shipping: null
         },
         initialize: function(opts) {
             var settings = App.Data.settings.get("settings_system"),
@@ -53,6 +54,7 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             opts = opts instanceof Object ? opts : {};
             this.set($.extend({}, this.defaults, set, opts));
 
+            // TODO deprecated?
             this.listenTo(this.get('delivery'), 'change:price', function() {
                 var deliveryItem = App.Data.myorder.find(function(model) {
                         return model.get('product').id == null &&
@@ -64,8 +66,16 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
 
             this.listenTo(this, 'change:total', function() {
                 var dining_option = App.Data.myorder.checkout.get('dining_option'),
-                    total_wo_delivery = dining_option != 'DINING_OPTION_DELIVERY' && dining_option != 'DINING_OPTION_SHIPPING' ? this.get('total')
-                     : this.get('total') - this.get_delivery_charge()*1;
+                    total_wo_delivery = this.get('total');
+
+                if(dining_option != 'DINING_OPTION_DELIVERY') {
+                    total_wo_delivery -= this.get_delivery_charge() * 1;
+                }
+
+                if(dining_option != 'DINING_OPTION_SHIPPING') {
+                    total_wo_delivery -= this.get_shipping_charge() * 1;
+                }
+
                 this.set("total_wo_delivery", total_wo_delivery, {silent: true});
             });
         },
@@ -137,6 +147,13 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             var delivery = this.get('delivery'),
                 charge = delivery.get('enable') ? delivery.get('charge') : 0;
             return round_monetary_currency(charge);
+        },
+        /**
+         * @method
+         * @returns {string} formatted shipping charge amount
+         */
+        get_shipping_charge: function() {
+            return round_monetary_currency(this.get('shipping') || 0);
         },
         set_delivery_charge: function(charge) {
             this.get('delivery').set('charge', charge);

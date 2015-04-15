@@ -231,25 +231,19 @@ define(['backbone', 'factory'], function(Backbone) {
             this.options.customer.set('load_shipping_status', '');
         },
         changeShipping: function(e) {
-            var shipping = {}, price = 0, name,
+            var shipping = {}, name,
                 value = parseInt(e.currentTarget.value),
                 myorder = App.Data.myorder,
-                checkout = myorder.checkout,
-                oldValue = this.options.customer.get("shipping_selected");
+                checkout = myorder.checkout;
 
             this.options.customer.set('shipping_selected', value);
             if (value >= 0) {
                 shipping = this.options.customer.get("shipping_services")[value];
-                price = parseFloat(shipping.shipping_charge).toFixed(2) * 1;
-                name = shipping.class_of_service;
+                myorder.total.set('shipping', shipping.shipping_charge);
             }
-            
+
             myorder.change_dining_option(checkout, checkout.get("dining_option"));
             if (e.shipping_status != "pending") {
-                myorder.deliveryItem.get("product").set({"price": price, 
-                                                         "name": name ? name : MSG.DELIVERY_ITEM, 
-                                                         "service_code": shipping.service_code ? shipping.service_code : "", 
-                                                         "shipment_company": shipping.shipment_company ? shipping.shipment_company : ""});
                 myorder.update_cart_totals();
             }
         },
