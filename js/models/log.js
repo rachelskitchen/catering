@@ -115,12 +115,18 @@ define(["backbone"], function(Backbone) {
             }, this.get('timeout'));
         },
         getMeta: function() {
+            var storageEnabled = false;
+            // Chrome 41.0.2272.118 throws DOMException when user uses localStorage identificator.
+            // Due to it need to define storageEnabled catching exceptions.
+            try {
+                storageEnabled = storage(localStorage);
+            } catch(e) {}
             return {
                 time: (new Date).toString(),
                 link: window.location.href,
                 language: window.navigator.language,
                 cookieEnabled: window.navigator.cookieEnabled,
-                storageEnabled: storage(localStorage),
+                storageEnabled: storageEnabled,
                 userAgent: window.navigator.userAgent,
                 vendor: window.navigator.vendor,
                 screen: window.screen
