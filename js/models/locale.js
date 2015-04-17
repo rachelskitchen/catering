@@ -86,6 +86,9 @@ define(['backbone'], function(Backbone) {
                                 case 'en':
                                     url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.weborder.placeholders.json';
                                     break;
+                                case 'ru':
+                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/ru.weborder.placeholders.json';
+                                    break;
                             }
                             break;
                         case App.Skins.RETAIL:
