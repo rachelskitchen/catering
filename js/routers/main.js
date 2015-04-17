@@ -529,6 +529,9 @@ define(["backbone", "factory"], function(Backbone) {
             if (cssua.ua.revelsystemswebview && cssua.ua.ios) {
                 $("body")[0].scrollIntoView(); //workaround for #18586, #18130
             }
+            if (location.hash.slice(1) == 'map') { //#19928 to resize the google.map 
+                App.Data.map.trigger("change_page");
+            }
         },
         profile: function(step, header, footer) {
             step = step <= 2 && step >= 0 ? Math.ceil(step) : 0;

@@ -110,12 +110,24 @@ textarea, input {
     position: absolute;
 }
 
-#content {
+#content_wrap { /* #21715 Android: Chrome: to clipping scrolling area inside */
     position: absolute;
     top: 0;
     left: 0.8em;
     bottom: 0.8em;
     right: 0.8em;
+    z-index: 10;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+#content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 5;
     border-bottom-left-radius: 2em 1.5em;
     border-bottom-right-radius: 2em 1.5em;
     overflow-x: hidden;
