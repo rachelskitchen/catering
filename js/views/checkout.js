@@ -112,17 +112,12 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.model.set('rewardCard', e.target.value);
         },
         controlAddress: function(model, value) {
-            var address = this.subViews.shift(),
-                shipping_address = {
-                    DINING_OPTION_DELIVERY: this.customer.get('deliveryAddressIndex'),
-                    DINING_OPTION_SHIPPING: this.customer.get('shippingAddressIndex')
-                };
+            var address = this.subViews.shift();
 
             // remove address if it exists
             address && address.remove();
 
             if(value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING') {
-                this.customer.set('shipping_address', shipping_address[value]);
                 address = new App.Views.CheckoutView.CheckoutAddressView({
                     customer: this.customer,
                     checkout: this.model
@@ -135,7 +130,6 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     this.trigger('address-without-states');
             } else {
                 this.trigger('address-hide');
-                this.customer.set('shipping_address', this.customer.defaults.shipping_address);
             }
         },
         controlDeliverySeat: function(model, value) {

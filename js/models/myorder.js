@@ -491,6 +491,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.checkout = new App.Models.Checkout();
             this.checkout.set('dining_option', App.Settings.default_dining_option);
 
+            this.listenTo(this.checkout, 'change:dining_option', this.setShippingAddress, this);
             this.listenTo(this.checkout, 'change:dining_option', this.change_dining_option, this);
 
             this.listenTo(this, 'add', this.onModelAdded);
@@ -543,7 +544,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 && model.previousAttributes().dining_option != value)
                 this.restoreTaxes();
 
-            if(value !== 'DINING_OPTION_SHIPPING' && !this.paymentInProgress) {
+            if(!this.paymentInProgress) {
                 this.update_cart_totals(); //for Shipping case update_cart_totals will be called from DeliveryAddressView::changeShipping func.
             }
         },
@@ -1012,9 +1013,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 });
             }
         },
-        update_cart_totals: function() {
+        update_cart_totals: function(params) {
             if (!this.getDiscountsTimeout) //it's to reduce the number of requests to the server
-                this.getDiscountsTimeout = setTimeout(this.get_cart_totals.bind(this), 100);
+                this.getDiscountsTimeout = setTimeout(this.get_cart_totals.bind(this, params), 100);
         },
         get_cart_totals: function(params) {
             var self = this;
@@ -1061,8 +1062,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     items: items,
                     orderInfo: order_info
                 },
-                shipping_selected,
-                shipping_address;
+                shipping_address,
+                isShipping,
+                request;
 
             this.preparePickupTime();
             checkout = this.checkout.toJSON();
@@ -1081,27 +1083,17 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
 
-            if(customer && checkout.dining_option === 'DINING_OPTION_SHIPPING'
-                        && (shipping_address = customer.get('addresses')[customer.get('shipping_address')])
-                        && (shipping_selected = customer.get('shipping_services')[customer.get('shipping_selected')])) {
-                order_info.shipping = {service_code: shipping_selected.service_code};
+            isShipping = checkout.dining_option === 'DINING_OPTION_SHIPPING' && customer
+                && (shipping_address = customer.get('addresses')[customer.get('shipping_address')])
+                && !customer._check_delivery_fields().length;
+
+            if(isShipping) {
+                order_info.shipping = customer.get('shipping_services')[customer.get('shipping_selected')] || {};
                 order_info.customer =  {address: shipping_address};
             }
 
-            if (App.Data.customer && myorder.deliveryItem) {
-                var customer = App.Data.customer.toJSON();
-                if (checkout.dining_option === 'DINING_OPTION_SHIPPING'
-                    && myorder.deliveryItem.get("product").get("name") != MSG.DELIVERY_ITEM) { //check that shipping service was selected
-                    order_info.address = customer.addresses[customer.shipping_address === -1 ? customer.addresses.length - 1 : customer.shipping_address];
-                    order_info.shipping = {
-                        service_code: myorder.deliveryItem.get("product").get("service_code"),
-                        shipment_company: myorder.deliveryItem.get("product").get("shipment_company")
-                    }
-                }
-            }
-
             var myorder_json = JSON.stringify(order);
-            return $.ajax({
+            request = $.ajax({
                 type: "POST",
                 url: App.Data.settings.get("host") + "/weborders/cart_totals/",
                 data: myorder_json,
@@ -1140,6 +1132,19 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     myorder.trigger("DiscountsComplete");
                 }
             });
+
+            // Need to update shipping services if it's required
+            if(isShipping && params && params.update_shipping_options) {
+                App.Data.customer.get_shipping_services(request, function(response) {
+                    if(response.data instanceof Object && response.data.shipping instanceof Object && Array.isArray(response.data.shipping.options)) {
+                        return response.data.shipping.options;
+                    } else {
+                        return [];
+                    }
+                });
+            }
+
+            return request;
 
             function reportErrorFrm(message) {
                 if (is_apply_discount) App.Data.errors.alert(message); // user notification
@@ -1514,6 +1519,34 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 removeData(uid);
                 return this.paymentResponse = paymentResponse;
             }
+        },
+        /*
+         * @method
+         * Set shipping address after dinign_option change.
+         *
+         * @param {Object} model - App.Data.myorder.checkout object
+         * @param {string} value - result of App.Data.myorder.checkout.get('dining_option')
+         *
+         * @returns {numder} selected shipping address
+         */
+        setShippingAddress: function(model, value) {
+            var customer = App.Data.customer,
+                shipping_addresses = {};
+
+            if(!customer) {
+                return;
+            }
+
+            shipping_addresses.DINING_OPTION_DELIVERY = customer.get('deliveryAddressIndex'),
+            shipping_addresses.DINING_OPTION_SHIPPING = customer.get('shippingAddressIndex')
+
+            if (value == 'DINING_OPTION_DELIVERY' || value == 'DINING_OPTION_SHIPPING') {
+                customer.set('shipping_address', shipping_addresses[value]);
+            } else {
+                customer.set('shipping_address', customer.defaults.shipping_address);
+            }
+
+            return customer.get('shipping_address');
         }
     });
 });

@@ -283,11 +283,14 @@ define(["backbone", "geopoint"], function(Backbone) {
          * }
          * When a response is processed `load_shipping_status` changes on 'resolved'.
          *
+         * @param {Object} jqXHR - the jqXHR Object.
+         * @param {Function} getShippingOptions - a function returning shipping options (expects a response-object as parameter).
+         *
          * @fires change:shipping_services
          * @event change:shipping_services
          * @type undefined
          */
-        get_shipping_services: function() {
+        get_shipping_services: function(jqXHR, getShippingOptions) {
             var self = this,
                 data = {},
                 address = this.get('addresses'),
@@ -308,41 +311,63 @@ define(["backbone", "geopoint"], function(Backbone) {
                 data.items.push(model.item_submit());
             });
 
-            this.set("shipping_services", [], {silent: true});
-            this.set("load_shipping_status", "pending", {silent: true});
-            this.trigger("change:shipping_services");
+            // reset shipping services
+            this.resetShippingServices('pending');
 
             var data_json = JSON.stringify(data);
-            $.ajax({
+
+            // define getShippingOptions function if it isn't a function
+            getShippingOptions = typeof getShippingOptions == 'function' ? getShippingOptions : function(response) {
+                return response.data;
+            };
+
+            jqXHR = jqXHR || $.ajax({
                 type: "POST",
                 url: App.Data.settings.get("host") + "/weborders/shipping_options/",
                 data: data_json,
-                dataType: "json",
-                success: function(response) {
-                    switch (response.status) {
-                        case "OK":
-                            self.set("shipping_services", response.data, {silent: true});
-                            complete();
-                            break;
-                        default:
-                            onError();
-                    }
-                },
-                error: function() {
-                    onError();
-                },
-                complete: function() {
+                dataType: "json"
+            });
+            // process successful response
+            jqXHR.done(function(response) {
+                var shipping_options
+                switch (response.status) {
+                    case "OK":
+                        self.set("shipping_services", getShippingOptions(response), {silent: true});
+                        complete();
+                        break;
+                    default:
+                        onError();
                 }
             });
+            // process failure response
+            jqXHR.error(onError);
 
-            function onError() {
-                setTimeout(complete, 300);
+            function onError(xhr) {
+                if (xhr.statusText != "abort") {
+                    setTimeout(complete, 300);
+                }
             }
 
             function complete() {
                 self.set("load_shipping_status", "resolved", {silent: true});
                 self.trigger("change:shipping_services");
             }
+        },
+        /**
+         * @method
+         * Clear `shipping_services` attribute, change `load_shipping_status`.
+         *
+         * @param {string} status - value of `load_shipping_status` need to be assigned after reset shipping services.
+         * @default ''
+         *
+         * @fires change:shipping_services
+         * @event change:shipping_services
+         * @type undefined
+         */
+        resetShippingServices: function(status) {
+            this.set('shipping_services', [], {silent: true});
+            this.set('load_shipping_status', typeof status == 'string' ? status : '', {silent: true});
+            this.trigger('change:shipping_services');
         },
         /**
          * @method
