@@ -2,8 +2,12 @@
     min-width: 700px;
     margin-bottom:60px;
 }
+#modifiers_popup .quantity_info {
+    width: 40%;
+}
 #modifiers_popup .action_button {
     position: absolute;
+    max-width: 45%;
     right: 20px;
     bottom: 10px;
     cursor: pointer;

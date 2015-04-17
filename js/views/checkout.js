@@ -328,12 +328,13 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.changeTime({target: {value: pickup }});
         },
         listenOrderType: function(model, value) {
+            var locale = App.Data.locale;
             this.isDelivery = this.model.get('dining_option') === 'DINING_OPTION_DELIVERY';
             this.pickupTime = this.options.timetable.getPickupList(this.isDelivery);
             if (value === 'DINING_OPTION_DELIVERY') {
-                this.$('.pickup').text('Delivery Time');
+                this.$('.pickup').text(locale.get('CONFIRM_DELIVERY_TIME'));
             } else {
-                this.$('.pickup').text('Arrival Time');
+                this.$('.pickup').text(locale.get('CONFIRM_ARRIVAL_TIME'));
             }
 
             if (value === 'DINING_OPTION_ONLINE') {
@@ -397,7 +398,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         },
         change_cash_text: function() {
             var isDelivery = this.collection.checkout.get("dining_option") === 'DINING_OPTION_DELIVERY';
-            this.$('.cash').html(isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE);
+            var cash = isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE;
+            this.$('.cash').html('<span class="clip">' + cash + '</span>');
         },
         gift_card: function() {
             var self = this;

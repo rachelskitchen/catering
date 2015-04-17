@@ -7,10 +7,15 @@
 }
 #content > .checkout h2 {
     padding-left: 100px;
+    padding-right: 100px;
     font-weight: bold;
 }
 #content > .checkout div.row, #content > .checkout div.delivery_address > div > div {
     position: relative;
+}
+#content > .checkout div.row  label > span {
+    padding-right: 15px;
+    font-weight: bold;
 }
 #content > .checkout .input_beauty,
 #content > .checkout div.tips {
@@ -45,6 +50,9 @@
     vertical-align: top;
     margin: 0;
 }
+#content > .checkout div.tips > span {
+    float: left;
+}
 #content > .checkout div.tips .number-wrap {
     display:  inline-block;
     position:  relative;
@@ -66,7 +74,8 @@
 #content > .checkout div.tips .currency_sym {
     display: inline-block;
     position: relative;
-    top: 1px;
+    top: 22px;
+    margin-right: 6px;
 }
 #content > .checkout div.tips .input_beauty {
     position: absolute;
@@ -78,13 +87,13 @@
 }
 #content > .checkout .tips .btn {
     display: inline-block;
-    width: 39px;
-    height: 39px;
+    width: 37px;
+    height: 37px;
     border-width: 1px;
     border-style: solid;
     border-radius: 20px;
     text-align: center;
-    line-height: 39px;
+    line-height: 37px;
     font-weight: normal;
     font-size: 14px;
     cursor: pointer;
@@ -155,7 +164,7 @@
     overflow-x: hidden;
 }
 #content .checkout .arrow_top {
-    top: 24px;
+    top: 30px;
     left: 0;
     right: 0;
 }
@@ -239,6 +248,7 @@
     display: inline-block;
     height: 32px;
     min-width: 68px;
+    max-width: 100px;
     border-width: 2px;
     border-radius: 20px;
     border-style: solid;
@@ -277,6 +287,7 @@
     }
     #content > .checkout h2 {
         padding-left: 50px !important;
+        padding-right: 50px !important;
     }
     #content > .checkout div.input_beauty,
     #content > .checkout div.tips {

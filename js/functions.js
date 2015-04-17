@@ -169,71 +169,72 @@ function format_date_1(date) {
  * Formatting a date in the format "MM/DD/YYYY HH:MM(am/pm)".
  */
 function format_date_2(date) {
-    var js_date = new Date(date);
-    var current_date_year = js_date.getFullYear();
-    var current_date_month = js_date.getMonth() + 1;
+    var locale = App.Data.locale,
+        time_prefixed = locale.get('CORE')['TIME_PREFIXES'],
+        js_date = new Date(date),
+        current_date_year = js_date.getFullYear(),
+        current_date_month = js_date.getMonth() + 1,
+        current_date_day = js_date.getDate(),
+        current_date_hours = js_date.getHours(),
+        am_pm = current_date_hours > 11 ? time_prefixed['TIME_PM'] : time_prefixed['TIME_AM'],
+        current_date_minutes = js_date.getMinutes();
     if (current_date_month < 10) current_date_month = "0" + current_date_month;
-    var current_date_day = js_date.getDate();
     if (current_date_day < 10) current_date_day = "0" + current_date_day;
-    var current_date_hours = js_date.getHours();
-    var am_pm = current_date_hours > 11 ? "pm" : "am";
     current_date_hours = current_date_hours > 12 ? current_date_hours - 12 : current_date_hours;
     if (current_date_hours == 0) {
        current_date_hours = 12;
     }
-    var current_date_minutes = js_date.getMinutes();
     if (current_date_minutes < 10) current_date_minutes = "0" + current_date_minutes;
-    var result = current_date_month + "/" + current_date_day + "/" + current_date_year + " " + current_date_hours + ":" + current_date_minutes + am_pm;
-    return result;
+    return current_date_month + "/" + current_date_day + "/" + current_date_year + " " + current_date_hours + ":" + current_date_minutes + am_pm;
 }
 /**
  * Formatting a date in the format "(Yesterday/Today/Tomorrow) at HH:MM(am/pm) | MONTH DD(st/nd/rd/th) at HH:MM(am/pm)".
  */
 function format_date_3(date) {
-    var result = "";
-    var now = App.Data.timetables.base();
-    var date_1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    var js_date = new Date(date);
-    var date_2 = new Date(js_date.getFullYear(), js_date.getMonth(), js_date.getDate());
-    var seconds_in_day = 86400000;
-    var time_difference = date_2 - date_1;
+    var SECONDS_IN_DAY = 86400000;
+    var locale = App.Data.locale,
+        days = locale.get('CORE')['DAYS'],
+        time_prefixed = locale.get('CORE')['TIME_PREFIXES'],
+        result = '',
+        now = App.Data.timetables.base(),
+        date_1 = new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+        js_date = new Date(date),
+        date_2 = new Date(js_date.getFullYear(), js_date.getMonth(), js_date.getDate()),
+        time_difference = date_2 - date_1;
     if (time_difference == 0) {
-        result += "Today";
-    }
-    else if (time_difference == -seconds_in_day) {
-        result += "Yesterday";
-    }
-    else if (time_difference == seconds_in_day) {
-        result += "Tomorrow";
-    }
-    else {
+        result += days['TODAY'];
+    } else if (time_difference == -SECONDS_IN_DAY) {
+        result += days['YESTERDAY'];
+    } else if (time_difference == SECONDS_IN_DAY) {
+        result += days['TOMORROW'];
+    } else {
         var current_date_month = js_date.getMonth() + 1;
         var current_date_day = js_date.getDate();
         result += ARRAY_MONTH[current_date_month - 1] + ' ' + current_date_day;
         switch (current_date_day) {
             case 1:
-                result += "st";
+                result += time_prefixed['FIRST_DAY_OF_MONTH'];
                 break;
             case 2:
-                result += "nd";
+                result += time_prefixed['SECOND_DAY_OF_MONTH'];
                 break;
             case 3:
-                result += "rd";
+                result += time_prefixed['THIRD_DAY_OF_MONTH'];
                 break;
             default:
-                result += "th";
+                result += time_prefixed['OTHER_DAY_OF_MONTH'];
                 break;
         }
     }
     var current_date_hours = js_date.getHours();
-    var am_pm = current_date_hours > 11 ? "pm" : "am";
+    var am_pm = current_date_hours > 11 ? time_prefixed['TIME_PM'] : time_prefixed['TIME_AM'];
     current_date_hours = current_date_hours > 12 ? current_date_hours - 12 : current_date_hours;
     if (current_date_hours == 0) {
        current_date_hours = 12;
     }
     var current_date_minutes = js_date.getMinutes();
     if (current_date_minutes < 10) current_date_minutes = "0" + current_date_minutes;
-    result += " at " + current_date_hours + ":" + current_date_minutes + am_pm;
+    result += ' ' + time_prefixed['TIME_AT'] + ' ' + current_date_hours + ':' + current_date_minutes + am_pm;
     return result;
 }
 /**
@@ -608,11 +609,12 @@ TimeFrm.prototype.toString_ft = { };
 TimeFrm.prototype.toString_ft['usa'] = function() {
     /* it outputs the time in format 10:01am or 12:45pm */
 
-    var hour = parseInt( this.minutes / 60 ),
+    var locale = App.Data.locale,
+        time_prefixed = locale.get('CORE')['TIME_PREFIXES'],
+        hour = parseInt( this.minutes / 60 ),
         minutes = this.minutes % 60;
-        hour = hour - parseInt( hour / 24) * 24;
-
-    var am_pm = hour > 11 ? "pm" : "am";
+        hour = hour - parseInt( hour / 24) * 24,
+        am_pm = (hour > 11) ? time_prefixed['TIME_PM'] : time_prefixed['TIME_AM'];
 
     if (hour > 12) {
         hour = hour - 12;
@@ -620,7 +622,7 @@ TimeFrm.prototype.toString_ft['usa'] = function() {
     else {
         if (hour === 0) {
             hour = 12;
-            am_pm = "am";
+            am_pm = time_prefixed['TIME_AM'];
         }
     }
 
