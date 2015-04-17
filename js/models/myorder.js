@@ -1265,7 +1265,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             call_name = call_name.concat(customerData.call_name);
             $.extend(payment_info, customerData.payment_info);
 
-            if(checkout.dining_option === 'DINING_OPTION_DELIVERY' || checkout.dining_option === 'DINING_OPTION_SHIPPING') {
+            if(checkout.dining_option === 'DINING_OPTION_DELIVERY') {
                 payment_info.address = customer.addresses[App.Data.customer.isDefaultShippingAddress() ? customer.addresses.length - 1 : customer.shipping_address];
             }
 
@@ -1285,6 +1285,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             if(checkout.rewardCard) {
                 payment_info.reward_card = checkout.rewardCard ? checkout.rewardCard.toString() : '';
+            }
+
+            if(checkout.dining_option === 'DINING_OPTION_SHIPPING') {
+                order_info.shipping = customer.shipping_services[customer.shipping_selected] || undefined;
+                order_info.customer = !order_info.shipping ? undefined : _.extend({}, order.paymentInfo);
             }
 
             var myorder_json = JSON.stringify(order),
