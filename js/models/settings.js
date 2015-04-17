@@ -371,11 +371,6 @@ define(["backbone", "async"], function(Backbone) {
                                 settings_system.dining_options.push(DINING_OPTION.DINING_OPTION_DELIVERY_SEAT);
                             }
 
-                            // add SHIPPING if it doesn't exist in response and `shipping` is true
-                            if(settings_system.dining_options.indexOf(DINING_OPTION.DINING_OPTION_SHIPPING) == -1 && settings_system.shipping) {
-                                settings_system.dining_options.push(DINING_OPTION.DINING_OPTION_SHIPPING);
-                            }
-
                             // Set default dining option.
                             // It's key of DINING_OPTION object property with value corresponding the first element of settings_system.dining_options array
                             (function() {

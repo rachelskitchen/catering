@@ -224,11 +224,12 @@ define(['backbone', 'factory'], function(Backbone) {
                 this.$(".shipping-status").spinner();
             }
 
-            this.changeShipping({currentTarget: shipping.get(0), shipping_status: shipping_status});
+            // this.changeShipping({currentTarget: shipping.get(0), shipping_status: shipping_status});
         },
         countryChange: function(e) {
             App.Views.AddressView.prototype.countryChange.apply(this, arguments);
-            this.options.customer.set('load_shipping_status', '');
+            // this.options.customer.set('load_shipping_status', '');
+            this.options.customer.resetShippingServices();
         },
         changeShipping: function(e) {
             var shipping = {}, name,
@@ -252,7 +253,7 @@ define(['backbone', 'factory'], function(Backbone) {
             var model = this.model;
             if (this.isShippingServices && model.street_1 && model.city && model.country && model.zipcode
                 && (model.country == 'US' ? model.state : true) && (model.country == 'CA' ? model.province : true)) {
-                this.options.customer.get_shipping_services();
+                App.Data.myorder.update_cart_totals({update_shipping_options: true});
             }
         }
     });
