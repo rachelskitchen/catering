@@ -13,7 +13,7 @@
 #content > .checkout div.row, #content > .checkout div.delivery_address > div > div {
     position: relative;
 }
-#content > .checkout div.row  label > span {
+#content > .checkout div.row label > span {
     padding-right: 15px;
     font-weight: bold;
 }
