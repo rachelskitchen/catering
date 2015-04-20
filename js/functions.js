@@ -614,7 +614,7 @@ TimeFrm.prototype.toString_ft['usa'] = function() {
         hour = parseInt( this.minutes / 60 ),
         minutes = this.minutes % 60;
 
-    hour = hour - parseInt( hour / 24) * 24,
+    hour = hour - parseInt( hour / 24) * 24;
     var am_pm = (hour > 11) ? time_prefixed['TIME_PM'] : time_prefixed['TIME_AM'];
 
     if (hour > 12) {
