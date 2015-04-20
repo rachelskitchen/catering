@@ -1266,7 +1266,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             $.extend(payment_info, customerData.payment_info);
 
             if(checkout.dining_option === 'DINING_OPTION_DELIVERY') {
-                payment_info.address = customer.addresses[App.Data.customer.isDefaultShippingAddress() ? customer.addresses.length - 1 : customer.shipping_address];
+                payment_info.address = getAddress();
             }
 
             // process payment type
@@ -1289,7 +1289,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             if(checkout.dining_option === 'DINING_OPTION_SHIPPING') {
                 order_info.shipping = customer.shipping_services[customer.shipping_selected] || undefined;
-                order_info.customer = !order_info.shipping ? undefined : _.extend({}, order.paymentInfo);
+                order_info.customer = !order_info.shipping ? undefined : _.extend({
+                    address: getAddress()
+                }, order.paymentInfo);
             }
 
             var myorder_json = JSON.stringify(order),
@@ -1402,6 +1404,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             function reportPaymentError(message) {
                 myorder.paymentResponse = {status: 'error', errorMsg: message, capturePhase: capturePhase};
                 myorder.trigger('paymentResponse');
+            }
+
+            function getAddress() {
+                return customer.addresses[App.Data.customer.isDefaultShippingAddress() ? customer.addresses.length - 1 : customer.shipping_address];
             }
         },
         getOrderSeatCallName: function(phone) {
