@@ -176,7 +176,7 @@ function format_date_2(date) {
         current_date_month = js_date.getMonth() + 1,
         current_date_day = js_date.getDate(),
         current_date_hours = js_date.getHours(),
-        am_pm = current_date_hours > 11 ? time_prefixed['TIME_PM'] : time_prefixed['TIME_AM'],
+        am_pm = (current_date_hours > 11) ? time_prefixed['TIME_PM'] : time_prefixed['TIME_AM'],
         current_date_minutes = js_date.getMinutes();
     if (current_date_month < 10) current_date_month = "0" + current_date_month;
     if (current_date_day < 10) current_date_day = "0" + current_date_day;
@@ -185,7 +185,7 @@ function format_date_2(date) {
        current_date_hours = 12;
     }
     if (current_date_minutes < 10) current_date_minutes = "0" + current_date_minutes;
-    return current_date_month + "/" + current_date_day + "/" + current_date_year + " " + current_date_hours + ":" + current_date_minutes + am_pm;
+    return current_date_month + '/' + current_date_day + '/' + current_date_year + ' ' + current_date_hours + ':' + current_date_minutes + am_pm;
 }
 /**
  * Formatting a date in the format "(Yesterday/Today/Tomorrow) at HH:MM(am/pm) | MONTH DD(st/nd/rd/th) at HH:MM(am/pm)".
@@ -227,7 +227,7 @@ function format_date_3(date) {
         }
     }
     var current_date_hours = js_date.getHours();
-    var am_pm = current_date_hours > 11 ? time_prefixed['TIME_PM'] : time_prefixed['TIME_AM'];
+    var am_pm = (current_date_hours > 11) ? time_prefixed['TIME_PM'] : time_prefixed['TIME_AM'];
     current_date_hours = current_date_hours > 12 ? current_date_hours - 12 : current_date_hours;
     if (current_date_hours == 0) {
        current_date_hours = 12;
@@ -613,8 +613,9 @@ TimeFrm.prototype.toString_ft['usa'] = function() {
         time_prefixed = locale.get('CORE')['TIME_PREFIXES'],
         hour = parseInt( this.minutes / 60 ),
         minutes = this.minutes % 60;
-        hour = hour - parseInt( hour / 24) * 24,
-        am_pm = (hour > 11) ? time_prefixed['TIME_PM'] : time_prefixed['TIME_AM'];
+
+    hour = hour - parseInt( hour / 24) * 24,
+    var am_pm = (hour > 11) ? time_prefixed['TIME_PM'] : time_prefixed['TIME_AM'];
 
     if (hour > 12) {
         hour = hour - 12;
