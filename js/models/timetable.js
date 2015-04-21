@@ -360,6 +360,7 @@ define(["backbone"], function(Backbone) {
                 return null;
             } else {
                 for (var i = 0, j = table.length; i < j; i++) {
+                    var cur_date = new Date(current_date.getTime()); //#22327, to get ready for table[] is unsorted
                     // from date (begin)
                     var from_date_month = this._get_month_id($.trim(table[i].from_date.split(",")[0])), // get ID of month in format JS
                         from_date_day = $.trim(table[i].from_date.split(",")[1]),
@@ -371,9 +372,9 @@ define(["backbone"], function(Backbone) {
                         to_date = new Date(current_date_year, to_date_month, to_date_day);
                     // to date (end)
                     from_date > to_date && to_date.setFullYear(to_date.getFullYear() + 1);
-                    from_date > current_date && current_date.setFullYear(current_date.getFullYear() + 1);
+                    from_date > cur_date && cur_date.setFullYear(cur_date.getFullYear() + 1);
 
-                    if (current_date <= to_date) {
+                    if (cur_date <= to_date) {
                         return table[i].timetable_data;
                     }
                 }
