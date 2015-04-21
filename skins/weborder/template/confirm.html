@@ -8,16 +8,14 @@
     </div>
     <div class="right-panel-wrap">
         <div class="panel right-panel">
-            <div class="cart_title"> <%= _lp.CONFIRM_REVIEW_ORDER %> </div>
-            <div class="pickup_time">
-                <b>
-                    <% if (isDelivery) { %>
-                        <%= _lp.CONFIRM_DELIVERY_TIME %>:
-                    <% } else { %>
-                        <%= _lp.CONFIRM_ARRIVAL_TIME %>:
-                    <% } %>
-                </b>
-                <%= pickup_time %>
+            <div class="cart_title clip"> <%= _lp.CONFIRM_REVIEW_ORDER %> </div>
+            <%
+                var title = isDelivery ? _lp.CONFIRM_DELIVERY_TIME : _lp.CONFIRM_ARRIVAL_TIME,
+                    content = pickup_time;
+            %>
+            <div class="pickup_time" title="<%= title %>: <%= content %>">
+                <span class="clip"> <%= title %> </span>
+                <span class="clip"> <%= content %> </span>
             </div>
             <div class="order-items-wrap">
                  <div class="order-items"></div>
