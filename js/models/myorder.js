@@ -1274,7 +1274,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 successValidation;
             $.ajax({
                 type: "POST",
-                url: App.Data.settings.get("host") + "/weborders/" + (validationOnly ? "pre_validate/" : "create_order_and_pay/"),
+                url: App.Data.settings.get("host") + "/weborders/" + (validationOnly ? "pre_validate/" : "create_order_and_pay_v1/"),
                 data: myorder_json,
                 dataType: "json",
                 success: function(data) {
