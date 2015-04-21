@@ -529,7 +529,7 @@ define(["backbone", "factory"], function(Backbone) {
             if (cssua.ua.revelsystemswebview && cssua.ua.ios) {
                 $("body")[0].scrollIntoView(); //workaround for #18586, #18130
             }
-            if (location.hash.slice(1) == 'map') { //#19928 to resize the google.map 
+            if (App.Data.map && location.hash.slice(1) == 'map') { // #19928 to resize the Google Maps
                 App.Data.map.trigger("change_page");
             }
         },

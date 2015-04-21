@@ -139,8 +139,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 for(var i = today; i < today + 7; i++) {
                     var weekDay = this.model.get_day_of_week(i % 7);
                     timetable.push({
-                        weekDay: weekDay.charAt(0).toUpperCase()+weekDay.substr(1).toLowerCase(),
-                        hours: timetable_on_week[this.model.get_day_of_week(i % 7)]
+                        weekDay: App.Data.locale.get('CORE')['DAYS_OF_WEEK'][weekDay],
+                        hours: timetable_on_week[weekDay]
                     });
                 }
             }

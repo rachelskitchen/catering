@@ -59,10 +59,10 @@
 
 <script type="text/template" id="main_maintenance-template">
     <section class="maintenance">
-        <header id="header"> <div class="btn back"> <%= _lp.MAIN_BACK %> </div> </header>
+        <header id="header"> <div class="btn back"> <span class="clip"> <%= _lp.MAIN_BACK %> </span> </div> </header>
         <div id="content">
             <p> <%= errMsg %> </p>
-            <div class="btn reload"> <%= _lp.MAIN_RESTART %> </div>
+            <div class="btn reload"> <span class="clip"> <%= _lp.MAIN_RESTART %> </span> </div>
         </div>
     </section>
     <footer>
@@ -92,7 +92,9 @@
                         <p class="confirmed-order-txt">
                             <%=message%>
                         </p>
-                        <div class="btn btn-long btnReturn"> <%= _lp.MAIN_RETURN_ORDER_SUMMARY %> </div>
+                        <div class="btn btn-long btnReturn">
+                            <span class="clip"> <%= _lp.MAIN_RETURN_ORDER_SUMMARY %> </span>
+                        </div>
                      <% } else { %>
                         <table class="order-confirmed-detail">
                             <tr>
@@ -130,7 +132,7 @@
                                 <td class='bold'><%= symbol %><%= total %></td>
                             </tr>
                         </table>
-                        <div class="btn btnReturn"> <%= _lp.MAIN_RETURN_TO_MENU %> </div>
+                        <div class="btn btnReturn"> <span class="clip"> <%= _lp.MAIN_RETURN_TO_MENU %> </span> </div>
                     <% } %>
                 </div>
             </div>

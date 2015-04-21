@@ -4,7 +4,7 @@
         <input type="<%= type %>" id="modifier<%= id %>" name="modifier<%= modifierClassName %>">
         <span class="input <%= type %>"></span>
         <% } else { %>
-            <span class="special_button"> <%= _lp.MODIFIERS_BUTTON_ADD %> </span>
+            <span class="special_button"> <span class="clip"> <%= _lp.MODIFIERS_BUTTON_ADD %> </span> </span>
         <% } %>
         <span class="title <% if(isSpecial) { %>special<% } %>"><%= name %></span>
         <% if(isSize) { %>
