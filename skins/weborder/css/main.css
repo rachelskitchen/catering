@@ -534,9 +534,17 @@ section.maintenance #header .btn {
 
 #cart .total_block li {
     text-align: right;
+    position: relative;
+}
+#cart .total_block .title {
+    display: inline-block;
+    width: 75%;
+    position: relative;
+    top: 3px;
 }
 #cart .total_block .cost {
     letter-spacing: -3px;
+    position: relative;
 }
 #cart .order-items li {
     position: relative;
@@ -917,6 +925,7 @@ section.maintenance #header .btn {
 }
 #alert .btn {
     min-width: 100px;
+    max-width: 180px;
     height: 34px;
     line-height: 34px;
     border-radius: 25px;

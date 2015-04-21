@@ -1517,7 +1517,7 @@ var QuickBooksPaymentProcessor = {
                     myorder.submit_order_and_pay(payment_type, validationOnly, capturePhase);
                 },
                 error: function (data) {
-                    data.errorMsg = MSG.ERROR_OCCURRED + "Error during tokenization";
+                    data.errorMsg = MSG.ERROR_OCCURRED + ' Error during tokenization';
                     myorder.paymentResponse = {status: 'error', errorMsg: data.errorMsg};
                     myorder.trigger('paymentResponse');
                 }
