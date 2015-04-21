@@ -214,6 +214,7 @@
                     var ests = App.Data.establishments;
                     if (ests) ests.needShowAlert(myorder.get_only_product_quantity() > 0);
                 });
+                myorder.trigger('reset'); //#21756, should be reset after est. changed 
             });
             app.loadApp(); // loading application
         });
