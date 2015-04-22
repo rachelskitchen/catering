@@ -9,7 +9,7 @@
 </script>
 
 <script type="text/template" id="total_checkout-template">
-    <% if(discount_allow) { %>
+    <% if(discounts*1 > 0) { %>
     <li>
         <span class="title">Discounts:</span>
         <span class="cost">
@@ -34,7 +34,7 @@
         </span>
     </li>
 <% } %>
-<% if (deliveryCharge && discount_allow) { %>
+<% if (deliveryCharge) { %>
     <% if (deliveryDiscount*1 > 0) { %>
        <li class="delivery_discount_item">
      <% } else { %>

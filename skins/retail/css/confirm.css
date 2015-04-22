@@ -135,6 +135,9 @@
     margin-top: 10px;
     min-height: 85px;
 }
+#popup .order-items .bag_charge > li {
+    margin-top: 10px;    
+}
 #popup .order-items > li {
     height: auto;
 }
