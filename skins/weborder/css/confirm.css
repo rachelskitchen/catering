@@ -141,11 +141,15 @@
     display: inline-block;
     width: 75%;
     position: relative;
+    float: right;
+    line-height: 18px;
+    padding-right: 5px;
 }
 #popup .total_block .cost {
     letter-spacing: -3px;
     position: relative;
-    top: -4px;
+    float: right;
+    line-height: 18px;
 }
 #popup .order-items li {
     position: relative;
