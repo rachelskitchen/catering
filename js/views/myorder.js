@@ -165,7 +165,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 });
             });
 
-            if (App.Settings.accept_discount_code && this.model.get("discount") instanceof Object) {
+            if (this.model.get("discount") instanceof Object) {
                 var view = App.Views.GeneratorView.create('MyOrder', {
                     el: $('<li></li>'),
                     mod: 'ProductDiscount',

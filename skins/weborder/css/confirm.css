@@ -131,7 +131,8 @@
 #popup .order-items li {
     position: relative;
 }
-#popup .order-items .myorder > li {
+#popup .order-items .myorder > li,
+#popup .order-items .bag_charge > li {
     margin-top: 10px;
 }
 #popup .order-items li li {
