@@ -777,7 +777,7 @@ define(["main_router"], function(main_router) {
                 appName;
 
             if(!App.Data.dirMode) {
-                appName = App.Data.get_parameters.appName || App.Settings.brand_name;
+                appName = App.Data.get_parameters.appName ? decodeURIComponent(App.Data.get_parameters.appName) : App.Settings.brand_name;
                 RevelAPI.set({
                     appName: /\w+'s(\s.*)?$/.test(appName) ? appName : 'the ' + appName,
                     appPossessiveName: /\w+'s(\s.*)?$/.test(appName) ? appName : appName + "'s",
