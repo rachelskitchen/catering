@@ -17,8 +17,11 @@
     cursor: pointer;
     padding: 0px 15px;
     margin: -7px 2px 0px 2px;
-    font-weight: bold;
     font-size: 22px;
+    max-width: 145px;
+}
+#modifiers_popup .action_button > span {
+    font-weight: bold;
 }
 
 @media only screen and (max-device-width: 949px) {

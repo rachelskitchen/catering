@@ -45,7 +45,7 @@
     <% if (is_gift && _settings.online_orders) { %>
     <div class='gift_card'>
         <span class="message"> <%= _lp.PRODUCTS_ENTER_GIFT_CARD %>. </span>
-        <span> <%= _lp.PRODUCTS_GIFT_CARD_NUMBER %>: </span>
+        <span class="clip"> <%= _lp.PRODUCTS_GIFT_CARD_NUMBER %>: </span>
         <div class="input_beauty">
             <input type="text" name="gift_card_number" value='<%= gift_card_number %>' class="gift_card_number" />
         </div>
@@ -53,7 +53,7 @@
     <% } %>
     <% if (is_gift && not_size && _settings.online_orders) { %>
     <div class='gift_card'>
-        <span> <%= _lp.PRODUCTS_AMOUNT %>: </span>
+        <span class="clip"> <%= _lp.PRODUCTS_AMOUNT %>: </span>
         <div class="input_beauty">
             <input type="text" id="price" name="gift_card_price" value='<%= price %>' class="gift_card_price price" />
         </div>

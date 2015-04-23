@@ -18,6 +18,8 @@
     font-weight: bold;
     vertical-align: top;
     line-height: 28px;
+    width: 100px;
+    display: inline-block;
 }
 
 .quantity_select {
