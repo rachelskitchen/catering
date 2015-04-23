@@ -773,10 +773,17 @@ define(["main_router"], function(main_router) {
         initRevelAPI: function() {
             App.Routers.RevelOrderingRouter.prototype.initRevelAPI.apply(this, arguments);
 
-            var RevelAPI = App.Data.RevelAPI;
+            var RevelAPI = App.Data.RevelAPI,
+                appName;
 
             if(!App.Data.dirMode) {
-                RevelAPI.set('appName', App.Data.get_parameters.appName || App.Settings.brand_name);
+                appName = App.Data.get_parameters.appName || App.Settings.brand_name;
+                RevelAPI.set({
+                    appName: /\w+'s(\s.*)?$/.test(appName) ? appName : 'the ' + appName,
+                    appPossessiveName: /\w+'s(\s.*)?$/.test(appName) ? appName : appName + "'s",
+                    appShortName: appName,
+                    text1: MSG.BRAND_DIRECTORY_WELCOME_TEXT
+                });
             }
 
             if(!RevelAPI.isAvailable()) {

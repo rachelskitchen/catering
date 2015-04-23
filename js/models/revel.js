@@ -50,7 +50,10 @@ define(["backbone", "card", "customers"], function(Backbone) {
             useAsDefaultCard: null,
             useAsDefaultCardSession: null,
             points: 0,
-            appName: 'Revel Directory',
+            appName: 'the Revel Directory',
+            appShortName: 'Revel',
+            appPossessiveName: "Revel's",
+            text1: MSG.REVEL_DIRECTORY_WELCOME_TEXT,
             gObj: 'App.Data.RevelAPI'
         },
         initialize: function() {

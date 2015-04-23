@@ -1,19 +1,19 @@
 <script type="text/template" id="revel_welcome-template">
-    <h1 class="title">Welcome to the <%= appName %>!</h1>
-    <p>With this application, you can become a member of Revel&rsquo;s Loyalty Program and easily pay at any establishment that uses Revel!</p>
+    <h1 class="title">Welcome to <%= appName %>!</h1>
+    <p>With this application, you can become a member of <%= appPossessiveName %> Loyalty Program <%= text1 %>!</p>
     <p>Press the <span class="loyalty">Loyalty</span> button to start the process.</p>
     <a href="javascript:void(0)" class="btn">Ok!</a>
 </script>
 
 <script type="text/template" id="revel_profile_notification-template">
-    <h1 class="title">Revel Loyalty Rewards</h1>
-    <p>On the following screen, please fill out the form to become a member of Revel&rsquo;s Loyalty program and easily pay at any establishment that uses Revel!</p>
+    <h1 class="title"><%= appShortName %> Loyalty Rewards</h1>
+    <p>On the following screen, please fill out the form to become a member of <%= appPossessiveName %> Loyalty Program <%= text1 %>!</p>
     <a href="javascript:void(0)" class="btn cancel">Back</a>
     <a href="javascript:void(0)" class="btn ok">Ok!</a>
 </script>
 
 <script type="text/template" id="revel_authentication-template">
-    <h1 class="title">Revel Loyalty Rewards</h1>
+    <h1 class="title"><%= appShortName %> Loyalty Rewards</h1>
     <p>Please enter your email &amp; password to view your Loyalty Reward Points.</p>
     <label class="input border"><input type="text" placeholder="Email Address" class="email" autocapitalize="none"></label>
     <label class="input border"><input type="password" placeholder="Password" class="password"></label>
@@ -121,7 +121,7 @@
 </script>
 
 <script type="text/template" id="revel_profile_security-template">
-    Security Info (Used for authentication at Revel Loyalty program)
+    Security Info (Used for authentication at <%= appShortName %> Loyalty Program)
     <% if(profileExists) { %>
     <label class="input border">
         <input type="password" placeholder="Old Password" data-prop="oldPassword" class="password ios-safari-caret" />
@@ -141,7 +141,7 @@
 </script>
 
 <script type="text/template" id="revel_loyalty-template">
-    <p>Your Loyalty Rewards Points can be used as currency for all your orders through the <%= appName %> app!</p>
+    <p>Your Loyalty Rewards Points can be used as currency for all your orders through <%= appName %> app!</p>
     <div class="img">
         <img alt="QR code" class="qr-code">
     </div>
@@ -150,8 +150,8 @@
 </script>
 
 <script type="text/template" id="revel_credit_card-template">
-    <h1 class="title">Revel Loyalty Rewards</h1>
-    <p>Use saved card instead of entering a new card number every time at any establishment that uses Revel!</p>
+    <h1 class="title"><%= appShortName %> Loyalty Rewards</h1>
+    <p>Use saved card instead of entering a new card number every time!</p>
     <a href="javascript:void(0)" class="btn cancel">Cancel</a>
     <a href="javascript:void(0)" class="btn ok">Ok!</a>
 </script>
