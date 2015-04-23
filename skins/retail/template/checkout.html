@@ -71,7 +71,9 @@
 
 <script type="text/template" id="checkout_address-template">
     <div class="row">
-        <label class="select" for="countries"> <span class="required bold"><%= _lp.CHECKOUT_COUNTRY %>:</span> </label>
+        <label class="select" for="countries">
+            <span class="required bold clip"><%= _lp.CHECKOUT_COUNTRY %>:</span>
+        </label>
         <div class="select countries select-wrapper">
             <select class="country select" id="countries">
             <% for (var i in countries) { %>
@@ -81,26 +83,26 @@
         </div>
     </div>
     <div class="row">
-        <label for="addressLine1"> <span class="required bold"><%= _lp.CHECKOUT_ADDRESS_LINE1 %>:</span> </label>
+        <label for="addressLine1"> <span class="required bold clip"><%= _lp.CHECKOUT_ADDRESS_LINE1 %>:</span> </label>
         <div class="input_beauty">
             <input type="text" id="addressLine1" name="street_1" class='street_1 ios-safari-caret' value="<%= street_1 %>">
         </div>
     </div>
     <div class="row">
-        <label for="addressLine2"> <%= _lp.CHECKOUT_ADDRESS_LINE2 %>: </label>
+        <label for="addressLine2"> <span class="clip"> <%= _lp.CHECKOUT_ADDRESS_LINE2 %>: </span> </label>
         <div class="input_beauty">
             <input type="text" id="addressLine2" name="street_2" class='street_2 ios-safari-caret' value="<%= street_2 %>">
         </div>
     </div>
     <div class="row">
-        <label for="city"> <span class="required bold"><%= _lp.CHECKOUT_CITY %>:</span> </label>
+        <label for="city"> <span class="required bold clip"><%= _lp.CHECKOUT_CITY %>:</span> </label>
         <div class="input_beauty">
             <input type="text" id="city" name="city" class='city ios-safari-caret' value="<%= city %>">
         </div>
     </div>
     <% if(country == 'US' && typeof state == 'string' && states instanceof Object && Object.keys(states).length > 0) { %>
     <div class="row">
-        <label class="select" for="states"> <span class="required bold"><%= _lp.CHECKOUT_STATE %>:</span> </label>
+        <label class="select" for="states"> <span class="required bold clip"><%= _lp.CHECKOUT_STATE %>:</span> </label>
         <div class="select states select-wrapper">
             <select class="states select" id="states">
             <% for(var i in states) { %>
@@ -112,19 +114,19 @@
     <% } %>
     <% if(typeof province == 'string') { %>
     <div class="row">
-        <label for="province"> <span class="required bold"><%= _lp.CHECKOUT_PROVINCE %>:</span> </label>
+        <label for="province"> <span class="required bold clip"><%= _lp.CHECKOUT_PROVINCE %>:</span> </label>
         <div class="input_beauty">
             <input type="text" id="province" name="province" class='province ios-safari-caret' value="<%= province %>">
         </div>
     </div>
     <% } %>
     <div class="row">
-        <label for="zip"> <span class="required bold"><%= _lp.CHECKOUT_ZIP_CODE %>:</span> </label>
+        <label for="zip"> <span class="required bold clip"><%= _lp.CHECKOUT_ZIP_CODE %>:</span> </label>
         <div class="input_beauty">
             <input type="text" id="zip" name="zipcode" class='zipcode ios-safari-caret' value="<%= zipcode %>">
         </div>
     </div>
-    <label class="select shipping"> <span class="required bold"><%= _lp.CHECKOUT_SHIPPING %>:</span> </label>
+    <label class="select shipping"> <span class="required bold clip"><%= _lp.CHECKOUT_SHIPPING %>:</span> </label>
     <div class="select-wrap">
     <div class="select shipping select-wrapper">
         <select class="shipping-select select"></select>
@@ -178,7 +180,7 @@
     <div class="data ios-safari-caret-fix">
         <div class="specials row">
             <% if(noteAllow) {%>
-                <label> <span class="bold"> <%= _lp.CHECKOUT_ORDER_NOTES %>: </span> </label>
+                <label> <span class="bold clip"> <%= _lp.CHECKOUT_ORDER_NOTES %>: </span> </label>
             <div class="input_beauty special">
                     <textarea class="vertical-scrollbar ios-safari-caret"><%=note%></textarea>
             </div>
