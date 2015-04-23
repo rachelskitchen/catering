@@ -153,6 +153,9 @@ MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_DESKTOP = 'Go Back';
 MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_MOBILE = 'Back';
 // page 'Establishments' (end)
 MSG.HALF_PRICE_STR =  ["Full", "First Half","Second Half"];
+// Revel Directory
+MSG.REVEL_DIRECTORY_WELCOME_TEXT = 'and easily pay at any establishment that uses Revel';
+MSG.BRAND_DIRECTORY_WELCOME_TEXT = 'to easily pay';
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
