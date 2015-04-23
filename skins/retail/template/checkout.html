@@ -13,25 +13,25 @@
         <% } %>
     </div>
     <div class="row">
-        <label for="firstName"> <span class="required bold"><%= _lp.CHECKOUT_FIRST_NAME %>:</span> </label>
+        <label for="firstName"> <span class="required bold clip"><%= _lp.CHECKOUT_FIRST_NAME %>:</span> </label>
         <div class="input_beauty">
             <input type="text" id="firstName" class="firstName ios-safari-caret" value="<%= firstName %>">
         </div>
     </div>
     <div class="row">
-        <label for="lastName"> <span class="required bold"><%= _lp.CHECKOUT_LAST_NAME %>:</span> </label>
+        <label for="lastName"> <span class="required bold clip"><%= _lp.CHECKOUT_LAST_NAME %>:</span> </label>
         <div class="input_beauty">
             <input type="text" id="lastName" class="lastName ios-safari-caret" value="<%= lastName %>">
         </div>
     </div>
     <div class="row">
-        <label for="email"> <span class="required bold"><%= _lp.CHECKOUT_EMAIL %>:</span> </label>
+        <label for="email"> <span class="required bold clip"><%= _lp.CHECKOUT_EMAIL %>:</span> </label>
         <div class="input_beauty">
             <input type="text" id="email" class="email ios-safari-caret" value="<%= email %>" autocapitalize="none">
         </div>
     </div>
     <div class="row">
-        <label for="phone"> <span class="required bold"><%= _lp.CHECKOUT_PHONE %>:</span> </label>
+        <label for="phone"> <span class="required bold clip"><%= _lp.CHECKOUT_PHONE %>:</span> </label>
         <div class="input_beauty">
             <input type="tel" id="phone" class="phone ios-safari-caret" value="<%= phone %>">
         </div>
@@ -39,7 +39,7 @@
     <div class="delivery_address"></div>
     <% if(enableRewardCard) { %>
     <div class="row">
-        <label for="rewardCard"> <%= _lp.CHECKOUT_REWARD_CARD %>: </label>
+        <label for="rewardCard"> <span class="clip"> <%= _lp.CHECKOUT_REWARD_CARD %>: </span> </label>
         <div class="input_beauty">
             <input type="<%= rewardCardType %>" id="rewardCard" class="rewardCard ios-safari-caret" value="<%= rewardCard %>">
         </div>
@@ -63,7 +63,7 @@
 </script>
 
 <script type="text/template" id="checkout_order_type-template">
-    <label class="select"> <span class="required bold"><%= _lp.CHECKOUT_ORDER_TYPE %>:</span> </label>
+    <label class="select"> <span class="required bold clip"><%= _lp.CHECKOUT_ORDER_TYPE %>:</span> </label>
     <div class="select select-wrapper">
         <select class="order-type-select select"></select>
     </div>
@@ -145,28 +145,28 @@
 <script type="text/template" id="checkout_pay_button-template">
     <% if (payment_count === 1 && flag) {%>
         <% if(paypal) { %>
-            <div class="btn paypal"> <%= _lp.CHECKOUT_PAYPAL %> </div>
+            <div class="btn paypal"> <span class="clip"> <%= _lp.CHECKOUT_PAYPAL %> </span> </div>
         <% } %>
         <% if(credit_card_button) { %>
-            <div class="btn credit-card"> <%= _lp.CHECKOUT_PAY_CREDIT_CARD %> </div>
+            <div class="btn credit-card"> <span class="clip"> <%= _lp.CHECKOUT_PAY_CREDIT_CARD %> </span> </div>
         <% } %>
         <% if(cash) { %>
         <div class='btn cash'></div>
         <% } %>
         <% if(gift_card) { %>
-            <div class="btn gift-card"> <%= _lp.CHECKOUT_PAY_GIFT_CARD %> </div>
+            <div class="btn gift-card"> <span class="clip"> <%= _lp.CHECKOUT_PAY_GIFT_CARD %> </span> </div>
         <% } %>
     <% } else if (flag) { %>
-        <div class="btn pay unselectable"> <%= _lp.CHECKOUT_PAY %> </div>
+        <div class="btn pay unselectable"> <span class="clip"> <%= _lp.CHECKOUT_PAY %> </span> </div>
     <% } else { %>
         <% if(paypal) { %>
         <div class='btn paypal'></div>
         <% } %>
         <% if(credit_card_button) { %>
-            <div class="btn credit-card"> <%= _lp.CHECKOUT_CREDIT_CARD %> </div>
+            <div class="btn credit-card"> <span class="clip"> <%= _lp.CHECKOUT_CREDIT_CARD %> </span> </div>
         <% } %>
         <% if(gift_card) { %>
-            <div class="btn gift-card"> <%= _lp.CHECKOUT_GIFT_CARD %> </div>
+            <div class="btn gift-card"> <span class="clip"> <%= _lp.CHECKOUT_GIFT_CARD %> </span> </div>
         <% } %>
         <% if(cash) { %>
         <div class='btn cash'></div>
@@ -188,7 +188,7 @@
 </script>
 
 <script type="text/template" id="checkout_discount_code-template">
-    <label class="discount-label"> <span class="bold"> <%= _lp.CHECKOUT_DISCOUNT_CODE %>: </span> </label>
+    <label class="discount-label"> <span class="bold clip"> <%= _lp.CHECKOUT_DISCOUNT_CODE %>: </span> </label>
     <div class="discount">
         <span class="number-wrap">
             <div class="number">
@@ -197,6 +197,6 @@
                 </div>
             </div>
         </span>
-        <button class="btn btnApply"> <%= _lp.CHECKOUT_APPLY %> </button>       
+        <button class="btn btnApply clip"> <%= _lp.CHECKOUT_APPLY %> </button>       
     </div>
 </script>
