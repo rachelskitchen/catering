@@ -139,7 +139,8 @@
 .modifiers_table .special_button + .title {
     display: inline-block;
     position: relative;
-    top: -4px;
+    vertical-align: top;
+    line-height: 28px;
 } 
 .modifiers_table .special_button > span {
     font-weight: bold;
