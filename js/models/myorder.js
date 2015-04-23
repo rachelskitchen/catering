@@ -1071,7 +1071,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     }
                     switch(data.status) {
                         case "OK":
-                            myorder.checkout.set('last_discount_code', data.data.discount_code);
+                            if (checkout.discount_code && is_apply_discount) {
+                                myorder.checkout.set('last_discount_code', checkout.discount_code);
+                            }
                             if (myorder.get_only_product_quantity() > 0) {
                                 myorder.process_cart_totals(data.data);
                             }
@@ -1236,6 +1238,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 card = App.Data.card && App.Data.card.toJSON(),
                 customer = App.Data.customer.toJSON();
 
+            if (checkout.last_discount_code) {
+                order.discount_code = checkout.last_discount_code;
+            }    
             order_info.created_date = checkout.createDate;
             order_info.pickup_time = checkout.pickupTimeToServer;
             order_info.lastPickupTime = checkout.lastPickupTime;
