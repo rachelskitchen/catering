@@ -386,8 +386,8 @@ footer {
     font-weight: bold;
     line-height: 38px;
     cursor: pointer;
-    padding-left: 0.15em;
-    padding-right: 0.15em;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
 }
 .btn > span {
     font-weight: bold;
