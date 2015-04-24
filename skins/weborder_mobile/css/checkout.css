@@ -172,7 +172,7 @@
     top: -5.8em;
     right: 0.5em;
     border: none;
-    box-shadow: none;
+    box-shadow: none !important;
 }
 
 /* Mercury accepted credit card */
