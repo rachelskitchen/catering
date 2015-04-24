@@ -43,7 +43,7 @@ define(["backbone"], function(Backbone) {
                 sections: [],
                 levels: [],
                 discount_code: '',
-                last_discount_code: ''                
+                last_discount_code: ''
             };
         },
         initialize: function() {
@@ -137,7 +137,7 @@ define(["backbone"], function(Backbone) {
             var delivery_cold_untaxed = App.Settings.delivery_cold_untaxed,
                 dining_option = this.get('dining_option'),
                 isToGo = dining_option === 'DINING_OPTION_TOGO',
-                isDelivery = dining_option === 'DINING_OPTION_DELIVERY',
+                isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING',
                 isCatering = dining_option === 'DINING_OPTION_CATERING';
 
             return isToGo || isCatering || isDelivery && delivery_cold_untaxed;

@@ -63,13 +63,13 @@ define(["main_router"], function(main_router) {
 
             if (settings.dining_options instanceof Array) {
                 // check available dining options and set default
-                if (settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) == -1 && settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_DELIVERY) == -1) {
+                if (settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) == -1 && settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_SHIPPING) == -1) {
                     App.Data.settings.set({
                         'isMaintenance': true,
                         'maintenanceMessage': ERROR[MAINTENANCE.ORDER_TYPE]
                     });
                 } else {
-                    settings.default_dining_option = settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) > -1 ? 'DINING_OPTION_TOGO' : 'DINING_OPTION_DELIVERY';
+                    settings.default_dining_option = settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) > -1 ? 'DINING_OPTION_TOGO' : 'DINING_OPTION_SHIPPING';
                     App.Data.myorder.checkout.set('dining_option', settings.default_dining_option);
                 }
             }
@@ -562,11 +562,6 @@ define(["main_router"], function(main_router) {
                     App.Data.customer = new App.Models.Customer();
                 }
 
-                if(typeof App.Data.customer.shipping_serives == 'undefined') {
-                    App.Data.customer.shipping_serives = true;
-                    App.Data.myorder.listenTo(App.Data.customer, 'change:shipping_services', App.Data.myorder.addDestinationBasedTaxes, App.Data.myorder);
-                }
-
                 var settings = App.Data.settings.get('settings_system');
 
                 App.Data.mainModel.set('mod', 'Main');
@@ -633,7 +628,7 @@ define(["main_router"], function(main_router) {
     return new main_router(function() {
         window.DINING_OPTION_NAME = {
             DINING_OPTION_TOGO: 'Pick up in store',
-            DINING_OPTION_DELIVERY: 'Shipping'
+            DINING_OPTION_SHIPPING: 'Shipping'
         };
         defaultRouterData();
         App.Routers.Router = Router;
