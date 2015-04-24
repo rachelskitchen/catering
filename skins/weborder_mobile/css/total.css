@@ -52,6 +52,7 @@
 
 #content ul.confirm span.title {
     float: left;
+    width: 40%;
 }
 
 #content ul.confirm span.cost {
