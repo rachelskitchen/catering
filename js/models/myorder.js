@@ -1252,7 +1252,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             if (checkout.last_discount_code) {
                 order.discount_code = checkout.last_discount_code;
-            }    
+            }
             order_info.created_date = checkout.createDate;
             order_info.pickup_time = checkout.pickupTimeToServer;
             order_info.lastPickupTime = checkout.lastPickupTime;
