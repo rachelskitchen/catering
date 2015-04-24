@@ -234,7 +234,7 @@ define(["main_router"], function(main_router) {
                 }
 
                 var header = {page_title: 'Menu'};
-                if(App.Data.dirMode)
+                if(App.Data.dirMode && navigator.userAgent.indexOf('RevelSystems') == -1)
                     header = Backbone.$.extend(header, {
                         back_title: 'Directory',
                         back: this.navigateDirectory.bind(this)
