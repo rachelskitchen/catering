@@ -84,49 +84,49 @@ define(['backbone'], function(Backbone) {
                         case App.Skins.WEBORDER:
                             switch (curLocale) {
                                 case 'en':
-                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.weborder.placeholders.json';
+                                    url = 'http://192.168.164.1/directory/HTML5/Web_ordering_app/placeholders/en.weborder.placeholders.json';
                                     break;
                             }
                             break;
                         case App.Skins.RETAIL:
                             switch (curLocale) {
                                 case 'en':
-                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.retail.placeholders.json';
+                                    url = 'http://192.168.164.1/directory/HTML5/Web_ordering_app/placeholders/en.retail.placeholders.json';
                                     break;
                             }
                             break;
                         case App.Skins.WEBORDER_MOBILE:
                             switch (curLocale) {
                                 case 'en':
-                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.weborder_mobile.placeholders.json';
+                                    url = 'http://192.168.164.1/directory/HTML5/Web_ordering_app/placeholders/en.weborder_mobile.placeholders.json';
                                     break;
                             }
                             break;
                         case App.Skins.DIRECTORY:
                             switch (curLocale) {
                                 case 'en':
-                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.directory.placeholders.json';
+                                    url = 'http://192.168.164.1/directory/HTML5/Web_ordering_app/placeholders/en.directory.placeholders.json';
                                     break;
                             }
                             break;
                         case App.Skins.DIRECTORY_MOBILE:
                             switch (curLocale) {
                                 case 'en':
-                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.directory_mobile.placeholders.json';
+                                    url = 'http://192.168.164.1/directory/HTML5/Web_ordering_app/placeholders/en.directory_mobile.placeholders.json';
                                     break;
                             }
                             break;
                         case App.Skins.MLB:
                             switch (curLocale) {
                                 case 'en':
-                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.mlb.placeholders.json';
+                                    url = 'http://192.168.164.1/directory/HTML5/Web_ordering_app/placeholders/en.mlb.placeholders.json';
                                     break;
                             }
                             break;
                         case App.Skins.PAYPAL:
                             switch (curLocale) {
                                 case 'en':
-                                    url = 'http://localhost/directory/HTML5/Web_ordering_app/placeholders/en.paypal.placeholders.json';
+                                    url = 'http://192.168.164.1/directory/HTML5/Web_ordering_app/placeholders/en.paypal.placeholders.json';
                                     break;
                             }
                             break;
