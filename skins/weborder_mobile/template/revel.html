@@ -1,19 +1,19 @@
 <script type="text/template" id="revel_welcome-template">
     <h1 class="title"> <%= _lp.REVEL_WELCOME %> <%= appName %>! </h1>
-    <p> <%= _lp.REVEL_WELCOME_TEXT %> </p>
+    <p> <%= _lp.REVEL_WELCOME_TEXT1 %> <%= appPossessiveName %> <%= _lp.REVEL_WELCOME_TEXT2 %> <%= text1 %>! </p>
     <p> <%= _lp.REVEL_WELCOME_BTN_TXT_PART1 %> <span class="loyalty"> <%= _lp.REVEL_WELCOME_BTN_TXT_PART2 %> </span> <%= _lp.REVEL_WELCOME_BTN_TXT_PART3 %>. </p>
     <a href="javascript: void(0)" class="btn"> <%= _lp.REVEL_OK_BTN %> </a>
 </script>
 
 <script type="text/template" id="revel_profile_notification-template">
-    <h1 class="title"> <%= _lp.REVEL_LOYALTY_REWARDS %> </h1>
-    <p> <%= _lp.REVEL_LOYALTY_REWARDS_TEXT %> </p>
+    <h1 class="title"> <%= appShortName %> <%= _lp.REVEL_LOYALTY_REWARDS %> </h1>
+    <p> <%= _lp.REVEL_LOYALTY_REWARDS_TEXT1 %> <%= appPossessiveName %> <%= _lp.REVEL_LOYALTY_REWARDS_TEXT2 %> <%= text1 %>! </p>
     <a href="javascript: void(0)" class="btn cancel"> <%= _lp.REVEL_BACK_BTN %> </a>
     <a href="javascript: void(0)" class="btn ok"> <%= _lp.REVEL_OK_BTN %> </a>
 </script>
 
 <script type="text/template" id="revel_authentication-template">
-    <h1 class="title"> <%= _lp.REVEL_LOYALTY_REWARDS %> </h1>
+    <h1 class="title"> <%= appShortName %> <%= _lp.REVEL_LOYALTY_REWARDS %> </h1>
     <p> <%= _lp.REVEL_ENTER_EMAIL_PASSWORD %>. </p>
     <label class="input border">
         <input type="text" placeholder="<%= _lp.REVEL_EMAIL_ADDRESS %>" class="email" autocapitalize="none">
@@ -123,7 +123,7 @@
 </script>
 
 <script type="text/template" id="revel_profile_security-template">
-    <%= _lp.REVEL_SECURITY_INFO %>
+    <%= _lp.REVEL_SECURITY_INFO1 %> <%= appShortName %> <%= _lp.REVEL_SECURITY_INFO2 %>
     <% if(profileExists) { %>
     <label class="input border">
         <input type="password" placeholder="<%= _lp.REVEL_OLD_PASSWORD %>" data-prop="oldPassword" class="password ios-safari-caret">
@@ -150,7 +150,7 @@
 </script>
 
 <script type="text/template" id="revel_credit_card-template">
-    <h1 class="title"> <%= _lp.REVEL_LOYALTY_REWARDS %> </h1>
+    <h1 class="title"> <%= appShortName %> <%= _lp.REVEL_LOYALTY_REWARDS %> </h1>
     <p> <%= _lp.REVEL_USE_SAVED_CARD %> </p>
     <a href="javascript: void(0)" class="btn cancel"> <%= _lp.REVEL_BACK_CANCEL %> </a>
     <a href="javascript: void(0)" class="btn ok"> <%= _lp.REVEL_OK_BTN %> </a>
