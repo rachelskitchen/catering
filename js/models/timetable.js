@@ -218,17 +218,18 @@ define(["backbone"], function(Backbone) {
                 isDelivery - true if dinning_option is delivery
             */
             params = params || {};
-            var options = [],
+            var locale = App.Data.locale,
+                options = [],
                 isDelivery = params.isDelivery,
                 t = new TimeFrm(0, 0, this.format),
                 isToday = params.today,
                 asap = false,
                 offest = (this.get_dining_offset(isDelivery) / 60 / 1000),
-                asap_text = 'ASAP';
+                asap_text = locale.get('CORE')['TIME_PREFIXES']['ASAP'];
 
 
             if (offest > 0) {
-                asap_text += ' (' + offest + ' min)'
+                asap_text += ' (' + offest + ' ' + locale.get('CORE')['TIME_PREFIXES']['MINUTES'] + ')';
             }
             // get pickup times grid potentially suited for the day
             var times = this._pickupSumTimes(isDelivery);
@@ -505,30 +506,34 @@ define(["backbone"], function(Backbone) {
             }
 
             return days.map(function(day, i) {
-                var date = new Date(now.getTime() + i * MILLISECONDS_A_DAY),
-                    weekDay = i >= 2 ? day : i ? 'tomorrow' : 'today',
+                var locale = App.Data.locale,
+                    date = new Date(now.getTime() + i * MILLISECONDS_A_DAY),
+                    weekDay = (i >= 2) ? day : i ? locale.get('CORE')['DAYS']['TOMORROW'] : locale.get('CORE')['DAYS']['TODAY'],
                     month = ARRAY_MONTH[date.getMonth()],
                     _date = date.getDate();
                 switch (_date.toString().match(/1?\d$/)[0]) {
                     case "1":
-                        _date += 'st';
+                        _date += locale.get('CORE')['TIME_PREFIXES']['FIRST_DAY_OF_MONTH'];
                         break;
                     case "2":
-                        _date += 'nd';
+                        _date += locale.get('CORE')['TIME_PREFIXES']['SECOND_DAY_OF_MONTH'];
                         break;
                     case "3":
-                        _date += 'rd';
+                        _date += locale.get('CORE')['TIME_PREFIXES']['THIRD_DAY_OF_MONTH'];
                         break;
                     default:
-                        _date += 'th';
+                        _date += locale.get('CORE')['TIME_PREFIXES']['OTHER_DAY_OF_MONTH'];
                         break;
                 }
-                weekDay = weekDay.replace(/^./, function(m) {
-                    return m.toUpperCase();
-                });
+                if (~weekDays.indexOf(weekDay)) {
+                    weekDay = locale.get('CORE')['DAYS_OF_WEEK'][weekDay];
+                }
 
                 this.workingDay.update({timetable: self.get_working_hours(date, 1), curTime : self.base()});
-                var working_day = this.workingDay.pickupTimeOptions({today: weekDay === "Today", isDelivery: isDelivery}); // set flag "Today" for creating the list of time intervals
+                var working_day = this.workingDay.pickupTimeOptions({
+                    today: (weekDay === locale.get('CORE')['DAYS']['TODAY']),
+                    isDelivery: isDelivery
+                }); // set flag "Today" for creating the list of time intervals
                 return {
                     weekDay: weekDay + (i >=2 ? ', ' + month + ' ' + _date : ''),
                     date: date,
