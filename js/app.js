@@ -190,6 +190,7 @@ var ERROR = {},
                     _.extend(MSG, locale.get('MSG'));
                     _.extend(ERROR, locale.get('ERRORS'));
                     window.ARRAY_MONTH = locale.get('CORE')['ARRAY_MONTHS'];
+                    window.TIMETABLE_WEEK_DAYS = locale.get('CORE')['DAYS_OF_WEEK_SHORTENED'];
                     window.DINING_OPTION_NAME = locale.get('CORE')['DINING_OPTIONS'];
                 });
                 locale.on('showError', function() {
