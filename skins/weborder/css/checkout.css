@@ -312,6 +312,7 @@
     }
     #content > .checkout div.tips .number {
         width: 110px !important;
+        top: 10px !important;
     }
     #content > .checkout div.tips .input_beauty {
         left: 0 !important;
