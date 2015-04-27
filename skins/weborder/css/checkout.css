@@ -1,9 +1,11 @@
 #content > .checkout label {
     display: inline-block;
     width: 302px;
-    margin: 10px 0;
     text-indent: 100px;
     font-weight: bold;
+    height: 39px;
+    line-height: 39px;
+    vertical-align: top;
 }
 #content > .checkout h2 {
     padding-left: 100px;
@@ -12,6 +14,7 @@
 }
 #content > .checkout div.row, #content > .checkout div.delivery_address > div > div {
     position: relative;
+    height: 39px;
 }
 #content > .checkout div.row label > span {
     padding-right: 15px;
@@ -22,7 +25,7 @@
     left: 292px;
     right: 120px;
     position: absolute;
-    top: 2px;
+    top: 6px;
     bottom: 6px;
 }
 #content > .checkout .tipBlock {
@@ -30,17 +33,15 @@
 }
 #content > .checkout div.select {
     display: inline-block;
-    width: 175px;
+    width: 250px;
     position: relative;
     left: -17px;
-    top: 6px;
+    top: 4px;
     vertical-align: top;
-    height: 24px;
+    height: 29px;
     margin-bottom: 12px;
 }
-#content > .checkout div.select_day, #content > .checkout div.select.states {
-    width: 250px;
-}
+
 #content > .checkout div.select_day[disabled="disabled"] {
     opacity: .5;
     filter: alpha(opacity=50);
@@ -216,25 +217,22 @@
     left: 292px;
     right: 120px;
     position: absolute;
-    top: 5px;  
+    top: 0;
+    bottom: 0;
 }
 #content > .checkout div.discount .number-wrap {
     display:  inline-block;
     position:  relative;
     vertical-align: top;
     width: 70%;
+    height: 100%;
 }
 #content > .checkout div.discount .number {
     display: inline-block;
     position: absolute;
-    height: 30px;
-    top: 5px;
     left: 0px;
     right: 40px;
     text-indent: 0 !important;
-}
-#content > .checkout  .discount-label {
-    margin-top: 18px;
 }
 #content > .checkout div.discount .input_beauty {
     position: absolute;
@@ -264,19 +262,37 @@
 }
 /* these button colores are the same for all themes: */
 #content > .checkout .discount .btn {
-    border-color: #a9a9a9;    
-    background-color: rgba(247,247,247,1); 
-    box-shadow: 0 3px 3px rgba(0,0,0,0.3);
+    border-color: #a9a9a9;
+    background-color: rgba(247,247,247,1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 #content > .checkout .discount .btn:active {
-    background-color: rgba(254,254,254,1); 
+    background-color: rgba(254,254,254,1);
 }
 #content > .checkout .discount .btn.applied {
     cursor: default;
 }
-#content > .checkout .discount .btn:after, 
+#content > .checkout .discount .btn:after,
 #content > .checkout .discount .btn:before {
     display: none;
+}
+
+.select-wrap {
+    display: inline-block;
+}
+
+#content > .checkout div.select.shipping {
+    display: inline-block;
+    width: 320px;
+}
+
+#content > .checkout .shipping-status {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    vertical-align: middle;
+    margin-top: 4px;
+    font-size: 8px;
 }
 
 /* for tablets */
@@ -315,7 +331,7 @@
     #content > .checkout div.discount .input_beauty {
         left: 0px !important;
         right: 0px !important;
-    }  
+    }
     #content > .checkout .discount .btn {
         margin-left: -7px;
     }

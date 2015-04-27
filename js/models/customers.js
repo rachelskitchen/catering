@@ -23,7 +23,60 @@
 define(["backbone", "geopoint"], function(Backbone) {
     'use strict';
 
+    /*
+     * @class App.Models.Customer
+     * Represents customer's data.
+     */
     App.Models.Customer = Backbone.Model.extend({
+        /**
+         * @property {Object} defaults - the set of model attributes with default values.
+         *
+         * @property {string} defaults.first_name - customer's first name.
+         * @default ''.
+         *
+         * @property {string} defaults.last_name - customer's last name.
+         * @default ''.
+         *
+         * @property {string} defaults.phone - customer's phone number (string type because may have "+", "." signs).
+         * @default ''.
+         *
+         * @property {string} defaults.email - customer's email.
+         * @default ''.
+         *
+         * @property {string|number} defaults.id - customer's id.
+         * @default null.
+         *
+         * @property {Object[]} defaults.addresses - array of customer's addresses.
+         * @default [].
+         * @property {string} defaults.addresses[].address - full address line.
+         * @property {string} defaults.addresses[].city - city of address.
+         * @property {string} defaults.addresses[].country - country of address.
+         * @property {string} defaults.addresses[].state - state of address.
+         * @property {string} defaults.addresses[].street_1 - address line 1.
+         * @property {string} defaults.addresses[].street_2 - address line 2.
+         * @property {string} defaults.addresses[].zipcode - zipcode of address (string type because may contains letter symbols, UK for ex.).
+         * @property {string} defaults.addresses[].province - province of address (used only if country is CA).
+         *
+         * @property {number} defaults.shipping_address - index of selected address (index of adresses array).
+         * @default -1.
+         *
+         * @property {Object[]} defaults.shipping_services - array of shipping sevices.
+         * @default [].
+         * @property {string} defaults.shipping_services[].class_of_service - name of shipping service.
+         * @property {string} defaults.shipping_services[].shipping_charge - shipping cost of shipping service.
+         *
+         * @property {number} defaults.shipping_selected - index of selected shipping service.
+         * @default -1.
+         *
+         * @property {string} defaults.load_shipping_status - status of shipping loading.
+         * @default ''.
+         *
+         * @property {number} defaults.deliveryAddressIndex - index of address used as destination for delivery.
+         * @default 0.
+         *
+         * @property {number} defaults.shippingAddressIndex - index of address used as destination for shipping.
+         * @default 1.
+         */
         defaults: {
             first_name: "",
             last_name: "",
@@ -31,22 +84,20 @@ define(["backbone", "geopoint"], function(Backbone) {
             email: "",
             id: null,
             addresses: [],
-            shipping_address: null,
+            shipping_address: -1,
             shipping_services: [],
             shipping_selected: -1,
-            load_shipping_status: ""
-            /**
-             * address - from function address_str. available only for other addresses
-             * city
-             * country
-             * state
-             * street_1
-             * street_2
-             * zipcode
-             */
+            load_shipping_status: "",
+            deliveryAddressIndex: 0,
+            shippingAddressIndex: 1
         },
+        /**
+         * @constructor
+         * Sync with RevelAPI, call setAddressesIndexes() method and set validators for `first_name`, `last_name` attributes.
+         */
         initialize: function() {
             this.syncWithRevelAPI();
+            this.setAddressesIndexes();
             this.listenTo(this, 'change:first_name', function() {
                 var firstName = this.get('first_name');
                 (typeof(firstName) == 'string') ?
@@ -61,6 +112,7 @@ define(["backbone", "geopoint"], function(Backbone) {
             }, this);
         },
         /**
+         * @method
          * Get customer name in the format "Smith M.".
          */
         get_customer_name : function() {
@@ -73,9 +125,21 @@ define(["backbone", "geopoint"], function(Backbone) {
 
             return (first_name + last_name);
         },
+        /**
+         * @method
+         * Save attributes in a storage.
+         */
         saveCustomer: function() {
             setData('customer', this);
         },
+        /**
+         * @method
+         * Load attributes from the storage.
+         * If a shipping service was selected change `load_shipping_status` on 'restoring' value.
+         *
+         * @fires change
+         * @fires change:<any attribute>
+         */
         loadCustomer: function() {
             var data = getData('customer');
             data = data instanceof Object ? data : {};
@@ -85,9 +149,21 @@ define(["backbone", "geopoint"], function(Backbone) {
                 this.set("load_shipping_status", "restoring", {silent: true});
             }
         },
+        /**
+         * @method
+         * Save addresses in the storage.
+         */
         saveAddresses: function() {
             setData('address', new Backbone.Model({addresses: this.get('addresses')}), true);
+
         },
+        /**
+         * @method
+         * Load addresses from the storage.
+         *
+         * @fires change
+         * @fires change:addresses
+         */
         loadAddresses: function() {
             var data = getData('address', true);
             if (data instanceof Object && Array.isArray(data.addresses) && data.addresses.length == 1 && App.skin != App.Skins.RETAIL) {
@@ -98,13 +174,24 @@ define(["backbone", "geopoint"], function(Backbone) {
             }
             this.set('addresses', data instanceof Object ? (data.addresses || []) : []);
         },
-        address_str: function() {
+        /**
+         * @method
+         * Convert address object as full address line.
+         *
+         * @param {number} index - index of addresses array
+         * @default last element.
+         * @see {@link http://mediawiki.middlebury.edu/wiki/LIS/Address_Standards} for detail format information.
+         * @returns {string} full address line
+         */
+        address_str: function(index) {
             var addresses = this.get('addresses'),
                 settings = App.Settings,
                 str = [];
 
+            index = index >= 0 ? index : addresses.length - 1;
+
             if(Array.isArray(addresses) && addresses.length > 0) {
-                addresses = addresses[addresses.length - 1];
+                addresses = addresses[index];
             } else {
                 return '';
             }
@@ -121,6 +208,12 @@ define(["backbone", "geopoint"], function(Backbone) {
 
             return str.join(', ');
         },
+        /**
+         * @method
+         * Validate address object properties `street_1`, `city`, `state`, `province`, `zipcode` values.
+         *
+         * @returns {Object[]} empty array if all properties pass validation or array with invalid properties.
+         */
         _check_delivery_fields: function() {
             var settings = App.Settings,
                 empty = [],
@@ -148,6 +241,13 @@ define(["backbone", "geopoint"], function(Backbone) {
 
             return empty;
         },
+        /**
+         * @method
+         * Validate attributes values.
+         *
+         * @param {string} dining_option - order type selected
+         * @returns {Object} {status: "OK"} if all attributes pass validation or {status: "ERROR_EMPTY_FIELDS", errorMsg: <string>, errorList: <array of errors>}.
+         */
         check: function(dining_option) {
             var err = [];
 
@@ -156,7 +256,7 @@ define(["backbone", "geopoint"], function(Backbone) {
             !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push('Email');
             !this.get('phone') && err.push('Phone Number');
 
-            if (dining_option === 'DINING_OPTION_DELIVERY' && this.get('shipping_address') === -1) {
+            if(this.isNewAddressSelected(dining_option)) {
                 err = err.concat(this._check_delivery_fields());
             }
 
@@ -172,11 +272,29 @@ define(["backbone", "geopoint"], function(Backbone) {
                 status: "OK"
             };
         },
-        get_shipping_services: function() {
+        /**
+         * @method
+         * If `load_shipping_status` attribute is 'restoring' change its value on resolved.
+         * Otherwise change `load_shipping_status` on 'pending' and send POST request to "/weborders/shipping_options/" with parameter
+         * {
+         *     address: <address object>
+         *     items: <array of cart items>
+         *     establishment: <establishment>
+         * }
+         * When a response is processed `load_shipping_status` changes on 'resolved'.
+         *
+         * @param {Object} jqXHR - the jqXHR Object.
+         * @param {Function} getShippingOptions - a function returning shipping options (expects a response-object as parameter).
+         *
+         * @fires change:shipping_services
+         * @event change:shipping_services
+         * @type undefined
+         */
+        get_shipping_services: function(jqXHR, getShippingOptions) {
             var self = this,
                 data = {},
                 address = this.get('addresses'),
-                shipping_addr_index = this.get('shipping_address') === -1 ? address.length - 1 : this.get('shipping_address');
+                shipping_addr_index = this.isDefaultShippingAddress() ? address.length - 1 : this.get('shipping_address');
 
             if (!address.length)
                 return;
@@ -193,35 +311,41 @@ define(["backbone", "geopoint"], function(Backbone) {
                 data.items.push(model.item_submit());
             });
 
-            this.set("shipping_services", [], {silent: true});
-            this.set("load_shipping_status", "pending", {silent: true});
-            this.trigger("change:shipping_services");
+            // reset shipping services
+            this.resetShippingServices('pending');
 
             var data_json = JSON.stringify(data);
-            $.ajax({
+
+            // define getShippingOptions function if it isn't a function
+            getShippingOptions = typeof getShippingOptions == 'function' ? getShippingOptions : function(response) {
+                return response.data;
+            };
+
+            jqXHR = jqXHR || $.ajax({
                 type: "POST",
                 url: App.Data.settings.get("host") + "/weborders/shipping_options/",
                 data: data_json,
-                dataType: "json",
-                success: function(response) {
-                    switch (response.status) {
-                        case "OK":
-                            self.set("shipping_services", response.data, {silent: true});
-                            complete();
-                            break;
-                        default:
-                            onError();
-                    }
-                },
-                error: function() {
-                    onError();
-                },
-                complete: function() {
+                dataType: "json"
+            });
+            // process successful response
+            jqXHR.done(function(response) {
+                var shipping_options
+                switch (response.status) {
+                    case "OK":
+                        self.set("shipping_services", getShippingOptions(response), {silent: true});
+                        complete();
+                        break;
+                    default:
+                        onError();
                 }
             });
+            // process failure response
+            jqXHR.error(onError);
 
-            function onError() {
-                setTimeout(complete, 300);
+            function onError(xhr) {
+                if (xhr.statusText != "abort") {
+                    setTimeout(complete, 300);
+                }
             }
 
             function complete() {
@@ -229,6 +353,77 @@ define(["backbone", "geopoint"], function(Backbone) {
                 self.trigger("change:shipping_services");
             }
         },
+        /**
+         * @method
+         * Clear `shipping_services` attribute, change `load_shipping_status`.
+         *
+         * @param {string} status - value of `load_shipping_status` need to be assigned after reset shipping services.
+         * @default ''
+         *
+         * @fires change:shipping_services
+         * @event change:shipping_services
+         * @type undefined
+         */
+        resetShippingServices: function(status) {
+            this.set('shipping_services', [], {silent: true});
+            this.set('load_shipping_status', typeof status == 'string' ? status : '', {silent: true});
+            this.trigger('change:shipping_services');
+        },
+        /**
+         * @method
+         * Set indexes for delivery and shipping addresses in `addresses` array.
+         * If initially addresses is empty array deliveryAddressIndex is 0, shippingAddressIndex is 1
+         *
+         * @fires change
+         * @fires change:deliveryAddressIndex
+         * @fires change:shippingAddressIndex
+         */
+        setAddressesIndexes: function() {
+            var addresses = this.get('addresses');
+            if(Array.isArray(addresses)) {
+                this.set({
+                    deliveryAddressIndex: addresses.length,
+                    shippingAddressIndex: addresses.length + 1
+                });
+            }
+
+        },
+        /**
+         * @method
+         * @returns {boolean} true if `shipping_address` is default or false otherwise.
+         */
+        isDefaultShippingAddress: function() {
+            return this.get('shipping_address') === this.defaults.shipping_address;
+        },
+        /**
+         * @method
+         * @param {string} dining_option - selected order type.
+         * @returns {boolean} true is a new address selected or false if address already exists in DB.
+         */
+        isNewAddressSelected: function(dining_option) {
+            var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING',
+                shipping_address = this.get('shipping_address');
+            return (shipping_address == this.get('deliveryAddressIndex') || shipping_address == this.get('shippingAddressIndex')) && isDelivery ? true : false;
+        },
+        /**
+         * @method
+         * Fill out RevelAPI.attributes.customer and add listeners for further synchronization with RevelAPI.attributes.customer if RevelAPI.isAvailable() returns true.
+         *
+         * @member {Object} profileCustomer - value of RevelAPI.get('customer');
+         * @member {Object} RevelAPI - value of this.get('RevelAPI');
+         *
+         * @callback updateProfile
+         * Fill out profileCustomer attributes and call RevelAPI.setOriginalProfileData().
+         * @listens change:first_name
+         * @listens change:last_name
+         * @listens change:phone
+         * @listens change:email
+         *
+         * @callback update
+         * Set attributes values as profileCustomer attributes values.
+         * @listens onProfileSaved [RevelAPI]
+         * @listens change [profileCustomer]
+         */
         syncWithRevelAPI: function() {
             var RevelAPI = this.get('RevelAPI');
 
@@ -249,7 +444,7 @@ define(["backbone", "geopoint"], function(Backbone) {
                 update();
             }, this);
 
-            // listen to profile customer changes if user wasn't set any value for one of 'first_name', 'last_name', 'phone', 'email' fields
+            // Listen to RevelAPI.attributes.customer changes if user wasn't set any value for one of 'first_name', 'last_name', 'phone', 'email' fields.
             this.listenTo(profileCustomer, 'change', function() {
                 if(RevelAPI.get('profileExists') && !this.get('first_name') && !this.get('last_name') && !this.get('phone') && !this.get('email')) {
                     update();
@@ -259,11 +454,29 @@ define(["backbone", "geopoint"], function(Backbone) {
             // fill out current model
             this.set(profileCustomer.toJSON());
 
+            /**
+             * @function updateProfile
+             * @callback
+             * Fill out RevelAPI.attributes.customer and call RevelAPI.setOriginalProfileData().
+             *
+             * @listens change:first_name
+             * @listens change:last_name
+             * @listens change:phone
+             * @listens change:email
+             */
             function updateProfile() {
                 profileCustomer.set(getData(self.toJSON()));
                 RevelAPI.setOriginalProfileData();
             }
 
+            /**
+             * @function update
+             * @callback
+             * Set {Object} attributes values as RevelAPI.get('customer').attributes values.
+             *
+             * @listens onProfileSaved [RevelAPI]
+             * @listens change
+             */
             function update() {
                 self.set(getData(profileCustomer.toJSON()));
             };
