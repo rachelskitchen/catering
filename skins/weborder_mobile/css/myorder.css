@@ -116,6 +116,7 @@
     border-width: 1px;
     border-style: solid;
     position: relative;
+    max-width: 7em;
 }
 
 #content ul.myorder .btns span:active {
@@ -318,6 +319,7 @@
     border-width: 1px;
     border-style: solid;
     position: relative;
+    max-width: 2.5em;
 }
 
 #content .discountBlock  .discount_code_text {
@@ -327,6 +329,7 @@
     padding-left: 0.2em;
     padding-top: 0.2em;
     text-decoration: underline;
+    width: 52%;
 }
 
 /* myorder mod item end */

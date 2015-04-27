@@ -87,7 +87,7 @@
 
             <% if(address instanceof Object) { %>
             <li>
-                <span class="title"> <%= _lp.STORE_INFO_ADDRESS %> </span>
+                <span class="title clip"> <%= _lp.STORE_INFO_ADDRESS %> </span>
                 <address class="desc">
                     <span><%= address.line1 %></span>
                     <span><%= address.line2 %></span>
@@ -97,7 +97,7 @@
 
             <% if(timetable) { %>
             <li class="hours">
-                <span class="title"> <%= _lp.STORE_INFO_HOURS %> </span>
+                <span class="title clip"> <%= _lp.STORE_INFO_HOURS %> </span>
                 <ul class="desc">
                     <% _.each(timetable, function(day, i) { %>
                     <li class="row <%= (timetable.length - 1 == i ? 'last' : i == 0 ? 'first' : '') %>">
@@ -123,21 +123,21 @@
 
             <% if(phone) { %>
             <li>
-                <span class="title"> <%= _lp.STORE_INFO_PHONE %> </span>
+                <span class="title clip"> <%= _lp.STORE_INFO_PHONE %> </span>
                 <a class="desc phone" href="tel:<%= phone %>"><%= phoneFormat(phone) %></a>
             </li>
             <% } %>
 
             <% if (email) { %>
                 <li>
-                    <span class="title"> <%= _lp.STORE_INFO_EMAIL %> </span>
+                    <span class="title clip"> <%= _lp.STORE_INFO_EMAIL %> </span>
                     <a class="desc email" href="mailto:<%= email %>"> <%= email %> </a>
                 </li>
             <% } %>
 
             <% if(access_to_location) { %>
             <li>
-                <span class="title"> <%= _lp.STORE_INFO_ACCESS %> </span>
+                <span class="title clip"> <%= _lp.STORE_INFO_ACCESS %> </span>
                 <span class="desc"><%= access_to_location %></span>
             </li>
             <% } %>

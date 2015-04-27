@@ -2,12 +2,12 @@
   <% if(status == "success") { %>
     <span class="thanks color-style1"> <%= _lp.DONE_THANK_YOU %>! </span>
     <dl class="orderCompleted">
-        <dt> <span> <%= _lp.DONE_ORDER_ID %>: </span> </dt>
+        <dt> <span class="clip"> <%= _lp.DONE_ORDER_ID %>: </span> </dt>
         <dd>
             <span><%= order_id %></span>
         </dd>
         <% if (!isOnlyGift && !isOrderFromSeat) { %>
-            <dt><span><%= pickup_type %>:</span></dt>
+            <dt> <span class="clip"> <%= pickup_type %>: </span> </dt>
             <dd>
                 <span>
                     <%= pickup_time %>
@@ -16,7 +16,7 @@
             </dd>
         <% } %>
         <% if(isDeliverToSeat) { %>
-            <dt> <span> <%= _lp.DONE_DELIVERY_INFO %>: </span> </dt>
+            <dt> <span class="clip"> <%= _lp.DONE_DELIVERY_INFO %>: </span> </dt>
             <dd>
                 <% if (level) { %> <%= _lp.DONE_LEVEL %> <span> <%= level %>, </span> <% } %>
                 <% if (section) { %> <%= _lp.DONE_SECTION %> <span> <%= section %>, </span> <% } %>
@@ -25,14 +25,14 @@
             </dd>
         <% } %>
         <% if(reward_points) { %>
-        <dt> <span> <%= _lp.DONE_REWARD_CARD_POINTS %>: </span> </dt>
+        <dt> <span class="clip"> <%= _lp.DONE_REWARD_CARD_POINTS %>: </span> </dt>
         <dd>
             <span>
                 <%= reward_points %>
             </span>
         </dd>
         <% } %>
-        <dt> <span> <%= _lp.DONE_AMOUNT_CHARGED %>: </span> </dt>
+        <dt> <span class="clip"> <%= _lp.DONE_AMOUNT_CHARGED %>: </span> </dt>
         <dd>
             <span>
                 <strong>

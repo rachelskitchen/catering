@@ -64,6 +64,9 @@
     font-size: 2.2em;
     position: relative;
     top: 2.3em;
+}
+
+#footer span.clip {
     padding: 0 7px;
 }
 

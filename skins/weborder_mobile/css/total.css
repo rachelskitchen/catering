@@ -24,6 +24,12 @@
     font-weight: bold;
 }
 
+#content .myorderSubtotal > div span.clip {
+    display: inline-block;
+    vertical-align: bottom;
+    width: 30%;
+}
+
 #content .myorderSubtotal .currency_symbol {
     position: relative;
     left: 0.2em;

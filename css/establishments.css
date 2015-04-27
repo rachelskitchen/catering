@@ -52,8 +52,11 @@
     font-weight: bold;
     line-height: 2em;
     outline: none;
-    padding: 0 6em;
+    padding: 0 2em;
     text-shadow: 0 0 2px #fff;
+}
+.establishments button > span {
+    width: 13em;
 }
 .establishments .select-wrapper {
     background: #fcfcfc;

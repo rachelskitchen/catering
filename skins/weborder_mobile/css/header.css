@@ -80,6 +80,7 @@
     right: 4.7em;
     bottom: 0;
     left: 3.9em;
+    width: 45%;
 }
 #header .two_button.modifiers h1 {
     /* solution for bug #16151 */

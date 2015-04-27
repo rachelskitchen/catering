@@ -31,8 +31,8 @@
     <ul class="discount_place"></ul>
     <% if(id_product !== null) { %>
     <div class="btns">
-        <span class="remove"> <%= _lp.MYORDER_REMOVE %> </span>
-        <span class="edit"> <%= _lp.MYORDER_EDIT %> </span>
+        <span class="remove clip"> <%= _lp.MYORDER_REMOVE %> </span>
+        <span class="edit clip"> <%= _lp.MYORDER_EDIT %> </span>
     </div>
     <% } %>
 </script>
@@ -99,14 +99,16 @@
 <script type="text/template" id="myorder_discount_code-template">
     <% if(discount_allow) { %>
     <div class='dcode_have <% if(discount_code_applied) print("hidden"); %>'>
-        <div class="discount_code_text color-style1"> <%= _lp.MYORDER_HAVE_DISCOUNT_CODE %> </div>
+        <div class="discount_code_text color-style1">
+            <span class="clip"> <%= _lp.MYORDER_HAVE_DISCOUNT_CODE %> </span>
+        </div>
     </div>
     <div class='dcode_enter hidden'>
         <div class='discount_field border2'>
             <input class="instructions bg-style1" name="discount_code" value="<%= discount_code %>" placeholder="<%= _lp.MYORDER_DISCOUNT_CODE %>">
         </div>
         <div class="btns">
-            <span class="btnApply"> <%= _lp.MYORDER_APPLY %> </button>
+            <span class="btnApply clip"> <%= _lp.MYORDER_APPLY %> </button>
         </div>
     </div>
     <div class='dcode_remove <% if(!discount_code_applied) print("hidden"); %>'>

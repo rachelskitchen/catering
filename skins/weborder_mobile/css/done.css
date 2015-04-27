@@ -24,6 +24,11 @@
     line-height: 2em;
 }
 
+#content .done .orderCompleted dl {
+    padding-left: 2em;
+    padding-right: 2em;
+}
+
 #content .done .orderCompleted dt {
     width: 50%;
     font-weight: bold;

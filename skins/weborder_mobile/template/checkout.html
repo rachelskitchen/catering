@@ -1,6 +1,6 @@
 <script type="text/template" id="checkout_main-template">
     <dl class="checkout <% if(isFirefox) { %>firefox<% } %>">
-        <dt class="color-style1"> <%= _lp.CHECKOUT_CONTACT_INFO %> </dt>
+        <dt class="color-style1 clip"> <%= _lp.CHECKOUT_CONTACT_INFO %> </dt>
         <dd class="contact_info">
             <label class="input required border">
                 <input type="text" placeholder="<%= _lp.CHECKOUT_FIRST_NAME %>" class="firstName ios-safari-caret bg-style1" value="<%= firstName %>">
@@ -103,7 +103,7 @@
 
 <script type="text/template" id="checkout_order_type-template">
     <dl class="checkout checkout-order-type <% if(isFirefox) { %>firefox<% } %>">
-        <dt class="order-type-head color-style1"> <%= _lp.CHECKOUT_ORDER_TYPE %> </dt>
+        <dt class="order-type-head color-style1 clip"> <%= _lp.CHECKOUT_ORDER_TYPE %> </dt>
         <dd>
             <label class="select required">
                 <select class="order-type-select">
