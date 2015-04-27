@@ -300,6 +300,9 @@
         right: 60px !important;
         top: 2px;
     }
+    #content > .checkout div.tips {
+        top: -10px;
+    }
     #content > .checkout .arrival_address > ul {
         padding-left: 195px !important;
     }
