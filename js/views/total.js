@@ -41,6 +41,11 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.$el.html(this.template(model));
         },
         update: function() {
+            if (this.model.get("discounts") > 0){
+                this.$('.total_discounts').removeClass('hide');
+            }else{
+                this.$('.total_discounts').addClass('hide');
+            }
             this.$('.total').text(round_monetary_currency(this.get_subtotal()));
             this.$('.discount').text(this.model.get_discounts_str());
         },
@@ -68,6 +73,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         render: function() {
             var data = this.getFormData();
             this.$el.html(this.template(data));
+            this.updateForm(data);
         },
         getFormData: function() {
             var model = {};
@@ -115,6 +121,11 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 this.$('.delivery_discount_item').removeClass('hide');
             }else{
                 this.$('.delivery_discount_item').addClass('hide');
+            }
+            if (data.discounts*1 > 0){
+                this.$('.total_discounts').removeClass('hide');
+            }else{
+                this.$('.total_discounts').addClass('hide');
             }
             this.$('.subtotal').text(data.subTotal);
             this.$('.surcharge').text(data.surcharge);

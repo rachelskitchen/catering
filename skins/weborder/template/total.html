@@ -9,15 +9,13 @@
 </script>
 
 <script type="text/template" id="total_checkout-template">
-    <% if(discounts*1 > 0) { %>
-    <li>
+    <li class="total_discounts">
         <span class="title">Discounts:</span>
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="discount"><%= discounts %></span>
         </span>
     </li>
-    <% } %>
     <li>
         <span class="title">Subtotal:</span>
         <span class="cost">
