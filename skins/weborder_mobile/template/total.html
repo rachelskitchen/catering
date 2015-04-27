@@ -1,13 +1,13 @@
 <script type="text/template" id="total_main-template">
     <% if(discount_allow) { %>
     <div>
-        <%= _lp.TOTAL_DISCOUNTS %>:
+        <span class="clip"> <%= _lp.TOTAL_DISCOUNTS %>: </span>
         <span class="currency_symbol"><%= currency_symbol %></span>
         <span class="discount"><%= discounts %></span>
     </div>
     <% } %>
     <div>
-        <%= _lp.TOTAL_SUBTOTAL %>:
+        <span class="clip"> <%= _lp.TOTAL_SUBTOTAL %>: </span>
         <span class="currency_symbol"><%= currency_symbol %></span>
         <span class="total"><%= subTotal %></span>
     </div>
