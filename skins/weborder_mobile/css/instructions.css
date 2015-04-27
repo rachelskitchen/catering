@@ -16,6 +16,12 @@
     padding: 0.3em 0;
 }
 
+#content .product_instructions .title > span {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 #content .product_instructions .textarea {
     width: 90%;
     height: 3.5em;
