@@ -28,6 +28,9 @@
     top: 6px;
     bottom: 6px;
 }
+#content > .checkout div.tips {
+    top: -10px;
+}
 #content > .checkout .tipBlock {
     height: 65px;
 }
@@ -58,7 +61,7 @@
     display:  inline-block;
     position:  relative;
     vertical-align: top;
-    margin-top: 10px;
+    margin-top: 5px;
 }
 #content > .checkout div.tips .number {
     display: inline-block;
@@ -68,9 +71,6 @@
     left: 2px;
     width: 76px;
     text-indent: 0 !important;
-}
-#content > .checkout  .tip-label {
-    margin-top: 22px;
 }
 #content > .checkout div.tips .currency_sym {
     display: inline-block;
