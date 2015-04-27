@@ -1,11 +1,9 @@
 <script type="text/template" id="total_main-template">
-    <% if(discount_allow) { %>
-    <div>
+    <div class="total_discounts">
         Discounts:
         <span class="currency_symbol"><%= currency_symbol %></span>
         <span class="discount"><%= discounts %></span>
     </div>
-    <% } %>
     <div>
         Subtotal:
         <span class="currency_symbol"><%= currency_symbol %></span>
@@ -15,15 +13,13 @@
 
 <script type="text/template" id="total_checkout-template">
     <ul class="confirm">
-    <% if(discount_allow) { %>
-        <li>
+        <li class="total_discounts">
             <span class="title">Discounts:</span>
             <span class="cost">
                 <span class="currency_symbol"><%= currency_symbol %></span>
                 <span class="discount"><%= discounts %></span>
             </span>
         </li>
-    <% } %>
         <li>
             <span class="title">Subtotal:</span>
             <span class="cost">
@@ -41,7 +37,7 @@
         </li>
 <% } %>
 
-<% if (deliveryCharge && discount_allow) { %>
+<% if (deliveryCharge) { %>
     <% if (deliveryDiscount*1 > 0) { %>
        <li class="delivery_discount_item">
      <% } else { %>
