@@ -36,8 +36,12 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.customer = this.options.customer;
             this.card = App.Data.card;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+
             this.model.get('dining_option') === 'DINING_OPTION_DELIVERY' &&
                  this.controlAddress(null, 'DINING_OPTION_DELIVERY');
+
+            this.model.get('dining_option') === 'DINING_OPTION_SHIPPING' &&
+                 this.controlAddress(null, 'DINING_OPTION_SHIPPING');
 
             this.model.get('dining_option') === 'DINING_OPTION_DELIVERY_SEAT' &&
                  this.controlDeliverySeat(null, 'DINING_OPTION_DELIVERY_SEAT');
@@ -108,9 +112,16 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.model.set('rewardCard', e.target.value);
         },
         controlAddress: function(model, value) {
-            if(value === 'DINING_OPTION_DELIVERY') {
-                this.customer.set('shipping_address', -1);
-                var address = new App.Views.CheckoutView.CheckoutAddressView({customer: this.customer});
+            var address = this.subViews.shift();
+
+            // remove address if it exists
+            address && address.remove();
+
+            if(value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING') {
+                address = new App.Views.CheckoutView.CheckoutAddressView({
+                    customer: this.customer,
+                    checkout: this.model
+                });
                 this.subViews.push(address);
                 this.$('.delivery_address').append(address.el);
                 if(address.model.state || address.model.province)
@@ -118,10 +129,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 else
                     this.trigger('address-without-states');
             } else {
-                address = this.subViews.shift();
-                address && address.remove();
                 this.trigger('address-hide');
-                this.customer.unset('shipping_address');
             }
         },
         controlDeliverySeat: function(model, value) {
@@ -397,9 +405,9 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             }
         },
         change_cash_text: function() {
-            var isDelivery = this.collection.checkout.get("dining_option") === 'DINING_OPTION_DELIVERY';
-            var cash = isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE;
-            this.$('.cash').html('<span class="clip">' + cash + '</span>');
+            var dining_option = this.collection.checkout.get("dining_option"),
+                isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING';
+            this.$('.cash').html(isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE);
         },
         gift_card: function() {
             var self = this;

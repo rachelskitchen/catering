@@ -179,7 +179,8 @@ define(["revel_view", "generator"], function(revel_view) {
             //App.Views.FactoryView.prototype.render.apply(this, arguments);
             var payment = App.Data.settings.get_payment_process(),
                 rows = payment.payment_count,
-                isDelivery = App.Data.myorder.checkout.get("dining_option") === 'DINING_OPTION_DELIVERY';
+                dining_option = App.Data.myorder.checkout.get("dining_option"),
+                isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING';
 
             payment.credit_card_button && payment.gift_card && rows--;
 

@@ -53,10 +53,15 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         getAddress: function() {
             var customer = this.options.customer.toJSON(),
-                lastIndex = customer.addresses.length - 1;
+                shipping_address = customer.shipping_address;
+
+            // if shipping address isn't selected take last index
+            if(this.options.customer.isDefaultShippingAddress()) {
+                shipping_address = customer.addresses.length - 1;
+            }
 
             // return last address
-            return customer.addresses.length && typeof customer.addresses[lastIndex].street_1 === 'string' ? customer.addresses[lastIndex] : undefined;
+            return customer.addresses[shipping_address] && typeof customer.addresses[shipping_address].street_1 === 'string' ? customer.addresses[shipping_address] : undefined;
         },
         events: {
             'change select.country': 'countryChange',
@@ -130,8 +135,14 @@ define(['backbone', 'factory'], function(Backbone) {
         updateAddress: function() {
             var customer = this.options.customer,
                 shipping_address = customer.get('shipping_address'),
+                addresses = customer.get('addresses'),
                 model = this.model,
                 address;
+
+            // if shipping_address isn't selected take last index
+            if(customer.isDefaultShippingAddress()) {
+                shipping_address = addresses.length ? addresses.length - 1 : 0;
+            }
 
             address = {
                 street_1: model.street_1,
@@ -143,21 +154,14 @@ define(['backbone', 'factory'], function(Backbone) {
                 country: model.country
             };
 
-            var addresses = customer.get('addresses');
-
-            if (addresses.length === 0 || typeof addresses[addresses.length - 1].street_1 !== 'string') {
-                addresses.push(address);
-            } else if (shipping_address === -1) {
-                addresses[addresses.length - 1] = address;
-            }
-
-            addresses[addresses.length - 1].address = customer.address_str();
+            addresses[shipping_address] = address;
+            addresses[shipping_address].address = customer.address_str(shipping_address);
         }
     });
 
     var DeliveryAddressesView = AddressView.extend({
         initialize: function() {
-            this.isShippingServices = App.skin == App.Skins.RETAIL;
+            this.isShippingServices = this.options.checkout && this.options.checkout.get('dining_option') === 'DINING_OPTION_SHIPPING';
 
             if (this.isShippingServices)
                 this.listenTo(this.options.customer, 'change:shipping_services', this.updateShippingServices, this);
@@ -165,6 +169,8 @@ define(['backbone', 'factory'], function(Backbone) {
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
+            this.model.isShippingServices = this.isShippingServices;
+
             App.Views.AddressView.prototype.render.apply(this, arguments);
 
             if (this.isShippingServices)
@@ -188,8 +194,8 @@ define(['backbone', 'factory'], function(Backbone) {
             }
 
             for (var index in shipping_services) {
-                var name = shipping_services[index].class_of_service + " (" + App.Settings.currency_symbol +
-                           parseFloat(shipping_services[index].shipping_charge).toFixed(2) +")";
+                var name = shipping_services[index].service_name + " (" + App.Settings.currency_symbol +
+                           parseFloat(shipping_services[index].shipping_and_handling_charge).toFixed(2) +")";
                 shipping.append('<option value="' + index + '" ' + (customer.get('shipping_selected') == index ? 'selected="selected"' : '') + '>' + name + '</option>');
             };
 
@@ -219,33 +225,28 @@ define(['backbone', 'factory'], function(Backbone) {
                 this.$(".shipping-status").spinner();
             }
 
-            this.changeShipping({currentTarget: shipping.get(0), shipping_status: shipping_status});
+            // this.changeShipping({currentTarget: shipping.get(0), shipping_status: shipping_status});
         },
         countryChange: function(e) {
             App.Views.AddressView.prototype.countryChange.apply(this, arguments);
-            this.options.customer.set('load_shipping_status', '');
+            // this.options.customer.set('load_shipping_status', '');
+            this.options.customer.resetShippingServices();
         },
         changeShipping: function(e) {
-            var price, name,
+            var shipping = {}, name,
                 value = parseInt(e.currentTarget.value),
                 myorder = App.Data.myorder,
-                checkout = myorder.checkout,
-                oldValue = this.options.customer.get("shipping_selected");
+                checkout = myorder.checkout;
 
             this.options.customer.set('shipping_selected', value);
             if (value >= 0) {
-                price = parseFloat(this.options.customer.get("shipping_services")[value].shipping_charge).toFixed(2) * 1;
-                name = this.options.customer.get("shipping_services")[value].class_of_service;
-            }
-            else {
-                price = 0;
-                name = MSG.DELIVERY_ITEM;
+                shipping = this.options.customer.get("shipping_services")[value];
+                myorder.total.set('shipping', shipping.shipping_and_handling_charge);
             }
 
             myorder.change_dining_option(checkout, checkout.get("dining_option"));
-            if (e.shipping_status != "pending") {
-                myorder.total.set_delivery_charge(price/*, {silent: App.Data.updateDiscountsStatus == "pending" }*/);
-                myorder.deliveryItem.get("product").set({"price": price, "name": name});
+            if (e.shipping_status != "pending" && !isNaN(value) && value != this.options.customer.defaults.shipping_selected) {
+                myorder.update_cart_totals();
             }
         },
         updateAddress: function() {
@@ -253,7 +254,7 @@ define(['backbone', 'factory'], function(Backbone) {
             var model = this.model;
             if (this.isShippingServices && model.street_1 && model.city && model.country && model.zipcode
                 && (model.country == 'US' ? model.state : true) && (model.country == 'CA' ? model.province : true)) {
-                this.options.customer.get_shipping_services();
+                App.Data.myorder.update_cart_totals({update_shipping_options: true});
             }
         }
     });
