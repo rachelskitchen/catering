@@ -336,7 +336,7 @@ define(["backbone", "geopoint"], function(Backbone) {
                         complete();
                         break;
                     default:
-                        onError();
+                        onError(jqXHR);
                 }
             });
             // process failure response
