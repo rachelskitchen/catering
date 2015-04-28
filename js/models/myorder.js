@@ -1199,7 +1199,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             if (json.shipping) {
-                myorder.total.set({"shipping": json.shipping.charge});
+                myorder.total.set({"shipping": json.shipping.service_charge});
             }
 
             if (json.order_discount instanceof Object) {
