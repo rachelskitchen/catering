@@ -223,12 +223,9 @@ define(['backbone', 'factory'], function(Backbone) {
                 shipping.append('<option value="-1">' + MSG.SHIPPING_SERVICES_RETRIVE_IN_PROGRESS + '</option>');
                 this.$(".shipping-status").spinner();
             }
-
-            // this.changeShipping({currentTarget: shipping.get(0), shipping_status: shipping_status});
         },
         countryChange: function(e) {
             App.Views.AddressView.prototype.countryChange.apply(this, arguments);
-            // this.options.customer.set('load_shipping_status', '');
             this.options.customer.resetShippingServices();
         },
         changeShipping: function(e) {
@@ -243,7 +240,6 @@ define(['backbone', 'factory'], function(Backbone) {
                 myorder.total.set('shipping', shipping.shipping_and_handling_charge);
             }
 
-            myorder.change_dining_option(checkout, checkout.get("dining_option"));
             if (e.shipping_status != "pending" && !isNaN(value) && value != this.options.customer.defaults.shipping_selected) {
                 myorder.update_cart_totals();
             }

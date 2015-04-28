@@ -326,16 +326,18 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             this.listenTo(myorder, 'paymentResponse', function() {
-                var card = App.Data.card;
+                var card = App.Data.card,
+                    customer = App.Data.customer;
 
                 App.Data.settings.usaepayBack = true;
 
                 var status = myorder.paymentResponse.status.toLowerCase();
                 switch (status) {
                     case 'ok':
-                        PaymentProcessor.completeTransaction();  // complete payment transaction
-                        myorder.clearData();                     // cleaning of the cart
-                        card && card.clearData();                // removal of information about credit card
+                        PaymentProcessor.completeTransaction();        // complete payment transaction
+                        myorder.clearData();                           // cleaning of the cart
+                        card && card.clearData();                      // removal of information about credit card
+                        customer && customer.resetShippingServices();  // clear shipping service selected
                         break;
                     case 'error':
                         card && card.clearData(); // removal of information about credit card
@@ -534,7 +536,7 @@ define(["backbone", "factory"], function(Backbone) {
             if (cssua.ua.revelsystemswebview && cssua.ua.ios) {
                 $("body")[0].scrollIntoView(); //workaround for #18586, #18130
             }
-            if (location.hash.slice(1) == 'map' && App.Data.map) { //#19928 to resize the google.map 
+            if (location.hash.slice(1) == 'map' && App.Data.map) { //#19928 to resize the google.map
                 App.Data.map.trigger("change_page");
             }
         },

@@ -365,8 +365,11 @@ define(["backbone", "geopoint"], function(Backbone) {
          * @type undefined
          */
         resetShippingServices: function(status) {
-            this.set('shipping_services', [], {silent: true});
-            this.set('load_shipping_status', typeof status == 'string' ? status : '', {silent: true});
+            this.set({
+                shipping_services: [],
+                load_shipping_status: typeof status == 'string' ? status : '',
+                shipping_selected: -1
+            }, {silent: true});
             this.trigger('change:shipping_services');
         },
         /**
