@@ -329,7 +329,7 @@ define(["backbone", "geopoint"], function(Backbone) {
             });
             // process successful response
             jqXHR.done(function(response) {
-                var shipping_options
+                var shipping_options;
                 switch (response.status) {
                     case "OK":
                         self.set("shipping_services", getShippingOptions(response), {silent: true});
