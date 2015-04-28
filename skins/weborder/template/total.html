@@ -9,15 +9,13 @@
 </script>
 
 <script type="text/template" id="total_checkout-template">
-    <% if(discount_allow) { %>
-    <li>
+    <li class="total_discounts">
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
             <span class="discount"><%= discounts %></span>
         </span>
         <span class="title clip"> <%= _lp.TOTAL_DISCOUNTS %>: </span>
     </li>
-    <% } %>
     <li>
         <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
@@ -35,7 +33,7 @@
         <span class="title clip"> <%= _lp.TOTAL_DELIVERY_CHARGE %>: </span>
     </li>
 <% } %>
-<% if (deliveryCharge && discount_allow) { %>
+<% if (deliveryCharge) { %>
     <% if (deliveryDiscount*1 > 0) { %>
        <li class="delivery_discount_item">
      <% } else { %>

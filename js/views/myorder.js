@@ -165,16 +165,14 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 });
             });
 
-            if (App.Settings.accept_discount_code && this.model.get("discount") instanceof Object) {
-                var view = App.Views.GeneratorView.create('MyOrder', {
-                    el: $('<li></li>'),
-                    mod: 'ProductDiscount',
-                    model: this.model
-                });
-                self.subViews.push(view);
-                self.$('.discount_place').append(view.el);
-            }
-
+            var view = App.Views.GeneratorView.create('MyOrder', {
+                el: $('<li></li>'),
+                mod: 'ProductDiscount',
+                model: this.model
+            });
+            self.subViews.push(view);
+            self.$('.discount_place').append(view.el);
+    
             return this;
         },
         getData: function() {
