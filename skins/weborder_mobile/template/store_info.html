@@ -109,11 +109,11 @@
                                 <% }); %>
                             </span>
                         <% } else if(day.hours) { %>
-                            <span class="weekDay"><%= day.weekDay %></span>
-                            <span class="time"> <%= _lp.STORE_INFO_ROUND_THE_CLOCK %> </span>
+                            <span class="weekDay clip"> <%= day.weekDay %> </span>
+                            <span class="time clip"> <%= _lp.STORE_INFO_ROUND_THE_CLOCK %> </span>
                         <% } else { %>
-                            <span class="weekDay"><%= day.weekDay %></span>
-                            <span class="time closed"> <%= _lp.STORE_INFO_CLOSED %> </span>
+                            <span class="weekDay clip"> <%= day.weekDay %> </span>
+                            <span class="time closed clip"> <%= _lp.STORE_INFO_CLOSED %> </span>
                         <% } %>
                     </li>
                     <% }); %>
