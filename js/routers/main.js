@@ -314,16 +314,18 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             this.listenTo(myorder, 'paymentResponse', function() {
-                var card = App.Data.card;
+                var card = App.Data.card,
+                    customer = App.Data.customer;
 
                 App.Data.settings.usaepayBack = true;
 
                 var status = myorder.paymentResponse.status.toLowerCase();
                 switch (status) {
                     case 'ok':
-                        PaymentProcessor.completeTransaction();  // complete payment transaction
-                        myorder.clearData();                     // cleaning of the cart
-                        card && card.clearData();                // removal of information about credit card
+                        PaymentProcessor.completeTransaction();        // complete payment transaction
+                        myorder.clearData();                           // cleaning of the cart
+                        card && card.clearData();                      // removal of information about credit card
+                        customer && customer.resetShippingServices();  // clear shipping service selected
                         break;
                     case 'error':
                         card && card.clearData(); // removal of information about credit card
