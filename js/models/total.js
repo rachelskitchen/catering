@@ -85,7 +85,10 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
          * get Total w/o delivery charge
          */
         get_total_wo_delivery: function() {
-            return round_monetary_currency(this.get('total_wo_delivery'));
+            if (App.Data.myorder.checkout.get('dining_option') == 'DINING_OPTION_DELIVERY')
+                return round_monetary_currency(this.get('total_wo_delivery'));
+            else
+                return round_monetary_currency(this.get('total'));
         },
         /**
          * get Tax
