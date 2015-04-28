@@ -203,31 +203,29 @@ var ERROR = {},
                 var myorder = App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
                 require([settings.get('skin') + '/router'], function(module) {
-                    if(module instanceof require('main_router')) {
-                        module.initRouter();
-                    }
-                    App.Data.router = new App.Routers.Router;
-                    var router = App.Data.router;
-                    router.once('started', function() {
-                        // hide a launch spinner & load an establishments list
-                        win.trigger('hideSpinner');
-                        router.trigger('needLoadEstablishments');
-                    });
-
-                    if (settings.get('isMaintenance')) {
-                        location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
-                    } else {
-                        // TODO: shouldn't depend on the isMaintenance mode if the 'Change Store' functionality is implemented on '#maintenance' page
-                        isNotFirstLaunch = true;
-                    }
-                    router.isNotFirstLaunch = isNotFirstLaunch;
-
                     locale.loadCompleted.done(function() {
-                        Backbone.history.start();
-                    });
+                        if(module instanceof require('main_router')) {
+                            module.initRouter();
+                        }
+                        var router = App.Data.router = new App.Routers.Router;
+                        router.once('started', function() {
+                            // hide a launch spinner & load an establishments list
+                            win.trigger('hideSpinner');
+                            router.trigger('needLoadEstablishments');
+                        });
 
-                    // invoke afterStart callback
-                    app.afterInit();
+                        if (settings.get('isMaintenance')) {
+                            location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
+                        } else {
+                            // TODO: shouldn't depend on the isMaintenance mode if the 'Change Store' functionality is implemented on '#maintenance' page
+                            isNotFirstLaunch = true;
+                        }
+                        router.isNotFirstLaunch = isNotFirstLaunch;
+                        Backbone.history.start();    
+
+                        // invoke afterStart callback
+                        app.afterInit();
+                    });
                 });
                 myorder.on('reset add remove', function() {
                     var ests = App.Data.establishments;
