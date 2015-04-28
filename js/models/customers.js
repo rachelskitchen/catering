@@ -400,6 +400,13 @@ define(["backbone", "geopoint"], function(Backbone) {
         },
         /**
          * @method
+         * @returns {boolean} true if `shipping_selected` is default or false otherwise.
+         */
+        isDefaultShippingSelected: function() {
+            return this.get('shipping_selected') === this.defaults.shipping_selected;
+        },
+        /**
+         * @method
          * @param {string} dining_option - selected order type.
          * @returns {boolean} true is a new address selected or false if address already exists in DB.
          */
