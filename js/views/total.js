@@ -39,6 +39,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.discounts = this.model.get_discounts_str();
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
             this.$el.html(this.template(model));
+            this.update();
         },
         update: function() {
             if (this.model.get("discounts") > 0){
