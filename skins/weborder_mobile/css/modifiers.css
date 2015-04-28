@@ -255,7 +255,7 @@
     z-index: 10;
 }
 
-.mdf_quantity_in.select:before {
+.mdf_quantity_in.select:before, .mdf_split_in.select:before {
     height: 1em;
     margin-top: 4px;
 }
