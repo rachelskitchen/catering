@@ -500,7 +500,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         },
         change_dining_option: function(model, value, opts) {
             var obj, bag_charge = this.total.get_bag_charge() * 1,
-                delivery_charge = this.total.get_delivery_charge() * 1;
+                delivery_charge = this.total.get_delivery_charge() * 1,
+                isShipping = value === 'DINING_OPTION_SHIPPING';
 
             if(typeof opts !== 'object'  || !opts.avoid_delivery) {
                 if (value === 'DINING_OPTION_DELIVERY' && delivery_charge !== 0) {
@@ -519,7 +520,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 }
 
                 // reset shipping
-                if(value !== 'DINING_OPTION_SHIPPING') {
+                if(!isShipping) {
                     this.total.set('shipping', null);
                 }
 
@@ -545,7 +546,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 this.restoreTaxes();
 
             if(!this.paymentInProgress) {
-                this.update_cart_totals(); //for Shipping case update_cart_totals will be called from DeliveryAddressView::changeShipping func.
+                this.update_cart_totals(isShipping ? {update_shipping_options: true} : undefined);
             }
         },
         // check if user get maintenance after payment
@@ -675,7 +676,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             this.change_only_gift_dining_option();
 
             if (model.isRealProduct()) {
-                this.update_cart_totals();
+                this.update_cart_totals({update_shipping_options: true});
             }
         },
         /**
@@ -694,7 +695,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             if (model.isRealProduct() && !this.paymentInProgress) {
-                this.update_cart_totals();
+                this.update_cart_totals({update_shipping_options: true});
             }
         },
         /**
@@ -716,7 +717,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             model.changedAttributes() && model.changedAttributes().sum && model.trigger('update:sum', model);
 
             if (model.isRealProduct()) {
-                this.update_cart_totals();
+                this.update_cart_totals({update_shipping_options: true});
             }
         },
         findDeliveryItem: function() {
