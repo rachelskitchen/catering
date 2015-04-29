@@ -501,7 +501,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         change_dining_option: function(model, value, opts) {
             var obj, bag_charge = this.total.get_bag_charge() * 1,
                 delivery_charge = this.total.get_delivery_charge() * 1,
-                isShipping = value === 'DINING_OPTION_SHIPPING';
+                isShipping = value === 'DINING_OPTION_SHIPPING',
+                customer = App.Data.customer;
 
             if(typeof opts !== 'object'  || !opts.avoid_delivery) {
                 if (value === 'DINING_OPTION_DELIVERY' && delivery_charge !== 0) {
@@ -546,7 +547,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 this.restoreTaxes();
 
             if(!this.paymentInProgress) {
-                this.update_cart_totals(isShipping ? {update_shipping_options: true} : undefined);
+                // need pass `update_shipping_options` flag if 'Shipping' order type is choosen at first time (shipping_selected === -1).
+                this.update_cart_totals(isShipping && customer && customer.isDefaultShippingSelected() ? {update_shipping_options: true} : undefined);
             }
         },
         // check if user get maintenance after payment

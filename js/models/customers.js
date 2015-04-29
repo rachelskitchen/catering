@@ -329,7 +329,7 @@ define(["backbone", "geopoint"], function(Backbone) {
             });
             // process successful response
             jqXHR.done(function(response) {
-                var shipping_options
+                var shipping_options;
                 switch (response.status) {
                     case "OK":
                         self.set("shipping_services", getShippingOptions(response), {silent: true});
@@ -397,6 +397,13 @@ define(["backbone", "geopoint"], function(Backbone) {
          */
         isDefaultShippingAddress: function() {
             return this.get('shipping_address') === this.defaults.shipping_address;
+        },
+        /**
+         * @method
+         * @returns {boolean} true if `shipping_selected` is default or false otherwise.
+         */
+        isDefaultShippingSelected: function() {
+            return this.get('shipping_selected') === this.defaults.shipping_selected;
         },
         /**
          * @method
