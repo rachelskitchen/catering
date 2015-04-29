@@ -68,7 +68,7 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
                 var dining_option = App.Data.myorder.checkout.get('dining_option'),
                     total_wo_delivery = this.get('total');
 
-                if(dining_option != 'DINING_OPTION_DELIVERY') {
+                if(dining_option == 'DINING_OPTION_DELIVERY') {
                     total_wo_delivery -= this.get_delivery_charge() * 1;
                 }
 

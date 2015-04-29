@@ -29,6 +29,7 @@ define({
         jquery_gallery: 'js/libs/jquery/jquery.gallery',
         jquery_numbermask: "js/libs/jquery/jquery.number_mask",
         backbone: "js/libs/backbone",
+        backbone_epoxy: "js/libs/backbone.epoxy",
         cssua: "js/libs/cssua",
         underscore: "js/libs/underscore",
         functions : "js/functions",
@@ -94,6 +95,10 @@ define({
         },
         "backbone": {
             deps: ["underscore", "jquery"],
+            exports: "Backbone"
+        },
+        "backbone_epoxy": {
+            deps: ["backbone"],
             exports: "Backbone"
         },
         "cssua": {
