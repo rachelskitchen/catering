@@ -36,7 +36,7 @@ define(['backbone'], function(Backbone) {
                 curLocale = window.navigator.language,
                 stateLocale = getData('currentLocale', true); // load data from storage (cookie, sessionStorage, localStorage)
             // for test (begin)
-            curLocale = 'en';
+            curLocale = 'ru';
             // for test (end)
             if (!stateLocale ||
                 stateLocale.locale != curLocale ||
@@ -127,6 +127,9 @@ define(['backbone'], function(Backbone) {
                             switch (curLocale) {
                                 case 'en':
                                     url = 'http://192.168.120.47/directory/HTML5/Web_ordering_app/placeholders/en.paypal.placeholders.json';
+                                    break;
+                                case 'ru':
+                                    url = 'http://192.168.120.47/directory/HTML5/Web_ordering_app/placeholders/ru.paypal.placeholders.json';
                                     break;
                             }
                             break;
