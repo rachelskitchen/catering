@@ -46,10 +46,6 @@
     height: 1.5em;
 }
 
-#content ul.confirm li.delivery-charge {
-    display: none;
-}
-
 #content ul.confirm span.title {
     float: left;
 }

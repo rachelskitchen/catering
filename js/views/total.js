@@ -58,7 +58,7 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
                     }
                 }
             });
-            return App.modelViews.CoreTotalMain = new viewModel();
+            return App.lastModelViews.CoreTotalMain = new viewModel(); //lastModelViews.xxx is for debug only
         },
         get_subtotal: function() {
             if (this.collection.get_only_product_quantity() == 0) {
@@ -85,33 +85,38 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
             this.listenTo(this.model.get('delivery'), 'change', this.updateAll, this);
         },
         getData: function() {
+            var dining_option = this.collection.checkout.get('dining_option');
             return {
+                discounts: this.model.get_discounts_str(),
                 subTotal: this.get_subtotal(),
                 surcharge: this.model.get_surcharge(),
                 grandTotal: this.model.get_grand(),
                 tax: this.model.get_tax(),
                 tip: this.model.get_tip(),
                 deliveryCharge: this.model.get_delivery_charge(),
-                discounts: this.model.get_discounts_str(),
+                shippingCharge: this.model.get_shipping_charge(),
                 deliveryDiscount: round_monetary_currency(this.collection.deliveryItem ? this.collection.deliveryItem.get("discount").get("sum") : 0),
-                dining_option: this.collection.checkout.get('dining_option')
+                shippingDiscount: round_monetary_currency(this.model.get('shipping_discount') || 0),
+                dining_option: dining_option
             };
         },
         bindings: {
             ".total_discounts": "classes:{hide:hide_discounts}",
             "li.delivery-charge": "classes:{hide:hide_delivery}",
             ".delivery_discount_item": "classes:{hide:hide_delivery_discount}",
+            ".shipping_charge_item": "classes:{hide:hide_shipping}",
+            ".shipping_discount_item": "classes:{hide:hide_shipping_discount}",
             ".surcharge_item": "classes:{hide:hide_surcharge_item}",
             ".discount": "text:discounts",
             ".subtotal": "text:subTotal",
             "span.delivery-charge": "text:deliveryCharge",
             ".delivery-discount": "text:deliveryDiscount",
+            ".shipping_charge": "text:shippingCharge",
+            ".shipping_discount": "text:shippingDiscount",
             ".surcharge": "text:surcharge",
             ".tax": "text:tax",
             ".tip": "text:tip",
             ".grandtotal": "text:grandTotal",
-            ".delivery_charge_title": "text:delivery_charge_str",
-            ".delivery_discount_title": "text:delivery_discount_str"
         },
         viewModel: function(view) {
             var viewModel = Backbone.Epoxy.Model.extend({
@@ -121,28 +126,25 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
                         return this.get("discounts")*1 <= 0;
                     },
                     hide_delivery: function() {
-                        if (view.collection.get_only_product_quantity() > 0 && 
-                             ((this.get('dining_option') == 'DINING_OPTION_DELIVERY' &&  this.get('deliveryCharge')*1 > 0) || 
-                               this.get('dining_option') == 'DINING_OPTION_SHIPPING')) {
-                            return false;
-                        } else
-                            return true;
+                        return !(view.collection.get_only_product_quantity() > 0 && 
+                               this.get('dining_option') == 'DINING_OPTION_DELIVERY' &&  this.get('deliveryCharge')*1 > 0);
+                    },
+                    hide_shipping: function() {
+                        return !(view.collection.get_only_product_quantity() > 0 && 
+                               this.get('dining_option') == 'DINING_OPTION_SHIPPING' &&  this.get('shippingCharge')*1 > 0);
                     },
                     hide_delivery_discount: function() {
                         return this.get('deliveryDiscount')*1 <= 0;
                     },
+                    hide_shipping_discount: function() {
+                        return this.get('shippingDiscount')*1 <= 0;
+                    },
                     hide_surcharge_item: function() {
                         return this.get('surcharge')*1 <= 0;
-                    },
-                    delivery_charge_str: function() {
-                        return this.get('dining_option') == 'DINING_OPTION_SHIPPING' ? 'Shipping:' : 'Delivery Charge:'
-                    },
-                    delivery_discount_str: function() {
-                        return this.get('dining_option') == 'DINING_OPTION_SHIPPING' ? 'Shipping Discount:' : 'Delivery Discount:'
                     }
                 }
             });
-            return App.modelViews.CoreTotalCheckout = new viewModel();
+            return App.lastModelViews.CoreTotalCheckout = new viewModel();
         }
     });    
 
