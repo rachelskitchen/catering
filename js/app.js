@@ -76,7 +76,7 @@
             log: {}
         },
         Models: {},
-        modelViews: {},
+        lastModelViews: {},
         Routers: {},
         Views: {},
         Skins: skins

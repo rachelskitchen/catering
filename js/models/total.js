@@ -36,7 +36,8 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             prevailing_surcharge: null,
             prevailing_tax: null,
             total_wo_delivery: 0,
-            shipping: null
+            shipping: null,
+            shipping_discount: 0
         },
         initialize: function(opts) {
             var settings = App.Data.settings.get("settings_system"),
@@ -147,7 +148,7 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             var delivery = this.get('delivery'),
                 charge = delivery.get('enable') ? delivery.get('charge') : 0;
             return round_monetary_currency(charge);
-        },
+        },    
         /**
          * @method
          * @returns {string} formatted shipping charge amount
@@ -157,7 +158,7 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
         },
         set_delivery_charge: function(charge) {
             this.get('delivery').set('charge', charge);
-        },
+        },        
         /**
          * get bag charge
          */
