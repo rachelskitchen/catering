@@ -20,26 +20,41 @@
                 <span class="discount"></span>
             </span>
         </li>
-        <li>
-            <span class="title">Subtotal:</span>
-            <span class="cost">
-                <span class="currency_symbol"><%= _settings.currency_symbol %></span>
-                <span class="subtotal"></span>
-            </span>
-        </li>
         <li class="delivery-charge">
-            <span class="title delivery_charge_title"></span>
+            <span class="title">Delivery Charge:</span>
             <span class="cost">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="delivery-charge"></span>
             </span>
         </li>
         <li class="delivery_discount_item">
-            <span class="title delivery_discount_title"></span>
+            <span class="title">Delivery Discount:</span>
             <span class="cost">
                 <span class="plus">-</span>
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="delivery-discount"></span>
+            </span>
+        </li>
+        <li class="shipping_charge_item">
+            <span class="title">Shipping:</span>
+            <span class="cost">
+                <span class="currency_symbol"><%= _settings.currency_symbol %></span>
+                <span class="shipping_charge"></span>
+            </span>
+        </li>
+        <li class="shipping_discount_item">
+            <span class="title">Shipping Discount:</span>
+            <span class="cost">
+                <span class="plus">-</span>
+                <span class="currency_symbol">-<%= _settings.currency_symbol %></span>
+                <span class="shipping_discount"></span>
+            </span>
+        </li>
+        <li>
+            <span class="title">Subtotal:</span>
+            <span class="cost">
+                <span class="currency_symbol"><%= _settings.currency_symbol %></span>
+                <span class="subtotal"></span>
             </span>
         </li>
         <li class="surcharge_item">
