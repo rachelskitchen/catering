@@ -23,6 +23,12 @@
 define(['backbone'], function(Backbone) {
     'use strict';
 
+    var REDEMPTION_CODES = {
+        points: 1,
+        visits: 2,
+        purchases: 3
+    };
+
     /**
      * @class App.Models.Rewards
      * Represents customer's rewards (points, visits, purchases).
@@ -31,10 +37,10 @@ define(['backbone'], function(Backbone) {
         /**
          * @property {Object} defaults - the set of model attributes with default values.
          *
-         * @property {Object} defaults.rewards_earned - rewards earned.
+         * @property {Object} defaults.rewards_earned - number of rewards earned (points / points per rewards). Only 1 reward may be redeemed per time.
          * @default 0.
          *
-         * @property {Object} defaults.discount - discount.
+         * @property {Object} defaults.discount - discount for 1 reward redemption.
          * @default 0.
          *
          * @property {Object} defaults.point_to_next_reward - points to next reward earned.
@@ -55,6 +61,15 @@ define(['backbone'], function(Backbone) {
          */
         isAvailable: function() {
             return this.get('rewards_earned') > 0;
+        },
+        /**
+         * @method
+         * @returns {boolean} true if all attributes have default values
+         */
+        isDefault: function() {
+            return Object.keys(this.defaults).every(function(attr) {
+                return this.defaults[attr] === this.get(attr);
+            }, this);
         }
     });
 
@@ -67,22 +82,26 @@ define(['backbone'], function(Backbone) {
          * @property {Object} defaults - the set of model attributes with default values.
          *
          * @property {App.Models.Rewards} defaults.purchases - rewards for purchases.
-         * @default instance of App.Models.Rewards
+         * @default instance of App.Models.Rewards.
          *
          * @property {App.Models.Rewards} defaults.points - point rewards.
-         * @default instance of App.Models.Rewards
+         * @default instance of App.Models.Rewards.
          *
          * @property {App.Models.Rewards} defaults.visits - rewards for visits.
-         * @default instance of App.Models.Rewards
+         * @default instance of App.Models.Rewards.
          *
          * @property {string} defaults.number - rewards card number.
          * @default ''.
+         *
+         * @property {number} defaults.redemption_code - code of selected rewards type. 1 - points reward, 2 - visits reward, 3 - purchases reward.
+         * @defaults null.
          */
         defaults: {
             purchases: new App.Models.Rewards,
             points: new App.Models.Rewards,
             visits: new App.Models.Rewards,
-            number: ''
+            number: '',
+            redemption_code: null
         },
         /**
          * @method
@@ -104,7 +123,7 @@ define(['backbone'], function(Backbone) {
          * @param {Object} data - data of rewards type (simple object is converted to instance of App.Models.Rewards)
          */
         updateRewardsType: function(rewardsType, data) {
-            if(Object.keys(this.defaults).indexOf(rewardsType) == -1) {
+            if(Object.keys(REDEMPTION_CODES).indexOf(rewardsType) == -1) {
                 return;
             }
             if(typeof data == 'undefined') {
@@ -140,7 +159,8 @@ define(['backbone'], function(Backbone) {
                 },
                 dataType: 'json',
                 successResp: function(data) {
-                    if(data[0] instanceof Object) {
+                    if(Array.isArray(data) && data[0] instanceof Object) {
+                        _.defaults(data[0], self.defaults);
                         updateRewards(data[0]);
                     } else {
                         // restore default rewards types
@@ -155,9 +175,18 @@ define(['backbone'], function(Backbone) {
 
             function updateRewards(obj) {
                 self.updateRewardsType('purchases', obj.purchases);
-                self.updateRewardsType('visits', obj.purchases);
-                self.updateRewardsType('points', obj.purchases);
+                self.updateRewardsType('visits', obj.visits);
+                self.updateRewardsType('points', obj.points);
                 self.trigger('onRewardsReceived');
+            }
+        },
+        /**
+         * @method
+         * Set `redemption_code` attribute.
+         */
+        selectRewardsType: function(rewardsType) {
+            if(Object.keys(REDEMPTION_CODES).indexOf(rewardsType) > -1) {
+                this.set('redemption_code', REDEMPTION_CODES[rewardsType]);
             }
         }
     });
