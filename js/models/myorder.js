@@ -594,10 +594,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
          * get quantity without delivery charge and bag charge items
          */
         get_only_product_quantity: function() {
-            var array = this.filter(function(model) {
-                    return model.get("id_product") != null;
-                });
-            return array.length;
+            return _.reduce(this.models, function(qty, model) {
+                    return model.get("id_product") != null ? qty + model.get('quantity') : qty; 
+                }, 0);
         },
         /**
          *  create orders from JSON.
@@ -1213,10 +1212,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 });
             }
 
-            if (json.shipping) {
-                myorder.total.set({"shipping": json.shipping.service_charge});
-            }
-
             if (json.order_discount instanceof Object) {
                 myorder.discount.set({ name: json.order_discount.name,
                                        sum: json.order_discount.sum,
@@ -1232,7 +1227,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 total: json.subtotal,
                 tax: json.tax,
                 surcharge: json.surcharge,
-                discounts: json.discounts
+                discounts: json.discounts,
+                shipping: json.shipping && json.shipping.service_charge,
+                shipping_discount: json.shipping && json.shipping.discount_sum,
             });
         },
 
