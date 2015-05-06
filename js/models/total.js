@@ -166,12 +166,17 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
          * save information from total model to local storage
          */
         saveTotal: function() {
+            setData('total',this);
             this.get('tip').saveTip();
         },
         /**
          * load information from local storage
          */
         loadTotal: function() {
+            var json = getData('total');
+            delete json.delivery;
+            delete json.tip;
+            this.set(json);
             this.get('tip').loadTip();
         },
         /**

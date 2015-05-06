@@ -39,7 +39,7 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
             ".discount": "text:discountsFrm",
             ".total": "text:totalFrm"
         },
-        computeds: { 
+        computeds: {
             totalFrm: {
                 deps: ["total", "dining_option"], //depends on attr. 'total' of this.model 
                 get: function() {
@@ -119,19 +119,15 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
                              return dining_option != 'DINING_OPTION_DELIVERY' ||  deliveryCharge*1 <= 0 || view.collection.get_only_product_quantity() <= 0;
                         }
                     },
-                    hide_shipping: {
-                        deps: ['dining_option', 'shippingCharge'], 
-                        get: function(dining_option, shippingCharge) {
-                            return dining_option != 'DINING_OPTION_SHIPPING' || shippingCharge*1 <= 0 || view.collection.get_only_product_quantity() <= 0;
-                        }
+                    hide_shipping: function() { //for right automatic binding discovering you may use AND/OR functions instead of &&/|| inline operation with deps: [...]
+                        return OR(this.get('dining_option') != 'DINING_OPTION_SHIPPING', this.get('shippingCharge')*1 <= 0) || view.collection.get_only_product_quantity() <= 0;
                     },
                     hide_delivery_discount: function() {
                         var dining_option = this.get('dining_option');
                         return this.get('deliveryDiscount')*1 <= 0 || dining_option != 'DINING_OPTION_DELIVERY';
                     },
-                    hide_shipping_discount: function() {
-                        var dining_option = this.get('dining_option');
-                        return this.get('shippingDiscount')*1 <= 0 || dining_option != 'DINING_OPTION_SHIPPING';
+                    hide_shipping_discount: function() { //for right binding discovering you may use AND/OR functions instead of &&/|| operations with extra value declaration
+                        return OR(this.get('shippingDiscount')*1 <= 0, this.get('dining_option') != 'DINING_OPTION_SHIPPING');
                     },
                     hide_surcharge_item: function() {
                         return this.get('surcharge')*1 <= 0;
