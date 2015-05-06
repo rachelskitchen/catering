@@ -1217,7 +1217,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 tax: json.tax,
                 surcharge: json.surcharge,
                 discounts: json.discounts,
-                shipping: json.shipping && json.shipping.amount,
+                shipping: json.shipping && json.shipping.service_charge,
                 shipping_discount: json.shipping && json.shipping.discount_sum,
             });
         },
