@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
+define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbone) {
     'use strict';
 
     App.Models.Myorder = Backbone.Model.extend({
@@ -486,6 +486,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         discount: null, // discount for the order
         paymentResponse: null, // contains payment response
         initialize: function( ) {
+            this.rewardsCard = new App.Models.RewardsCard();
             this.discount = new App.Models.DiscountItem({"discount_rate": 0});
             this.total = new App.Models.Total();
             this.checkout = new App.Models.Checkout();
@@ -757,6 +758,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             setData('orders', orderToSave);
             this.checkout.saveCheckout();
+            this.rewardsCard.saveData();
             this.total.saveTotal();
             this.discount.saveDiscount();
         },
@@ -766,6 +768,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         loadOrders: function() {
             this.empty_myorder();
             this.checkout.loadCheckout();
+            this.rewardsCard.loadData();
             this.total.loadTotal();
             var orders = getData('orders');
             var delivery_data = getData('delivery_data');
@@ -1056,6 +1059,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         _get_cart_totals: function(params) {
             var myorder = this, checkout,
                 customer = App.Data.customer,
+                rewardsCard = this.rewardsCard.toJSON(),
                 total = myorder.total.get_all(),
                 items = [],
                 order_info = {},
@@ -1093,6 +1097,14 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             if(isShipping) {
                 order_info.shipping = customer.get('shipping_services')[customer.get('shipping_selected')] || {};
                 order_info.customer =  {address: shipping_address};
+            }
+
+            // add rewards card and redemption code to apply discount
+            if(rewardsCard.number && rewardsCard.redemption_code) {
+                order_info.rewards_card = {
+                    number: rewardsCard.number,
+                    redemption: rewardsCard.redemption_code
+                };
             }
 
             var myorder_json = JSON.stringify(order);
@@ -1250,6 +1262,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             var call_name = [],
                 checkout = this.checkout.toJSON(),
+                rewardsCard = this.rewardsCard.toJSON(),
                 card = App.Data.card && App.Data.card.toJSON(),
                 customer = App.Data.customer.toJSON();
 
@@ -1286,8 +1299,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             if(notifications)
                 order.notifications = notifications;
 
-            if(checkout.rewardCard) {
-                payment_info.reward_card = checkout.rewardCard ? checkout.rewardCard.toString() : '';
+            if(rewardsCard.number) {
+                order_info.rewards_card = {
+                    number: rewardsCard.number,
+                    redemption: rewardsCard.redemption_code || undefined
+                };
             }
 
             if(checkout.dining_option === 'DINING_OPTION_SHIPPING') {

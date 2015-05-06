@@ -31,7 +31,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         initialize: function() {
             this.listenTo(this.model, 'change:dining_option', this.controlAddress, this);
             this.listenTo(this.model, 'change:dining_option', this.controlDeliverySeat, this);
-            this.listenTo(this.model, 'change:rewardCard', this.updateData, this);
+            this.listenTo(this.options.rewardsCard, 'change:number', this.updateData, this);
             this.listenTo(this.options.customer, 'change:first_name change:last_name change:email change:phone', this.updateData, this);
             this.customer = this.options.customer;
             this.card = App.Data.card;
@@ -56,7 +56,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             model.lastName = this.customer.escape('last_name');
             model.email = this.customer.escape('email');
             model.phone = this.customer.escape('phone');
-            model.rewardCard = this.model.escape('rewardCard');
+            model.rewardCard = this.options.rewardsCard.escape('number');
             model.isFirefox = /firefox/i.test(navigator.userAgent);
             model.enableRewardCard = settings.enable_reward_cards_collecting;
             model.business_name = settings.business_name;
@@ -109,7 +109,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.customer.set('phone', e.target.value);
         },
         changeRewardCard: function(e) {
-            this.model.set('rewardCard', e.target.value);
+            this.options.rewardsCard.set('number', e.target.value);
         },
         controlAddress: function(model, value) {
             var address = this.subViews.shift();
@@ -150,7 +150,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.$('.lastName').val(customer.get('last_name'));
             this.$('.email').val(customer.get('email'));
             this.$('.phone').val(customer.get('phone'));
-            this.$('.rewardCard').val(this.model.get('rewardCard'));
+            this.$('.rewardCard').val(this.options.rewardsCard.get('number'));
         }
     });
 

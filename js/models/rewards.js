@@ -57,10 +57,10 @@ define(['backbone'], function(Backbone) {
         },
         /**
          * @method
-         * @returns {boolean} true if 'reward_earned' attribute is more than 0, otherwise false.
+         * @returns {boolean} true if 'reward_earned' attribute isn't less than 1, otherwise false.
          */
         isAvailable: function() {
-            return this.get('rewards_earned') > 0;
+            return this.get('rewards_earned') >= 1;
         },
         /**
          * @method
@@ -153,10 +153,10 @@ define(['backbone'], function(Backbone) {
             Backbone.$.ajax({
                 url: '/weborders/reward_cards/',
                 type: 'POST',
-                data: {
+                data: JSON.stringify({
                     establishment: App.Data.settings.get("establishment"),
                     number: number
-                },
+                }),
                 dataType: 'json',
                 successResp: function(data) {
                     if(Array.isArray(data) && data[0] instanceof Object) {
@@ -185,9 +185,36 @@ define(['backbone'], function(Backbone) {
          * Set `redemption_code` attribute.
          */
         selectRewardsType: function(rewardsType) {
-            if(Object.keys(REDEMPTION_CODES).indexOf(rewardsType) > -1) {
-                this.set('redemption_code', REDEMPTION_CODES[rewardsType]);
-            }
+            var isAvailable = Object.keys(REDEMPTION_CODES).indexOf(rewardsType) > -1 && this.get(rewardsType).isAvailable();
+            this.set('redemption_code', isAvailable ? REDEMPTION_CODES[rewardsType] : this.defaults.redemption_code);
+        },
+        /**
+         * @method
+         * Saves data in storage. 'rewardsCard' is used as entry name.
+         */
+        saveData: function() {
+            var data = _.extend(this.toJSON(), {
+                points: this.get('points').toJSON(),
+                visits: this.get('visits').toJSON(),
+                purchases: this.get('purchases').toJSON()
+            });
+            setData('rewardsCard', data);
+        },
+        /**
+         * @method
+         * Restores data from storage. 'rewardsCard' is used as entry name.
+         */
+        loadData: function() {
+            var data = getData('rewardsCard');
+            data = data instanceof Object ? data : {};
+            this.set(data);
+        },
+        /**
+         * @method
+         * Resets all attributes to default values.
+         */
+        resetData: function() {
+            this.set(this.defaults);
         }
     });
 });

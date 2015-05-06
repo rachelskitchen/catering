@@ -54,6 +54,7 @@ define(["checkout_view"], function(checkout_view) {
             var main = App.Views.GeneratorView.create('Checkout', {
                 model: this.collection.checkout,
                 customer: this.options.customer,
+                rewardsCard: this.collection.rewardsCard,
                 mod: 'Main'
             }), specials = this.$('.specials');
 

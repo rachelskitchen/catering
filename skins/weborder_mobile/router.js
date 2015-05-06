@@ -473,6 +473,7 @@ define(["main_router"], function(main_router) {
                             modelName: 'Checkout',
                             model: App.Data.myorder.checkout,
                             customer: App.Data.customer,
+                            rewardsCard: App.Data.myorder.rewardsCard,
                             mod: 'Main',
                             className: 'checkout'
                         },
