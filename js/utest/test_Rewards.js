@@ -23,6 +23,7 @@ define(['rewards'], function() {
         });
 
         it('isAvailable()', function() {
+            rewards.set('rewards_earned', 0.5);
             expect(rewards.isAvailable()).toBe(false);
             rewards.set('rewards_earned', 21);
             expect(rewards.isAvailable()).toBe(true);
@@ -310,7 +311,7 @@ define(['rewards'], function() {
                 expect(jqXHR.url).toBe(url);
                 expect(jqXHR.type).toBe(type);
                 expect(jqXHR.dataType).toBe(dataType);
-                expect(jqXHR.data).toEqual({number: number, establishment: est});
+                expect(JSON.parse(jqXHR.data)).toEqual({number: number, establishment: est});
             }
         });
 
@@ -322,10 +323,10 @@ define(['rewards'], function() {
             it('`rewardsType` is invalid', function() {
                 spyOn(rewardsCard, 'set');
                 rewardsCard.selectRewardsType('dfsdf');
-                expect(rewardsCard.set).not.toHaveBeenCalled();
+                expect(rewardsCard.set).toHaveBeenCalledWith('redemption_code', rewardsCard.defaults.redemption_code);
             });
 
-            it('`rewardsType` is valid', function() {
+            it('`rewardsType` is valid, `rewards_earned` >= 1', function() {
                 var REDEMPTION_CODES = {
                     points: 1,
                     visits: 2,
@@ -333,17 +334,115 @@ define(['rewards'], function() {
                 };
 
                 // check points
+                rewardsCard.get('points').set('rewards_earned', 1);
                 rewardsCard.selectRewardsType('points');
                 expect(rewardsCard.get('redemption_code')).toBe(REDEMPTION_CODES.points);
 
                 // check visits
+                rewardsCard.get('visits').set('rewards_earned', 2);
                 rewardsCard.selectRewardsType('visits');
                 expect(rewardsCard.get('redemption_code')).toBe(REDEMPTION_CODES.visits);
 
                 // check purchases
+                rewardsCard.get('purchases').set('rewards_earned', 3);
                 rewardsCard.selectRewardsType('purchases');
                 expect(rewardsCard.get('redemption_code')).toBe(REDEMPTION_CODES.purchases);
             });
+
+            it('`rewardsType` is valid, `rewards_earned` < 1', function() {
+                // check points
+                rewardsCard.get('points').set('rewards_earned', 0);
+                rewardsCard.selectRewardsType('points');
+                expect(rewardsCard.get('redemption_code')).toBe(rewardsCard.defaults.redemption_code);
+
+                // check visits
+                rewardsCard.get('visits').set('rewards_earned', 0.5);
+                rewardsCard.selectRewardsType('visits');
+                expect(rewardsCard.get('redemption_code')).toBe(rewardsCard.defaults.redemption_code);
+
+                // check purchases
+                rewardsCard.get('purchases').set('rewards_earned', 0.99);
+                rewardsCard.selectRewardsType('purchases');
+                expect(rewardsCard.get('redemption_code')).toBe(rewardsCard.defaults.redemption_code);
+            });
+        });
+
+        it('saveData()', function() {
+            var data = {
+                number: '123',
+                redemption_code: 2,
+                points: {rewards_earned: 11, discount: 12, point_to_next_reward: 13, value: 14},
+                visits: {rewards_earned: 21, discount: 22, point_to_next_reward: 23, value: 24},
+                purchases: {rewards_earned: 31, discount: 32, point_to_next_reward: 33, value: 34}
+            }, nameArg, dataArg;
+
+
+            spyOn(window, 'setData').and.callFake(function(_name, _data) {
+                nameArg = _name;
+                dataArg = _data;
+            });
+            rewardsCard.set(data);
+            rewardsCard.saveData();
+
+            expect(window.setData).toHaveBeenCalled();
+            expect(nameArg).toBe('rewardsCard');
+            expect(dataArg).toEqual(dataArg);
+        });
+
+        describe('loadData()', function() {
+            it('data exists in storage', function() {
+                var data = {
+                    number: '123',
+                    redemption_code: 2,
+                    points: {rewards_earned: 11, discount: 12, point_to_next_reward: 13, value: 14},
+                    visits: {rewards_earned: 21, discount: 22, point_to_next_reward: 23, value: 24},
+                    purchases: {rewards_earned: 31, discount: 32, point_to_next_reward: 33, value: 34}
+                }
+
+                spyOn(window, 'getData').and.callFake(function() {
+                    return data;
+                });
+                rewardsCard.loadData();
+
+                expect(window.getData).toHaveBeenCalledWith('rewardsCard');
+                expect(rewardsCard.get('number')).toBe(data.number);
+                expect(rewardsCard.get('redemption_code')).toBe(data.redemption_code);
+                expect(rewardsCard.get('points').toJSON()).toEqual(data.points);
+                expect(rewardsCard.get('visits').toJSON()).toEqual(data.visits);
+                expect(rewardsCard.get('purchases').toJSON()).toEqual(data.purchases);
+            });
+
+            it('data doesn\'t exist in storage', function() {
+                spyOn(window, 'getData').and.returnValue(undefined);
+                rewardsCard.loadData();
+
+                expect(window.getData).toHaveBeenCalledWith('rewardsCard');
+                expect(rewardsCard.get('number')).toBe(rewardsCard.defaults.number);
+                expect(rewardsCard.get('redemption_code')).toBe(rewardsCard.defaults.redemption_code);
+                expect(rewardsCard.get('points')).toBe(rewardsCard.defaults.points);
+                expect(rewardsCard.get('visits')).toBe(rewardsCard.defaults.visits);
+                expect(rewardsCard.get('purchases')).toBe(rewardsCard.defaults.purchases);
+            });
+        });
+
+        it('resetData()', function() {
+            var data = {
+                number: '232312',
+                redemption_code: 2,
+                points: {rewards_earned: 11, discount: 12, point_to_next_reward: 13, value: 14},
+                visits: {rewards_earned: 21, discount: 22, point_to_next_reward: 23, value: 24},
+                purchases: {rewards_earned: 31, discount: 32, point_to_next_reward: 33, value: 34}
+            };
+
+            rewardsCard.set(data);
+            expect(rewardsCard.get('number')).toBe(data.number);
+            expect(rewardsCard.get('redemption_code')).toBe(data.redemption_code);
+            expect(rewardsCard.get('points').toJSON()).toEqual(data.points);
+            expect(rewardsCard.get('visits').toJSON()).toEqual(data.visits);
+            expect(rewardsCard.get('purchases').toJSON()).toEqual(data.purchases);
+
+            rewardsCard.resetData();
+            expect(rewardsCard.toJSON()).toEqual(rewardsCard.defaults);
         });
     });
 });
