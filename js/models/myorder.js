@@ -1201,10 +1201,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 });
             }
 
-            if (json.shipping) {
-                myorder.total.set({"shipping": json.shipping.service_charge});
-            }
-
             if (json.order_discount instanceof Object) {
                 myorder.discount.set({ name: json.order_discount.name,
                                        sum: json.order_discount.sum,
@@ -1220,7 +1216,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 total: json.subtotal,
                 tax: json.tax,
                 surcharge: json.surcharge,
-                discounts: json.discounts
+                discounts: json.discounts,
+                shipping: json.shipping && json.shipping.service_charge,
+                shipping_discount: json.shipping && json.shipping.discount_sum,
             });
         },
 

@@ -20,148 +20,123 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator"], function(Backbone) {
+define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone) {
     'use strict';
 
     App.Views.CoreTotalView = {};
-
-    App.Views.CoreTotalView.CoreTotalMainView = App.Views.FactoryView.extend({
+    App.Views.CoreTotalView.CoreTotalMainView = Backbone.Epoxy.View.extend(App.Views.FactoryView.prototype).extend({
         name: 'total',
         mod: 'main',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'change', this.update, this);
         },
-        render: function() {
-            var model = {};
-            model.subTotal = this.get_subtotal();
-            model.discount_allow = App.Settings.accept_discount_code === true;
-            model.discounts = this.model.get_discounts_str();
-            model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
-            this.$el.html(this.template(model));
-            this.update();
+        render: function() {            
+            this.$el.html(this.template());
+            this.applyBindings();
         },
-        update: function() {
-            if (this.model.get("discounts") > 0){
-                this.$('.total_discounts').removeClass('hide');
-            }else{
-                this.$('.total_discounts').addClass('hide');
+        bindings: {
+            ".total_discounts": "classes:{hide:hide_discounts}",
+            ".discount": "text:discountsFrm",
+            ".total": "text:totalFrm"
+        },
+        computeds: {
+            totalFrm: {
+                deps: ["total", "dining_option"], //depends on attr. 'total' of this.model 
+                get: function() {
+                    return this.get_subtotal();
+                }
+            },
+            discountsFrm: {
+                deps: ["discounts"],  //depends on attr. 'discounts' of this.model
+                get: function() { 
+                    return this.model.get_discounts_str();
+                }
+            },
+            hide_discounts: function() {
+                return this.getBinding("discounts")*1 <= 0;
             }
-            this.$('.total').text(round_monetary_currency(this.get_subtotal()));
-            this.$('.discount').text(this.model.get_discounts_str());
         },
         get_subtotal: function() {
             if (this.collection.get_only_product_quantity() == 0) {
                 return round_monetary_currency(0);
             }
-            var dining_option = this.collection.checkout.get('dining_option');
-            return dining_option != 'DINING_OPTION_DELIVERY' && dining_option != 'DINING_OPTION_SHIPPING' ? this.collection.total.get_total()
-                : round_monetary_currency(this.collection.total.get_total() - this.collection.total.get_delivery_charge());
+            return this.collection.total.get_total();
         }
     });
 
-    App.Views.CoreTotalView.CoreTotalCheckoutView = App.Views.FactoryView.extend({
+    App.Views.CoreTotalView.CoreTotalCheckoutView = App.Views.CoreTotalView.CoreTotalMainView.extend({
         name: 'total',
         mod: 'checkout',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model.get('tip'), 'change', this.updateAll, this);
-            this.listenTo(this.model, 'change', this.updateAll, this); // not update all, because we need show or not show surcharge row, not only update sum
-            this.listenTo(this.collection.checkout, 'change:dining_option', this.updateDeliveryCharge, this);
+            this.listenTo(this.model, 'change', this.updateAll, this);
+            this.listenTo(this.collection.checkout, 'change:dining_option', this.updateAll, this);
             this.listenTo(this.model.get('delivery'), 'change', this.updateAll, this);
-            this.updateDeliveryCharge(this.collection.checkout, this.collection.checkout.get('dining_option'));
-        },
-        render: function() {
-            var data = this.getFormData();
-            this.$el.html(this.template(data));
-            this.updateForm(data);
-        },
-        getFormData: function() {
-            var model = {};
-            model.subTotal = this.get_subtotal();
-            model.surcharge = this.model.get_surcharge();
-            model.grandTotal = this.model.get_grand();
-            model.tax = this.model.get_tax();
-            model.tip = this.model.get_tip();
-            model.currency_symbol = App.Settings.currency_symbol;
-            model.deliveryCharge = this.model.get_delivery_charge();
-            model.tip_allow = App.Settings.accept_tips_online === true;
-            model.discount_allow = App.Settings.accept_discount_code === true;
-            model.discounts = this.model.get_discounts_str();
-            model.deliveryDiscount = this.collection.deliveryItem ? this.collection.deliveryItem.get("discount").get("sum") : 0;
-            model.deliveryDiscount = round_monetary_currency(model.deliveryDiscount);
-
-            if (this.collection.get_only_product_quantity() == 0) {
-                model.surcharge = round_monetary_currency(0);
-                model.tax = round_monetary_currency(0);
-                model.grandTotal = round_monetary_currency(0);
-                if($('span[data-amount="other"]').hasClass('selected') == false) {
-                    model.tip = round_monetary_currency(0);
-                    model.grandTotal = round_monetary_currency(0);
-                }
-                else {
-                    model.grandTotal = round_monetary_currency(model.tip * 1);
-                }
-            }
-
-            return model;
         },
         updateAll: function() {
-            var data = this.getFormData();
-            this.updateForm(data);
-            this.updateDeliveryCharge(this.collection.checkout, this.collection.checkout.get('dining_option'));
+            this.viewModel.set(this.getData());
         },
-        updateForm: function(data) {
-            if (!data) return;
-            if (data.surcharge > 0){
-                this.$('.surcharge_item').removeClass('hide');
-            }else{
-                this.$('.surcharge_item').addClass('hide');
-            }
-            if (data.deliveryDiscount > 0){
-                this.$('.delivery_discount_item').removeClass('hide');
-            }else{
-                this.$('.delivery_discount_item').addClass('hide');
-            }
-            if (data.discounts*1 > 0){
-                this.$('.total_discounts').removeClass('hide');
-            }else{
-                this.$('.total_discounts').addClass('hide');
-            }
-            this.$('.subtotal').text(data.subTotal);
-            this.$('.surcharge').text(data.surcharge);
-            this.$('.tax').text(data.tax);
-            this.$('.discount').text(data.discounts);
-            this.$('.delivery-discount').text(data.deliveryDiscount);
-            this.$('.tip').text(data.tip);
-            this.$('.grandtotal').text(data.grandTotal);
+        getData: function() {
+            var dining_option = this.collection.checkout.get('dining_option');
+            return {
+                surcharge: this.model.get_surcharge(),
+                grandTotal: this.model.get_grand(),
+                tax: this.model.get_tax(),
+                tip: this.model.get_tip(),
+                deliveryCharge: this.model.get_delivery_charge(),
+                shippingCharge: this.model.get_shipping_charge(),
+                deliveryDiscount: round_monetary_currency(this.collection.deliveryItem ? this.collection.deliveryItem.get("discount").get("sum") : 0),
+                shippingDiscount: round_monetary_currency(this.model.get('shipping_discount') || 0),
+                dining_option: dining_option
+            };
         },
-        updateDeliveryCharge: function(model, value) {
-            var delivery = this.model.get_delivery_charge(),
-                isShippingDiningOption = value == 'DINING_OPTION_SHIPPING';
-            if((value == 'DINING_OPTION_DELIVERY' || isShippingDiningOption) && delivery * 1 > 0 && this.collection.get_only_product_quantity() > 0) {
-                this.$('.delivery-charge-title').text(isShippingDiningOption ? 'Shipping:' : 'Delivery Charge:');
-                this.$('span.delivery-charge').text(delivery);
-                this.$('li.delivery-charge').show();
-                this.$('ul.confirm').addClass('has-delivery');
-                var deliveryDiscount = this.collection.deliveryItem ? this.collection.deliveryItem.get("discount").get("sum") : 0;
-                if (deliveryDiscount > 0) {
-                    this.$('.delivery_discount_item').removeClass('hide');
+        bindings: {
+            ".total_discounts": "classes:{hide:hide_discounts}",
+            "li.delivery-charge": "classes:{hide:hide_delivery}",
+            ".delivery_discount_item": "classes:{hide:hide_delivery_discount}",
+            ".shipping_charge_item": "classes:{hide:hide_shipping}",
+            ".shipping_discount_item": "classes:{hide:hide_shipping_discount}",
+            ".surcharge_item": "classes:{hide:hide_surcharge_item}",
+            ".discount": "text:discountsFrm",
+            ".subtotal": "text:totalFrm",
+            "span.delivery-charge": "text:deliveryCharge",
+            ".delivery-discount": "text:deliveryDiscount",
+            ".shipping_charge": "text:shippingCharge",
+            ".shipping_discount": "text:shippingDiscount",
+            ".surcharge": "text:surcharge",
+            ".tax": "text:tax",
+            ".tip": "text:tip",
+            ".grandtotal": "text:grandTotal",
+        },
+        viewModel: function(view) {
+            var viewModel = Backbone.Epoxy.Model.extend({
+                defaults: view.getData(),
+                computeds: {
+                    hide_delivery: {
+                        deps: ['dining_option', 'deliveryCharge'], 
+                        get: function(dining_option, deliveryCharge) {
+                             return dining_option != 'DINING_OPTION_DELIVERY' ||  deliveryCharge*1 <= 0 || view.collection.get_only_product_quantity() <= 0;
+                        }
+                    },
+                    hide_shipping: function() { //for right automatic binding discovering you may use AND/OR functions instead of &&/|| inline operation with deps: [...]
+                        return OR(this.get('dining_option') != 'DINING_OPTION_SHIPPING', this.get('shippingCharge')*1 <= 0) || view.collection.get_only_product_quantity() <= 0;
+                    },
+                    hide_delivery_discount: function() {
+                        var dining_option = this.get('dining_option');
+                        return this.get('deliveryDiscount')*1 <= 0 || dining_option != 'DINING_OPTION_DELIVERY';
+                    },
+                    hide_shipping_discount: function() { //for right binding discovering you may use AND/OR functions instead of &&/|| operations with extra value declaration
+                        return OR(this.get('shippingDiscount')*1 <= 0, this.get('dining_option') != 'DINING_OPTION_SHIPPING');
+                    },
+                    hide_surcharge_item: function() {
+                        return this.get('surcharge')*1 <= 0;
+                    }
                 }
-            } else {
-                this.$('li.delivery-charge').hide();
-                this.$('.delivery_discount_item').addClass('hide');
-                this.$('ul.confirm').removeClass('has-delivery');
-            }
-        },
-        get_subtotal: function() {
-            if (this.collection.get_only_product_quantity() == 0) {
-                return round_monetary_currency(0);
-            }
-
-            return this.collection.total.get_total_wo_delivery();
+            });
+            return App.lastModelViews.CoreTotalCheckout = new viewModel();
         }
-    });
+    });    
 
     return new (require('factory'))(function() {
         App.Views.TotalView = {};
