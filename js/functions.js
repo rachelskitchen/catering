@@ -1623,3 +1623,27 @@ function removeClassRegexp(jq_elem, exp_str) {
        $(elem).prop('className', $(elem).prop('className').replace(regexp, ''));
     });
 }
+
+/*
+*  @function implements logical AND operation on all arguments passed (it's needed for automatic binding discovering for Epoxy)
+*  @returns arg1 && arg2 && arg3 ...
+*/
+function AND(){
+    var result = arguments[0];
+    for (var i = 1; i < arguments.length; i++) {
+        result = result && arguments[i];
+    }
+    return result;
+}
+
+/*
+*  @function implements logical OR operation on all arguments passed (it's needed for automatic binding discovering for Epoxy)
+*  returns arg1 || arg2 || arg3 ...
+*/
+function OR(){
+    var result = arguments[0];
+    for (var i = 1; i < arguments.length; i++) {
+        result = result || arguments[i];
+    }
+    return result;
+}

@@ -79,6 +79,7 @@ var ERROR = {},
             log: {}
         },
         Models: {},
+        lastModelViews: {},
         Routers: {},
         Views: {},
         Skins: skins
