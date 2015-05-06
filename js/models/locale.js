@@ -36,7 +36,7 @@ define(['backbone'], function(Backbone) {
                 curLocale = window.navigator.language,
                 stateLocale = getData('currentLocale', true); // load data from storage (cookie, sessionStorage, localStorage)
             // for test (begin)
-            curLocale = 'ru';
+            curLocale = 'en';
             // for test (end)
             if (!stateLocale ||
                 stateLocale.locale != curLocale ||
