@@ -1,0 +1,50 @@
+.rewards-info {
+    position: relative;
+    width: 400px;
+    background: #fff;
+    text-align: left;
+    padding-bottom: 6px;
+}
+
+.rewards-info .popup-background {
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.rewards-info h3 {
+    padding-bottom: 24px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.rewards-info label {
+    display: inline-block;
+    font-weight: bold;
+    text-align: right;
+    width: 87px;
+    padding-right: 10px;
+}
+
+.rewards-info .input_beauty {
+    position: relative;
+    top: 0;
+    bottom: 0;
+    display: inline-block;
+    height: 27px;
+}
+
+.captcha {
+    height: 48px;
+    width: 120px;
+    margin: 24px 0 12px 101px;
+    outline: 1px solid red;
+}
+
+.submit-card {
+    margin: 16px 16px 0;
+}
+
+/* need to increase margins to avoid jumping */
+.submit-card.btn.disabled {
+    margin: 19px 19px 3px;
+}
