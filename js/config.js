@@ -83,7 +83,8 @@ define({
         establishments: 'js/models/establishments',
         establishments_view: 'js/views/establishments',
         filters: 'js/models/filters',
-        rewards: 'js/models/rewards'
+        rewards: 'js/models/rewards',
+        rewards_view: 'js/views/rewards'
     },
     waitSeconds: 30,
     shim: {
@@ -212,6 +213,9 @@ define({
         },
         'rewards': {
             deps: ['backbone']
+        },
+        'rewards_view': {
+            deps: ['factory']
         }
     },
     map: {

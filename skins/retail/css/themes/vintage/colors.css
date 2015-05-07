@@ -206,6 +206,9 @@ aside:after, aside:before {
     border-color: #c1bfba;
     box-shadow: 0 0 3px 2px #fff inset, 0 -1px 5px 3px #b9b5b0;
 }
+.btn.disabled:before {
+    box-shadow: none;
+}
 .btn:active {
     box-shadow: none !important;
 }
@@ -276,7 +279,7 @@ aside:after, aside:before {
     border: 1px solid #781a00;
     box-shadow: 0 -1px 1px 2px #d3c2bd, 0 3px 1px 0 rgba(0,0,0,0.3);
 }
-.action_button.disabled, .action_button.disabled:active {
+.action_button.disabled, .action_button.disabled:active, .btn.disabled, .btn.disabled:active {
     background: -moz-linear-gradient(top,  #f9f9f9 0%, #eaeaea 100%);
     background: -webkit-linear-gradient(top,  #f9f9f9 0%,#eaeaea 100%);
     background: -o-linear-gradient(top,  #f9f9f9 0%,#eaeaea 100%);

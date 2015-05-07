@@ -963,8 +963,12 @@ section.maintenance .back {
     font-size: inherit;
 }
 /* end input beauty */
-.action_button.disabled {
+.action_button.disabled, .btn.disabled {
     cursor: default !important;
+}
+
+.btn.disabled {
+    pointer-events: none;
 }
 
 /** confirm page */
