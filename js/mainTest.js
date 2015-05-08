@@ -28,23 +28,39 @@ require(['app'], function(app) {
     // set config for require
     require.config(app.config);
 
-    require(["cssua", "errors", "tests_list", "e2e_list", 'settings', "tax", "main_router" ], function() {
+    require(['cssua', 'errors', 'tests_list', 'e2e_list', 'settings', 'tax', 'main_router', 'locale'], function() {
         // invoke beforeStart onfig
         app.beforeInit();
 
         // init errors object and check browser version
-        App.Data.errors = new App.Models.Errors();
+        var errors = App.Data.errors = new App.Models.Errors();
         window.alert_message = function(){};
         
         // init settings object
-        App.Data.settings = new App.Models.Settings({
+        var settings = App.Data.settings = new App.Models.Settings({
             supported_skins: app.skins.available
         });
-        App.Data.settings.set({
+        settings.set({
             'img_path' : 'test/path/',
             'settings_skin' : { img_default : 'test/img_default' },
             'establishment' : 1,
             'host': 'testHost'
+        });
+
+        // init Locale object
+        var locale = App.Data.locale = new App.Models.Locale;
+        settings.on('change:skin', function() {
+            locale.loadLanguagePack(); // load a language pack (localStorage or the backend system)
+            locale.loadCompleted.done(function() {
+                _.extend(MSG, locale.get('MSG'));
+                _.extend(ERROR, locale.get('ERRORS'));
+                window.ARRAY_MONTH = locale.get('CORE')['ARRAY_MONTHS'];
+                window.TIMETABLE_WEEK_DAYS = locale.get('CORE')['DAYS_OF_WEEK_SHORTENED'];
+                window.DINING_OPTION_NAME = locale.get('CORE')['DINING_OPTIONS'];
+            });
+            locale.on('showError', function() {
+                errors.alert(ERROR.LOAD_LANGUAGE_PACK, true); // user notification
+            });
         });
 
         $.ajax({
@@ -53,7 +69,7 @@ require(['app'], function(app) {
             dataType: "json",
             async: false,
             success: function(data) {
-                App.Data.settings.set("settings_system", data);
+                settings.set('settings_system', data);
             }
         });
 
@@ -65,7 +81,7 @@ require(['app'], function(app) {
            // else
            //     hostName = window.location.origin;
 
-            App.Data.settings.set({
+            settings.set({
                 establishment: 18,
                 host: hostName
                 //host: 'https://weborder-dev-branch.revelup.com'
@@ -84,7 +100,7 @@ require(['app'], function(app) {
                 });
             }
             else { 
-                require(['jasmine_blanket'], function(blanket) {   
+                require(['jasmine_blanket'], function(blanket) {
                     
                     blanket.options('debug', true);
                     blanket.options('filter', 'js');
@@ -96,8 +112,10 @@ require(['app'], function(app) {
                     jasmineEnv.updateInterval = 1000;
 
                     $(document).ready(function() {
-                        require(tests_list, function(spec) {                      
-                            window.onload();                      
+                        locale.loadCompleted.done(function() {
+                            require(tests_list, function(spec) {
+                                window.onload();
+                            });
                         });
                     });
                 });
@@ -106,6 +124,3 @@ require(['app'], function(app) {
     });
 
 });
-
-    
-    
