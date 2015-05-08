@@ -35,7 +35,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 defaultAddress = App.Settings.address,
                 address = this.getAddress();
 
-            model.country = address ? address.country : defaultAddress.country;
+            model.country = address && address.country ? address.country : defaultAddress.country;
             model.state = model.country == 'US' ? (address ? address.state : defaultAddress.state) : null;
             model.province = model.country == 'CA' ? (address ? address.province : '') : null;
             model.originalState = model.state;
@@ -58,6 +58,24 @@ define(['backbone', 'factory'], function(Backbone) {
             // if shipping address isn't selected take last index
             if(this.options.customer.isDefaultShippingAddress()) {
                 shipping_address = customer.addresses.length - 1;
+            } else {
+                var reverse_addr_index = shipping_address == customer.deliveryAddressIndex ? customer.shippingAddressIndex : customer.deliveryAddressIndex;
+                var addr = customer.addresses[shipping_address];
+                var reverse_addr = customer.addresses[reverse_addr_index];
+                addr == undefined && (addr = {});
+                if (reverse_addr) {
+                    if ((addr.country && reverse_addr.country && addr.country == reverse_addr.country) || 
+                        (!addr.country && reverse_addr.country == App.Settings.address.country)) { //if country was changed that we can't copy address
+                        if (!addr.province && !addr.street_1 && !addr.street_2 && !addr.city && !addr.zipcode) { //and we will copy address if all target fields are empty only
+                            return _.extend(addr, { state: reverse_addr.state, 
+                                                    province: reverse_addr.province,                                                
+                                                    street_1: reverse_addr.street_1, 
+                                                    street_2: reverse_addr.street_2,
+                                                    city: reverse_addr.city, 
+                                                    zipcode: reverse_addr.zipcode });
+                        }
+                    }
+                }
             }
 
             // return last address

@@ -593,10 +593,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          * get quantity without delivery charge and bag charge items
          */
         get_only_product_quantity: function() {
-            var array = this.filter(function(model) {
-                    return model.get("id_product") != null;
-                });
-            return array.length;
+            return _.reduce(this.models, function(qty, model) {
+                    return model.get("id_product") != null ? qty + model.get('quantity') : qty; 
+                }, 0);
         },
         /**
          *  create orders from JSON.
