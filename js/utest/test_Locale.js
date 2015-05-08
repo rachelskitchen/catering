@@ -10,7 +10,6 @@ define(['locale'], function() {
         });
 
         it('Environment', function() {
-            model.loadLanguagePack();
             expect(App.Models.Card).toBeDefined();
         });
 
