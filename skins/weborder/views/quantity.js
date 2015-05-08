@@ -56,6 +56,9 @@ define(["quantity_view"], function(quantity_view) {
 
             if(product.isParent())
                 this.$el.hide();
+
+            ///////////////////////////////////////////////////////
+            var selectBoxOne = this.$("#s1").combobox(); ///////////////
         },
         change: function(e) {
             this.model.set('quantity', e.target.value * 1);
