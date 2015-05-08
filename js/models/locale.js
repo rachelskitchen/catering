@@ -33,13 +33,17 @@ define(['backbone'], function(Backbone) {
 
             var DEFAULT_LOCALE = 'en';
             var self = this,
-                skin = App.Data.settings.get('skin'),
+                settings = App.Data.settings,
+                skin = settings.get('skin'),
                 curLocale = window.navigator.language,
                 actualVersions = {
                     defaultLocale: null,
                     curLocale: null
                 },
                 stateLocale = getData('currentLocale', true); // load data from storage (cookie, sessionStorage, localStorage)
+
+            settings.setSkinPath(true); // set path for the current skin
+            var skinPath = settings.get('skinPath');
 
             var loadVersions = Backbone.$.Deferred();
             // load versions.json file
@@ -81,7 +85,7 @@ define(['backbone'], function(Backbone) {
 
                     if (actualVersions.defaultLocale && ((json.defaultLocale.placeholders[skin] && json.defaultLocale.placeholders[skin].version != actualVersions.defaultLocale) || (!json.defaultLocale.placeholders[skin]))) {
                         Backbone.$.ajax({
-                            url: '../i18n/' + skin + '/' + DEFAULT_LOCALE + '.' + skin + '.json',
+                            url: skinPath + '/i18n/' + DEFAULT_LOCALE + '.json',
                             dataType: 'json',
                             success: function(data) {
                                 json.defaultLocale.placeholders[skin] = {
@@ -105,7 +109,7 @@ define(['backbone'], function(Backbone) {
 
                     if (actualVersions.curLocale && ((json.placeholders[skin] && json.placeholders[skin].version != actualVersions.curLocale) || (!json.placeholders[skin]))) {
                         Backbone.$.ajax({
-                            url: '../i18n/' + skin + '/' + curLocale + '.' + skin + '.json',
+                            url: skinPath + '/i18n/' + curLocale + '.json',
                             dataType: 'json',
                             success: function(data) {
                                 json.placeholders[skin] = {
