@@ -30,151 +30,123 @@ define(['backbone'], function(Backbone) {
         loadLanguagePack: function() {
             this.loadCompleted = Backbone.$.Deferred();
             this.clear();
+
+            var DEFAULT_LOCALE = 'en';
             var self = this,
-                settings = App.Data.settings,
-                skin = settings.get('skin'),
+                skin = App.Data.settings.get('skin'),
                 curLocale = window.navigator.language,
+                actualVersions = {
+                    defaultLocale: null,
+                    curLocale: null
+                },
                 stateLocale = getData('currentLocale', true); // load data from storage (cookie, sessionStorage, localStorage)
-            // for test (begin)
-            curLocale = 'en';
-            // for test (end)
-            if (!stateLocale ||
-                stateLocale.locale != curLocale ||
-                !stateLocale.placeholders[skin] ||
-                Backbone.$.isEmptyObject(settings.get('settings_system')) || // if the app was not loaded (Establishments View)
-                !settings.get('settings_system').locales || // for Directory skin (skin shouldn't depend on settings_system)
-                stateLocale.placeholders[skin].version != settings.get('settings_system').locales[curLocale]) {
+
+            var loadVersions = Backbone.$.Deferred();
+            // load versions.json file
+            Backbone.$.ajax({
+                url: '../i18n/versions.json',
+                dataType: 'json',
+                success: function(data) {
+                    if (data[skin][DEFAULT_LOCALE]) actualVersions.defaultLocale = data[skin][DEFAULT_LOCALE];
+                    if (data[skin][curLocale]) actualVersions.curLocale = data[skin][curLocale];
+                    loadVersions.resolve();
+                },
+                error: function() {
+                    self.trigger('showError');
+                }
+            });
+
+            loadVersions.done(function() {
+                if (!stateLocale || stateLocale.locale != curLocale || stateLocale.defaultLocale.locale != DEFAULT_LOCALE || (actualVersions.defaultLocale && ((stateLocale.defaultLocale.placeholders[skin] && stateLocale.defaultLocale.placeholders[skin].version != actualVersions.defaultLocale) || !stateLocale.defaultLocale.placeholders[skin])) || (actualVersions.curLocale && ((stateLocale.placeholders[skin] && stateLocale.placeholders[skin].version != actualVersions.curLocale) || !stateLocale.placeholders[skin]))) {
                     var json = {
                         locale: curLocale,
-                        placeholders: {}
-                    }
-                    if (stateLocale && stateLocale.locale == curLocale && stateLocale.placeholders) json.placeholders = stateLocale.placeholders;
-                    /*
-                    Backbone.$.ajax({
-                        url: settings.get('host') + '/weborders/lang/',
-                        data: {
-                            locale: curLocale,
-                            skin: skin
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            switch (response.status) {
-                                case 'OK':
-                                    json.placeholders[skin] = response.data;
-                                    if (setData('currentLocale', json, true)) { // save data to storage (cookie, sessionStorage, localStorage)
-                                        self.set(response.data.placeholders);
-                                        self.loadCompleted.resolve();
-                                    } else {
-                                        self.trigger('showError');
-                                    }
-                                    break;
-                                default:
-                                    self.trigger('showError');
-                                    break;
-                            }
-                        },
-                        error: function() {
-                            self.trigger('showError');
+                        placeholders: {},
+                        defaultLocale: {
+                            locale: DEFAULT_LOCALE,
+                            placeholders: {}
                         }
-                    });
-                    */
-                    // for test (begin)
-                    var url;
-                    switch (skin) {
-                        case App.Skins.WEBORDER:
-                            switch (curLocale) {
-                                case 'en':
-                                    url = 'http://192.168.120.47/directory/HTML5/Web_ordering_app/placeholders/en.weborder.placeholders.json';
-                                    break;
-                            }
-                            break;
-                        case App.Skins.RETAIL:
-                            switch (curLocale) {
-                                case 'en':
-                                    url = 'http://192.168.120.47/directory/HTML5/Web_ordering_app/placeholders/en.retail.placeholders.json';
-                                    break;
-                            }
-                            break;
-                        case App.Skins.WEBORDER_MOBILE:
-                            switch (curLocale) {
-                                case 'en':
-                                    url = 'http://192.168.120.47/directory/HTML5/Web_ordering_app/placeholders/en.weborder_mobile.placeholders.json';
-                                    break;
-                            }
-                            break;
-                        case App.Skins.DIRECTORY:
-                            switch (curLocale) {
-                                case 'en':
-                                    url = 'http://192.168.120.47/directory/HTML5/Web_ordering_app/placeholders/en.directory.placeholders.json';
-                                    break;
-                            }
-                            break;
-                        case App.Skins.DIRECTORY_MOBILE:
-                            switch (curLocale) {
-                                case 'en':
-                                    url = 'http://192.168.120.47/directory/HTML5/Web_ordering_app/placeholders/en.directory_mobile.placeholders.json';
-                                    break;
-                            }
-                            break;
-                        case App.Skins.MLB:
-                            switch (curLocale) {
-                                case 'en':
-                                    url = 'http://192.168.120.47/directory/HTML5/Web_ordering_app/placeholders/en.mlb.placeholders.json';
-                                    break;
-                            }
-                            break;
-                        case App.Skins.PAYPAL:
-                            switch (curLocale) {
-                                case 'en':
-                                    url = 'http://192.168.120.47/directory/HTML5/Web_ordering_app/placeholders/en.paypal.placeholders.json';
-                                    break;
-                                case 'ru':
-                                    url = 'http://192.168.120.47/directory/HTML5/Web_ordering_app/placeholders/ru.paypal.placeholders.json';
-                                    break;
-                            }
-                            break;
                     }
 
-                    Backbone.$.ajax({
-                        url: url,
-                        data: {
-                            locale: curLocale,
-                            skin: skin
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            response = {
-                                status: 'OK',
-                                data: {
-                                    placeholders: response
-                                }
+                    var loadLocales = Backbone.$.Deferred(),
+                        countLocales = 2,
+                        loadLocaleComplete = function() {
+                            countLocales--;
+                            if (countLocales == 0) loadLocales.resolve();
+                        };
+
+                    // copy existing placeholders to "json" object from "stateLocale" object (localStorage) for the default locale
+                    if (stateLocale && stateLocale.defaultLocale.locale == DEFAULT_LOCALE && !Backbone.$.isEmptyObject(stateLocale.defaultLocale.placeholders)) {
+                        json.defaultLocale.placeholders = stateLocale.defaultLocale.placeholders;
+                    }
+
+                    if (actualVersions.defaultLocale && ((json.defaultLocale.placeholders[skin] && json.defaultLocale.placeholders[skin].version != actualVersions.defaultLocale) || (!json.defaultLocale.placeholders[skin]))) {
+                        Backbone.$.ajax({
+                            url: '../i18n/' + skin + '/' + DEFAULT_LOCALE + '.' + skin + '.json',
+                            dataType: 'json',
+                            success: function(data) {
+                                json.defaultLocale.placeholders[skin] = {
+                                    version: actualVersions.defaultLocale,
+                                    placeholders: data
+                                };
+                                loadLocaleComplete();
+                            },
+                            error: function() {
+                                self.trigger('showError');
                             }
-                            if (curLocale == 'ru') response.data.version = 1427802447190;
-                            if (curLocale == 'en') response.data.version = 1427802271098;
-                            switch (response.status) {
-                                case 'OK':
-                                    json.placeholders[skin] = response.data;
-                                    if (setData('currentLocale', json, true)) { // save data to storage (cookie, sessionStorage, localStorage)
-                                        self.set(response.data.placeholders);
-                                        self.loadCompleted.resolve();
-                                    } else {
-                                        self.trigger('showError');
-                                    }
-                                    break;
-                                default:
-                                    self.trigger('showError');
-                                    break;
+                        });
+                    } else {
+                        loadLocaleComplete();
+                    }
+
+                    // copy existing placeholders to "json" object from "stateLocale" object (localStorage) for the current locale
+                    if (stateLocale && stateLocale.locale == curLocale && !Backbone.$.isEmptyObject(stateLocale.placeholders)) {
+                        json.placeholders = stateLocale.placeholders;
+                    }
+
+                    if (actualVersions.curLocale && ((json.placeholders[skin] && json.placeholders[skin].version != actualVersions.curLocale) || (!json.placeholders[skin]))) {
+                        Backbone.$.ajax({
+                            url: '../i18n/' + skin + '/' + curLocale + '.' + skin + '.json',
+                            dataType: 'json',
+                            success: function(data) {
+                                json.placeholders[skin] = {
+                                    version: actualVersions.curLocale,
+                                    placeholders: data
+                                };
+                                loadLocaleComplete();
+                            },
+                            error: function() {
+                                self.trigger('showError');
                             }
-                        },
-                        error: function() {
+                        });
+                    } else {
+                        loadLocaleComplete();
+                    }
+
+                    loadLocales.done(function() {
+                        if (setData('currentLocale', json, true)) { // save data to storage (cookie, sessionStorage, localStorage)
+                            var dl = (!Backbone.$.isEmptyObject(json.defaultLocale.placeholders[skin])) ?
+                                json.defaultLocale.placeholders[skin].placeholders :
+                                {},
+                                cl = (!Backbone.$.isEmptyObject(json.placeholders[skin])) ?
+                                json.placeholders[skin].placeholders :
+                                {};
+                            self.set(_.extend(dl, cl));
+                            self.loadCompleted.resolve();
+                        } else {
                             self.trigger('showError');
                         }
                     });
-                    // for test (end)
-            } else {
-                this.set(stateLocale.placeholders[skin].placeholders);
-                this.loadCompleted.resolve();
-            }
+                } else {
+                    var dl = (!Backbone.$.isEmptyObject(stateLocale.defaultLocale.placeholders[skin])) ?
+                        stateLocale.defaultLocale.placeholders[skin].placeholders :
+                        {},
+                        cl = (!Backbone.$.isEmptyObject(stateLocale.placeholders[skin])) ?
+                        stateLocale.placeholders[skin].placeholders :
+                        {};
+                    self.set(_.extend(dl, cl));
+                    self.loadCompleted.resolve();
+                }
+            });
         }
     });
 });
