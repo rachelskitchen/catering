@@ -521,13 +521,18 @@ define(["backbone", "async"], function(Backbone) {
         loadSettings: function() {
             this.set('settings_system', getData('settings').settings_system);
         },
-        setSkinPath: function() {
+        /**
+         * Set path for the current skin.
+         *
+         * @param {boolean} withoutTrigger Is it necessary to initiate the "changeSkinPath" trigger?
+         */
+        setSkinPath: function(withoutTrigger) {
             var skinPath = this.get('basePath') + '/skins/' + this.get('skin');
             this.set({
                 img_path: skinPath + '/img/',
                 skinPath: skinPath
             });
-            this.trigger('changeSkinPath');
+            if (!withoutTrigger) this.trigger('changeSkinPath');
         }
     });
 });
