@@ -48,11 +48,11 @@ define(['backbone'], function(Backbone) {
             var loadVersions = Backbone.$.Deferred();
             // load versions.json file
             Backbone.$.ajax({
-                url: '../i18n/versions.json',
+                url: skinPath + '/i18n/_versions.json',
                 dataType: 'json',
                 success: function(data) {
-                    if (data[skin][DEFAULT_LOCALE]) actualVersions.defaultLocale = data[skin][DEFAULT_LOCALE];
-                    if (data[skin][curLocale]) actualVersions.curLocale = data[skin][curLocale];
+                    if (data[DEFAULT_LOCALE]) actualVersions.defaultLocale = data[DEFAULT_LOCALE];
+                    if (data[curLocale]) actualVersions.curLocale = data[curLocale];
                     loadVersions.resolve();
                 },
                 error: function() {
