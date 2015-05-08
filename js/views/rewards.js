@@ -20,8 +20,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
- define(["factory"], function(factory) {
+ define(["factory", "backbone_epoxy"], function(factory) {
     'use strict';
+
+    Backbone.Epoxy.binding.addFilter('currencyFormat', function(value) {
+        return App.Settings.currency_symbol + round_monetary_currency(value);
+    });
 
     var RewardsCardView = App.Views.FactoryView.extend({
         name: 'rewards',
@@ -42,11 +46,58 @@
         }
     });
 
+    var RewardsItemApplicationView = App.Views.FactoryView.extend({
+        name: 'rewards',
+        mod: 'item_application',
+        tagName: 'li',
+        binding: {
+            '.discount': 'text: currencyFormat(discount)'
+        }
+    });
+
+    var RewardsOrderApplicationView = RewardsItemApplicationView.extend({
+        name: 'rewards',
+        mod: 'order_application'
+    });
+
+    var RewardsInfoView = App.Views.FactoryView.extend({
+        name: 'rewards',
+        mod: 'info',
+        bindings: {
+            '.rewards-number': 'text: number',
+            '.total-points': 'text: points_value',
+            '.total-visits': 'text: visits_value',
+            '.total-purchases': 'text: currencyFormat(purchases_value)'
+        },
+        events: {
+            'click .apply-reward': 'apply'
+        },
+        initialize: function() {
+            // extend bindingSources to implement the ability pass bindingSources via options
+            if(this.options.bindingSources instanceof Object) {
+                this.bindingSources = this.bindingSources || {};
+                _.extend(this.bindingSources, this.options.bindingSources);
+            }
+
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.applyBindings();
+        },
+        apply: function() {
+            console.log('reward has been applied');
+        }
+    });
+
     return new (require('factory'))(function() {
         App.Views.RewardsView = {}
         App.Views.RewardsView.RewardsCardView = RewardsCardView;
+        App.Views.RewardsView.RewardsItemApplicationView = RewardsItemApplicationView;
+        App.Views.RewardsView.RewardsOrderApplicationView = RewardsOrderApplicationView;
+        App.Views.RewardsView.RewardsInfoView = RewardsInfoView;
 
         // mixin prototype with Backbone.Epoxy.View.prototype
         Backbone.Epoxy.View.mixin(RewardsCardView.prototype);
+        Backbone.Epoxy.View.mixin(RewardsItemApplicationView.prototype);
+        Backbone.Epoxy.View.mixin(RewardsOrderApplicationView.prototype);
+        Backbone.Epoxy.View.mixin(RewardsInfoView.prototype);
     });
 });

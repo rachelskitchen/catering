@@ -23,10 +23,5 @@
  define(["rewards_view"], function(rewards_view) {
     'use strict';
 
-    return new (require('factory'))(rewards_view.initViews.bind(rewards_view), function() {
-        // App.Views.QuantityView.QuantityMainView = QuantityMainView;
-
-        // // mixin prototype with Backbone.Epoxy.View.prototype
-        // Backbone.Epoxy.View.mixin(QuantityMainView.prototype);
-    });
+    return new (require('factory'))(rewards_view.initViews.bind(rewards_view), function() {});
 });
