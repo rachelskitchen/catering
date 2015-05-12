@@ -156,6 +156,7 @@ MSG.HALF_PRICE_STR =  ["Full", "First Half","Second Half"];
 // Revel Directory
 MSG.REVEL_DIRECTORY_WELCOME_TEXT = 'and easily pay at any establishment that uses Revel';
 MSG.BRAND_DIRECTORY_WELCOME_TEXT = 'to easy pay';
+MSG.INTEGRITY_TEST_MAIN = "There is no testA_xx function in main.js (functions.js). Try manually clear the browser cash and restart.";
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
@@ -1757,4 +1758,12 @@ function OR(){
         result = result || arguments[i];
     }
     return result;
+}
+
+/*
+* Integrity simple test function (Bug 23033), it's checked from categories view. 
+* When the minimization done it's combined into main.js then checked from mainView.js  
+*/
+function testA_1() {
+   return 23033;
 }

@@ -61,6 +61,11 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
                 return round_monetary_currency(0);
             }
             return this.collection.total.get_total();
+        },
+        integrity_test: function() { //#23033 
+            if (typeof testA_1 != 'function') {
+                App.Data.errors.alert("Integrity error. " + MSG.INTEGRITY_TEST_MAIN);
+            }
         }
     });
 

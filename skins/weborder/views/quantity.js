@@ -33,7 +33,7 @@ define(["quantity_view"], function(quantity_view) {
                 product = this.model.get_product(),
                 quantity = this.model.get('quantity'),
                 stock_amount = product.get('stock_amount'),
-                selectWrapper = this.$('.select-wrapper');
+                selectWrapper = this.$('.combobox-wrapper'); //selectWrapper = this.$('.select-wrapper');
 
             select.empty();
             for (var i = 1; i <= stock_amount; i++) {
@@ -57,8 +57,7 @@ define(["quantity_view"], function(quantity_view) {
             if(product.isParent())
                 this.$el.hide();
 
-            ///////////////////////////////////////////////////////
-            var selectBoxOne = this.$("#s1").combobox(); ///////////////
+            select.combobox();
         },
         change: function(e) {
             this.model.set('quantity', e.target.value * 1);
