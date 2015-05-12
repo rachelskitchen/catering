@@ -31,6 +31,17 @@
     font-weight: bold;
 }
 
+.quantity_select input {
+    border: medium none;
+    font-weight: bold;
+    font-size: 15px;
+    padding-right: 22px;
+}
+
+.quantity .combobox-wrapper.l2 {
+    width: 36px;
+}
+
 .quantity .select-wrapper.l1 {
     width: 49px;
 }
