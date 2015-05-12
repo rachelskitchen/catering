@@ -942,12 +942,12 @@ section.maintenance .back {
     top: -2px;
     bottom: -2px;
     left: -2px;
-    right: -22px;
+    right: -2px;
     border-radius: 2px;
 }
 .input_beauty:after {
     left: 0;
-    right: -20px;
+    right: 0;
     top: 0;
     bottom: 0;
 }
@@ -961,6 +961,9 @@ section.maintenance .back {
     border-radius: 2px;
     padding: 0 10px;
     font-size: inherit;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 /* end input beauty */
 .action_button.disabled, .btn.disabled {
@@ -1034,4 +1037,34 @@ input[type="search"] {
 }
 .imgCardLogo {
     height: 20px;
+}
+
+/* cancel-input */
+.cancel-input {
+    display: inline-block;
+    width: 25px;
+    position: absolute;
+    right: 1px;
+    top: 1px;
+    bottom: 1px;
+    z-index: 2;
+    line-height: 24px;
+}
+
+span.cancel-input:before {
+    content: '\f00d';
+    font-family: FontAwesome;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    border-radius: 10px;
+    text-shadow: none;
+    text-align: center;
+    line-height: 20px;
+    cursor: pointer;
+}
+
+.cancel-input:not(.hide) + input {
+    padding-right: 30px;
 }

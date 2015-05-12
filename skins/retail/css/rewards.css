@@ -44,7 +44,7 @@
     outline: 1px solid red;
 }
 
-.submit-card {
+.submit-card, .apply-reward {
     margin: 16px 16px 0;
 }
 

@@ -245,6 +245,37 @@ define(["main_router"], function(main_router) {
                     App.Data.myorder.trigger('showCart');
                 }
             });
+
+            // onRewardsReceived event occurs when Rewards Card data is received from server
+            this.listenTo(App.Data.myorder.rewardsCard, 'onRewardsReceived', function() {
+                App.Data.mainModel.set('popup', {
+                    modelName: 'Rewards',
+                    mod: 'Info',
+                    model: App.Data.myorder.rewardsCard,
+                    className: 'rewards-info',
+                    collection: App.Data.myorder,
+                    points: App.Data.myorder.rewardsCard.get('points'),
+                    visits: App.Data.myorder.rewardsCard.get('points'),
+                    purchases: App.Data.myorder.rewardsCard.get('purchases')
+                });
+                App.Data.mainModel.trigger('loadCompleted');
+            });
+
+            // onApplyRewardsCard event occurs when Rewards Card's 'Apply' button is clicked on #checkout page
+            this.listenTo(App.Data.myorder.rewardsCard, 'onApplyRewardsCard', function() {
+                App.Data.mainModel.set('popup', {
+                    modelName: 'Rewards',
+                    mod: 'Card',
+                    model: App.Data.myorder.rewardsCard,
+                    className: 'rewards-info'
+                });
+            });
+
+            // onGetRewards event occurs when Rewards Card's 'Submit' button is clicked on 'Rewards Card Info' popup
+            this.listenTo(App.Data.myorder.rewardsCard, 'onGetRewards', function() {
+                App.Data.mainModel.trigger('loadStarted');
+                App.Data.myorder.rewardsCard.getRewards();
+            });
         },
         encodeState: function(data) {
             var enc = '';

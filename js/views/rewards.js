@@ -23,10 +23,6 @@
  define(["factory", "backbone_epoxy"], function(factory) {
     'use strict';
 
-    Backbone.Epoxy.binding.addFilter('currencyFormat', function(value) {
-        return App.Settings.currency_symbol + round_monetary_currency(value);
-    });
-
     var RewardsCardView = App.Views.FactoryView.extend({
         name: 'rewards',
         mod: 'card',
@@ -36,10 +32,6 @@
         },
         events: {
             'click .submit-card': 'submit'
-        },
-        initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.applyBindings();
         },
         submit: function() {
             this.model.trigger('onGetRewards');
@@ -67,20 +59,47 @@
             '.rewards-number': 'text: number',
             '.total-points': 'text: points_value',
             '.total-visits': 'text: visits_value',
-            '.total-purchases': 'text: currencyFormat(purchases_value)'
+            '.total-purchases': 'text: currencyFormat(purchases_value)',
+            '.points-discount': 'text: currencyFormat(points_discount)',
+            '.visits-discount': 'text: currencyFormat(visits_discount)',
+            '.purchases-discount': 'text: currencyFormat(purchases_discount)',
+            '.points-selection': 'toggle: isPointsAvailable',
+            '.visits-selection': 'toggle: isVisitsAvailable',
+            '.purchases-selection': 'toggle: isPurchasesAvailable',
+            '.rewards-unavailable': 'toggle: doNotQualifyRewards'
         },
         events: {
             'click .apply-reward': 'apply'
         },
         initialize: function() {
-            // extend bindingSources to implement the ability pass bindingSources via options
-            if(this.options.bindingSources instanceof Object) {
-                this.bindingSources = this.bindingSources || {};
-                _.extend(this.bindingSources, this.options.bindingSources);
-            }
-
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.applyBindings();
+        },
+        computeds: {
+            isPointsAvailable: {
+                deps: ['points', 'points_rewards_earned'],
+                get: function(points) {
+                    return points.isAvailable();
+                }
+            },
+            isVisitsAvailable: {
+                deps: ['visits', 'visits_rewards_earned'],
+                get: function(visits) {
+                    return visits.isAvailable();
+                }
+            },
+            isPurchasesAvailable: {
+                deps: ['purchases', 'purchases_rewards_earned'],
+                get: function(purchases) {
+                    return purchases.isAvailable();
+                }
+            },
+            doNotQualifyRewards: {
+                deps: ['points_rewards_earned', 'visits_rewards_earned', 'purchases_rewards_earned'],
+                get: function() {
+console.log('doNotQualifyRewards', this.getBinding('isPointsAvailable'), this.getBinding('isVisitsAvailable'), this.getBinding('isPurchasesAvailable'))
+                    return !(this.getBinding('isPointsAvailable') || this.getBinding('isVisitsAvailable') || this.getBinding('isPurchasesAvailable'));
+                }
+            }
         },
         apply: function() {
             console.log('reward has been applied');
@@ -93,11 +112,5 @@
         App.Views.RewardsView.RewardsItemApplicationView = RewardsItemApplicationView;
         App.Views.RewardsView.RewardsOrderApplicationView = RewardsOrderApplicationView;
         App.Views.RewardsView.RewardsInfoView = RewardsInfoView;
-
-        // mixin prototype with Backbone.Epoxy.View.prototype
-        Backbone.Epoxy.View.mixin(RewardsCardView.prototype);
-        Backbone.Epoxy.View.mixin(RewardsItemApplicationView.prototype);
-        Backbone.Epoxy.View.mixin(RewardsOrderApplicationView.prototype);
-        Backbone.Epoxy.View.mixin(RewardsInfoView.prototype);
     });
 });

@@ -24,6 +24,11 @@ define(["checkout_view"], function(checkout_view) {
     'use strict';
 
     var CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView.extend({
+        bindings: {
+            '.rewards-card-apply': 'classes: {hide: select(rewardsCard_redemption_code, true, false)}',
+            '.see-rewards': 'classes: {hide: select(rewardsCard_redemption_code, false, true)}',
+            '.cancel-input': 'classes: {hide: select(rewardsCard_redemption_code, false, true)}'
+        },
         controlAddress: function(model, value) {
             var arrAdd= this.$('.arrival_address');
             App.Views.CoreCheckoutView.CoreCheckoutMainView.prototype.controlAddress.apply(this, arguments);
