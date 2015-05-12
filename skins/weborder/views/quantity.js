@@ -25,7 +25,7 @@ define(["quantity_view"], function(quantity_view) {
 
     var QuantityMainView = App.Views.CoreQuantityView.CoreQuantityMainView.extend({
         events: {
-            'change select': 'change',
+            'change input': 'change' //'change select': 'change',
         },
         hide_show: function() {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.hide_show.apply(this, arguments);
