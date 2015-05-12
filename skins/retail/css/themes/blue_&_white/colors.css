@@ -590,3 +590,15 @@ aside:after, aside:before {
 section.maintenance .back {
     color: #373b40;
 }
+
+/* cancel-input */
+span.cancel-input:before {
+    background: #ccc;
+    color: #fff;
+}
+span.cancel-input:active:before {
+    background: #ff0000;
+}
+.rewards-card-btn:active {
+    color: #2699ca;
+}

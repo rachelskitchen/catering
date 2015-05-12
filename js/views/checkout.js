@@ -92,7 +92,9 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             'blur .lastName': 'changeLastName',
             'blur .email': 'changeEmail',
             'blur .phone': 'changePhone',
-            'blur .rewardCard' : 'changeRewardCard'
+            'blur .rewardCard': 'changeRewardCard',
+            'click .rewards-card-apply': 'applyRewardsCard',
+            'click .see-rewards': 'showRewards'
         },
         changeFirstName: function(e) {
             this.customer.set('first_name', e.target.value);
@@ -151,6 +153,12 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.$('.email').val(customer.get('email'));
             this.$('.phone').val(customer.get('phone'));
             this.$('.rewardCard').val(this.options.rewardsCard.get('number'));
+        },
+        applyRewardsCard: function() {
+            this.options.rewardsCard.trigger('onApplyRewardsCard');
+        },
+        showRewards: function() {
+            this.options.rewardsCard.trigger('onShowRewards');
         }
     });
 
