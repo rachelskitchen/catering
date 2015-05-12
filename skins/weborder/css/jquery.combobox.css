@@ -1,6 +1,5 @@
 .combobox-wrapper {
 	margin-left: 5px;
-
 	border: 2px solid #A9A9A9;
 	border-radius: 15px;
 	box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.3);
@@ -20,14 +19,11 @@
 .combobox {
 	display: inline-block;
 	position: relative;
-
 	width: 57px;
 	height: 26px;
-
 	min-width: 52px;
 	vertical-align: middle;
 }
-
 
 .triangle {
     background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjE1LjIiPjxnPjxwYXRoIGQ9Im00LDBMMSw2TDcsNloiIGZpbGw9IiM2ODY4NjgiLz48cmVjdCBoZWlnaHQ9IjEiIHdpZHRoPSI4IiB5PSI3IiB4PSIwIiBmaWxsPSIjNjg2ODY4Ii8+PHBhdGggZD0ibTQsMTUuMkwxLDkuMkw3LDkuMloiIGZpbGw9IiM2ODY4NjgiLz48L2c+PC9zdmc+");
@@ -42,28 +38,21 @@
 .inputbox {
 	color: #7D7D7D;
 	background-color: transparent;
-
     -webkit-appearance: none;
     -moz-appearance: none;
     -ms-appearance: none;
     appearance: none;
-
+	width: 47px; /* Fallback if calc Unsupported */
 	width: -webkit-calc(100% - 10px);
 	width: -moz-calc(100% - 10px);
 	width: calc(100% - 10px);
 	height: 26px;
-
     cursor: pointer;
-
-	/* #cecece  #a9a9a9a */
 	border: 2px solid #a9a9a9;
 	border-radius: 15px;
-
 	padding: 0px 2px 0px 8px !important;
-
 	font-weight: bold;
 	font-size: 15px;
-
     background-color: #fcfcfc;
 }
 
@@ -79,21 +68,17 @@
 	padding: 0;
 	margin: 0;
 	border: solid 1px #ccc;
-	/* fontFamily: inputSelect.css(fontFamily); */
-	/* fontSize: inputSelect.css(fontSize); */
 	background: #fff;
 	position: absolute;
 	z-index: 1000000;
-
 	margin-left: 4px;
 	margin-top: -2px;
+	width: 51px; /* Fallback if calc Unsupported */
 	width: -webkit-calc(100% - 6px);
 	width: -moz-calc(100% - 6px);
 	width: calc(100% - 6px);
-
 	color: #7D7D7D;
 	text-shadow: none;
-
 	border: 1px solid #b2b2b2;
 	padding: 0px;
    	text-align: left;
@@ -103,7 +88,6 @@
 .selectbox li {
 	background-color: #fff;
 }
-
 
 .selectbox li:hover {
 	background-color: #3399ff;
