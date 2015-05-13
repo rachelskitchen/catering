@@ -83,6 +83,8 @@
 	padding: 0px;
    	text-align: left;
    	cursor: pointer;
+   	max-height: 94px;
+	overflow-y: auto;
 }
 
 .selectbox li {
