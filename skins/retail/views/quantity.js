@@ -40,7 +40,7 @@ define(["quantity_view"], function(quantity_view) {
                 return this.$el.hide();
 
             stock_amount > 0 && select.empty();
-            for (var i = 1; i <= stock_amount; i++) {
+            for (var i = 1; i <= Math.min(stock_amount, 100); i++) {
                 if (i === quantity) {
                     select.append('<option selected="selected" value="' + i + '">' + i + '</option>');
                 } else {
@@ -59,6 +59,9 @@ define(["quantity_view"], function(quantity_view) {
             }
 
             select.combobox();
+            var inputbox = this.$('.inputbox');
+            inputTypeNumberMask(inputbox, /^[1-9][0-9]{0,2}$/); // 1-999 range
+            inputbox.trigger("change");
         },
         change: function(e) {
             this.model.set('quantity', e.target.value * 1);

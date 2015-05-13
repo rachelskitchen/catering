@@ -25,7 +25,7 @@ define(["quantity_view"], function(quantity_view) {
 
     var QuantityMainView = App.Views.CoreQuantityView.CoreQuantityMainView.extend({
         events: {
-            'change input': 'change' //'change select': 'change',
+            'change input': 'change'
         },
         hide_show: function() {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.hide_show.apply(this, arguments);
@@ -33,10 +33,10 @@ define(["quantity_view"], function(quantity_view) {
                 product = this.model.get_product(),
                 quantity = this.model.get('quantity'),
                 stock_amount = product.get('stock_amount'),
-                selectWrapper = this.$('.combobox-wrapper'); //selectWrapper = this.$('.select-wrapper');
+                selectWrapper = this.$('.combobox-wrapper');
 
             select.empty();
-            for (var i = 1; i <= stock_amount; i++) {
+            for (var i = 1; i <= Math.min(stock_amount, 100); i++) {
                 if (i === quantity) {
                     select.append('<option selected="selected" value="' + i + '">' + i + '</option>');
                 } else {
@@ -58,6 +58,9 @@ define(["quantity_view"], function(quantity_view) {
                 this.$el.hide();
 
             select.combobox();
+            var inputbox = this.$('.inputbox');
+            inputTypeNumberMask(inputbox, /^[1-9][0-9]{0,2}$/); // 1-999 range
+            inputbox.trigger("change");
         },
         change: function(e) {
             this.model.set('quantity', e.target.value * 1);
