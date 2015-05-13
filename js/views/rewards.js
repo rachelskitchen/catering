@@ -28,13 +28,44 @@
         mod: 'card',
         bindings: {
             '.rewards-input': 'value: number, events: ["input"]',
-            '.submit-card': 'classes: {disabled: select(number, false, true)}',
+            '#rewardsCaptcha': 'value: captchaValue, events: ["input"]',
+            '.submit-card': 'classes: {disabled: disableBtn}',
+            '.captcha-image': 'loadSpinner: _url'
         },
         events: {
-            'click .submit-card': 'submit'
+            'click .submit-card': 'submit',
+            'click .update-captcha': 'updateCaptcha'
+        },
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            inputTypeNumberMask(this.$('.rewards-input'), /^\d*$/, this.model.get('number'), true);
+            this.updateCaptcha();
+        },
+        computeds: {
+            disableBtn: {
+                deps: ['number', 'captchaValue', 'captchaKey'],
+                get: function(number, captchaValue, captchaKey) {
+                    return !(number && captchaValue && captchaKey);
+                }
+            },
+            _url: {
+                deps: ['captchaImage', '_settings_host'],
+                get: function(captchaImage, _settings_host) {
+                    // this.$('.ui-spinner').remove();
+                    if(captchaImage) {
+                        return _settings_host + captchaImage;
+                    } else {
+                        return '';
+                    }
+                }
+            }
         },
         submit: function() {
             this.model.trigger('onGetRewards');
+        },
+        updateCaptcha: function() {
+            // this.$('.captcha').spinner();
+            this.model.loadCaptcha();
         }
     });
 
@@ -63,16 +94,26 @@
             '.points-discount': 'text: currencyFormat(points_discount)',
             '.visits-discount': 'text: currencyFormat(visits_discount)',
             '.purchases-discount': 'text: currencyFormat(purchases_discount)',
-            '.points-selection': 'toggle: isPointsAvailable',
-            '.visits-selection': 'toggle: isVisitsAvailable',
-            '.purchases-selection': 'toggle: isPurchasesAvailable',
-            '.rewards-unavailable': 'toggle: doNotQualifyRewards'
+            '.points-selection': 'toggle: isPointsAvailable, classes: {active: points_selected}',
+            '.visits-selection': 'toggle: isVisitsAvailable, classes: {active: visits_selected}',
+            '.purchases-selection': 'toggle: isPurchasesAvailable, classes: {active: purchases_selected}',
+            '.rewards-unavailable': 'toggle: doNotQualifyRewards',
+            '.points-collected': 'classes: {hide: isPointsDefault}',
+            '.visits-collected': 'classes: {hide: isVisitsDefault}',
+            '.purchases-collected': 'classes: {hide: isPurchasesDefault}',
+            '.apply-reward': 'classes: {disabled: select(redemption_code, false, true)}'
         },
-        events: {
-            'click .apply-reward': 'apply'
+        events: function() {
+            return {
+                'click .apply-reward': this.apply,
+                'click .points-selection': this.selectRewardType.bind(this, 'points'),
+                'click .visits-selection': this.selectRewardType.bind(this, 'visits'),
+                'click .purchases-selection': this.selectRewardType.bind(this, 'purchases')
+            }
         },
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.originalRedemptionCode = this.model.get('redemption_code');
         },
         computeds: {
             isPointsAvailable: {
@@ -93,16 +134,49 @@
                     return purchases.isAvailable();
                 }
             },
+            isPointsDefault: {
+                deps: ['points'],
+                get: function(points) {
+                    return points.isDefault();
+                }
+            },
+            isVisitsDefault: {
+                deps: ['visits'],
+                get: function(visits) {
+                    return visits.isDefault();
+                }
+            },
+            isPurchasesDefault: {
+                deps: ['purchases'],
+                get: function(purchases) {
+                    return purchases.isDefault();
+                }
+            },
             doNotQualifyRewards: {
-                deps: ['points_rewards_earned', 'visits_rewards_earned', 'purchases_rewards_earned'],
-                get: function() {
-console.log('doNotQualifyRewards', this.getBinding('isPointsAvailable'), this.getBinding('isVisitsAvailable'), this.getBinding('isPurchasesAvailable'))
-                    return !(this.getBinding('isPointsAvailable') || this.getBinding('isVisitsAvailable') || this.getBinding('isPurchasesAvailable'));
+                deps: ['isPointsAvailable', 'isVisitsAvailable', 'isPurchasesAvailable'],
+                get: function(isPointsAvailable, isVisitsAvailable, isPurchasesAvailable) {
+                    return !(isPointsAvailable || isVisitsAvailable || isPurchasesAvailable);
                 }
             }
         },
+        remove: function() {
+            this.model.set('redemption_code', this.originalRedemptionCode);
+            App.Views.FactoryView.prototype.remove.apply(this, arguments);
+        },
         apply: function() {
-            console.log('reward has been applied');
+            this.originalRedemptionCode = this.model.get('redemption_code');
+            this.model.trigger('onRedemptionApplied');
+        },
+        selectRewardType: function(type) {
+            var model = this.model.get(type);
+
+            // If reward type is already selected need to unselect it.
+            // Otherwise it should be selected.
+            if(model && model.get('selected')) {
+                this.model.selectRewardsType(null);
+            } else {
+                this.model.selectRewardsType(type);
+            }
         }
     });
 

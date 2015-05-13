@@ -246,18 +246,35 @@ define(["main_router"], function(main_router) {
                 }
             });
 
+            // onRedemptionApplied event occurs when 'Apply Reward' btn is clicked
+            this.listenTo(App.Data.myorder.rewardsCard, 'onRedemptionApplied', function() {
+                App.Data.mainModel.trigger('loadStarted');
+                App.Data.myorder.get_cart_totals().always(function() {
+                    App.Data.mainModel.unset('popup');
+                    App.Data.mainModel.trigger('loadCompleted');
+                });
+            });
+
+
             // onRewardsReceived event occurs when Rewards Card data is received from server
             this.listenTo(App.Data.myorder.rewardsCard, 'onRewardsReceived', function() {
-                App.Data.mainModel.set('popup', {
-                    modelName: 'Rewards',
-                    mod: 'Info',
-                    model: App.Data.myorder.rewardsCard,
-                    className: 'rewards-info',
-                    collection: App.Data.myorder,
-                    points: App.Data.myorder.rewardsCard.get('points'),
-                    visits: App.Data.myorder.rewardsCard.get('points'),
-                    purchases: App.Data.myorder.rewardsCard.get('purchases')
-                });
+                var rewardsCard = App.Data.myorder.rewardsCard;
+
+                if(rewardsCard.get('points').isDefault() && rewardsCard.get('visits').isDefault() && rewardsCard.get('purchases').isDefault()) {
+                    App.Data.errors.alert(MSG.NO_REWARDS_AVAILABLE);
+                } else {
+                    App.Data.mainModel.set('popup', {
+                        modelName: 'Rewards',
+                        mod: 'Info',
+                        model: rewardsCard,
+                        className: 'rewards-info',
+                        collection: App.Data.myorder,
+                        points: rewardsCard.get('points'),
+                        visits: rewardsCard.get('visits'),
+                        purchases: rewardsCard.get('purchases')
+                    });
+                }
+
                 App.Data.mainModel.trigger('loadCompleted');
             });
 

@@ -94,7 +94,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             'blur .phone': 'changePhone',
             'blur .rewardCard': 'changeRewardCard',
             'click .rewards-card-apply': 'applyRewardsCard',
-            'click .see-rewards': 'showRewards'
+            'click .see-rewards': 'showRewards',
+            'click .cancel-input': 'resetRewards'
         },
         changeFirstName: function(e) {
             this.customer.set('first_name', e.target.value);
@@ -158,7 +159,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.options.rewardsCard.trigger('onApplyRewardsCard');
         },
         showRewards: function() {
-            this.options.rewardsCard.trigger('onShowRewards');
+            this.options.rewardsCard.trigger('onRewardsReceived');
+        },
+        resetRewards: function() {
+            this.options.rewardsCard.resetData();
         }
     });
 

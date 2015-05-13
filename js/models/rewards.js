@@ -53,7 +53,8 @@ define(['backbone'], function(Backbone) {
             rewards_earned: 0,
             discount: 0,
             point_to_next_reward: 0,
-            value: 0
+            value: 0,
+            selected: false
         },
         /**
          * @method
@@ -101,7 +102,10 @@ define(['backbone'], function(Backbone) {
             points: new App.Models.Rewards,
             visits: new App.Models.Rewards,
             number: '',
-            redemption_code: null
+            redemption_code: null,
+            captchaImage: '',
+            captchaKey: '',
+            captchaValue: ''
         },
         /**
          * @method
@@ -185,8 +189,21 @@ define(['backbone'], function(Backbone) {
          * Set `redemption_code` attribute.
          */
         selectRewardsType: function(rewardsType) {
-            var isAvailable = Object.keys(REDEMPTION_CODES).indexOf(rewardsType) > -1 && this.get(rewardsType).isAvailable();
+            var reward = this.get(rewardsType),
+                isAvailable = Object.keys(REDEMPTION_CODES).indexOf(rewardsType) > -1 && reward.isAvailable();
+
             this.set('redemption_code', isAvailable ? REDEMPTION_CODES[rewardsType] : this.defaults.redemption_code);
+            updateSelected(this.get('points'));
+            updateSelected(this.get('visits'));
+            updateSelected(this.get('purchases'));
+
+            function updateSelected(model) {
+                if(model !== reward || !isAvailable) {
+                    model.set('selected', false);
+                } else {
+                    model.set('selected', true);
+                }
+            }
         },
         /**
          * @method
@@ -215,6 +232,17 @@ define(['backbone'], function(Backbone) {
          */
         resetData: function() {
             this.set(this.defaults);
+        },
+        /**
+         * @method
+         * Loads captcha data.
+         */
+        loadCaptcha: function() {
+            var self = this;
+            Backbone.$.getJSON('/weborders/captcha/?establishment=1', {}, function(json) {
+                self.set('captchaImage', json.captcha_image);
+                self.set('captchaKey', json.captcha_key);
+            });
         }
     });
 });
