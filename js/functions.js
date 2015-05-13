@@ -1649,19 +1649,7 @@ function OR(){
         result = result || arguments[i];
     }
     return result;
-<<<<<<< .mine
 }
-
-
-
-
-
-
-
-
-=======
-}
-
 /*
 * Integrity simple test function (Bug 23033), it's checked from categories view. 
 * When the minimization done it's combined into main.js then checked from mainView.js  
@@ -1669,4 +1657,3 @@ function OR(){
 function testA_2() {
    return 23033;
 }
->>>>>>> .theirs
