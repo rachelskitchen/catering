@@ -44,6 +44,9 @@ var RESOURCES = {
 ERROR.WEBSTORAGES_ARE_DISABLED = 'Web storages are disabled or not supported in your browser';
 ERROR.LOAD_LANGUAGE_PACK = 'Unable to load a language pack. Now the page is reloaded.';
 
+MSG.DISCOUNT_CODE_NOT_APPLICABLE = "The typed discount code is not applicable now. Automatic discounts can be applied only.";
+MSG.INTEGRITY_TEST_MAIN = "There is no testA_xx function in main.js (functions.js). Try manually clear the browser cash and restart.";
+
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
     CREDIT: 2,
@@ -1646,4 +1649,24 @@ function OR(){
         result = result || arguments[i];
     }
     return result;
+<<<<<<< .mine
 }
+
+
+
+
+
+
+
+
+=======
+}
+
+/*
+* Integrity simple test function (Bug 23033), it's checked from categories view. 
+* When the minimization done it's combined into main.js then checked from mainView.js  
+*/
+function testA_2() {
+   return 23033;
+}
+>>>>>>> .theirs
