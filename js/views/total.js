@@ -64,7 +64,7 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
         },
         integrity_test: function() { //#23033 
             if (typeof testA_2 != 'function') {
-                App.Data.errors.alert("Integrity error. " + MSG.INTEGRITY_TEST_MAIN);
+                App.Data.errors.alert("Integrity error. " + MSG.ERROR_INTEGRITY_TEST_MAIN);
             }
         }
     });
