@@ -61,11 +61,13 @@
 
 	        	//bind the focus handler
 	        	inputbox.focus(function(){
-	        		selectbox.fadeIn(100);
+	        		setTimeout(function() {selectbox.fadeIn(100);}, 100);
 	        	}).blur(function(){
-	        		selectbox.fadeOut(100);
+	        		setTimeout(function() {selectbox.fadeOut(100);}, 100);
 	        	}).keyup(function(e){
-	        		if(e.which==13)	inputbox.trigger("blur");
+	        		if(e.which==13)	{
+	        			inputbox.trigger("blur");
+	        		}
 	        	});
 
 	        	//hide original element
@@ -140,3 +142,4 @@
     }
 
 }( jQuery ));
+

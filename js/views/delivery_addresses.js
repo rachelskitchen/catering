@@ -84,43 +84,29 @@ define(['backbone', 'factory'], function(Backbone) {
             'change select.country': 'countryChange',
             'change select.states': 'changeState',
             'change .shipping-select': 'changeShipping',
-            'focus input[name]': 'focus',
-            'blur input[name]': 'blur'
+            'input input[name]': 'input',
+            'blur input[name]': 'change',
+            'change input[name]': 'change'
         },
-        focus: function(event){
+        input: function(event){
             var name = event.target.name,
-                prev = null,
-                format = 'format' + name,
-                listen = 'listen' + name;
-            this[format] = function() {
-                if(event.target.value === prev)
-                    return;
-
-                try {
-                    var start = event.target.selectionStart,
-                        end = event.target.selectionEnd,
-                        direction = event.target.selectionDirection;
-                } catch(e) {
-                    console.log('There is not selection API');
-                }
-                event.target.value = fistLetterToUpperCase(event.target.value);
-                prev = event.target.value;
-                try {
-                    event.target.setSelectionRange(start, end, direction);
-                } catch(e) {}
-            };
-            this[listen] = setInterval(this[format], 50);
+                prev = null;
+            if(event.target.value === prev)
+                return;
+            try {
+                var start = event.target.selectionStart,
+                    end = event.target.selectionEnd,
+                    direction = event.target.selectionDirection;
+            } catch(e) {
+                console.log('There is not selection API');
+            }
+            event.target.value = fistLetterToUpperCase(event.target.value);
+            prev = event.target.value;
+            try {
+                event.target.setSelectionRange(start, end, direction);
+            } catch(e) {}
         },
-        blur: function(event){
-            var name = event.target.name,
-                format = 'format' + name,
-                listen = 'listen' + name;
-            clearInterval(this['listen' + name]);
-            delete this[format];
-            delete this[listen];
-            this.onChangeElem(event);
-        },
-        onChangeElem: function(e) {
+        change: function(e) {
             e.target.value = fistLetterToUpperCase(e.target.value).trim();
             if (this.model[e.target.name] != e.target.value) {
                 this.model[e.target.name] = e.target.value;

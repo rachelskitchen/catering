@@ -1115,9 +1115,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                             }
                             break;
                         case "DISCOUNT_CODE_NOT_FOUND":
+                        case "DISCOUNT_CODE_NOT_APPLICABLE":
                             myorder.checkout.set('last_discount_code', null);
-                            reportErrorFrm(MSG.DISCOUNT_CODE_NOT_FOUND);
-                            myorder.update_cart_totals();//get discounts w/o discount_code
+                            reportErrorFrm(MSG[data.status]);
+                            myorder.update_cart_totals();//get discounts & totals w/o discount_code
                             break;
                         default:
                             if (!data.errorMsg) data.errorMsg = MSG.ERROR_NO_MSG_FROM_SERVER;
