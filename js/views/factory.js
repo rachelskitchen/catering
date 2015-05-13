@@ -28,6 +28,17 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         return App.Settings.currency_symbol + round_monetary_currency(value);
     });
 
+    // add handlers
+    Backbone.Epoxy.binding.addHandler('loadSpinner', function($el, value) {
+        if(value) {
+            $el.off();
+            $el.attr('src', value);
+            return loadSpinner($el);
+        } else {
+            return $el;
+        }
+    });
+
     App.Views.FactoryView = Backbone.Epoxy.View.extend({
         constructor: function(options) {
             // Extend Backbone.Epoxy.View.prototype.bindingSources to implement the ability to pass `bindingSources` via Backbone.View options.
@@ -42,10 +53,8 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
                 _.extend(bindingSources, _.isObject(options.bindingSources) ? options.bindingSources : undefined);
             }
 
-            if(_.isObject(bindingSources) && Object.keys(bindingSources).length) {
-                this.bindingSources || (this.bindingSources = {});
-                _.extend(this.bindingSources, bindingSources);
-            }
+            this.bindingSources || (this.bindingSources = {});
+            _.extend(this.bindingSources, {_settings: App.Data.settings}, bindingSources);
 
             // init array of sub views
             this.subViews = [];

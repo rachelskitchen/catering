@@ -46,7 +46,10 @@ define(['rewards'], function() {
                 visits: new App.Models.Rewards,
                 points: new App.Models.Rewards,
                 number: '',
-                redemption_code: null
+                redemption_code: null,
+                captchaImage: '',
+                captchaKey: '',
+                captchaValue: ''
             };
         });
 
@@ -60,6 +63,9 @@ define(['rewards'], function() {
             expect(rewardsCard.get('purchases').toJSON()).toEqual(def.purchases.toJSON());
             expect(rewardsCard.get('visits').toJSON()).toEqual(def.visits.toJSON());
             expect(rewardsCard.get('points').toJSON()).toEqual(def.points.toJSON());
+            expect(rewardsCard.get('captchaImage')).toEqual(def.captchaImage);
+            expect(rewardsCard.get('captchaKey')).toEqual(def.captchaKey);
+            expect(rewardsCard.get('captchaValue')).toEqual(def.captchaValue);
         });
 
         it('initialize()', function() {
@@ -443,6 +449,32 @@ define(['rewards'], function() {
 
             rewardsCard.resetData();
             expect(rewardsCard.toJSON()).toEqual(rewardsCard.defaults);
+        });
+
+        it('loadCaptcha()', function() {
+            var captchaData = {captcha_image: 'aaaaaa', captcha_key: 'bbbbbbbb'},
+                URL = '/weborders/captcha/?establishment=1',
+                DATA = {},
+                jsXHR, _url, _data;
+
+            spyOn(Backbone.$, 'getJSON').and.callFake(function(url, data, cb) {
+                jsXHR = Backbone.$.Deferred();
+                jsXHR.always(function() {
+                    cb(captchaData);
+                });
+                _url = url;
+                _data = data;
+            });
+
+            spyOn(rewardsCard, 'set');
+
+            // check success
+            rewardsCard.loadCaptcha();
+            jsXHR.resolve();
+            expect(_url).toBe(URL);
+            expect(_data).toEqual(DATA);
+            expect(rewardsCard.set).toHaveBeenCalledWith('captchaImage', captchaData.captcha_image);
+            expect(rewardsCard.set).toHaveBeenCalledWith('captchaKey', captchaData.captcha_key);
         });
     });
 });

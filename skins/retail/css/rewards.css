@@ -37,11 +37,12 @@
     height: 27px;
 }
 
-.captcha {
+.rewards-info .captcha {
+    display: inline-block;
     height: 48px;
     width: 120px;
     margin: 24px 0 12px 101px;
-    outline: 1px solid red;
+    font-size: 8px;
 }
 
 .submit-card, .apply-reward {
@@ -49,7 +50,7 @@
 }
 
 /* need to increase margins to avoid jumping */
-.submit-card.btn.disabled {
+.submit-card.btn.disabled, .apply-reward.btn.disabled {
     margin: 19px 19px 3px;
 }
 
@@ -59,12 +60,12 @@
     font-weight: bold;
 }
 
-.points-collected {
+.collected {
     text-align: center;
     margin-bottom: 12px;
 }
 
-.points-collected li {
+.collected li {
     display: inline-block;
     width: 32%;
     word-break: break-word;
@@ -92,11 +93,16 @@
 
 .reward-selection li {
     height: 93px;
-    border: 1px solid #000;
+    border: 1px solid #2699ca;
     margin: 7px 0;
     text-align: center;
     font-size: 24px;
     cursor: pointer;
+}
+
+.reward-selection li.active {
+    border-color: #065ca0;
+    background-color: rgba(38, 153, 202, 0.2);
 }
 
 .reward-selection li:before {
@@ -105,4 +111,17 @@
     height: 100%;
     width: 0;
     vertical-align: middle;
+}
+
+.rewards-info .rewards-card-btn {
+    display: inline-block;
+    line-height: 48px;
+    margin: 24px 50px 12px 12px;
+    vertical-align: top;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.rewards-info .img-spinner {
+    height: 100%;
 }

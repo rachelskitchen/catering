@@ -595,7 +595,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
          */
         get_only_product_quantity: function() {
             return _.reduce(this.models, function(qty, model) {
-                    return model.get("id_product") != null ? qty + model.get('quantity') : qty; 
+                    return model.get("id_product") != null ? qty + model.get('quantity') : qty;
                 }, 0);
         },
         /**
