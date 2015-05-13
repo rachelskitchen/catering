@@ -435,6 +435,7 @@
         "ERROR_GET_DISCOUNTS":                            "Failed request to get discounts",
         "ERROR_INCORRECT_DISCOUNT_CODE":                  "Type correct discount code from 4 to 16 characters",
         "DISCOUNT_CODE_NOT_FOUND":                        "The typed discount code hasn't been found. Automatic discounts can be applied only.",
+        "DISCOUNT_CODE_NOT_APPLICABLE":                   "The typed discount code is not applicable now. Automatic discounts can be applied only.",
         "ESTABLISHMENTS_ERROR_NOSTORE":                   "No store is available for the specified brand",
         "ESTABLISHMENTS_CHOOSE_BRAND_DESKTOP":            "Choose which %s you are looking for:",
         "ESTABLISHMENTS_CHOOSE_BRAND_MOBILE":             "Choose which %s you're looking for:",
@@ -454,7 +455,8 @@
             "Second Half"
         ],
         "REVEL_DIRECTORY_WELCOME_TEXT":                   "and easily pay at any establishment that uses Revel",
-        "BRAND_DIRECTORY_WELCOME_TEXT":                   "to easy pay"
+        "BRAND_DIRECTORY_WELCOME_TEXT":                   "to easy pay",
+        "ERROR_INTEGRITY_TEST_MAIN":                      "There is no testA_xx function in main.js (functions.js). Try manually clear the browser cache and restart."
     },
     "CARD_TITLE":                    "Enter your Card Information",
     "CARD_FIRST_NAME":               "First Name",

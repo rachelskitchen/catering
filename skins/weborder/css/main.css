@@ -531,25 +531,16 @@ section.maintenance #header .btn {
     left: 15px;
     right: 13px;
 }
-
 #cart .total_block li {
     text-align: right;
-    position: relative;
-    height: 18px;
 }
 #cart .total_block .title {
     display: inline-block;
-    width: 70%;
-    position: relative;
-    float: right;
-    line-height: 18px;
-    padding-right: 5px;
+    max-width: 70%;
+    vertical-align: top;
 }
 #cart .total_block .cost {
     letter-spacing: -3px;
-    position: relative;
-    float: right;
-    line-height: 18px;
 }
 #cart .order-items li {
     position: relative;
