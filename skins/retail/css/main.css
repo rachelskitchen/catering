@@ -115,6 +115,9 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, 
 img {
     border: none;
 }
+img[src=''] {
+    opacity: 0;
+}
 ul {
     list-style: none;
 }

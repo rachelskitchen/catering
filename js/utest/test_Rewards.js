@@ -10,7 +10,8 @@ define(['rewards'], function() {
                 rewards_earned: 0,
                 discount: 0,
                 point_to_next_reward: 0,
-                value: 0
+                value: 0,
+                selected: false
             };
         });
 
@@ -160,7 +161,8 @@ define(['rewards'], function() {
                     rewards_earned: 2,
                     discount: 12,
                     point_to_next_reward: 4,
-                    value: 2
+                    value: 2,
+                    selected: false
                 }
 
                 // check purchases
@@ -190,7 +192,7 @@ define(['rewards'], function() {
         });
 
         describe('getRewards()', function() {
-            var data, rewardsCard, number, jqXHR, url, type, dataType, postData, est;
+            var data, rewardsCard, number, jqXHR, url, type, dataType, postData, est, captchaKey, captchaValue;
 
             beforeEach(function() {
                 // URL for reward cards resource
@@ -211,10 +213,18 @@ define(['rewards'], function() {
                 // establishment
                 est = 1;
 
+                // captchaKey
+                captchaKey = 'captcha-test-key';
+
+                // captchaValue
+                captchaValue = 'captcha-test-key';
+
                 // data passed to server to get rewards card
                 postData = {
                     establishment: est,
-                    number: number
+                    number: number,
+                    captchaKey: captchaKey,
+                    captchaValue: captchaValue
                 };
 
                 // response from server
@@ -240,7 +250,9 @@ define(['rewards'], function() {
                 }];
 
                 rewardsCard = new App.Models.RewardsCard({
-                    number: number
+                    number: number,
+                    captchaKey: captchaKey,
+                    captchaValue: captchaValue
                 });
 
                 spyOn(Backbone.$, 'ajax').and.callFake(function(opts) {
@@ -264,13 +276,25 @@ define(['rewards'], function() {
                 expect(Backbone.$.ajax).not.toHaveBeenCalled();
             });
 
-            it('`number` is assigned, request failed', function() {
+            it('`captchaKey` isn\'t assigned', function() {
+                rewardsCard.set('captchaKey', '');
+                rewardsCard.getRewards();
+                expect(Backbone.$.ajax).not.toHaveBeenCalled();
+            });
+
+            it('`captchaValue` isn\'t assigned', function() {
+                rewardsCard.set('captchaValue', '');
+                rewardsCard.getRewards();
+                expect(Backbone.$.ajax).not.toHaveBeenCalled();
+            });
+
+            it('`number`, `captchaKey`, `captchaValue` are assigned, request failed', function() {
                 rewardsCard.getRewards();
                 jqXHR.reject();
                 expectRequestParameters();
             });
 
-            it('`number` is assigned, request is successful, `data` param isn\'t array', function() {
+            it('`number`, `captchaKey`, `captchaValue` are assigned, request is successful, `data` param isn\'t array', function() {
                 rewardsCard.getRewards();
                 data = 213;
                 jqXHR.resolve();
@@ -281,7 +305,7 @@ define(['rewards'], function() {
                 expect(rewardsCard.get('points')).toBe(rewardsCard.defaults.points);
             });
 
-            it('`number` is assigned, request is successful, `data` param is array and its first element isn\'t object', function() {
+            it('`number`, `captchaKey`, `captchaValue` are assigned, request is successful, `data` param is array and its first element isn\'t object', function() {
                 rewardsCard.getRewards();
                 data = ['sdf'];
                 jqXHR.resolve();
@@ -292,17 +316,17 @@ define(['rewards'], function() {
                 expect(rewardsCard.get('points')).toBe(rewardsCard.defaults.points);
             });
 
-            it('`number` is assigned, request is successful, `data` param is array and its first element is object', function() {
+            it('`number`, `captchaKey`, `captchaValue` are assigned, request is successful, `data` param is array and its first element is object', function() {
                 rewardsCard.getRewards();
                 jqXHR.resolve();
                 expectRequestParameters();
                 expect(rewardsCard.trigger).toHaveBeenCalledWith('onRewardsReceived');
-                expect(rewardsCard.get('purchases').toJSON()).toEqual(data[0].purchases);
-                expect(rewardsCard.get('visits').toJSON()).toEqual(data[0].visits);
-                expect(rewardsCard.get('points').toJSON()).toEqual(data[0].points);
+                expect(rewardsCard.get('purchases').toJSON()).toEqual(_.extend(data[0].purchases, {selected: false}));
+                expect(rewardsCard.get('visits').toJSON()).toEqual(_.extend(data[0].visits, {selected: false}));
+                expect(rewardsCard.get('points').toJSON()).toEqual(_.extend(data[0].points, {selected: false}));
             });
 
-            it('`number` is assigned, request is successful, `data` param is array and its first element is object, rewards types are disabled', function() {
+            it('`number`, `captchaKey`, `captchaValue` are assigned, request is successful, `data` param is array and its first element is object, rewards types are disabled', function() {
                 rewardsCard.getRewards();
                 data = [{number: '131232'}];
                 jqXHR.resolve();
@@ -317,7 +341,7 @@ define(['rewards'], function() {
                 expect(jqXHR.url).toBe(url);
                 expect(jqXHR.type).toBe(type);
                 expect(jqXHR.dataType).toBe(dataType);
-                expect(JSON.parse(jqXHR.data)).toEqual({number: number, establishment: est});
+                expect(JSON.parse(jqXHR.data)).toEqual({number: number, establishment: est, captchaKey : captchaKey, captchaValue : captchaValue});
             }
         });
 
@@ -400,9 +424,11 @@ define(['rewards'], function() {
                 var data = {
                     number: '123',
                     redemption_code: 2,
-                    points: {rewards_earned: 11, discount: 12, point_to_next_reward: 13, value: 14},
-                    visits: {rewards_earned: 21, discount: 22, point_to_next_reward: 23, value: 24},
-                    purchases: {rewards_earned: 31, discount: 32, point_to_next_reward: 33, value: 34}
+                    points: {rewards_earned: 11, discount: 12, point_to_next_reward: 13, value: 14, selected: false},
+                    visits: {rewards_earned: 21, discount: 22, point_to_next_reward: 23, value: 24, selected: true},
+                    purchases: {rewards_earned: 31, discount: 32, point_to_next_reward: 33, value: 34, selected: false},
+                    captchaKey: 'test',
+                    captchaValue: 'test'
                 }
 
                 spyOn(window, 'getData').and.callFake(function() {
@@ -413,6 +439,8 @@ define(['rewards'], function() {
                 expect(window.getData).toHaveBeenCalledWith('rewardsCard');
                 expect(rewardsCard.get('number')).toBe(data.number);
                 expect(rewardsCard.get('redemption_code')).toBe(data.redemption_code);
+                expect(rewardsCard.get('captchaKey')).toBe(data.captchaKey);
+                expect(rewardsCard.get('captchaValue')).toBe(data.captchaValue);
                 expect(rewardsCard.get('points').toJSON()).toEqual(data.points);
                 expect(rewardsCard.get('visits').toJSON()).toEqual(data.visits);
                 expect(rewardsCard.get('purchases').toJSON()).toEqual(data.purchases);
@@ -425,6 +453,8 @@ define(['rewards'], function() {
                 expect(window.getData).toHaveBeenCalledWith('rewardsCard');
                 expect(rewardsCard.get('number')).toBe(rewardsCard.defaults.number);
                 expect(rewardsCard.get('redemption_code')).toBe(rewardsCard.defaults.redemption_code);
+                expect(rewardsCard.get('captchaKey')).toBe(rewardsCard.defaults.captchaKey);
+                expect(rewardsCard.get('captchaValue')).toBe(rewardsCard.defaults.captchaValue);
                 expect(rewardsCard.get('points')).toBe(rewardsCard.defaults.points);
                 expect(rewardsCard.get('visits')).toBe(rewardsCard.defaults.visits);
                 expect(rewardsCard.get('purchases')).toBe(rewardsCard.defaults.purchases);
@@ -435,14 +465,18 @@ define(['rewards'], function() {
             var data = {
                 number: '232312',
                 redemption_code: 2,
-                points: {rewards_earned: 11, discount: 12, point_to_next_reward: 13, value: 14},
-                visits: {rewards_earned: 21, discount: 22, point_to_next_reward: 23, value: 24},
-                purchases: {rewards_earned: 31, discount: 32, point_to_next_reward: 33, value: 34}
+                points: {rewards_earned: 11, discount: 12, point_to_next_reward: 13, value: 14, selected: true},
+                visits: {rewards_earned: 21, discount: 22, point_to_next_reward: 23, value: 24, selected: false},
+                purchases: {rewards_earned: 31, discount: 32, point_to_next_reward: 33, value: 34, selected: false},
+                captchaKey: 'test',
+                captchaValue: 'test'
             };
 
             rewardsCard.set(data);
             expect(rewardsCard.get('number')).toBe(data.number);
             expect(rewardsCard.get('redemption_code')).toBe(data.redemption_code);
+            expect(rewardsCard.get('captchaValue')).toBe(data.captchaValue);
+            expect(rewardsCard.get('captchaKey')).toBe(data.captchaKey);
             expect(rewardsCard.get('points').toJSON()).toEqual(data.points);
             expect(rewardsCard.get('visits').toJSON()).toEqual(data.visits);
             expect(rewardsCard.get('purchases').toJSON()).toEqual(data.purchases);
