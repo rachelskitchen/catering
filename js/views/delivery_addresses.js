@@ -30,8 +30,7 @@ define(['backbone', 'factory'], function(Backbone) {
      */
     var AddressView = App.Views.FactoryView.extend({
         initialize: function() {
-            var locale = App.Data.locale,
-                model = _.extend({}, this.options.customer.toJSON()),
+            var model = _.extend({}, this.options.customer.toJSON()),
                 defaultAddress = App.Settings.address,
                 address = this.getAddress();
 
@@ -39,12 +38,12 @@ define(['backbone', 'factory'], function(Backbone) {
             model.state = model.country == 'US' ? (address ? address.state : defaultAddress.state) : null;
             model.province = model.country == 'CA' ? (address ? address.province : '') : null;
             model.originalState = model.state;
-            model.states = locale.get('CORE')['STATES'];
+            model.states = _loc['STATES'];
             model.street_1 = address ? address.street_1 : '';
             model.street_2 = address ? address.street_2 : '';
             model.city = address ? address.city : '';
             model.zipcode = address ? address.zipcode : '';
-            model.countries = locale.get('CORE')['COUNTRIES'];
+            model.countries = _loc['COUNTRIES'];
 
             this.model = model;
 

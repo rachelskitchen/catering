@@ -186,12 +186,10 @@ var ERROR = {},
                 return errors.alert(ERROR.WEBSTORAGES_ARE_DISABLED, true);
             }
 
-            var def_core, def_skin;
-
             settings.on('change:skin', function() {
-                def_core = locale.loadLanguagePack(true); // load a core language pack (localStorage or the backend system)
-                def_skin = locale.loadLanguagePack(); // load a skin language pack (localStorage or the backend system)
-                $.when(def_core, def_skin).done(function() {
+                locale.dfd_core = locale.loadLanguagePack(true); // load a core language pack (localStorage or the backend system)
+                locale.dfd_skin = locale.loadLanguagePack(); // load a skin language pack (localStorage or the backend system)
+                $.when(locale.dfd_core, locale.dfd_skin).done(function() {
                     _loc = locale.toJSON();
                     _.extend(ERROR, _loc.ERRORS);
                     _.extend(MSG, _loc.MSG);
@@ -206,7 +204,7 @@ var ERROR = {},
                 var myorder = App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
                 require([settings.get('skin') + '/router'], function(module) {
-                    $.when(def_core, def_skin).done(function() {
+                    $.when(locale.dfd_core, locale.dfd_skin).done(function() {
                         if(module instanceof require('main_router')) {
                             module.initRouter();
                         }

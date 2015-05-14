@@ -218,18 +218,17 @@ define(["backbone"], function(Backbone) {
                 isDelivery - true if dinning_option is delivery
             */
             params = params || {};
-            var locale = App.Data.locale,
-                options = [],
+            var options = [],
                 isDelivery = params.isDelivery,
                 t = new TimeFrm(0, 0, this.format),
                 isToday = params.today,
                 asap = false,
                 offest = (this.get_dining_offset(isDelivery) / 60 / 1000),
-                asap_text = locale.get('CORE')['TIME_PREFIXES']['ASAP'];
+                asap_text = _loc['TIME_PREFIXES']['ASAP'];
 
 
             if (offest > 0) {
-                asap_text += ' (' + offest + ' ' + locale.get('CORE')['TIME_PREFIXES']['MINUTES'] + ')';
+                asap_text += ' (' + offest + ' ' + _loc['TIME_PREFIXES']['MINUTES'] + ')';
             }
             // get pickup times grid potentially suited for the day
             var times = this._pickupSumTimes(isDelivery);
@@ -317,8 +316,8 @@ define(["backbone"], function(Backbone) {
          * Get ID of month in format JS.
          */
         _get_month_id: function(month_text) { //Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
-            for (var i = 0; i < ARRAY_MONTH.length; i++) {
-                if (month_text === ARRAY_MONTH[i].substr(0, 3)) {
+            for (var i = 0; i < _loc.ARRAY_MONTH.length; i++) {
+                if (month_text === _loc.ARRAY_MONTH[i].substr(0, 3)) {
                     return i;
                 }
             }
@@ -500,38 +499,37 @@ define(["backbone"], function(Backbone) {
                 day = now.getDay();
 
             var days = [];
-            var date_range = App.Data.settings.get('settings_system').online_order_date_range;
+            var date_range = App.Settings.online_order_date_range;
             for (var i = 0; i < date_range; i++) {
                 days.push(weekDays[(day + i) % 7]);
             }
 
             return days.map(function(day, i) {
-                var locale = App.Data.locale,
-                    date = new Date(now.getTime() + i * MILLISECONDS_A_DAY),
-                    weekDay = (i >= 2) ? day : i ? locale.get('CORE')['DAYS']['TOMORROW'] : locale.get('CORE')['DAYS']['TODAY'],
-                    month = ARRAY_MONTH[date.getMonth()],
+                var date = new Date(now.getTime() + i * MILLISECONDS_A_DAY),
+                    weekDay = (i >= 2) ? day : i ? _loc['DAYS']['TOMORROW'] : _loc['DAYS']['TODAY'],
+                    month = _loc.ARRAY_MONTH[date.getMonth()],
                     _date = date.getDate();
                 switch (_date.toString().match(/1?\d$/)[0]) {
                     case "1":
-                        _date += locale.get('CORE')['TIME_PREFIXES']['FIRST_DAY_OF_MONTH'];
+                        _date += _loc['TIME_PREFIXES']['FIRST_DAY_OF_MONTH'];
                         break;
                     case "2":
-                        _date += locale.get('CORE')['TIME_PREFIXES']['SECOND_DAY_OF_MONTH'];
+                        _date += _loc['TIME_PREFIXES']['SECOND_DAY_OF_MONTH'];
                         break;
                     case "3":
-                        _date += locale.get('CORE')['TIME_PREFIXES']['THIRD_DAY_OF_MONTH'];
+                        _date += _loc['TIME_PREFIXES']['THIRD_DAY_OF_MONTH'];
                         break;
                     default:
-                        _date += locale.get('CORE')['TIME_PREFIXES']['OTHER_DAY_OF_MONTH'];
+                        _date += _loc['TIME_PREFIXES']['OTHER_DAY_OF_MONTH'];
                         break;
                 }
                 if (~weekDays.indexOf(weekDay)) {
-                    weekDay = locale.get('CORE')['DAYS_OF_WEEK'][weekDay];
+                    weekDay = _loc['DAYS_OF_WEEK'][weekDay];
                 }
 
                 this.workingDay.update({timetable: self.get_working_hours(date, 1), curTime : self.base()});
                 var working_day = this.workingDay.pickupTimeOptions({
-                    today: (weekDay === locale.get('CORE')['DAYS']['TODAY']),
+                    today: (weekDay === _loc['DAYS']['TODAY']),
                     isDelivery: isDelivery
                 }); // set flag "Today" for creating the list of time intervals
                 return {

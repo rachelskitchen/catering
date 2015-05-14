@@ -327,7 +327,7 @@ define(["main_router"], function(main_router) {
                         collection: App.Data.myorder,
                         mod: 'Page',
                         className: 'checkout',
-                        DINING_OPTION_NAME: DINING_OPTION_NAME,
+                        DINING_OPTION_NAME: _loc.DINING_OPTION_NAME,
                         timetable: App.Data.timetables,
                         customer: App.Data.customer,
                         acceptTips: settings.accept_tips_online,

@@ -160,13 +160,13 @@ function format_date_1(date) {
  * Formatting a date in the format "MM/DD/YYYY HH:MM(am/pm)".
  */
 function format_date_2(date) {
-    var time_prefixed = _loc['TIME_PREFIXES'],
+    var time_prefix = _loc['TIME_PREFIXES'],
         js_date = new Date(date),
         current_date_year = js_date.getFullYear(),
         current_date_month = js_date.getMonth() + 1,
         current_date_day = js_date.getDate(),
         current_date_hours = js_date.getHours(),
-        am_pm = (current_date_hours > 11) ? time_prefixed['TIME_PM'] : time_prefixed['TIME_AM'],
+        am_pm = (current_date_hours > 11) ? time_prefix['TIME_PM'] : time_prefix['TIME_AM'],
         current_date_minutes = js_date.getMinutes();
     if (current_date_month < 10) current_date_month = "0" + current_date_month;
     if (current_date_day < 10) current_date_day = "0" + current_date_day;
@@ -182,9 +182,8 @@ function format_date_2(date) {
  */
 function format_date_3(date) {
     var SECONDS_IN_DAY = 86400000;
-    var locale = App.Data.locale,
-        days = locale.get('CORE')['DAYS'],
-        time_prefixed = _loc['TIME_PREFIXES'],
+    var days = _loc['DAYS'],
+        time_prefix = _loc['TIME_PREFIXES'],
         result = '',
         now = App.Data.timetables.base(),
         date_1 = new Date(now.getFullYear(), now.getMonth(), now.getDate()),
@@ -200,31 +199,31 @@ function format_date_3(date) {
     } else {
         var current_date_month = js_date.getMonth() + 1;
         var current_date_day = js_date.getDate();
-        result += ARRAY_MONTH[current_date_month - 1] + ' ' + current_date_day;
+        result += _loc.ARRAY_MONTH[current_date_month - 1] + ' ' + current_date_day;
         switch (current_date_day) {
             case 1:
-                result += time_prefixed['FIRST_DAY_OF_MONTH'];
+                result += time_prefix['FIRST_DAY_OF_MONTH'];
                 break;
             case 2:
-                result += time_prefixed['SECOND_DAY_OF_MONTH'];
+                result += time_prefix['SECOND_DAY_OF_MONTH'];
                 break;
             case 3:
-                result += time_prefixed['THIRD_DAY_OF_MONTH'];
+                result += time_prefix['THIRD_DAY_OF_MONTH'];
                 break;
             default:
-                result += time_prefixed['OTHER_DAY_OF_MONTH'];
+                result += time_prefix['OTHER_DAY_OF_MONTH'];
                 break;
         }
     }
     var current_date_hours = js_date.getHours();
-    var am_pm = (current_date_hours > 11) ? time_prefixed['TIME_PM'] : time_prefixed['TIME_AM'];
+    var am_pm = (current_date_hours > 11) ? time_prefix['TIME_PM'] : time_prefix['TIME_AM'];
     current_date_hours = current_date_hours > 12 ? current_date_hours - 12 : current_date_hours;
     if (current_date_hours == 0) {
        current_date_hours = 12;
     }
     var current_date_minutes = js_date.getMinutes();
     if (current_date_minutes < 10) current_date_minutes = "0" + current_date_minutes;
-    result += ' ' + time_prefixed['TIME_AT'] + ' ' + current_date_hours + ':' + current_date_minutes + am_pm;
+    result += ' ' + time_prefix['TIME_AT'] + ' ' + current_date_hours + ':' + current_date_minutes + am_pm;
     return result;
 }
 /**
@@ -906,9 +905,9 @@ function format_time(time) {
 function format_days(days, day_time) {
     var str = "";
     if (days.length > 1 && days.length < 7) {
-        str = DAYS_OF_WEEK_SHORT[days[0]] + ' - ' + DAYS_OF_WEEK_SHORT[days[days.length - 1]] + ' ';
+        str = _loc.DAYS_OF_WEEK_SHORT[days[0]] + ' - ' + _loc.DAYS_OF_WEEK_SHORT[days[days.length - 1]] + ' ';
     } else if (days.length == 1) {
-        str = DAYS_OF_WEEK_SHORT[days[0]] + ' ';
+        str = _loc.DAYS_OF_WEEK_SHORT[days[0]] + ' ';
     }
     str += day_time;
     return str;
@@ -948,7 +947,7 @@ function format_timetables(timetables, separator) {
         var prev_day_time = null;
         var days = [];
 
-        for(day in DAYS_OF_WEEK_SHORT) {
+        for(day in _loc.DAYS_OF_WEEK_SHORT) {
             var day_time = null;
             if (timetable_data[day] && timetable_data[day].length > 0) {
                 day_time = format_times(timetable_data[day])
