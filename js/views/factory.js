@@ -45,7 +45,7 @@ define(['backbone'], function(Backbone) {
                 var template = template_helper(this.name, this.mod),
                     baseParams = {
                         _settings: App.Settings,
-                        _lp: App.Data.locale.toJSON()
+                        _lp: _loc
                     };
                 params = params instanceof Object ? _.extend(baseParams, params) : baseParams;
                 return template(params);

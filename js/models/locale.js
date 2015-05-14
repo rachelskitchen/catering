@@ -27,28 +27,35 @@ define(['backbone'], function(Backbone) {
         /**
          * Load a language pack (localStorage or the backend system).
          */
-        loadLanguagePack: function() {
-            this.loadCompleted = Backbone.$.Deferred();
-            this.clear();
-
+        loadLanguagePack: function(load_core) {
             var DEFAULT_LOCALE = 'en';
-            var self = this,
+            var self = this, path, stateLocaleKey,
                 settings = App.Data.settings,
                 skin = settings.get('skin'),
                 curLocale = window.navigator.language,
                 actualVersions = {
                     defaultLocale: null,
                     curLocale: null
-                },
-                stateLocale = getData('currentLocale', true); // load data from storage (cookie, sessionStorage, localStorage)
+                };
 
             settings.setSkinPath(true); // set path for the current skin
-            var skinPath = settings.get('skinPath');
+            
+            if (load_core) {
+                stateLocaleKey = 'currentLocaleCore';
+                path = settings.get('basePath');
+                this.clear();
+            } else {
+                stateLocaleKey = 'currentLocaleSkin';
+                path = settings.get('skinPath');                
+            }
 
-            var loadVersions = Backbone.$.Deferred();
+            var stateLocale = getData(stateLocaleKey, true); // load data from storage (cookie, sessionStorage, localStorage)
+
+            var loadVersions = $.Deferred(),
+                loadCompleted = $.Deferred();
             // load versions.json file
-            Backbone.$.ajax({
-                url: skinPath + '/i18n/_versions.json',
+            $.ajax({
+                url: path + '/i18n/_versions.json',
                 dataType: 'json',
                 success: function(data) {
                     if (data[DEFAULT_LOCALE]) actualVersions.defaultLocale = data[DEFAULT_LOCALE];
@@ -61,7 +68,20 @@ define(['backbone'], function(Backbone) {
             });
 
             loadVersions.done(function() {
-                if (!stateLocale || stateLocale.locale != curLocale || stateLocale.defaultLocale.locale != DEFAULT_LOCALE || (actualVersions.defaultLocale && ((stateLocale.defaultLocale.placeholders[skin] && stateLocale.defaultLocale.placeholders[skin].version != actualVersions.defaultLocale) || !stateLocale.defaultLocale.placeholders[skin])) || (actualVersions.curLocale && ((stateLocale.placeholders[skin] && stateLocale.placeholders[skin].version != actualVersions.curLocale) || !stateLocale.placeholders[skin]))) {
+                
+                if  (!stateLocale || stateLocale.locale != curLocale || stateLocale.defaultLocale.locale != DEFAULT_LOCALE 
+                        || (actualVersions.defaultLocale && 
+                             (
+                               !stateLocale.defaultLocale.placeholders[skin] || stateLocale.defaultLocale.placeholders[skin].version != actualVersions.defaultLocale 
+                             )
+                           ) 
+                        || (actualVersions.curLocale && 
+                              (
+                                !stateLocale.placeholders[skin] || stateLocale.placeholders[skin].version != actualVersions.curLocale
+                              )
+                           )
+                    ) {
+
                     var json = {
                         locale: curLocale,
                         placeholders: {},
@@ -71,7 +91,7 @@ define(['backbone'], function(Backbone) {
                         }
                     }
 
-                    var loadLocales = Backbone.$.Deferred(),
+                    var loadLocales = $.Deferred(),
                         countLocales = 2,
                         loadLocaleComplete = function() {
                             countLocales--;
@@ -79,13 +99,16 @@ define(['backbone'], function(Backbone) {
                         };
 
                     // copy existing placeholders to "json" object from "stateLocale" object (localStorage) for the default locale
-                    if (stateLocale && stateLocale.defaultLocale.locale == DEFAULT_LOCALE && !Backbone.$.isEmptyObject(stateLocale.defaultLocale.placeholders)) {
+                    if (stateLocale && stateLocale.defaultLocale.locale == DEFAULT_LOCALE && !$.isEmptyObject(stateLocale.defaultLocale.placeholders)) {
                         json.defaultLocale.placeholders = stateLocale.defaultLocale.placeholders;
                     }
 
-                    if (actualVersions.defaultLocale && ((json.defaultLocale.placeholders[skin] && json.defaultLocale.placeholders[skin].version != actualVersions.defaultLocale) || (!json.defaultLocale.placeholders[skin]))) {
-                        Backbone.$.ajax({
-                            url: skinPath + '/i18n/' + DEFAULT_LOCALE + '.json',
+                    if (actualVersions.defaultLocale && 
+                        ((json.defaultLocale.placeholders[skin] && json.defaultLocale.placeholders[skin].version != actualVersions.defaultLocale) 
+                            || (!json.defaultLocale.placeholders[skin]))) {
+
+                        $.ajax({
+                            url: path + '/i18n/' + DEFAULT_LOCALE + '.json',
                             dataType: 'json',
                             success: function(data) {
                                 json.defaultLocale.placeholders[skin] = {
@@ -103,13 +126,13 @@ define(['backbone'], function(Backbone) {
                     }
 
                     // copy existing placeholders to "json" object from "stateLocale" object (localStorage) for the current locale
-                    if (stateLocale && stateLocale.locale == curLocale && !Backbone.$.isEmptyObject(stateLocale.placeholders)) {
+                    if (stateLocale && stateLocale.locale == curLocale && !$.isEmptyObject(stateLocale.placeholders)) {
                         json.placeholders = stateLocale.placeholders;
                     }
 
                     if (actualVersions.curLocale && ((json.placeholders[skin] && json.placeholders[skin].version != actualVersions.curLocale) || (!json.placeholders[skin]))) {
-                        Backbone.$.ajax({
-                            url: skinPath + '/i18n/' + curLocale + '.json',
+                        $.ajax({
+                            url: path + '/i18n/' + curLocale + '.json',
                             dataType: 'json',
                             success: function(data) {
                                 json.placeholders[skin] = {
@@ -127,30 +150,30 @@ define(['backbone'], function(Backbone) {
                     }
 
                     loadLocales.done(function() {
-                        if (setData('currentLocale', json, true)) { // save data to storage (cookie, sessionStorage, localStorage)
-                            var dl = (!Backbone.$.isEmptyObject(json.defaultLocale.placeholders[skin])) ?
-                                json.defaultLocale.placeholders[skin].placeholders :
-                                {},
-                                cl = (!Backbone.$.isEmptyObject(json.placeholders[skin])) ?
-                                json.placeholders[skin].placeholders :
-                                {};
+                        if (setData(stateLocaleKey, json, true)) { // save data to storage (cookie, sessionStorage, localStorage)
+                            var def_locale = json.defaultLocale.placeholders[skin],
+                                cur_locale = json.placeholders[skin],
+                                dl = !$.isEmptyObject(def_locale) ? def_locale.placeholders : {},
+                                cl = !$.isEmptyObject(cur_locale) ? cur_locale.placeholders : {};
                             self.set(_.extend(dl, cl));
-                            self.loadCompleted.resolve();
+                            loadCompleted.resolve();
                         } else {
                             self.trigger('showError');
                         }
                     });
                 } else {
-                    var dl = (!Backbone.$.isEmptyObject(stateLocale.defaultLocale.placeholders[skin])) ?
+                    var dl = (!$.isEmptyObject(stateLocale.defaultLocale.placeholders[skin])) ?
                         stateLocale.defaultLocale.placeholders[skin].placeholders :
                         {},
-                        cl = (!Backbone.$.isEmptyObject(stateLocale.placeholders[skin])) ?
+                        cl = (!$.isEmptyObject(stateLocale.placeholders[skin])) ?
                         stateLocale.placeholders[skin].placeholders :
                         {};
                     self.set(_.extend(dl, cl));
-                    self.loadCompleted.resolve();
+                    loadCompleted.resolve();
                 }
             });
-        }
+        
+            return loadCompleted;
+        } //end of loadLanguagePack
     });
 });

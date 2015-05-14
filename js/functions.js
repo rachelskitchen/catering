@@ -160,8 +160,7 @@ function format_date_1(date) {
  * Formatting a date in the format "MM/DD/YYYY HH:MM(am/pm)".
  */
 function format_date_2(date) {
-    var locale = App.Data.locale,
-        time_prefixed = locale.get('CORE')['TIME_PREFIXES'],
+    var time_prefixed = _loc['TIME_PREFIXES'],
         js_date = new Date(date),
         current_date_year = js_date.getFullYear(),
         current_date_month = js_date.getMonth() + 1,
@@ -185,7 +184,7 @@ function format_date_3(date) {
     var SECONDS_IN_DAY = 86400000;
     var locale = App.Data.locale,
         days = locale.get('CORE')['DAYS'],
-        time_prefixed = locale.get('CORE')['TIME_PREFIXES'],
+        time_prefixed = _loc['TIME_PREFIXES'],
         result = '',
         now = App.Data.timetables.base(),
         date_1 = new Date(now.getFullYear(), now.getMonth(), now.getDate()),
@@ -600,13 +599,12 @@ TimeFrm.prototype.toString_ft = { };
 TimeFrm.prototype.toString_ft['usa'] = function() {
     /* it outputs the time in format 10:01am or 12:45pm */
 
-    var locale = App.Data.locale,
-        time_prefixed = locale.get('CORE')['TIME_PREFIXES'],
+    var time_prefix = _loc['TIME_PREFIXES'],
         hour = parseInt( this.minutes / 60 ),
         minutes = this.minutes % 60;
 
     hour = hour - parseInt( hour / 24) * 24;
-    var am_pm = (hour > 11) ? time_prefixed['TIME_PM'] : time_prefixed['TIME_AM'];
+    var am_pm = (hour > 11) ? time_prefix['TIME_PM'] : time_prefix['TIME_AM'];
 
     if (hour > 12) {
         hour = hour - 12;
@@ -614,7 +612,7 @@ TimeFrm.prototype.toString_ft['usa'] = function() {
     else {
         if (hour === 0) {
             hour = 12;
-            am_pm = time_prefixed['TIME_AM'];
+            am_pm = time_prefix['TIME_AM'];
         }
     }
 
@@ -908,9 +906,9 @@ function format_time(time) {
 function format_days(days, day_time) {
     var str = "";
     if (days.length > 1 && days.length < 7) {
-        str = TIMETABLE_WEEK_DAYS[days[0]] + ' - ' + TIMETABLE_WEEK_DAYS[days[days.length - 1]] + ' ';
+        str = DAYS_OF_WEEK_SHORT[days[0]] + ' - ' + DAYS_OF_WEEK_SHORT[days[days.length - 1]] + ' ';
     } else if (days.length == 1) {
-        str = TIMETABLE_WEEK_DAYS[days[0]] + ' ';
+        str = DAYS_OF_WEEK_SHORT[days[0]] + ' ';
     }
     str += day_time;
     return str;
@@ -950,7 +948,7 @@ function format_timetables(timetables, separator) {
         var prev_day_time = null;
         var days = [];
 
-        for(day in TIMETABLE_WEEK_DAYS) {
+        for(day in DAYS_OF_WEEK_SHORT) {
             var day_time = null;
             if (timetable_data[day] && timetable_data[day].length > 0) {
                 day_time = format_times(timetable_data[day])

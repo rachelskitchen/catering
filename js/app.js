@@ -21,7 +21,8 @@
  */
 
 var ERROR = {},
-    MSG = {};
+    MSG  = {},
+    _loc; //locale strings
 
 (function() {
     'use strict';
@@ -185,14 +186,15 @@ var ERROR = {},
                 return errors.alert(ERROR.WEBSTORAGES_ARE_DISABLED, true);
             }
 
+            var def_core, def_skin;
+
             settings.on('change:skin', function() {
-                locale.loadLanguagePack(); // load a language pack (localStorage or the backend system)
-                locale.loadCompleted.done(function() {
-                    _.extend(MSG, locale.get('MSG'));
-                    _.extend(ERROR, locale.get('ERRORS'));
-                    window.ARRAY_MONTH = locale.get('CORE')['ARRAY_MONTHS'];
-                    window.TIMETABLE_WEEK_DAYS = locale.get('CORE')['DAYS_OF_WEEK_SHORTENED'];
-                    window.DINING_OPTION_NAME = locale.get('CORE')['DINING_OPTIONS'];
+                def_core = locale.loadLanguagePack(true); // load a core language pack (localStorage or the backend system)
+                def_skin = locale.loadLanguagePack(); // load a skin language pack (localStorage or the backend system)
+                $.when(def_core, def_skin).done(function() {
+                    _loc = locale.toJSON();
+                    _.extend(ERROR, _loc.ERRORS);
+                    _.extend(MSG, _loc.MSG);
                 });
                 locale.on('showError', function() {
                     errors.alert(ERROR.LOAD_LANGUAGE_PACK, true); // user notification
@@ -204,7 +206,7 @@ var ERROR = {},
                 var myorder = App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
                 require([settings.get('skin') + '/router'], function(module) {
-                    locale.loadCompleted.done(function() {
+                    $.when(def_core, def_skin).done(function() {
                         if(module instanceof require('main_router')) {
                             module.initRouter();
                         }

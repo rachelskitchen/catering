@@ -50,13 +50,14 @@ require(['app'], function(app) {
         // init Locale object
         var locale = App.Data.locale = new App.Models.Locale;
         settings.on('change:skin', function() {
-            locale.loadLanguagePack(); // load a language pack (localStorage or the backend system)
-            locale.loadCompleted.done(function() {
+            var def_core = locale.loadLanguagePack(true); // load a core language pack (localStorage or the backend system)
+            var def_skin = locale.loadLanguagePack(); // load a skin language pack (localStorage or the backend system)
+            $.when(def_core, def_skin).done(function() {
                 _.extend(MSG, locale.get('MSG'));
                 _.extend(ERROR, locale.get('ERRORS'));
-                window.ARRAY_MONTH = locale.get('CORE')['ARRAY_MONTHS'];
-                window.TIMETABLE_WEEK_DAYS = locale.get('CORE')['DAYS_OF_WEEK_SHORTENED'];
-                window.DINING_OPTION_NAME = locale.get('CORE')['DINING_OPTIONS'];
+                _.extend(window, locale.get('CORE'));
+                //window.ARRAY_MONTH = locale.get('CORE')['ARRAY_MONTHS'];
+                //window.TIMETABLE_WEEK_DAYS = locale.get('CORE')['DAYS_OF_WEEK_SHORTENED'];
             });
             locale.on('showError', function() {
                 errors.alert(ERROR.LOAD_LANGUAGE_PACK, true); // user notification
