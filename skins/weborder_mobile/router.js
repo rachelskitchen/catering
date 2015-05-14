@@ -218,8 +218,6 @@ define(["main_router"], function(main_router) {
         index: function() {
             var self = this;
             this.prepare('index', function() {
-                var locale = App.Data.locale;
-
                 // load content block for categories
                 if (!App.Data.categories) {
                     App.Data.categories = new App.Collections.Categories();
@@ -230,10 +228,10 @@ define(["main_router"], function(main_router) {
                     });
                 }
 
-                var header = {page_title: locale.get('HEADER_INDEX_PT')};
+                var header = {page_title: _loc['HEADER_INDEX_PT']};
                 if(App.Data.dirMode)
                     header = Backbone.$.extend(header, {
-                        back_title: locale.get('HEADER_INDEX_BT'),
+                        back_title: _loc['HEADER_INDEX_BT'],
                         back: this.navigateDirectory.bind(this)
                     });
 
@@ -279,7 +277,7 @@ define(["main_router"], function(main_router) {
                 $.when(App.Data.categories.loadData, App.Collections.Products.init(id_category)).then(function() {
                     App.Data.header.set({
                         page_title: App.Data.categories.get(id_category).get('name'),
-                        back_title: App.Data.locale.get('HEADER_PRODUCTS_BT'),
+                        back_title: _loc['HEADER_PRODUCTS_BT'],
                         back: self.navigate.bind(self, 'index', true)
                     });
 
@@ -301,7 +299,6 @@ define(["main_router"], function(main_router) {
         modifiers_add: function(id_category, id_product) {
             this.prepare('modifiers', function() {
                 var self = this,
-                    locale = App.Data.locale,
                     order = new App.Models.Myorder(),
                     dfdOrder = order.add_empty(id_product * 1, id_category * 1);
 
@@ -309,9 +306,9 @@ define(["main_router"], function(main_router) {
                     order = order.clone();
 
                     App.Data.header.set({
-                        page_title: locale.get('HEADER_MODIFIERS_PT'),
-                        back_title: locale.get('HEADER_MODIFIERS_BT'),
-                        forward_title: locale.get('HEADER_MODIFIERS_ADD_FT'),
+                        page_title: _loc['HEADER_MODIFIERS_PT'],
+                        back_title: _loc['HEADER_MODIFIERS_BT'],
+                        forward_title: _loc['HEADER_MODIFIERS_ADD_FT'],
                         back: self.navigate.bind(self, 'products/' + id_category, true),
                         forward: function() {
                             var check = order.check_order();
@@ -348,7 +345,6 @@ define(["main_router"], function(main_router) {
             index = parseInt(index);
             this.prepare('modifiers', function() {
                 var self = this,
-                    locale = App.Data.locale,
                     _order = App.Data.myorder.at(index),
                     order;
 
@@ -358,9 +354,9 @@ define(["main_router"], function(main_router) {
                 order = _order.clone();
 
                 App.Data.header.set({
-                    page_title: locale.get('HEADER_MODIFIERS_PT'),
-                    back_title: locale.get('HEADER_MODIFIERS_BT'),
-                    forward_title: locale.get('HEADER_MODIFIERS_EDIT_FT'),
+                    page_title: _loc['HEADER_MODIFIERS_PT'],
+                    back_title: _loc['HEADER_MODIFIERS_BT'],
+                    forward_title: _loc['HEADER_MODIFIERS_EDIT_FT'],
                     back: this.navigate.bind(this, 'myorder', true),
                     forward: function() {
                         var check = order.check_order();
@@ -394,11 +390,10 @@ define(["main_router"], function(main_router) {
         },
         myorder: function() {
             this.prepare('myorder', function() {
-                var locale = App.Data.locale;
                 App.Data.header.set({
-                    page_title: locale.get('HEADER_MYORDER_PT'),
-                    back_title: locale.get('HEADER_MYORDER_BT'),
-                    forward_title: locale.get('HEADER_MYORDER_FT'),
+                    page_title: _loc['HEADER_MYORDER_PT'],
+                    back_title: _loc['HEADER_MYORDER_BT'],
+                    forward_title: _loc['HEADER_MYORDER_FT'],
                     back: this.navigate.bind(this, 'index', true),
                     forward: this.navigate.bind(this, 'checkout', true)
                 });
@@ -443,8 +438,7 @@ define(["main_router"], function(main_router) {
         },
         checkout: function() {
             this.prepare('checkout', function() {
-                var locale = App.Data.locale,
-                    RevelAPI = App.Data.RevelAPI;
+                var RevelAPI = App.Data.RevelAPI;
 
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card({RevelAPI: RevelAPI});
@@ -458,8 +452,8 @@ define(["main_router"], function(main_router) {
                 }
 
                 App.Data.header.set({
-                    page_title: locale.get('HEADER_CHECKOUT_PT'),
-                    back_title: locale.get('HEADER_CHECKOUT_BT'),
+                    page_title: _loc['HEADER_CHECKOUT_PT'],
+                    back_title: _loc['HEADER_CHECKOUT_BT'],
                     back: this.navigate.bind(this, 'myorder', true)
                 });
 
@@ -472,7 +466,7 @@ define(["main_router"], function(main_router) {
                             model: App.Data.myorder.checkout,
                             collection: App.Data.myorder,
                             mod: 'OrderType',
-                            DINING_OPTION_NAME: DINING_OPTION_NAME,
+                            DINING_OPTION_NAME: _loc.DINING_OPTION_NAME,
                             className: 'checkout'
                         },
                         {
@@ -501,7 +495,7 @@ define(["main_router"], function(main_router) {
                     App.Data.card = new App.Models.Card;
 
                 App.Data.header.set({
-                    page_title: App.Data.locale.get('HEADER_CARD_PT')
+                    page_title: _loc['HEADER_CARD_PT']
                 });
 
                 App.Data.mainModel.set({
@@ -523,7 +517,7 @@ define(["main_router"], function(main_router) {
                     App.Data.giftcard = new App.Models.GiftCard;
 
                 App.Data.header.set({
-                    page_title: App.Data.locale.get('HEADER_GIFT_CARD_PT')
+                    page_title: _loc['HEADER_GIFT_CARD_PT']
                 });
 
                 App.Data.mainModel.set({
@@ -548,14 +542,13 @@ define(["main_router"], function(main_router) {
             }
 
             this.prepare('confirm', function() {
-                var locale = App.Data.locale;
 
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card;
 
                 App.Data.header.set({
-                    page_title: locale.get('HEADER_CONFIRM_PT'),
-                    back_title: locale.get('HEADER_CONFIRM_BT'),
+                    page_title: _loc['HEADER_CONFIRM_PT'],
+                    back_title: _loc['HEADER_CONFIRM_BT'],
                     back: this.navigate.bind(this, 'checkout', true)
                 });
 
@@ -592,8 +585,7 @@ define(["main_router"], function(main_router) {
                 return this.navigate('index', true);
             }
             this.prepare('done', function() {
-                var locale = App.Data.locale;
-
+                
                 // if App.Data.customer doesn't exist (success payment -> history.back() to #confirm -> history.forward() to #done)
                 // need to init it.
                 if(!App.Data.customer) {
@@ -603,7 +595,7 @@ define(["main_router"], function(main_router) {
                 var params = App.Data.myorder.paymentResponse;
                 var isSuccess = params.status === 'OK';
 
-                App.Data.header.set('page_title', isSuccess ? locale.get('HEADER_DONE_SUCCESS_PT') : locale.get('HEADER_DONE_FAILURE_PT'));
+                App.Data.header.set('page_title', isSuccess ? _loc['HEADER_DONE_SUCCESS_PT'] : _loc['HEADER_DONE_FAILURE_PT']);
                 App.Data.footer.set({success_payment: isSuccess});
 
                 App.Data.mainModel.set({
@@ -624,12 +616,11 @@ define(["main_router"], function(main_router) {
             var settings = App.Data.settings.get('settings_system');
 
             this.prepare('store_info', function() {
-                var locale = App.Data.locale;
-
+               
                 App.Data.header.set({
-                    page_title: (settings instanceof Object) ? settings.business_name : locale.get('HEADER_LOCATION_PT'),
-                    back_title: locale.get('HEADER_LOCATION_BT'),
-                    forward_title: locale.get('HEADER_LOCATION_FT'),
+                    page_title: (settings instanceof Object) ? settings.business_name : _loc['HEADER_LOCATION_PT'],
+                    back_title: _loc['HEADER_LOCATION_BT'],
+                    forward_title: _loc['HEADER_LOCATION_FT'],
                     back: this.navigate.bind(this, 'index', true),
                     forward: this.navigate.bind(this, 'map', true)
                 });
@@ -649,11 +640,10 @@ define(["main_router"], function(main_router) {
         },
         map: function() {
             this.prepare('store_info', function() {
-                var locale = App.Data.locale;
-
+                
                 App.Data.header.set({
-                    page_title: locale.get('HEADER_MAP_PT'),
-                    back_title: locale.get('HEADER_MAP_BT'),
+                    page_title: _loc['HEADER_MAP_PT'],
+                    back_title: _loc['HEADER_MAP_BT'],
                     back: this.navigate.bind(this, 'location', true)
                 });
 
@@ -681,15 +671,14 @@ define(["main_router"], function(main_router) {
                 });
 
             this.prepare('store_info', function() {
-                var locale = App.Data.locale,
-                    images = App.Data.settings.get('settings_system').about_images,
+                var images = App.Data.settings.get('settings_system').about_images,
                     header = headerModes.About;
 
                 App.Data.header.set({
-                    page_title: locale.get('HEADER_ABOUT_PT') + ' ' + App.Data.settings.get('settings_system').business_name,
-                    back_title: locale.get('HEADER_ABOUT_BT'),
+                    page_title: _loc['HEADER_ABOUT_PT'] + ' ' + App.Data.settings.get('settings_system').business_name,
+                    back_title: _loc['HEADER_ABOUT_BT'],
                     back: this.navigate.bind(this, 'index', true),
-                    forward_title: locale.get('HEADER_ABOUT_FT'),
+                    forward_title: _loc['HEADER_ABOUT_FT'],
                     forward: this.navigate.bind(this, 'gallery', true)
                 });
 
@@ -713,15 +702,14 @@ define(["main_router"], function(main_router) {
         gallery: function() {
 
             this.prepare('store_info', function() {
-                var locale = App.Data.locale;
 
                 if (!App.Data.AboutModel) {
                     App.Data.AboutModel = new App.Models.AboutModel();
                 }
 
                 App.Data.header.set({
-                    page_title: App.Data.settings.get('settings_system').business_name + ' ' + locale.get('HEADER_GALLERY_PT'),
-                    back_title: locale.get('HEADER_GALLERY_BT'),
+                    page_title: App.Data.settings.get('settings_system').business_name + ' ' + _loc['HEADER_GALLERY_PT'],
+                    back_title: _loc['HEADER_GALLERY_BT'],
                     back: this.navigate.bind(this, 'about', true)
                 });
 
@@ -743,13 +731,12 @@ define(["main_router"], function(main_router) {
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
 
             this.prepare('maintenance', function() {
-                var locale = App.Data.locale,
-                    back_title, back;
+                var back_title, back;
                 if (App.Data.dirMode) {
-                    back_title = locale.get('HEADER_MAINTENANCE_DIR_BT');
+                    back_title = _loc['HEADER_MAINTENANCE_DIR_BT'];
                     back = this.navigateDirectory.bind(this);
                 } else {
-                    back_title = locale.get('HEADER_MAINTENANCE_BT');
+                    back_title = _loc['HEADER_MAINTENANCE_BT'];
                     back = function() { window.history.back() };
                 }
                 var header = {
@@ -778,11 +765,9 @@ define(["main_router"], function(main_router) {
             });
         },
         profile: function(step) {
-            var locale = App.Data.locale;
-
             App.Data.header.set({
-                page_title: locale.get('HEADER_PROFILE_PT'),
-                back_title: locale.get('HEADER_PROFILE_BT'),
+                page_title: _loc['HEADER_PROFILE_PT'],
+                back_title: _loc['HEADER_PROFILE_BT'],
                 back: App.Data.RevelAPI.trigger.bind( App.Data.RevelAPI, 'onProfileCancel')
             });
             return App.Routers.RevelOrderingRouter.prototype.profile.call(this, step, headerModes.Profile, footerModes.Profile);

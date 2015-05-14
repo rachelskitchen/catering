@@ -400,7 +400,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 else
                     category = new App.Models.Category({
                         parent_name: parent,
-                        name: App.Data.locale.get('CATEGORIES_ALL'),
+                        name: _loc.CATEGORIES_ALL,
                         description: '',
                         sort: 1
                     });
@@ -437,7 +437,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 id = categories.selected;
 
             this.addItem(this.model.get('products'), new Backbone.Model({
-                parent_name: App.Data.locale.get('CATEGORIES_SEARCH'),
+                parent_name: _loc.CATEGORIES_SEARCH,
                 name: this.model.get('pattern'),
                 description: '',
                 active: true

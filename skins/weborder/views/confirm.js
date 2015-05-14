@@ -25,8 +25,7 @@ define(["confirm_view"], function(confirm_view) {
 
     var ConfirmPayCardView = App.Views.CoreConfirmView.CoreConfirmPayCardView.extend({
         render: function() {
-            var locale = App.Data.locale,
-                new_model = {}, offset,
+            var new_model = {}, offset,
                 pickup = this.collection.checkout.get("pickupTS"),
                 currentTime = this.options.timetable.base(),
                 time = currentTime.getTime(),
@@ -43,8 +42,8 @@ define(["confirm_view"], function(confirm_view) {
                    offset = App.Settings.estimated_order_preparation_time;
                 }
                 new_model.pickup_time = offset > 0 ?
-                    locale.get('CONFIRM_TODAY_ASAP') + ' (' + offset + ' ' + locale.get('CONFIRM_MINUTES') + ')' :
-                    locale.get('CONFIRM_TODAY_ASAP');
+                    _loc['CONFIRM_TODAY_ASAP'] + ' (' + offset + ' ' + _loc['CONFIRM_MINUTES'] + ')' :
+                    _loc['CONFIRM_TODAY_ASAP'];
             } else {
                 new_model.pickup_time = format_date_3(pickup);
             }

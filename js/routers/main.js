@@ -37,14 +37,14 @@ define(["backbone", "factory"], function(Backbone) {
 
              // remove Delivery option if it is necessary
             if (!App.Data.myorder.total.get('delivery').get('enable'))
-                delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
+                delete _loc.DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
 
             if(App.Settings.editable_dining_options && App.Settings.editable_dining_options[0]) {
-                if (DINING_OPTION_NAME['DINING_OPTION_DRIVETHROUGH']) {
-                    DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH = _.escape(App.Settings.editable_dining_options[1]);
+                if (_loc.DINING_OPTION_NAME['DINING_OPTION_DRIVETHROUGH']) {
+                    _loc.DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH = _.escape(App.Settings.editable_dining_options[1]);
                 }
-                if (DINING_OPTION_NAME['DINING_OPTION_OTHER']) {
-                    DINING_OPTION_NAME.DINING_OPTION_OTHER = _.escape(App.Settings.editable_dining_options[2]);
+                if (_loc.DINING_OPTION_NAME['DINING_OPTION_OTHER']) {
+                    _loc.DINING_OPTION_NAME.DINING_OPTION_OTHER = _.escape(App.Settings.editable_dining_options[2]);
                 }
             }
 
@@ -56,12 +56,12 @@ define(["backbone", "factory"], function(Backbone) {
                     enable_row: orderFromSeat[3]
                 };
             } else {
-                delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
+                delete _loc.DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
             }
 
-            for (var dining_ontion_name in DINING_OPTION) {
-                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_ontion_name]) == -1 || (App.Data.orderFromSeat && dining_ontion_name == 'DINING_OPTION_OTHER')) {
-                    delete DINING_OPTION_NAME[dining_ontion_name];
+            for (var dining_option in DINING_OPTION) {
+                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_option]) == -1 || (App.Data.orderFromSeat && dining_option == 'DINING_OPTION_OTHER')) {
+                    delete _loc.DINING_OPTION_NAME[dining_option];
                 }
             }
 
@@ -364,7 +364,8 @@ define(["backbone", "factory"], function(Backbone) {
             !settings.get('settings_skin').name_app && pageTitle('Revel Systems');
 
             App.Routers.MainRouter.prototype.prepare('establishments', function() {
-                App.Data.locale.loadCompleted.done(function() {
+                var locale = App.Data.locale;
+                $.when(locale.dfd_core, locale.dfd_skin).done(function() {
                     var view = App.Views.GeneratorView.create('CoreEstablishments', {
                         mod: 'Main',
                         className: 'establishments_view',

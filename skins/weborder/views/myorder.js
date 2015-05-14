@@ -30,11 +30,10 @@ define(["myorder_view"], function(myorder_view) {
         },
         render: function() {
             App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.render.apply(this, arguments);
-            var locale = App.Data.locale;
             if (this.options.action === 'add') {
-                this.$('.action_button').html(locale.get('MYORDER_ADD_ITEM'));
+                this.$('.action_button').html(_loc['MYORDER_ADD_ITEM']);
             } else {
-                this.$('.action_button').html(locale.get('MYORDER_UPDATE_ITEM'));
+                this.$('.action_button').html(_loc['MYORDER_UPDATE_ITEM']);
             }
             var model = this.model,
                 view;
@@ -56,7 +55,7 @@ define(["myorder_view"], function(myorder_view) {
             });
             this.subViews.push(view);
 
-            if (App.Data.settings.get('settings_system').special_requests_online === false) {
+            if (App.Settings.special_requests_online === false) {
                 view.$el.hide(); // hide special request if not allowed
             }
 

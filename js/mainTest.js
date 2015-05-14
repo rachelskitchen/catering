@@ -50,14 +50,12 @@ require(['app'], function(app) {
         // init Locale object
         var locale = App.Data.locale = new App.Models.Locale;
         settings.on('change:skin', function() {
-            var def_core = locale.loadLanguagePack(true); // load a core language pack (localStorage or the backend system)
-            var def_skin = locale.loadLanguagePack(); // load a skin language pack (localStorage or the backend system)
-            $.when(def_core, def_skin).done(function() {
-                _.extend(MSG, locale.get('MSG'));
-                _.extend(ERROR, locale.get('ERRORS'));
-                _.extend(window, locale.get('CORE'));
-                //window.ARRAY_MONTH = locale.get('CORE')['ARRAY_MONTHS'];
-                //window.TIMETABLE_WEEK_DAYS = locale.get('CORE')['DAYS_OF_WEEK_SHORTENED'];
+            locale.dfd_core = locale.loadLanguagePack(true); // load a core language pack (localStorage or the backend system)
+            locale.dfd_skin = locale.loadLanguagePack(); // load a skin language pack (localStorage or the backend system)
+            $.when(locale.dfd_core, locale.dfd_skin).done(function() {
+                _loc = locale.toJSON();
+                _.extend(ERROR, _loc.ERRORS);
+                _.extend(MSG, _loc.MSG);
             });
             locale.on('showError', function() {
                 errors.alert(ERROR.LOAD_LANGUAGE_PACK, true); // user notification
@@ -113,7 +111,7 @@ require(['app'], function(app) {
                     jasmineEnv.updateInterval = 1000;
 
                     $(document).ready(function() {
-                        locale.loadCompleted.done(function() {
+                        $.when(locale.dfd_core, locale.dfd_skin).done(function() {
                             require(tests_list, function(spec) {
                                 window.onload();
                             });

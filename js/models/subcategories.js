@@ -42,7 +42,7 @@
                 allSubs;
 
             allSubs = new App.Models.Category({
-                name: App.Data.locale.get('CORE')['SUBCATEGORIES_VIEW_ALL'],
+                name: _loc['SUBCATEGORIES_VIEW_ALL'],
                 parent_name: name,
                 sort: -1,
                 active: true,
