@@ -30,13 +30,14 @@
             '.rewards-input': 'value: number, events: ["input"]',
             '#rewardsCaptcha': 'value: captchaValue, events: ["input"]',
             '.submit-card': 'classes: {disabled: disableBtn}',
-            '.captcha-image': 'loadSpinner: _url'
+            '.captcha-image': 'updateCaptcha: _url, classes:{test: _url}'
         },
         events: {
             'click .submit-card': 'submit',
             'click .update-captcha': 'updateCaptcha'
         },
         initialize: function() {
+window.viewTest = this;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             inputTypeNumberMask(this.$('.rewards-input'), /^\d*$/, this.model.get('number'), true);
             this.updateCaptcha();
@@ -60,12 +61,30 @@
                 }
             }
         },
+        bindingHandlers: {
+            updateCaptcha: function($el, value) {
+                var view = this.view;
+                value && $el.on('load', removeSpinner).error(removeSpinner);
+                $el.attr('src', value);
+                function removeSpinner() {
+                    $el.off('load error');
+                    view.removeCaptchaSpinner();
+                }
+            }
+        },
         submit: function() {
             this.model.trigger('onGetRewards');
         },
         updateCaptcha: function() {
-            // this.$('.captcha').spinner();
+            this.removeCaptchaSpinner();
+            this.$('.captcha-spinner').spinner();
+            this.captchaSpinner = this.$('.ui-spinner');
+            this.model.set('captchaImage', '');
             this.model.loadCaptcha();
+        },
+        removeCaptchaSpinner: function() {
+            this.captchaSpinner && this.captchaSpinner.remove();
+            delete this.captchaSpinner;
         }
     });
 

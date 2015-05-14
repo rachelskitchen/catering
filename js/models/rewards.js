@@ -118,6 +118,9 @@ define(['backbone'], function(Backbone) {
             this.listenTo(this, 'change:purchases', this.updateRewardsType.bind(this, 'purchases', undefined));
             this.listenTo(this, 'change:visits', this.updateRewardsType.bind(this, 'visits', undefined));
             this.listenTo(this, 'change:points', this.updateRewardsType.bind(this, 'points', undefined));
+            this.listenTo(this, 'change:redemption_code', function(model, value) {
+                Object.keys(REDEMPTION_CODES).forEach(this.updateSelected, this);
+            }, this);
         },
         /**
          * @method
@@ -137,6 +140,7 @@ define(['backbone'], function(Backbone) {
                 data = new App.Models.Rewards(data);
             }
             this.set(rewardsType, data);
+            this.updateSelected(rewardsType);
         },
         /**
          * @method
@@ -146,10 +150,12 @@ define(['backbone'], function(Backbone) {
          */
         getRewards: function() {
             var number = this.get('number'),
+                captchaKey = this.get('captchaKey'),
+                captchaValue = this.get('captchaValue'),
                 self = this;
 
-            // abort execution if card number isn't assigned
-            if(!number.length) {
+            // abort execution if card number, captchaKey, captchaValue aren't assigned
+            if(!number.length || !captchaKey.length || !captchaValue.length) {
                 return;
             }
 
@@ -159,7 +165,9 @@ define(['backbone'], function(Backbone) {
                 type: 'POST',
                 data: JSON.stringify({
                     establishment: App.Data.settings.get("establishment"),
-                    number: number
+                    number: number,
+                    captchaKey: captchaKey,
+                    captchaValue: captchaValue
                 }),
                 dataType: 'json',
                 successResp: function(data) {
@@ -191,19 +199,7 @@ define(['backbone'], function(Backbone) {
         selectRewardsType: function(rewardsType) {
             var reward = this.get(rewardsType),
                 isAvailable = Object.keys(REDEMPTION_CODES).indexOf(rewardsType) > -1 && reward.isAvailable();
-
             this.set('redemption_code', isAvailable ? REDEMPTION_CODES[rewardsType] : this.defaults.redemption_code);
-            updateSelected(this.get('points'));
-            updateSelected(this.get('visits'));
-            updateSelected(this.get('purchases'));
-
-            function updateSelected(model) {
-                if(model !== reward || !isAvailable) {
-                    model.set('selected', false);
-                } else {
-                    model.set('selected', true);
-                }
-            }
         },
         /**
          * @method
@@ -243,6 +239,19 @@ define(['backbone'], function(Backbone) {
                 self.set('captchaImage', json.captcha_image);
                 self.set('captchaKey', json.captcha_key);
             });
+        },
+        /**
+         * @method
+         * Updates `selected` attribute of reward type.
+         *
+         * @param key - one of 'points', 'visits', 'purchases' reward types.
+         */
+        updateSelected: function(key) {
+            var redemption = this.get('redemption_code'),
+                model = this.get(key);
+            if(model){
+                model.set({selected: redemption ? REDEMPTION_CODES[key] === redemption : model.defaults.selected});
+            }
         }
     });
 });
