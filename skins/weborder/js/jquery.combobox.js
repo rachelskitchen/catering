@@ -12,8 +12,10 @@
 
 (function ( $ ) {
 
-    $.fn.combobox = function() {
+    $.fn.combobox = function(min, max) {
     	var instanceVar;
+    	min = min || 1;
+    	max = max || 999;
 
     	this.each(function(){
 	        var originalSelect = $(this);
@@ -27,7 +29,12 @@
 	        	combobox.addClass("combobox");
 
 	        	//place an input which will represent the inputbox
-	        	var inputbox = $("<input/>").attr("maxlength", 3).insertBefore(originalSelect);
+	        	var inputbox = $("<input/>").attr({
+					"min" : min,
+					"max" : max,
+					"type" : "number",
+					"maxlength" : 3
+			    }).insertBefore(originalSelect);
 
         		//get and remove the original id
         		var objID = originalSelect.attr("id");
@@ -69,6 +76,13 @@
 	        			inputbox.trigger("blur");
 	        		}
 	        	});
+
+
+				inputbox.on('input', function(a) {
+		            if (!a.target.value || !this.validity.valid) {
+		                a.target.value = max;
+		            }
+				});
 
 	        	//hide original element
 	        	originalSelect.css({visibility: "hidden", display: "none"});
@@ -123,6 +137,12 @@
         	instanceVar.parent().remove();
         	originalSelect.css({visibility: "visible", display: "inline-block"});
         	originalSelect.attr({id: objID});
+        };
+
+        instanceVar.destroy = function(){
+        	var originalSelect = instanceVar.parent().children("select");
+        	instanceVar.parent().before(originalSelect);
+        	instanceVar.parent().remove();
         };
 
         return instanceVar;
