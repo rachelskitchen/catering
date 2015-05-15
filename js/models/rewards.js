@@ -170,18 +170,26 @@ define(['backbone'], function(Backbone) {
                     captchaValue: captchaValue
                 }),
                 dataType: 'json',
-                successResp: function(data) {
-                    if(Array.isArray(data) && data[0] instanceof Object) {
-                        _.defaults(data[0], self.defaults);
-                        updateRewards(data[0]);
+                success: function(data) {
+                    // expect response that may have following formats:
+                    // {status: 'OK', data:[...]}
+                    // {status: 'ERROR', data: []}
+                    // {status: 'ERROR', errorMsg: '...'}
+                    if(data.data) {
+                        data = data.data;
+                        if(Array.isArray(data) && data[0] instanceof Object) {
+                            _.defaults(data[0], self.defaults);
+                            updateRewards(data[0]);
+                        } else {
+                            // restore default rewards types
+                            updateRewards(self.defaults);
+                        }
+                        self.trigger('onRewardsReceived');
                     } else {
                         // restore default rewards types
                         updateRewards(self.defaults);
+                        self.trigger('onRewardsErrors', data.errorMsg);
                     }
-                },
-                errorResp: function(data) {
-                    // restore default rewards types
-                    updateRewards(self.defaults);
                 }
             });
 
@@ -189,7 +197,6 @@ define(['backbone'], function(Backbone) {
                 self.updateRewardsType('purchases', obj.purchases);
                 self.updateRewardsType('visits', obj.visits);
                 self.updateRewardsType('points', obj.points);
-                self.trigger('onRewardsReceived');
             }
         },
         /**

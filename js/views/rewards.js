@@ -30,14 +30,13 @@
             '.rewards-input': 'value: number, events: ["input"]',
             '#rewardsCaptcha': 'value: captchaValue, events: ["input"]',
             '.submit-card': 'classes: {disabled: disableBtn}',
-            '.captcha-image': 'updateCaptcha: _url, classes:{test: _url}'
+            '.captcha-image': 'updateCaptcha: url, classes:{test: url}'
         },
         events: {
             'click .submit-card': 'submit',
             'click .update-captcha': 'updateCaptcha'
         },
         initialize: function() {
-window.viewTest = this;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             inputTypeNumberMask(this.$('.rewards-input'), /^\d*$/, this.model.get('number'), true);
             this.updateCaptcha();
@@ -49,10 +48,9 @@ window.viewTest = this;
                     return !(number && captchaValue && captchaKey);
                 }
             },
-            _url: {
+            url: {
                 deps: ['captchaImage', '_settings_host'],
                 get: function(captchaImage, _settings_host) {
-                    // this.$('.ui-spinner').remove();
                     if(captchaImage) {
                         return _settings_host + captchaImage;
                     } else {
@@ -77,10 +75,13 @@ window.viewTest = this;
         },
         updateCaptcha: function() {
             this.removeCaptchaSpinner();
-            this.$('.captcha-spinner').spinner();
-            this.captchaSpinner = this.$('.ui-spinner');
+            this.createCaptchaSpinner();
             this.model.set('captchaImage', '');
             this.model.loadCaptcha();
+        },
+        createCaptchaSpinner: function() {
+            this.$('.captcha-spinner').spinner();
+            this.captchaSpinner = this.$('.ui-spinner');
         },
         removeCaptchaSpinner: function() {
             this.captchaSpinner && this.captchaSpinner.remove();
@@ -132,7 +133,8 @@ window.viewTest = this;
         },
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.originalRedemptionCode = this.model.get('redemption_code');
+            this.listenTo(this.model, 'change:number', this.resetOriginalRedemptionCode, this);
+            this.setOriginalRedemptionCode();
         },
         computeds: {
             isPointsAvailable: {
@@ -183,7 +185,7 @@ window.viewTest = this;
             App.Views.FactoryView.prototype.remove.apply(this, arguments);
         },
         apply: function() {
-            this.originalRedemptionCode = this.model.get('redemption_code');
+            this.setOriginalRedemptionCode();
             this.model.trigger('onRedemptionApplied');
         },
         selectRewardType: function(type) {
@@ -196,6 +198,12 @@ window.viewTest = this;
             } else {
                 this.model.selectRewardsType(type);
             }
+        },
+        setOriginalRedemptionCode: function() {
+            this.originalRedemptionCode = this.model.get('redemption_code');
+        },
+        resetOriginalRedemptionCode: function() {
+            this.originalRedemptionCode = this.model.defaults.redemption_code;
         }
     });
 

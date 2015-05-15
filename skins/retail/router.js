@@ -255,6 +255,11 @@ define(["main_router"], function(main_router) {
                 });
             });
 
+            // onRewardsErrors event occurs when /weborders/reward_cards/ request fails
+            this.listenTo(App.Data.myorder.rewardsCard, 'onRewardsErrors', function(errorMsg) {
+                App.Data.errors.alert(errorMsg);
+                App.Data.mainModel.trigger('loadCompleted');
+            });
 
             // onRewardsReceived event occurs when Rewards Card data is received from server
             this.listenTo(App.Data.myorder.rewardsCard, 'onRewardsReceived', function() {
