@@ -51,7 +51,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             is_gift: false,
             gift_card_number: null,
             checked_gift_cards: null,
-            stock_amount: 10,
+            stock_amount: 999,
             active: true,
             created_date: null,
             original_tax: null, // used to save origin tax rate to restore in Retail mode
@@ -220,7 +220,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                                     var image = true;
 
                                     if(!inventory && el.product)
-                                        el.product.stock_amount = 10;
+                                        el.product.stock_amount = 999;
 
                                     // copy image url from parent if it is not present for child product
                                     if(el.product && !el.product.image) {
@@ -338,7 +338,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
         checkStockAmount: function() {
             var inventory = App.Data.settings.get("settings_system").cannot_order_with_empty_inventory;
             if (!inventory)
-                this.set('stock_amount', 10);
+                this.set('stock_amount', 999);
         },
         restoreTax: function() {
             this.set('tax', this.get('original_tax'));

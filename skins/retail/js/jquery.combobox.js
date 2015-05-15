@@ -125,6 +125,12 @@
         	originalSelect.attr({id: objID});
         };
 
+        instanceVar.destroy = function(){
+        	var originalSelect = instanceVar.parent().children("select");
+        	instanceVar.parent().before(originalSelect);
+        	instanceVar.parent().remove();
+        };
+
         return instanceVar;
     };
 
