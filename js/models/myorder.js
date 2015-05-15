@@ -386,6 +386,14 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
         },
         isRealProduct: function() {
             return this.get("id_product") !== null;
+        },
+        /**
+         * @method
+         * @returns true if product's `point_value` is number. Otherwise returns false.
+         */
+        hasPointValue: function() {
+            var point_value = this.isRealProduct() && this.get_product().get('point_value');
+            return typeof point_value == 'number' && !isNaN(point_value);
         }
     });
 
@@ -1101,7 +1109,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             // add rewards card and redemption code to apply discount
             if(rewardsCard.number && rewardsCard.redemption_code) {
                 order_info.rewards_card = {
-                    number: rewardsCard.number,
                     redemption: rewardsCard.redemption_code
                 };
             }
@@ -1296,10 +1303,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             if(notifications)
                 order.notifications = notifications;
 
-            if(rewardsCard.number) {
+            if(rewardsCard.number && rewardsCard.redemption_code) {
                 order_info.rewards_card = {
-                    number: rewardsCard.number,
-                    redemption: rewardsCard.redemption_code || undefined
+                    redemption: rewardsCard.redemption_code
                 };
             }
 
@@ -1574,6 +1580,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             }
 
             return customer.get('shipping_address');
+        },
+        /**
+         * @method
+         * @returns array of items with products which have point value.
+         */
+        getItemsWithPointValue: function() {
+            return this.filter(function(item){
+                return item.hasPointValue();
+            });
         }
     });
 });

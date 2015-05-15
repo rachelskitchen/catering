@@ -18,7 +18,7 @@
 #content > .checkout .input_beauty,
 #content > .checkout div.tips {
     left: 292px;
-    right: 120px;
+    right: 100px;
     position: absolute;
     top: 6px;
     bottom: 6px;
@@ -284,6 +284,22 @@
     margin-top: 4px;
     font-size: 8px;
 }
+
+#content > .checkout .rewards-card-input {
+    right: 220px;
+}
+
+#content > .checkout .rewards-card-btn {
+    display: inline-block;
+    width: 100px;
+    float: right;
+    margin-right: 100px;
+    padding-left: 20px;
+    line-height: 39px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 
 /* for tablets */
 @media only screen and (max-device-width: 949px) {

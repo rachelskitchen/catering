@@ -189,3 +189,9 @@
 .imgCardLogo {
     height: 4em;
 }
+
+.checkout .rewards-card-btn {
+    float: right;
+    padding-top: 0.5em;
+    font-size: 0.8em;
+}

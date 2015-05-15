@@ -44,9 +44,12 @@
     <% if(enableRewardCard) { %>
     <div class="row">
         <label for="rewardCard">Reward Card #:</label>
-        <div class="input_beauty">
+        <div class="input_beauty rewards-card-input">
+            <span class="cancel-input hide"></span>
             <input type="<%= rewardCardType %>" id="rewardCard" class="rewardCard ios-safari-caret" value="<%= rewardCard %>">
         </div>
+        <span class="rewards-card-apply rewards-card-btn">Apply</span>
+        <span class="see-rewards rewards-card-btn">See Rewards</span>
     </div>
     <% } %>
 </script>

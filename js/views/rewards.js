@@ -28,7 +28,7 @@
         mod: 'card',
         bindings: {
             '.rewards-input': 'value: number, events: ["input"]',
-            '#rewardsCaptcha': 'value: captchaValue, events: ["input"]',
+            '.rewards-captcha-input': 'value: captchaValue, events: ["input"]',
             '.submit-card': 'classes: {disabled: disableBtn}',
             '.captcha-image': 'updateCaptcha: url, classes:{test: url}'
         },
@@ -133,14 +133,14 @@
         },
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'change:number', this.resetOriginalRedemptionCode, this);
+            this.listenTo(this.model, 'onResetData', this.resetOriginalRedemptionCode, this);
             this.setOriginalRedemptionCode();
         },
         computeds: {
             isPointsAvailable: {
                 deps: ['points', 'points_rewards_earned'],
                 get: function(points) {
-                    return points.isAvailable();
+                    return points.isAvailable() && this.collection.getItemsWithPointValue().length;
                 }
             },
             isVisitsAvailable: {
@@ -181,7 +181,8 @@
             }
         },
         remove: function() {
-            this.model.set('redemption_code', this.originalRedemptionCode);
+            !this.removed && this.model.set('redemption_code', this.originalRedemptionCode);
+            this.removed = true;
             App.Views.FactoryView.prototype.remove.apply(this, arguments);
         },
         apply: function() {

@@ -371,3 +371,13 @@
 #footer ul.checkout .half {
     width: 50%;
 }
+
+#footer .submit-card, #footer .apply-reward {
+    width: 90%;
+    line-height: 8em;
+}
+
+#footer .submit-card span, #footer .apply-reward span {
+    font-size: 3em;
+    top: 0;
+}

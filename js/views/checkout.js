@@ -28,6 +28,12 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
     App.Views.CoreCheckoutView.CoreCheckoutMainView = App.Views.FactoryView.extend({
         name: 'checkout',
         mod: 'main',
+        bindings: {
+            '.rewards-card-apply': 'classes: {hide: select(rewardsCard_redemption_code, true, false)}',
+            '.see-rewards': 'classes: {hide: select(rewardsCard_redemption_code, false, true)}',
+            '.cancel-input': 'classes: {hide: select(rewardsCard_redemption_code, false, true)}',
+            '.rewardCard': 'attr: {readonly: rewardsCard_redemption_code}'
+        },
         initialize: function() {
             this.listenTo(this.model, 'change:dining_option', this.controlAddress, this);
             this.listenTo(this.model, 'change:dining_option', this.controlDeliverySeat, this);

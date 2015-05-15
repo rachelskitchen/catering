@@ -1,6 +1,6 @@
 .rewards-info {
     position: relative;
-    width: 400px;
+    width: 400px !important;
     text-align: left;
     padding-bottom: 6px;
 }
