@@ -133,7 +133,7 @@ define(["done_view", "generator"], function(done_view) {
             $(window).trigger('loadCompleted');
             clearTimeout(this.spinner);
             delete this.spinner;
-           
+
             this.hideSpinner();
         },
         loadStarted: function() {
@@ -233,7 +233,7 @@ define(["done_view", "generator"], function(done_view) {
 
         $(window).resize(function() {
             !resizing && resize();
-            
+
             if (document.activeElement.tagName.toLowerCase() == "input") {
                 document.activeElement.scrollIntoView(); // #18707
             }

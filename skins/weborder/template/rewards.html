@@ -1,0 +1,58 @@
+<script type="text/template" id="rewards_card-template">
+    <div class="popup-background">
+        <h3>Rewards Information</h3>
+        <label for="rewardsCardNumber">Rewards #:</label>
+        <div class="input_beauty">
+            <input type="text" id="rewardsCardNumber" class="ios-safari-caret rewards-input">
+        </div>
+        <div class="captcha">
+            <img src="" alt="" width="100%" height="100%" class="captcha-image">
+            <div class="captcha-spinner"></div>
+        </div>
+        <span class="rewards-card-btn update-captcha">Reload</span>
+        <label for="rewardsCaptcha">Captcha:</label>
+        <div class="input_beauty">
+            <input type="text" id="rewardsCaptcha" class="ios-safari-caret rewards-captcha-input">
+        </div>
+    </div>
+    <div class="btn submit-card">Submit</div>
+</script>
+
+<script type="text/template" id="rewards_info-template">
+    <div class="popup-background">
+        <h3>Rewards Information</h3>
+        <span class='rewards-title'>Rewards #:</span>
+        <span class="rewards-number"></span>
+        <ul class="collected">
+            <li class="points-collected">
+                <dfn>Total Points</dfn>
+                <span class='total-points'></span>
+            </li>
+            <li class="visits-collected">
+                <dfn>Total Visits</dfn>
+                <span class='total-visits'></span>
+            </li>
+            <li class="purchases-collected">
+                <dfn>Total Purchases</dfn>
+                <span class='total-purchases'></span>
+            </li>
+        </ul>
+    </div>
+    <span class="info">Choose a rewards below, or close this window to save your points.</span>
+    <div class="popup-background">
+        <h3 class="rewards-available">Rewards Available</h3>
+        <ul class="reward-selection">
+            <li class="points-selection">
+                <span class="points-discount"></span> off Items
+            </li>
+            <li class="visits-selection">
+                <span class="visits-discount"></span> off Entire Order
+            </li>
+            <li class="purchases-selection">
+                <span class="purchases-discount"></span> off Entire Order
+            </li>
+        </ul>
+        <span class="rewards-unavailable">You do not qualify for a reward at this time.</span>
+    </div>
+    <div class="btn apply-reward">Apply Reward</div>
+</script>

@@ -172,9 +172,9 @@ define(['backbone'], function(Backbone) {
                 dataType: 'json',
                 success: function(data) {
                     // expect response that may have following formats:
-                    // {status: 'OK', data:[...]}
-                    // {status: 'ERROR', data: []}
-                    // {status: 'ERROR', errorMsg: '...'}
+                    // {status: 'OK', data:[...]} - card number exists
+                    // {status: 'ERROR', data: []} - card number doesn't exist
+                    // {status: 'ERROR', errorMsg: '...'} - invalid captcha
                     if(data.data) {
                         data = data.data;
                         if(Array.isArray(data) && data[0] instanceof Object) {
@@ -232,9 +232,12 @@ define(['backbone'], function(Backbone) {
         /**
          * @method
          * Resets all attributes to default values.
+         *
+         * @fires App.Models.RewardsCard #onResetData
          */
         resetData: function() {
             this.set(this.defaults);
+            this.trigger('onResetData');
         },
         /**
          * @method

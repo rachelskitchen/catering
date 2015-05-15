@@ -92,6 +92,11 @@
             "views": [],
             "templates": [],
             "core": []
+        },
+        "rewards": {
+            "css": ["rewards"],
+            "views": ["rewards"],
+            "templates": ["rewards"]
         }
     }
 }
