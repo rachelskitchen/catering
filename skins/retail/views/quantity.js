@@ -65,10 +65,7 @@ define(["quantity_view"], function(quantity_view) {
                 //console.log("combobox destroy");
                 QuantityMainView.combobox.destroy();
             }
-            QuantityMainView.combobox = select.combobox();
-            var inputbox = this.$('.inputbox');
-            inputTypeNumberMask(inputbox, /^[1-9][0-9]{0,2}$/); // 1-999 range
-            inputbox.trigger("change");
+            QuantityMainView.combobox = select.combobox(1, stock_amount);
         },
         change: function(e) {
             this.model.set('quantity', e.target.value * 1);
