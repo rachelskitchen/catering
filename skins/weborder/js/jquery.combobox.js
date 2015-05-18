@@ -32,8 +32,7 @@
                 var inputbox = $("<input/>").attr({
                     "min": min,
                     "max": max,
-                    "type": "number",
-                    "maxlength": 3
+                    "type": "number"
                 }).insertBefore(originalSelect);
 
                 //get and remove the original id

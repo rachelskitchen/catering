@@ -27,6 +27,7 @@ define(["quantity_view"], function(quantity_view) {
         events: {
             'click .increase': 'increase',
             'click .decrease': 'decrease',
+            'change .quantity input': 'change'
         },
         hide_show: function() {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.hide_show.apply(this, arguments);
@@ -55,7 +56,16 @@ define(["quantity_view"], function(quantity_view) {
             this.model.set('quantity', --q >= 1 ? q : 1);
         },
         update: function() {
-            this.$('span.quantity').text(this.model.get('quantity'));
+            this.$('div.quantity input').val(this.model.get('quantity'));
+        },
+        change: function(e) {
+            var stock_amount = this.model.get_product().get('stock_amount');
+            if (!e.target.validity.valid) {
+                e.target.value = stock_amount;
+            } else if (!e.target.value) {
+                e.target.value = 1;
+            }
+            this.model.set('quantity', e.target.value * 1);
         }
     });
 
