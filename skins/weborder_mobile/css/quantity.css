@@ -39,6 +39,31 @@
     overflow: hidden;
 }
 
+#content div.quantity input {
+    display: block;
+    margin: 0 auto;
+    font-size: 2.8em;
+    position: relative;
+    top: 0.6em;
+    bottom: 0.6em;
+    text-align: center;
+    background-color: transparent;
+    border: 1px solid #C8CBCD;
+    border-radius: 1.3em;
+    color: inherit;
+    box-shadow: 0 0 0.5em #bddbea;
+    width: 4.7em;
+    -webkit-appearance: none;
+    -ms-appearance: none;
+    -moz-appearance:textfield;
+    appearance: none;
+}
+
+#content div.quantity input::-webkit-outer-spin-button,
+#content div.quantity input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
 #content div.quantity .increase,
 #content div.quantity .decrease {
     position: absolute;
