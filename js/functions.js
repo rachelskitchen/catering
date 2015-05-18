@@ -1766,5 +1766,5 @@ function OR(){
 * When the minimization done it's combined into main.js then checked from mainView.js  
 */
 function testA_3() {
-   return 23033;
+   return 23033 + 'v1';
 }
