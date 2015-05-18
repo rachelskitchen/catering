@@ -50,9 +50,8 @@ require(['app'], function(app) {
         // init Locale object
         var locale = App.Data.locale = new App.Models.Locale;
         settings.on('change:skin', function() {
-            locale.dfd_core = locale.loadLanguagePack(true); // load a core language pack (localStorage or the backend system)
-            locale.dfd_skin = locale.loadLanguagePack(); // load a skin language pack (localStorage or the backend system)
-            $.when(locale.dfd_core, locale.dfd_skin).done(function() {
+            locale.dfd_load = locale.loadLanguagePack(); // load a language pack from backend
+            locale.dfd_load.done(function() {
                 _loc = locale.toJSON();
                 _.extend(ERROR, _loc.ERRORS);
                 _.extend(MSG, _loc.MSG);
@@ -111,7 +110,7 @@ require(['app'], function(app) {
                     jasmineEnv.updateInterval = 1000;
 
                     $(document).ready(function() {
-                        $.when(locale.dfd_core, locale.dfd_skin).done(function() {
+                        locale.dfd_load.done(function() {
                             require(tests_list, function(spec) {
                                 window.onload();
                             });

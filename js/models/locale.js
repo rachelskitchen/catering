@@ -25,154 +25,65 @@ define(['backbone'], function(Backbone) {
 
     App.Models.Locale = Backbone.Model.extend({
         /**
-         * Load a language pack (localStorage or the backend system).
+         * Load a language pack
          */
-        loadLanguagePack: function(load_core) {
+        loadLanguagePack: function() {
+            var dfd_core = $.Deferred(),
+                dfd_skin = $.Deferred(),
+                load_all = $.Deferred();
+            dfd_core = this._loadLanguagePack(true); // load a core language pack from backend
+            dfd_skin = this._loadLanguagePack(); // load a skin language pack from backend
+            $.when(dfd_core, dfd_skin).done(function() {
+                load_all.resolve();
+            });
+            return load_all;        
+        },
+        _loadLanguagePack: function(load_core) {
             var DEFAULT_LOCALE = 'en';
-            var self = this, path, stateLocaleKey,
+            var self = this, path,
                 settings = App.Data.settings,
                 skin = settings.get('skin'),
-                curLocale = window.navigator.language,
-                actualVersions = {
-                    defaultLocale: null,
-                    curLocale: null
-                };
+                curLocale = window.navigator.language;
 
             settings.setSkinPath(true); // set path for the current skin
             
             if (load_core) {
-                stateLocaleKey = 'currentLocaleCore';
-                path = settings.get('basePath');
+                path = settings.get('coreBasePath');
                 this.clear();
             } else {
-                stateLocaleKey = 'currentLocaleSkin';
                 path = settings.get('skinPath');                
             }
+            
+            var loadCurLocale = $.Deferred(),
+                loadDefLocale = $.Deferred(),
+                loadCompleted = $.Deferred(),
+                placeholders = {};
 
-            var stateLocale = getData(stateLocaleKey, true); // load data from storage (cookie, sessionStorage, localStorage)
+            var js = path + '/i18n/' + DEFAULT_LOCALE + '.js';
+            require([js], function(defLocale) {
+               //trace(defLocale);
+               _.extend(placeholders, defLocale);
 
-            var loadVersions = $.Deferred(),
-                loadCompleted = $.Deferred();
-            // load versions.json file
-            $.ajax({
-                url: path + '/i18n/_versions.json',
-                dataType: 'json',
-                success: function(data) {
-                    if (data[DEFAULT_LOCALE]) actualVersions.defaultLocale = data[DEFAULT_LOCALE];
-                    if (data[curLocale]) actualVersions.curLocale = data[curLocale];
-                    loadVersions.resolve();
-                },
-                error: function() {
-                    self.trigger('showError');
-                }
+               loadDefLocale.resolve();
+            }, function(err) {
+               self.trigger('showError'); 
+               loadDefLocale.resolve();
             });
 
-            loadVersions.done(function() {
-                
-                if  (!stateLocale || stateLocale.locale != curLocale || stateLocale.defaultLocale.locale != DEFAULT_LOCALE 
-                        || (actualVersions.defaultLocale && 
-                             (
-                               !stateLocale.defaultLocale.placeholders[skin] || stateLocale.defaultLocale.placeholders[skin].version != actualVersions.defaultLocale 
-                             )
-                           ) 
-                        || (actualVersions.curLocale && 
-                              (
-                                !stateLocale.placeholders[skin] || stateLocale.placeholders[skin].version != actualVersions.curLocale
-                              )
-                           )
-                    ) {
+            js = path + '/i18n/' + curLocale + '.js';
+            require([js], function(currentLocale) {
+               //trace(currentLocale);
+               _.extend(placeholders, currentLocale);
 
-                    var json = {
-                        locale: curLocale,
-                        placeholders: {},
-                        defaultLocale: {
-                            locale: DEFAULT_LOCALE,
-                            placeholders: {}
-                        }
-                    }
-
-                    var loadLocales = $.Deferred(),
-                        countLocales = 2,
-                        loadLocaleComplete = function() {
-                            countLocales--;
-                            if (countLocales == 0) loadLocales.resolve();
-                        };
-
-                    // copy existing placeholders to "json" object from "stateLocale" object (localStorage) for the default locale
-                    if (stateLocale && stateLocale.defaultLocale.locale == DEFAULT_LOCALE && !$.isEmptyObject(stateLocale.defaultLocale.placeholders)) {
-                        json.defaultLocale.placeholders = stateLocale.defaultLocale.placeholders;
-                    }
-
-                    if (actualVersions.defaultLocale && 
-                        ((json.defaultLocale.placeholders[skin] && json.defaultLocale.placeholders[skin].version != actualVersions.defaultLocale) 
-                            || (!json.defaultLocale.placeholders[skin]))) {
-
-                        $.ajax({
-                            url: path + '/i18n/' + DEFAULT_LOCALE + '.json',
-                            dataType: 'json',
-                            success: function(data) {
-                                json.defaultLocale.placeholders[skin] = {
-                                    version: actualVersions.defaultLocale,
-                                    placeholders: data
-                                };
-                                loadLocaleComplete();
-                            },
-                            error: function() {
-                                self.trigger('showError');
-                            }
-                        });
-                    } else {
-                        loadLocaleComplete();
-                    }
-
-                    // copy existing placeholders to "json" object from "stateLocale" object (localStorage) for the current locale
-                    if (stateLocale && stateLocale.locale == curLocale && !$.isEmptyObject(stateLocale.placeholders)) {
-                        json.placeholders = stateLocale.placeholders;
-                    }
-
-                    if (actualVersions.curLocale && ((json.placeholders[skin] && json.placeholders[skin].version != actualVersions.curLocale) || (!json.placeholders[skin]))) {
-                        $.ajax({
-                            url: path + '/i18n/' + curLocale + '.json',
-                            dataType: 'json',
-                            success: function(data) {
-                                json.placeholders[skin] = {
-                                    version: actualVersions.curLocale,
-                                    placeholders: data
-                                };
-                                loadLocaleComplete();
-                            },
-                            error: function() {
-                                self.trigger('showError');
-                            }
-                        });
-                    } else {
-                        loadLocaleComplete();
-                    }
-
-                    loadLocales.done(function() {
-                        if (setData(stateLocaleKey, json, true)) { // save data to storage (cookie, sessionStorage, localStorage)
-                            var def_locale = json.defaultLocale.placeholders[skin],
-                                cur_locale = json.placeholders[skin],
-                                dl = !$.isEmptyObject(def_locale) ? def_locale.placeholders : {},
-                                cl = !$.isEmptyObject(cur_locale) ? cur_locale.placeholders : {};
-                            self.set(_.extend(dl, cl));
-                            loadCompleted.resolve();
-                        } else {
-                            self.trigger('showError');
-                        }
-                    });
-                } else {
-                    var dl = (!$.isEmptyObject(stateLocale.defaultLocale.placeholders[skin])) ?
-                        stateLocale.defaultLocale.placeholders[skin].placeholders :
-                        {},
-                        cl = (!$.isEmptyObject(stateLocale.placeholders[skin])) ?
-                        stateLocale.placeholders[skin].placeholders :
-                        {};
-                    self.set(_.extend(dl, cl));
-                    loadCompleted.resolve();
-                }
+               loadCurLocale.resolve();
+            }, function(err) {
+               loadCurLocale.resolve();
             });
-        
+
+            $.when(loadDefLocale, loadCurLocale).done(function() {
+                self.set(placeholders);
+                loadCompleted.resolve();
+            });
             return loadCompleted;
         } //end of loadLanguagePack
     });

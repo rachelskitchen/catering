@@ -1,4 +1,5 @@
-﻿{
+﻿define(function () {
+  return {
     "DINING_OPTION_NAME": {
         "DINING_OPTION_TOGO":            "Take Out",
         "DINING_OPTION_EATIN":           "Eat In",
@@ -193,4 +194,5 @@
     "TOTAL_TAX":                     "Tax",
     "TOTAL_TIP":                     "Tip",
     "TOTAL_GRAND_TOTAL":             "Grand Total"
-}
+  } //end of locale
+});//end of module
