@@ -1583,12 +1583,28 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
         },
         /**
          * @method
-         * @returns array of items with products which have point value.
+         * @param discount - discount which may be applied to items.
+         * @returns array of items with products which have point value and may be redeemed with points reward.
          */
-        getItemsWithPointValue: function() {
-            return this.filter(function(item){
+        getItemsWithPointsRewardDiscount: function(discount) {
+            var itemsWithDiscount = [];
+
+            discount || (discount = 0);
+
+            this.filter(function(item){
                 return item.hasPointValue();
+            }).sort(function(x, y) {
+                return x.get_modelsum() - y.get_modelsum();
+            }).some(function(item) {
+                var oldSum = item.get_modelsum(),
+                    newSum = oldSum - discount;
+                item.set('reward_discount', newSum);
+                itemsWithDiscount.push(item);
+                discount -= oldSum;
+                return discount <= 0;
             });
+
+            return itemsWithDiscount;
         }
     });
 });

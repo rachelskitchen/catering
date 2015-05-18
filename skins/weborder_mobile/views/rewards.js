@@ -31,15 +31,14 @@
             '.info': 'toggle: select(doNotQualifyRewards, false, true)',
             '.rewards-available': 'classes: {"no-bottom-padding": select(doNotQualifyRewards, false, true)}'
         }),
-        inititalize: function() {
+        initialize: function() {
             CoreRewardsInfoView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'beforeRedemptionApplied', this.setOriginalRedemptionCode, this);
-        }//,
-        // removeFromDOMTree: function() {
-        //     !this.removedFromDomTree && this.model.set('redemption_code', this.originalRedemptionCode);
-        //     this.removedFromDomTree = true;
-        //     CoreRewardsInfoView.prototype.removeFromDOMTree.apply(this, arguments);
-        // }
+        },
+        removeFromDOMTree: function() {
+            this.model.set('redemption_code', this.originalRedemptionCode);
+            CoreRewardsInfoView.prototype.removeFromDOMTree.apply(this, arguments);
+        }
     });
 
     return new (require('factory'))(rewards_view.initViews.bind(rewards_view), function() {
