@@ -28,6 +28,8 @@ define(["backbone", "async"], function(Backbone) {
             var app = require('app');
             this.get_data_warehouse(); // selection of the data warehouse
             this.set('basePath', app.config.baseUrl.replace(/\/$/, '') || '.');
+            this.set('coreBasePath', app.config.baseUrl.replace(/\/$/, '') || '.'); //it allways points to ../core for all skins and /dev/ or /core/ debug start url
+            this.set('host', app.REVEL_HOST);
             this.set('host', app.REVEL_HOST);
             this.set('hostname', /^http[s]*:\/\/(.+)/.exec(app.REVEL_HOST)[1]); //it's the host w/o "http[s]://" substring
             this.ajaxSetup(); // AJAX-requests settings

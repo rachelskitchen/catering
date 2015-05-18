@@ -1,4 +1,5 @@
-﻿{
+﻿define(function () {
+  return {
         "SUBCATEGORIES_VIEW_ALL":   "View All",
         "STORES_MI":                "mi",
         "ARRAY_MONTH": [
@@ -455,4 +456,5 @@
         "ERROR_INTEGRITY_TEST_MAIN":                      "There is no testA_xx function in main.js (functions.js). Try manually clear the browser cache and restart.",
         "MODIFIER_FREE":                                  "free"
     }
-}
+  }// end of locale
+});//end of module

@@ -365,7 +365,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             App.Routers.MainRouter.prototype.prepare('establishments', function() {
                 var locale = App.Data.locale;
-                $.when(locale.dfd_core, locale.dfd_skin).done(function() {
+                locale.dfd_load.done(function() {
                     var view = App.Views.GeneratorView.create('CoreEstablishments', {
                         mod: 'Main',
                         className: 'establishments_view',

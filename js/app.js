@@ -187,9 +187,8 @@ var ERROR = {},
             }
 
             settings.on('change:skin', function() {
-                locale.dfd_core = locale.loadLanguagePack(true); // load a core language pack (localStorage or the backend system)
-                locale.dfd_skin = locale.loadLanguagePack(); // load a skin language pack (localStorage or the backend system)
-                $.when(locale.dfd_core, locale.dfd_skin).done(function() {
+                locale.dfd_load = locale.loadLanguagePack(); // load a language pack from backend
+                locale.dfd_load.done(function() {
                     _loc = locale.toJSON();
                     _.extend(ERROR, _loc.ERRORS);
                     _.extend(MSG, _loc.MSG);
@@ -204,7 +203,7 @@ var ERROR = {},
                 var myorder = App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
                 require([settings.get('skin') + '/router'], function(module) {
-                    $.when(locale.dfd_core, locale.dfd_skin).done(function() {
+                    locale.dfd_load.done(function() {
                         if(module instanceof require('main_router')) {
                             module.initRouter();
                         }
