@@ -618,7 +618,7 @@
 
     // Collection: write-only. Manages a list of views bound to a Backbone.Collection.
     collection: makeHandler({
-      init: function($element, collection, context, bindings) {
+      init: function($element, collection, context, bindings) {debugger
         this.i = bindings.itemView ? this.view[bindings.itemView] : this.view.itemView;
         if (!isCollection(collection)) throw('Binding "collection" requires a Collection.');
         if (!isFunction(this.i)) throw('Binding "collection" requires an itemView.');

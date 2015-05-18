@@ -259,8 +259,14 @@ define(['backbone'], function(Backbone) {
         updateSelected: function(key) {
             var redemption = this.get('redemption_code'),
                 model = this.get(key);
-            if(model){
-                model.set({selected: redemption ? REDEMPTION_CODES[key] === redemption : model.defaults.selected});
+            if(model instanceof App.Models.Rewards) {
+                model.set({selected: getRedemption()});
+            } else if(model instanceof Object) {
+                model.selected = getRedemption();
+            }
+
+            function getRedemption() {
+                return redemption ? REDEMPTION_CODES[key] === redemption : model.defaults.selected
             }
         }
     });

@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
- define(["factory", "backbone_epoxy"], function(factory) {
+ define(["factory", "myorder_view"], function(factory) {
     'use strict';
 
     var RewardsCardView = App.Views.FactoryView.extend({
@@ -102,7 +102,7 @@
         name: 'rewards',
         mod: 'order_application'
     });
-
+var test = App.Views.MyOrderView.MyOrderItemView
     var RewardsInfoView = App.Views.FactoryView.extend({
         name: 'rewards',
         mod: 'info',
@@ -121,7 +121,10 @@
             '.points-collected': 'classes: {hide: isPointsDefault}',
             '.visits-collected': 'classes: {hide: isVisitsDefault}',
             '.purchases-collected': 'classes: {hide: isPurchasesDefault}',
-            '.apply-reward': 'classes: {disabled: select(redemption_code, false, true)}'
+            '.apply-reward': 'classes: {disabled: select(redemption_code, false, true)}',
+            '.visits-redemption': 'text: pointsPerReward(visits_value, visits_rewards_earned)',
+            '.purchases-redemption': 'text: pointsPerReward(purchases_value, purchases_rewards_earned)',
+            '.items-with-points': 'collection:$itemsWithPointsRewardDiscount,itemView:"itemWithPointDiscountView"'
         },
         events: function() {
             return {
@@ -134,13 +137,19 @@
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'onResetData', this.resetOriginalRedemptionCode, this);
+
+            // update $itemsWithPointsRewardDiscount when items or points discount update
+            this.listenTo(this.collection, 'add remove change', this.updateItemsWithPointsRewardDiscount, this);
+            this.listenTo(this.model.get('points'), 'change:discount', this.updateItemsWithPointsRewardDiscount, this);
+
+            this.updateItemsWithPointsRewardDiscount();
             this.setOriginalRedemptionCode();
         },
         computeds: {
             isPointsAvailable: {
-                deps: ['points', 'points_rewards_earned'],
-                get: function(points) {
-                    return points.isAvailable() && this.collection.getItemsWithPointValue().length;
+                deps: ['points', 'points_rewards_earned', '$itemsWithPointsRewardDiscount'],
+                get: function(points, rewards, items) {
+                    return points.isAvailable() && items.length;
                 }
             },
             isVisitsAvailable: {
@@ -180,6 +189,17 @@
                 }
             }
         },
+        bindingFilters: {
+            pointsPerReward: function(points, rewards) {
+                return parseInt(points / rewards, 10);
+            }
+        },
+        bindingSources: {
+            itemsWithPointsRewardDiscount: function() {
+                return new Backbone.Collection();
+            }
+        },
+        itemWithPointDiscountView: App.Views.MyOrderView.MyOrderItemView,
         remove: function() {
             !this.removed && this.model.set('redemption_code', this.originalRedemptionCode);
             this.removed = true;
@@ -205,6 +225,12 @@
         },
         resetOriginalRedemptionCode: function() {
             this.originalRedemptionCode = this.model.defaults.redemption_code;
+        },
+        updateItemsWithPointsRewardDiscount: function() {
+            var items = this.getBinding('$itemsWithPointsRewardDiscount'),
+                discount = this.model.get('points').get('discount');
+            items.reset(this.collection.getItemsWithPointsRewardDiscount(discount));
+            items.trigger('update');
         }
     });
 

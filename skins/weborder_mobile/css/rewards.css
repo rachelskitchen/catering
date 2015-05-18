@@ -119,12 +119,12 @@
 }
 
 .reward-selection > li {
-    height: 4em;
+    height: 3em;
     font-size: 3em;
     border-width: 1px;
     border-style: solid;
-    margin-top: 1em;
-    line-height: 4em;
+    margin-top: 0.5em;
+    padding-top: 1em;
     text-align: center;
 }
 
@@ -141,4 +141,9 @@
 .total-points, .total-visits, .total-purchases {
     font-size: 1.5em;
     word-break: break-word;
+}
+
+.rewards-info .redemption {
+    display: block;
+    font-size: 0.7em;
 }
