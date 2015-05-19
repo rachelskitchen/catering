@@ -55,7 +55,7 @@
                 inputbox.val(originalSelect.val());
 
                 //add the triangle at the right
-                var triangle = $("<div/>").addClass("triangle").insertAfter(inputbox);
+                var triangle = $("<div/>").attr("class", originalSelect.attr("class")).addClass("triangle").insertAfter(inputbox);
 
                 //create the selectbox that will appear when the input gets focus
                 var selectbox = $("<ol/>").addClass("selectbox").insertAfter(triangle);
