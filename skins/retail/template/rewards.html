@@ -43,16 +43,58 @@
         <h3 class="rewards-available">Rewards Available</h3>
         <ul class="reward-selection">
             <li class="points-selection">
-                <span class="points-discount"></span> off Items
+                <div class="items-with-points"></div>
+                <span class="redemption color-style1 redemption-points">
+                    (<span class="points-redemption"></span>&nbsp;<span class="points-redemption-info"></span>)
+                </span>
             </li>
             <li class="visits-selection">
-                <span class="visits-discount"></span> off Entire Order
+                <span>
+                    <span class="visits-discount color-style1"></span> off Entire Order
+                    <span class="redemption color-style1">
+                        (<span class="visits-redemption"></span>&nbsp;<span class="visits-redemption-info"></span>)
+                    </span>
+                </span>
             </li>
             <li class="purchases-selection">
-                <span class="purchases-discount"></span> off Entire Order
+                <span>
+                    <span class="purchases-discount color-style1"></span> off Entire Order
+                    <span class="redemption color-style1">
+                        (<span class="purchases-redemption"></span>&nbsp;<span class="purchases-redemption-info"></span>)
+                    </span>
+                </span>
             </li>
         </ul>
         <span class="rewards-unavailable">You do not qualify for a reward at this time.</span>
     </div>
     <div class="btn apply-reward">Apply Reward</div>
+</script>
+
+<script type="text/template" id="rewards_points_item-template">
+    <div>
+        <div class="image">
+            <img src=<%= image %> alt="<%= name %> logo<%= id %>" class="logo" data-default-index="1">
+        </div>
+        <h4 class="name">
+                <span class="name weight"></span>
+                <span class="name quantity"></span>
+        </h4>
+        <ul class="modifier_place">
+            <li class="weight-info weight"></li>
+            <li class="special">*** <span class="special"></span></li>
+        </ul>
+        <% _.each(attrs, function(attr) { %>
+        <div class="attrs">
+            <span><%= attr.name %></span>:
+            <span><%= attr.value %></span>
+        </div>
+        <% }); %>
+        <span class="price-line">
+            <span class="price"></span>
+            &ndash;
+            <span class="discount-line color-style1">
+                <span class="discount"></span> Off
+            </span>
+        </span>
+    </div>
 </script>

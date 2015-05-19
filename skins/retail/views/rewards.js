@@ -1,4 +1,4 @@
-/*
+/*hide_images
  * Revel Systems Online Ordering Application
  *
  *  Copyright (C) 2014 by Revel Systems
@@ -23,5 +23,15 @@
  define(["rewards_view"], function(rewards_view) {
     'use strict';
 
-    return new (require('factory'))(rewards_view.initViews.bind(rewards_view), function() {});
+    var CoreRewardsPointsItemView = App.Views.RewardsView.RewardsPointsItemView,
+        RewardsPointsItemView = CoreRewardsPointsItemView.extend({
+            bindings: _.extend(CoreRewardsPointsItemView.prototype.bindings, {
+                '.image': 'toggle: select(_system_settings_hide_images, false, true)',
+                '.attrs': 'classes: {noimage: _system_settings_hide_images}',
+                '.price-line': 'classes: {noimage: _system_settings_hide_images}'
+            })        });
+
+    return new (require('factory'))(rewards_view.initViews.bind(rewards_view), function() {
+        App.Views.RewardsView.RewardsPointsItemView = RewardsPointsItemView;
+    });
 });

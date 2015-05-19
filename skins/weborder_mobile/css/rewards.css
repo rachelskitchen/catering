@@ -128,7 +128,7 @@
     text-align: center;
 }
 
-.reward-selection li.active:after {
+.reward-selection > li.active:after {
     content: '';
     display: block;
     width: 1.5em;
@@ -136,6 +136,21 @@
     position: absolute;
     top: 0.2em;
     right: 0.2em;
+}
+
+.reward-selection .points-selection {
+    display: list-item;
+    padding-top: 0;
+    height: auto;
+    text-align: left;
+}
+
+.rewards-info .redemption {
+    text-align: center;
+}
+
+.rewards-info .redemption-points {
+    padding-bottom: 0.5em;
 }
 
 .total-points, .total-visits, .total-purchases {
@@ -146,4 +161,51 @@
 .rewards-info .redemption {
     display: block;
     font-size: 0.7em;
+}
+
+.rewards-info .order-item {
+    display: block;
+    margin: 0 20px;
+    vertical-align: middle;
+    padding: 5px 0;
+}
+
+.rewards-info .order-item {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.rewards-info .order-item:last-child {
+    border-bottom: none;
+}
+
+.rewards-info .order-item:before {
+    content: '';
+    display: inline-block;
+    height: 83px;
+    width: 0;
+    vertical-align: middle;
+    position: relative;
+    margin-left: -8px;
+}
+
+.rewards-info .order-item > div {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.rewards-info h4.name {
+    font-size: 18px;
+    margin-right: 20px;
+}
+
+.rewards-info .modifier_place, .rewards-info .price-line, .rewards-info .attrs {
+    display: block;
+    font-size: 14px !important;
+    margin-top: 2px;
+}
+
+.rewards-info .quantity {
+    position: relative;
+    padding: 0;
 }

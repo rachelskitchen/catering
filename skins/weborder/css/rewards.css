@@ -98,8 +98,8 @@
     font-size: 24px;
 }
 
-.reward-selection li {
-    height: 93px;
+.reward-selection > li {
+    height: 83px;
     border-width: 1px;
     border-style: solid;
     margin: 7px 0;
@@ -108,11 +108,16 @@
     cursor: pointer;
 }
 
+.reward-selection > li > span {
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .reward-selection li.active {
     position: relative;
 }
 
-.reward-selection li.active:after {
+.reward-selection > li.active:after {
     content: '';
     display: block;
     width: 30px;
@@ -122,7 +127,7 @@
     right: 5px;
 }
 
-.reward-selection li:before {
+.reward-selection > li:before {
     content: '';
     display: inline-block;
     height: 100%;
@@ -141,4 +146,74 @@
 
 .rewards-info .img-spinner {
     height: 100%;
+}
+
+.rewards-info .redemption {
+    display: block;
+    font-size: 16px;
+    text-align: center;
+}
+
+.rewards-info .redemption-points {
+    padding-bottom: 10px;
+}
+
+.rewards-info .reward-selection {
+    text-shadow: none;
+}
+
+.rewards-info .points-selection {
+    text-align: left;
+    height: auto;
+}
+
+.rewards-info .points-selection:before {
+    display: none;
+}
+
+.rewards-info .order-item {
+    display: block;
+    margin: 0 20px;
+    vertical-align: middle;
+    padding: 5px 0;
+}
+
+.rewards-info .order-item {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.rewards-info .order-item:last-child {
+    border-bottom: none;
+}
+
+.rewards-info .order-item:before {
+    content: '';
+    display: inline-block;
+    height: 83px;
+    width: 0;
+    vertical-align: middle;
+    position: relative;
+    margin-left: -8px;
+}
+
+.rewards-info .order-item > div {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.rewards-info h4.name {
+    font-size: 18px;
+    margin-right: 20px;
+}
+
+.rewards-info .modifier_place, .rewards-info .price-line {
+    display: block;
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+.rewards-info .quantity {
+    position: relative;
+    padding: 0;
 }

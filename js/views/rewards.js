@@ -102,7 +102,47 @@
         name: 'rewards',
         mod: 'order_application'
     });
-var test = App.Views.MyOrderView.MyOrderItemView
+
+    var RewardsPointsItemView = App.Views.MyOrderView.MyOrderItemView.extend({
+        name: 'rewards',
+        mod: 'points_item',
+        className: 'order-item',
+        initialize: function() {
+            // Set current `this` value as `this` value for `this.bindingSources.item` function.
+            // To avoid change of RewardsPointsItemView.prototype.bindingSources.item after first view initialization
+            // need to create own property 'bindingSources' as clone of prototype value.
+            this.bindingSources = _.extend({}, this.bindingSources);
+            this.bindingSources.item = this.bindingSources.item.bind(this);
+            App.Views.MyOrderView.MyOrderItemView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            '.weight': 'classes: {hide: select(item_sold_by_weight, false, true)}',
+            '.quantity': 'classes: {hide: item_sold_by_weight}',
+            '.weight.name': 'text: format("$1 $2", item_sizeModifier, item_name)',
+            '.quantity.name': 'text: format("$1x $2 $3", item_quantity, item_sizeModifier, item_name)',
+            '.weight-info': 'text: weightPriceFormat(item_weight, item_initial_price)',
+            '.price': 'text: currencyFormat(item_sum)',
+            '.discount': 'text: currencyFormat(reward_discount)',
+            'li.special': 'toggle: item_special',
+            'span.special': 'text: item_special',
+            '.cost': 'toggle: false'
+        },
+        bindingSources: {
+            item: function() {
+                return new Backbone.Model(this.getData());
+            }
+        },
+        updateBingingSource: function() {
+            var item = this.getBinding('$item');
+            item.set(this.getData());
+            item.trigger('update');
+        },
+        update: function() {
+            this.updateBingingSource();
+            App.Views.MyOrderView.MyOrderItemView.prototype.update.apply(this, arguments);
+        }
+    });
+
     var RewardsInfoView = App.Views.FactoryView.extend({
         name: 'rewards',
         mod: 'info',
@@ -122,9 +162,13 @@ var test = App.Views.MyOrderView.MyOrderItemView
             '.visits-collected': 'classes: {hide: isVisitsDefault}',
             '.purchases-collected': 'classes: {hide: isPurchasesDefault}',
             '.apply-reward': 'classes: {disabled: select(redemption_code, false, true)}',
+            '.points-redemption': 'text: pointsPerReward(points_value, points_rewards_earned)',
             '.visits-redemption': 'text: pointsPerReward(visits_value, visits_rewards_earned)',
             '.purchases-redemption': 'text: pointsPerReward(purchases_value, purchases_rewards_earned)',
-            '.items-with-points': 'collection:$itemsWithPointsRewardDiscount,itemView:"itemWithPointDiscountView"'
+            '.items-with-points': 'collection:$itemsWithPointsRewardDiscount, itemView:"itemWithPointDiscountView"',
+            '.points-redemption-info': 'text: selectText(points_value, points_rewards_earned, "Point will be redeemed", "Points will be redeemed")',
+            '.visits-redemption-info': 'text: selectText(visits_value, visits_rewards_earned, "Visit will be redeemed", "Visits will be redeemed")',
+            '.purchases-redemption-info': 'text: selectText(purchases_value, purchases_rewards_earned, "Purchase will be redeemed", "Purchases will be redeemed")',
         },
         events: function() {
             return {
@@ -192,6 +236,9 @@ var test = App.Views.MyOrderView.MyOrderItemView
         bindingFilters: {
             pointsPerReward: function(points, rewards) {
                 return parseInt(points / rewards, 10);
+            },
+            selectText: function(points, rewards, text1, text2) {
+                return parseInt(points / rewards, 10) <= 1 ? text1 : text2;
             }
         },
         bindingSources: {
@@ -199,7 +246,7 @@ var test = App.Views.MyOrderView.MyOrderItemView
                 return new Backbone.Collection();
             }
         },
-        itemWithPointDiscountView: App.Views.MyOrderView.MyOrderItemView,
+        itemWithPointDiscountView: RewardsPointsItemView,
         remove: function() {
             !this.removed && this.model.set('redemption_code', this.originalRedemptionCode);
             this.removed = true;
@@ -240,5 +287,6 @@ var test = App.Views.MyOrderView.MyOrderItemView
         App.Views.RewardsView.RewardsItemApplicationView = RewardsItemApplicationView;
         App.Views.RewardsView.RewardsOrderApplicationView = RewardsOrderApplicationView;
         App.Views.RewardsView.RewardsInfoView = RewardsInfoView;
+        App.Views.RewardsView.RewardsPointsItemView = RewardsPointsItemView;
     });
 });

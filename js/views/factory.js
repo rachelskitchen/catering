@@ -28,6 +28,17 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         return App.Settings.currency_symbol + round_monetary_currency(value);
     });
 
+    Backbone.Epoxy.binding.addFilter('weightPriceFormat', function(weight, price) {
+        var currency_symbol = App.Settings.currency_symbol,
+            scales = App.Settings.scales,
+            uom = _.isObject(scales) ? scales.default_weighing_unit : '',
+            line = weight +' @ ' + currency_symbol + round_monetary_currency(price);
+        if(uom) {
+            line += '/' + uom;
+        }
+        return line;
+    });
+
     // add handlers
     Backbone.Epoxy.binding.addHandler('loadSpinner', function($el, value) {
         if(value) {
@@ -54,7 +65,7 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             }
 
             this.bindingSources || (this.bindingSources = {});
-            _.extend(this.bindingSources, {_settings: App.Data.settings}, bindingSources);
+            _.extend(this.bindingSources, {_settings: App.Data.settings, _system_settings: new Backbone.Model(App.Settings)}, bindingSources);
 
             // init array of sub views
             this.subViews = [];
