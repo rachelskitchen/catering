@@ -1644,10 +1644,10 @@ function OR(){
     }
     return result;
 }
-/*
-* Integrity simple test function (Bug 23033), it's checked from categories view. 
-* When the minimization done it's combined into main.js then checked from mainView.js  
+/**
+ * Integrity simple test function (bug 23033), it's checked from categories view.
+ * When the minimization done it's combined into main.js then checked from mainView.js.
 */
-function testA_2() {
-   return 23033;
+function testA_3() {
+   return 23033 + 'v1';
 }
