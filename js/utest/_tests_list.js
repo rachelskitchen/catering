@@ -3,7 +3,8 @@ var tests_list = [
     "../core/js/utest/test_Card",
     // "../core/js/utest/test_Categories",
     // "../core/js/utest/test_Customers",
-    "../core/js/utest/test_Filters"
+    "../core/js/utest/test_Filters",
+    "../core/js/utest/test_Rewards"
 /*
     "../core/js/utest/test_Checkout",
     "../core/js/utest/test_ChildProducts",

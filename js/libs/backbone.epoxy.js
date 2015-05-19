@@ -587,7 +587,7 @@
         if ($element.length > 1) {
           $element = $element.filter('[value="'+ value +'"]');
         }
-        
+
         // Default as loosely-typed boolean:
         var checked = !!value;
 
@@ -1161,7 +1161,7 @@
     // Resolve source instance:
     if (typeof source[name] == 'function') {
         source = source[name](view);
-    } else 
+    } else
     source = _.result(source, name);
 
     // Ignore missing sources, and invoke non-instances:

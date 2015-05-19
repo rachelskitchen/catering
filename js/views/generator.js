@@ -53,6 +53,6 @@ define(['backbone'], function(Backbone) {
             cache = {};
         }
     };
-
+window.cache = cache;
     App.Views.GeneratorView = new App.Views.Generator();
 });

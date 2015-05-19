@@ -28,10 +28,16 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
     App.Views.CoreCheckoutView.CoreCheckoutMainView = App.Views.FactoryView.extend({
         name: 'checkout',
         mod: 'main',
+        bindings: {
+            '.rewards-card-apply': 'classes: {hide: select(rewardsCard_redemption_code, true, false)}',
+            '.see-rewards': 'classes: {hide: select(rewardsCard_redemption_code, false, true)}',
+            '.cancel-input': 'classes: {hide: select(rewardsCard_redemption_code, false, true)}',
+            '.rewardCard': 'attr: {readonly: rewardsCard_redemption_code}'
+        },
         initialize: function() {
             this.listenTo(this.model, 'change:dining_option', this.controlAddress, this);
             this.listenTo(this.model, 'change:dining_option', this.controlDeliverySeat, this);
-            this.listenTo(this.model, 'change:rewardCard', this.updateData, this);
+            this.listenTo(this.options.rewardsCard, 'change:number', this.updateData, this);
             this.listenTo(this.options.customer, 'change:first_name change:last_name change:email change:phone', this.updateData, this);
             this.customer = this.options.customer;
             this.card = App.Data.card;
@@ -56,7 +62,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             model.lastName = this.customer.escape('last_name');
             model.email = this.customer.escape('email');
             model.phone = this.customer.escape('phone');
-            model.rewardCard = this.model.escape('rewardCard');
+            model.rewardCard = this.options.rewardsCard.escape('number');
             model.isFirefox = /firefox/i.test(navigator.userAgent);
             model.enableRewardCard = settings.enable_reward_cards_collecting;
             model.business_name = settings.business_name;
@@ -92,7 +98,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             'blur .lastName': 'changeLastName',
             'blur .email': 'changeEmail',
             'blur .phone': 'changePhone',
-            'blur .rewardCard' : 'changeRewardCard'
+            'blur .rewardCard': 'changeRewardCard',
+            'click .rewards-card-apply': 'applyRewardsCard',
+            'click .see-rewards': 'showRewards',
+            'click .cancel-input': 'resetRewards'
         },
         changeFirstName: function(e) {
             this.customer.set('first_name', e.target.value);
@@ -109,7 +118,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.customer.set('phone', e.target.value);
         },
         changeRewardCard: function(e) {
-            this.model.set('rewardCard', e.target.value);
+            this.options.rewardsCard.set('number', e.target.value);
         },
         controlAddress: function(model, value) {
             var address = this.subViews.shift();
@@ -150,7 +159,16 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.$('.lastName').val(customer.get('last_name'));
             this.$('.email').val(customer.get('email'));
             this.$('.phone').val(customer.get('phone'));
-            this.$('.rewardCard').val(this.model.get('rewardCard'));
+            this.$('.rewardCard').val(this.options.rewardsCard.get('number'));
+        },
+        applyRewardsCard: function() {
+            this.options.rewardsCard.trigger('onApplyRewardsCard');
+        },
+        showRewards: function() {
+            this.options.rewardsCard.trigger('onRewardsReceived');
+        },
+        resetRewards: function() {
+            this.options.rewardsCard.resetData();
         }
     });
 

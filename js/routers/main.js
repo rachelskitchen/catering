@@ -624,6 +624,7 @@ define(["backbone", "factory"], function(Backbone) {
             var RevelAPI = App.Data.RevelAPI,
                 mainModel = App.Data.mainModel,
                 checkout = App.Data.myorder.checkout,
+                rewardsCard = App.Data.myorder.rewardsCard,
                 profileCustomer = RevelAPI.get('customer'),
                 profileCancelCallback,
                 profileSaveCallback;
@@ -633,9 +634,9 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             this.once('started', function() {
-                // If rewardCard is not set yet need set its value from profile.
+                // If rewardsCard is not set yet need set its value from profile.
                 // Reward card may be set by this moment after checkout restoring from localStorage.
-                !checkout.get('rewardCard') && updateReward();
+                !rewardsCard.get('number') && updateReward();
                 RevelAPI.run(); // controls of Welcome screen
             });
 
@@ -727,7 +728,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             // bind phone changes in profile with reward card in checkout
             checkout.listenTo(profileCustomer, 'change:phone', function() {
-                !checkout.get('rewardCard') && RevelAPI.get('profileExists') && updateReward();
+                !rewardsCard.get('number') && RevelAPI.get('profileExists') && updateReward();
             });
 
             // if user saves profile reward card should be overriden excepting use case when profile is updated during payment with credit card
@@ -769,7 +770,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             function updateReward() {
                 var phone = profileCustomer.get('phone');
-                phone && checkout.set('rewardCard', phone);
+                phone && rewardsCard.set('number', phone);
             }
         }
     });

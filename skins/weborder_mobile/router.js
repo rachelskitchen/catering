@@ -68,6 +68,8 @@ define(["main_router"], function(main_router) {
         footerModes.MaintenanceDirectory = {mod: 'MaintenanceDirectory'};
         footerModes.Profile = {mod: 'Profile'};
         footerModes.Loyalty = {mod: 'Loyalty'};
+        footerModes.RewardsCard = {mod: 'RewardsCard', rewardsCard: App.Data.myorder.rewardsCard};
+        footerModes.Rewards = {mod: 'Rewards', rewardsCard: App.Data.myorder.rewardsCard};
     }
 
     var Router = App.Routers.RevelOrderingRouter.extend({
@@ -91,6 +93,8 @@ define(["main_router"], function(main_router) {
             "pay": "pay",
             "profile(/:step)": "profile",
             "loyalty": "loyalty",
+            "rewards_card_submit": "rewards_card_submit",
+            "rewards": "rewards",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -178,7 +182,9 @@ define(["main_router"], function(main_router) {
                 this.listenTo(ests, 'resetEstablishmentData', mainModel.trigger.bind(mainModel, 'showSpinnerAndHideContent'), this);
 //common
                 this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
-//common
+
+                this.navigationControl();
+
                 // run history tracking
                 this.triggerInitializedEvent();
             });
@@ -187,6 +193,45 @@ define(["main_router"], function(main_router) {
             checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
             App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
+        },
+        navigationControl: function() {
+            // onApplyRewardsCard event occurs when Rewards Card's 'Apply' button is clicked on #checkout page
+            this.listenTo(App.Data.myorder.rewardsCard, 'onApplyRewardsCard', this.navigate.bind(this, 'rewards_card_submit', true));
+
+            // onGetRewards event occurs when Rewards Card's 'Submit' button is clicked on 'Rewards Card Info' popup
+            this.listenTo(App.Data.myorder.rewardsCard, 'onGetRewards', function() {
+                App.Data.mainModel.trigger('loadStarted');
+                App.Data.myorder.rewardsCard.getRewards();
+            });
+
+            // onRedemptionApplied event occurs when 'Apply Reward' btn is clicked
+            this.listenTo(App.Data.myorder.rewardsCard, 'onRedemptionApplied', function() {
+                var self = this;
+                App.Data.mainModel.trigger('loadStarted');
+                App.Data.myorder.get_cart_totals().always(function() {
+                    App.Data.mainModel.trigger('loadCompleted');
+                    self.navigate('checkout', true);
+                });
+            }, this);
+
+            // onRewardsErrors event occurs when /weborders/reward_cards/ request fails
+            this.listenTo(App.Data.myorder.rewardsCard, 'onRewardsErrors', function(errorMsg) {
+                App.Data.errors.alert(errorMsg);
+                App.Data.mainModel.trigger('loadCompleted');
+            });
+
+            // onRewardsReceived event occurs when Rewards Card data is received from server
+            this.listenTo(App.Data.myorder.rewardsCard, 'onRewardsReceived', function() {
+                var rewardsCard = App.Data.myorder.rewardsCard;
+
+                if(rewardsCard.get('points').isDefault() && rewardsCard.get('visits').isDefault() && rewardsCard.get('purchases').isDefault()) {
+                    App.Data.errors.alert(MSG.NO_REWARDS_AVAILABLE);
+                } else {
+                    this.navigate('rewards', true);
+                }
+
+                App.Data.mainModel.trigger('loadCompleted');
+            }, this);
         },
         /**
          * Navigate on #done when payment is completed.
@@ -473,6 +518,7 @@ define(["main_router"], function(main_router) {
                             modelName: 'Checkout',
                             model: App.Data.myorder.checkout,
                             customer: App.Data.customer,
+                            rewardsCard: App.Data.myorder.rewardsCard,
                             mod: 'Main',
                             className: 'checkout'
                         },
@@ -769,6 +815,55 @@ define(["main_router"], function(main_router) {
         },
         loyalty: function() {
             return App.Routers.RevelOrderingRouter.prototype.loyalty.call(this, headerModes.Main, footerModes.Loyalty);
+        },
+        rewards_card_submit: function() {
+            this.prepare('rewards', function() {
+                App.Data.header.set({
+                    page_title: 'Rewards Card',
+                    back_title: 'Cancel',
+                    back: this.navigate.bind(this, 'checkout', true)
+                });
+                App.Data.mainModel.set({
+                    header: headerModes.OneButton,
+                    footer: footerModes.RewardsCard,
+                    content: {
+                        modelName: 'Rewards',
+                        mod: 'Card',
+                        model: App.Data.myorder.rewardsCard,
+                        className: 'rewards-info'
+                    }
+                });
+
+                this.change_page();
+            });
+        },
+        rewards: function() {
+            this.prepare('rewards', function() {
+                var rewardsCard = App.Data.myorder.rewardsCard;
+
+                App.Data.header.set({
+                    page_title: 'Rewards',
+                    back_title: 'Cancel',
+                    back: this.navigate.bind(this, 'checkout', true)
+                });
+
+                App.Data.mainModel.set({
+                    header: headerModes.OneButton,
+                    footer: footerModes.Rewards,
+                    content: {
+                        modelName: 'Rewards',
+                        mod: 'Info',
+                        model: rewardsCard,
+                        className: 'rewards-info',
+                        collection: App.Data.myorder,
+                        points: rewardsCard.get('points'),
+                        visits: rewardsCard.get('visits'),
+                        purchases: rewardsCard.get('purchases')
+                    }
+                });
+
+                this.change_page();
+            });
         },
         initRevelAPI: function() {
             App.Routers.RevelOrderingRouter.prototype.initRevelAPI.apply(this, arguments);

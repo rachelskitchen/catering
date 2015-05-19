@@ -34,7 +34,7 @@
 }
 #content > .checkout .input_beauty {
     left: 287px;
-    right: 120px;
+    right: 100px;
     position: absolute;
     top: 6px;
     bottom: 6px;
@@ -213,18 +213,33 @@
 }
 /* these button colores are the same for all themes: */
 #content > .checkout .discount .btn {
-    border-color: #a9a9a9;    
-    background-color: rgba(247,247,247,1); 
+    border-color: #a9a9a9;
+    background-color: rgba(247,247,247,1);
     box-shadow: 0 3px 3px rgba(0,0,0,0.3);
 }
 #content > .checkout .discount .btn:active {
-    background-color: rgba(254,254,254,1); 
+    background-color: rgba(254,254,254,1);
 }
 #content > .checkout .discount .btn.applied {
     cursor: default;
 }
 #content > .checkout .discount .btn:after, #content > .checkout .discount .btn:before {
     display: none;
+}
+
+#content > .checkout .rewards-card-input {
+    right: 220px;
+}
+
+#content > .checkout .rewards-card-btn {
+    display: inline-block;
+    width: 100px;
+    float: right;
+    margin-right: 100px;
+    padding-left: 20px;
+    line-height: 39px;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 /* for tablets */
@@ -264,7 +279,7 @@
     #content > .checkout div.discount .input_beauty {
         left: 0px !important;
         right: 0px !important;
-    }  
+    }
     #content > .checkout .discount .btn {
         margin-left: -7px;
     }
@@ -273,6 +288,6 @@
 @media only screen and (max-device-width: 949px) and (orientation: portrait) {
     #content > .checkout div.discount .number-wrap{
         width: 65%;
-    }  
+    }
 }
 
