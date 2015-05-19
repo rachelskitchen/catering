@@ -601,7 +601,8 @@ section.maintenance .back {
 #cart .order-items > ul > li {
     margin-bottom: 10px;
 }
-#cart .order-items .image, .confirmPayCard .order-items .image {
+#cart .order-items .image, .confirmPayCard .order-items .image,
+.rewards-info .order-item .image  {
     width: 65px;
     height: 85px;
     text-align: center;
@@ -619,7 +620,7 @@ section.maintenance .back {
     min-height: 35px;
 }
 
-#cart .order-items img, .confirmPayCard .order-items img {
+#cart .order-items img, .confirmPayCard .order-items img, .rewards-info .order-item img {
     height: auto;
     width: auto;
     max-height: 100%;
@@ -655,8 +656,8 @@ section.maintenance .back {
     line-height: 15px;
     margin-left: 75px;
 }
-#cart .order-items h3.noimage, .confirmPayCard .order-items h3.noimage {
-    margin-left: 0;
+.noimage {
+    margin-left: 0 !important;
 }
 #cart .main .order-items h3 {
    width: 170px;
@@ -671,13 +672,10 @@ section.maintenance .back {
     font-size: 14px;
 }
 #cart .order-items .cost, #cart .order-items .attrs,
-.confirmPayCard .order-items .cost, .confirmPayCard .order-items .attrs {
+.confirmPayCard .order-items .cost, .confirmPayCard .order-items .attrs,
+.rewards-info .order-item .attrs, .rewards-info .order-item .price-line {
     font-size: 12px;
     margin-left: 75px;
-}
-#cart .order-items .cost.noimage, #cart .order-items .attrs.noimage,
-.confirmPayCard .order-items .cost.noimage, .confirmPayCard .order-items .attrs.noimage {
-    margin-left: 0;
 }
 .order-items .currency_symbol {
     margin-right: -3px;
@@ -693,9 +691,6 @@ section.maintenance .back {
     position: static;
     margin-top: 5px;
     margin-left: 75px;
-}
-#cart .checkout .order-items .btns.noimage, .confirmPayCard .order-items .btns.noimage {
-    margin-left: 0;
 }
 #cart .order-items .btns > span, .confirmPayCard .order-items .btns > span {
     display: inline-block;

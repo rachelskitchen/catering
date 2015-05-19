@@ -1594,11 +1594,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             this.filter(function(item){
                 return item.hasPointValue();
             }).sort(function(x, y) {
-                return x.get_modelsum() - y.get_modelsum();
+                return -1 * (x.get_modelsum() - y.get_modelsum());
             }).some(function(item) {
                 var oldSum = item.get_modelsum(),
                     newSum = oldSum - discount;
-                item.set('reward_discount', newSum);
+                item.set('reward_discount', newSum <= 0 ? oldSum : discount);
                 itemsWithDiscount.push(item);
                 discount -= oldSum;
                 return discount <= 0;
