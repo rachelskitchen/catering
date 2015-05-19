@@ -287,6 +287,44 @@ define(["revel_view", "generator"], function(revel_view) {
         mod: 'loyalty'
     });
 
+    var FooterRewardsCardView = App.Views.FactoryView.extend({
+        name: 'footer',
+        mod: 'rewards_card',
+        bindings: {
+            '.submit-card': 'classes: {disabled: disableBtn}',
+        },
+        events: {
+            'click .submit-card': 'submit'
+        },
+        computeds: {
+            disableBtn: {
+                deps: ['rewardsCard_number', 'rewardsCard_captchaValue', 'rewardsCard_captchaKey'],
+                get: function(number, captchaValue, captchaKey) {
+                    return !(number && captchaValue && captchaKey);
+                }
+            }
+        },
+        submit: function() {
+            this.getBinding('$rewardsCard').trigger('onGetRewards');
+        }
+    });
+
+    var FooterRewardsView = App.Views.FactoryView.extend({
+        name: 'footer',
+        mod: 'rewards',
+        bindings: {
+            '.apply-reward': 'classes: {disabled: select(rewardsCard_redemption_code, false, true)}',
+        },
+        events: {
+            'click .apply-reward': 'apply'
+        },
+        apply: function() {
+            var rewardsCard = this.getBinding('$rewardsCard');
+            rewardsCard.trigger('beforeRedemptionApplied');
+            rewardsCard.trigger('onRedemptionApplied');
+        }
+    });
+
     function setCallback(prop) {
         return function() {
             var tab = this.model.get(prop);
@@ -306,5 +344,7 @@ define(["revel_view", "generator"], function(revel_view) {
         App.Views.FooterView.FooterMaintenanceDirectoryView = FooterMaintenanceDirectoryView;
         App.Views.FooterView.FooterProfileView = App.Views.RevelView.RevelProfileFooterView;
         App.Views.FooterView.FooterLoyaltyView = FooterLoyaltyView;
+        App.Views.FooterView.FooterRewardsCardView = FooterRewardsCardView;
+        App.Views.FooterView.FooterRewardsView = FooterRewardsView;
     });
 });

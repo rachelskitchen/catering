@@ -51,6 +51,14 @@ textarea, input {
     border-radius: 0;
 }
 
+ul {
+    list-style: none;
+}
+
+img[src=''] {
+    opacity: 0;
+}
+
 .fl_left {float: left;}
 .fl_right {float: right;}
 .clear_both {clear: both;}
@@ -357,6 +365,11 @@ textarea, input {
     cursor: pointer;
 }
 
+#footer .btn1.disabled, #footer .btn2.disabled {
+    pointer-events: none;
+    cursor: default;
+}
+
 /* footer block end */
 
 /* spinner block start */
@@ -559,4 +572,41 @@ label.select {
     border-radius: 0.6em;
     -webkit-box-shadow: inset 0 0 0.4em rgba(0,0,0,.3);
     background-color: #BBB;
+}
+
+/* cancel-input */
+.cancel-input {
+    display: inline-block;
+    width: 2em;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    z-index: 2;
+    line-height: 2em;
+}
+
+span.cancel-input:before {
+    content: '\f00d';
+    font-family: FontAwesome;
+    display: inline-block;
+    width: 1.2em;
+    height: 1.2em;
+    font-size: 1.2em;
+    border-radius: 1.2em;
+    text-shadow: none;
+    text-align: center;
+    line-height: 1.2em;
+    cursor: pointer;
+}
+
+.cancel-input:not(.hide) + input {
+    padding-right: 2.5em;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.rewards-card-btn {
+    text-decoration: underline;
+    cursor: pointer;
 }

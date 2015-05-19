@@ -25,7 +25,8 @@ define(["checkout_view"], function(checkout_view) {
 
     var CoreDeliveryAddressesView = App.Views.DeliveryAddressesView,
         CoreCheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView,
-        DeliveryAddressesView, CheckoutAddressView;
+        DeliveryAddressesView, CheckoutAddressView, CheckoutMainView;
+
 
     DeliveryAddressesView = CoreDeliveryAddressesView.extend({
         initialize: function() {
