@@ -63,7 +63,7 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
             return this.collection.total.get_total();
         },
         integrity_test: function() { // #23033
-            if (typeof testA_3 != 'function') {
+            if (typeof testA_4 != 'function') {
                 console.error('Integrity error. ' + MSG.ERROR_INTEGRITY_TEST_MAIN);
             }
         }

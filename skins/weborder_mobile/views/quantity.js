@@ -64,7 +64,6 @@ define(["quantity_view"], function(quantity_view) {
             var min = 1,
                 max = this.model.get_product().get('stock_amount');
 
-            console.log("validity: " + e.target.validity.valid);
             if (!e.target.validity.valid) {
                 e.target.value = min;
             } else if (e.target.value > max) {
