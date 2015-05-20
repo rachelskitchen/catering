@@ -46,26 +46,26 @@ define(['backbone'], function(Backbone) {
                 self.set(placeholders);
                 load_all.resolve();
             });
-            return load_all;        
+            return load_all;
         },
         _loadLanguagePack: function(load_core) {
             var DEFAULT_LOCALE = 'en';
             var self = this, path,
                 settings = App.Data.settings,
                 skin = settings.get('skin'),
-                defLocalePlaceholders, 
+                defLocalePlaceholders,
                 curLocalePlaceholders,
                 resultPlaceholders,
-                curLocale = window.navigator.language;
+                curLocale = window.navigator.language.replace(/-.*/g, '');
 
             settings.setSkinPath(true); // set path for the current skin
-            
+
             if (load_core) {
                 path = settings.get('coreBasePath');
             } else {
                 path = settings.get('skinPath');
             }
-            
+
             var loadCurLocale = $.Deferred(),
                 loadDefLocale = $.Deferred(),
                 loadCompleted = $.Deferred(),
@@ -76,7 +76,7 @@ define(['backbone'], function(Backbone) {
                defLocalePlaceholders = defLocale;
                loadDefLocale.resolve();
             }, function(err) {
-               self.trigger('showError'); 
+               self.trigger('showError');
                loadDefLocale.resolve();
             });
 
@@ -93,8 +93,8 @@ define(['backbone'], function(Backbone) {
                 if (load_core)
                     resultPlaceholders = self.corePlaceholders;
                 else
-                    resultPlaceholders = self.skinPlaceholders;              
-           
+                    resultPlaceholders = self.skinPlaceholders;
+
                 _.extend(resultPlaceholders, defLocalePlaceholders);
                 _.extend(resultPlaceholders, curLocalePlaceholders);
                 loadCompleted.resolve();

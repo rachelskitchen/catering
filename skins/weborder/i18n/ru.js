@@ -123,6 +123,29 @@
     "SUBCATEGORIES_SUBCATEGORIES": "Подкатегории",
     "TIPS_ADD_TIP": "Оставить чаевые",
     "TIPS_NONE": "Нет",
-    'TIPS_OTHER':   'Другое'
+    "TIPS_OTHER": "Другое",
+    "REWARDS_INFORMATION":           "Накопленные баллы",
+    "REWARDS_NUMBER":                "Номер карты",
+    "REWARDS_TOTAL_POINTS":          "Кол-во очков",
+    "REWARDS_TOTAL_VISITS":          "Кол-во посещений",
+    "REWARDS_TOTAL_PURCHASES":       "Кол-во покупок",
+    "REWARDS_SELECTION_INFO":        "Выберите вид накоплений, которое вы хотите использовать.",
+    "REWARDS_AVAILABLE":             "Доступные виды накоплений",
+    "REWARDS_UNAVAILABLE":           "Вы не можете применить ни один из видов накоплений в данный момент.",
+    "REWARDS_ENTIRE_ORDER_DISCOUNT": "скидка ко всему заказу",
+    "REWARDS_APPLY":                 "Применить",
+    "REWARDS_OFF":                   "скидка",
+    "REWARDS_POINTS_REDEMPTION_AMOUNT": [
+        "очко будет потрачено",
+        "очков будет потрачено"
+    ],
+    "REWARDS_VISITS_REDEMPTION_AMOUNT": [
+        "посещение будет потрачено",
+        "посещения будет потрачено"
+    ],
+    "REWARDS_PURCHASES_REDEMPTION_AMOUNT": [
+        "покупка будет потрачена",
+        "покупок будет потрачено"
+    ]
   }// end of locale
 });//end of module
