@@ -83,7 +83,7 @@
 .rewards-info dfn {
     font-style: normal;
     display: block;
-    width: 86px;
+    width: 88px;
     margin: 24px auto 4px;
     font-size: 18px;
 }
@@ -216,4 +216,10 @@
 .rewards-info .quantity {
     position: relative;
     padding: 0;
+}
+
+@media only screen and (max-device-width: 949px) {
+    .rewards-info dfn {
+        width: 86px !important;
+    }
 }
