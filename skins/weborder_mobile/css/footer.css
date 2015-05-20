@@ -66,6 +66,10 @@
     top: 2.3em;
 }
 
+#footer span.clip {
+    padding: 0 7px;
+}
+
 #myorder.btn2 span {
     top: 3.9em;
 }
@@ -240,6 +244,7 @@
     float: left;
     top: 0;
     font-size: inherit;
+    padding: 0;
 }
 
 #footer ul.confirm div {
@@ -264,11 +269,6 @@
 #pay {
     right: 4em;
     left: 2em;
-}
-
-#creditCard {
-    right: 2em;
-    left: 4em;
 }
 
 #footer .btn1 img {

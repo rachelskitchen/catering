@@ -49,6 +49,8 @@
     font-weight: bold;
     text-align: center;
     margin: 8px 0;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 .confirmPayCard .pickup_time {
     margin: 15px 10px 5px 10px;
@@ -124,6 +126,11 @@
 }
 #popup .total_block li {
     text-align: right;
+}
+#popup .total_block .title {
+    display: inline-block;
+    max-width: 280px;
+    vertical-align: top;
 }
 #popup .total_block .cost {
     letter-spacing: -3px;

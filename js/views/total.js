@@ -30,7 +30,7 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
-        render: function() {            
+        render: function() {
             this.$el.html(this.template());
             this.applyBindings();
         },
@@ -41,14 +41,14 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
         },
         computeds: {
             totalFrm: {
-                deps: ["total", "dining_option"], //depends on attr. 'total' of this.model 
+                deps: ['total', 'dining_option'], // depends on attr. 'total' of this.model
                 get: function() {
                     return this.get_subtotal();
                 }
             },
             discountsFrm: {
                 deps: ["discounts"],  //depends on attr. 'discounts' of this.model
-                get: function() { 
+                get: function() {
                     return this.model.get_discounts_str();
                 }
             },
@@ -62,9 +62,9 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
             }
             return this.collection.total.get_total();
         },
-        integrity_test: function() { //#23033 
+        integrity_test: function() { // #23033
             if (typeof testA_3 != 'function') {
-                console.error("Integrity error. " + MSG.INTEGRITY_TEST_MAIN);
+                console.error('Integrity error. ' + MSG.ERROR_INTEGRITY_TEST_MAIN);
             }
         }
     });
@@ -119,7 +119,7 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
                 defaults: view.getData(),
                 computeds: {
                     hide_delivery: {
-                        deps: ['dining_option', 'deliveryCharge'], 
+                        deps: ['dining_option', 'deliveryCharge'],
                         get: function(dining_option, deliveryCharge) {
                              return dining_option != 'DINING_OPTION_DELIVERY' ||  deliveryCharge*1 <= 0 || view.collection.get_only_product_quantity() <= 0;
                         }
@@ -141,7 +141,7 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
             });
             return App.lastModelViews.CoreTotalCheckout = new viewModel();
         }
-    });    
+    });
 
     return new (require('factory'))(function() {
         App.Views.TotalView = {};

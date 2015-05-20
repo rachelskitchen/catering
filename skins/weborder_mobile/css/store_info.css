@@ -168,6 +168,8 @@
 
 #content ul.location .weekDay {
     float: left;
+    width: 35%;
+    padding-right: 2%;
 }
 
 #content ul.location ul.desc li.info {

@@ -62,9 +62,13 @@
     font-size: 3em;
 }
 
+#content .checkout dl {
+    text-align: center;
+}
+
 #content .checkout dt {
     display: inline-block;
-    width: 100%;
+    width: 90%;
     text-align: center;
     font-size: 2.8em;
     font-weight: bold;

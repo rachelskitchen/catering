@@ -129,13 +129,21 @@
     height: 21px;
     width: 35px;
     font-size: 15px;
-    font-weight: bold;
     border-width: 2px;
     border-radius: 15px;
     border-style: solid;
     padding: 0 7px;
     line-height: 21px;
     text-align: center;
+}
+.modifiers_table .special_button + .title {
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+    line-height: 28px;
+} 
+.modifiers_table .special_button > span {
+    font-weight: bold;
 }
 
 .modifiers_table .no-controls .special_button {

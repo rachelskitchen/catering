@@ -1,7 +1,7 @@
 <script type="text/template" id="tips_line-template">
     <ul class="tips <% if(isFirefox) print('firefox') %> <% if (!tip_allow) print('hidden'); %>">
         <li>
-            <div class="fl_left tip_label">Add a Tip:</div>
+            <div class="fl_left tip_label clip"> <%= _lp.TIPS_ADD %>: </div>
             <div class="fl_right">
                 <div class="currency_sym"> <span> <%=currency_symbol%> </span> </div>
                 <div class="input border <% if (!type || amount) print('disabled')%>">
@@ -11,11 +11,11 @@
             <div class="clear_both"></div>
         </li>
         <li>
-            <span class="btn" data-amount="None">None</span>
-            <span class="btn" data-amount="10">10%</span>
-            <span class="btn" data-amount="15">15%</span>
-            <span class="btn" data-amount="20">20%</span>
-            <span class="btn" data-amount="Other">Other</span>
+            <span class="btn clip" data-amount="None"> <%= _lp.TIPS_NONE %> </span>
+            <span class="btn clip" data-amount="10"> 10% </span>
+            <span class="btn clip" data-amount="15"> 15% </span>
+            <span class="btn clip" data-amount="20"> 20% </span>
+            <span class="btn clip" data-amount="Other"> <%= _lp.TIPS_OTHER %> </span>
         </li>
     </ul>
 </script>

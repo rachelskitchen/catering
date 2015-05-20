@@ -1,11 +1,11 @@
 <script type="text/template" id="total_main-template">
     <div class="total_discounts">
-        Discounts:
+        <span class="clip"> <%= _lp.TOTAL_DISCOUNTS %>: </span>
         <span class="currency_symbol"><%= _settings.currency_symbol %></span>
         <span class="discount"></span>
     </div>
     <div>
-        Subtotal:
+        <span class="clip"> <%= _lp.TOTAL_SUBTOTAL %>: </span>
         <span class="currency_symbol"><%= _settings.currency_symbol %></span>
         <span class="total"></span>
     </div>
@@ -14,21 +14,21 @@
 <script type="text/template" id="total_checkout-template">
     <ul class="confirm">
         <li class="total_discounts">
-            <span class="title">Discounts:</span>
+            <span class="title clip"> <%= _lp.TOTAL_DISCOUNTS %>: </span>
             <span class="cost">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="discount"></span>
             </span>
         </li>
         <li class="delivery-charge">
-            <span class="title">Delivery Charge:</span>
+            <span class="title clip"> <%= _lp.TOTAL_DELIVERY_CHARGE %>: </span>
             <span class="cost">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="delivery-charge"></span>
             </span>
         </li>
         <li class="delivery_discount_item">
-            <span class="title">Delivery Discount:</span>
+            <span class="title clip"> <%= _lp.TOTAL_DELIVERY_DISCOUNT %>: </span>
             <span class="cost">
                 <span class="plus">-</span>
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
@@ -36,14 +36,14 @@
             </span>
         </li>
         <li class="shipping_charge_item">
-            <span class="title">Shipping:</span>
+            <span class="title clip"> <%= _lp.TOTAL_SHIPPING %>: </span>
             <span class="cost">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="shipping_charge"></span>
             </span>
         </li>
         <li class="shipping_discount_item">
-            <span class="title">Shipping Discount:</span>
+            <span class="title clip"> <%= _lp.TOTAL_SHIPPING_DISCOUNT %>: </span>
             <span class="cost">
                 <span class="plus">-</span>
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
@@ -51,21 +51,21 @@
             </span>
         </li>
         <li>
-            <span class="title">Subtotal:</span>
+            <span class="title clip"> <%= _lp.TOTAL_SUBTOTAL %>: </span>
             <span class="cost">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="subtotal"></span>
             </span>
         </li>
         <li class="surcharge_item">
-            <span class="title">Surcharge:</span>
+            <span class="title clip"> <%= _lp.TOTAL_SURCHARGE %>: </span>
             <span class="cost">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="surcharge"></span>
             </span>
         </li>
         <li>
-            <span class="title">Tax:</span>
+            <span class="title clip"> <%= _lp.TOTAL_TAX %>: </span>
             <span class="cost">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="tax"></span>
@@ -73,7 +73,7 @@
         </li>
     <% if(_settings.accept_tips_online) { %>
         <li>
-            <span class="title">Tip:</span>
+            <span class="title clip"> <%= _lp.TOTAL_TIP %>: </span>
             <span class="cost">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="tip"></span>
@@ -81,7 +81,7 @@
         </li>
     <% } %>
         <li>
-            <span class="title">Grand Total:</span>
+            <span class="title clip"> <%= _lp.TOTAL_GRAND_TOTAL %>: </span>
             <span class="cost">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="grandtotal"></span>

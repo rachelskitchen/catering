@@ -357,9 +357,9 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.isDelivery = this.model.get('dining_option') === 'DINING_OPTION_DELIVERY';
             this.pickupTime = this.options.timetable.getPickupList(this.isDelivery);
             if (value === 'DINING_OPTION_DELIVERY') {
-                this.$('.pickup').text('Delivery Time');
+                this.$('.pickup').text(_loc.CONFIRM_DELIVERY_TIME);
             } else {
-                this.$('.pickup').text('Arrival Time');
+                this.$('.pickup').text(_loc.CONFIRM_ARRIVAL_TIME);
             }
 
             if (value === 'DINING_OPTION_ONLINE') {
@@ -600,10 +600,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 });
         },
         enableApplyBtn: function() {
-            this.$(".btnApply").removeAttr("disabled").removeClass("applied").text("Apply");
+            this.$(".btnApply").removeAttr("disabled").removeClass("applied").text(_loc.CHECKOUT_DISC_CODE_APPLY);
         },
         disableApplyBtn: function() {
-            this.$(".btnApply").attr("disabled", "disabled").addClass("applied").text("Applied");
+            this.$(".btnApply").attr("disabled", "disabled").addClass("applied").text(_loc.CHECKOUT_DISC_CODE_APPLIED);
         }
     });
 

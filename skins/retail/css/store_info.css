@@ -86,17 +86,23 @@
     border-bottom: none;
 }
 
+.info_location .hours li .weekDay {
+    float: left;
+    width: 250px;
+}
 .info_location .hours li .time {
     float: right;
     text-align: right;
+    width: 210px;
 }
 
 .info_location .phone,
 .info_location .email {
     text-decoration: none;
 }
-.info_location td:first-child {
+.info_location td:first-child > span {
     font-weight: bold;
+    max-width: 250px;
 }
 
 #googlemaps_popup strong {
