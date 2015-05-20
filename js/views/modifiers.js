@@ -59,8 +59,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             }
 
             this.$el.html(this.template(model));
-            
-            var option_el, 
+
+            var option_el,
                 mdf_qauntity_el = this.$(".mdf_quantity select");
             for (var i=1; i <= 5; i++) {
                 option_el = $('<option>').val(i).text("x" + i);
@@ -129,7 +129,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
 
                     if (App.Settings.enable_quantity_modifiers) {
                         this.$(".mdf_quantity").css("display", "inline-block");
-                        
+
                         this.$('.mdf_quantity option:selected').removeAttr('selected');
                         if (this.model.get('quantity') > 0) {
                             this.$(".mdf_quantity select").val(this.model.get('quantity'));
@@ -137,7 +137,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                     }
                     if (App.Settings.enable_split_modifiers) {
                         this.$(".mdf_split").css("display", "inline-block");
-                        
+
                         this.$(".mdf_split select").val(this.model.get('qty_type'));
                         var elem = this.$(".mdf_split .selected_option")
                         removeClassRegexp(elem, "option_\\d+");
@@ -169,7 +169,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
 
             if(typeof free_amount != 'undefined') {
                 hide.call($cost);
-                $free.find('.value').text(parseFloat(free_amount) ? '+' + currency_symbol + round_monetary_currency(free_amount) : _loc.MODIFIER_FREE);
+                $free.find('.value').text(parseFloat(free_amount) ? '+' + currency_symbol + round_monetary_currency(free_amount) : _loc.MSG.MODIFIER_FREE);
                 show.call($free);
             } else {
                 hide.call($free);

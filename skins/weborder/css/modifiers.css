@@ -127,7 +127,8 @@
 .modifiers_table .special_button {
     display: inline-block;
     height: 21px;
-    width: 35px;
+    max-width: 100px;
+    min-width: 35px;
     font-size: 15px;
     border-width: 2px;
     border-radius: 15px;
@@ -141,7 +142,7 @@
     position: relative;
     vertical-align: top;
     line-height: 28px;
-} 
+}
 .modifiers_table .special_button > span {
     font-weight: bold;
 }
