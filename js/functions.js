@@ -41,6 +41,10 @@ var RESOURCES = {
     CSS: 'RESOURCES_CSS',
     TEMPLATES: 'RESOURCES_TEMPLATES'
 }
+var ERROR = {},
+    MSG = {},
+    _loc; ; //locale strings
+
 ERROR.WEBSTORAGES_ARE_DISABLED = 'Web storages are disabled or not supported in your browser';
 ERROR.LOAD_LANGUAGE_PACK = 'Unable to load a language pack. Now the page is reloaded.';
 

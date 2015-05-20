@@ -20,10 +20,6 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-var ERROR = {},
-    MSG  = {},
-    _loc; //locale strings
-
 (function() {
     'use strict';
     if (is_browser_unsupported) {
