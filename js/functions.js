@@ -1655,6 +1655,6 @@ function OR(){
 * Integrity simple test function (Bug 23033), it's checked from categories view.
 * When the minimization done it's combined into main.js then checked from mainView.js
 */
-function testA_4() {
+function testA_5() {
    return 23033 + 'v1';
 }
