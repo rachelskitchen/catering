@@ -1,28 +1,5 @@
 ﻿define(function() {
     return {
-        // page "Total"
-        'TOTAL_DISCOUNTS':           'Discounts', // except: Directory, Directory Mobile
-        'TOTAL_SUBTOTAL':            'Subtotal', // except: Directory, Directory Mobile
-        'TOTAL_DELIVERY_CHARGE':     'Delivery Charge', // except: Directory, Directory Mobile, MLB, PayPal
-        'TOTAL_SHIPPING':            'Shipping', // except: Directory, Directory Mobile, MLB
-        'TOTAL_DELIVERY_DISCOUNT':   'Delivery Discount', // except: Directory, Directory Mobile, MLB, PayPal
-        'TOTAL_SHIPPING_DISCOUNT':   'Shipping Discount', // except: Directory, Directory Mobile, MLB, PayPal
-        'TOTAL_SURCHARGE':           'Surcharge', // except: Directory, Directory Mobile
-        'TOTAL_TAX':                 'Tax', // except: Directory, Directory Mobile
-        'TOTAL_TIP':                 'Tip', // except: Retail, Directory, Directory Mobile, MLB
-        'TOTAL_GRAND_TOTAL':         'Grand Total', // except: Directory, Directory Mobile, MLB, PayPal
-
-        'DINING_OPTION_NAME': {
-            'DINING_OPTION_TOGO':            'Take Out',
-            'DINING_OPTION_EATIN':           'Eat In',
-            'DINING_OPTION_DELIVERY':        'Delivery',
-            'DINING_OPTION_CATERING':        'Catering',
-            'DINING_OPTION_DRIVETHROUGH':    'Drive Through',
-            'DINING_OPTION_ONLINE':          'Online Ordering',
-            'DINING_OPTION_OTHER':           'Other',
-            'DINING_OPTION_DELIVERY_SEAT':   'Deliver to Seat',
-            'DINING_OPTION_SHIPPING':        'Shipping'
-        },
         'SUBCATEGORIES_VIEW_ALL':   'View All',
         'STORES_MI':                'mi',
         'ARRAY_MONTH': [
@@ -478,6 +455,29 @@
             'ERROR_INTEGRITY_TEST_MAIN':                      'There is no testA_xx function in main.js (functions.js). Try manually clear the browser cache and restart.',
             'MODIFIER_FREE':                                  'free',
             'ERROR_PAYPAL_DIRECTIONS_NO_RESULT':              'Unable to get directions'
-        }
+        },
+        'DINING_OPTION_NAME': {
+            'DINING_OPTION_TOGO':            'Take Out',
+            'DINING_OPTION_EATIN':           'Eat In',
+            'DINING_OPTION_DELIVERY':        'Delivery',
+            'DINING_OPTION_CATERING':        'Catering',
+            'DINING_OPTION_DRIVETHROUGH':    'Drive Through',
+            'DINING_OPTION_ONLINE':          'Online Ordering',
+            'DINING_OPTION_OTHER':           'Other',
+            'DINING_OPTION_DELIVERY_SEAT':   'Deliver to Seat',
+            'DINING_OPTION_SHIPPING':        'Shipping'
+        },
+
+        // page "Total"
+        'TOTAL_DISCOUNTS':           'Discounts', // except: Directory, Directory Mobile
+        'TOTAL_SUBTOTAL':            'Subtotal', // except: Directory, Directory Mobile
+        'TOTAL_DELIVERY_CHARGE':     'Delivery Charge', // except: Directory, Directory Mobile, MLB, PayPal
+        'TOTAL_SHIPPING':            'Shipping', // except: Directory, Directory Mobile, MLB
+        'TOTAL_DELIVERY_DISCOUNT':   'Delivery Discount', // except: Directory, Directory Mobile, MLB, PayPal
+        'TOTAL_SHIPPING_DISCOUNT':   'Shipping Discount', // except: Directory, Directory Mobile, MLB, PayPal
+        'TOTAL_SURCHARGE':           'Surcharge', // except: Directory, Directory Mobile
+        'TOTAL_TAX':                 'Tax', // except: Directory, Directory Mobile
+        'TOTAL_TIP':                 'Tip', // except: Retail, Directory, Directory Mobile, MLB
+        'TOTAL_GRAND_TOTAL':         'Grand Total', // except: Directory, Directory Mobile, MLB, PayPal
     } // end of locale
 }); // end of module
