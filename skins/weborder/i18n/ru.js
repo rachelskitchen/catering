@@ -123,17 +123,6 @@
     "SUBCATEGORIES_SUBCATEGORIES": "Подкатегории",
     "TIPS_ADD_TIP": "Оставить чаевые",
     "TIPS_NONE": "Нет",
-    "TIPS_OTHER": "Другое",
-    "TOTAL_SUB_TOTAL": "Подытог",
-    "TOTAL_DISCOUNTS": "Скидки",
-    "TOTAL_SUBTOTAL": "Подытог",
-    "TOTAL_DELIVERY_CHARGE": "Доставка",
-    "TOTAL_SHIPPING": "Доставка",
-    "TOTAL_DELIVERY_DISCOUNT": "Скидка по доставке",
-    "TOTAL_SHIPPING_DISCOUNT": "Скидка по доставке",
-    "TOTAL_SURCHARGE": "Добавочная стоимость",
-    "TOTAL_TAX": "Налог",
-    "TOTAL_TIP": "Чаевые",
-    "TOTAL_GRAND_TOTAL": "Итого"
+    'TIPS_OTHER':   'Другое'
   }// end of locale
 });//end of module

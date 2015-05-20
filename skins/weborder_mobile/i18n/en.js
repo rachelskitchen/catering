@@ -172,16 +172,6 @@
     "STORE_INFO_ACCESS":             "Access",
     "TIPS_ADD":                      "Add a Tip",
     "TIPS_NONE":                     "None",
-    "TIPS_OTHER":                    "Other",
-    "TOTAL_DISCOUNTS":               "Discounts",
-    "TOTAL_SUBTOTAL":                "Subtotal",
-    "TOTAL_DELIVERY_CHARGE":         "Delivery Charge",
-    "TOTAL_DELIVERY_DISCOUNT":       "Delivery Discount",
-    "TOTAL_SHIPPING":                "Shipping",
-    "TOTAL_SHIPPING_DISCOUNT":       "Shipping Discount",
-    "TOTAL_SURCHARGE":               "Surcharge",
-    "TOTAL_TAX":                     "Tax",
-    "TOTAL_TIP":                     "Tip",
-    "TOTAL_GRAND_TOTAL":             "Grand Total"
+    'TIPS_OTHER':                    'Other'
   } //end of locale
 });//end of module
