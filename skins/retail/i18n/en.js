@@ -96,14 +96,28 @@
     "STORE_INFO_PHONE":              "Phone",
     "STORE_INFO_EMAIL":              "Email",
     "STORE_INFO_ACCESS":             "Access",
-    "TOTAL_SUBTOTAL":                "Subtotal",
-    "TOTAL_DISCOUNTS":               "Discounts",
-    "TOTAL_DELIVERY_CHARGE":         "Delivery Charge",
-    "TOTAL_DELIVERY_DISCOUNT":       "Delivery Discount",
-    "TOTAL_SHIPPING":                "Shipping",
-    "TOTAL_SHIPPING_DISCOUNT":       "Shipping Discount",
-    "TOTAL_SURCHARGE":               "Surcharge",
-    "TOTAL_TAX":                     "Tax",
-    "TOTAL_GRAND_TOTAL":             "Grand Total"
+    "REWARDS_INFORMATION":           "Information",
+    "REWARDS_NUMBER":                "Rewards #",
+    "REWARDS_TOTAL_POINTS":          "Total Points",
+    "REWARDS_TOTAL_VISITS":          "Total Visits",
+    "REWARDS_TOTAL_PURCHASES":       "Total Purchases",
+    "REWARDS_SELECTION_INFO":        "Choose a rewards below, or cancel to save your points.",
+    "REWARDS_AVAILABLE":             "Available",
+    "REWARDS_UNAVAILABLE":           "You do not qualify for a reward at this time.",
+    "REWARDS_ENTIRE_ORDER_DISCOUNT": "off Entire Order",
+    "REWARDS_APPLY":                 "Apply Reward",
+    "REWARDS_OFF":                   "Off",
+    "REWARDS_POINTS_REDEMPTION_AMOUNT": [
+        "Point will be redeemed",
+        "Points will be redeemed"
+    ],
+    "REWARDS_VISITS_REDEMPTION_AMOUNT": [
+        "Visit will be redeemed",
+        "Visits will be redeemed"
+    ],
+    "REWARDS_PURCHASES_REDEMPTION_AMOUNT": [
+        "Purchase will be redeemed",
+        "Purchases will be redeemed"
+    ]
   }// end of locale
 });//end of module

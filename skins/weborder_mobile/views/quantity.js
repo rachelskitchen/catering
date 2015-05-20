@@ -28,7 +28,8 @@ define(["quantity_view"], function(quantity_view) {
             'click .increase': 'increase',
             'click .decrease': 'decrease',
             'input .quantity_edit_input': 'change_quantity',
-            'blur .quantity_edit_input': 'blur_quantity'
+            'blur .quantity_edit_input': 'blur_quantity',
+            'keypress .quantity_edit_input': 'keypress_quantity'
         },
         hide_show: function() {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.hide_show.apply(this, arguments);
@@ -62,10 +63,13 @@ define(["quantity_view"], function(quantity_view) {
             this.$('.quantity_edit_input').val(this.model.get('quantity'));
         },
         change_quantity: function(e) {
-            if (!e.target.validity.valid ) {
-                e.target.value = this.model.get('quantity');
-            } else if (e.target.value) {
-               this.model.set('quantity', e.target.value * 1);
+            var min = 1,
+                max = this.model.get_product().get('stock_amount');
+
+            if (!e.target.validity.valid) {
+                e.target.value = min;
+            } else if (e.target.value > max) {
+                e.target.value = max;
             }
         },
         blur_quantity:  function(e) {
@@ -73,6 +77,19 @@ define(["quantity_view"], function(quantity_view) {
                e.target.value = 1;
                this.model.set('quantity', e.target.value * 1);
             }
+        },
+
+        keypress_quantity:  function(e) {
+            return this.isDigitOrControlKey(e.which);
+        },
+
+        isDigitOrControlKey: function(key) {
+            if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27)) {
+                return true; // control key
+            } else if ((("0123456789").indexOf(String.fromCharCode(key)) > -1)) {
+                return true; // digit
+            }
+            return false;
         }
     });
 

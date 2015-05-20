@@ -458,7 +458,31 @@
             'BRAND_DIRECTORY_WELCOME_TEXT':                   'to easy pay',
             'ERROR_INTEGRITY_TEST_MAIN':                      'There is no testA_xx function in main.js (functions.js). Try manually clear the browser cache and restart.',
             'MODIFIER_FREE':                                  'free',
-            'ERROR_PAYPAL_DIRECTIONS_NO_RESULT':              'Unable to get directions'
-        }
+            'ERROR_PAYPAL_DIRECTIONS_NO_RESULT':              'Unable to get directions',
+            'NO_REWARDS_AVAILABLE':                           'Для указанной карты нет данных по накопленным баллам'
+        },
+        'DINING_OPTION_NAME': {
+            'DINING_OPTION_TOGO':            'Самовывоз',
+            'DINING_OPTION_EATIN':           'На месте',
+            'DINING_OPTION_DELIVERY':        'Доставка',
+            'DINING_OPTION_CATERING':        'Общественное питание',
+            'DINING_OPTION_DRIVETHROUGH':    'За рулем',
+            'DINING_OPTION_ONLINE':          'Онлайн заказ',
+            'DINING_OPTION_OTHER':           'Другой',
+            'DINING_OPTION_DELIVERY_SEAT':   'Доставка на место',
+            'DINING_OPTION_SHIPPING':        'Сторонняя служба доставки'
+        },
+
+        // page "Total"
+        'TOTAL_DISCOUNTS':           'Скидки', // except: Directory, Directory Mobile
+        'TOTAL_SUBTOTAL':            'Подытог', // except: Directory, Directory Mobile
+        'TOTAL_DELIVERY_CHARGE':     'Доставка', // except: Directory, Directory Mobile, MLB, PayPal
+        'TOTAL_SHIPPING':            'Доставка', // except: Directory, Directory Mobile, MLB
+        'TOTAL_DELIVERY_DISCOUNT':   'Скидка по доставке', // except: Directory, Directory Mobile, MLB, PayPal
+        'TOTAL_SHIPPING_DISCOUNT':   'Скидка по доставке', // except: Directory, Directory Mobile, MLB, PayPal
+        'TOTAL_SURCHARGE':           'Добавочная стоимость', // except: Directory, Directory Mobile
+        'TOTAL_TAX':                 'Налог', // except: Directory, Directory Mobile
+        'TOTAL_TIP':                 'Чаевые', // except: Retail, Directory, Directory Mobile, MLB
+        'TOTAL_GRAND_TOTAL':         'Итого', // except: Directory, Directory Mobile, MLB, PayPal
     } // end of locale
 }); // end of module
