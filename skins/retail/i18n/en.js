@@ -118,7 +118,6 @@
     "REWARDS_PURCHASES_REDEMPTION_AMOUNT": [
         "Purchase will be redeemed",
         "Purchases will be redeemed"
-    ],
-    "REWARDS_ENTER_CAPTCHA":          "Enter Captcha Characters"
+    ]
   }// end of locale
 });//end of module

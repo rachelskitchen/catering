@@ -261,13 +261,13 @@ footer {
     margin: 22px 10px 0;
 }
 #header .main ul.menu li.shop {
-    width: 38px;
+    max-width: 80px;
 }
 #header .main ul.menu li.about {
-    width: 43px;
+    max-width: 80px;
 }
 #header .main ul.menu li.locations {
-    width: 70px;
+    max-width: 80px;
 }
 #header .main ul.menu li.active {
     cursor: default;
