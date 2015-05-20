@@ -556,7 +556,7 @@ define(["backbone", "factory"], function(Backbone) {
                     }),
                     prev: null,
                     save: null},
-                content: {mod: 'ProfilePersonal', cacheId: 'ProfilePersonal'}
+                content: {mod: 'ProfilePersonal', cacheId: 'ProfilePersonal', rewardsCard: App.Data.myorder.rewardsCard}
             }, {
                 footer: {next: RevelAPI.processPaymentInfo.bind(RevelAPI, next, creditCardValidationAlert), prev: prev, save: null},
                 content: {mod: 'ProfilePayment', cacheId: 'ProfilePayment'}

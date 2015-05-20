@@ -66,7 +66,10 @@
                 $el.attr('src', value);
                 function removeSpinner() {
                     $el.off('load error');
-                    view.removeCaptchaSpinner();
+                    // need to remove spinner only when current element's `src` attribute corresponds `value`
+                    if($el.attr('src') === value) {
+                        view.removeCaptchaSpinner();
+                    }
                 }
             }
         },
