@@ -481,9 +481,14 @@ define(["backbone", "card", "customers"], function(Backbone) {
             var request = Backbone.$.Deferred(),
                 self = this;
             $.ajax({
-                url: App.Data.settings.get("host") + "/weborders/reward_cards/",
+                url: '/weborders/reward_cards/',
+                dataType: 'json',
+                type: 'POST',
                 data: {
-                    number: this.get('customer').get('phone')
+                    number: this.get('customer').get('phone'),
+                    establishment: App.Data.settings.get('establishment'),
+                    captchaKey: '',
+                    captchaValue: ''
                 },
                 success: function(data) {
                     if(data.status && Array.isArray(data.data) && data.data.length && data.data[0].points instanceof Object && typeof data.data[0].points.value == 'number') {

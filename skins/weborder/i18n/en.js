@@ -123,6 +123,29 @@
     "SUBCATEGORIES_SUBCATEGORIES":   "Sub-Categories",
     "TIPS_ADD_TIP":                  "Add a Tip",
     "TIPS_NONE":                     "None",
-    'TIPS_OTHER':                    'Other'
+    "TIPS_OTHER":                    "Other",
+    "REWARDS_INFORMATION":           "Rewards Information",
+    "REWARDS_NUMBER":                "Rewards #",
+    "REWARDS_TOTAL_POINTS":          "Total Points",
+    "REWARDS_TOTAL_VISITS":          "Total Visits",
+    "REWARDS_TOTAL_PURCHASES":       "Total Purchases",
+    "REWARDS_SELECTION_INFO":        "Choose a rewards below, or close this window to save your points.",
+    "REWARDS_AVAILABLE":             "Rewards Available",
+    "REWARDS_UNAVAILABLE":           "You do not qualify for a reward at this time.",
+    "REWARDS_ENTIRE_ORDER_DISCOUNT": "off Entire Order",
+    "REWARDS_APPLY":                 "Apply Reward",
+    "REWARDS_OFF":                   "Off",
+    "REWARDS_POINTS_REDEMPTION_AMOUNT": [
+        "Point will be redeemed",
+        "Points will be redeemed"
+    ],
+    "REWARDS_VISITS_REDEMPTION_AMOUNT": [
+        "Visit will be redeemed",
+        "Visits will be redeemed"
+    ],
+    "REWARDS_PURCHASES_REDEMPTION_AMOUNT": [
+        "Purchase will be redeemed",
+        "Purchases will be redeemed"
+    ]
   }// end of locale
 });//end of module
