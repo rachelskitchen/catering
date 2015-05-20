@@ -211,13 +211,16 @@
                         });
 
                         if (settings.get('isMaintenance')) {
+                            if (!settings.get('maintenanceMessage')) {
+                                settings.set('maintenanceMessage', ERROR[MAINTENANCE.BACKEND_CONFIGURATION]); // default error message
+                            }
                             location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
                         } else {
                             // TODO: shouldn't depend on the isMaintenance mode if the 'Change Store' functionality is implemented on '#maintenance' page
                             isNotFirstLaunch = true;
                         }
                         router.isNotFirstLaunch = isNotFirstLaunch;
-                        Backbone.history.start();    
+                        Backbone.history.start();
 
                         // invoke afterStart callback
                         app.afterInit();
@@ -227,7 +230,7 @@
                     var ests = App.Data.establishments;
                     if (ests) ests.needShowAlert(myorder.get_only_product_quantity() > 0);
                 });
-                myorder.trigger('reset'); //#21756, should be reset after est. changed 
+                myorder.trigger('reset'); //#21756, should be reset after est. changed
             });
             app.loadApp(); // loading application
         });
