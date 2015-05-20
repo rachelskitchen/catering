@@ -55,7 +55,7 @@ define(["instructions_view"], function(instructions_view) {
 
             if (!block.is(':visible')) {
                 block.show();
-                button.html('Remove Special Instructions');
+                button.html(_loc['INSTRUCTIONS_REMOVE_SPECIAL']);
             this.$el.trigger('change_height');
             }
         },
@@ -65,10 +65,10 @@ define(["instructions_view"], function(instructions_view) {
 
             if (!block.is(':visible')) {
                 block.show();
-                button.html('Remove Special Instructions');
+                button.html(_loc['INSTRUCTIONS_REMOVE_SPECIAL']);
             } else {
                 block.hide();
-                button.html('Add Special Instructions');
+                button.html(_loc['INSTRUCTIONS_ADD_SPECIAL']);
                 this.model.set('special', '', {silent : true});
                 this.$('.instructions').val('');
             }
@@ -89,7 +89,7 @@ define(["instructions_view"], function(instructions_view) {
 
             if (this.model.get('special')) {
                 block.show();
-                button.html('Remove Special Instructions');
+                button.html(_loc['INSTRUCTIONS_REMOVE_SPECIAL']);
             }
         }
     });

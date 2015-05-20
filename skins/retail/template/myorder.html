@@ -23,7 +23,7 @@
         <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
         <% } %>
         <% if(is_gift) { %>
-        <li class="special">*** Add amount to <%= gift_card_number %></li>
+        <li class="special"> *** <%= _lp.MYORDER_ADD_AMOUNT_TO %> <%= gift_card_number %> </li>
         <% } %>
         <% if(special) { %>
         <li class="special">*** <%= special %></li>
@@ -42,9 +42,9 @@
     <ul class="discount_place"></ul>
     <% if(id_product !== null) { %>
     <div class="btns <% if(_settings.hide_images) {print('noimage');} %>">
-        <span class="edit">Edit</span>
+        <span class="edit"> <%= _lp.MYORDER_EDIT %> </span>
         <span class="divider"></span>
-        <span class="remove"><span>Remove</span></span>
+        <span class="remove"> <span> <%= _lp.MYORDER_REMOVE %> </span> </span>
     </div>
     <% } %>
     <div style="clear:both;"></div>
@@ -71,7 +71,7 @@
 </script>
 
 <script type="text/template" id="myorder_modifier-template">
-    <span class="name">w/ <%= name %></span>
+    <span class="name"> <%= _lp.MYORDER_WEIGHT %> <%= name %> </span>
 </script>
 
 <script type="text/template" id="myorder_matrix-template">
@@ -82,7 +82,7 @@
         </div>
         <% if(_settings.online_orders) { %>
         <div class='quantity quantity_info'></div>
-        <div class='action_button'>Add to Bag</div>
+        <div class="action_button"> <span class="clip"> <%= _lp.MYORDER_ADD_TO_BAG %> </span> </div>
         <% } %>
     </div>
 </script>

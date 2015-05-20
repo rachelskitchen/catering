@@ -24,42 +24,12 @@
 * Constants
 */
 
-var array_day_of_week = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
-
-var array_month = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
-
-var TIMETABLE_WEEK_DAYS = {
-    "monday": "Mon",
-    "tuesday": "Tue",
-    "wednesday": "Wed",
-    "thursday": "Thu",
-    "friday": "Fri",
-    "saturday": "Sat",
-    "sunday": "Sun"
-};
-
 var MonthByStr = {"Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5, "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10, "Nov": 11, "Dec": 12};
 
 // http://www.w3.org/TR/html5/forms.html#valid-e-mail-address
 var EMAIL_VALIDATION_REGEXP = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
-var ERROR = {},
-    MSG = {};
-
 //write errors here
-
-ERROR.STORE_IS_CLOSED = "Error: Store is closed";
-ERROR.BLOCK_STORE_IS_CLOSED = "We're sorry, your order cannot be processed because the store is closed";
-ERROR.FORCED_MODIFIER = "Please select at least | %d modifier(s) in %s";
-ERROR.SELECT_SIZE_MODIFIER = "Select a size please";
-ERROR.SELECT_PRODUCT_ATTRIBUTES = "Please select all attributes";
-ERROR.BLOCK_WEIGHT_IS_NOT_VALID = "The product weight is not set or zero";
-ERROR.WEBSTORAGES_ARE_DISABLED = "Web storages are disabled or not supported in your browser"
-
-ERROR.MAINTENANCE_CONFIGURATION = 'Can\'t get application configuration. Please check backend settings.';
-ERROR.MAINTENANCE_PAYMENT = 'Please setup at least one payment option'; // for app accessed directly from browser (not via Directory app)
-ERROR.MAINTENANCE_DINING = 'Please setup at least one dining option'; // for QSR
-ERROR.MAINTENANCE_ORDER_TYPE = 'Please setup at least one order type (in-store pickup or shipping)'; // for Retail
 
 var MAINTENANCE = {
     BACKEND_CONFIGURATION: 'MAINTENANCE_CONFIGURATION',
@@ -67,99 +37,18 @@ var MAINTENANCE = {
     DINING_OPTION: 'MAINTENANCE_DINING',
     ORDER_TYPE: 'MAINTENANCE_ORDER_TYPE'
 };
-
-ERROR.RESOURCES_CSS = 'Unable to load CSS resources. Now the page is reloaded.';
-ERROR.RESOURCES_TEMPLATES = 'Unable to load template resources. Now the page is reloaded.';
-
 var RESOURCES = {
     CSS: 'RESOURCES_CSS',
     TEMPLATES: 'RESOURCES_TEMPLATES'
 }
+var ERROR = {},
+    MSG = {},
+    _loc; ; //locale strings
 
-//write messages here
-MSG.ERROR_STORE_IS_CLOSED = "We're sorry, your order cannot be processed because the store is closed for selected pickup day/time";
-MSG.ERROR_GEOLOCATION = [ "There was an error while retrieving your location.",
-                          "Your current location retrieval is disallowed. Reset location settings if you want to allow it.",
-                          "The browser was unable to determine your location.",
-                          "The browser timed out while retrieving your location." ];
-MSG.ERROR_GEOLOCATION_NOAPI = "Geolocation API is not supported in your browser.";
-MSG.ERROR_SUBMIT_ORDER = "Failed to submit an order. Please try again.";
-MSG.ERROR_ORDERS_PICKUPTIME_LIMIT = "Maximum number of orders for this pickup time exceeded. Please select different pickup time.";
-MSG.ERROR_INSUFFICIENT_STOCK = "Some products have insufficient stock.";
-MSG.ERROR_OCCURRED = "Error occurred: ";
-MSG.ERROR_HAS_OCCURRED = "The error has occurred";
-MSG.ERROR_HAS_OCCURRED_WITH_CONTACT = "The error has occurred, please contact: %email: %%phone: %";
-MSG.ERROR_MIN_ITEMS_LIMIT = "Please select at least %s items to place an order.";
-MSG.ERROR_INCORRECT_AJAX_DATA = "Incorrect data in server responce.";
-MSG.ERROR_SERVER_UNREACHED = 'The server cannot be reached at this time.';
-MSG.ERROR_DELIVERY_ADDRESS_INPUT = "The following necessary fields are blank: %s";
-MSG.ERROR_DELIVERY_EXCEEDED = "Exceeded maximum delivery distance";
-MSG.ERROR_DELIVERY_ADDRESS = "Couldn't verify delivery address";
-MSG.ERROR_CATEGORY_LOAD = 'Unable to get the menu from backend. Now the page is reloaded';
-MSG.ERROR_MODIFIERS_LOAD = 'Unable to get the list modifiers of product from backend. Now the page is reloaded.';
-MSG.ERROR_RECENT_LOAD = 'Unable to get a list of recent orders.';
-MSG.ERROR_PRODUCTS_LOAD = 'Unable to get the list products of menu from backend. Now the page is reloaded.';
-MSG.ERROR_STORES_LOAD = 'Unable to get the list of stores.';
-MSG.DELIVERY_ITEM = 'Delivery Charge';
-MSG.BAG_CHARGE_ITEM = 'Bag Charge';
-MSG.REPEAT_ORDER_NOTIFICATION = "Some items have changed or no longer available. Please review items before placing your order.";
-MSG.REWARD_CARD_UNDEFINED = "Invalid Reward Card Number.";
-MSG.ADD_MORE_FOR_DELIVERY = "Please add %s more for delivery";
-MSG.ADD_MORE_FOR_SHIPPING = "Please add %s more for shipping";
-MSG.ERROR_PRODUCT_NOT_SELECTED = "You have not selected any product";
-MSG.ERROR_EMPTY_NOT_VALID_DATA = "Following required fields are blank or contain incorrect data: %s";
-MSG.ERROR_GRATUITY_EXCEEDS = "Gratuity amount can't exceed the receipt amount";
-MSG.ERROR_CARD_EXP = "Exp. Date less then current date";
-MSG.ERROR_FORCED_MODIFIER = "This modifier is required";
-MSG.ERROR_CHROME_CRASH = "This version of Chrome is unstable and unsupported. Please update to the latest version or use different browser.";
-MSG.ERROR_UNSUPPORTED_BROWSER = "The current browser version is not supported. Please update it to the latest release.";
-MSG.PAY_AT_STORE = "Pay at Store";
-MSG.PAY_AT_DELIVERY = "Pay at Delivery";
-MSG.ERROR_GET_CHILD_PRODUCTS = "Unable to get the information about the product from backend. Now the page is reloaded.";
-MSG.ERROR_SHIPPING_SERVICES_NOT_FOUND = "No shipping services found";
-MSG.SHIPPING_SERVICES_RETRIVE_IN_PROGRESS = "Retriving shipping services...";
-MSG.SHIPPING_SERVICES_SET_ADDRESS = "Fill required address fields above";
-MSG.PRODUCTS_EMPTY_RESULT = "No products found";
-MSG.FILTER_SHOW_ALL = "Show All";
-MSG.FREE_MODIFIERS_PRICE = "Modifiers for up to %s will be free";
-MSG.FREE_MODIFIERS_QUANTITY = "First %s modifiers selected will be free";
-MSG.FREE_MODIFIERS_QUANTITY1 = "First modifier selected will be free";
-MSG.PRODUCTS_VALID_TIME = "Available: ";
-MSG.ERROR_REVEL_EMPTY_NEW_PASSWORD = 'Please enter new password.';
-MSG.ERROR_REVEL_EMPTY_OLD_PASSWORD = 'Please enter old password.';
-MSG.ERROR_REVEL_NOT_MATCH_PASSWORDS = 'New Password & Repeat Password values don\'t match';
-MSG.ERROR_REVEL_USER_EXISTS = 'User %s already exists.';
-MSG.ERROR_REVEL_UNABLE_TO_PERFORM = 'Unable to perform action. Please ask about this problem at ask.revelsystems.com.';
-MSG.ERROR_REVEL_ATTEMPTS_EXCEEDED = 'Max number of authentication attempts exceeded. Account deleted.';
-MSG.ERROR_REVEL_PASSWORD_UPDATE_FAILED = 'Password update failed. Old password is invalid.';
-MSG.ERROR_REVEL_AUTHENTICATION_FAILED = 'Authentication failed. Please enter valid email & password.';
-MSG.ERROR_NO_MSG_FROM_SERVER = "No message about the error";
-MSG.ERROR_GET_DISCOUNTS = "Failed request to get discounts";
-MSG.ERROR_INCORRECT_DISCOUNT_CODE = "Type correct discount code from 4 to 16 characters";
-MSG.DISCOUNT_CODE_NOT_FOUND = "The typed discount code hasn't been found. Automatic discounts can be applied only.";
-MSG.DISCOUNT_CODE_NOT_APPLICABLE = "The typed discount code is not applicable now. Automatic discounts can be applied only.";
+ERROR.WEBSTORAGES_ARE_DISABLED = 'Web storages are disabled or not supported in your browser';
+ERROR.LOAD_LANGUAGE_PACK = 'Unable to load a language pack. Now the page is reloaded.';
+
 MSG.NO_REWARDS_AVAILABLE = "No rewards are available for this card number";
-// page 'Establishments' (begin)
-MSG.ESTABLISHMENTS_ERROR_NOSTORE = 'No store is available for the specified brand';
-MSG.ESTABLISHMENTS_CHOOSE_BRAND_DESKTOP = 'Choose which %s you are looking for:';
-MSG.ESTABLISHMENTS_CHOOSE_BRAND_MOBILE = 'Choose which %s you\'re looking for:';
-MSG.ESTABLISHMENTS_PROCEED_BUTTON = 'Proceed';
-MSG.ESTABLISHMENTS_BACK_BUTTON = 'Go Back';
-MSG.ESTABLISHMENTS_ALERT_MESSAGE_DESKTOP = 'If you choose a different store location, your order will be canceled. Cancel Order?';
-MSG.ESTABLISHMENTS_ALERT_MESSAGE_TITLE_MOBILE = 'Warning';
-MSG.ESTABLISHMENTS_ALERT_MESSAGE_MOBILE = 'If you switch stores, your order will be discarded.';
-MSG.ESTABLISHMENTS_ALERT_MESSAGE_QUESTION_MOBILE = 'Continue?';
-MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_DESKTOP = 'Proceed';
-MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_MOBILE = 'Ok';
-MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_DESKTOP = 'Go Back';
-MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_MOBILE = 'Back';
-// page 'Establishments' (end)
-MSG.HALF_PRICE_STR =  ["Full", "First Half","Second Half"];
-// Revel Directory
-MSG.REVEL_DIRECTORY_WELCOME_TEXT = 'and easily pay at any establishment that uses Revel';
-MSG.BRAND_DIRECTORY_WELCOME_TEXT = 'to easy pay';
-MSG.INTEGRITY_TEST_MAIN = "There is no testA_xx function in main.js (functions.js). Try manually clear the browser cash and restart.";
-
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
     CREDIT: 2,
@@ -276,72 +165,70 @@ function format_date_1(date) {
  * Formatting a date in the format "MM/DD/YYYY HH:MM(am/pm)".
  */
 function format_date_2(date) {
-    var js_date = new Date(date);
-    var current_date_year = js_date.getFullYear();
-    var current_date_month = js_date.getMonth() + 1;
+    var time_prefix = _loc['TIME_PREFIXES'],
+        js_date = new Date(date),
+        current_date_year = js_date.getFullYear(),
+        current_date_month = js_date.getMonth() + 1,
+        current_date_day = js_date.getDate(),
+        current_date_hours = js_date.getHours(),
+        am_pm = (current_date_hours > 11) ? time_prefix['TIME_PM'] : time_prefix['TIME_AM'],
+        current_date_minutes = js_date.getMinutes();
     if (current_date_month < 10) current_date_month = "0" + current_date_month;
-    var current_date_day = js_date.getDate();
     if (current_date_day < 10) current_date_day = "0" + current_date_day;
-    var current_date_hours = js_date.getHours();
-    var am_pm = current_date_hours > 11 ? "pm" : "am";
     current_date_hours = current_date_hours > 12 ? current_date_hours - 12 : current_date_hours;
     if (current_date_hours == 0) {
        current_date_hours = 12;
     }
-    var current_date_minutes = js_date.getMinutes();
     if (current_date_minutes < 10) current_date_minutes = "0" + current_date_minutes;
-    var result = current_date_month + "/" + current_date_day + "/" + current_date_year + " " + current_date_hours + ":" + current_date_minutes + am_pm;
-    return result;
+    return current_date_month + '/' + current_date_day + '/' + current_date_year + ' ' + current_date_hours + ':' + current_date_minutes + am_pm;
 }
 /**
  * Formatting a date in the format "(Yesterday/Today/Tomorrow) at HH:MM(am/pm) | MONTH DD(st/nd/rd/th) at HH:MM(am/pm)".
  */
 function format_date_3(date) {
-    var result = "";
-    var now = App.Data.timetables.base();
-    var date_1 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    var js_date = new Date(date);
-    var date_2 = new Date(js_date.getFullYear(), js_date.getMonth(), js_date.getDate());
-    var seconds_in_day = 86400000;
-    var time_difference = date_2 - date_1;
+    var SECONDS_IN_DAY = 86400000;
+    var days = _loc['DAYS'],
+        time_prefix = _loc['TIME_PREFIXES'],
+        result = '',
+        now = App.Data.timetables.base(),
+        date_1 = new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+        js_date = new Date(date),
+        date_2 = new Date(js_date.getFullYear(), js_date.getMonth(), js_date.getDate()),
+        time_difference = date_2 - date_1;
     if (time_difference == 0) {
-        result += "Today";
-    }
-    else if (time_difference == -seconds_in_day) {
-        result += "Yesterday";
-    }
-    else if (time_difference == seconds_in_day) {
-        result += "Tomorrow";
-    }
-    else {
-        var array_month = new Array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+        result += days['TODAY'];
+    } else if (time_difference == -SECONDS_IN_DAY) {
+        result += days['YESTERDAY'];
+    } else if (time_difference == SECONDS_IN_DAY) {
+        result += days['TOMORROW'];
+    } else {
         var current_date_month = js_date.getMonth() + 1;
         var current_date_day = js_date.getDate();
-        result += array_month[current_date_month-1] + " " + current_date_day;
+        result += _loc.ARRAY_MONTH[current_date_month - 1] + ' ' + current_date_day;
         switch (current_date_day) {
             case 1:
-                result += "st";
+                result += time_prefix['FIRST_DAY_OF_MONTH'];
                 break;
             case 2:
-                result += "nd";
+                result += time_prefix['SECOND_DAY_OF_MONTH'];
                 break;
             case 3:
-                result += "rd";
+                result += time_prefix['THIRD_DAY_OF_MONTH'];
                 break;
             default:
-                result += "th";
+                result += time_prefix['OTHER_DAY_OF_MONTH'];
                 break;
         }
     }
     var current_date_hours = js_date.getHours();
-    var am_pm = current_date_hours > 11 ? "pm" : "am";
+    var am_pm = (current_date_hours > 11) ? time_prefix['TIME_PM'] : time_prefix['TIME_AM'];
     current_date_hours = current_date_hours > 12 ? current_date_hours - 12 : current_date_hours;
     if (current_date_hours == 0) {
        current_date_hours = 12;
     }
     var current_date_minutes = js_date.getMinutes();
     if (current_date_minutes < 10) current_date_minutes = "0" + current_date_minutes;
-    result += " at " + current_date_hours + ":" + current_date_minutes + am_pm;
+    result += ' ' + time_prefix['TIME_AT'] + ' ' + current_date_hours + ':' + current_date_minutes + am_pm;
     return result;
 }
 /**
@@ -371,7 +258,7 @@ function getData(name, local) {
     return data;
 }
 /**
- * save data to storage (coockie or sessionStorage)
+ * Save data to storage (cookie, sessionStorage, localStorage).
  * Return true if successfully saved
  */
 function setData(name, data, local) {
@@ -716,11 +603,12 @@ TimeFrm.prototype.toString_ft = { };
 TimeFrm.prototype.toString_ft['usa'] = function() {
     /* it outputs the time in format 10:01am or 12:45pm */
 
-    var hour = parseInt( this.minutes / 60 ),
+    var time_prefix = _loc['TIME_PREFIXES'],
+        hour = parseInt( this.minutes / 60 ),
         minutes = this.minutes % 60;
-        hour = hour - parseInt( hour / 24) * 24;
 
-    var am_pm = hour > 11 ? "pm" : "am";
+    hour = hour - parseInt( hour / 24) * 24;
+    var am_pm = (hour > 11) ? time_prefix['TIME_PM'] : time_prefix['TIME_AM'];
 
     if (hour > 12) {
         hour = hour - 12;
@@ -728,7 +616,7 @@ TimeFrm.prototype.toString_ft['usa'] = function() {
     else {
         if (hour === 0) {
             hour = 12;
-            am_pm = "am";
+            am_pm = time_prefix['TIME_AM'];
         }
     }
 
@@ -1022,9 +910,9 @@ function format_time(time) {
 function format_days(days, day_time) {
     var str = "";
     if (days.length > 1 && days.length < 7) {
-        str = TIMETABLE_WEEK_DAYS[days[0]] + ' - ' + TIMETABLE_WEEK_DAYS[days[days.length - 1]] + ' ';
+        str = _loc.DAYS_OF_WEEK_SHORT[days[0]] + ' - ' + _loc.DAYS_OF_WEEK_SHORT[days[days.length - 1]] + ' ';
     } else if (days.length == 1) {
-        str = TIMETABLE_WEEK_DAYS[days[0]] + ' ';
+        str = _loc.DAYS_OF_WEEK_SHORT[days[0]] + ' ';
     }
     str += day_time;
     return str;
@@ -1064,7 +952,7 @@ function format_timetables(timetables, separator) {
         var prev_day_time = null;
         var days = [];
 
-        for(day in TIMETABLE_WEEK_DAYS) {
+        for(day in _loc.DAYS_OF_WEEK_SHORT) {
             var day_time = null;
             if (timetable_data[day] && timetable_data[day].length > 0) {
                 day_time = format_times(timetable_data[day])
@@ -1622,7 +1510,7 @@ var QuickBooksPaymentProcessor = {
                     myorder.submit_order_and_pay(payment_type, validationOnly, capturePhase);
                 },
                 error: function (data) {
-                    data.errorMsg = MSG.ERROR_OCCURRED + "Error during tokenization";
+                    data.errorMsg = MSG.ERROR_OCCURRED + ' Error during tokenization';
                     myorder.paymentResponse = {status: 'error', errorMsg: data.errorMsg};
                     myorder.trigger('paymentResponse');
                 }

@@ -4,19 +4,19 @@
 
 <script type="text/template" id="header_one_button-template">
     <div class="btn header_block_buttons header_block_button_left leftBtn">
-        <span><%= back_title %></span>
+        <span class="clip"> <%= back_title %> </span>
     </div>
     <h1 class="title"><%= page_title %></h1>
 </script>
 
 <script type="text/template" id="header_two_button-template">
     <div class="btn header_block_buttons header_block_button_left leftBtn">
-        <span><%= back_title %></span>
+        <span class="clip"> <%= back_title %> </span>
     </div>
-    <h1 class="title"><%= page_title %></h1>
+    <h1 class="title clip"><%= page_title %></h1>
     <% if(_settings.online_orders) { %>
     <div class="btn header_block_buttons header_block_button_right rightBtn enable">
-        <span><%= forward_title %></span>
+        <span class="clip"> <%= forward_title %> </span>
     </div>
     <% } %>
 </script>

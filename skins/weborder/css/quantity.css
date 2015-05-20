@@ -19,7 +19,10 @@
 .quantity .title {
     font-weight: bold;
     vertical-align: middle;
-    line-height: 28px;
+    line-height: 30px;
+    max-width: 110px;
+    float: left;
+    margin-right: 0.3em;
 }
 
 .quantity_select select {

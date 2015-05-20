@@ -26,18 +26,6 @@ define(["backbone", "factory"], function(Backbone) {
     // flag for maintenance mode
     var isMaintenance;
 
-    window.DINING_OPTION_NAME = {
-        DINING_OPTION_TOGO: 'Take Out',
-        DINING_OPTION_EATIN: 'Eat In',
-        DINING_OPTION_DELIVERY: 'Delivery',
-        DINING_OPTION_CATERING : 'Catering',
-        DINING_OPTION_DRIVETHROUGH: 'Drive Through',
-        DINING_OPTION_ONLINE : 'Online Ordering',
-        DINING_OPTION_OTHER: 'Other',
-        DINING_OPTION_DELIVERY_SEAT: 'Deliver to Seat',
-        DINING_OPTION_SHIPPING: 'Shipping'
-    };
-
     App.Routers.MainRouter = Backbone.Router.extend({
         initialize: function() {
             var self = this;
@@ -49,14 +37,14 @@ define(["backbone", "factory"], function(Backbone) {
 
              // remove Delivery option if it is necessary
             if (!App.Data.myorder.total.get('delivery').get('enable'))
-                delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
+                delete _loc.DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
 
             if(App.Settings.editable_dining_options && App.Settings.editable_dining_options[0]) {
-                if (DINING_OPTION_NAME['DINING_OPTION_DRIVETHROUGH']) {
-                    DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH = _.escape(App.Settings.editable_dining_options[1]);
+                if (_loc.DINING_OPTION_NAME['DINING_OPTION_DRIVETHROUGH']) {
+                    _loc.DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH = _.escape(App.Settings.editable_dining_options[1]);
                 }
-                if (DINING_OPTION_NAME['DINING_OPTION_OTHER']) {
-                    DINING_OPTION_NAME.DINING_OPTION_OTHER = _.escape(App.Settings.editable_dining_options[2]);
+                if (_loc.DINING_OPTION_NAME['DINING_OPTION_OTHER']) {
+                    _loc.DINING_OPTION_NAME.DINING_OPTION_OTHER = _.escape(App.Settings.editable_dining_options[2]);
                 }
             }
 
@@ -68,12 +56,12 @@ define(["backbone", "factory"], function(Backbone) {
                     enable_row: orderFromSeat[3]
                 };
             } else {
-                delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
+                delete _loc.DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
             }
 
-            for (var dining_ontion_name in DINING_OPTION) {
-                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_ontion_name]) == -1 || (App.Data.orderFromSeat && dining_ontion_name == 'DINING_OPTION_OTHER')) {
-                    delete DINING_OPTION_NAME[dining_ontion_name];
+            for (var dining_option in DINING_OPTION) {
+                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_option]) == -1 || (App.Data.orderFromSeat && dining_option == 'DINING_OPTION_OTHER')) {
+                    delete _loc.DINING_OPTION_NAME[dining_option];
                 }
             }
 
@@ -367,18 +355,26 @@ define(["backbone", "factory"], function(Backbone) {
                 settings = App.Data.settings,
                 cssCore = settings.get('settings_skin').routing.establishments.cssCore;
 
-            modelForView.get('isMobileVersion') && cssCore.indexOf('establishments_mobile') && cssCore.push('establishments_mobile');
+            if (modelForView.get('isMobileVersion')) {
+                cssCore.indexOf('establishments_mobile') && cssCore.push('establishments_mobile');
+                (!App.skin) && settings.set('skin', App.Skins.WEBORDER_MOBILE);
+            } else {
+                (!App.skin) && settings.set('skin', App.Skins.WEBORDER);
+            }
             !settings.get('settings_skin').name_app && pageTitle('Revel Systems');
 
             App.Routers.MainRouter.prototype.prepare('establishments', function() {
-                var view = App.Views.GeneratorView.create('CoreEstablishments', {
-                    mod: 'Main',
-                    className: 'establishments_view',
-                    collection: ests,
-                    model: modelForView
-                }, 'ContentEstablishmentsCore');
-                Backbone.$('body').append(view.el);
-                Backbone.$(window).trigger('hideSpinner');
+                var locale = App.Data.locale;
+                locale.dfd_load.done(function() {
+                    var view = App.Views.GeneratorView.create('CoreEstablishments', {
+                        mod: 'Main',
+                        className: 'establishments_view',
+                        collection: ests,
+                        model: modelForView
+                    }, 'ContentEstablishmentsCore');
+                    Backbone.$('body').append(view.el);
+                    Backbone.$(window).trigger('hideSpinner');
+                });
             });
         },
         /**
@@ -536,7 +532,7 @@ define(["backbone", "factory"], function(Backbone) {
             if (cssua.ua.revelsystemswebview && cssua.ua.ios) {
                 $("body")[0].scrollIntoView(); //workaround for #18586, #18130
             }
-            if (location.hash.slice(1) == 'map' && App.Data.map) { //#19928 to resize the google.map
+            if (App.Data.map && location.hash.slice(1) == 'map') { // #19928 to resize the Google Maps
                 App.Data.map.trigger("change_page");
             }
         },
