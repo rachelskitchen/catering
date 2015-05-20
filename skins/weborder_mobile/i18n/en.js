@@ -1,16 +1,5 @@
 ﻿define(function () {
   return {
-    "DINING_OPTION_NAME": {
-        "DINING_OPTION_TOGO":            "Take Out",
-        "DINING_OPTION_EATIN":           "Eat In",
-        "DINING_OPTION_DELIVERY":        "Delivery",
-        "DINING_OPTION_CATERING":        "Catering",
-        "DINING_OPTION_DRIVETHROUGH":    "Drive Through",
-        "DINING_OPTION_ONLINE":          "Online Ordering",
-        "DINING_OPTION_OTHER":           "Other",
-        "DINING_OPTION_DELIVERY_SEAT":   "Deliver to Seat",
-        "DINING_OPTION_SHIPPING":        "Shipping"
-    },
     "CARD_FIRST_NAME":               "First Name",
     "CARD_LAST_NAME":                "Last Name",
     "CARD_NUMBER":                   "Card Number",

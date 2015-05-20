@@ -1,5 +1,16 @@
 ﻿define(function() {
     return {
+        'DINING_OPTION_NAME': {
+            'DINING_OPTION_TOGO':            'Самовывоз',
+            'DINING_OPTION_EATIN':           'На месте',
+            'DINING_OPTION_DELIVERY':        'Доставка',
+            'DINING_OPTION_CATERING':        'Общественное питание',
+            'DINING_OPTION_DRIVETHROUGH':    'За рулем',
+            'DINING_OPTION_ONLINE':          'Онлайн заказ',
+            'DINING_OPTION_OTHER':           'Другой',
+            'DINING_OPTION_DELIVERY_SEAT':   'Доставка на место',
+            'DINING_OPTION_SHIPPING':        'Сторонняя служба доставки'
+        },
         'SUBCATEGORIES_VIEW_ALL':   'Показать все',
         'STORES_MI':                'mi', // ???
         'ARRAY_MONTH': [
