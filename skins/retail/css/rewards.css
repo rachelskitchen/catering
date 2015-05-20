@@ -217,3 +217,9 @@
     position: relative;
     padding: 0;
 }
+
+@media only screen and (max-device-width: 949px) {
+    .rewards-info dfn {
+        width: 86px !important;
+    }
+}
