@@ -211,21 +211,15 @@ define({
         },
         'filters': {
             deps: ['backbone']
-<<<<<<< .mine
         },
         'rewards': {
             deps: ['backbone']
         },
         'rewards_view': {
             deps: ['factory']
-=======
         },
         'locale': {
             deps: ['backbone']
-
-
-
->>>>>>> .theirs
         }
     },
     map: {
