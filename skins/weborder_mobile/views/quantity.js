@@ -37,10 +37,12 @@ define(["quantity_view"], function(quantity_view) {
             if (product.get('stock_amount') === 1 || product.isParent()) {
                 this.$('.decrease').addClass('disabled');
                 this.$('.increase').addClass('disabled');
+                this.$('.quantity_edit_input').addClass('disabled').prop('disabled', true);
                 disallowNegativeInventory && this.model.set('quantity', 1); // bug 13494
             } else {
                 this.$('.decrease').removeClass('disabled');
                 this.$('.increase').removeClass('disabled');
+                this.$('.quantity_edit_input').removeClass('disabled').prop('disabled', false);
             }
         },
         increase: function(event) {
