@@ -295,8 +295,8 @@
     font-size: 8px;
 }
 
-#content > .checkout .rewards-card-input {
-    right: 220px;
+#content > .checkout .rewards-card-input.input_beauty {
+    right: 220px !important;
 }
 
 #content > .checkout .rewards-card-btn {
