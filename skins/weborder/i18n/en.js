@@ -1,16 +1,5 @@
-﻿define(function () { 
+﻿define(function () {
   return {
-    "DINING_OPTION_NAME": {
-        "DINING_OPTION_TOGO":            "Take Out",
-        "DINING_OPTION_EATIN":           "Eat In",
-        "DINING_OPTION_DELIVERY":        "Delivery",
-        "DINING_OPTION_CATERING":        "Catering",
-        "DINING_OPTION_DRIVETHROUGH":    "Drive Through",
-        "DINING_OPTION_ONLINE":          "Online Ordering",
-        "DINING_OPTION_OTHER":           "Other",
-        "DINING_OPTION_DELIVERY_SEAT":   "Deliver to Seat",
-        "DINING_OPTION_SHIPPING":        "Shipping"
-    },
     "CARD_TITLE":                    "Enter your Card Information",
     "CARD_FIRST_NAME":               "First Name",
     "CARD_LAST_NAME":                "Last Name",
@@ -135,16 +124,28 @@
     "TIPS_ADD_TIP":                  "Add a Tip",
     "TIPS_NONE":                     "None",
     "TIPS_OTHER":                    "Other",
-    "TOTAL_SUB_TOTAL":               "Sub-Total",
-    "TOTAL_DISCOUNTS":               "Discounts",
-    "TOTAL_SUBTOTAL":                "Subtotal",
-    "TOTAL_DELIVERY_CHARGE":         "Delivery Charge",
-    "TOTAL_SHIPPING":                "Shipping",
-    "TOTAL_DELIVERY_DISCOUNT":       "Delivery Discount",
-    "TOTAL_SHIPPING_DISCOUNT":       "Shipping Discount",
-    "TOTAL_SURCHARGE":               "Surcharge",
-    "TOTAL_TAX":                     "Tax",
-    "TOTAL_TIP":                     "Tip",
-    "TOTAL_GRAND_TOTAL":             "Grand Total" 
+    "REWARDS_INFORMATION":           "Rewards Information",
+    "REWARDS_NUMBER":                "Rewards #",
+    "REWARDS_TOTAL_POINTS":          "Total Points",
+    "REWARDS_TOTAL_VISITS":          "Total Visits",
+    "REWARDS_TOTAL_PURCHASES":       "Total Purchases",
+    "REWARDS_SELECTION_INFO":        "Choose a rewards below, or close this window to save your points.",
+    "REWARDS_AVAILABLE":             "Rewards Available",
+    "REWARDS_UNAVAILABLE":           "You do not qualify for a reward at this time.",
+    "REWARDS_ENTIRE_ORDER_DISCOUNT": "off Entire Order",
+    "REWARDS_APPLY":                 "Apply Reward",
+    "REWARDS_OFF":                   "Off",
+    "REWARDS_POINTS_REDEMPTION_AMOUNT": [
+        "Point will be redeemed",
+        "Points will be redeemed"
+    ],
+    "REWARDS_VISITS_REDEMPTION_AMOUNT": [
+        "Visit will be redeemed",
+        "Visits will be redeemed"
+    ],
+    "REWARDS_PURCHASES_REDEMPTION_AMOUNT": [
+        "Purchase will be redeemed",
+        "Purchases will be redeemed"
+    ]
   }// end of locale
 });//end of module

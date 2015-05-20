@@ -65,7 +65,11 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             }
 
             this.bindingSources || (this.bindingSources = {});
-            _.extend(this.bindingSources, {_settings: App.Data.settings, _system_settings: new Backbone.Model(App.Settings)}, bindingSources);
+            _.extend(this.bindingSources, {
+                _settings: App.Data.settings,
+                _system_settings: new Backbone.Model(App.Settings),
+                _lp: new Backbone.Model(_loc)
+            }, bindingSources);
 
             // init array of sub views
             this.subViews = [];
