@@ -123,17 +123,6 @@
     "SUBCATEGORIES_SUBCATEGORIES":   "Sub-Categories",
     "TIPS_ADD_TIP":                  "Add a Tip",
     "TIPS_NONE":                     "None",
-    "TIPS_OTHER":                    "Other",
-    "TOTAL_SUB_TOTAL":               "Sub-Total",
-    "TOTAL_DISCOUNTS":               "Discounts",
-    "TOTAL_SUBTOTAL":                "Subtotal",
-    "TOTAL_DELIVERY_CHARGE":         "Delivery Charge",
-    "TOTAL_SHIPPING":                "Shipping",
-    "TOTAL_DELIVERY_DISCOUNT":       "Delivery Discount",
-    "TOTAL_SHIPPING_DISCOUNT":       "Shipping Discount",
-    "TOTAL_SURCHARGE":               "Surcharge",
-    "TOTAL_TAX":                     "Tax",
-    "TOTAL_TIP":                     "Tip",
-    "TOTAL_GRAND_TOTAL":             "Grand Total"
+    'TIPS_OTHER':                    'Other'
   }// end of locale
 });//end of module

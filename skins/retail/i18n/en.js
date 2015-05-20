@@ -95,15 +95,6 @@
     "STORE_INFO_CLOSED":             "Closed",
     "STORE_INFO_PHONE":              "Phone",
     "STORE_INFO_EMAIL":              "Email",
-    "STORE_INFO_ACCESS":             "Access",
-    "TOTAL_SUBTOTAL":                "Subtotal",
-    "TOTAL_DISCOUNTS":               "Discounts",
-    "TOTAL_DELIVERY_CHARGE":         "Delivery Charge",
-    "TOTAL_DELIVERY_DISCOUNT":       "Delivery Discount",
-    "TOTAL_SHIPPING":                "Shipping",
-    "TOTAL_SHIPPING_DISCOUNT":       "Shipping Discount",
-    "TOTAL_SURCHARGE":               "Surcharge",
-    "TOTAL_TAX":                     "Tax",
-    "TOTAL_GRAND_TOTAL":             "Grand Total"
+    'STORE_INFO_ACCESS':             'Access'
   }// end of locale
 });//end of module
