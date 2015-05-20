@@ -83,6 +83,7 @@ define({
         establishments: 'js/models/establishments',
         establishments_view: 'js/views/establishments',
         filters: 'js/models/filters',
+        locale: 'js/models/locale',
         rewards: 'js/models/rewards',
         rewards_view: 'js/views/rewards'
     },
@@ -116,7 +117,7 @@ define({
             deps: ["backbone"]
         },
         "errors" : {
-            deps: ["backbone", "functions"]
+            deps: ["backbone"]
         },
         'errors_view': {
             deps: ['backbone', 'factory']
@@ -216,6 +217,9 @@ define({
         },
         'rewards_view': {
             deps: ['factory']
+        },
+        'locale': {
+            deps: ['backbone']
         }
     },
     map: {

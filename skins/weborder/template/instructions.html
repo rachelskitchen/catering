@@ -1,12 +1,16 @@
 <script type="text/template" id="instructions_modifiers-template">
     <div class='instruction_block'>
-        <div class="title">Special Instructions</div>
-        <div class="note">E.g. no pickles! All requests are honored when possible. <br>Adding certain ingredients may require further payment. </div>
+        <div class="title"> <%= _lp.INSTRUCTIONS_TITLE %> </div>
+        <div class="note">
+            <%= _lp.INSTRUCTIONS_NOTE1 %>
+            <br>
+            <%= _lp.INSTRUCTIONS_NOTE2 %>
+        </div>
         <div class="textarea input_beauty">
             <textarea class="instructions"><%= special %></textarea>
         </div>
     </div>
-    <div class="add_instructions <% if (sold_by_weight) { print('sold_by_weight') } %>">
-        Add Special Instructions
+    <div class="clip add_instructions <% if (sold_by_weight) { print('sold_by_weight'); } %>">
+        <%= _lp.INSTRUCTIONS_ADD_SPECIAL %>
     </div>
 </script>

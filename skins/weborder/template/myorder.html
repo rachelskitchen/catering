@@ -22,7 +22,7 @@
         <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
         <% } %>
         <% if(is_gift) { %>
-        <li class="special">*** Add amount to <%= gift_card_number %></li>
+        <li class="special"> *** <%= _lp.MYORDER_ADD_AMOUNT %> <%= gift_card_number %> </li>
         <% } %>
         <% if(special) { %>
         <li class="special">*** <%= special %></li>
@@ -31,9 +31,9 @@
     <div class="discount_place"></div>
     <% if(id_product !== null) { %>
     <div class="btns">
-        <span class="edit">Edit</span>
+        <span class="edit"> <% _lp.MYORDER_EDIT %> </span>
         <span class="divider"></span>
-        <span class="remove"><span>Remove</span></span>
+        <span class="remove"> <span> <%= _lp.MYORDER_REMOVE %> </span> </span>
     </div>
     <% } %>
 </script>
@@ -49,7 +49,11 @@
 </script>
 
 <script type="text/template" id="myorder_modifier-template">
-    <span class="name"><% if(_settings.enable_quantity_modifiers) { print(quantity+'x') }%> <%if(qty_type>0) { print("("+half_price_str+")") }%> w/ <%= name %></span>
+    <span class="name">
+        <% if (_settings.enable_quantity_modifiers) { print(quantity + 'x') } %>
+        <% if (qty_type > 0) { print('(' + half_price_str + ')') } %>
+        <%= _lp.MYORDER_WEIGHT %> <%= name %>
+    </span>
     <span class="cost">
         <span class="plus">+</span>
         <span class="currency_symbol"><%= currency_symbol %></span>
@@ -81,11 +85,8 @@
         <% if(_settings.online_orders) { %>
         <div class='product_instructions'>
         </div>
-        <div class='quantity quantity_info'>
-        </div>
-        <div class='action_button'>
-            Add Item
-        </div>
+            <div class="quantity quantity_info"> </div>
+            <div class="action_button clip"> <%= _lp.MYORDER_ADD_ITEM %> </div>
         <% } %>
     </div>
 </script>

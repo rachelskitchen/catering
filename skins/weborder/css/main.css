@@ -244,6 +244,7 @@ footer {
     position: absolute;
     bottom: 0;
     left: 20px;
+    height: 46px;
 }
 #header .main .tabs li {
     display: inline-block;
@@ -258,14 +259,19 @@ footer {
     border-top-right-radius: 10px;
     font-weight: bold;
     position: relative;
-    bottom: -3px;
+    bottom: -10px;
+    padding-left: 0.15em;
+    padding-right: 0.15em;
+}
+#header .main .tabs li > span {
+    font-weight: bold;
 }
 #header .main .tabs li:not(.active) {
     cursor: pointer;
 }
 #header .main .tabs li.active {
     height: 38px;
-    bottom: -1px;
+    bottom: -9px;
     border-width: 0;
     z-index: 2;
 }
@@ -292,13 +298,19 @@ footer {
     height: 10px;
 }
 #header .checkout .btn {
-    width: 68px;
     height: 25px;
+    width: 68px;
+    min-width: 68px;
+    max-width: 270px;
     font-weight: normal;
     font-size: 14px;
     line-height: 24px;
     border-width: 4px;
     text-indent: 15px;
+    padding-left: 0.6em;
+}
+#header .checkout .btn > span {
+    font-weight: normal;
 }
 #header .checkout .btn:after {
     content: '\f053';
@@ -317,9 +329,15 @@ footer {
     margin-top: -7px;
 }
 .current_establishment {
-    display: none;
-    float: left;
+    position: absolute;
+    width: 70%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+.current_establishment > span {
     padding-left: 0.65em;
+    padding-right: 0.65em;
 }
 .link1 {
     margin: 0 20px;
@@ -371,6 +389,11 @@ footer {
     font-weight: bold;
     line-height: 38px;
     cursor: pointer;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+}
+.btn > span {
+    font-weight: bold;
 }
 #cart .btn {
     position: absolute;
@@ -511,9 +534,13 @@ section.maintenance #header .btn {
     left: 15px;
     right: 13px;
 }
-
 #cart .total_block li {
     text-align: right;
+}
+#cart .total_block .title {
+    display: inline-block;
+    max-width: 70%;
+    vertical-align: top;
 }
 #cart .total_block .cost {
     letter-spacing: -3px;
@@ -738,18 +765,29 @@ section.maintenance #header .btn {
     top: 50px;
 }
 
-.delivery_info span {
+.delivery_info > span {
     display: block;
     float: left;
     width: 110px;
     padding-left: 10px;
 }
-.delivery_info span:nth-child(2n) {
+.delivery_info > span .clip:nth-child(1) {
+    width: 63px;
+    float: left;
+}
+.delivery_info > span .clip:nth-child(2) {
+    padding-right: 5px;
+}
+.delivery_info > span:nth-child(2n) {
     width: 184px;
     padding-left: 0;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+}
+.delivery_info > span:nth-child(2n) .clip {
+    width: 117px;
+    float: left;
 }
 /* End delivery info block*/
 
@@ -886,6 +924,7 @@ section.maintenance #header .btn {
 }
 #alert .btn {
     min-width: 100px;
+    max-width: 180px;
     height: 34px;
     line-height: 34px;
     border-radius: 25px;

@@ -41,7 +41,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                         content: '<div id="googlemaps_popup">' +
                             '<div> <strong>' + title + '</strong> </div>' +
                             '<div>' + address.full_address + '</div>' +
-                            '</div>' + ((!settings.delivery_post_code_lookup[0] && settings.delivery_geojson[0]) ?
+                            '</div>' + (((!_.isArray(settings.delivery_post_code_lookup) || !settings.delivery_post_code_lookup[0]) && _.isArray(settings.delivery_geojson) && settings.delivery_geojson[0]) ?
                             '<div> *Delivery area is marked with grey</div>': ''),
                         position: coords
                     }),
@@ -72,7 +72,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                         title: title
                     });
 
-                if (!settings.delivery_post_code_lookup[0] && settings.delivery_geojson[0]) {
+                if ((!_.isArray(settings.delivery_post_code_lookup) || !settings.delivery_post_code_lookup[0]) && _.isArray(settings.delivery_geojson) && settings.delivery_geojson[0]) {
                     try {
                         map.data.addGeoJson(JSON.parse(settings.delivery_geojson[1]));
                         map.data.setStyle({"strokeWeight": 1});
@@ -139,8 +139,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 for(var i = today; i < today + 7; i++) {
                     var weekDay = this.model.get_day_of_week(i % 7);
                     timetable.push({
-                        weekDay: weekDay.charAt(0).toUpperCase()+weekDay.substr(1).toLowerCase(),
-                        hours: timetable_on_week[this.model.get_day_of_week(i % 7)]
+                        weekDay: _loc['DAYS_OF_WEEK'][weekDay],
+                        hours: timetable_on_week[weekDay]
                     });
                 }
             }

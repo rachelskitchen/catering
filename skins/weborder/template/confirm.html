@@ -8,13 +8,20 @@
     </div>
     <div class="right-panel-wrap">
         <div class="panel right-panel">
-            <div class="cart_title">Review your Order</div>
-            <div class="pickup_time"> <b> <% if(isDelivery) { %>Delivery Time:<% } else { %>Arrival Time:<% } %> </b> <%=pickup_time%> </div>
+            <div class="cart_title clip"> <%= _lp.CONFIRM_REVIEW_ORDER %> </div>
+            <%
+                var title = isDelivery ? _lp.CONFIRM_DELIVERY_TIME : _lp.CONFIRM_ARRIVAL_TIME,
+                    content = pickup_time;
+            %>
+            <div class="pickup_time" title="<%= title %>: <%= content %>">
+                <span class="clip"> <%= title %> </span>
+                <span class="clip"> <%= content %> </span>
+            </div>
             <div class="order-items-wrap">
                  <div class="order-items"></div>
             </div>
             <ul class="total_block"></ul>
-            <div class="btn btn-submit">Submit</div>
+            <div class="btn btn-submit"> <span class="clip"> <%= _lp.CONFIRM_SUBMIT %> </span> </div>
         </div>
     </div>
 </script>

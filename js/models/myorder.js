@@ -1121,7 +1121,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 dataType: "json",
                 success: function(data) {
                     if (!data || !data.status) {
-                        reportErrorFrm(MSG.ERROR_OCCURRED + MSG.ERROR_INCORRECT_AJAX_DATA);
+                        reportErrorFrm(MSG.ERROR_OCCURRED + ' ' + MSG.ERROR_INCORRECT_AJAX_DATA);
                         return;
                     }
                     switch(data.status) {
@@ -1141,7 +1141,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                             break;
                         default:
                             if (!data.errorMsg) data.errorMsg = MSG.ERROR_NO_MSG_FROM_SERVER;
-                            data.errorMsg = MSG.ERROR_OCCURRED + data.errorMsg;
+                            data.errorMsg = MSG.ERROR_OCCURRED + ' ' + data.errorMsg;
                             reportErrorFrm(data.errorMsg);
                     }//end of switch
                 },
@@ -1326,7 +1326,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 dataType: "json",
                 success: function(data) {
                     if (!data || !data.status) {
-                        reportErrorFrm(MSG.ERROR_OCCURRED + MSG.ERROR_INCORRECT_AJAX_DATA);
+                        reportErrorFrm(MSG.ERROR_OCCURRED + ' ' + MSG.ERROR_INCORRECT_AJAX_DATA);
                         return;
                     }
                     myorder.paymentResponse = data instanceof Object ? data : {};
@@ -1384,7 +1384,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                             reportErrorFrm(data.errorMsg + " " + MSG.PRODUCTS_VALID_TIME + "<br/>" + format_timetables(data.responseJSON["timetables"], ",<br/>"));
                             break;
                         default:
-                            data.errorMsg = MSG.ERROR_OCCURRED + data.errorMsg;
+                            data.errorMsg = MSG.ERROR_OCCURRED + ' ' + data.errorMsg;
                             reportErrorFrm(data.errorMsg);
                     }//end of switch
                 },

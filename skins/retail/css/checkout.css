@@ -15,11 +15,16 @@
     width: 302px;
     /*margin: 10px 0;*/
     text-indent: 100px;
-    font-weight: bold;
     background: none;
     height: 39px;
     line-height: 39px;
     vertical-align: top;
+}
+#content > .checkout label > span {
+    font-weight: bold;
+}
+#content > .checkout label > span {
+    padding-right: 20px;
 }
 #content > .checkout h2 {
     padding-left: 100px;
@@ -198,6 +203,7 @@
     display: inline-block;
     height: 32px;
     min-width: 68px;
+    max-width: 87px;
     border-width: 2px;
     border-radius: 20px;
     border-style: solid;

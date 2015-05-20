@@ -398,7 +398,12 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 if(ids.length == 1)
                     category = categories.get(ids[0]);
                 else
-                    category = new App.Models.Category({name: 'All', parent_name: parent, sort: 1, description: ''});
+                    category = new App.Models.Category({
+                        parent_name: parent,
+                        name: _loc.CATEGORIES_ALL,
+                        description: '',
+                        sort: 1
+                    });
 
                 ids.forEach(function(id) {
                     // add products with new sort value
@@ -432,7 +437,7 @@ define(["backbone", "factory", "generator", "list", "slider_view", "categories",
                 id = categories.selected;
 
             this.addItem(this.model.get('products'), new Backbone.Model({
-                parent_name: 'Search',
+                parent_name: _loc.CATEGORIES_SEARCH,
                 name: this.model.get('pattern'),
                 description: '',
                 active: true
