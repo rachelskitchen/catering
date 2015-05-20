@@ -55,7 +55,7 @@
     "HEADER_MAP": "Карта",
     "HEADER_DELIVERY": "Доставка",
     "HEADER_DELIVERY_FREE": "Бесплатно",
-    "HEADER_DELIVERY_TIME": "Ожидаемое время доставки",
+    "HEADER_DELIVERY_TIME": "Время доставки",
     "HEADER_DELIVERY_HOUR": "[час]",
     "HEADER_DELIVERY_MINUTES": "мин",
     "HEADER_DELIVERY_ASAP": "Сейчас",
