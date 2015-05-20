@@ -627,7 +627,7 @@ define(["main_router"], function(main_router) {
                         collection: App.Data.myorder,
                         mod: 'Page',
                         className: 'checkout',
-                        DINING_OPTION_NAME: DINING_OPTION_NAME,
+                        DINING_OPTION_NAME: _loc.DINING_OPTION_NAME,
                         timetable: App.Data.timetables,
                         customer: App.Data.customer,
                         acceptTips: settings.accept_tips_online,
@@ -679,10 +679,6 @@ define(["main_router"], function(main_router) {
     }
 
     return new main_router(function() {
-        window.DINING_OPTION_NAME = {
-            DINING_OPTION_TOGO: 'Pick up in store',
-            DINING_OPTION_SHIPPING: 'Shipping'
-        };
         defaultRouterData();
         App.Routers.Router = Router;
     });

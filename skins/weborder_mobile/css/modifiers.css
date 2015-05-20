@@ -55,7 +55,7 @@
     cursor: default;
 }
 
-#content .modifier span {
+#content .modifier span:not([class="clip"]) {
     line-height: 2.5em;
     white-space: nowrap;
     text-overflow: ellipsis;

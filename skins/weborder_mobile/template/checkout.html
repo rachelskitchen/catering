@@ -1,18 +1,18 @@
 <script type="text/template" id="checkout_main-template">
     <dl class="checkout <% if(isFirefox) { %>firefox<% } %>">
-        <dt class="color-style1">Contact Information</dt>
+        <dt class="color-style1 clip"> <%= _lp.CHECKOUT_CONTACT_INFO %> </dt>
         <dd class="contact_info">
             <label class="input required border">
-                <input type="text" placeholder="First Name" class="firstName ios-safari-caret bg-style1" value="<%= firstName %>">
+                <input type="text" placeholder="<%= _lp.CHECKOUT_FIRST_NAME %>" class="firstName ios-safari-caret bg-style1" value="<%= firstName %>">
             </label>
             <label class="input required border">
-                <input type="text" placeholder="Last Name" class="lastName ios-safari-caret bg-style1" value="<%= lastName %>">
+                <input type="text" placeholder="<%= _lp.CHECKOUT_LAST_NAME %>" class="lastName ios-safari-caret bg-style1" value="<%= lastName %>">
             </label>
             <label class="input required border">
-                <input type="text" placeholder="Email" class="email ios-safari-caret bg-style1" value="<%= email %>" autocapitalize="none">
+                <input type="text" placeholder="<%= _lp.CHECKOUT_EMAIL %>" class="email ios-safari-caret bg-style1" value="<%= email %>" autocapitalize="none">
             </label>
             <label class="input required border">
-                <input type="tel" placeholder="Phone #" class="phone ios-safari-caret bg-style1" value="<%=phone%>" min="0" />
+                <input type="tel" placeholder="<%= _lp.CHECKOUT_PHONE %>" class="phone ios-safari-caret bg-style1" value="<%= phone %>" min="0">
             </label>
             <div class="delivery_address">
             </div>
@@ -20,11 +20,11 @@
             </div>
         </dd>
         <% if(enableRewardCard) { %>
-        <dt class="color-style1 rewardCard">Reward Card</dt>
+        <dt class="color-style1 rewardCard clip"> <%= _lp.CHECKOUT_REWARD_CARD %> </dt>
         <dd class="rewardCard">
             <label class="input rewardCard border">
                 <span class="cancel-input hide"></span>
-                <input type="<%= rewardCardType %>" placeholder="Reward Card #" class="rewardCard ios-safari-caret bg-style1" value="<%= rewardCard %>">
+                <input type="<%= rewardCardType %>" placeholder="<%= _lp.CHECKOUT_REWARD_CARD_NUMBER %>" class="rewardCard ios-safari-caret bg-style1" value="<%= rewardCard %>">
                 <span class="rewards-card-apply rewards-card-btn">Apply</span>
                 <span class="see-rewards rewards-card-btn">See Rewards</span>
             </label>
@@ -40,7 +40,9 @@
             <div class="select-wrapper">
                 <label class="select required">
                     <select class="level" name="level">
-                        <option value="" <% if (level == "") { %>selected="selected"<% }; %>>Level</option>
+                        <option value="" <% if (level == '') { %> selected="selected" <% } %>>
+                            <%= _lp.CHECKOUT_LEVEL %>
+                        </option>
                         <% _.each(levels, function(l) { %>
                         <option value="<%= l %>" <% if (level == l) { %>selected="selected"<% }; %>><%= l %></option>
                         <% }); %>
@@ -49,7 +51,7 @@
             </div>
             <% } else { %>
             <label class="input label required border">
-                <input type="text" placeholder="Level" name="level" class="level ios-safari-caret bg-style1" maxlength="4" value="<%= level %>">
+                <input type="text" placeholder="<%= _lp.CHECKOUT_LEVEL %>" name="level" class="level ios-safari-caret bg-style1" maxlength="4" value="<%= level %>">
             </label>
             <% } %>
         <% } %>
@@ -58,7 +60,9 @@
             <div class="select-wrapper">
                 <label class="select required">
                     <select class="section" name="section">
-                        <option value="" <% if (section == "") { %>selected="selected"<% }; %>>Section</option>
+                        <option value="" <% if (section == '') { %> selected="selected" <% } %>>
+                            <%= _lp.CHECKOUT_SECTION %>
+                        </option>
                         <% _.each(sections, function(s) { %>
                         <option value="<%= s %>" <% if (section == s) { %>selected="selected"<% }; %>><%= s %></option>
                         <% }); %>
@@ -67,17 +71,17 @@
             </div>
             <% } else { %>
             <label class="input label required border">
-                <input type="text" placeholder="Section" name="section" class="section ios-safari-caret bg-style1" maxlength="4" value="<%= section %>">
+                <input type="text" placeholder="<%= _lp.CHECKOUT_SECTION %>" name="section" class="section ios-safari-caret bg-style1" maxlength="4" value="<%= section %>">
             </label>
             <% } %>
         <% } %>
         <% if(orderFromSeat.enable_row) { %>
             <label class="input label required border">
-                <input type="text" placeholder="Row" name="row" class="row ios-safari-caret bg-style1" maxlength="4" value="<%= row %>">
+                <input type="text" placeholder="<%= _lp.CHECKOUT_ROW %>" name="row" class="row ios-safari-caret bg-style1" maxlength="4" value="<%= row %>">
             </label>
         <% } %>
             <label class="input label required border">
-                <input type="text" placeholder="Seat" name="seat" class="seat ios-safari-caret bg-style1" maxlength="4" value="<%= seat %>">
+                <input type="text" placeholder="<%= _lp.CHECKOUT_SEAT %>" name="seat" class="seat ios-safari-caret bg-style1" maxlength="4" value="<%= seat %>">
             </label>
     <% } %>
 </script>
@@ -102,7 +106,7 @@
 
 <script type="text/template" id="checkout_order_type-template">
     <dl class="checkout checkout-order-type <% if(isFirefox) { %>firefox<% } %>">
-        <dt class="order-type-head color-style1">Order Type</dt>
+        <dt class="order-type-head color-style1 clip"> <%= _lp.CHECKOUT_ORDER_TYPE %> </dt>
         <dd>
             <label class="select required">
                 <select class="order-type-select">
@@ -125,13 +129,13 @@
     </div>
     <% } %>
     <label class="input label required border">
-        <input type="text" placeholder="Address Line 1" name="street_1" value="<%= street_1 %>" class="ios-safari-caret bg-style1">
+        <input type="text" placeholder="<%= _lp.CHECKOUT_ADDRESS_LINE1 %>" name="street_1" value="<%= street_1 %>" class="ios-safari-caret bg-style1">
     </label>
     <label class="input label border">
-        <input type="text" placeholder="Address Line 2" name="street_2" value="<%= street_2 %>" class="ios-safari-caret bg-style1">
+        <input type="text" placeholder="<%= _lp.CHECKOUT_ADDRESS_LINE2 %>" name="street_2" value="<%= street_2 %>" class="ios-safari-caret bg-style1">
     </label>
     <label class="input label required border">
-        <input type="text" placeholder="City" name="city" value="<%= city %>" class="ios-safari-caret bg-style1">
+        <input type="text" placeholder="<%= _lp.CHECKOUT_CITY %>" name="city" value="<%= city %>" class="ios-safari-caret bg-style1">
     </label>
     <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
     <div class="label select-wrapper shipping-state">
@@ -146,11 +150,11 @@
     <% } %>
     <% if(typeof province == 'string') { %>
        <label class="input label required border province">
-           <input type="text" placeholder="Province" name="province" value="<%= province %>" class="ios-safari-caret bg-style1">
+           <input type="text" placeholder="<%= _lp.CHECKOUT_PROVINCE %>" name="province" value="<%= province %>" class="ios-safari-caret bg-style1">
        </label>
     <% } %>
     <label class="input label required border">
-        <input type="text" placeholder="Zip Code" name="zipcode" value="<%= zipcode %>" class="ios-safari-caret bg-style1">
+        <input type="text" placeholder="<%= _lp.CHECKOUT_ZIP_CODE %>" name="zipcode" value="<%= zipcode %>" class="ios-safari-caret bg-style1">
     </label>
     <% if(isShippingServices) { %>
     <div class="label select-wrapper shipping-services">

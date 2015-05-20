@@ -18,6 +18,7 @@
 #content ul.tips .tip_label {
     margin-top: 0.5em;
     margin-left: 0.4em;
+    max-width: 55%;
 }
 #content ul.tips .currency_sym {
     display: table;

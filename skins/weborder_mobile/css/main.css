@@ -309,6 +309,7 @@ img[src=''] {
     outline: none;
     margin: 0 10px 0 10px;
     min-width: 80px;
+    max-width: 85px;
     padding: 0px 10px;
     position: relative;
     text-align: center;

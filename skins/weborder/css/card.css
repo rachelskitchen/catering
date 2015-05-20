@@ -6,6 +6,9 @@
     text-indent: 30px;
     font-weight: bold;
 }
+#credit-card label > span {
+    padding-right: 8px;
+}
 
 #credit-card > div {
     position: relative;

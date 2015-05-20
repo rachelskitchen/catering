@@ -1,31 +1,35 @@
 <script type="text/template" id="card_main-template">
-    <div class="card_title">Enter your Card Information</div>
+    <div class="card_title"> <%= _lp.CARD_TITLE %> </div>
     <div>
-        <label for="firstName"><span class="bold <% if(paypal_direct_credit_card) { %>required<% } %>">First Name:</span></label>
+        <label for="firstName">
+            <span class="clip bold <% if (paypal_direct_credit_card) { %> required <% } %>"><%= _lp.CARD_FIRST_NAME %>:</span>
+        </label>
         <div class="input_beauty">
             <input type="text" id="firstName" class="first_name" value="<%= firstName %>" maxlength="20">
         </div>
     </div>
     <div>
-        <label for="lastName"><span class="bold <% if(paypal_direct_credit_card) { %>required<% } %>">Last Name:</span></label>
+        <label for="lastName">
+            <span class="clip bold <% if (paypal_direct_credit_card) { %> required <% } %>"><%= _lp.CARD_LAST_NAME %>:</span>
+        </label>
         <div class="input_beauty">
             <input type="text" id="lastName" class="last_name" value="<%= secondName %>" maxlength="20">
         </div>
     </div>
     <div>
-        <label for="cardNumber"><span class="bold required">Card Number:</span></label>
+        <label for="cardNumber"> <span class="clip bold required"><%= _lp.CARD_NUMBER %>:</span> </label>
         <div class="input_beauty">
             <input type="text" id="cardNumber" class="number" value="<%= cardNumber %>" min="0">
         </div>
     </div>
     <div>
-        <label for="securityCode"><span class="bold required">Security Code:</span></label>
+        <label for="securityCode"> <span class="clip bold required"><%= _lp.CARD_SECURITY_CODE %>:</span> </label>
         <div class="input_beauty">
             <input type="text" id="securityCode" class="secure" value="<%= securityCode %>" min="0">
         </div>
     </div>
     <div>
-        <label for="exp-month"><span class="pickup bold required">Exp. Date:</span></label>
+        <label for="exp-month"> <span class="clip pickup bold required"><%= _lp.CARD_EXP_DATE %>:</span> </label>
         <div class="select month select-wrapper" style="display: inline-block;">
             <select class="month" id="exp-month">
                 <option value="01">01</option>
