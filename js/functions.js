@@ -41,14 +41,15 @@ var RESOURCES = {
     CSS: 'RESOURCES_CSS',
     TEMPLATES: 'RESOURCES_TEMPLATES'
 }
+
 var ERROR = {},
     MSG = {},
     _loc; ; //locale strings
 
+// Should be set before language pack loading
 ERROR.WEBSTORAGES_ARE_DISABLED = 'Web storages are disabled or not supported in your browser';
 ERROR.LOAD_LANGUAGE_PACK = 'Unable to load a language pack. Now the page is reloaded.';
 
-MSG.NO_REWARDS_AVAILABLE = "No rewards are available for this card number";
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
     CREDIT: 2,
@@ -1654,6 +1655,6 @@ function OR(){
 * Integrity simple test function (Bug 23033), it's checked from categories view.
 * When the minimization done it's combined into main.js then checked from mainView.js
 */
-function testA_3() {
+function testA_4() {
    return 23033 + 'v1';
 }

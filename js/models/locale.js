@@ -28,32 +28,44 @@ define(['backbone'], function(Backbone) {
          * Load a language pack
          */
         loadLanguagePack: function() {
-            var dfd_core = $.Deferred(),
+            var self = this,
+                dfd_core = $.Deferred(),
                 dfd_skin = $.Deferred(),
                 load_all = $.Deferred();
+
+            this.corePlaceholders = {};
+            this.skinPlaceholders = {};
+            this.clear();
+
             dfd_core = this._loadLanguagePack(true); // load a core language pack from backend
             dfd_skin = this._loadLanguagePack(); // load a skin language pack from backend
             $.when(dfd_core, dfd_skin).done(function() {
+                var placeholders = {};
+                _.extend(placeholders, self.corePlaceholders);
+                _.extend(placeholders, self.skinPlaceholders);
+                self.set(placeholders);
                 load_all.resolve();
             });
-            return load_all;        
+            return load_all;
         },
         _loadLanguagePack: function(load_core) {
             var DEFAULT_LOCALE = 'en';
             var self = this, path,
                 settings = App.Data.settings,
                 skin = settings.get('skin'),
-                curLocale = window.navigator.language;
+                defLocalePlaceholders,
+                curLocalePlaceholders,
+                resultPlaceholders,
+                curLocale = window.navigator.language.replace(/-.*/g, '');
 
             settings.setSkinPath(true); // set path for the current skin
-            
+
             if (load_core) {
                 path = settings.get('coreBasePath');
-                this.clear();
             } else {
-                path = settings.get('skinPath');                
+                path = settings.get('skinPath');
             }
-            
+
             var loadCurLocale = $.Deferred(),
                 loadDefLocale = $.Deferred(),
                 loadCompleted = $.Deferred(),
@@ -61,27 +73,30 @@ define(['backbone'], function(Backbone) {
 
             var js = path + '/i18n/' + DEFAULT_LOCALE + '.js';
             require([js], function(defLocale) {
-               //trace(defLocale);
-               _.extend(placeholders, defLocale);
-
+               defLocalePlaceholders = defLocale;
                loadDefLocale.resolve();
             }, function(err) {
-               self.trigger('showError'); 
+               self.trigger('showError');
                loadDefLocale.resolve();
             });
 
             js = path + '/i18n/' + curLocale + '.js';
             require([js], function(currentLocale) {
-               //trace(currentLocale);
-               _.extend(placeholders, currentLocale);
-
+               curLocalePlaceholders = currentLocale;
                loadCurLocale.resolve();
             }, function(err) {
                loadCurLocale.resolve();
             });
 
             $.when(loadDefLocale, loadCurLocale).done(function() {
-                self.set(placeholders);
+                var resultPlaceholders;
+                if (load_core)
+                    resultPlaceholders = self.corePlaceholders;
+                else
+                    resultPlaceholders = self.skinPlaceholders;
+
+                _.extend(resultPlaceholders, defLocalePlaceholders);
+                _.extend(resultPlaceholders, curLocalePlaceholders);
                 loadCompleted.resolve();
             });
             return loadCompleted;

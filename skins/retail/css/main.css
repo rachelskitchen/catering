@@ -261,13 +261,13 @@ footer {
     margin: 22px 10px 0;
 }
 #header .main ul.menu li.shop {
-    width: 38px;
+    max-width: 60px;
 }
 #header .main ul.menu li.about {
-    width: 43px;
+    max-width: 60px;
 }
 #header .main ul.menu li.locations {
-    width: 70px;
+    max-width: 60px;
 }
 #header .main ul.menu li.active {
     cursor: default;
@@ -828,7 +828,8 @@ section.maintenance .back {
     text-align: center;
 }
 .confirm .btn {
-    width: 250px;
+    max-width: 300px;
+    min-width: 100px;
     margin: 0 auto 15px;
 }
 .confirm .confirmed-order-txt {

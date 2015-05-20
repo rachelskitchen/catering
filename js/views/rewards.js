@@ -66,7 +66,10 @@
                 $el.attr('src', value);
                 function removeSpinner() {
                     $el.off('load error');
-                    view.removeCaptchaSpinner();
+                    // need to remove spinner only when current element's `src` attribute corresponds `value`
+                    if($el.attr('src') === value) {
+                        view.removeCaptchaSpinner();
+                    }
                 }
             }
         },
@@ -166,9 +169,9 @@
             '.visits-redemption': 'text: pointsPerReward(visits_value, visits_rewards_earned)',
             '.purchases-redemption': 'text: pointsPerReward(purchases_value, purchases_rewards_earned)',
             '.items-with-points': 'collection:$itemsWithPointsRewardDiscount, itemView:"itemWithPointDiscountView"',
-            '.points-redemption-info': 'text: selectText(points_value, points_rewards_earned, "Point will be redeemed", "Points will be redeemed")',
-            '.visits-redemption-info': 'text: selectText(visits_value, visits_rewards_earned, "Visit will be redeemed", "Visits will be redeemed")',
-            '.purchases-redemption-info': 'text: selectText(purchases_value, purchases_rewards_earned, "Purchase will be redeemed", "Purchases will be redeemed")',
+            '.points-redemption-info': 'text: selectText(points_value, points_rewards_earned, _lp_REWARDS_POINTS_REDEMPTION_AMOUNT)',
+            '.visits-redemption-info': 'text: selectText(visits_value, visits_rewards_earned, _lp_REWARDS_VISITS_REDEMPTION_AMOUNT)',
+            '.purchases-redemption-info': 'text: selectText(purchases_value, purchases_rewards_earned, _lp_REWARDS_PURCHASES_REDEMPTION_AMOUNT)',
         },
         events: function() {
             return {
@@ -238,6 +241,10 @@
                 return parseInt(points / rewards, 10);
             },
             selectText: function(points, rewards, text1, text2) {
+                if(Array.isArray(text1) && typeof text2 == 'undefined') {
+                    text2 = text1[1];
+                    text1 = text1[0];
+                }
                 return parseInt(points / rewards, 10) <= 1 ? text1 : text2;
             }
         },
