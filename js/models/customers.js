@@ -251,10 +251,10 @@ define(["backbone", "geopoint"], function(Backbone) {
         check: function(dining_option) {
             var err = [];
 
-            !this.get('first_name') && err.push('First Name');
-            !this.get('last_name') && err.push('Last Name');
-            !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push('Email');
-            !this.get('phone') && err.push('Phone Number');
+            !this.get('first_name') && err.push(_loc.CHECKOUT_FIRST_NAME);
+            !this.get('last_name') && err.push(_loc.CHECKOUT_LAST_NAME);
+            !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.CHECKOUT_EMAIL);
+            !this.get('phone') && err.push(_loc.CHECKOUT_PHONE);
 
             if(this.isNewAddressSelected(dining_option)) {
                 err = err.concat(this._check_delivery_fields());
