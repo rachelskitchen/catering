@@ -113,7 +113,7 @@
         ],
         'REWARDS_VISITS_REDEMPTION_AMOUNT': [
             'посещение будет потрачено',
-            'посещения будут потрачены'
+            'посещений будет потрачено'
         ],
         'REWARDS_PURCHASES_REDEMPTION_AMOUNT': [
             'покупка будет потрачена',

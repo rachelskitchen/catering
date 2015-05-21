@@ -117,7 +117,7 @@
         'REVEL_BACK_CANCEL':               'Отменить',
         'REVEL_BACK_BTN':                  'Назад',
         'REVEL_LOYALTY_REWARDS':           'Накопленные баллы',
-        'REVEL_LOYALTY_REWARDS_TEXT1':     'На следующем экране, пожалуйста заполните форму, чтобы стать членом',
+        'REVEL_LOYALTY_REWARDS_TEXT1':     'На следующем экране, пожалуйста, заполните форму, чтобы стать членом',
         'REVEL_LOYALTY_REWARDS_TEXT2':     'Программы Лояльности',
         'REVEL_ENTER_EMAIL_PASSWORD':      'Введите адрес эл. почты и пароль, чтобы увидеть ваши накопленные баллы',
         'REVEL_EMAIL_ADDRESS':             'Эл. почта',
@@ -147,7 +147,7 @@
         'REVEL_LOYALTY_REWARDS_LINE2':     'для оплаты заказов в приложении!',
         'REVEL_QR_CODE':                   'QR код',
         'REVEL_TOTAL_REWARDS_POINTS':      'Накопленные баллы',
-        'REVEL_USE_SAVED_CARD':            'Использовать 	данные сохраненной карты вместо их ввода каждый раз!',
+        'REVEL_USE_SAVED_CARD':            'Использовать данные сохраненной карты вместо их ввода каждый раз!',
         'STORE_INFO_TITLE':                'Информация о магазине',
         'STORE_INFO_PHONE':                'Телефон',
         'STORE_INFO_EMAIL':                'Эл. почта',
@@ -189,7 +189,7 @@
         ],
         'REWARDS_VISITS_REDEMPTION_AMOUNT': [
             'посещение будет потрачено',
-            'посещения будет потрачено'
+            'посещений будет потрачено'
         ],
         'REWARDS_PURCHASES_REDEMPTION_AMOUNT': [
             'покупка будет потрачена',
