@@ -195,6 +195,7 @@
         "Purchase will be redeemed",
         "Purchases will be redeemed"
     ],
+    "REWARDS_ENTER_CAPTCHA":          "Enter Captcha Characters",
     "CONFIRM_SUBMIT":                "Submit"
   } //end of locale
 });//end of module

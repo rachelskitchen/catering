@@ -188,6 +188,8 @@
                     _loc = locale.toJSON();
                     _.extend(ERROR, _loc.ERRORS);
                     _.extend(MSG, _loc.MSG);
+                    delete _loc.ERRORS;
+                    delete _loc.MSG;
                 });
                 locale.on('showError', function() {
                     errors.alert(ERROR.LOAD_LANGUAGE_PACK, true); // user notification

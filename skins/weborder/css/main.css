@@ -812,7 +812,8 @@ section.maintenance #header .btn {
     text-align: center;
 }
 .confirm .btn {
-    width: 250px;
+    max-width: 300px;
+    min-width: 100px;
     margin: 0 auto 15px;
 }
 .confirm .confirmed-order-txt {

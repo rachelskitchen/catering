@@ -31,8 +31,8 @@
                 //place an input which will represent the inputbox
                 var inputbox = $("<input/>").attr({
                     "min": min,
-                    "max": max,
-                    "type": "number"
+                    "type": "number",
+                    "inputmode": "numeric"
                 }).insertBefore(originalSelect);
 
                 //get and remove the original id
@@ -78,15 +78,19 @@
                     if (e.which == 13) {
                         inputbox.trigger("blur");
                     }
+                }).keypress(function(e) {
+                    return isDigitOrControlKey(e.which);
                 }).change(function() {
                     if (!inputbox.val()) {
                         inputbox.val(min);
                     }
                 });
 
-                inputbox.on('input', function(a) {
+                inputbox.on('input', function(e) {
                     if (!this.validity.valid) {
-                        a.target.value = max;
+                        e.target.value = min;
+                    } else if (e.target.value > max) {
+                        e.target.value = max;
                     }
                 });
 
@@ -173,6 +177,15 @@
             inputbox.val(selectOption.text());
             inputbox.trigger("change");
         });
+    }
+
+    function isDigitOrControlKey(key) {
+        if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27)) {
+            return true; // control key
+        } else if ((("0123456789").indexOf(String.fromCharCode(key)) > -1)) {
+            return true; // digit
+        }
+        return false;
     }
 
 }(jQuery));
