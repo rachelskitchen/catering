@@ -1,7 +1,7 @@
 ﻿define(function() {
     return {
         'SUBCATEGORIES_VIEW_ALL':   'Показать все',
-        'STORES_MI':                'mi', // ???
+        'STORES_MI':                'мили(ей)',
         'ARRAY_MONTH': [
             'Январь',
             'Февраль',
@@ -57,7 +57,7 @@
             'STORE_TYPE_RETAIL':       'Розница',
             'STORE_TYPE_OTHER':        'Другое',
             'DISTANCE_MILE':           'Миля',
-            'DISTANCE_MILES':          'Miles' // ???
+            'DISTANCE_MILES':          'Мили(ей)'
         },
         // https://ru.wikipedia.org/wiki/Алфавитный_список_стран_и_территорий
         'COUNTRIES': {
