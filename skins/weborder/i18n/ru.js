@@ -88,7 +88,7 @@
     "MAIN_ROW":                      "Ряд",
     "MAIN_SEAT":                     "Место",
     "MAIN_REWARD_CARD_POINTS":       "Баллы накопительной карты",
-    "MAIN_TOTAL_AMOUNT_CHARGED":     "Всего заплачено",
+    "MAIN_TOTAL_AMOUNT_CHARGED":     "Всего оплачено",
     "MAIN_RETURN_TO_MENU":           "Вернуться в Меню",
     "MODIFIERS_BUTTON_ADD":          "Добавить",
     "MODIFIERS_OPTIONAL":            "Опционально",
@@ -113,7 +113,7 @@
     "STORE_INFO_VIEW_MAP1":          "Смотреть",
     "STORE_INFO_VIEW_MAP2":          "на большой карте",
     "STORE_INFO_ADDRESS":            "Адрес",
-    "STORE_INFO_HOURS":              "часы",
+    "STORE_INFO_HOURS":              "Часы",
     "STORE_INFO_ROUND_THE_CLOCK":    "Круглосуточно",
     "STORE_INFO_CLOSED":             "Закрыто",
     "STORE_INFO_PHONE":              "Телефон",
@@ -126,7 +126,7 @@
     "TIPS_OTHER":                    "Другое",
     "REWARDS_INFORMATION":           "Накопленные баллы",
     "REWARDS_NUMBER":                "Номер карты",
-    "REWARDS_TOTAL_POINTS":          "Кол-во очков",
+    "REWARDS_TOTAL_POINTS":          "Кол-во баллов",
     "REWARDS_TOTAL_VISITS":          "Кол-во посещений",
     "REWARDS_TOTAL_PURCHASES":       "Кол-во покупок",
     "REWARDS_SELECTION_INFO":        "Выберите вид накоплений, которое вы хотите использовать.",
@@ -136,12 +136,12 @@
     "REWARDS_APPLY":                 "Применить",
     "REWARDS_OFF":                   "скидка",
     "REWARDS_POINTS_REDEMPTION_AMOUNT": [
-        "очко будет потрачено",
-        "очков будет потрачено"
+        "балл будет потрачен",
+        "баллов будет потрачено"
     ],
     "REWARDS_VISITS_REDEMPTION_AMOUNT": [
         "посещение будет потрачено",
-        "посещения будет потрачено"
+        "посещения будут потрачены"
     ],
     "REWARDS_PURCHASES_REDEMPTION_AMOUNT": [
         "покупка будет потрачена",
