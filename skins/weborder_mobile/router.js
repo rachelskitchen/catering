@@ -824,8 +824,8 @@ define(["main_router"], function(main_router) {
         rewards_card_submit: function() {
             this.prepare('rewards', function() {
                 App.Data.header.set({
-                    page_title: 'Rewards Card',
-                    back_title: 'Cancel',
+                    page_title: _loc['HEADER_REWARDS_CARD_PT'],
+                    back_title: _loc['HEADER_REWARDS_CARD_BT'],
                     back: this.navigate.bind(this, 'checkout', true)
                 });
                 App.Data.mainModel.set({
@@ -847,8 +847,8 @@ define(["main_router"], function(main_router) {
                 var rewardsCard = App.Data.myorder.rewardsCard;
 
                 App.Data.header.set({
-                    page_title: 'Rewards',
-                    back_title: 'Cancel',
+                    page_title: _loc['HEADER_REWARDS_PT'],
+                    back_title: _loc['HEADER_REWARDS_PT'],
                     back: this.navigate.bind(this, 'checkout', true)
                 });
 
