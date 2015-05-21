@@ -450,7 +450,7 @@
             'ESTABLISHMENTS_ALERT_BACK_BUTTON_DESKTOP':       'Назад',
             'ESTABLISHMENTS_ALERT_BACK_BUTTON_MOBILE':        'Назад',
             'HALF_PRICE_STR': [
-                'Полный',
+                'Полностью',
                 'Первая половина',
                 'Вторая половина'
             ],
@@ -462,14 +462,14 @@
             'NO_REWARDS_AVAILABLE':                           'Для указанной карты нет данных по накопленным баллам'
         },
         'DINING_OPTION_NAME': {
-            'DINING_OPTION_TOGO':            'Самовывоз',
+            'DINING_OPTION_TOGO':            'Заберу сам',
             'DINING_OPTION_EATIN':           'На месте',
             'DINING_OPTION_DELIVERY':        'Доставка',
             'DINING_OPTION_CATERING':        'Общественное питание',
             'DINING_OPTION_DRIVETHROUGH':    'За рулем',
             'DINING_OPTION_ONLINE':          'Онлайн заказ',
             'DINING_OPTION_OTHER':           'Другой',
-            'DINING_OPTION_DELIVERY_SEAT':   'Доставка на место',
+            'DINING_OPTION_DELIVERY_SEAT':   'Доставка к месту',
             'DINING_OPTION_SHIPPING':        'Сторонняя служба доставки'
         },
 
