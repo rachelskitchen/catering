@@ -141,7 +141,7 @@
     display: inline-block;
     width: 75%;
     position: relative;
-    float: right;
+    float: left;
     line-height: 18px;
     padding-right: 5px;
 }
