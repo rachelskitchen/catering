@@ -1,8 +1,8 @@
 ﻿define(function () {
   return {
     "DINING_OPTION_NAME": {
-        "DINING_OPTION_TOGO":            "Pick up in store",
-        "DINING_OPTION_SHIPPING":        "Shipping"
+        'DINING_OPTION_TOGO':       'Заберу в магазине',
+        'DINING_OPTION_SHIPPING':   'Доставка'
     },
     "CARD_TITLE":                    "Введите данные кредитной карты",
     "CARD_FIRST_NAME":               "Имя",
