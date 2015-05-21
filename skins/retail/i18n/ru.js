@@ -10,9 +10,9 @@
     "CARD_NUMBER":                   "Номер карты",
     "CARD_SECURITY_CODE":            "Код безопасности",
     "CARD_EXP_DATE":                 "Срок действия",
-    "CART_MAIN_TITLE":               "Ваша Корзина",
+    'CART_MAIN_TITLE':               'Корзина',
     "CART_CHECKOUT":                 "Оформить заказ",
-    "CART_CHECKOUT_TITLE":           "Ваша Корзина",
+    'CART_CHECKOUT_TITLE':           'Корзина',
     "CART_PAY":                      "Оплатить",
     "CATEGORIES_SEARCH":             "Поиск",
     "CATEGORIES_ALL":                "Все",
@@ -45,8 +45,8 @@
     "CONFIRM_SUBMIT":                "Оплатить",
     "FILTERS_DEFAULT_SORTING":       "Сортировка по умолчанию",
     "FILTERS_NEW_ARRIVALS":          "Новые поступления",
-    "FILTERS_LOW_TO_HIGH":           "Цены: По возрастанию",
-    "FILTERS_HIGH_TO_LOW":           "Цены: По убыванию",
+    'FILTERS_LOW_TO_HIGH':           'Цена: по возрастанию',
+    'FILTERS_HIGH_TO_LOW':           'Цена: по убыванию',
     "FILTERS_SHOW_ALL":              "Показать все",
     "GIFTCARD_TITLE":                "Введите данные кредитной карты",
     "GIFTCARD_NUMBER":               "Номер карты",
@@ -86,7 +86,7 @@
     "PRODUCTS_GIFT_CARD_NUMBER":     "№ подарочной карты",
     "PRODUCTS_AMOUNT":               "Amount???",
     "QUANTITY_HOW_MANY":             "Количество",
-    "QUANTITY_ENTER_WEIGHT":         "Введите вес",
+    'QUANTITY_ENTER_WEIGHT':         'Вес',
     "STORE_INFO_VIEW":               "Смотреть",
     "STORE_INFO_IN_LARGER_MAP":      "на большой карте",
     "STORE_INFO_ADDRESS":            "Адрес",
@@ -118,6 +118,6 @@
     "REWARDS_PURCHASES_REDEMPTION_AMOUNT": [
         "покупка будет потрачена",
         "покупок будет потрачено"
-    ]    
+    ]
   }// end of locale
 });//end of module

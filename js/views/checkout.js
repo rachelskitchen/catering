@@ -424,7 +424,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         change_cash_text: function() {
             var dining_option = this.collection.checkout.get("dining_option"),
                 isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING';
-            this.$('.cash').html(isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE);
+            this.$('.cash > span').html(isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE);
         },
         gift_card: function() {
             var self = this;
