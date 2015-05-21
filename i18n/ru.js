@@ -27,13 +27,13 @@
         },
         // http://www.tetran.ru/SiteContent/Details/4
         'DAYS_OF_WEEK_SHORT': {
-            'monday':      'Пнд.',
-            'tuesday':     'Втр.',
-            'wednesday':   'Срд.',
-            'thursday':    'Чтв.',
-            'friday':      'Птн.',
-            'saturday':    'Сбт.',
-            'sunday':      'Вск.'
+            'monday':      'Пн.',
+            'tuesday':     'Вт.',
+            'wednesday':   'Ср.',
+            'thursday':    'Чт.',
+            'friday':      'Пт.',
+            'saturday':    'Сб.',
+            'sunday':      'Вс.'
         },
         'DAYS': {
             'TODAY':       'Сегодня',
@@ -367,13 +367,13 @@
             'BLOCK_WEIGHT_IS_NOT_VALID':   'Вес продукта не установлен или нулевой',
             'MAINTENANCE_CONFIGURATION':   'Не удается получить настройки приложения. Пожалуйста, проверьте серверные настройки',
             'MAINTENANCE_PAYMENT':         'Установите по крайней мере 1 платежную систему',
-            'MAINTENANCE_DINING':          'Please setup at least one dining option', // ???
-            'MAINTENANCE_ORDER_TYPE':      'Please setup at least one order type (in-store pickup or shipping)', // ???
+            'MAINTENANCE_DINING':          'Пожалуйста, установите хотя бы один тип заказа (на сервере в настройках магазина dining option)',
+            'MAINTENANCE_ORDER_TYPE':      'Пожалуйста, установите хотя бы один тип заказа (на сервере в настройках магазина dining option: pickup или shipping)',
             'RESOURCES_CSS':               'Невозможно загрузить ресурсы CSS. Страница будет перезагружена.',
             'RESOURCES_TEMPLATES':         'Невозможно загрузить ресурсы шаблонов. Страница будет перезагружена.'
         },
         'MSG': {
-            'ERROR_STORE_IS_CLOSED':                          'We\'re sorry, your order cannot be processed because the store is closed for selected pickup day/time', // ???
+            'ERROR_STORE_IS_CLOSED':       'Извините, ваш заказ не может быть принят, т.к. магазин закрыт для выбранной даты/времени подготовки заказа', 
             'ERROR_GEOLOCATION': [
                 'Ошибка при получении вашего местоположения.',
                 'Определение вашего местоположения запрещено. Сбросьте настройки местоположения для разрешения этого действия.',
@@ -382,11 +382,11 @@
             ],
             'ERROR_GEOLOCATION_NOAPI':                        'Geolocation API не поддерживается в вашем браузере.',
             'ERROR_SUBMIT_ORDER':                             'Не удалось отправить заказ. Пожалуйста, повторите еще раз.',
-            'ERROR_ORDERS_PICKUPTIME_LIMIT':                  'Maximum number of orders for this pickup time exceeded. Please select different pickup time.', // ???
+            'ERROR_ORDERS_PICKUPTIME_LIMIT':                  'Достигнуто максимально возможное число заказов на данное время. Пожалуйста, измените время заказа.',
             'ERROR_INSUFFICIENT_STOCK':                       'Недостаточное количество некоторых продуктов.',
             'ERROR_OCCURRED':                                 'Произошла ошибка:',
             'ERROR_HAS_OCCURRED':                             'Произошла ошибка',
-            'ERROR_HAS_OCCURRED_WITH_CONTACT':                'Произошла ошибка, пожалуйста обратитесь сюда: %email: %%phone: %',
+            'ERROR_HAS_OCCURRED_WITH_CONTACT':                'Произошла ошибка, пожалуйста, обратитесь сюда: %email: %%phone: %',
             'ERROR_MIN_ITEMS_LIMIT':                          'Выберите по крайней мере %s продуктов для создания заказа.',
             'ERROR_INCORRECT_AJAX_DATA':                      'Неверные данные в серверном ответе.',
             'ERROR_SERVER_UNREACHED':                         'Сервер не доступен в настоящий момент.',
@@ -399,12 +399,12 @@
             'ERROR_PRODUCTS_LOAD':                            'Невозможно получить список продуктов меню от севрера. Страница будет перезагружена.',
             'ERROR_STORES_LOAD':                              'Невозможно получить список магазинов.',
             'DELIVERY_ITEM':                                  'Стоимость доставки',
-            'BAG_CHARGE_ITEM':                                'Bag Charge', // ???
+            'BAG_CHARGE_ITEM':                                'Упаковка',
             'REPEAT_ORDER_NOTIFICATION':                      'Некоторые товары были изменены или не доступны. Пожалуйста, ознакомьтесь с деталями перед оформлением заказа.',
             'REWARD_CARD_UNDEFINED':                          'Ошибка в номер бонусной карты',
-            'ADD_MORE_FOR_DELIVERY':                          'Добавьте больше %s товаров для доставки',
-            'ADD_MORE_FOR_SHIPPING':                          'Please add %s more for shipping', // ???
-            'ERROR_PRODUCT_NOT_SELECTED':                     'Вы не выбрали ни единого товара',
+            'ADD_MORE_FOR_DELIVERY':                          'Пожалуйста, добавьте еще %s товаров для доставки',
+            'ADD_MORE_FOR_SHIPPING':                          'Пожалуйста, добавьте еще %s для доставки',
+            'ERROR_PRODUCT_NOT_SELECTED':                     'Вы не выбрали ни одного товара',
             'ERROR_EMPTY_NOT_VALID_DATA':                     'Обязательные поля пусты или содержат неверные данные: %s',
             'ERROR_GRATUITY_EXCEEDS':                         'Сумма чаевых не может превышать сумму чека',
             'ERROR_CARD_EXP':                                 'Срок действия меньше текущей даты',
@@ -414,14 +414,14 @@
             'PAY_AT_STORE':                                   'В магазине',
             'PAY_AT_DELIVERY':                                'Оплата при доставке',
             'ERROR_GET_CHILD_PRODUCTS':                       'Невозможно получить информацию о продукте от сервера. Страница будет перезагружена.',
-            'ERROR_SHIPPING_SERVICES_NOT_FOUND':              'No shipping services found', // ???
-            'SHIPPING_SERVICES_RETRIVE_IN_PROGRESS':          'Retrieving shipping services...', // ???
+            'ERROR_SHIPPING_SERVICES_NOT_FOUND':              'Службы доставки не найдены',
+            'SHIPPING_SERVICES_RETRIVE_IN_PROGRESS':          'Получение списка служб доставки...',
             'SHIPPING_SERVICES_SET_ADDRESS':                  'Заполните обязательные поля адреса выше',
             'PRODUCTS_EMPTY_RESULT':                          'Товары не найдены',
             'FILTER_SHOW_ALL':                                'Показать все',
             'FREE_MODIFIERS_PRICE':                           'Модификаторы для %s бесплатны',
-            'FREE_MODIFIERS_QUANTITY':                        'Первые выбранные модификаторы %s бесплатны',
-            'FREE_MODIFIERS_QUANTITY1':                       'Первый выбранный модификатор бесплатен',
+            'FREE_MODIFIERS_QUANTITY':                        'Первые выбранные модификаторы %s - бесплатные',
+            'FREE_MODIFIERS_QUANTITY1':                       'Первый выбранный модификатор - бесплатный',
             'PRODUCTS_VALID_TIME':                            'Достапный: ',
             'ERROR_REVEL_EMPTY_NEW_PASSWORD':                 'Введите новый пароль.',
             'ERROR_REVEL_EMPTY_OLD_PASSWORD':                 'Введите старый пароль.',
@@ -455,8 +455,8 @@
                 'Вторая половина'
             ],
             'REVEL_DIRECTORY_WELCOME_TEXT':                   'и легко оплатите в любом заведении, использующим Revel',
-            'BRAND_DIRECTORY_WELCOME_TEXT':                   'для простой оплаты',
-            'ERROR_INTEGRITY_TEST_MAIN':                      'Не найдена функция testA_xx в main.js (functions.js). Попробуйте вручную очистить кэш браузера и перезагрузиться.',
+            'BRAND_DIRECTORY_WELCOME_TEXT':                   'для легкой оплаты',
+            'ERROR_INTEGRITY_TEST_MAIN':                      'Не найдена функция testA_xx в main.js (functions.js). Попробуйте вручную очистить кэш браузера и перезагрузить страницу.',
             'MODIFIER_FREE':                                  'бесплатно',
             'ERROR_PAYPAL_DIRECTIONS_NO_RESULT':              'Невозможно получить маршрут',
             'NO_REWARDS_AVAILABLE':                           'Для указанной карты нет данных по накопленным баллам'
