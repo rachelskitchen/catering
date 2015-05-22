@@ -139,7 +139,7 @@
         'REVEL_PAYMENT_INFO':              'Платежная инфо. (можно использовать при формировании платежа)',
         'REVEL_CARD_NUMBER':               '№ карты',
         'REVEL_SECURITY_CODE':             'Защитный код',
-        'REVEL_EXP_DATE':                  'Срок дей-ия',
+        'REVEL_EXP_DATE':                  'Срок',
         'REVEL_USE_DEFAULT_CC':            'Использовать по умолчанию для платежей',
         'REVEL_SECURITY_INFO1':            'Логин/пароль (используются для аутентификации в',
         'REVEL_SECURITY_INFO2':            'Программе Лояльности)',
