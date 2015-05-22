@@ -316,8 +316,8 @@ define(["backbone"], function(Backbone) {
          * Get ID of month in format JS.
          */
         _get_month_id: function(month_text) { //Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
-            for (var i = 0; i < _loc.ARRAY_MONTH.length; i++) {
-                if (month_text === _loc.ARRAY_MONTH[i].substr(0, 3)) {
+            for (var i = 0; i < EN_ARRAY_MONTH.length; i++) {
+                if (month_text === EN_ARRAY_MONTH[i].substr(0, 3)) {
                     return i;
                 }
             }
