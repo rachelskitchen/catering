@@ -99,6 +99,7 @@
 
 #content .checkout .input.rewardCard {
     top: 0 !important;
+    margin-bottom: 2.0em;
 }
 
 #content .checkout input.firstName, #content .checkout input.lastName, #content .checkout input[name="city"],
@@ -197,5 +198,5 @@
 .checkout .rewards-card-btn {
     float: right;
     padding-top: 0.5em;
-    font-size: 0.8em;
+    font-size: 1.0em;
 }

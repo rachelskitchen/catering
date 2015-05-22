@@ -74,7 +74,7 @@
         'MAIN_CURRENT_STORE':              'Текущий магазин',
         'MAIN_CHANGE':                     'Изменить?',
         'MAIN_OR':                         'или',
-        'MAIN_GOTO_DIRECTORY':             'Перейти в Директорию',
+        'MAIN_GOTO_DIRECTORY':             'Перейти в каталог',
         'MAIN_BACK':                       'Назад',
         'MAIN_RESTART':                    'Перезагрузить',
         'MAIN_ORDER_SUBMITTED':            'Ваш заказ принят',
