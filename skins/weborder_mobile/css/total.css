@@ -54,7 +54,7 @@
 
 #content ul.confirm span.title {
     float: left;
-    width: 40%;
+    width: 60%;
 }
 
 #content ul.confirm span.cost {
@@ -62,7 +62,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
     display: inline-block;
-    width: 60%;
+    width: 40%;
     float: right;
     font-weight: bold;
     text-align: right;
