@@ -566,7 +566,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             var data = this.model.toJSON();
             data.iPad = iPad();
             this.$el.html(this.template(data));
-            inputTypeStringMask(this.$('input'), /^[\d\w]{0,16}$/, '');
+            inputTypeStringMask(this.$('input'), /^[\d\w]{1,200}$/, '');
 
             return this;
         },
@@ -588,7 +588,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             var self = this,
                 myorder = this.options.myorder;
 
-            if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
+            if (!/^[\d\w]{1,200}$/.test(this.model.get("discount_code")) ) {
                 App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
                 return;
             }
@@ -621,7 +621,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             data.discount_allow = App.Settings.accept_discount_code === true;
             data.discount_code_applied = this.model.get("last_discount_code");
             this.$el.html(this.template(data));
-            inputTypeStringMask(this.$('input'), /^[\d\w]{0,16}$/, '');
+            inputTypeStringMask(this.$('input'), /^[\d\w]{1,200}$/, '');
             return this;
         },
         events: {
@@ -656,7 +656,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             var self = this,
                 myorder = this.options.myorder;
 
-            if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
+            if (!/^[\d\w]{1,200}$/.test(this.model.get("discount_code")) ) {
                 App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
                 return;
             }

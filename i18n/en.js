@@ -429,7 +429,7 @@
             'ERROR_REVEL_AUTHENTICATION_FAILED':              'Authentication failed. Please enter valid email & password.',
             'ERROR_NO_MSG_FROM_SERVER':                       'No message about the error',
             'ERROR_GET_DISCOUNTS':                            'Failed request to get discounts',
-            'ERROR_INCORRECT_DISCOUNT_CODE':                  'Type correct discount code from 4 to 16 characters',
+            'ERROR_INCORRECT_DISCOUNT_CODE':                  'Type correct discount code from 1 to 200 characters',
             'DISCOUNT_CODE_NOT_FOUND':                        'The typed discount code hasn\'t been found. Automatic discounts can be applied only.',
             'DISCOUNT_CODE_NOT_APPLICABLE':                   'The typed discount code is not applicable now. Automatic discounts can be applied only.',
             'ESTABLISHMENTS_ERROR_NOSTORE':                   'No store is available for the specified brand',
