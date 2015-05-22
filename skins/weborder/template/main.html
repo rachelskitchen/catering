@@ -16,11 +16,11 @@
                 <% if(isDirMode) { %>
                     <%= _lp.MAIN_OR %>
                 <% } %>
+                <% if (isDirMode) { %>
+                    <a class="go-to-directory link1" href="javascript: void(0);"> <%= _lp.MAIN_GOTO_DIRECTORY %> </a>
+                <% } %>
             </span>
         </div>
-        <% if(isDirMode) { %>
-            <a class="go-to-directory link1" href="javascript: void(0);"><%= _lp.MAIN_GOTO_DIRECTORY %></a>
-        <% } %>
         <a class="powered-by" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
     </footer>
     <div class="popup">
