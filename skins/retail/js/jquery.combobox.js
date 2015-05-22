@@ -66,14 +66,15 @@
                 });
 
                 //bind the focus handler
-                inputbox.focus(function() {
+                inputbox.focus(function(e) {
                     setTimeout(function() {
+                        moveCursorToTheEnd(e.target);
                         selectbox.fadeIn(100);
-                    }, 100);
+                    }, 1);
                 }).blur(function() {
                     setTimeout(function() {
                         selectbox.fadeOut(100);
-                    }, 100);
+                    }, 1);
                 }).keyup(function(e) {
                     if (e.which == 13) {
                         inputbox.trigger("blur");
@@ -186,6 +187,15 @@
             return true; // digit
         }
         return false;
+    }
+
+    function moveCursorToTheEnd(input) {
+        try {
+            input.selectionStart = input.selectionEnd = input.value.length;
+        } catch (ex) {
+            // Chrome does not support selection for input element's type 'number'
+            input.value = input.value;
+        }
     }
 
 }(jQuery));
