@@ -174,9 +174,11 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
          */
         loadTotal: function() {
             var json = getData('total');
-            delete json.delivery;
-            delete json.tip;
-            this.set(json);
+            if (json) {
+              delete json.delivery;
+              delete json.tip;
+              this.set(json);
+            }
             this.get('tip').loadTip();
         },
         /**
