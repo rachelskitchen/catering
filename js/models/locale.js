@@ -56,7 +56,7 @@ define(['backbone'], function(Backbone) {
                 defLocalePlaceholders,
                 curLocalePlaceholders,
                 resultPlaceholders,
-                curLocale = window.navigator.language.replace(/-.*/g, '');
+                curLocale = App.Data.curLocale;
 
             if (App.skin && App.skin == App.Skins.MLB) {
                 curLocale = DEFAULT_LOCALE; // no translations for MLB skin

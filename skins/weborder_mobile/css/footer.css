@@ -156,16 +156,6 @@
     font-size: 3em;
 }
 
-#placeOrder {
-    left: 2em;
-    right: 4em;
-}
-
-#creditCard {
-    left: 4em;
-    right: 2em;
-}
-
 /* checkout mod end */
 /* card mod start */
 
@@ -258,17 +248,24 @@
     width: auto;
 }
 
+#footer #creditCard {
+    right: auto;
+    max-width: 25.5em;
+    min-width: 23.5em;
+}
+
+#footer #giftcard {
+    left: auto;
+    max-width: 25.5em;
+    min-width: 23.5em;
+}
+
 #footer ul.confirm div span {
     top: 0;
 }
 
 #footer ul.confirm div span {
     font-size: 3em;
-}
-
-#pay {
-    right: 4em;
-    left: 2em;
 }
 
 #footer .btn1 img {
