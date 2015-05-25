@@ -73,7 +73,8 @@
             devMode: /dev=true/.test(location.search),
             devPath: /\/dev\//.test(location.href),
             images: {},
-            log: {}
+            log: {},
+            curLocale: window.navigator.language.replace(/-.*/g, '') 
         },
         Models: {},
         lastModelViews: {},
