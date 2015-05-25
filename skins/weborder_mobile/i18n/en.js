@@ -176,6 +176,7 @@
         'STORE_INFO_ACCESS':               'Access',
         'TIPS_ADD':                        'Add a Tip',
         'TIPS_NONE':                       'None',
+        'TIPS_OTHER':                      'Other',
         'REWARDS_INFORMATION':             'Rewards Information',
         'REWARDS_NUMBER':                  'Rewards #',
         'REWARDS_TOTAL_POINTS':            'Total Points',
