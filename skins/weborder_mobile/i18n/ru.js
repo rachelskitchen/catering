@@ -176,6 +176,7 @@
         'STORE_INFO_ACCESS':               'Доступ',
         'TIPS_ADD':                        'Оставить чаевые',
         'TIPS_NONE':                       'Нет',
+        'TIPS_OTHER':                      'Другое',
         'REWARDS_INFORMATION':             'Накопленные баллы',
         'REWARDS_NUMBER':                  'Номер карты',
         'REWARDS_TOTAL_POINTS':            'Кол-во баллов',
