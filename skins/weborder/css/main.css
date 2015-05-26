@@ -219,7 +219,7 @@ footer {
 #header .main div.logo, #header .checkout div.logo {
     height: 100%;
     position: absolute;
-    left: 305px;
+    left: 341px;
     right: 0;
     top: 0;
     text-align: center;
@@ -754,7 +754,7 @@ section.maintenance #header .btn {
 
 /* delivery info block */
 .delivery_info {
-    width: 305px;
+    width: 341px;
     left: 0;
     position: absolute;
     top: 20px;
@@ -779,7 +779,7 @@ section.maintenance #header .btn {
     padding-right: 5px;
 }
 .delivery_info > span:nth-child(2n) {
-    width: 184px;
+    width: 220px;
     padding-left: 0;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -821,7 +821,8 @@ section.maintenance #header .btn {
     font-size: 21px;
 }
 .confirm .btn.btn-long {
-    width: 400px;
+    min-width: 400px;
+    max-width: 450px;
 }
 .confirm #content img {
     height: 200px;
