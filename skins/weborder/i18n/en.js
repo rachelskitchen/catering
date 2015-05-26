@@ -15,6 +15,7 @@
         'CHECKOUT_EMAIL':                  'Email',
         'CHECKOUT_PHONE':                  'Phone',
         'CHECKOUT_REWARD_CARD':            'Reward Card #',
+        'CHECKOUT_SEE_REWARDS':            'See Rewards',
         'CHECKOUT_ORDER_TYPE':             'Order Type',
         'CHECKOUT_COUNTRY':                'Country',
         'CHECKOUT_ADDRESS_LINE1':          'Address Line 1',
