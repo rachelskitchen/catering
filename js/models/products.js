@@ -277,8 +277,8 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                 return success();
             }
 
-            (!gift_number || checked_gift_cards[gift_number] === false) && err.push('Gift Card Number');
-            !price && err.push('Price');
+            (!gift_number || checked_gift_cards[gift_number] === false) && err.push(_loc.PRODUCTS_GIFT_CARD_NUMBER);
+            (!price) && err.push(_loc.PRODUCTS_AMOUNT);
 
             if (err.length) {
                 error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, err.join(', ')));
@@ -300,7 +300,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                                 success();
                                 break;
                             default:
-                                err.push('Gift Card Number');
+                                err.push(_loc.PRODUCTS_GIFT_CARD_NUMBER);
                                 checked_gift_cards[gift_number] = false;
                                 error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, err.join(', ')));
                         }
