@@ -59,7 +59,7 @@
         'HEADER_DELIVERY_TIME':            'Время доставки',
         'HEADER_DELIVERY_HOUR':            'ч',
         'HEADER_DELIVERY_MINUTES':         'мин',
-        'HEADER_DELIVERY_ASAP':            'Сейчас',
+        'HEADER_DELIVERY_ASAP':            'Сейчас (15 мин)',
         'HEADER_DELIVERY_MINIMUM':         'Минимум',
         'HEADER_DELIVERY_AREA':            'Зоны доставки',
         'HEADER_DELIVERY_RADIUS':          'Радиус доставки',
