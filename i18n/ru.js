@@ -462,10 +462,10 @@
             'NO_REWARDS_AVAILABLE':                           'Для указанной карты нет данных по накопленным баллам'
         },
         'DINING_OPTION_NAME': {
-            'DINING_OPTION_TOGO':            'Заберу сам',
-            'DINING_OPTION_EATIN':           'На месте',
+            'DINING_OPTION_TOGO':            'С собой',
+            'DINING_OPTION_EATIN':           'В зале',
             'DINING_OPTION_DELIVERY':        'Доставка',
-            'DINING_OPTION_CATERING':        'Общественное питание',
+            'DINING_OPTION_CATERING':        'Кейтеринг',
             'DINING_OPTION_DRIVETHROUGH':    'За рулем',
             'DINING_OPTION_ONLINE':          'Онлайн заказ',
             'DINING_OPTION_OTHER':           'Другой',
