@@ -14,7 +14,7 @@
         'CHECKOUT_LAST_NAME':              'Фамилия',
         'CHECKOUT_EMAIL':                  'Эл. почта',
         'CHECKOUT_PHONE':                  'Телефон',
-        'CHECKOUT_REWARD_CARD':            'Накопительная карта №',
+        'CHECKOUT_REWARD_CARD':            'Накоп-ая карта №',
         'CHECKOUT_SEE_REWARDS':            'См. бонусы',
         'CHECKOUT_ORDER_TYPE':             'Тип заказа',
         'CHECKOUT_COUNTRY':                'Страна',
