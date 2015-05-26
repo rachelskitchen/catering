@@ -46,10 +46,10 @@ define(["backbone"], function(Backbone) {
         check: function() {
             var err = [];
             if (!this.get('cardNumber')) {
-                err.push('Gift Card Number');
+                err.push(_loc.GIFTCARD_NUMBER);
             }
             if (!this.get('captchaValue')) {
-                err.push('Captcha');
+                err.push(_loc.GIFTCARD_CAPTCHA);
             }
             if (err.length) {
                 return {
