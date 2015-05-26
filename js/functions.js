@@ -349,7 +349,7 @@ function loadTemplate2(name, file, isCore, loadModelTemplate) {
 
     if (loadTemplate2[id] === undefined) {
         $.ajax({
-            url: isCore ? 'template/' + file + '.html' : App.Data.settings.get('skinPath') + '/template/' + file + '.html',
+            url: isCore ? 'template/' + file + '.html' : App.Data.settings.get('skinPath') + '/template/' + file + '.html?ver=' + autoVersion,
             dataType: "html",
             success : function(data) {
                 var tmplEl = $(data);
@@ -376,7 +376,7 @@ function loadTemplate(name,file) {
     var dfd = $.Deferred();
     if ($("#" + name).length === 0) {
         $.ajax({
-            url: App.Data.settings.get('skinPath') + "/template/" + file + ".html",
+            url: App.Data.settings.get('skinPath') + "/template/" + file + ".html?ver=" + autoVersion,
             dataType: "html",
             success: function(data) {
                 $("head").append(data);
@@ -438,7 +438,7 @@ function loadCSS(name, loadModelCSS) {
         cache = true;
         elem = loadCSS.cache[id];
     } else {
-        elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
+        elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css?ver=' + autoVersion + '" type="text/css" />');
         if (!loadEventUnsupported) {
             // bug #18285 - no timeout for app assets
             /**
