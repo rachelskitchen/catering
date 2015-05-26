@@ -82,7 +82,7 @@
         'MYORDER_WEIGHT':                  'в/',
         'MYORDER_ADD_TO_BAG':              'Добавить',
         'MYORDER_UPDATE_ITEM':             'Изменить',
-        'PRODUCTS_ENTER_GIFT_CARD':        'Введите номер подарочной карты на которую Вы хотите положить деньги',
+        'PRODUCTS_ENTER_GIFT_CARD':        'Введите номер подарочной карты, на которую вы хотите положить деньги',
         'PRODUCTS_GIFT_CARD_NUMBER':       '№ карты',
         'PRODUCTS_AMOUNT':                 'Сумма',
         'QUANTITY_HOW_MANY':               'Количество',

@@ -1,6 +1,6 @@
 .rewards-info {
     position: relative;
-    width: 400px !important;
+    width: 460px !important;
     text-align: left;
     padding-bottom: 6px;
 }
@@ -22,9 +22,9 @@
 
 .rewards-info label {
     display: inline-block;
+    width: 140px;
     font-weight: bold;
     text-align: right;
-    width: 87px;
     padding-right: 10px;
 }
 
@@ -40,7 +40,7 @@
     display: inline-block;
     height: 48px;
     width: 120px;
-    margin: 24px 0 12px 101px;
+    margin: 24px 0 12px 154px;
     font-size: 8px;
     position: relative;
 }
@@ -137,8 +137,9 @@
 
 .rewards-info .rewards-card-btn {
     display: inline-block;
+    max-width: 145px;
+    margin: 24px 0 12px 12px;
     line-height: 48px;
-    margin: 24px 50px 12px 12px;
     vertical-align: top;
     text-decoration: underline;
     cursor: pointer;

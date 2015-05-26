@@ -243,21 +243,9 @@
     bottom: 1em;
     line-height: 8em;
     text-align: center;
-    left: 4em;
-    right: 4em;
+    left: 2em;
+    right: 2em;
     width: auto;
-}
-
-#footer #creditCard {
-    right: auto;
-    max-width: 25.5em;
-    min-width: 23.5em;
-}
-
-#footer #giftcard {
-    left: auto;
-    max-width: 25.5em;
-    min-width: 23.5em;
 }
 
 #footer ul.confirm div span {
@@ -275,6 +263,11 @@
 
 /* confirm mod end */
 /* done, maintenance mod start */
+
+#pay {
+    right: 4em;
+    left: 2em;
+}
 
 #returnToMenu, #reload {
     position: absolute;
