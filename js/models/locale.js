@@ -33,6 +33,13 @@ define(['backbone'], function(Backbone) {
                 dfd_skin = $.Deferred(),
                 load_all = $.Deferred();
 
+            if (!App.Data.get_parameters) {
+                App.Data.get_parameters = parse_get_params();
+            }
+            if (App.Data.get_parameters.locale) {
+                App.Data.curLocale = App.Data.get_parameters.locale;
+            }
+
             this.corePlaceholders = {};
             this.skinPlaceholders = {};
             this.clear();
