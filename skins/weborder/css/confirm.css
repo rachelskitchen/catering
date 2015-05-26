@@ -96,11 +96,12 @@
 }
 .confirmPayCard .btn-reload {
     display: inline-block;
+    min-width: 70px;
+    max-width: 132px;
     vertical-align: top;
     height: 20px;
     font-size: 15px;
     line-height: 20px;
-    width: 70px;
     margin-top: 4px;
 }
 
