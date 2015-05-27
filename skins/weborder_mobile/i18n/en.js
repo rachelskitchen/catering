@@ -16,6 +16,8 @@
         'CHECKOUT_PHONE':                  'Phone #',
         'CHECKOUT_REWARD_CARD':            'Reward Card',
         'CHECKOUT_REWARD_CARD_NUMBER':     'Reward Card #',
+        'CHECKOUT_APPLY':                  'Apply',
+        'CHECKOUT_SEE_REWARDS':            'See Rewards',
         'CHECKOUT_LEVEL':                  'Level',
         'CHECKOUT_SECTION':                'Section',
         'CHECKOUT_ROW':                    'Row',
