@@ -322,6 +322,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             function saveData() {
                 try {
                     self.set('useAsDefaultCard', Boolean(self.get('useAsDefaultCard')));
+                    self.setOriginalProfileData();
                     var data = {
                         card: self.get('card').toJSON(),
                         useAsDefaultCard: self.get('useAsDefaultCard')
@@ -335,7 +336,6 @@ define(["backbone", "card", "customers"], function(Backbone) {
                     console.log('Unable to save user\'s profile', '\n', e);
                 }
             }
-
         },
         getProfile: function(cb) {
             var self = this;
