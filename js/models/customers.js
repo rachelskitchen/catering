@@ -253,7 +253,7 @@ define(["backbone", "geopoint"], function(Backbone) {
 
             !this.get('first_name') && err.push(_loc.CHECKOUT_FIRST_NAME);
             !this.get('last_name') && err.push(_loc.CHECKOUT_LAST_NAME);
-            !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.CHECKOUT_EMAIL + ' (' + (this.get('email') ? this.get('email') : 'empty') + ')');
+            !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.CHECKOUT_EMAIL);
             !this.get('phone') && err.push(_loc.CHECKOUT_PHONE);
 
             if(this.isNewAddressSelected(dining_option)) {
