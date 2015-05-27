@@ -116,7 +116,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.card.set('secondName', e.target.value);
         },
         changeEmail: function(e) {
-            this.customer.set('email', e.target.value);
+            this.customer.set('email', e.target.value.trim());
         },
         changePhone: function(e) {
             this.customer.set('phone', e.target.value);
