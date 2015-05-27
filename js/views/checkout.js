@@ -95,9 +95,13 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         },
         events: {
             'blur .firstName': 'changeFirstName',
+            'change .firstName': 'changeFirstName',
             'blur .lastName': 'changeLastName',
+            'change .lastName': 'changeLastName',
             'blur .email': 'changeEmail',
+            'change .email': 'changeEmail',
             'blur .phone': 'changePhone',
+            'change .phone': 'changePhone',
             'blur .rewardCard': 'changeRewardCard',
             'click .rewards-card-apply': 'applyRewardsCard',
             'click .see-rewards': 'showRewards',
