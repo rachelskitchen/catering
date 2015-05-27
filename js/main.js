@@ -36,7 +36,6 @@ require(['app'], function() {
     // set REVEL_HOST for getting data from it
     //app.REVEL_HOST = "https://weborder-dev-branch.revelup.com";
     app.REVEL_HOST = window.location.origin;
-    app.REVEL_HOST = 'https://weborder-dev-branch.revelup.com';
 
     // run app
     app.init();
