@@ -275,12 +275,11 @@
     bottom: 19.0em;
 }
 #content .discountBlock .discount_field {
-    float: left;
     height: 1.8em;
     font-size: 2.4em;
     margin-top: 0.2em;
     margin-left: 0.5em;
-    width: 8.5em;    
+    width: 7em;
     position: relative;
 }
 #content .discountBlock .discount_field:before {
@@ -309,7 +308,6 @@
 #content .discountBlock .btns {
     margin-top: 0.8em;
     margin-left: 1.3em;
-    float: left;
 }
 #content .discountBlock .btns span {
     font-size: 2.4em;
@@ -319,7 +317,8 @@
     border-width: 1px;
     border-style: solid;
     position: relative;
-    max-width: 6.0em;
+    width: 6em;
+    text-align: center;
 }
 
 #content .discountBlock  .discount_code_text {

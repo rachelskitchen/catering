@@ -125,7 +125,7 @@
     bottom: 0;
     left: 1.5em;
     right: 1.5em;
-    height: 16em;
+    height: 13.5em;
     padding: 0em 0 0.8em;
 }
 
@@ -138,7 +138,7 @@
 
 #content .myorderNote .note_field {
     width: 90%;
-    height: 3.5em;
+    height: 3.3em;
     font-size: 2.4em;
     margin: 0.2em auto;
     position: relative;
