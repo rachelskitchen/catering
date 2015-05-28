@@ -529,6 +529,7 @@ define(["main_router"], function(main_router) {
                             model: App.Data.filter,
                             categories: categories,
                             search: App.Data.search,
+                            products: App.Data.products,
                             mod: 'Sort',
                             className: 'filter sort select-wrapper'
                         },

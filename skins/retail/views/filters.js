@@ -43,10 +43,27 @@ define(["factory"], function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.update();
         },
+        /**
+         * Enable/disable the drop-down list.
+         *
+         * @param {numeric} count The quantity of products.
+         */
+        control: function(count) {
+            if (count <= 1)
+                this.disable(); // disable the drop-down list
+            else
+                this.enable(); // enable the drop-down list
+        },
+        /**
+         * Disable the drop-down list.
+         */
         disable: function() {
             this.$('select').attr('disabled', 'disabled');
             this.$el.addClass('disabled');
         },
+        /**
+         * Enable the drop-down list.
+         */
         enable: function() {
             this.$('select').removeAttr('disabled');
             this.$el.removeClass('disabled');
@@ -55,7 +72,16 @@ define(["factory"], function() {
             this.enable();
         },
         onProductsLoaded: function() {
-            this.enable();
+            var count = 0,
+                selectedCategories = this.options.categories.selected;
+
+            if (Array.isArray(selectedCategories)) {
+                selectedCategories.forEach(function(category) {
+                    count += this.options.products[category].length;
+                }, this);
+            }
+
+            this.control(count); // enable/disable the drop-down list
         },
         onCategorySelected: function() {
             this.enable();
