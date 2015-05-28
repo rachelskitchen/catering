@@ -189,9 +189,10 @@ define(["backbone", "async"], function(Backbone) {
          */
         get_settings_for_skin: function() {
             var self = this,
-                load = $.Deferred();
+                load = $.Deferred(),
+                version = is_minimized_version ? '?ver=' + autoVersion : '';
             $.ajax({
-                url: self.get("skinPath") + "/settings.json",
+                url: self.get("skinPath") + "/settings.json" + version,
                 dataType: "json",
                 success: function(data) {
                     var settings_skin = {};

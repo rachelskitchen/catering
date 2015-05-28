@@ -348,8 +348,9 @@ function loadTemplate2(name, file, isCore, loadModelTemplate) {
     }
 
     if (loadTemplate2[id] === undefined) {
+        var version = is_minimized_version ? '?ver=' + autoVersion : '';
         $.ajax({
-            url: isCore ? 'template/' + file + '.html' : App.Data.settings.get('skinPath') + '/template/' + file + '.html',
+            url: isCore ? 'template/' + file + '.html' : App.Data.settings.get('skinPath') + '/template/' + file + '.html' + version,
             dataType: "html",
             success : function(data) {
                 var tmplEl = $(data);
@@ -375,8 +376,9 @@ function loadTemplate2(name, file, isCore, loadModelTemplate) {
 function loadTemplate(name,file) {
     var dfd = $.Deferred();
     if ($("#" + name).length === 0) {
+        var version = is_minimized_version ? '?ver=' + autoVersion : '';
         $.ajax({
-            url: App.Data.settings.get('skinPath') + "/template/" + file + ".html",
+            url: App.Data.settings.get('skinPath') + "/template/" + file + ".html" + version,
             dataType: "html",
             success: function(data) {
                 $("head").append(data);
@@ -432,13 +434,14 @@ function loadCSS(name, loadModelCSS) {
         loadModelCSS.count--;
         if (loadModelCSS.count === 0) loadModelCSS.dfd.resolve();
     }
-    var cache = false;
+    var cache = false,
+        version = is_minimized_version ? '?ver=' + autoVersion : '';
 
     if(loadCSS.cache[id] instanceof $) {
         cache = true;
         elem = loadCSS.cache[id];
     } else {
-        elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
+        elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css' + version + '" type="text/css" />');
         if (!loadEventUnsupported) {
             // bug #18285 - no timeout for app assets
             /**
