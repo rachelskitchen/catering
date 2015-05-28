@@ -114,6 +114,21 @@ define(["revel_view", "generator"], function(revel_view) {
     var FooterCheckoutView = App.Views.FactoryView.extend({
         name: 'footer',
         mod: 'checkout',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(App.Data.customer, 'change:shipping_services', this.updateConfirmButtonState, this);
+            this.updateConfirmButtonState();
+        },
+        updateConfirmButtonState: function() {
+            var customer = App.Data.customer,
+                status = customer.get('load_shipping_status'),
+                confirm = this.$('#confirmOrder');
+            if ('pending' == status) {
+                confirm.addClass('disabled');
+            } else {
+                confirm.removeClass('disabled');
+            }
+        },
         events: {
             "click #confirmOrder": "confirmOrder",
             "click .profile": "profile"
