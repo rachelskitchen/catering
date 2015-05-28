@@ -95,9 +95,13 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         },
         events: {
             'blur .firstName': 'changeFirstName',
+            'change .firstName': 'changeFirstName',
             'blur .lastName': 'changeLastName',
+            'change .lastName': 'changeLastName',
             'blur .email': 'changeEmail',
+            'change .email': 'changeEmail',
             'blur .phone': 'changePhone',
+            'change .phone': 'changePhone',
             'blur .rewardCard': 'changeRewardCard',
             'click .rewards-card-apply': 'applyRewardsCard',
             'click .see-rewards': 'showRewards',
@@ -112,7 +116,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.card.set('secondName', e.target.value);
         },
         changeEmail: function(e) {
-            this.customer.set('email', e.target.value);
+            this.customer.set('email', e.target.value.trim());
         },
         changePhone: function(e) {
             this.customer.set('phone', e.target.value);
@@ -400,6 +404,18 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.needPreValidate = payment.payment_count == 1 && this.flag;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection.checkout, 'change:dining_option', this.change_cash_text);
+            this.listenTo(App.Data.customer, 'change:shipping_services', this.updatePayButtonState, this);
+            this.updatePayButtonState();
+        },
+        updatePayButtonState: function() {
+            var customer = App.Data.customer,
+                status = customer.get('load_shipping_status'),
+                pay = this.$('.btn.pay');
+            if ('pending' == status) {
+                pay.addClass('disabled');
+            } else {
+                pay.removeClass('disabled');
+            }
         },
         render: function() {
             var payment = Backbone.$.extend(App.Data.settings.get_payment_process(), {
