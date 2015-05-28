@@ -187,7 +187,7 @@ ul.categories {
 .action_button:active {
     box-shadow: none;
 }
-.action_button.disabled, .action_button.disabled:active {
+.action_button.disabled, .action_button.disabled:active, .btn.disabled, .btn.disabled:active {
     background: -moz-linear-gradient(top,  #f9f9f9 0%, #eaeaea 100%);
     background: -webkit-linear-gradient(top,  #f9f9f9 0%,#eaeaea 100%);
     background: -o-linear-gradient(top,  #f9f9f9 0%,#eaeaea 100%);
@@ -531,4 +531,47 @@ ul.categories {
 }
 #modifiers_popup .modifier .select-wrapper {
     border-color: #cecece;
+}
+
+#content > .checkout .shipping-select[data-status=pending] {
+  color: #838383;
+}
+
+#content > .checkout .shipping-select[data-status=error] {
+  color: #ff0000;
+}
+
+/* cancel-input */
+span.cancel-input:before {
+    background: #ccc;
+    color: #fff;
+}
+span.cancel-input:active:before {
+    background: #ff0000;
+}
+.rewards-card-btn:active {
+    color: #2699ca;
+}
+.rewards-info {
+    background: #f6f6f6;
+}
+.color-style1 {
+    color: #fff;
+}
+.reward-selection li {
+    border-color: #fff;
+}
+.reward-selection li.active {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+.points-selection .order-item {
+    border-bottom-color: #fff;
+}
+.reward-selection li.active:after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSIxOTciIGhlaWdodD0iMTU4IiB4bWw6c3BhY2U9InByZXNlcnZlIj48cG9seWdvbiBmaWxsPSIjZmZmZmZmIiBwb2ludHM9IjE3NCwwIDYxLDExMyAyMiw3NCAwLDk3IDM4LDEzNSA2MSwxNTggMTk3LDIyIi8+PC9zdmc+');
+    background-size: 100%;
+    background-repeat: no-repeat;
+}
+.rewards-info .info {
+    color: #44a0c7;
 }

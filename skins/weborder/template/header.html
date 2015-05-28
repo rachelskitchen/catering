@@ -4,45 +4,76 @@
         <img src='<%= logo %>' alt="<%= business_name %> logo" class="logo" data-default-index="1">
     </div>
     <ul class="tabs">
-        <li class="menu <% if(typeof tab_index == 'number' && tab_index === 0) { %> active <% } %>">Menu</li>
-        <li class="about <% if(typeof tab_index == 'number' && tab_index === 1) { %> active <% } %>">About</li>
-        <li class="map <% if(typeof tab_index == 'number' && tab_index === 2) { %> active <% } %>">Map</li>
+        <li class="menu <% if (typeof tab_index == 'number' && tab_index === 0) { %> active <% } %>">
+            <span class="clip"> <%= _lp.HEADER_MENU %> </span>
+        </li>
+        <li class="about <% if (typeof tab_index == 'number' && tab_index === 1) { %> active <% } %>">
+            <span class="clip"> <%= _lp.HEADER_ABOUT %> </span>
+        </li>
+        <li class="map <% if (typeof tab_index == 'number' && tab_index === 2) { %> active <% } %>">
+            <span class="clip"> <%= _lp.HEADER_MAP %> </span>
+        </li>
     </ul>
 </script>
 
 <script type="text/template" id="header_delivery-template">
     <div class='delivery_info'>
-        <span>
-            Delivery: <% if(delivery_charge > 0) { %><%= currency_symbol + delivery_charge %><% }  else { %> Free <% } %>
+        <%
+            var title = _lp.HEADER_DELIVERY,
+                content = (delivery_charge > 0) ? (currency_symbol + delivery_charge) : _lp.HEADER_DELIVERY_FREE;
+        %>
+        <span title="<%= title %>: <%= content %>">
+            <span class="clip"> <%= title %>: </span>
+            <span class="clip"> <%= content %> </span>
         </span>
-        <span>
-            Est. Delivery Time:
-            <% if(delivery_time.hour > 0) { %>
-                <%= delivery_time.hour %> hr
-            <% } %>
-            <% if(delivery_time.minutes > 0) { %>
-                <%= delivery_time.minutes %> min
-            <% } %>
-            <% if(delivery_time.minutes == 0 && delivery_time.hour == 0) { %>
-                ASAP
-            <% } %>
+        <%
+            var title = _lp.HEADER_DELIVERY_TIME,
+                content = '';
+            if (delivery_time.hour > 0) content += delivery_time.hour + ' ' + _lp.HEADER_DELIVERY_HOUR;
+            if (delivery_time.hour > 0 && delivery_time.minutes > 0) content += ' ';
+            if (delivery_time.minutes > 0) content += delivery_time.minutes + ' ' + _lp.HEADER_DELIVERY_MINUTES;
+            if (delivery_time.minutes == 0 && delivery_time.hour == 0) content += _lp.HEADER_DELIVERY_ASAP;
+        %>
+        <span title="<%= title %>: <%= content %>">
+            <span class="clip"> <%= title %>: </span>
+            <%= content %>
         </span>
-        <span>
-            Minimum: <%= currency_symbol + min_delivery_amount %>
+        <%
+            var title = _lp.HEADER_DELIVERY_MINIMUM,
+                content = currency_symbol + min_delivery_amount;
+        %>
+        <span title="<%= title %>: <%= content %>">
+            <span class="clip"> <%= title %>: </span>
+            <%= content %>
         </span>
-        <span>
-            Delivery Radius: <%= max_delivery_distance %>
-            <% if(distance_mearsure.toLowerCase() == 'km') { %>
-                km
-            <% } else { %>
-                Mile<% if(max_delivery_distance > 1) { %>s<% } %>
-            <% } %>
+        <%
+            var title = '',
+                content = '';
+            if (delivery_post_code_lookup_enabled) {
+                title = _lp.HEADER_DELIVERY_AREA;
+                content = delivery_post_codes;
+            } else if (!delivery_geojson_enabled) {
+                title = _lp.HEADER_DELIVERY_RADIUS;
+                content = max_delivery_distance + ' ';
+                if (distance_mearsure.toLowerCase() == 'km') {
+                    content += _lp.HEADER_DELIVERY_KM;
+                } else {
+                    content += _lp.HEADER_DELIVERY_MILE;
+                    if (max_delivery_distance > 1) {
+                        content += _lp.HEADER_DELIVERY_MILE_END;
+                    }
+                }
+            }
+        %>
+        <span title="<%= title %>: <%= content %>">
+            <span class="clip"> <%= title %>: </span>
+            <%= content %>
         </span>
     </div>
 </script>
 
 <script type="text/template" id="header_checkout-template">
-    <div class="btn unselectable">Back</div>
+    <div class="btn unselectable"> <span class="clip"> <%= _lp.HEADER_DELIVERY_BACK %> </span> </div>
     <div class='delivery_wrapper'></div>
     <div class="logo">
         <img src='<%= logo %>' alt="<%= business_name %> logo" class="logo" data-default-index="1">

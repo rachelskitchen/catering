@@ -35,7 +35,8 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             tax_country: '',
             prevailing_surcharge: null,
             prevailing_tax: null,
-            total_wo_delivery: 0
+            shipping: null,
+            shipping_discount: 0
         },
         initialize: function(opts) {
             var settings = App.Data.settings.get("settings_system"),
@@ -52,33 +53,12 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             this.unset('delivery_item');
             opts = opts instanceof Object ? opts : {};
             this.set($.extend({}, this.defaults, set, opts));
-
-            this.listenTo(this.get('delivery'), 'change:price', function() {
-                var deliveryItem = App.Data.myorder.find(function(model) {
-                        return model.get('product').id == null &&
-                               model.get('product').get('isDeliveryItem') === true;
-                    });
-                if (deliveryItem)
-                    App.Data.myorder.onModelChange(deliveryItem);
-            });
-
-            this.listenTo(this, 'change:total', function() {
-                var total_wo_delivery = App.Data.myorder.checkout.get('dining_option') != 'DINING_OPTION_DELIVERY' ? this.get('total')
-                     : this.get('total') - this.get_delivery_charge()*1;
-                this.set("total_wo_delivery", total_wo_delivery, {silent: true});                
-            });
         },
         /**
          * get Total
          */
         get_total: function() {
             return round_monetary_currency(this.get('total'));
-        },
-         /**
-         * get Total w/o delivery charge
-         */
-        get_total_wo_delivery: function() {
-            return round_monetary_currency(this.get('total_wo_delivery'));
         },
         /**
          * get Tax
@@ -137,8 +117,19 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
                 charge = delivery.get('enable') ? delivery.get('charge') : 0;
             return round_monetary_currency(charge);
         },
+        /**
+         * @method
+         * Sets delivery charge for total model
+         */
         set_delivery_charge: function(charge) {
             this.get('delivery').set('charge', charge);
+        }, 
+         /**
+         * @method
+         * @returns {string} formatted shipping charge amount
+         */
+        get_shipping_charge: function() {
+            return round_monetary_currency(this.get('shipping') || 0);
         },
         /**
          * get bag charge
@@ -175,12 +166,19 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
          * save information from total model to local storage
          */
         saveTotal: function() {
+            setData('total',this);
             this.get('tip').saveTip();
         },
         /**
          * load information from local storage
          */
         loadTotal: function() {
+            var json = getData('total');
+            if (json) {
+              delete json.delivery;
+              delete json.tip;
+              this.set(json);
+            }
             this.get('tip').loadTip();
         },
         /**

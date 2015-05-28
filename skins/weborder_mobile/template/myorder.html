@@ -1,6 +1,8 @@
 <script type="text/template" id="myorder_list-template">
     <ul class="myorder items"></ul>
+    <ul class="bag_charge items"></ul>
     <ul class="discount items"></ul>
+    <ul class="service_fees items"></ul>
 </script>
 
 <script type="text/template" id="myorder_item-template">
@@ -8,7 +10,7 @@
         <% if(sold_by_weight) { %>
             <span class="name"><%= sizeModifier %> <%= name %></span>
         <% } else { %>
-            <span class="name"><%= quantity %>x <%= sizeModifier %> <%= name %></span>
+            <span class="name"><% if(!is_service_fee) { print(quantity + "x") }%> <%= sizeModifier %> <%= name %></span>
         <% } %>
             <span class="cost">
             <span class="currency_symbol"><%= currency_symbol %></span>
@@ -20,7 +22,7 @@
         <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
         <% } %>
         <% if(is_gift) { %>
-        <li class="special">*** Add amount to <%= gift_card_number %></li>
+            <li class="special"> *** <%= _lp.MYORDER_ADD_AMOUNT_TO %> <%= gift_card_number %> </li>
         <% } %>
         <% if(special) { %>
         <li class="special">*** <%= special %></li>
@@ -29,14 +31,18 @@
     <ul class="discount_place"></ul>
     <% if(id_product !== null) { %>
     <div class="btns">
-        <span class="remove">Remove</span>
-        <span class="edit">Edit</span>
+        <span class="remove clip"> <%= _lp.MYORDER_REMOVE %> </span>
+        <span class="edit clip"> <%= _lp.MYORDER_EDIT %> </span>
     </div>
     <% } %>
 </script>
 
 <script type="text/template" id="myorder_modifier-template">
-    <span class="name"><% if(_settings.enable_quantity_modifiers) { print(quantity+'x') }%> <%if(qty_type>0) { print("("+half_price_str+")") }%> w/ <%= name %></span>
+    <span class="name">
+        <% if (_settings.enable_quantity_modifiers) { print(quantity + 'x'); } %>
+        <% if (qty_type > 0) { print('(' + half_price_str + ')'); } %>
+        <%= _lp.MYORDER_WEIGHT %> <%= name %>
+    </span>
     <span class="cost">
         <span class="plus">+</span>
         <span class="currency_symbol"><%= currency_symbol %></span>
@@ -63,9 +69,9 @@
 
 <script type="text/template" id="myorder_note-template">
     <% if(noteAllow) {%>
-      <div class='note_text color-style1'>Order Notes</div>
+        <div class="note_text color-style1 clip"> <%= _lp.MYORDER_ORDER_NOTES %> </div>
       <div class='note_field border2'>
-          <textarea class="instructions bg-style1" placeholder='Order notes'><%=note%></textarea>
+        <textarea class="instructions bg-style1" placeholder="<%= _lp.MYORDER_ORDER_NOTES_INPUT %>"><%= note %></textarea>
       </div>
     <% } %>
 </script>
@@ -93,18 +99,20 @@
 <script type="text/template" id="myorder_discount_code-template">
     <% if(discount_allow) { %>
     <div class='dcode_have <% if(discount_code_applied) print("hidden"); %>'>
-        <div class='discount_code_text color-style1'>Have a Discount Code?</div>
+        <div class="discount_code_text color-style1">
+            <span class="clip"> <%= _lp.MYORDER_HAVE_DISCOUNT_CODE %> </span>
+        </div>
     </div>
     <div class='dcode_enter hidden'>
         <div class='discount_field border2'>
-            <input class="instructions bg-style1" name='discount_code' value='<%= discount_code %>' placeholder='Discount Code'>
+            <input class="instructions bg-style1" name="discount_code" value="<%= discount_code %>" placeholder="<%= _lp.MYORDER_DISCOUNT_CODE %>">
         </div>
         <div class="btns">
-            <span class="btnApply">Apply</button>
+            <span class="btnApply clip"><%= _lp.MYORDER_APPLY %></span>
         </div>
     </div>
     <div class='dcode_remove <% if(!discount_code_applied) print("hidden"); %>'>
-        <div class='discount_code_text color-style1'>Remove Discount Code</div>
+        <div class="discount_code_text color-style1"> <%= _lp.MYORDER_REMOVE_DISCOUNT %> </div>
     </div>
     <% } %>
 </script>

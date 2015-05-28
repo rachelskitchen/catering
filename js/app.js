@@ -71,10 +71,13 @@
             taxes: {},
             paypal_iOS: /device=ios/.test(location.search),
             devMode: /dev=true/.test(location.search),
+            devPath: /\/dev\//.test(location.href),
             images: {},
-            log: {}
+            log: {},
+            curLocale: window.navigator.language.replace(/-.*/g, '')
         },
         Models: {},
+        lastModelViews: {},
         Routers: {},
         Views: {},
         Skins: skins
@@ -110,7 +113,7 @@
         // set config for require
         require.config(app.config);
 
-        require(['cssua', 'functions', 'generator', 'errors', 'errors_view', 'myorder', 'settings', 'timetable', 'log', 'tax', 'main_router'], function() {
+        require(['cssua', 'functions', 'generator', 'errors', 'errors_view', 'myorder', 'settings', 'timetable', 'log', 'tax', 'main_router', 'locale'], function() {
             var win = Backbone.$(window);
 
             // invoke beforeStart onfig
@@ -168,50 +171,69 @@
             });
 
             // init settings object
-            App.Data.settings = new App.Models.Settings({
+            var settings = App.Data.settings = new App.Models.Settings({
                 supported_skins: app.skins.available
-            });
-            var settings = App.Data.settings,
+            }),
+                locale = App.Data.locale = new App.Models.Locale,
                 isNotFirstLaunch = false;
 
             // if `storage_data` attribute isn't the web storage need to show a message
             // that blocks further the app initialization
-            if(settings.get('storage_data') !== 1) {
-                return App.Data.errors.alert(ERROR.WEBSTORAGES_ARE_DISABLED, true);
+            if (settings.get('storage_data') !== 1) {
+                return errors.alert(ERROR.WEBSTORAGES_ARE_DISABLED, true);
             }
+
+            settings.on('change:skin', function() {
+                locale.dfd_load = locale.loadLanguagePack(); // load a language pack from backend
+                locale.dfd_load.done(function() {
+                    _loc = locale.toJSON();
+                    _.extend(ERROR, _loc.ERRORS);
+                    _.extend(MSG, _loc.MSG);
+                    delete _loc.ERRORS;
+                    delete _loc.MSG;
+                });
+                locale.on('showError', function() {
+                    errors.alert(ERROR.LOAD_LANGUAGE_PACK, true); // user notification
+                });
+            });
 
             settings.on('changeSettingsSkin', function() {
                 load_styles_and_scripts(); // load styles and scripts
                 var myorder = App.Data.myorder = new App.Collections.Myorders;
                 App.Data.timetables = new App.Models.Timetable;
                 require([settings.get('skin') + '/router'], function(module) {
-                    if(module instanceof require('main_router')) {
-                        module.initRouter();
-                    }
-                    App.Data.router = new App.Routers.Router;
-                    var router = App.Data.router;
-                    router.once('started', function() {
-                        // hide a launch spinner & load an establishments list
-                        win.trigger('hideSpinner');
-                        router.trigger('needLoadEstablishments');
+                    locale.dfd_load.done(function() {
+                        if(module instanceof require('main_router')) {
+                            module.initRouter();
+                        }
+                        var router = App.Data.router = new App.Routers.Router;
+                        router.once('started', function() {
+                            // hide a launch spinner & load an establishments list
+                            win.trigger('hideSpinner');
+                            router.trigger('needLoadEstablishments');
+                        });
+
+                        if (settings.get('isMaintenance')) {
+                            if (!settings.get('maintenanceMessage')) {
+                                settings.set('maintenanceMessage', ERROR[MAINTENANCE.BACKEND_CONFIGURATION]); // default error message
+                            }
+                            location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
+                        } else {
+                            // TODO: shouldn't depend on the isMaintenance mode if the 'Change Store' functionality is implemented on '#maintenance' page
+                            isNotFirstLaunch = true;
+                        }
+                        router.isNotFirstLaunch = isNotFirstLaunch;
+                        Backbone.history.start();
+
+                        // invoke afterStart callback
+                        app.afterInit();
                     });
-
-                    if (settings.get('isMaintenance')) {
-                        location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
-                    } else {
-                        // TODO: shouldn't depend on the isMaintenance mode if the 'Change Store' functionality is implemented on '#maintenance' page
-                        isNotFirstLaunch = true;
-                    }
-                    router.isNotFirstLaunch = isNotFirstLaunch;
-                    Backbone.history.start();
-
-                    // invoke afterStart callback
-                    app.afterInit();
                 });
                 myorder.on('reset add remove', function() {
                     var ests = App.Data.establishments;
                     if (ests) ests.needShowAlert(myorder.get_only_product_quantity() > 0);
                 });
+                myorder.trigger('reset'); //#21756, should be reset after est. changed
             });
             app.loadApp(); // loading application
         });

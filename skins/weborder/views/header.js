@@ -102,6 +102,9 @@ define(["backbone", "factory"], function() {
                 delivery_charge: round_monetary_currency(settings.delivery_charge),
                 currency_symbol: settings.currency_symbol,
                 min_delivery_amount: round_monetary_currency(settings.min_delivery_amount),
+                delivery_post_code_lookup_enabled: _.isArray(settings.delivery_post_code_lookup) && settings.delivery_post_code_lookup[0],
+                delivery_post_codes: _.isArray(settings.delivery_post_code_lookup) && settings.delivery_post_code_lookup[1],
+                delivery_geojson_enabled: _.isArray(settings.delivery_geojson) && settings.delivery_geojson[0],
                 max_delivery_distance: settings.max_delivery_distance,
                 delivery_time: {
                     hour: Math.floor(settings.estimated_delivery_time / 60),

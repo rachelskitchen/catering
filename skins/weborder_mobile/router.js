@@ -68,9 +68,11 @@ define(["main_router"], function(main_router) {
         footerModes.MaintenanceDirectory = {mod: 'MaintenanceDirectory'};
         footerModes.Profile = {mod: 'Profile'};
         footerModes.Loyalty = {mod: 'Loyalty'};
+        footerModes.RewardsCard = {mod: 'RewardsCard', rewardsCard: App.Data.myorder.rewardsCard};
+        footerModes.Rewards = {mod: 'Rewards', rewardsCard: App.Data.myorder.rewardsCard};
     }
 
-    var Router = App.Routers.MobileRouter.extend({
+    var Router = App.Routers.RevelOrderingRouter.extend({
         routes: {
             "": "index",
             "index": "index",
@@ -91,6 +93,8 @@ define(["main_router"], function(main_router) {
             "pay": "pay",
             "profile(/:step)": "profile",
             "loyalty": "loyalty",
+            "rewards_card_submit": "rewards_card_submit",
+            "rewards": "rewards",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -104,11 +108,6 @@ define(["main_router"], function(main_router) {
             // set locked routes if online orders are disabled
             if(!App.Settings.online_orders) {
                 this.lockedRoutes = ['modifiers_edit', 'myorder', 'checkout', 'card', 'giftcard', 'confirm', 'done', 'pay'];
-            }
-
-            // check if we here from paypal payment page
-            if (App.Data.get_parameters.pay || App.Data.get_parameters[MONERIS_PARAMS.PAY]) {
-                window.location.hash = "#pay";
             }
 
             // if it is Revel's WebView need change color_scheme on 'revel'
@@ -172,24 +171,76 @@ define(["main_router"], function(main_router) {
                     model: mainModel,
                     el: 'body'
                 });
+//common
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
+//common
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
+//common
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
+//common
                 this.listenTo(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
                 this.listenTo(ests, 'resetEstablishmentData', mainModel.trigger.bind(mainModel, 'showSpinnerAndHideContent'), this);
+//common
                 this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
-                // emit 'initialized' event
-                this.trigger('initialized');
-                this.initialized = true;
+                this.navigationControl();
+
+                // run history tracking
+                this.triggerInitializedEvent();
             });
 
             var checkout = App.Data.myorder.checkout;
             checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
-            this.initPaymentResponseHandler(this.navigate.bind(this, "done", true));
+            App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
+        },
+        navigationControl: function() {
+            // onApplyRewardsCard event occurs when Rewards Card's 'Apply' button is clicked on #checkout page
+            this.listenTo(App.Data.myorder.rewardsCard, 'onApplyRewardsCard', this.navigate.bind(this, 'rewards_card_submit', true));
 
-            App.Routers.MobileRouter.prototype.initialize.apply(this, arguments);
+            // onGetRewards event occurs when Rewards Card's 'Submit' button is clicked on 'Rewards Card Info' popup
+            this.listenTo(App.Data.myorder.rewardsCard, 'onGetRewards', function() {
+                App.Data.mainModel.trigger('loadStarted');
+                App.Data.myorder.rewardsCard.getRewards();
+            });
+
+            // onRedemptionApplied event occurs when 'Apply Reward' btn is clicked
+            this.listenTo(App.Data.myorder.rewardsCard, 'onRedemptionApplied', function() {
+                var self = this;
+                App.Data.mainModel.trigger('loadStarted');
+                App.Data.myorder.get_cart_totals().always(function() {
+                    App.Data.mainModel.trigger('loadCompleted');
+                    self.navigate('checkout', true);
+                });
+            }, this);
+
+            // onRewardsErrors event occurs when /weborders/reward_cards/ request fails
+            this.listenTo(App.Data.myorder.rewardsCard, 'onRewardsErrors', function(errorMsg) {
+                App.Data.errors.alert(errorMsg);
+                App.Data.mainModel.trigger('loadCompleted');
+            });
+
+            // onRewardsReceived event occurs when Rewards Card data is received from server
+            this.listenTo(App.Data.myorder.rewardsCard, 'onRewardsReceived', function() {
+                var rewardsCard = App.Data.myorder.rewardsCard;
+
+                if(rewardsCard.get('points').isDefault() && rewardsCard.get('visits').isDefault() && rewardsCard.get('purchases').isDefault()) {
+                    App.Data.errors.alert(MSG.NO_REWARDS_AVAILABLE);
+                } else {
+                    this.navigate('rewards', true);
+                }
+
+                App.Data.mainModel.trigger('loadCompleted');
+            }, this);
+        },
+        /**
+         * Navigate on #done when payment is completed.
+         */
+        onPayHandler: function(capturePhase) {
+            this.navigate('done',  {
+                trigger: true,
+                replace: capturePhase
+            });
         },
         showPromoMessage: function() {
             App.Data.footer.set('isShowPromoMessage', true);
@@ -207,7 +258,7 @@ define(["main_router"], function(main_router) {
                 var si = App.Data.storeInfo;
                 if (/^(index.*)?$/i.test(Backbone.history.fragment) && si) si.set('needShowStoreChoice', true);
             };
-            App.Routers.MainRouter.prototype.getEstablishments.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.getEstablishments.apply(this, arguments);
         },
         index: function() {
             var self = this;
@@ -222,10 +273,10 @@ define(["main_router"], function(main_router) {
                     });
                 }
 
-                var header = {page_title: 'Menu'};
+                var header = {page_title: _loc['HEADER_INDEX_PT']};
                 if(App.Data.dirMode)
                     header = Backbone.$.extend(header, {
-                        back_title: 'Directory',
+                        back_title: _loc['HEADER_INDEX_BT'],
                         back: this.navigateDirectory.bind(this)
                     });
 
@@ -271,7 +322,7 @@ define(["main_router"], function(main_router) {
                 $.when(App.Data.categories.loadData, App.Collections.Products.init(id_category)).then(function() {
                     App.Data.header.set({
                         page_title: App.Data.categories.get(id_category).get('name'),
-                        back_title: 'Categories',
+                        back_title: _loc['HEADER_PRODUCTS_BT'],
                         back: self.navigate.bind(self, 'index', true)
                     });
 
@@ -300,9 +351,9 @@ define(["main_router"], function(main_router) {
                     order = order.clone();
 
                     App.Data.header.set({
-                        page_title: 'Modifiers',
-                        back_title: 'Cancel',
-                        forward_title: 'Add Item',
+                        page_title: _loc['HEADER_MODIFIERS_PT'],
+                        back_title: _loc['HEADER_MODIFIERS_BT'],
+                        forward_title: _loc['HEADER_MODIFIERS_ADD_FT'],
                         back: self.navigate.bind(self, 'products/' + id_category, true),
                         forward: function() {
                             var check = order.check_order();
@@ -348,9 +399,9 @@ define(["main_router"], function(main_router) {
                 order = _order.clone();
 
                 App.Data.header.set({
-                    page_title: 'Modifiers',
-                    back_title: 'Cancel',
-                    forward_title: 'Update',
+                    page_title: _loc['HEADER_MODIFIERS_PT'],
+                    back_title: _loc['HEADER_MODIFIERS_BT'],
+                    forward_title: _loc['HEADER_MODIFIERS_EDIT_FT'],
                     back: this.navigate.bind(this, 'myorder', true),
                     forward: function() {
                         var check = order.check_order();
@@ -385,9 +436,9 @@ define(["main_router"], function(main_router) {
         myorder: function() {
             this.prepare('myorder', function() {
                 App.Data.header.set({
-                    page_title: 'Order Cart',
-                    back_title: 'Menu',
-                    forward_title: 'Check Out',
+                    page_title: _loc['HEADER_MYORDER_PT'],
+                    back_title: _loc['HEADER_MYORDER_BT'],
+                    forward_title: _loc['HEADER_MYORDER_FT'],
                     back: this.navigate.bind(this, 'index', true),
                     forward: this.navigate.bind(this, 'checkout', true)
                 });
@@ -424,8 +475,7 @@ define(["main_router"], function(main_router) {
                             mod: 'Note',
                             className: 'myorderNote'
                         }
-                    ],
-                    no_perfect_scroll: true
+                    ]
                 });
 
                 this.change_page();
@@ -447,8 +497,8 @@ define(["main_router"], function(main_router) {
                 }
 
                 App.Data.header.set({
-                    page_title: 'Check Out',
-                    back_title: 'Order Cart',
+                    page_title: _loc['HEADER_CHECKOUT_PT'],
+                    back_title: _loc['HEADER_CHECKOUT_BT'],
                     back: this.navigate.bind(this, 'myorder', true)
                 });
 
@@ -461,13 +511,14 @@ define(["main_router"], function(main_router) {
                             model: App.Data.myorder.checkout,
                             collection: App.Data.myorder,
                             mod: 'OrderType',
-                            DINING_OPTION_NAME: DINING_OPTION_NAME,
+                            DINING_OPTION_NAME: _loc.DINING_OPTION_NAME,
                             className: 'checkout'
                         },
                         {
                             modelName: 'Checkout',
                             model: App.Data.myorder.checkout,
                             customer: App.Data.customer,
+                            rewardsCard: App.Data.myorder.rewardsCard,
                             mod: 'Main',
                             className: 'checkout'
                         },
@@ -478,8 +529,7 @@ define(["main_router"], function(main_router) {
                             mod: 'Pickup',
                             className: 'checkout'
                         }
-                    ],
-                    no_perfect_scroll: true
+                    ]
                 });
 
                 this.change_page();
@@ -491,7 +541,7 @@ define(["main_router"], function(main_router) {
                     App.Data.card = new App.Models.Card;
 
                 App.Data.header.set({
-                    page_title: 'Card Information'
+                    page_title: _loc['HEADER_CARD_PT']
                 });
 
                 App.Data.mainModel.set({
@@ -513,7 +563,7 @@ define(["main_router"], function(main_router) {
                     App.Data.giftcard = new App.Models.GiftCard;
 
                 App.Data.header.set({
-                    page_title: 'Gift Card Information'
+                    page_title: _loc['HEADER_GIFT_CARD_PT']
                 });
 
                 App.Data.mainModel.set({
@@ -538,12 +588,13 @@ define(["main_router"], function(main_router) {
             }
 
             this.prepare('confirm', function() {
+
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card;
 
                 App.Data.header.set({
-                    page_title: 'Confirm Order',
-                    back_title: 'Check Out',
+                    page_title: _loc['HEADER_CONFIRM_PT'],
+                    back_title: _loc['HEADER_CONFIRM_BT'],
                     back: this.navigate.bind(this, 'checkout', true)
                 });
 
@@ -570,15 +621,27 @@ define(["main_router"], function(main_router) {
                 this.change_page();
             }, [load]);
         },
+        /**
+         * Handler for #done.
+         * If App.Data.myorder.paymentResponse is null this handler isn't executed and run #index handler.
+         */
         done: function() {
-            if(!App.Data.settings.usaepayBack)
+            // if App.Data.myorder.paymentResponse isn't defined navigate to #index
+            if(!(App.Data.myorder.paymentResponse instanceof Object)) {
                 return this.navigate('index', true);
-
+            }
             this.prepare('done', function() {
+                
+                // if App.Data.customer doesn't exist (success payment -> history.back() to #confirm -> history.forward() to #done)
+                // need to init it.
+                if(!App.Data.customer) {
+                    this.loadCustomer();
+                }
+
                 var params = App.Data.myorder.paymentResponse;
                 var isSuccess = params.status === 'OK';
 
-                App.Data.header.set('page_title', isSuccess ? 'Order has been Submitted.' : 'Order has not been Submitted.');
+                App.Data.header.set('page_title', isSuccess ? _loc['HEADER_DONE_SUCCESS_PT'] : _loc['HEADER_DONE_FAILURE_PT']);
                 App.Data.footer.set({success_payment: isSuccess});
 
                 App.Data.mainModel.set({
@@ -599,10 +662,11 @@ define(["main_router"], function(main_router) {
             var settings = App.Data.settings.get('settings_system');
 
             this.prepare('store_info', function() {
+               
                 App.Data.header.set({
-                    page_title: settings instanceof Object ? settings.business_name : 'Location',
-                    back_title: 'Menu',
-                    forward_title: 'Map',
+                    page_title: (settings instanceof Object) ? settings.business_name : _loc['HEADER_LOCATION_PT'],
+                    back_title: _loc['HEADER_LOCATION_BT'],
+                    forward_title: _loc['HEADER_LOCATION_FT'],
                     back: this.navigate.bind(this, 'index', true),
                     forward: this.navigate.bind(this, 'map', true)
                 });
@@ -622,9 +686,10 @@ define(["main_router"], function(main_router) {
         },
         map: function() {
             this.prepare('store_info', function() {
+                
                 App.Data.header.set({
-                    page_title: 'Map',
-                    back_title: 'Location',
+                    page_title: _loc['HEADER_MAP_PT'],
+                    back_title: _loc['HEADER_MAP_BT'],
                     back: this.navigate.bind(this, 'location', true)
                 });
 
@@ -656,10 +721,10 @@ define(["main_router"], function(main_router) {
                     header = headerModes.About;
 
                 App.Data.header.set({
-                    page_title: 'About ' + App.Data.settings.get('settings_system').business_name,
-                    back_title: 'Menu',
+                    page_title: _loc['HEADER_ABOUT_PT'] + ' ' + App.Data.settings.get('settings_system').business_name,
+                    back_title: _loc['HEADER_ABOUT_BT'],
                     back: this.navigate.bind(this, 'index', true),
-                    forward_title: 'Gallery',
+                    forward_title: _loc['HEADER_ABOUT_FT'],
                     forward: this.navigate.bind(this, 'gallery', true)
                 });
 
@@ -683,13 +748,14 @@ define(["main_router"], function(main_router) {
         gallery: function() {
 
             this.prepare('store_info', function() {
+
                 if (!App.Data.AboutModel) {
                     App.Data.AboutModel = new App.Models.AboutModel();
                 }
 
                 App.Data.header.set({
-                    page_title: App.Data.settings.get('settings_system').business_name + ' Gallery',
-                    back_title: 'About',
+                    page_title: App.Data.settings.get('settings_system').business_name + ' ' + _loc['HEADER_GALLERY_PT'],
+                    back_title: _loc['HEADER_GALLERY_BT'],
                     back: this.navigate.bind(this, 'about', true)
                 });
 
@@ -708,15 +774,15 @@ define(["main_router"], function(main_router) {
             });
         },
         maintenance : function() {
-            App.Routers.MobileRouter.prototype.maintenance.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
 
             this.prepare('maintenance', function() {
                 var back_title, back;
                 if (App.Data.dirMode) {
-                    back_title = 'Directory';
+                    back_title = _loc['HEADER_MAINTENANCE_DIR_BT'];
                     back = this.navigateDirectory.bind(this);
                 } else {
-                    back_title = 'Back';
+                    back_title = _loc['HEADER_MAINTENANCE_BT'];
                     back = function() { window.history.back() };
                 }
                 var header = {
@@ -746,22 +812,78 @@ define(["main_router"], function(main_router) {
         },
         profile: function(step) {
             App.Data.header.set({
-                page_title: 'Profile',
-                back_title: 'Cancel',
+                page_title: _loc['HEADER_PROFILE_PT'],
+                back_title: _loc['HEADER_PROFILE_BT'],
                 back: App.Data.RevelAPI.trigger.bind( App.Data.RevelAPI, 'onProfileCancel')
             });
-            return App.Routers.MobileRouter.prototype.profile.call(this, step, headerModes.Profile, footerModes.Profile);
+            return App.Routers.RevelOrderingRouter.prototype.profile.call(this, step, headerModes.Profile, footerModes.Profile);
         },
         loyalty: function() {
-            return App.Routers.MobileRouter.prototype.loyalty.call(this, headerModes.Main, footerModes.Loyalty);
+            return App.Routers.RevelOrderingRouter.prototype.loyalty.call(this, headerModes.Main, footerModes.Loyalty);
+        },
+        rewards_card_submit: function() {
+            this.prepare('rewards', function() {
+                App.Data.header.set({
+                    page_title: _loc['HEADER_REWARDS_CARD_PT'],
+                    back_title: _loc['HEADER_REWARDS_CARD_BT'],
+                    back: this.navigate.bind(this, 'checkout', true)
+                });
+                App.Data.mainModel.set({
+                    header: headerModes.OneButton,
+                    footer: footerModes.RewardsCard,
+                    content: {
+                        modelName: 'Rewards',
+                        mod: 'Card',
+                        model: App.Data.myorder.rewardsCard,
+                        className: 'rewards-info'
+                    }
+                });
+
+                this.change_page();
+            });
+        },
+        rewards: function() {
+            this.prepare('rewards', function() {
+                var rewardsCard = App.Data.myorder.rewardsCard;
+
+                App.Data.header.set({
+                    page_title: _loc['HEADER_REWARDS_PT'],
+                    back_title: _loc['HEADER_REWARDS_PT'],
+                    back: this.navigate.bind(this, 'checkout', true)
+                });
+
+                App.Data.mainModel.set({
+                    header: headerModes.OneButton,
+                    footer: footerModes.Rewards,
+                    content: {
+                        modelName: 'Rewards',
+                        mod: 'Info',
+                        model: rewardsCard,
+                        className: 'rewards-info',
+                        collection: App.Data.myorder,
+                        points: rewardsCard.get('points'),
+                        visits: rewardsCard.get('visits'),
+                        purchases: rewardsCard.get('purchases')
+                    }
+                });
+
+                this.change_page();
+            });
         },
         initRevelAPI: function() {
-            App.Routers.MobileRouter.prototype.initRevelAPI.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.initRevelAPI.apply(this, arguments);
 
-            var RevelAPI = App.Data.RevelAPI;
+            var RevelAPI = App.Data.RevelAPI,
+                appName;
 
             if(!App.Data.dirMode) {
-                RevelAPI.set('appName', App.Data.get_parameters.appName || App.Settings.brand_name);
+                appName = App.Data.get_parameters.appName ? decodeURIComponent(App.Data.get_parameters.appName) : App.Settings.brand_name;
+                RevelAPI.set({
+                    appName: /\w+'s(\s.*)?$/.test(appName) ? appName : 'the ' + appName,
+                    appPossessiveName: /\w+'s(\s.*)?$/.test(appName) ? appName : appName + "'s",
+                    appShortName: appName,
+                    text1: MSG.BRAND_DIRECTORY_WELCOME_TEXT
+                });
             }
 
             if(!RevelAPI.isAvailable()) {

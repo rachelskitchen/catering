@@ -40,13 +40,6 @@ define(["done_view", "generator"], function(done_view) {
 
             this.iOSFeatures();
 
-            var self = this;
-            $(window).resize(function() {
-                if (!isIEMobile() && !isAndroidWebKit() && self.model.get('no_perfect_scroll') !== true) { //no_perfect_scroll #14024
-                   self.$('#content').perfectScrollbar('update');
-                }
-            })
-
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
@@ -85,9 +78,6 @@ define(["done_view", "generator"], function(done_view) {
                 content.append(this.addContent(data));
 
             content.scrollTop(0);
-            if (!isIEMobile() && !isAndroidWebKit()) {
-               content.perfectScrollbar('destroy');
-            }
         },
         header_change: function() {
             var data = _.defaults(this.model.get('header'), this.header_defaults());
@@ -143,13 +133,7 @@ define(["done_view", "generator"], function(done_view) {
             $(window).trigger('loadCompleted');
             clearTimeout(this.spinner);
             delete this.spinner;
-            if (!isIEMobile() && !isAndroidWebKit() && this.model.get('no_perfect_scroll') !== true) { //no_perfect_scroll #14024
-                $("#content").css("overflow-y", "hidden");
-                setTimeout($.fn.perfectScrollbar.bind(this.$('#content')), 0);
-            }
-            if (this.model.get('no_perfect_scroll') === true) {
-                $("#content").css("overflow-y", "auto");
-            }
+
             this.hideSpinner();
         },
         loadStarted: function() {
@@ -249,7 +233,7 @@ define(["done_view", "generator"], function(done_view) {
 
         $(window).resize(function() {
             !resizing && resize();
-            
+
             if (document.activeElement.tagName.toLowerCase() == "input") {
                 document.activeElement.scrollIntoView(); // #18707
             }

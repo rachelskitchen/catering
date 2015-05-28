@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
+define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbone) {
     'use strict';
 
     App.Models.Myorder = Backbone.Model.extend({
@@ -119,82 +119,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 initial_price = this.get_initial_price();
             if (max_price) {
                 this.get_modifiers().update_prices(max_price > initial_price ? max_price - initial_price : 0);
-            }
-        },
-        /**
-         *  tax per one product
-         */
-        get_myorder_tax_rate: function() {
-            var product = this.get_product();
-
-            if (!this.collection) { // this.collection is undefined on Confirm page -> Return to Menu btn click
-                return 0;
-            }
-
-            var surcharge = this.get_myorder_surcharge_rate() || 0,
-                prevailingTax = this.collection.total.get('prevailing_tax'),
-                is_tax_included = App.TaxCodes.is_tax_included(this.collection.total.get('tax_country')),
-                tax;
-
-            if (this.isUntaxable()){
-                return 0;
-            } else {
-                if (!is_tax_included) {
-                    return (product.get('tax') + prevailingTax * surcharge ) / 100;
-                } else {
-                    tax = product.get('tax');
-                    return tax / (100 + tax);
-                }
-            }
-        },
-        get_myorder_tax: function() {
-            var model_sum = this.get('sum'),
-                tax_rate = this.get_myorder_tax_rate(),
-                order_discount_rate = this.collection ? this.collection.discount.get("discount_rate") : 0,
-                discount = this.get("discount").get("sum"),
-                is_discount_taxed = this.get("discount").get("taxed");
-
-            if (is_discount_taxed) {
-                if (discount > model_sum)
-                    discount = model_sum;
-                return (model_sum - discount) * (1 - order_discount_rate) * tax_rate;
-            }
-            else {
-                return model_sum * (1 - order_discount_rate) * tax_rate;
-            }
-        },
-        isUntaxable: function() {
-            var product = this.get_product(),
-                checkout = this.collection && this.collection.checkout;
-
-            return product.get('is_gift') || product.get('is_cold') && checkout && checkout.isColdUntaxable();
-        },
-        get_myorder_surcharge_rate: function() {
-            var product = this.get_product(),
-                tax_country = this.collection.total.get('tax_country'),
-                is_tax_included = App.TaxCodes.is_tax_included(tax_country),
-                surcharge  = this.collection.total.get('prevailing_surcharge');
-
-            if (product.get('is_gift') || is_tax_included) {
-                return 0;
-            } else {
-                return surcharge / 100;
-            }
-        },
-        get_myorder_surcharge: function() {
-            var model_sum = this.get('sum'),
-                order_discount_rate = this.collection ? this.collection.discount.get("discount_rate") : 0,
-                surcharge_rate = this.get_myorder_surcharge_rate(),
-                discount = this.get("discount").get("sum"),
-                is_discount_taxed = this.get("discount").get("taxed");
-
-            if (is_discount_taxed) {
-                if (discount > model_sum)
-                    discount = model_sum;
-                return (model_sum - discount) * (1 - order_discount_rate) * surcharge_rate;
-            }
-            else {
-                return model_sum * (1 - order_discount_rate) * surcharge_rate;
             }
         },
         /**
@@ -401,7 +325,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          */
         item_submit: function(for_discounts) {
             var modifiers = [],
-                modifiers_price = this.get('sum') / this.get('quantity') - this.get('initial_price'),
                 special = this.get_special(),
                 modifiersModel = this.get_modifiers();
 
@@ -412,22 +335,15 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             var currency_symbol = App.Data.settings.get('settings_system').currency_symbol,
                 uom = App.Data.settings.get("settings_system").scales.default_weighing_unit,
                 product = this.get_product().toJSON(),
-                price = Number(this.get('initial_price')) >= 0 ? this.get('initial_price') : product.price,//model.get('sum');
-                item_tax = this.get_myorder_tax(),
+                price = Number(this.get('initial_price')) >= 0 ? this.get('initial_price') : product.price,
                 item_obj = {
-                    modifier_amount: modifiers_price,
                     modifieritems: modifiers,
-                    initial_price: price,
                     special_request: special,
                     price: price,
                     product: product.id,
                     product_name_override: product.name,
                     quantity: this.get('quantity'),
-                    discount: for_discounts || !this.get("discount").get("id") ? undefined : this.get("discount").toJSON(),
                     product_sub_id: for_discounts ? this.get('product_sub_id') : undefined,
-                    tax_amount: item_tax,
-                    tax_rate: product.tax,//model.get_product_tax_rate(),
-                    is_cold: product.is_cold
                 };
 
             if (product.sold_by_weight) {
@@ -458,22 +374,50 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         restoreTax: function() {
             var product = this.get_product();
             product && product.restoreTax();
+        },
+        isServiceFee: function() {
+            return this.get("isServiceFee") === true;
+        },
+        isDeliveryItem: function() {
+            return this.get("isDeliveryItem") === true && this.collection.checkout.get('dining_option') == 'DINING_OPTION_DELIVERY';
+        },
+        isShippingItem: function() {
+            return this.get("isDeliveryItem") === true && this.collection.checkout.get('dining_option') == 'DINING_OPTION_SHIPPING';
+        },
+        isRealProduct: function() {
+            return this.get("id_product") !== null;
+        },
+        /**
+         * @method
+         * @returns true if product's `point_value` is number. Otherwise returns false.
+         */
+        hasPointValue: function() {
+            var point_value = this.isRealProduct() && this.get_product().get('point_value');
+            return typeof point_value == 'number' && !isNaN(point_value);
         }
     });
 
     App.Models.DeliveryChargeItem = App.Models.Myorder.extend({
         initialize: function() {
-            var charge = this.get('total').get_delivery_charge() * 1;
+            var self = this,
+                charge = this.get('total').get_delivery_charge() * 1;
             App.Models.Myorder.prototype.initialize.apply(this, arguments);
             this.set({
                 product: new App.Models.Product({
                     name: MSG.DELIVERY_ITEM,
                     price: charge,
-                    tax: this.get('total').get('prevailing_tax'),
-                    isDeliveryItem: true
+                    service_code: 0,
+                    tax: this.get('total').get('prevailing_tax')
                 }),
+                isDeliveryItem: true,
                 initial_price: charge,
                 sum: charge
+            });
+
+            this.listenTo(this.get("product"), "change:price", function() {
+                if (self.get('total')) {
+                    self.get('total').set_delivery_charge(self.get("product").get("price"));
+                }
             });
         }
     });
@@ -531,6 +475,18 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         }
     });
 
+    App.Models.ServiceFeeItem = App.Models.Myorder.extend({
+        initialize: function() {
+            App.Models.Myorder.prototype.initialize.apply(this, arguments);
+            this.set({
+                product: new App.Models.Product({
+                    name: "default fee"
+                }),
+                isServiceFee: true
+            });
+        }
+    });
+
     App.Collections.Myorders = Backbone.Collection.extend({
         model: App.Models.Myorder,
         quantity: 0,
@@ -538,14 +494,14 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         discount: null, // discount for the order
         paymentResponse: null, // contains payment response
         initialize: function( ) {
+            this.rewardsCard = new App.Models.RewardsCard();
             this.discount = new App.Models.DiscountItem({"discount_rate": 0});
             this.total = new App.Models.Total();
             this.checkout = new App.Models.Checkout();
             this.checkout.set('dining_option', App.Settings.default_dining_option);
 
+            this.listenTo(this.checkout, 'change:dining_option', this.setShippingAddress, this);
             this.listenTo(this.checkout, 'change:dining_option', this.change_dining_option, this);
-            this.listenTo(this.checkout, 'change:pickupTS', this.update_discounts, this);
-            this.listenTo(this.checkout, 'change:isPickupASAP', this.update_discounts, this);
 
             this.listenTo(this, 'add', this.onModelAdded);
             this.listenTo(this, 'remove', this.onModelRemoved);
@@ -553,22 +509,29 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         },
         change_dining_option: function(model, value, opts) {
             var obj, bag_charge = this.total.get_bag_charge() * 1,
-                delivery_charge = this.total.get_delivery_charge() * 1;
+                delivery_charge = this.total.get_delivery_charge() * 1,
+                isShipping = value === 'DINING_OPTION_SHIPPING',
+                customer = App.Data.customer;
 
             if(typeof opts !== 'object'  || !opts.avoid_delivery) {
-                if (value === 'DINING_OPTION_DELIVERY' && (delivery_charge !== 0 || App.skin == App.Skins.RETAIL)) {
+                if (value === 'DINING_OPTION_DELIVERY' && delivery_charge !== 0) {
                     if (!this.deliveryItem) {
                         this.deliveryItem = new App.Models.DeliveryChargeItem({total: this.total});
                     }
                     obj = this.find(function(model) {
                         return model.get('product').id == null &&
-                               model.get('product').get('isDeliveryItem') === true;
+                               model.isDeliveryItem() === true;
                     });
-                    if (obj == undefined && (App.skin != App.Skins.RETAIL || (App.Data.customer && App.Data.customer.get("shipping_selected") >= 0)))
+                    if (obj == undefined)
                        this.add(this.deliveryItem);
 
                 } else {
                     this.remove(this.deliveryItem);
+                }
+
+                // reset shipping
+                if(!isShipping) {
+                    this.total.set('shipping', null);
                 }
 
                 if (this.isBagChargeAvailable() && bag_charge !== 0) {
@@ -592,7 +555,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 && model.previousAttributes().dining_option != value)
                 this.restoreTaxes();
 
-            this.recalculate_tax();
+            if(!this.paymentInProgress) {
+                // need pass `update_shipping_options` flag if 'Shipping' order type is choosen at first time (shipping_selected === -1).
+                this.update_cart_totals(isShipping && customer && customer.isDefaultShippingSelected() ? {update_shipping_options: true} : undefined);
+            }
         },
         // check if user get maintenance after payment
         check_maintenance: function() {
@@ -636,12 +602,9 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
          * get quantity without delivery charge and bag charge items
          */
         get_only_product_quantity: function() {
-            var quantity = this.quantity;
-
-            this.get(this.deliveryItem) && quantity--;
-            this.get(this.bagChargeItem) && quantity--;
-
-            return quantity;
+            return _.reduce(this.models, function(qty, model) {
+                    return model.get("id_product") != null ? qty + model.get('quantity') : qty;
+                }, 0);
         },
         /**
          *  create orders from JSON.
@@ -721,9 +684,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }, {silent: true});
 
             this.change_only_gift_dining_option();
-            this.isShippingOrderType() && this.getDestinationBasedTaxes(model);
 
-            this.update_discounts();
+            if (model.isRealProduct()) {
+                this.update_cart_totals({update_shipping_options: true});
+            }
         },
         /**
          *  Recalculate total when model remove
@@ -737,9 +701,12 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 this.discount.zero_discount();
                 this.bagChargeItem && this.bagChargeItem.get("discount").zero_discount();
                 this.deliveryItem && this.deliveryItem.get("discount").zero_discount();
+                this.removeServiceFees();
             }
 
-            this.update_discounts();
+            if (model.isRealProduct() && !this.paymentInProgress) {
+                this.update_cart_totals({update_shipping_options: true});
+            }
         },
         /**
          *  Recalculate total when model change
@@ -759,62 +726,13 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             model.changedAttributes() && model.changedAttributes().sum && model.trigger('update:sum', model);
 
-            this.update_discounts();
-        },
-        recalculate_tax: function() {
-            var tax = 0;
-            this.each(function(model) {
-                tax += model.get_myorder_tax();
-            });
-            this.total.set('tax', tax);
-        },
-
-         /**
-         * recalculate subtotal, total discount/tax/surcharge :
-         */
-        recalculate_all: function() {
-            var myorder = this,
-                tax = 0,
-                total = 0,
-                discounts = 0,
-                surcharge = 0;
-
-            myorder.each(function(model) {
-                discounts += model.get("discount").get("sum");
-
-                total += model.get('sum') - model.get("discount").get("sum");
-            });
-
-            var discount = myorder.discount.get("sum");
-
-            myorder.discount.set("discount_rate", myorder.discount.get("taxed") ? discount / total : 0);
-
-            if (discount > 0) {
-                discounts += discount;
-                total -= discount;
+            if (model.isRealProduct()) {
+                this.update_cart_totals({update_shipping_options: true});
             }
-
-            // item surcharge/tax depend on "discount_rate" for order level discount, so second cycle is used:
-            myorder.each(function(model) {
-                surcharge += model.get_myorder_surcharge();
-
-                tax += model.get_myorder_tax();
-            });
-
-            if (total < 0) total = 0;
-            if (tax < 0) tax = 0;
-            if (surcharge < 0) surcharge = 0;
-
-            this.total.set({
-                total: total,
-                tax: tax,
-                surcharge: surcharge,
-                discounts: discounts
-            });
         },
         findDeliveryItem: function() {
             return this.find(function(model) {
-                return model.get('product').get('isDeliveryItem') === true;
+                return model.isDeliveryItem() === true;
             });
         },
         findBagChargeItem: function() {
@@ -822,6 +740,10 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 return model.get('product').id == null &&
                        model.get('product').get('name') == MSG.BAG_CHARGE_ITEM;
             });
+        },
+        removeServiceFees: function() {
+            var fees = this.filter(function(obj){ return obj.isServiceFee(); });
+            this.remove(fees);
         },
         /**
          * save order to localstorage
@@ -843,6 +765,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
 
             setData('orders', orderToSave);
             this.checkout.saveCheckout();
+            this.rewardsCard.saveData();
             this.total.saveTotal();
             this.discount.saveDiscount();
         },
@@ -852,6 +775,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         loadOrders: function() {
             this.empty_myorder();
             this.checkout.loadCheckout();
+            this.rewardsCard.loadData();
             this.total.loadTotal();
             var orders = getData('orders');
             var delivery_data = getData('delivery_data');
@@ -863,8 +787,21 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     this.deliveryItem.get("product").set(delivery_data);
             }
 
+            var total  = _.find(orders, function(item) {
+                return item.total instanceof Object;
+            });
+
+            if (total) {
+                total = total["total"];
+                this.total.set({
+                    total: total.total,
+                    tax: total.tax,
+                    surcharge: total.surcharge,
+                    discounts: total.discounts
+                });
+            }
+
             this.discount.loadDiscount();
-            this.recalculate_all();
         },
         /**
          *
@@ -897,7 +834,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if (remain > 0 ) {
                     return {
                         status: 'ERROR',
-                        errorMsg: (App.skin == App.Skins.RETAIL ? MSG.ADD_MORE_FOR_SHIPPING : MSG.ADD_MORE_FOR_DELIVERY).replace('%s', App.Data.settings.get('settings_system').currency_symbol + remain)
+                        errorMsg: (MSG.ADD_MORE_FOR_DELIVERY).replace('%s', App.Data.settings.get('settings_system').currency_symbol + remain)
                     };
                 }
             }
@@ -1013,8 +950,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 return error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, fields.join(', '))); // user notification
             } else if (errorMsg) {
                 return error(errorMsg); // user notification
-            } else if (options.customer && dining_option === 'DINING_OPTION_DELIVERY') {
-                customer.validate_address(_success.bind(this), error);
             } else {
                 _success.call(this);
             }
@@ -1045,8 +980,12 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             if(this.paymentInProgress)
                 return;
             this.paymentInProgress = true;
-            if(this.preparePickupTime() === 0)
+            if(this.preparePickupTime() === 0) {
+                this.trigger('cancelPayment');
+                delete this.paymentInProgress;
+                App.Data.errors.alert(MSG.ERROR_STORE_IS_CLOSED); // user notification
                 return;
+            }
             this.trigger('paymentInProcess');
             this.submit_order_and_pay(payment_type, validationOnly);
         },
@@ -1065,9 +1004,6 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if (pickup) pickup = new Date(time > pickup ? time : pickup);
 
                 if (App.skin != App.Skins.RETAIL && (!pickup || !App.Data.timetables.checking_work_shop(pickup, delivery)) ) { //pickup may be null or string
-                    this.trigger('cancelPayment');
-                    delete this.paymentInProgress;
-                    App.Data.errors.alert(MSG.ERROR_STORE_IS_CLOSED); // user notification
                     return 0;
                 }
 
@@ -1090,11 +1026,11 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 });
             }
         },
-        update_discounts: function() {
+        update_cart_totals: function(params) {
             if (!this.getDiscountsTimeout) //it's to reduce the number of requests to the server
-                this.getDiscountsTimeout = setTimeout(this.get_discounts.bind(this), 100);
+                this.getDiscountsTimeout = setTimeout(this.get_cart_totals.bind(this, params), 100);
         },
-        get_discounts: function(params) {
+        get_cart_totals: function(params) {
             var self = this;
 
             if (this.getDiscountsTimeout) {
@@ -1102,10 +1038,16 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 delete this.getDiscountsTimeout;
             }
 
-            App.skin == App.Skins.PAYPAL && self.recalculate_all();
+            if (self.get_only_product_quantity() < 1) {
+                self.total.set({
+                    total: 0,
+                    tax: 0,
+                    surcharge: 0,
+                    discounts: 0
+                });
+            }
 
-            if (!App.Settings.accept_discount_code || self.get_only_product_quantity() < 1 || self.NoRequestDiscounts === true) {
-                App.skin != App.Skins.PAYPAL && self.recalculate_all();
+            if (self.get_only_product_quantity() < 1 || self.NoRequestDiscounts === true) {
                 self.trigger("NoRequestDiscountsComplete");
                 return (new $.Deferred()).reject();
             }
@@ -1114,26 +1056,32 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 this.get_discount_xhr.abort();
             }
 
-            this.get_discount_xhr = this._get_discounts(params);
+            this.get_discount_xhr = this._get_cart_totals(params);
             this.get_discount_xhr.always(function() {
                 delete self.get_discount_xhr;
             });
 
             return this.get_discount_xhr;
         },
-        _get_discounts: function(params) {
-            var myorder = this,
+        _get_cart_totals: function(params) {
+            var myorder = this, checkout,
+                customer = App.Data.customer,
+                rewardsCard = this.rewardsCard.toJSON(),
                 total = myorder.total.get_all(),
                 items = [],
                 order_info = {},
-                checkout = this.checkout.toJSON(),
                 is_apply_discount = params && params.apply_discount ? params.apply_discount : false,
                 order = {
-                    skin: App.Data.settings.get('skin'),
                     establishmentId: App.Data.settings.get("establishment"),
                     items: items,
                     orderInfo: order_info
-                };
+                },
+                shipping_address,
+                isShipping,
+                request;
+
+            this.preparePickupTime();
+            checkout = this.checkout.toJSON();
 
             if (checkout.discount_code && is_apply_discount) {
                 order.discount_code = checkout.discount_code;
@@ -1143,45 +1091,57 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             }
 
             myorder.each(function(model) {
-                items.push(model.item_submit(true));
+                if (!model.isServiceFee() && !model.isShippingItem())
+                  items.push(model.item_submit(true));
             });
 
-            order_info.created_date = checkout.createDate;
-            order_info.pickup_time = checkout.pickupTimeToServer;
-            order_info.lastPickupTime = checkout.lastPickupTime;
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
-            order_info.asap = checkout.isPickupASAP;
-            order_info.tax = total.tax;
-            order_info.subtotal = total.subtotal;
-            order_info.final_total = total.final_total;
-            order_info.surcharge = total.surcharge;
+
+            isShipping = checkout.dining_option === 'DINING_OPTION_SHIPPING' && customer
+                && (shipping_address = customer.get('addresses')[customer.get('shipping_address')])
+                && !customer._check_delivery_fields().length;
+
+            if(isShipping) {
+                order_info.shipping = customer.get('shipping_services')[customer.get('shipping_selected')] || {};
+                order_info.customer =  {address: shipping_address};
+            }
+
+            // add rewards card and redemption code to apply discount
+            if(rewardsCard.number && rewardsCard.redemption_code) {
+                order_info.rewards_card = {
+                    redemption: rewardsCard.redemption_code
+                };
+            }
 
             var myorder_json = JSON.stringify(order);
-            return $.ajax({
+            request = $.ajax({
                 type: "POST",
-                url: App.Data.settings.get("host") + "/weborders/discounts/",
+                url: App.Data.settings.get("host") + "/weborders/cart_totals/",
                 data: myorder_json,
                 dataType: "json",
                 success: function(data) {
                     if (!data || !data.status) {
-                        reportErrorFrm(MSG.ERROR_OCCURRED + MSG.ERROR_INCORRECT_AJAX_DATA);
+                        reportErrorFrm(MSG.ERROR_OCCURRED + ' ' + MSG.ERROR_INCORRECT_AJAX_DATA);
                         return;
                     }
                     switch(data.status) {
                         case "OK":
-                            myorder.checkout.set('last_discount_code', data.data.discount_code);
+                            if (checkout.discount_code && is_apply_discount) {
+                                myorder.checkout.set('last_discount_code', checkout.discount_code);
+                            }
                             if (myorder.get_only_product_quantity() > 0) {
-                                myorder.process_discounts(data.data);
+                                myorder.process_cart_totals(data.data);
                             }
                             break;
                         case "DISCOUNT_CODE_NOT_FOUND":
+                        case "DISCOUNT_CODE_NOT_APPLICABLE":
                             myorder.checkout.set('last_discount_code', null);
-                            reportErrorFrm(MSG.DISCOUNT_CODE_NOT_FOUND);
-                            myorder.update_discounts();//get discounts w/o discount_code
+                            reportErrorFrm(MSG[data.status]);
+                            myorder.update_cart_totals();//get discounts & totals w/o discount_code
                             break;
                         default:
                             if (!data.errorMsg) data.errorMsg = MSG.ERROR_NO_MSG_FROM_SERVER;
-                            data.errorMsg = MSG.ERROR_OCCURRED + data.errorMsg;
+                            data.errorMsg = MSG.ERROR_OCCURRED + ' ' + data.errorMsg;
                             reportErrorFrm(data.errorMsg);
                     }//end of switch
                 },
@@ -1191,31 +1151,33 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                     }
                 },
                 complete: function() {
-                    myorder.recalculate_all();
                     myorder.trigger("DiscountsComplete");
                 }
             });
+
+            // Need to update shipping services if it's required
+            if(isShipping && params && params.update_shipping_options) {
+                App.Data.customer.get_shipping_services(request, function(response) {
+                    if(response.data instanceof Object && response.data.shipping instanceof Object && Array.isArray(response.data.shipping.options)) {
+                        return response.data.shipping.options;
+                    } else {
+                        return [];
+                    }
+                });
+            }
+
+            return request;
 
             function reportErrorFrm(message) {
                 if (is_apply_discount) App.Data.errors.alert(message); // user notification
             }
         },
-        process_discounts: function(json) {
+        process_cart_totals: function(json) {
             if (!(json instanceof Object)) return;
 
-            var myorder = this;
+            var myorder = this, model;
 
             json.items.forEach(function(product) {
-                /*if (product.product_name_override == "Bag Charge" || product.product_name_override == "Delivery Charge") {
-                    if (!myorder.debug_counter) {
-                        myorder.debug_counter = 0;
-                    }
-                    myorder.debug_counter = myorder.debug_counter + 0.2;
-                    product.discount = { name: 'Debug $1 item discount',
-                              sum: myorder.debug_counter,
-                              taxed: false,
-                              id: 1, type: 1};
-                }*/
                 var model = myorder.findWhere({ "product_sub_id": product.product_sub_id,
                                                 "id_product": product.product });
                 if (!model || !model.get("discount"))
@@ -1233,20 +1195,50 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 }
             });
 
-            /*json.discount = { name: '10% All/Order/Untaxed',
-                              sum: 1.00,
-                              taxed: true,
-                              id: 23};*/
-            if (json.orderInfo.discount instanceof Object) {
-                myorder.discount.set({ name: json.orderInfo.discount.name,
-                                       sum: json.orderInfo.discount.sum,
-                                       taxed: json.orderInfo.discount.taxed,
-                                       id: json.orderInfo.discount.id,
-                                       type: json.orderInfo.discount.type
+            if (json.service_fees == undefined)
+                json.service_fees = [];
+
+            if (Array.isArray(json.service_fees)) {
+                var myorder_fees = myorder.filter(function(obj){ return obj.isServiceFee(); });
+
+                var diff = myorder_fees.filter(function(obj){
+                           return !_.findWhere(json.service_fees, {id: obj.id});
+                       });
+                //remove all service fees from myorder which aren't present in the responce now
+                myorder.remove(diff);
+
+                //we create new service fee if needed or update old one:
+                json.service_fees.forEach(function(item){
+                    var fee = myorder.findWhere({id: item.id});
+                    if (!fee) {
+                        fee = new App.Models.ServiceFeeItem({id: item.id});
+                        myorder.add(fee);
+                    }
+                    fee.get("product").set({name: item.name, price: item.amount});
+                    fee.set({ initial_price: item.amount,
+                              sum: item.amount });
+                });
+            }
+
+            if (json.order_discount instanceof Object) {
+                myorder.discount.set({ name: json.order_discount.name,
+                                       sum: json.order_discount.sum,
+                                       taxed: json.order_discount.taxed,
+                                       id: json.order_discount.id,
+                                       type: json.order_discount.type
                                     });
             } else {
                 myorder.discount.zero_discount();
             }
+
+            myorder.total.set({
+                total: json.subtotal,
+                tax: json.tax,
+                surcharge: json.surcharge,
+                discounts: json.discounts,
+                shipping: json.shipping && json.shipping.service_charge,
+                shipping_discount: json.shipping && json.shipping.discount_sum,
+            });
         },
 
         submit_order_and_pay: function(payment_type, validationOnly, capturePhase) {
@@ -1269,21 +1261,22 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 };
 
             myorder.each(function(model) {
-                items.push(model.item_submit());
+                if (!model.isServiceFee())
+                    items.push(model.item_submit());
             });
 
             var call_name = [],
                 checkout = this.checkout.toJSON(),
+                rewardsCard = this.rewardsCard.toJSON(),
                 card = App.Data.card && App.Data.card.toJSON(),
                 customer = App.Data.customer.toJSON();
 
+            if (checkout.last_discount_code) {
+                order.discount_code = checkout.last_discount_code;
+            }
             order_info.created_date = checkout.createDate;
             order_info.pickup_time = checkout.pickupTimeToServer;
             order_info.lastPickupTime = checkout.lastPickupTime;
-            order_info.tax = total.tax;
-            order_info.subtotal = total.subtotal;
-            order_info.final_total = total.final_total;
-            order_info.surcharge = total.surcharge;
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.notes = checkout.notes;
             order_info.asap = checkout.isPickupASAP;
@@ -1294,38 +1287,50 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
             $.extend(payment_info, customerData.payment_info);
 
             if(checkout.dining_option === 'DINING_OPTION_DELIVERY') {
-                payment_info.address = customer.addresses[customer.shipping_address === -1 ? customer.addresses.length - 1 : customer.shipping_address];
+                payment_info.address = getAddress();
             }
 
             // process payment type
             var pt = PaymentProcessor.processPaymentType(payment_type, myorder);
-            if(pt instanceof Object)
-                $.extend(payment_info, pt);
-            else
-                return;
+            $.extend(payment_info, pt);
+
+            // if payment has failed need emit 'paymentResponse' event and abort execution
+            if (payment_info.errorMsg) {
+                return reportPaymentError(payment_info.errorMsg);
+            }
 
             var notifications = this.getNotifications();
             order_info.call_name = call_name.join(' / ');
             if(notifications)
                 order.notifications = notifications;
 
-            if(checkout.rewardCard) {
-                payment_info.reward_card = checkout.rewardCard ? checkout.rewardCard.toString() : '';
+            if(rewardsCard.number && rewardsCard.redemption_code) {
+                order_info.rewards_card = {
+                    redemption: rewardsCard.redemption_code
+                };
+            }
+
+            if(checkout.dining_option === 'DINING_OPTION_SHIPPING') {
+                order_info.shipping = customer.shipping_services[customer.shipping_selected] || undefined;
+                order_info.customer = !order_info.shipping ? undefined : _.extend({
+                    address: getAddress()
+                }, order.paymentInfo);
             }
 
             var myorder_json = JSON.stringify(order),
                 successValidation;
             $.ajax({
                 type: "POST",
-                url: App.Data.settings.get("host") + "/weborders/" + (validationOnly ? "pre_validate/" : "create_order_and_pay/"),
+                url: App.Data.settings.get("host") + "/weborders/" + (validationOnly ? "pre_validate/" : "create_order_and_pay_v1/"),
                 data: myorder_json,
                 dataType: "json",
                 success: function(data) {
                     if (!data || !data.status) {
-                        reportErrorFrm(MSG.ERROR_OCCURRED + MSG.ERROR_INCORRECT_AJAX_DATA);
+                        reportErrorFrm(MSG.ERROR_OCCURRED + ' ' + MSG.ERROR_INCORRECT_AJAX_DATA);
                         return;
                     }
                     myorder.paymentResponse = data instanceof Object ? data : {};
+                    myorder.paymentResponse.capturePhase = capturePhase;
 
                     switch(data.status) {
                         case "OK":
@@ -1372,11 +1377,14 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                         case "REWARD CARD UNDEFINED":
                             reportErrorFrm(MSG.REWARD_CARD_UNDEFINED);
                             break;
+                        case "DELIVERY_ADDRESS_ERROR":
+                            reportErrorFrm(data.errorMsg);
+                            break;
                         case "PRODUCTS_NOT_AVAILABLE_FOR_SELECTED_TIME":
                             reportErrorFrm(data.errorMsg + " " + MSG.PRODUCTS_VALID_TIME + "<br/>" + format_timetables(data.responseJSON["timetables"], ",<br/>"));
                             break;
                         default:
-                            data.errorMsg = MSG.ERROR_OCCURRED + data.errorMsg;
+                            data.errorMsg = MSG.ERROR_OCCURRED + ' ' + data.errorMsg;
                             reportErrorFrm(data.errorMsg);
                     }//end of switch
                 },
@@ -1398,8 +1406,7 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 if (validationOnly) {
                     myorder.trigger('paymentFailedValid', [message]);
                 } else if (capturePhase) {
-                    myorder.paymentResponse = {status: 'error', errorMsg: message};
-                    myorder.trigger('paymentResponse');
+                    reportPaymentError(message);
                 } else {
                     myorder.trigger('paymentFailed');
                     App.Data.errors.alert(message, false, false, {
@@ -1415,6 +1422,15 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 } else {
                     myorder.trigger('paymentFailed', [message]);
                 }
+            }
+
+            function reportPaymentError(message) {
+                myorder.paymentResponse = {status: 'error', errorMsg: message, capturePhase: capturePhase};
+                myorder.trigger('paymentResponse');
+            }
+
+            function getAddress() {
+                return customer.addresses[App.Data.customer.isDefaultShippingAddress() ? customer.addresses.length - 1 : customer.shipping_address];
             }
         },
         getOrderSeatCallName: function(phone) {
@@ -1494,105 +1510,8 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
                 item.removeFreeModifiers();
             });
         },
-        /*
-         * Avalara service http://www.avalara.com/
-         * Bag charge should not be processed by Avalara
-         */
-        getDestinationBasedTaxes: function(item) {
-            if(!App.Data.customer) {
-                return;
-            }
-
-            var self = this,
-                addresses = App.Data.customer.get('addresses'),
-                post = {
-                    establishment: App.Data.settings.get('establishment'),
-                    items: [],
-                    address: {}
-                },
-                data, address, isPresent;
-
-            if(!Array.isArray(addresses) || addresses.length == 0)
-                return;
-
-            address = encodeStr(addresses[0].address);
-            post.address = addresses[0]; // 0 index due to this method is used only in retail skin that has to have single address
-
-            if(!(this.destinationBasedTaxes instanceof Object) || !Array.isArray(this.destinationBasedTaxes[address]))
-                return;
-
-            if(!item) {
-                this.each(function(item) {
-                    if(item instanceof App.Models.BagChargeItem)
-                        return;
-
-                    data = item.item_submit();
-                    post.items.push({
-                        price: data.price,
-                        quantity: data.quantity,
-                        product: data.product
-                    });
-                });
-            } else {
-                data = item.item_submit();
-                post.items.push({
-                    price: data.price,
-                    quantity: data.quantity,
-                    product: data.product
-                });
-                isPresent = this.destinationBasedTaxes[address].some(function(taxItem) {
-                    return taxItem.product == item.get('id_product');
-                });
-            }
-
-            if(isPresent) {
-                return updateTaxes();
-            }
-
-            $.ajax({
-                type: 'POST',
-                url: App.Data.settings.get('host') + '/weborders/shipping_taxes/',
-                data: JSON.stringify(post),
-                contentType: 'application/json',
-                success: function(response) {
-                    if(response.status == 'OK' && response.data instanceof Object && Array.isArray(response.data.items)) {
-                        Array.prototype.push.apply(self.destinationBasedTaxes[address], response.data.items);
-                        updateTaxes();
-                    }
-                }
-            });
-
-            function updateTaxes() {
-                self.destinationBasedTaxes[address].forEach(function(item) {
-                    self.where({id_product: item.product}).forEach(function(orderItem) {
-                        if(orderItem instanceof App.Models.BagChargeItem)
-                            return;
-
-                        var product = orderItem.get_product();
-                        product.set('tax', item.tax_rate);
-                    });
-                });
-                self.recalculate_all();
-            }
-        },
-        addDestinationBasedTaxes: function() {
-            if(typeof this.destinationBasedTaxes == 'undefined')
-                this.destinationBasedTaxes = {};
-
-            var address = App.Data.customer.get('addresses');
-
-            if(!Array.isArray(address) || address.length == 0)
-                return;
-
-            address = encodeStr(address[0].address);
-            if(address in this.destinationBasedTaxes)
-                return;
-
-            this.destinationBasedTaxes[address] = [];
-            this.getDestinationBasedTaxes();
-        },
         isShippingOrderType: function() {
-            return App.Skins.RETAIL == App.skin && this.checkout.get('dining_option') == 'DINING_OPTION_DELIVERY';
+            return this.checkout.get('dining_option') == 'DINING_OPTION_SHIPPING';
         },
         restoreTaxes: function() {
             this.each(function(item) {
@@ -1608,6 +1527,85 @@ define(["backbone", 'total', 'checkout', 'products'], function(Backbone) {
         clearData: function() {
             this.empty_myorder();
             this.saveOrders();
+        },
+        /**
+         * Save paymentResponse in sessionStorage. An amount of payment responses may be more than 1 per session. Need use unique id for each.
+         *
+         * @param {string} uid - Unique identificator
+         */
+        savePaymentResponse: function(uid) {
+            if(typeof uid == 'string' && uid.length && this.paymentResponse) {
+                setData(uid + '.paymentResponse', this.paymentResponse);
+            }
+        },
+        /**
+         * Restore paymentResponse and remove it from sessionStorage. An amount of payment responses may be more than 1 per session. Need use unique id for each.
+         *
+         * @param {string} uid - Unique identificator
+         */
+        restorePaymentResponse: function(uid) {
+            if(typeof uid != 'string' || !uid.length) {
+                return;
+            }
+            uid = uid + '.paymentResponse';
+            var paymentResponse = getData(uid);
+            if(paymentResponse) {
+                removeData(uid);
+                return this.paymentResponse = paymentResponse;
+            }
+        },
+        /*
+         * @method
+         * Set shipping address after dinign_option change.
+         *
+         * @param {Object} model - App.Data.myorder.checkout object
+         * @param {string} value - result of App.Data.myorder.checkout.get('dining_option')
+         *
+         * @returns {numder} selected shipping address
+         */
+        setShippingAddress: function(model, value) {
+            var customer = App.Data.customer,
+                shipping_addresses = {};
+
+            if(!customer) {
+                return;
+            }
+
+            shipping_addresses.DINING_OPTION_DELIVERY = customer.get('deliveryAddressIndex'),
+            shipping_addresses.DINING_OPTION_SHIPPING = customer.get('shippingAddressIndex')
+
+            if (value == 'DINING_OPTION_DELIVERY' || value == 'DINING_OPTION_SHIPPING') {
+                customer.set('shipping_address', shipping_addresses[value]);
+            } else {
+                customer.set('shipping_address', customer.defaults.shipping_address);
+            }
+
+            return customer.get('shipping_address');
+        },
+        /**
+         * @method
+         * @param discount - discount which may be applied to items.
+         * @returns array of items with products which have point value and may be redeemed with points reward.
+         */
+        getItemsWithPointsRewardDiscount: function(discount) {
+            var itemsWithDiscount = [];
+
+            discount || (discount = 0);
+
+            this.filter(function(item){
+                return item.hasPointValue();
+            }).sort(function(x, y) {
+                return -1 * (x.get_modelsum() - y.get_modelsum());
+            }).some(function(item) {
+                var oldSum = item.get_modelsum(),
+                    newSum = oldSum - discount;
+                item.set('reward_discount', newSum <= 0 ? oldSum : discount);
+                itemsWithDiscount.push(item);
+                discount -= oldSum;
+                return discount <= 0;
+            });
+
+            return itemsWithDiscount;
         }
     });
 });

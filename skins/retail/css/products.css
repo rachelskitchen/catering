@@ -240,10 +240,12 @@
     font-weight: bold;
     margin-bottom: 10px;
 }
-#modifiers_popup .product .gift_card span:not([class]) {
+#modifiers_popup .product .gift_card span.clip {
     display: inline-block;
-    width: 130px;
+    width: 145px;
     text-align: right;
+    line-height: 19px;
+    vertical-align: top;
 }
 #modifiers_popup .product .gift_card .input_beauty {
     margin-left: 12px;

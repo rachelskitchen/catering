@@ -1,21 +1,19 @@
 <script type="text/template" id="cart_main-template">
-    <h2 class="cart_title">Cart</h2>
+    <h2 class="cart_title"> <%= _lp.CART_CART %> </h2>
     <div class="order-items_wrapper">
         <div class="order-items"></div>
     </div>
     <ul class="total_block"></ul>
     <% if(_settings.online_orders) { %>
-    <div class="btn unselectable">Checkout</div>
+        <div class="btn unselectable"> <span class="clip"> <%= _lp.CART_CHECKOUT %> </span> </div>
     <% } %>
 </script>
 
 <script type="text/template" id="cart_checkout-template">
-    <h2 class="cart_title">Order Summary</h2>
+    <h2 class="cart_title"> <%= _lp.CART_ORDER_SUMMARY %></h2>
     <div class="order-items_wrapper">
         <div class="order-items"></div>
     </div>
     <ul class="total_block"></ul>
-    <div class='pay_button'>
-    <div class="btn pay unselectable">Pay</div>
-    </div>
+    <div class="pay_button"> <div class="btn pay unselectable"> <%= _lp.CART_PAY %> </div> </div>
 </script>

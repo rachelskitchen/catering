@@ -102,15 +102,15 @@
             </div>
             <div class="btn_wrapper">
                 <% if (!btnsSwap) { %>
-                    <div class="btn btnOk"> <%= btnText1 %> </div>
+                    <div class="btn btnOk"> <span class="clip"> <%= btnText1 %> </span> </div>
                     <% if (isConfirm && !cancelHide) { %>
-                       <div class="btn btnCancel"> <%= btnText2 %> </div>
+                       <div class="btn btnCancel"> <span class="clip"> <%= btnText2 %> </span> </div>
                     <% } %>
                 <% } else { %>
                     <% if (isConfirm && !cancelHide) { %>
-                       <div class="btn btnCancel"> <%= btnText2 %> </div>
+                       <div class="btn btnCancel"> <span class="clip"> <%= btnText2 %> </span> </div>
                     <% } %>
-                    <div class="btn btnOk"> <%= btnText1 %> </div>
+                    <div class="btn btnOk"> <span class="clip"> <%= btnText1 %> </span> </div>
                 <% } %>
             </div>
         </div>

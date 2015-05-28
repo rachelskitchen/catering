@@ -20,6 +20,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+if (is_minimized_version) {
+    require.config({
+        urlArgs: "ver=" + autoVersion
+    });
+}
+
 require(['app'], function() {
     if (is_browser_unsupported) {
         return;
@@ -34,7 +40,8 @@ require(['app'], function() {
     skins.set('RETAIL', 'retail');
 
     // set REVEL_HOST for getting data from it
-    app.REVEL_HOST = "https://weborder-dev-branch.revelup.com";
+    //app.REVEL_HOST = "https://weborder-dev-branch.revelup.com";
+    app.REVEL_HOST = window.location.origin;
 
     // run app
     app.init();

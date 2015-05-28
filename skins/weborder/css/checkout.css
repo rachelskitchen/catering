@@ -1,41 +1,50 @@
 #content > .checkout label {
     display: inline-block;
-    width: 302px;
-    margin: 10px 0;
+    width: 320px;
     text-indent: 100px;
     font-weight: bold;
+    height: 39px;
+    line-height: 39px;
+    vertical-align: top;
 }
 #content > .checkout h2 {
     padding-left: 100px;
+    padding-right: 100px;
     font-weight: bold;
 }
 #content > .checkout div.row, #content > .checkout div.delivery_address > div > div {
     position: relative;
+    height: 39px;
+}
+#content > .checkout div.row label > span {
+    padding-right: 15px;
+    font-weight: bold;
 }
 #content > .checkout .input_beauty,
 #content > .checkout div.tips {
-    left: 292px;
-    right: 120px;
+    right: 100px;
     position: absolute;
-    top: 2px;
+    left: 310px;
+    top: 6px;
     bottom: 6px;
+}
+#content > .checkout div.tips {
+    top: -10px;
 }
 #content > .checkout .tipBlock {
     height: 65px;
 }
 #content > .checkout div.select {
     display: inline-block;
-    width: 175px;
+    width: 250px;
     position: relative;
     left: -17px;
-    top: 6px;
+    top: 4px;
     vertical-align: top;
-    height: 24px;
+    height: 29px;
     margin-bottom: 12px;
 }
-#content > .checkout div.select_day, #content > .checkout div.select.states {
-    width: 250px;
-}
+
 #content > .checkout div.select_day[disabled="disabled"] {
     opacity: .5;
     filter: alpha(opacity=50);
@@ -45,11 +54,14 @@
     vertical-align: top;
     margin: 0;
 }
+#content > .checkout div.tips > span {
+    float: left;
+}
 #content > .checkout div.tips .number-wrap {
     display:  inline-block;
     position:  relative;
     vertical-align: top;
-    margin-top: 10px;
+    margin-top: 5px;
 }
 #content > .checkout div.tips .number {
     display: inline-block;
@@ -60,13 +72,11 @@
     width: 76px;
     text-indent: 0 !important;
 }
-#content > .checkout  .tip-label {
-    margin-top: 22px;
-}
 #content > .checkout div.tips .currency_sym {
     display: inline-block;
     position: relative;
-    top: 1px;
+    top: 22px;
+    margin-right: 6px;
 }
 #content > .checkout div.tips .input_beauty {
     position: absolute;
@@ -78,13 +88,14 @@
 }
 #content > .checkout .tips .btn {
     display: inline-block;
-    width: 39px;
-    height: 39px;
+    min-width: 30px;
+    max-width: 85px;
+    height: 37px;
     border-width: 1px;
     border-style: solid;
     border-radius: 20px;
     text-align: center;
-    line-height: 39px;
+    line-height: 37px;
     font-weight: normal;
     font-size: 14px;
     cursor: pointer;
@@ -124,7 +135,7 @@
 }
 
 #content > .checkout .arrival_address > ul {
-    padding-left: 290px;
+    padding-left: 308px;
 }
 
 #content > .checkout .arrival_address > ul li {
@@ -155,7 +166,7 @@
     overflow-x: hidden;
 }
 #content .checkout .arrow_top {
-    top: 24px;
+    top: 30px;
     left: 0;
     right: 0;
 }
@@ -181,7 +192,7 @@
     height: auto;
 }
 #pay_popup .btn {
-    width: 248px;
+    width: 260px;
     height: 38px;
     border-radius: 25px;
     margin: 0 auto 20px;
@@ -204,28 +215,25 @@
     height: 50px;
 }
 #content > .checkout div.discount {
-    left: 292px;
     right: 120px;
     position: absolute;
-    top: 5px;  
+    left: 310px;
+    top: 0;
+    bottom: 0;
 }
 #content > .checkout div.discount .number-wrap {
     display:  inline-block;
     position:  relative;
     vertical-align: top;
-    width: 70%;
+    width: 50%;
+    height: 100%;
 }
 #content > .checkout div.discount .number {
     display: inline-block;
     position: absolute;
-    height: 30px;
-    top: 5px;
     left: 0px;
-    right: 40px;
+    right: 10px;
     text-indent: 0 !important;
-}
-#content > .checkout  .discount-label {
-    margin-top: 18px;
 }
 #content > .checkout div.discount .input_beauty {
     position: absolute;
@@ -239,6 +247,7 @@
     display: inline-block;
     height: 32px;
     min-width: 68px;
+    max-width: 110px;
     border-width: 2px;
     border-radius: 20px;
     border-style: solid;
@@ -254,38 +263,76 @@
 }
 /* these button colores are the same for all themes: */
 #content > .checkout .discount .btn {
-    border-color: #a9a9a9;    
-    background-color: rgba(247,247,247,1); 
-    box-shadow: 0 3px 3px rgba(0,0,0,0.3);
+    border-color: #a9a9a9;
+    background-color: rgba(247,247,247,1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 #content > .checkout .discount .btn:active {
-    background-color: rgba(254,254,254,1); 
+    background-color: rgba(254,254,254,1);
 }
 #content > .checkout .discount .btn.applied {
     cursor: default;
 }
-#content > .checkout .discount .btn:after, 
+#content > .checkout .discount .btn:after,
 #content > .checkout .discount .btn:before {
     display: none;
 }
 
+.select-wrap {
+    display: inline-block;
+}
+
+#content > .checkout div.select.shipping {
+    display: inline-block;
+    width: 320px;
+}
+
+#content > .checkout .shipping-status {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    vertical-align: middle;
+    margin-top: 4px;
+    font-size: 8px;
+}
+
+#content > .checkout .rewards-card-input.input_beauty {
+    right: 220px !important;
+}
+
+#content > .checkout .rewards-card-btn {
+    display: inline-block;
+    width: 100px;
+    float: right;
+    margin-right: 100px;
+    padding-left: 20px;
+    line-height: 39px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
     #content > .checkout label {
-        width: 202px !important;
+        width: 220px !important;
         text-indent: 50px !important;
     }
     #content > .checkout h2 {
         padding-left: 50px !important;
+        padding-right: 50px !important;
     }
     #content > .checkout div.input_beauty,
     #content > .checkout div.tips {
-        left: 194px !important;
+        left: 212px !important;
         right: 60px !important;
         top: 2px;
     }
+    #content > .checkout div.tips {
+        top: -10px;
+    }
     #content > .checkout .arrival_address > ul {
-        padding-left: 195px !important;
+        padding-left: 213px !important;
     }
     #content > .checkout div.tips label {
         width: 160px !important;
@@ -293,20 +340,27 @@
     }
     #content > .checkout div.tips .number {
         width: 110px !important;
+        top: 10px !important;
     }
     #content > .checkout div.tips .input_beauty {
         left: 0 !important;
     }
     #content > .checkout div.discount {
-        left: 194px;
+        left: 212px;
         right: 40px;
     }
     #content > .checkout div.discount .input_beauty {
         left: 0px !important;
         right: 0px !important;
-    }  
+    }
     #content > .checkout .discount .btn {
         margin-left: -7px;
+    }
+    #content > .checkout .rewards-card-input.input_beauty {
+        right: 180px !important;
+    }
+    #content > .checkout .rewards-card-btn {
+        margin-right: 60px;
     }
 }
 

@@ -28,6 +28,8 @@ define(["backbone", "async"], function(Backbone) {
             var app = require('app');
             this.get_data_warehouse(); // selection of the data warehouse
             this.set('basePath', app.config.baseUrl.replace(/\/$/, '') || '.');
+            this.set('coreBasePath', app.config.baseUrl.replace(/\/$/, '') || '.'); //it allways points to ../core for all skins and /dev/ or /core/ debug start url
+            this.set('host', app.REVEL_HOST);
             this.set('host', app.REVEL_HOST);
             this.set('hostname', /^http[s]*:\/\/(.+)/.exec(app.REVEL_HOST)[1]); //it's the host w/o "http[s]://" substring
             this.ajaxSetup(); // AJAX-requests settings
@@ -81,7 +83,6 @@ define(["backbone", "async"], function(Backbone) {
                 errors = App.Data.errors;
             Backbone.$.ajaxSetup({
                 timeout: self.get('timeout'),
-                cache: true,
                 success: function(data) {
                     if (!data.status) {
                         errors.alert(MSG.ERROR_INCORRECT_AJAX_DATA, true, false, {
@@ -188,9 +189,10 @@ define(["backbone", "async"], function(Backbone) {
          */
         get_settings_for_skin: function() {
             var self = this,
-                load = $.Deferred();
+                load = $.Deferred(),
+                version = is_minimized_version ? '?ver=' + autoVersion : '';
             $.ajax({
-                url: self.get("skinPath") + "/settings.json",
+                url: self.get("skinPath") + "/settings.json" + version,
                 dataType: "json",
                 success: function(data) {
                     var settings_skin = {};
@@ -262,7 +264,13 @@ define(["backbone", "async"], function(Backbone) {
                     default_dining_option: 'DINING_OPTION_TOGO',
                     accept_discount_code: true,
                     enable_quantity_modifiers: true,
-                    enable_split_modifiers: true
+                    enable_split_modifiers: true,
+                    // for test (begin)
+                    locales: {
+                        en: 1427802271098,
+                        ru: 1427802447190
+                    }
+                    // for test (end)
                 },
                 load = $.Deferred();
 
@@ -347,6 +355,14 @@ define(["backbone", "async"], function(Backbone) {
                             if (settings_system.auto_bag_charge < 0)
                                 settings_system.auto_bag_charge = 0;
 
+                            if (_.isArray(settings_system.delivery_post_code_lookup) && settings_system.delivery_post_code_lookup[0]) {
+                                //format codes for better presentation
+                                var  codes = settings_system.delivery_post_code_lookup[1];
+                                if (codes) {
+                                    codes = $.map(codes.split(","), $.trim);
+                                    settings_system.delivery_post_code_lookup[1] = codes.join(", ");
+                                }
+                            }
                            //for debug:
                            //settings_system.color_scheme =  "blue_&_white"; // "default", "blue_&_white", "vintage"
                             setData(color_scheme_key, new Backbone.Model({color_scheme: settings_system.color_scheme}), true);
@@ -507,13 +523,18 @@ define(["backbone", "async"], function(Backbone) {
         loadSettings: function() {
             this.set('settings_system', getData('settings').settings_system);
         },
-        setSkinPath: function() {
+        /**
+         * Set path for the current skin.
+         *
+         * @param {boolean} withoutTrigger Is it necessary to initiate the "changeSkinPath" trigger?
+         */
+        setSkinPath: function(withoutTrigger) {
             var skinPath = this.get('basePath') + '/skins/' + this.get('skin');
             this.set({
                 img_path: skinPath + '/img/',
                 skinPath: skinPath
             });
-            this.trigger('changeSkinPath');
+            if (!withoutTrigger) this.trigger('changeSkinPath');
         }
     });
 });

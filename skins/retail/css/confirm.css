@@ -49,6 +49,8 @@
     font-weight: bold;
     text-align: center;
     margin: 8px 0;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 .confirmPayCard .pickup_time {
     margin: 15px 10px 5px 10px;
@@ -125,6 +127,11 @@
 #popup .total_block li {
     text-align: right;
 }
+#popup .total_block .title {
+    display: inline-block;
+    max-width: 280px;
+    vertical-align: top;
+}
 #popup .total_block .cost {
     letter-spacing: -3px;
 }
@@ -134,6 +141,9 @@
 #popup .order-items .myorder > li {
     margin-top: 10px;
     min-height: 85px;
+}
+#popup .order-items .bag_charge > li {
+    margin-top: 10px;    
 }
 #popup .order-items > li {
     height: auto;
@@ -164,8 +174,18 @@
     width: 2px !important;
 }
 
-#popup .order-items ul.discount > li {
+#popup .order-items ul.discount > li,
+#popup .order-items ul.service_fees > li {
     margin-top: 10px;
+}
+
+#popup .order-items .myorder > li.no_image .image,
+#popup .order-items .service_fees .image {
+    display: none;
+}
+#popup .order-items .myorder > li.no_image,
+#popup .order-items .service_fees > li {
+    min-height: 35px;
 }
 
 #popup .order-items .remove,

@@ -51,9 +51,8 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             is_gift: false,
             gift_card_number: null,
             checked_gift_cards: null,
-            stock_amount: 10,
+            stock_amount: 999,
             active: true,
-            isDeliveryItem: false,
             created_date: null,
             original_tax: null, // used to save origin tax rate to restore in Retail mode
             timetables: null
@@ -221,7 +220,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                                     var image = true;
 
                                     if(!inventory && el.product)
-                                        el.product.stock_amount = 10;
+                                        el.product.stock_amount = 999;
 
                                     // copy image url from parent if it is not present for child product
                                     if(el.product && !el.product.image) {
@@ -278,8 +277,8 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                 return success();
             }
 
-            (!gift_number || checked_gift_cards[gift_number] === false) && err.push('Gift Card Number');
-            !price && err.push('Price');
+            (!gift_number || checked_gift_cards[gift_number] === false) && err.push(_loc.PRODUCTS_GIFT_CARD_NUMBER);
+            (!price) && err.push(_loc.PRODUCTS_AMOUNT);
 
             if (err.length) {
                 error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, err.join(', ')));
@@ -301,7 +300,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                                 success();
                                 break;
                             default:
-                                err.push('Gift Card Number');
+                                err.push(_loc.PRODUCTS_GIFT_CARD_NUMBER);
                                 checked_gift_cards[gift_number] = false;
                                 error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, err.join(', ')));
                         }
@@ -339,7 +338,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
         checkStockAmount: function() {
             var inventory = App.Data.settings.get("settings_system").cannot_order_with_empty_inventory;
             if (!inventory)
-                this.set('stock_amount', 10);
+                this.set('stock_amount', 999);
         },
         restoreTax: function() {
             this.set('tax', this.get('original_tax'));

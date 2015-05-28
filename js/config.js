@@ -29,6 +29,7 @@ define({
         jquery_gallery: 'js/libs/jquery/jquery.gallery',
         jquery_numbermask: "js/libs/jquery/jquery.number_mask",
         backbone: "js/libs/backbone",
+        backbone_epoxy: "js/libs/backbone.epoxy",
         cssua: "js/libs/cssua",
         underscore: "js/libs/underscore",
         functions : "js/functions",
@@ -81,7 +82,10 @@ define({
         revel_view: 'js/views/revel',
         establishments: 'js/models/establishments',
         establishments_view: 'js/views/establishments',
-        filters: 'js/models/filters'
+        filters: 'js/models/filters',
+        locale: 'js/models/locale',
+        rewards: 'js/models/rewards',
+        rewards_view: 'js/views/rewards'
     },
     waitSeconds: 30,
     shim: {
@@ -94,6 +98,10 @@ define({
         },
         "backbone": {
             deps: ["underscore", "jquery"],
+            exports: "Backbone"
+        },
+        "backbone_epoxy": {
+            deps: ["backbone"],
             exports: "Backbone"
         },
         "cssua": {
@@ -109,7 +117,7 @@ define({
             deps: ["backbone"]
         },
         "errors" : {
-            deps: ["backbone", "functions"]
+            deps: ["backbone"]
         },
         'errors_view': {
             deps: ['backbone', 'factory']
@@ -202,6 +210,15 @@ define({
             deps: ['backbone', 'factory', 'generator', 'list']
         },
         'filters': {
+            deps: ['backbone']
+        },
+        'rewards': {
+            deps: ['backbone']
+        },
+        'rewards_view': {
+            deps: ['factory']
+        },
+        'locale': {
             deps: ['backbone']
         }
     },

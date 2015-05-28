@@ -41,7 +41,9 @@ define(["confirm_view"], function(confirm_view) {
                 } else {
                    offset = App.Settings.estimated_order_preparation_time;
                 }
-                new_model.pickup_time = offset > 0 ? 'Today ASAP (' + offset + ' min)' : 'Today ASAP';
+                new_model.pickup_time = offset > 0 ?
+                    _loc['CONFIRM_TODAY_ASAP'] + ' (' + offset + ' ' + _loc['CONFIRM_MINUTES'] + ')' :
+                    _loc['CONFIRM_TODAY_ASAP'];
             } else {
                 new_model.pickup_time = format_date_3(pickup);
             }

@@ -31,9 +31,9 @@ define(["myorder_view"], function(myorder_view) {
         render: function() {
             App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.render.apply(this, arguments);
             if (this.options.action === 'add') {
-                this.$('.action_button').html('Add to Bag');
+                this.$('.action_button > span').html(_loc['MYORDER_ADD_TO_BAG']);
             } else {
-                this.$('.action_button').html('Update Item');
+                this.$('.action_button > span').html(_loc['MYORDER_UPDATE_ITEM']);
             }
             var model = this.model,
                 view;
@@ -127,7 +127,8 @@ define(["myorder_view"], function(myorder_view) {
         render: function() {
             App.Views.CoreMyOrderView.CoreMyOrderItemView.prototype.render.apply(this, arguments);
             // need hide logo for bag charge (bug Bug 12073)
-            this.options.collection.bagChargeItem === this.model && this.$el.addClass("no_image");
+            this.options.collection && this.options.collection.bagChargeItem === this.model && this.$el.addClass("no_image");
+            App.Settings.hide_images === true && this.$el.addClass("no_image");
             return this;
         },
         editItem: function(e) {

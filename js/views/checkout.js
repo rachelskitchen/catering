@@ -28,16 +28,26 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
     App.Views.CoreCheckoutView.CoreCheckoutMainView = App.Views.FactoryView.extend({
         name: 'checkout',
         mod: 'main',
+        bindings: {
+            '.rewards-card-apply': 'classes: {hide: select(rewardsCard_redemption_code, true, false)}',
+            '.see-rewards': 'classes: {hide: select(rewardsCard_redemption_code, false, true)}',
+            '.cancel-input': 'classes: {hide: select(rewardsCard_redemption_code, false, true)}',
+            '.rewardCard': 'attr: {readonly: rewardsCard_redemption_code}'
+        },
         initialize: function() {
             this.listenTo(this.model, 'change:dining_option', this.controlAddress, this);
             this.listenTo(this.model, 'change:dining_option', this.controlDeliverySeat, this);
-            this.listenTo(this.model, 'change:rewardCard', this.updateData, this);
+            this.listenTo(this.options.rewardsCard, 'change:number', this.updateData, this);
             this.listenTo(this.options.customer, 'change:first_name change:last_name change:email change:phone', this.updateData, this);
             this.customer = this.options.customer;
             this.card = App.Data.card;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+
             this.model.get('dining_option') === 'DINING_OPTION_DELIVERY' &&
                  this.controlAddress(null, 'DINING_OPTION_DELIVERY');
+
+            this.model.get('dining_option') === 'DINING_OPTION_SHIPPING' &&
+                 this.controlAddress(null, 'DINING_OPTION_SHIPPING');
 
             this.model.get('dining_option') === 'DINING_OPTION_DELIVERY_SEAT' &&
                  this.controlDeliverySeat(null, 'DINING_OPTION_DELIVERY_SEAT');
@@ -52,7 +62,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             model.lastName = this.customer.escape('last_name');
             model.email = this.customer.escape('email');
             model.phone = this.customer.escape('phone');
-            model.rewardCard = this.model.escape('rewardCard');
+            model.rewardCard = this.options.rewardsCard.escape('number');
             model.isFirefox = /firefox/i.test(navigator.userAgent);
             model.enableRewardCard = settings.enable_reward_cards_collecting;
             model.business_name = settings.business_name;
@@ -85,10 +95,17 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         },
         events: {
             'blur .firstName': 'changeFirstName',
+            'change .firstName': 'changeFirstName',
             'blur .lastName': 'changeLastName',
+            'change .lastName': 'changeLastName',
             'blur .email': 'changeEmail',
+            'change .email': 'changeEmail',
             'blur .phone': 'changePhone',
-            'blur .rewardCard' : 'changeRewardCard'
+            'change .phone': 'changePhone',
+            'blur .rewardCard': 'changeRewardCard',
+            'click .rewards-card-apply': 'applyRewardsCard',
+            'click .see-rewards': 'showRewards',
+            'click .cancel-input': 'resetRewards'
         },
         changeFirstName: function(e) {
             this.customer.set('first_name', e.target.value);
@@ -99,18 +116,25 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.card.set('secondName', e.target.value);
         },
         changeEmail: function(e) {
-            this.customer.set('email', e.target.value);
+            this.customer.set('email', e.target.value.trim());
         },
         changePhone: function(e) {
             this.customer.set('phone', e.target.value);
         },
         changeRewardCard: function(e) {
-            this.model.set('rewardCard', e.target.value);
+            this.options.rewardsCard.set('number', e.target.value);
         },
         controlAddress: function(model, value) {
-            if(value === 'DINING_OPTION_DELIVERY') {
-                this.customer.set('shipping_address', -1);
-                var address = new App.Views.CheckoutView.CheckoutAddressView({customer: this.customer});
+            var address = this.subViews.shift();
+
+            // remove address if it exists
+            address && address.remove();
+
+            if(value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING') {
+                address = new App.Views.CheckoutView.CheckoutAddressView({
+                    customer: this.customer,
+                    checkout: this.model
+                });
                 this.subViews.push(address);
                 this.$('.delivery_address').append(address.el);
                 if(address.model.state || address.model.province)
@@ -118,10 +142,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 else
                     this.trigger('address-without-states');
             } else {
-                address = this.subViews.shift();
-                address && address.remove();
                 this.trigger('address-hide');
-                this.customer.unset('shipping_address');
             }
         },
         controlDeliverySeat: function(model, value) {
@@ -142,7 +163,16 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.$('.lastName').val(customer.get('last_name'));
             this.$('.email').val(customer.get('email'));
             this.$('.phone').val(customer.get('phone'));
-            this.$('.rewardCard').val(this.model.get('rewardCard'));
+            this.$('.rewardCard').val(this.options.rewardsCard.get('number'));
+        },
+        applyRewardsCard: function() {
+            this.options.rewardsCard.trigger('onApplyRewardsCard');
+        },
+        showRewards: function() {
+            this.options.rewardsCard.trigger('onRewardsReceived');
+        },
+        resetRewards: function() {
+            this.options.rewardsCard.resetData();
         }
     });
 
@@ -177,7 +207,6 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
             if (value !== oldValue) {
                 this.model.set('dining_option', value);
-                this.collection.recalculate_tax();
             }
         },
         set_type : function() {
@@ -332,9 +361,9 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.isDelivery = this.model.get('dining_option') === 'DINING_OPTION_DELIVERY';
             this.pickupTime = this.options.timetable.getPickupList(this.isDelivery);
             if (value === 'DINING_OPTION_DELIVERY') {
-                this.$('.pickup').text('Delivery Time');
+                this.$('.pickup').text(_loc.CONFIRM_DELIVERY_TIME);
             } else {
-                this.$('.pickup').text('Arrival Time');
+                this.$('.pickup').text(_loc.CONFIRM_ARRIVAL_TIME);
             }
 
             if (value === 'DINING_OPTION_ONLINE') {
@@ -375,6 +404,18 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.needPreValidate = payment.payment_count == 1 && this.flag;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection.checkout, 'change:dining_option', this.change_cash_text);
+            this.listenTo(App.Data.customer, 'change:shipping_services', this.updatePayButtonState, this);
+            this.updatePayButtonState();
+        },
+        updatePayButtonState: function() {
+            var customer = App.Data.customer,
+                status = customer.get('load_shipping_status'),
+                pay = this.$('.btn.pay');
+            if ('pending' == status) {
+                pay.addClass('disabled');
+            } else {
+                pay.removeClass('disabled');
+            }
         },
         render: function() {
             var payment = Backbone.$.extend(App.Data.settings.get_payment_process(), {
@@ -397,8 +438,9 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             }
         },
         change_cash_text: function() {
-            var isDelivery = this.collection.checkout.get("dining_option") === 'DINING_OPTION_DELIVERY';
-            this.$('.cash').html(isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE);
+            var dining_option = this.collection.checkout.get("dining_option"),
+                isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING';
+            this.$('.cash > span').html(isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE);
         },
         gift_card: function() {
             var self = this;
@@ -540,7 +582,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             var data = this.model.toJSON();
             data.iPad = iPad();
             this.$el.html(this.template(data));
-            inputTypeStringMask(this.$('input'), /^[\d\w]{0,16}$/, '');
+            inputTypeStringMask(this.$('input'), /^[\d\w]{1,200}$/, '');
 
             return this;
         },
@@ -562,11 +604,11 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             var self = this,
                 myorder = this.options.myorder;
 
-            if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
+            if (!/^[\d\w]{1,200}$/.test(this.model.get("discount_code")) ) {
                 App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
                 return;
             }
-            myorder.get_discounts({ apply_discount: true})
+            myorder.get_cart_totals({ apply_discount: true})
                 .done(function(data) {
                     if (data.status == "OK") {
                         self.disableApplyBtn();
@@ -574,10 +616,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 });
         },
         enableApplyBtn: function() {
-            this.$(".btnApply").removeAttr("disabled").removeClass("applied").text("Apply");
+            this.$(".btnApply").removeAttr("disabled").removeClass("applied").text(_loc.CHECKOUT_DISC_CODE_APPLY);
         },
         disableApplyBtn: function() {
-            this.$(".btnApply").attr("disabled", "disabled").addClass("applied").text("Applied");
+            this.$(".btnApply").attr("disabled", "disabled").addClass("applied").text(_loc.CHECKOUT_DISC_CODE_APPLIED);
         }
     });
 
@@ -595,7 +637,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             data.discount_allow = App.Settings.accept_discount_code === true;
             data.discount_code_applied = this.model.get("last_discount_code");
             this.$el.html(this.template(data));
-            inputTypeStringMask(this.$('input'), /^[\d\w]{0,16}$/, '');
+            inputTypeStringMask(this.$('input'), /^[\d\w]{1,200}$/, '');
             return this;
         },
         events: {
@@ -624,17 +666,17 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.$(".dcode_have").removeClass('hidden');
             this.model.set({last_discount_code: '',
                             discount_code: ''}, {silent: true});
-            myorder.get_discounts();
+            myorder.get_cart_totals();
         },
         onApplyCode: function() {
             var self = this,
                 myorder = this.options.myorder;
 
-            if (!/^[\d\w]{4,16}$/.test(this.model.get("discount_code")) ) {
+            if (!/^[\d\w]{1,200}$/.test(this.model.get("discount_code")) ) {
                 App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
                 return;
             }
-            myorder.get_discounts({ apply_discount: true})
+            myorder.get_cart_totals({ apply_discount: true})
                 .done(function(data) {
                     if (data.status == "OK") {
                         self.discountApplied();

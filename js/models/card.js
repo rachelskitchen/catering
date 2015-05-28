@@ -131,8 +131,8 @@ define(["backbone"], function(Backbone) {
                 err = [];
 
             if (payment.paypal && payment.paypal_direct_credit_card) {
-                !card.firstName && err.push('First Name');
-                !card.secondName && err.push('Last Name');
+                (!card.firstName) && err.push(_loc.CARD_FIRST_NAME);
+                (!card.secondName) && err.push(_loc.CARD_LAST_NAME);
             }
 
             return err;
@@ -141,14 +141,16 @@ define(["backbone"], function(Backbone) {
             var securityPattern = /^\d{3,4}$/,
                 card = this.toJSON(),
                 err = [];
-            !securityPattern.test(card.securityCode) && err.push('Security Code');
+
+            (!securityPattern.test(card.securityCode)) && err.push(_loc.CARD_SECURITY_CODE);
             return err;
         },
         checkCardNumber: function() {
             var cardPattern = /^[3-6]\d{12,18}$/,
                 card = this.toJSON(),
                 err = [];
-            !cardPattern.test(card.cardNumber) && err.push('Card Number');
+
+            (!cardPattern.test(card.cardNumber)) && err.push(_loc.CARD_NUMBER);
             return err;
         },
         /**

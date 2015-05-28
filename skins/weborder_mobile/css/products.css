@@ -120,6 +120,7 @@
     font-size: 2.3em;
     display:inline-block;
     margin-right: 0.5em;
+    max-width: 10em;
 }
 #content .product .is_gift .uom {
     top: 1.5em;

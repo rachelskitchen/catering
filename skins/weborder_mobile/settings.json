@@ -6,12 +6,11 @@
     "img_default": "none.png",
     "routing": {
         "main": {
-            "css": [ "main", "header", "footer", "perfect-scrollbar", "revel"],
+            "css": [ "main", "header", "footer", "revel"],
             "model": ["main", "header", "footer", "revel"],
             "templates": ["main", "header", "footer", "revel"],
             "views": ["main", "header", "footer", "logo"],
-            "core": ["geopoint", "jquery_numbermask", "revel_view"],
-            "js": ["perfect-scrollbar-0.4.5.with-mousewheel.min"]
+            "core": ["geopoint", "jquery_numbermask", "revel_view"]
         },
         "index": {
             "css": ["store_info", "categories"],
@@ -65,7 +64,7 @@
             "css": ["done"],
             "views": [],
             "templates": ["done"],
-            "core": ["products", "modifiers", "tip", "checkout", "card", "giftcard"]
+            "core": ["products", "modifiers", "tip", "checkout", "card", "giftcard", "customers"]
         },
         "store_info": {
             "css": ["store_info"],
@@ -93,6 +92,11 @@
             "views": [],
             "templates": [],
             "core": []
+        },
+        "rewards": {
+            "css": ["rewards"],
+            "views": ["rewards"],
+            "templates": ["rewards"]
         }
     }
 }

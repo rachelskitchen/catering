@@ -1,0 +1,100 @@
+<script type="text/template" id="rewards_card-template">
+    <div class="popup-background">
+        <h3><%= _lp.REWARDS_INFORMATION %></h3>
+        <label for="rewardsCardNumber"><%= _lp.REWARDS_NUMBER %>:</label>
+        <div class="input_beauty">
+            <input type="text" id="rewardsCardNumber" class="ios-safari-caret rewards-input">
+        </div>
+        <div class="captcha">
+            <img src="" alt="" width="100%" height="100%" class="captcha-image">
+            <div class="captcha-spinner"></div>
+        </div>
+        <span class="rewards-card-btn update-captcha"><%= _lp.GIFTCARD_RELOAD %></span>
+        <label for="rewardsCaptcha"><%= _lp.GIFTCARD_CAPTCHA %>:</label>
+        <div class="input_beauty">
+            <input type="text" id="rewardsCaptcha" class="ios-safari-caret rewards-captcha-input">
+        </div>
+    </div>
+    <div class="btn submit-card"><%= _lp.CONFIRM_SUBMIT %></div>
+</script>
+
+<script type="text/template" id="rewards_info-template">
+    <div class="popup-background">
+        <h3><%= _lp.REWARDS_INFORMATION %></h3>
+        <span class='rewards-title'><%= _lp.REWARDS_NUMBER %>:</span>
+        <span class="rewards-number"></span>
+        <ul class="collected">
+            <li class="points-collected">
+                <dfn><%= _lp.REWARDS_TOTAL_POINTS %></dfn>
+                <span class='total-points color-style1'></span>
+            </li>
+            <li class="visits-collected">
+                <dfn><%= _lp.REWARDS_TOTAL_VISITS %></dfn>
+                <span class='total-visits color-style1'></span>
+            </li>
+            <li class="purchases-collected">
+                <dfn><%= _lp.REWARDS_TOTAL_PURCHASES %></dfn>
+                <span class='total-purchases color-style1'></span>
+            </li>
+        </ul>
+    </div>
+    <span class="info"><%= _lp.REWARDS_SELECTION_INFO %></span>
+    <div class="popup-background">
+        <h3 class="rewards-available"><%= _lp.REWARDS_AVAILABLE %></h3>
+        <ul class="reward-selection">
+            <li class="points-selection">
+                <div class="items-with-points"></div>
+                <span class="redemption color-style1 redemption-points">
+                    (<span class="points-redemption"></span>&nbsp;<span class="points-redemption-info"></span>)
+                </span>
+            </li>
+            <li class="visits-selection">
+                <span>
+                    <span class="visits-discount color-style1"></span> <%= _lp.REWARDS_ENTIRE_ORDER_DISCOUNT %>
+                    <span class="redemption color-style1">
+                        (<span class="visits-redemption"></span>&nbsp;<span class="visits-redemption-info"></span>)
+                    </span>
+                </span>
+            </li>
+            <li class="purchases-selection">
+                <span>
+                    <span class="purchases-discount color-style1"></span> <%= _lp.REWARDS_ENTIRE_ORDER_DISCOUNT %>
+                    <span class="redemption color-style1">
+                        (<span class="purchases-redemption"></span>&nbsp;<span class="purchases-redemption-info"></span>)
+                    </span>
+                </span>
+            </li>
+        </ul>
+        <span class="rewards-unavailable"><%= _lp.REWARDS_UNAVAILABLE %></span>
+    </div>
+    <div class="btn apply-reward"><%= _lp.REWARDS_APPLY %></div>
+</script>
+
+<script type="text/template" id="rewards_points_item-template">
+    <div>
+        <div class="image">
+            <img src=<%= image %> alt="<%= name %> logo<%= id %>" class="logo" data-default-index="1">
+        </div>
+        <h4 class="name">
+                <span class="name weight"></span>
+                <span class="name quantity"></span>
+        </h4>
+        <ul class="modifier_place">
+            <li class="weight-info weight"></li>
+            <li class="special">*** <span class="special"></span></li>
+        </ul>
+        <% _.each(attrs, function(attr) { %>
+        <div class="attrs">
+            <span><%= attr.name %></span>:
+            <span><%= attr.value %></span>
+        </div>
+        <% }); %>
+        <span class="price-line">
+            <span class="price"></span>
+            &ndash;
+            <span class="discount-line color-style1">
+                <span class="discount"></span> <%= _lp.REWARDS_OFF %>
+            </span>
+        </span>
+    </div>
+</script>

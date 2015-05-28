@@ -27,6 +27,9 @@ define(["quantity_view"], function(quantity_view) {
         events: {
             'click .increase': 'increase',
             'click .decrease': 'decrease',
+            'input .quantity_edit_input': 'change_quantity',
+            'blur .quantity_edit_input': 'blur_quantity',
+            'keypress .quantity_edit_input': 'keypress_quantity'
         },
         hide_show: function() {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.hide_show.apply(this, arguments);
@@ -35,10 +38,12 @@ define(["quantity_view"], function(quantity_view) {
             if (product.get('stock_amount') === 1 || product.isParent()) {
                 this.$('.decrease').addClass('disabled');
                 this.$('.increase').addClass('disabled');
+                this.$('.quantity_edit_input').addClass('disabled').prop('disabled', true);
                 disallowNegativeInventory && this.model.set('quantity', 1); // bug 13494
             } else {
                 this.$('.decrease').removeClass('disabled');
                 this.$('.increase').removeClass('disabled');
+                this.$('.quantity_edit_input').removeClass('disabled').prop('disabled', false);
             }
         },
         increase: function(event) {
@@ -55,7 +60,40 @@ define(["quantity_view"], function(quantity_view) {
             this.model.set('quantity', --q >= 1 ? q : 1);
         },
         update: function() {
-            this.$('span.quantity').text(this.model.get('quantity'));
+            this.$('.quantity_edit_input').val(this.model.get('quantity'));
+        },
+        change_quantity: function(e) {
+            var min = 1,
+                max = this.model.get_product().get('stock_amount');
+
+            if (!e.target.validity.valid) {
+                e.target.value = min;
+            } else if (e.target.value > max) {
+                e.target.value = max;
+            }
+
+            if (e.target.value)  {
+                this.model.set('quantity', e.target.value * 1);
+            }
+        },
+        blur_quantity:  function(e) {
+            if (!e.target.value) {
+               e.target.value = 1;
+               this.model.set('quantity', e.target.value * 1);
+            }
+        },
+
+        keypress_quantity:  function(e) {
+            return this.isDigitOrControlKey(e.which);
+        },
+
+        isDigitOrControlKey: function(key) {
+            if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27)) {
+                return true; // control key
+            } else if ((("0123456789").indexOf(String.fromCharCode(key)) > -1)) {
+                return true; // digit
+            }
+            return false;
         }
     });
 

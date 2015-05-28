@@ -20,34 +20,90 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(['backbone'], function(Backbone) {
+define(['backbone', 'backbone_epoxy'], function(Backbone) {
     'use strict';
 
-    App.Views.FactoryView = Backbone.View.extend({
-        constructor: function() {
+    // add filters
+    Backbone.Epoxy.binding.addFilter('currencyFormat', function(value) {
+        return App.Settings.currency_symbol + round_monetary_currency(value);
+    });
+
+    Backbone.Epoxy.binding.addFilter('weightPriceFormat', function(weight, price) {
+        var currency_symbol = App.Settings.currency_symbol,
+            scales = App.Settings.scales,
+            uom = _.isObject(scales) ? scales.default_weighing_unit : '',
+            line = weight +' @ ' + currency_symbol + round_monetary_currency(price);
+        if(uom) {
+            line += '/' + uom;
+        }
+        return line;
+    });
+
+    // add handlers
+    Backbone.Epoxy.binding.addHandler('loadSpinner', function($el, value) {
+        if(value) {
+            $el.off();
+            $el.attr('src', value);
+            return loadSpinner($el);
+        } else {
+            return $el;
+        }
+    });
+
+    App.Views.FactoryView = Backbone.Epoxy.View.extend({
+        constructor: function(options) {
+            // Extend Backbone.Epoxy.View.prototype.bindingSources to implement the ability to pass `bindingSources` via Backbone.View options.
+            // All Backbone.Model's, Backbone.Collection's instances existing in options will be added to `bindingSources` (overrides existing pairs in this.prototype.bindingSources).
+            // If `bindingSources` object exists in options it overrides all existing pairs in this.bindingSources.
+            if(_.isObject(options)) {
+                // parse all models and collections from options except `model` and `collection`
+                var bindingSources = _.pick(options, Object.keys(options).filter(function(key) {
+                    var value = options[key];
+                    return key != 'model' && key != 'collection' && (value instanceof Backbone.Model || value instanceof Backbone.Collection);
+                }));
+                _.extend(bindingSources, _.isObject(options.bindingSources) ? options.bindingSources : undefined);
+            }
+
+            this.bindingSources || (this.bindingSources = {});
+            _.extend(this.bindingSources, {
+                _settings: App.Data.settings,
+                _system_settings: new Backbone.Model(App.Settings),
+                _lp: new Backbone.Model(_loc)
+            }, bindingSources);
+
+            // init array of sub views
             this.subViews = [];
+
+            // remove() method removes all subviews
             this.subViews.remove = function() {
                 while(this.length > 0) {
                     var view = this.shift();
                     view instanceof Backbone.View && view.remove();
                 };
             };
+
+            // removeFromDOMTree(): removes node elements of subviews from DOM tree
             this.subViews.removeFromDOMTree = function() {
                 while(this.length > 0) {
                     var view = this.shift();
                     view instanceof Backbone.View && view.removeFromDOMTree();
                 };
             };
+
             return Backbone.View.prototype.constructor.apply(this, arguments);
         },
         initialize: function() {
             this.template = function(params) {
                 var template = template_helper(this.name, this.mod),
-                    baseParams = {_settings: App.Settings};
+                    baseParams = {
+                        _settings: App.Settings,
+                        _lp: _loc
+                    };
                 params = params instanceof Object ? _.extend(baseParams, params) : baseParams;
                 return template(params);
             };
             this.render();
+            this.applyBindings();
             App.Data.devMode && this.$el.attr("data-tmpl", this.name + "_" + this.mod + "-template");
             App.Data.devMode && this.$el.attr("data-view", this.options.dbgClassName);
         },

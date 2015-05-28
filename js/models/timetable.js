@@ -23,8 +23,7 @@
 define(["backbone"], function(Backbone) {
     'use strict';
 
-    var weekDays = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"],
-        months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var weekDays = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 
     var MILLISECONDS_A_DAY = 86400000;//24*60*60*1000
 //
@@ -225,11 +224,11 @@ define(["backbone"], function(Backbone) {
                 isToday = params.today,
                 asap = false,
                 offest = (this.get_dining_offset(isDelivery) / 60 / 1000),
-                asap_text = 'ASAP';
+                asap_text = _loc['TIME_PREFIXES']['ASAP'];
 
 
             if (offest > 0) {
-                asap_text += ' (' + offest + ' min)'
+                asap_text += ' (' + offest + ' ' + _loc['TIME_PREFIXES']['MINUTES'] + ')';
             }
             // get pickup times grid potentially suited for the day
             var times = this._pickupSumTimes(isDelivery);
@@ -317,8 +316,8 @@ define(["backbone"], function(Backbone) {
          * Get ID of month in format JS.
          */
         _get_month_id: function(month_text) { //Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
-            for (var i = 0; i < months.length; i++) {
-                if (month_text === months[i].substr(0, 3)) {
+            for (var i = 0; i < EN_ARRAY_MONTH.length; i++) {
+                if (month_text === EN_ARRAY_MONTH[i].substr(0, 3)) {
                     return i;
                 }
             }
@@ -360,6 +359,7 @@ define(["backbone"], function(Backbone) {
                 return null;
             } else {
                 for (var i = 0, j = table.length; i < j; i++) {
+                    var cur_date = new Date(current_date.getTime()); //#22327, to get ready for table[] is unsorted
                     // from date (begin)
                     var from_date_month = this._get_month_id($.trim(table[i].from_date.split(",")[0])), // get ID of month in format JS
                         from_date_day = $.trim(table[i].from_date.split(",")[1]),
@@ -371,9 +371,9 @@ define(["backbone"], function(Backbone) {
                         to_date = new Date(current_date_year, to_date_month, to_date_day);
                     // to date (end)
                     from_date > to_date && to_date.setFullYear(to_date.getFullYear() + 1);
-                    from_date > current_date && current_date.setFullYear(current_date.getFullYear() + 1);
+                    from_date > cur_date && cur_date.setFullYear(cur_date.getFullYear() + 1);
 
-                    if (current_date <= to_date) {
+                    if (cur_date <= to_date) {
                         return table[i].timetable_data;
                     }
                 }
@@ -499,36 +499,39 @@ define(["backbone"], function(Backbone) {
                 day = now.getDay();
 
             var days = [];
-            var date_range = App.Data.settings.get('settings_system').online_order_date_range;
+            var date_range = App.Settings.online_order_date_range;
             for (var i = 0; i < date_range; i++) {
                 days.push(weekDays[(day + i) % 7]);
             }
 
             return days.map(function(day, i) {
                 var date = new Date(now.getTime() + i * MILLISECONDS_A_DAY),
-                    weekDay = i >= 2 ? day : i ? 'tomorrow' : 'today',
-                    month = months[date.getMonth()],
+                    weekDay = (i >= 2) ? day : i ? _loc['DAYS']['TOMORROW'] : _loc['DAYS']['TODAY'],
+                    month = _loc.ARRAY_MONTH[date.getMonth()],
                     _date = date.getDate();
                 switch (_date.toString().match(/1?\d$/)[0]) {
                     case "1":
-                        _date += 'st';
+                        _date += _loc['TIME_PREFIXES']['FIRST_DAY_OF_MONTH'];
                         break;
                     case "2":
-                        _date += 'nd';
+                        _date += _loc['TIME_PREFIXES']['SECOND_DAY_OF_MONTH'];
                         break;
                     case "3":
-                        _date += 'rd';
+                        _date += _loc['TIME_PREFIXES']['THIRD_DAY_OF_MONTH'];
                         break;
                     default:
-                        _date += 'th';
+                        _date += _loc['TIME_PREFIXES']['OTHER_DAY_OF_MONTH'];
                         break;
                 }
-                weekDay = weekDay.replace(/^./, function(m) {
-                    return m.toUpperCase();
-                });
+                if (~weekDays.indexOf(weekDay)) {
+                    weekDay = _loc['DAYS_OF_WEEK'][weekDay];
+                }
 
                 this.workingDay.update({timetable: self.get_working_hours(date, 1), curTime : self.base()});
-                var working_day = this.workingDay.pickupTimeOptions({today: weekDay === "Today", isDelivery: isDelivery}); // set flag "Today" for creating the list of time intervals
+                var working_day = this.workingDay.pickupTimeOptions({
+                    today: (weekDay === _loc['DAYS']['TODAY']),
+                    isDelivery: isDelivery
+                }); // set flag "Today" for creating the list of time intervals
                 return {
                     weekDay: weekDay + (i >=2 ? ', ' + month + ' ' + _date : ''),
                     date: date,

@@ -25,15 +25,18 @@ define(["quantity_view"], function(quantity_view) {
 
     var QuantityMainView = App.Views.CoreQuantityView.CoreQuantityMainView.extend({
         events: {
-            'change select': 'change',
+            'change input': 'change'
         },
+
+        combobox: null,
+
         hide_show: function() {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.hide_show.apply(this, arguments);
             var select = this.$('select'),
                 product = this.model.get_product(),
                 quantity = this.model.get('quantity'),
                 stock_amount = product.get('stock_amount'),
-                selectWrapper = this.$('.select-wrapper');
+                selectWrapper = this.$('.combobox-wrapper');
 
             // need hide quantity widget if parent product is selected
             if(product.isParent())
@@ -57,6 +60,12 @@ define(["quantity_view"], function(quantity_view) {
                 select.prop('disabled', false);
                 selectWrapper.removeClass('disabled');
             }
+
+            if (QuantityMainView.combobox) {
+                //console.log("combobox destroy");
+                QuantityMainView.combobox.destroy();
+            }
+            QuantityMainView.combobox = select.combobox(1, stock_amount);
         },
         change: function(e) {
             this.model.set('quantity', e.target.value * 1);
