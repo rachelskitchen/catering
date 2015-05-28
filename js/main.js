@@ -20,9 +20,11 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-require.config({
-    urlArgs: "ver=" + autoVersion
-});
+if (is_minimized_version) {
+    require.config({
+        urlArgs: "ver=" + autoVersion
+    });
+}
 
 require(['app'], function() {
     if (is_browser_unsupported) {
