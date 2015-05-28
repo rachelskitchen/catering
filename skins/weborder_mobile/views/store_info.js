@@ -47,6 +47,9 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 currency_symbol: settings_system.currency_symbol,
                 delivery_charge: round_monetary_currency(settings_system.delivery_charge),
                 min_delivery_amount: round_monetary_currency(settings_system.min_delivery_amount),
+                delivery_post_code_lookup_enabled: settings_system.delivery_post_code_lookup[0],
+                delivery_post_codes: settings_system.delivery_post_code_lookup[1],
+                delivery_geojson_enabled: settings_system.delivery_geojson[0],
                 delivery_radius: settings_system.max_delivery_distance,
                 delivery_for_online_orders: settings_system.delivery_for_online_orders,
                 est_delivery_time: {

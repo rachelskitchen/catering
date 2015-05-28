@@ -48,10 +48,20 @@
     font-weight: bold;
     text-align: center;
     margin: 8px 0;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 .confirmPayCard .pickup_time {
     margin: 15px 10px 5px 10px;
     text-align: center;
+}
+.confirmPayCard .pickup_time > span:nth-child(1) {
+    font-weight: bold;
+    width: 50%;
+    float: left;
+}
+.confirmPayCard .pickup_time > span:nth-child(2) {
+    width: 50%;
 }
 .confirmPayCard .order-items-wrap {
     position: relative;
@@ -86,11 +96,12 @@
 }
 .confirmPayCard .btn-reload {
     display: inline-block;
+    min-width: 70px;
+    max-width: 132px;
     vertical-align: top;
     height: 20px;
     font-size: 15px;
     line-height: 20px;
-    width: 70px;
     margin-top: 4px;
 }
 
@@ -124,14 +135,28 @@
 }
 #popup .total_block li {
     text-align: right;
+    position: relative;
+    height: 18px;
+}
+#popup .total_block .title {
+    display: inline-block;
+    width: 75%;
+    position: relative;
+    float: left;
+    line-height: 18px;
+    padding-right: 5px;
 }
 #popup .total_block .cost {
     letter-spacing: -3px;
+    position: relative;
+    float: right;
+    line-height: 18px;
 }
 #popup .order-items li {
     position: relative;
 }
-#popup .order-items .myorder > li {
+#popup .order-items .myorder > li,
+#popup .order-items .bag_charge > li {
     margin-top: 10px;
 }
 #popup .order-items li li {
@@ -174,6 +199,9 @@
 }
 #popup .order-items ul.discount > li {
     margin-top: 10px;
+}
+#popup .order-items .service_fees {
+    margin-top: 8px;
 }
 #popup .order-items .s4 .name {
     right: 53px;

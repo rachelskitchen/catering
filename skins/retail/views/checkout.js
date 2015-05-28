@@ -27,7 +27,7 @@ define(["checkout_view"], function(checkout_view) {
         controlAddress: function(model, value) {
             var arrAdd= this.$('.arrival_address');
             App.Views.CoreCheckoutView.CoreCheckoutMainView.prototype.controlAddress.apply(this, arguments);
-            if(value === 'DINING_OPTION_DELIVERY') {
+            if(value === 'DINING_OPTION_SHIPPING') {
                 arrAdd.hide();
             } else {
                 arrAdd.show();
@@ -54,6 +54,7 @@ define(["checkout_view"], function(checkout_view) {
             var main = App.Views.GeneratorView.create('Checkout', {
                 model: this.collection.checkout,
                 customer: this.options.customer,
+                rewardsCard: this.collection.rewardsCard,
                 mod: 'Main'
             }), specials = this.$('.specials');
 

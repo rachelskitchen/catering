@@ -41,7 +41,7 @@ define(["backbone", "factory"], function(Backbone) {
                 this.model.success = true;
                 App.Data.myorder.order_id = get.orderId;
 
-                if (dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_DELIVERY_SEAT')
+                if (dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_DELIVERY_SEAT' || dining_option === 'DINING_OPTION_SHIPPING')
                     model.pickup_type = 'Delivery Time';
                 else
                     model.pickup_type = 'Pickup Time';

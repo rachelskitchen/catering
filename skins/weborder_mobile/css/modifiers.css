@@ -55,7 +55,7 @@
     cursor: default;
 }
 
-#content .modifier span {
+#content .modifier span:not([class="clip"]) {
     line-height: 2.5em;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -205,8 +205,8 @@
 }
 #content .modifier .mdf_split,
 #content .modifier .mdf_quantity {
-    /* mdf_split_wrap element is necessary for Android WebView, 
-    because between this relative element and absolute positioned element (e.g. .selected_option) 
+    /* mdf_split_wrap element is necessary for Android WebView,
+    because between this relative element and absolute positioned element (e.g. .selected_option)
     the middle one should exist (.mdf_split) w/o position described */
     position: relative;
     width: 5em;
@@ -217,14 +217,14 @@
     margin-left: 0.3em;
 }
 
-#content .modifier .mdf_quantity_in, 
+#content .modifier .mdf_quantity_in,
 #content .modifier .mdf_split_in {
     display: inline-block;
     vertical-align: middle;
     width: 5em;
     height: 2.2em;
     border-radius: 1.3em;
-    margin-bottom: 0.4em; 
+    margin-bottom: 0.4em;
 }
 #content .modifier .mdf_quantity select,
 #content .modifier .mdf_split select {
@@ -253,4 +253,9 @@
     background-repeat: no-repeat;
     pointer-events:none;
     z-index: 10;
+}
+
+.mdf_quantity_in.select:before, .mdf_split_in.select:before {
+    height: 1em;
+    margin-top: 4px;
 }

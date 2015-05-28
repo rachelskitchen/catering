@@ -37,7 +37,7 @@ define(["main_router"], function(main_router) {
         carts.checkout = {mod: 'Checkout', className: 'checkout'};
     }
 
-    var Router = App.Routers.MainRouter.extend({
+    var Router = App.Routers.RevelOrderingRouter.extend({
         routes: {
             "": "index",
             "index(/:data)": "index",
@@ -63,13 +63,13 @@ define(["main_router"], function(main_router) {
 
             if (settings.dining_options instanceof Array) {
                 // check available dining options and set default
-                if (settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) == -1 && settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_DELIVERY) == -1) {
+                if (settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) == -1 && settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_SHIPPING) == -1) {
                     App.Data.settings.set({
                         'isMaintenance': true,
                         'maintenanceMessage': ERROR[MAINTENANCE.ORDER_TYPE]
                     });
                 } else {
-                    settings.default_dining_option = settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) > -1 ? 'DINING_OPTION_TOGO' : 'DINING_OPTION_DELIVERY';
+                    settings.default_dining_option = settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) > -1 ? 'DINING_OPTION_TOGO' : 'DINING_OPTION_SHIPPING';
                     App.Data.myorder.checkout.set('dining_option', settings.default_dining_option);
                 }
             }
@@ -110,12 +110,16 @@ define(["main_router"], function(main_router) {
                     this.constructor.prototype.loadOrders.apply(this, arguments);
                     App.Data.filter.loadSort();
                 }
-
+//common
                 this.listenTo(mainModel, 'change:mod', this.createMainView);
+//common
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
+//common
                 this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
+//common
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
                 this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
+//common
                 this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
                 mainModel.set({
@@ -131,17 +135,9 @@ define(["main_router"], function(main_router) {
                 // listen to navigation control
                 this.navigationControl();
 
-                // check if we here from paypal payment page
-                if (App.Data.get_parameters.pay || App.Data.get_parameters[MONERIS_PARAMS.PAY]) {
-                    window.location.hash = "#pay";
-                }
-
-                // emit 'initialized' event
-                this.trigger('initialized');
-                this.initialized = true;
+                // run history tracking
+                this.triggerInitializedEvent();
             });
-
-            this.initPaymentResponseHandler(this.navigate.bind(this, 'confirm',  true));
 
             this.listenTo(App.Data.myorder, "paymentInProcess", function() {
                 App.Data.mainModel.trigger('loadStarted');
@@ -165,14 +161,14 @@ define(["main_router"], function(main_router) {
                 App.Data.errors.trigger('hideAlertMessage'); // hide user notification
             });
 
-            App.Routers.MainRouter.prototype.initialize.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
         },
         /**
          * Change page.
          */
         change_page: function(callback) {
             (callback instanceof Function && App.Data.establishments.length > 1) ? callback() : App.Data.mainModel.set('needShowStoreChoice', false);
-            App.Routers.MainRouter.prototype.change_page.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.change_page.apply(this, arguments);
         },
         createMainView: function() {
             var data = App.Data.mainModel.toJSON(),
@@ -203,85 +199,8 @@ define(["main_router"], function(main_router) {
             // change:selected event occurs when any subcategory is clicked
             this.listenTo(App.Data.categories, 'change:selected', function() {
                 App.Data.mainModel.trigger('loadCompleted');
-
-                var state = {},
-                    hashRE = /#.*$/,
-                    encoded, url;
-
-                if(this.state)
-                    state = this.state;
-
-                delete state.pattern;
-                delete state.attribute1;
-
-                state.parent_selected = App.Data.categories.parent_selected;
-                state.selected = App.Data.categories.selected;
-                encoded = this.encodeState(state);
-                url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
-
-                this.updateState(!this.index.initState, url);
-
-                // save state after initialization of views.
-                // second entry in window.history (#index -> #index/<data>).
-                if(encoded && this.index.initState === null)
-                    this.index.initState = encoded;
+                App.Data.search.clearLastPattern();
             }, this);
-
-            // onSearchComplete event occurs when search results are ready
-            this.listenTo(App.Data.search, 'onSearchComplete', function(result) {
-                // ingnore cases when no products found
-                if(!result.get('products') || result.get('products').length == 0)
-                    return;
-
-                var state = {},
-                    hashRE = /#.*$/,
-                    encoded, url;
-
-                if(this.state)
-                    state = this.state;
-
-                delete state.parent_selected;
-                delete state.selected;
-                state.pattern = result.get('pattern');
-                encoded = this.encodeState(state);
-                url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
-
-                this.updateState(!this.index.initState, url);
-            });
-
-            // listen to filter changes and encode it to hash
-            this.listenTo(App.Data.filter, 'change', function(model) {
-                var state = {},
-                    noChanges = true,
-                    hashRE = /#.*$/,
-                    i, encoded, url;
-
-                if(this.state)
-                    state = this.state;
-
-                for(i in model.changed) {
-                    if(state[i] == model.changed[i])
-                        continue;
-                    noChanges = false;
-                }
-
-                if(noChanges)
-                    return;
-
-                Object.keys(model.changed).forEach(function(key) {
-                    delete state[key];
-                });
-
-                state = Backbone.$.extend(state, model.changed);
-
-                if(state.attribute1 == 1)
-                    delete state.attribute1;
-
-                encoded = this.encodeState(state);
-                url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
-
-                this.updateState(false, url);
-            });
 
             // onCheckoutClick event occurs when 'checkout' button is clicked
             this.listenTo(App.Data.myorder, 'onCheckoutClick', this.navigate.bind(this, 'checkout', true));
@@ -326,6 +245,59 @@ define(["main_router"], function(main_router) {
                     App.Data.myorder.trigger('showCart');
                 }
             });
+
+            // onRedemptionApplied event occurs when 'Apply Reward' btn is clicked
+            this.listenTo(App.Data.myorder.rewardsCard, 'onRedemptionApplied', function() {
+                App.Data.mainModel.trigger('loadStarted');
+                App.Data.myorder.get_cart_totals().always(function() {
+                    App.Data.mainModel.unset('popup');
+                    App.Data.mainModel.trigger('loadCompleted');
+                });
+            });
+
+            // onRewardsErrors event occurs when /weborders/reward_cards/ request fails
+            this.listenTo(App.Data.myorder.rewardsCard, 'onRewardsErrors', function(errorMsg) {
+                App.Data.errors.alert(errorMsg);
+                App.Data.mainModel.trigger('loadCompleted');
+            });
+
+            // onRewardsReceived event occurs when Rewards Card data is received from server
+            this.listenTo(App.Data.myorder.rewardsCard, 'onRewardsReceived', function() {
+                var rewardsCard = App.Data.myorder.rewardsCard;
+
+                if(rewardsCard.get('points').isDefault() && rewardsCard.get('visits').isDefault() && rewardsCard.get('purchases').isDefault()) {
+                    App.Data.errors.alert(MSG.NO_REWARDS_AVAILABLE);
+                } else {
+                    App.Data.mainModel.set('popup', {
+                        modelName: 'Rewards',
+                        mod: 'Info',
+                        model: rewardsCard,
+                        className: 'rewards-info',
+                        collection: App.Data.myorder,
+                        points: rewardsCard.get('points'),
+                        visits: rewardsCard.get('visits'),
+                        purchases: rewardsCard.get('purchases')
+                    });
+                }
+
+                App.Data.mainModel.trigger('loadCompleted');
+            });
+
+            // onApplyRewardsCard event occurs when Rewards Card's 'Apply' button is clicked on #checkout page
+            this.listenTo(App.Data.myorder.rewardsCard, 'onApplyRewardsCard', function() {
+                App.Data.mainModel.set('popup', {
+                    modelName: 'Rewards',
+                    mod: 'Card',
+                    model: App.Data.myorder.rewardsCard,
+                    className: 'rewards-info'
+                });
+            });
+
+            // onGetRewards event occurs when Rewards Card's 'Submit' button is clicked on 'Rewards Card Info' popup
+            this.listenTo(App.Data.myorder.rewardsCard, 'onGetRewards', function() {
+                App.Data.mainModel.trigger('loadStarted');
+                App.Data.myorder.rewardsCard.getRewards();
+            });
         },
         encodeState: function(data) {
             var enc = '';
@@ -339,13 +311,146 @@ define(["main_router"], function(main_router) {
             return btoa(enc);
         },
         decodeState: function(data) {
-            this.state = null;
+            var state = null;
             try {
                 // decode data from hash and restore
-                this.state = JSON.parse(atob(data));
+                state = JSON.parse(atob(data));
             } catch(e) {
                 log('Unable to decode state for string "%s"', data);
             }
+            return state;
+        },
+        runStateTracking: function() {
+            if(!App.Routers.RevelOrderingRouter.prototype.runStateTracking.apply(this, arguments)) {
+                return;
+            }
+
+            var filter = App.Data.filter,
+                categories = App.Data.categories,
+                search = App.Data.search,
+                subCategoryIsNotSelected = true;
+
+            // listen to filter change
+            this.listenTo(filter, 'change', function(model, opts) {
+                updateState.call(this, filter, opts);
+            }, this);
+
+            // listen to subcategory change and add entry to browser history
+            this.listenTo(categories, 'change:selected', function() {
+                updateState.call(this, categories, {replaceState: subCategoryIsNotSelected});
+                // handle case when subcategory is selected at first time (hash changes on #index/<base64 string>)
+                subCategoryIsNotSelected = false;
+            }, this);
+
+            // listen to onSearchComplete and add entry to browser history
+            this.listenTo(search, 'onSearchComplete', function(result) {
+                // ingnore cases when no products found
+                if(!result.get('products') || result.get('products').length == 0)
+                    return;
+                updateState.call(this, search, {});
+            }, this);
+
+            function updateState(obj, opts) {
+                // if obj is in restoring mode we shouldn't update state
+                if(obj.isRestoring || !(opts instanceof Object)) {
+                    return;
+                }
+                var encoded = this.encodeState(this.getState()),
+                    hashRE = /#.*$/,
+                    url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
+                this.updateState(Boolean(opts.replaceState), url);
+            }
+        },
+        restoreState: function(event) {
+            var filter = App.Data.filter,
+                search = App.Data.search,
+                categories = App.Data.categories,
+                est = App.Data.settings.get('establishment'),
+                hashData = location.hash.match(/^#index\/(\w+)/), // parse decoded state string from hash
+                mainRouterData, isSearchPatternPresent, state, data;
+
+            if(Array.isArray(hashData) && hashData[1].length) {
+                state = this.decodeState(hashData[1]);
+            }
+
+            // set data as parsed state
+            data = state;
+
+            // need execute App.Routers.MainRouter.prototype.restoreState to handle establishment changing
+            mainRouterData = event instanceof Object && event.state
+                ? App.Routers.RevelOrderingRouter.prototype.restoreState.apply(this, arguments)
+                : App.Routers.RevelOrderingRouter.prototype.restoreState.call(this, {state: {stateData: data}});
+
+            data = data || mainRouterData;
+
+            if(!(data instanceof Object) || est != data.establishment) {
+                return;
+            }
+            // define pattern is present is data or not
+            isSearchPatternPresent = typeof data.searchPattern == 'string' && data.searchPattern.length;
+
+            // If data.filter is object resore App.Data.filter attributes and set restoring mode
+            if(data.filter instanceof Object) {
+                filter.isRestoring = true;
+                filter.set(data.filter);
+            };
+
+            // If data.categories is object restore 'selected', 'parent_selected' props of App.Data.categories and set restoring mode.
+            // If search pattern is present categories shouldn't be restored
+            if(data.categories instanceof Object && !isSearchPatternPresent) {
+                categories.isRestoring = true;
+                categories.setParentSelected(data.categories.parent_selected);
+                categories.setSelected(data.categories.selected);
+                // remove restoring mode
+                delete categories.isRestoring;
+                delete filter.isRestoring;
+            };
+
+            // If data.searchPattern is string restore last searched pattern and set restoring mode
+            if(isSearchPatternPresent) {
+                search.isRestoring = true;
+                search.lastPattern = data.searchPattern;
+                // set callback on event onSearchComplete (products received)
+                this.listenToOnce(search, 'onSearchComplete', function() {
+                    // remove restoring mode
+                    delete search.isRestoring;
+                    delete filter.isRestoring;
+                }, this);
+                search.trigger('onRestore');
+                // due to 'onRestore' handler in header view changes categories.selected, categories.parent_selected on 0
+                // need override this value to avoid a selection of first category and subcategory
+                // that is triggered in categories views after receiving data from server
+                categories.selected = -1;
+                categories.parent_selected = -1;
+            }
+        },
+        getState: function() {
+            var filter = App.Data.filter,
+                categories = App.Data.categories,
+                search = App.Data.search,
+                data = {},
+                hash = location.hash,
+                searchPattern;
+
+            // if hash isn't index and is present need return default valu,
+            if(hash && !/^#index/i.test(hash) || !filter || !categories || !search) {
+                return App.Routers.MobileRouter.prototype.getState.apply(this, arguments);
+            }
+
+            data.filter = filter.toJSON();
+            searchPattern = search.lastPattern;
+
+            // search pattern and categories data cannot be in one state due to views implementation
+            if(searchPattern) {
+                data.searchPattern = searchPattern;
+            } else {
+                data.categories = {
+                    parent_selected: categories.parent_selected,
+                    selected: categories.selected
+                };
+            }
+
+            return _.extend(App.Routers.MobileRouter.prototype.getState.apply(this, arguments), data);
         },
         showPromoMessage: function() {
             // can be called when App.Data.header is not initializd yet ('back' btn in browser history control)
@@ -362,51 +467,46 @@ define(["main_router"], function(main_router) {
             this.getEstablishmentsCallback = function() {
                 if (/^(index.*)?$/i.test(Backbone.history.fragment)) App.Data.mainModel.set('needShowStoreChoice', true);
             };
-            App.Routers.MainRouter.prototype.getEstablishments.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.getEstablishments.apply(this, arguments);
         },
         /**
         * Remove establishment data in case if establishment ID will change.
         */
         resetEstablishmentData: function() {
-            App.Routers.MainRouter.prototype.resetEstablishmentData.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.resetEstablishmentData.apply(this, arguments);
             this.index.initState = null;
         },
         /**
         * Remove HTML and CSS of current establishment in case if establishment ID will change.
         */
         removeHTMLandCSS: function() {
-            App.Routers.MainRouter.prototype.removeHTMLandCSS.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.removeHTMLandCSS.apply(this, arguments);
             this.bodyElement.children('.main-container').remove();
         },
         index: function(data) {
-            // init origin state for case when page is loaded without any data (#index or hash is not assigned)
-            if(!data && typeof this.index.initState == 'undefined')
-                this.index.initState = null;
-
-            // restore state for first entry in window.history (#index/<data> -> #index)
-            if(!data && this.index.initState)
-                data = this.index.initState;
-
-            // decode data from url
-            this.decodeState(data);
-
             this.prepare('index', function() {
                 var categories = App.Data.categories,
+                    restoreState = new Function,
                     dfd = $.Deferred(),
                     self = this;
 
                 categories.selected = 0;
 
                 // load content block for categories
-                if (!categories.receiving)
+                // and restore state from hash
+                if (!categories.receiving) {
                     categories.receiving = categories.get_categories();
+                    categories.receiving.then(this.restoreState.bind(this, {}));
+                }
 
                 categories.receiving.then(function() {
-                    dfd.resolve();
-                    if(self.state) {
-                        self.restore = $.Deferred();
-                        categories.trigger('onRestoreState', self.state);
+                    // After restoring state an establishment may be changed.
+                    // In this case need abort execution of this callback to avoid exceptions in console
+                    if(!Backbone.History.started) {
+                        return;
                     }
+                    dfd.resolve();
+                    self.restore = $.Deferred();
                 });
 
                 App.Data.header.set('menu_index', 0);
@@ -429,6 +529,7 @@ define(["main_router"], function(main_router) {
                             model: App.Data.filter,
                             categories: categories,
                             search: App.Data.search,
+                            products: App.Data.products,
                             mod: 'Sort',
                             className: 'filter sort select-wrapper'
                         },
@@ -453,9 +554,10 @@ define(["main_router"], function(main_router) {
                 });
 
                 dfd.then(function() {
+                    // change page
                     self.change_page(function() {
                         App.Data.mainModel.set('needShowStoreChoice', true);
-                    }); // change page
+                    });
                     //start preload google maps api:
                     App.Data.settings.load_geoloc();
                 });
@@ -514,11 +616,6 @@ define(["main_router"], function(main_router) {
                     App.Data.customer = new App.Models.Customer();
                 }
 
-                if(typeof App.Data.customer.shipping_serives == 'undefined') {
-                    App.Data.customer.shipping_serives = true;
-                    App.Data.myorder.listenTo(App.Data.customer, 'change:shipping_services', App.Data.myorder.addDestinationBasedTaxes, App.Data.myorder);
-                }
-
                 var settings = App.Data.settings.get('settings_system');
 
                 App.Data.mainModel.set('mod', 'Main');
@@ -531,7 +628,7 @@ define(["main_router"], function(main_router) {
                         collection: App.Data.myorder,
                         mod: 'Page',
                         className: 'checkout',
-                        DINING_OPTION_NAME: DINING_OPTION_NAME,
+                        DINING_OPTION_NAME: _loc.DINING_OPTION_NAME,
                         timetable: App.Data.timetables,
                         customer: App.Data.customer,
                         acceptTips: settings.accept_tips_online,
@@ -542,12 +639,22 @@ define(["main_router"], function(main_router) {
                 this.change_page();
             });
         },
+        /**
+         * Handler for #confirm. Set `mod` attribute of App.Data.mainModel to 'Done'.
+         * If App.Data.myorder.paymentResponse is null this handler isn't executed and run #index handler.
+         */
         confirm: function() {
-            if(!App.Data.settings.usaepayBack) {
+            // if App.Data.myorder.paymentResponse isn't defined navigate to #index
+            if(!(App.Data.myorder.paymentResponse instanceof Object)) {
                 return this.navigate('index', true);
             }
-
             this.prepare('confirm', function() {
+                // if App.Data.customer doesn't exist (success payment -> history.back() to #checkout -> history.forward() to #confirm)
+                // need to init it.
+                if(!App.Data.customer) {
+                    this.loadCustomer();
+                }
+
                 App.Data.mainModel.set({
                     mod: 'Done'
                 });
@@ -563,7 +670,7 @@ define(["main_router"], function(main_router) {
                 });
             }
             this.change_page();
-            App.Routers.MainRouter.prototype.maintenance.apply(this, arguments);
+            App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         }
     });
 
@@ -573,10 +680,6 @@ define(["main_router"], function(main_router) {
     }
 
     return new main_router(function() {
-        window.DINING_OPTION_NAME = {
-            DINING_OPTION_TOGO: 'Pick up in store',
-            DINING_OPTION_DELIVERY: 'Shipping'
-        };
         defaultRouterData();
         App.Routers.Router = Router;
     });

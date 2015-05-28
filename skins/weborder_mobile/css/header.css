@@ -23,7 +23,8 @@
     position: relative;
 }
 #header .one_button .leftBtn {
-    width: 5.4em;
+    max-width: 5.4em;
+    min-width: 3.2em;
 }
 
 #header .one_button.profile .leftBtn {
@@ -57,7 +58,8 @@
     text-align: center;
 }
 #header .two_button .leftBtn {
-    width: 3.2em;
+    max-width: 4.2em;
+    min-width: 3.2em;
 }
 #header .two_button.modifiers .leftBtn {
     /* solution for bug #16151 */
@@ -66,7 +68,8 @@
     float: left;
 }
 #header .two_button .rightBtn {
-    width: 4.8em;
+    max-width: 5.8em;
+    min-width: 2.2em;
 }
 #header .two_button.modifiers .rightBtn {
     /* solution for bug #16151 */
@@ -80,6 +83,7 @@
     right: 4.7em;
     bottom: 0;
     left: 3.9em;
+    width: 45%;
 }
 #header .two_button.modifiers h1 {
     /* solution for bug #16151 */

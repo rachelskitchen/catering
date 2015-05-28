@@ -7,6 +7,9 @@
     line-height: 39px;
     vertical-align: top;
 }
+#credit-card label > span {
+    padding-right: 15px;
+}
 
 #credit-card > div {
     position: relative;
@@ -18,7 +21,7 @@
     top: 6px;
     bottom: 6px;
     left: 225px;
-    right: 40px;
+    right: 20px;
 }
 
 #credit-card div.select {

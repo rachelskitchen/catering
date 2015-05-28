@@ -50,7 +50,10 @@ define(["backbone", "card", "customers"], function(Backbone) {
             useAsDefaultCard: null,
             useAsDefaultCardSession: null,
             points: 0,
-            appName: 'Revel Directory',
+            appName: 'the Revel Directory',
+            appShortName: 'Revel',
+            appPossessiveName: "Revel's",
+            text1: MSG.REVEL_DIRECTORY_WELCOME_TEXT,
             gObj: 'App.Data.RevelAPI'
         },
         initialize: function() {
@@ -64,7 +67,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             this.listenTo(this, 'onPayWithCustomCreditCard onPayWithSavedCreditCard', this.trigger.bind(this, 'startListeningToCustomer'), this);
 
             this.set('card', new App.Models.Card());
-            this.set('customer', new App.Models.Customer({shipping_address: -1}));
+            this.set('customer', new App.Models.Customer());
 
             // Queue of requests. Used if middleware action is required.
             // For instance, if `getData` request responds the error 'Session expired' need automatically get a new token and continue `getData` performing.
@@ -319,6 +322,7 @@ define(["backbone", "card", "customers"], function(Backbone) {
             function saveData() {
                 try {
                     self.set('useAsDefaultCard', Boolean(self.get('useAsDefaultCard')));
+                    self.setOriginalProfileData();
                     var data = {
                         card: self.get('card').toJSON(),
                         useAsDefaultCard: self.get('useAsDefaultCard')
@@ -332,7 +336,6 @@ define(["backbone", "card", "customers"], function(Backbone) {
                     console.log('Unable to save user\'s profile', '\n', e);
                 }
             }
-
         },
         getProfile: function(cb) {
             var self = this;
@@ -478,13 +481,18 @@ define(["backbone", "card", "customers"], function(Backbone) {
             var request = Backbone.$.Deferred(),
                 self = this;
             $.ajax({
-                url: App.Data.settings.get("host") + "/weborders/reward_cards/",
+                url: '/weborders/reward_cards/',
+                dataType: 'json',
+                type: 'POST',
                 data: {
-                    number: this.get('customer').get('phone')
+                    number: this.get('customer').get('phone'),
+                    establishment: App.Data.settings.get('establishment'),
+                    captchaKey: '',
+                    captchaValue: ''
                 },
                 success: function(data) {
-                    if(data.status && Array.isArray(data.data) && data.data.length && typeof data.data[0].total_points == 'number') {
-                        self.set('points', data.data[0].total_points);
+                    if(data.status && Array.isArray(data.data) && data.data.length && data.data[0].points instanceof Object && typeof data.data[0].points.value == 'number') {
+                        self.set('points', data.data[0].points.value);
                     }
                 },
                 complete: function() {

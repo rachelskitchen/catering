@@ -66,6 +66,10 @@
     top: 2.3em;
 }
 
+#footer span.clip {
+    padding: 0 7px;
+}
+
 #myorder.btn2 span {
     top: 3.9em;
 }
@@ -152,16 +156,6 @@
     font-size: 3em;
 }
 
-#placeOrder {
-    left: 2em;
-    right: 4em;
-}
-
-#creditCard {
-    left: 4em;
-    right: 2em;
-}
-
 /* checkout mod end */
 /* card mod start */
 
@@ -240,6 +234,7 @@
     float: left;
     top: 0;
     font-size: inherit;
+    padding: 0;
 }
 
 #footer ul.confirm div {
@@ -248,8 +243,8 @@
     bottom: 1em;
     line-height: 8em;
     text-align: center;
-    left: 4em;
-    right: 4em;
+    left: 2em;
+    right: 2em;
     width: auto;
 }
 
@@ -261,16 +256,6 @@
     font-size: 3em;
 }
 
-#pay {
-    right: 4em;
-    left: 2em;
-}
-
-#creditCard {
-    right: 2em;
-    left: 4em;
-}
-
 #footer .btn1 img {
     vertical-align: text-bottom;
     height: 1em;
@@ -278,6 +263,11 @@
 
 /* confirm mod end */
 /* done, maintenance mod start */
+
+#pay {
+    right: 4em;
+    left: 2em;
+}
 
 #returnToMenu, #reload {
     position: absolute;
@@ -370,4 +360,14 @@
 
 #footer ul.checkout .half {
     width: 50%;
+}
+
+#footer .submit-card, #footer .apply-reward {
+    width: 90%;
+    line-height: 8em;
+}
+
+#footer .submit-card span, #footer .apply-reward span {
+    font-size: 3em;
+    top: 0;
 }

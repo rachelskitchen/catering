@@ -165,16 +165,14 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 });
             });
 
-            if (App.Settings.accept_discount_code && this.model.get("discount") instanceof Object) {
-                var view = App.Views.GeneratorView.create('MyOrder', {
-                    el: $('<li></li>'),
-                    mod: 'ProductDiscount',
-                    model: this.model
-                });
-                self.subViews.push(view);
-                self.$('.discount_place').append(view.el);
-            }
-
+            var view = App.Views.GeneratorView.create('MyOrder', {
+                el: $('<li></li>'),
+                mod: 'ProductDiscount',
+                model: this.model
+            });
+            self.subViews.push(view);
+            self.$('.discount_place').append(view.el);
+    
             return this;
         },
         getData: function() {
@@ -197,6 +195,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.label_manual_weights = App.Data.settings.get("settings_system").scales.label_for_manual_weights;
             model.image = product.get_product().get('image');
             model.id = product.get_product().get('id');
+            model.is_service_fee = this.model.isServiceFee();
             if (model.sold_by_weight) {
                 num_digits = App.Data.settings.get("settings_system").scales.number_of_digits_to_right_of_decimal;
                 model.weight = model.weight.toFixed(num_digits);
@@ -256,6 +255,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         render: function() {
             this.$el.html(this.template());
+            
             this.collection.each(this.addItem.bind(this));
         },
         addItem: function(model) {
@@ -270,13 +270,19 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 collection: this.collection
             });
 
+            if (model.isServiceFee()) {
+                this.subViews.push(view);
+                this.$('.service_fees').append(view.el);
+                return;
+            }
+            
             if (model === App.Data.myorder.bagChargeItem) {
                 this.bagChargeItemView = view;
                 if (this.subViews.indexOf(this.bagChargeItemView) == -1 &&
                     App.Data.myorder.get_only_product_quantity() > 0 && bag_charge) {
 
                     this.subViews.push(this.bagChargeItemView);
-                    this.$('.myorder').append(this.bagChargeItemView.el);
+                    this.$('.bag_charge').append(this.bagChargeItemView.el);
                 }
             }
             else {
@@ -287,7 +293,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
                 this.$('.myorder').append(view.el);
                 if (this.bagChargeItemView && bag_charge) {
-                    this.$('.myorder').append(this.bagChargeItemView.el);
+                    this.$('.bag_charge').append(this.bagChargeItemView.el);
                 }
             }
 
@@ -309,9 +315,11 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     view.remove();
                     self.subViews.splice(i, 1);
                     var bag_charge_index = self.subViews.indexOf(self.bagChargeItemView);
-                    if (self.collection.get_only_product_quantity() < 1 && bag_charge_index != -1) {
-                        Backbone.View.prototype.remove.call(self.bagChargeItemView);
-                        self.subViews.splice(bag_charge_index, 1);
+                    if (self.collection.get_only_product_quantity() < 1) {
+                        if (bag_charge_index != -1) { 
+                            Backbone.View.prototype.remove.call(self.bagChargeItemView);
+                            self.subViews.splice(bag_charge_index, 1);
+                        }
                     }
                     return true;
                 }

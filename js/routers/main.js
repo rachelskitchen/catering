@@ -26,17 +26,6 @@ define(["backbone", "factory"], function(Backbone) {
     // flag for maintenance mode
     var isMaintenance;
 
-    window.DINING_OPTION_NAME = {
-        DINING_OPTION_TOGO: 'Take Out',
-        DINING_OPTION_EATIN: 'Eat In',
-        DINING_OPTION_DELIVERY: 'Delivery',
-        DINING_OPTION_CATERING : 'Catering',
-        DINING_OPTION_DRIVETHROUGH: 'Drive Through',
-        DINING_OPTION_ONLINE : 'Online Ordering',
-        DINING_OPTION_OTHER: 'Other',
-        DINING_OPTION_DELIVERY_SEAT: 'Deliver to Seat'
-    };
-
     App.Routers.MainRouter = Backbone.Router.extend({
         initialize: function() {
             var self = this;
@@ -48,14 +37,14 @@ define(["backbone", "factory"], function(Backbone) {
 
              // remove Delivery option if it is necessary
             if (!App.Data.myorder.total.get('delivery').get('enable'))
-                delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
+                delete _loc.DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
 
             if(App.Settings.editable_dining_options && App.Settings.editable_dining_options[0]) {
-                if (DINING_OPTION_NAME['DINING_OPTION_DRIVETHROUGH']) {
-                    DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH = _.escape(App.Settings.editable_dining_options[1]);
+                if (_loc.DINING_OPTION_NAME['DINING_OPTION_DRIVETHROUGH']) {
+                    _loc.DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH = _.escape(App.Settings.editable_dining_options[1]);
                 }
-                if (DINING_OPTION_NAME['DINING_OPTION_OTHER']) {
-                    DINING_OPTION_NAME.DINING_OPTION_OTHER = _.escape(App.Settings.editable_dining_options[2]);
+                if (_loc.DINING_OPTION_NAME['DINING_OPTION_OTHER']) {
+                    _loc.DINING_OPTION_NAME.DINING_OPTION_OTHER = _.escape(App.Settings.editable_dining_options[2]);
                 }
             }
 
@@ -67,12 +56,12 @@ define(["backbone", "factory"], function(Backbone) {
                     enable_row: orderFromSeat[3]
                 };
             } else {
-                delete DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
+                delete _loc.DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
             }
 
-            for (var dining_ontion_name in DINING_OPTION) {
-                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_ontion_name]) == -1 || (App.Data.orderFromSeat && dining_ontion_name == 'DINING_OPTION_OTHER')) {
-                    delete DINING_OPTION_NAME[dining_ontion_name];
+            for (var dining_option in DINING_OPTION) {
+                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_option]) == -1 || (App.Data.orderFromSeat && dining_option == 'DINING_OPTION_OTHER')) {
+                    delete _loc.DINING_OPTION_NAME[dining_option];
                 }
             }
 
@@ -155,6 +144,9 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(App.Data.myorder, 'paymentResponse paymentFailed', function() {
                 App.Data.establishments && App.Data.establishments.removeSavedEstablishment();
             }, this);
+
+            // set handler for window.unload event
+            window.onunload = this.beforeUnloadApp.bind(this);
         },
         navigate: function() {
             this.started && arguments[0] != location.hash.slice(1) && App.Data.mainModel.trigger('loadStarted');
@@ -164,7 +156,6 @@ define(["backbone", "factory"], function(Backbone) {
         },
         change_page: function(cb) {
             App.Data.mainModel.trigger('loadCompleted');
-            App.Data.mainModel.set('no_perfect_scroll', false, {silent: true}); // this is for #14024
             !this.started && this.trigger('started');
         },
         maintenance : function() {
@@ -280,9 +271,7 @@ define(["backbone", "factory"], function(Backbone) {
             }
         },
         pay: function() {
-            this.loadData().then(function() {
-                App.Data.myorder.submit_order_and_pay(App.Data.myorder.checkout.get('payment_type'), undefined, true);
-            });
+            App.Data.myorder.submit_order_and_pay(App.Data.myorder.checkout.get('payment_type'), undefined, true);
         },
         loadData: function() {
             var load = $.Deferred();
@@ -293,9 +282,7 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.card.loadCard();
                 App.Data.giftcard = new App.Models.GiftCard();
                 App.Data.giftcard.loadCard();
-                App.Data.customer = new App.Models.Customer({RevelAPI: App.Data.RevelAPI});
-                App.Data.customer.loadCustomer();
-                App.Data.customer.loadAddresses();
+                this.loadCustomer();
                 App.Data.myorder.loadOrders();
                 App.Data.establishments && App.Data.establishments.removeSavedEstablishment();
                 App.Data.loadFromLocalStorage = false;
@@ -305,31 +292,59 @@ define(["backbone", "factory"], function(Backbone) {
             return load;
         },
         /**
+         * Init App.Data.customer and restore its state from a storage
+         */
+        loadCustomer: function() {
+            App.Data.customer = new App.Models.Customer({RevelAPI: App.Data.RevelAPI});
+            App.Data.customer.loadCustomer();
+            App.Data.customer.loadAddresses();
+        },
+        /**
          * Handler of a payment response.
+         * Check payment state and redirect to #pay if payment exists
          *
          * @param {function} cb Function callback.
          */
         initPaymentResponseHandler: function(cb) {
-            var myorder = App.Data.myorder;
+            var myorder = App.Data.myorder,
+                savedDefaultPaymentState = PaymentProcessor.loadDefaultState(); // must be called forever to clear saved state in storage
+
+            if(!App.Data.get_parameters) {
+                App.Data.get_parameters = parse_get_params();
+            }
+
             this.listenTo(myorder, 'paymentResponse', function() {
-                var card = App.Data.card;
+                var card = App.Data.card,
+                    customer = App.Data.customer;
 
                 App.Data.settings.usaepayBack = true;
-                App.Data.get_parameters = parse_get_params();
 
                 var status = myorder.paymentResponse.status.toLowerCase();
                 switch (status) {
                     case 'ok':
-                        myorder.clearData(); // cleaning of the cart
-                        card && card.clearData(); // removal of information about credit card
+                        PaymentProcessor.completeTransaction();        // complete payment transaction
+                        myorder.clearData();                           // cleaning of the cart
+                        card && card.clearData();                      // removal of information about credit card
+                        customer && customer.resetShippingServices();  // clear shipping service selected
                         break;
                     case 'error':
                         card && card.clearData(); // removal of information about credit card
                         break;
                 }
 
-                typeof cb == 'function' && cb();
+                // call cb
+                typeof cb == 'function' && cb(myorder.paymentResponse.capturePhase);
             }, this);
+
+            // Check if app is loaded after payment on external payment page (paypal, usaepay and others).
+            // If true change init hash on #pay replacing history entry to immediately handle payment response.
+            // If `pay` GET-parameter doesn't exist and `savedDefaultPaymentState` exists change hash on #pay creating new history entry.
+            if(App.Data.get_parameters.pay || App.Data.get_parameters[MONERIS_PARAMS.PAY]) {
+                window.location.replace('#pay');
+            } else if(savedDefaultPaymentState) {
+                App.Data.get_parameters.pay = savedDefaultPaymentState;
+                window.location.assign('#pay');
+            }
         },
         /**
         * Load the page with stores list.
@@ -340,18 +355,26 @@ define(["backbone", "factory"], function(Backbone) {
                 settings = App.Data.settings,
                 cssCore = settings.get('settings_skin').routing.establishments.cssCore;
 
-            modelForView.get('isMobileVersion') && cssCore.indexOf('establishments_mobile') && cssCore.push('establishments_mobile');
+            if (modelForView.get('isMobileVersion')) {
+                cssCore.indexOf('establishments_mobile') && cssCore.push('establishments_mobile');
+                (!App.skin) && settings.set('skin', App.Skins.WEBORDER_MOBILE);
+            } else {
+                (!App.skin) && settings.set('skin', App.Skins.WEBORDER);
+            }
             !settings.get('settings_skin').name_app && pageTitle('Revel Systems');
 
             App.Routers.MainRouter.prototype.prepare('establishments', function() {
-                var view = App.Views.GeneratorView.create('CoreEstablishments', {
-                    mod: 'Main',
-                    className: 'establishments_view',
-                    collection: ests,
-                    model: modelForView
-                }, 'ContentEstablishmentsCore');
-                Backbone.$('body').append(view.el);
-                Backbone.$(window).trigger('hideSpinner');
+                var locale = App.Data.locale;
+                locale.dfd_load.done(function() {
+                    var view = App.Views.GeneratorView.create('CoreEstablishments', {
+                        mod: 'Main',
+                        className: 'establishments_view',
+                        collection: ests,
+                        model: modelForView
+                    }, 'ContentEstablishmentsCore');
+                    Backbone.$('body').append(view.el);
+                    Backbone.$(window).trigger('hideSpinner');
+                });
             });
         },
         /**
@@ -487,6 +510,19 @@ define(["backbone", "factory"], function(Backbone) {
                 Backbone.$('body').append(view.el);
                 errors.trigger('showAlertMessage'); // user notification
             });
+        },
+        /**
+         * This method is invoked before app close
+         */
+        beforeUnloadApp: function() {
+            // any code may be written here
+        },
+        /**
+         * Returns unique id of app defined as '<hostname>.<skin>.<establishment>'
+         */
+        getUID: function() {
+            var settings = App.Data.settings.toJSON();
+            return [settings.hostname, settings.skin, settings.establishment].join('.');
         }
     });
 
@@ -495,6 +531,9 @@ define(["backbone", "factory"], function(Backbone) {
             App.Routers.MainRouter.prototype.change_page.apply(this, arguments);
             if (cssua.ua.revelsystemswebview && cssua.ua.ios) {
                 $("body")[0].scrollIntoView(); //workaround for #18586, #18130
+            }
+            if (App.Data.map && location.hash.slice(1) == 'map') { // #19928 to resize the Google Maps
+                App.Data.map.trigger("change_page");
             }
         },
         profile: function(step, header, footer) {
@@ -517,7 +556,7 @@ define(["backbone", "factory"], function(Backbone) {
                     }),
                     prev: null,
                     save: null},
-                content: {mod: 'ProfilePersonal', cacheId: 'ProfilePersonal'}
+                content: {mod: 'ProfilePersonal', cacheId: 'ProfilePersonal', rewardsCard: App.Data.myorder.rewardsCard}
             }, {
                 footer: {next: RevelAPI.processPaymentInfo.bind(RevelAPI, next, creditCardValidationAlert), prev: prev, save: null},
                 content: {mod: 'ProfilePayment', cacheId: 'ProfilePayment'}
@@ -581,6 +620,7 @@ define(["backbone", "factory"], function(Backbone) {
             var RevelAPI = App.Data.RevelAPI,
                 mainModel = App.Data.mainModel,
                 checkout = App.Data.myorder.checkout,
+                rewardsCard = App.Data.myorder.rewardsCard,
                 profileCustomer = RevelAPI.get('customer'),
                 profileCancelCallback,
                 profileSaveCallback;
@@ -590,9 +630,9 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             this.once('started', function() {
-                // If rewardCard is not set yet need set its value from profile.
+                // If rewardsCard is not set yet need set its value from profile.
                 // Reward card may be set by this moment after checkout restoring from localStorage.
-                !checkout.get('rewardCard') && updateReward();
+                !rewardsCard.get('number') && updateReward();
                 RevelAPI.run(); // controls of Welcome screen
             });
 
@@ -684,7 +724,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             // bind phone changes in profile with reward card in checkout
             checkout.listenTo(profileCustomer, 'change:phone', function() {
-                !checkout.get('rewardCard') && RevelAPI.get('profileExists') && updateReward();
+                !rewardsCard.get('number') && RevelAPI.get('profileExists') && updateReward();
             });
 
             // if user saves profile reward card should be overriden excepting use case when profile is updated during payment with credit card
@@ -726,10 +766,88 @@ define(["backbone", "factory"], function(Backbone) {
 
             function updateReward() {
                 var phone = profileCustomer.get('phone');
-                phone && checkout.set('rewardCard', phone);
+                phone && rewardsCard.set('number', phone);
             }
         }
     });
+
+    /**
+     * App.Routers.RevelOrderingRouter class
+     * Extend App.Routers.MobileRouter
+     * Implement functionality of order placing for all payment processors supported by Revel.
+     *
+     * This is parent router for Weborder, Weborder Mobile, Retail apps.
+     */
+    App.Routers.RevelOrderingRouter = App.Routers.MobileRouter.extend({
+        triggerInitializedEvent: function() {
+            var myorder = App.Data.myorder;
+
+            // Restore App.Data.myorder.paymentResponse if exists in session storage.
+            myorder.restorePaymentResponse(this.getUID());
+
+            // init payment response handler,
+            // set navigation to #confirm as callback parameter
+            this.initPaymentResponseHandler(this.onPayHandler.bind(this));
+
+            // If a payment transaction is in process need to save any changes of cart to a session storage.
+            // If user clears the cart the payment transaction record should be removed.
+            // Bug #21653
+            this.listenTo(myorder, 'remove change add', function() {
+                if(!PaymentProcessor.isTransactionInProcess()) {
+                    return;
+                }
+                if(!myorder.get_only_product_quantity()) {
+                    PaymentProcessor.completeTransaction();
+                } else {
+                    myorder.saveOrders();
+                }
+            });
+
+            // If payment transaction is in process need restore models at first.
+            if(PaymentProcessor.isTransactionInProcess()) {
+                this.loadData().then(fireInitializedEvent.bind(this));
+            } else {
+                fireInitializedEvent.call(this);
+            }
+
+            function fireInitializedEvent() {
+                // emit 'initialized' event
+                this.trigger('initialized');
+                this.initialized = true;
+            }
+        },
+        onPayHandler: function(capturePhase) {
+            this.navigate('confirm',  {
+                trigger: true,
+                replace: capturePhase
+            });
+        },
+        /**
+         * Implement removing of payment transaction record in a session storage
+         * when user changes establishment.
+         */
+        resetEstablishmentData: function() {
+            PaymentProcessor.completeTransaction();
+            return App.Routers.MobileRouter.prototype.resetEstablishmentData.apply(this, arguments);
+        },
+        /**
+         * Save paymentResponse before app close.
+         *
+         * Use case:
+         * 1) User has made payment via Credit Card (usaepay) and #confirm screen displays now.
+         * 2) Click on 'Back' button in browser toolbar (history.back()).
+         * 3) Now #checkout screen displays and app has reinitialized because CC payment uses redirection on 3rd party site.
+         * 4) Click on 'Forward' button in browser toolbar (history.forward())
+         * 5) Now #confirm screen displays and app has reinitialized again. App.Data.myorder.paymentResponse is null after app init.
+         *    Need restore it from sessionStorage to correctly display payment information.
+         *    To be able to do it need save App.Data.myorder.paymentResponse in sessionStorage before app unloading.
+         */
+        beforeUnloadApp: function() {
+            App.Data.myorder.savePaymentResponse(this.getUID());
+            App.Routers.MobileRouter.prototype.beforeUnloadApp.apply(this, arguments);
+        }
+    });
+
 
     /**
      * Router Module class

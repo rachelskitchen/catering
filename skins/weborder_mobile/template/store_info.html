@@ -7,47 +7,66 @@
     <% } %>
     <% if (phone || email || location || delivery_for_online_orders) { %>
         <div class="store_info_main_data <% if(enable_delivery) { %>delivery_info<% } %>">
-            <h2>Store Information</h2>
+            <h2> <%= _lp.STORE_INFO_TITLE %> </h2>
             <dl class="<% if (delivery_for_online_orders) { %> with_delivery <% } else { %> without_delivery <% } %>">
                 <% if(phone) { %>
-                    <dt>Phone</dt>
+                    <dt class="clip"> <%= _lp.STORE_INFO_PHONE %> </dt>
                     <dd><a href="tel:<%= phone %>" class="phone"><%= phoneFormat(phone) %></a></dd>
                 <% } %>
                 <% if (email) { %>
-                    <dt> Email </dt>
+                    <dt class="clip"> <%= _lp.STORE_INFO_EMAIL %> </dt>
                     <dd> <a class="email" href="mailto:<%= email %>"> <%= email %> </a> </dd>
                 <% } %>
                 <% if(location) { %>
-                    <dt>Location</dt>
+                    <dt class="clip"> <%= _lp.STORE_INFO_LOCATION %> </dt>
                     <dd><%= location %></dd>
                 <% } %>
                 <dt class='current_establishment'> &nbsp; </dt>
-                <dd class='current_establishment'> <a class='change_establishment' href='javascript: void(0);'> Change store location? </a> </dd>
+                <dd class="current_establishment">
+                    <a class="change_establishment" href="javascript: void(0);"> <%= _lp.STORE_INFO_CHANGE_STORE %> </a>
+                </dd>
+                
+                <% delivery_for_online_orders = true; %>
+                
                 <% if(delivery_for_online_orders) { %>
-                    <dt>Delivery</dt>
-                    <dd><% if(parseFloat(delivery_charge) > 0) { %><%= currency_symbol + delivery_charge %><% }  else { %> Free <% } %></dd>
-                    <dt>Minimum</dt>
+                    <dt class="clip"> <%= _lp.STORE_INFO_DELIVERY %> </dt>
+                    <dd>
+                        <% if (parseFloat(delivery_charge) > 0) { %>
+                            <%= currency_symbol + delivery_charge %>
+                        <% } else { %>
+                            <%= _lp.STORE_INFO_FREE %>
+                        <% } %>
+                    </dd>
+                    <dt class="clip"> <%= _lp.STORE_INFO_MINIMUM %> </dt>
                     <dd><%= currency_symbol + min_delivery_amount %></dd>
-                    <dt>Est. Delivery Time</dt>
+                    <dt class="clip"> <%= _lp.STORE_INFO_DELIVERY_TIME %> </dt>
                     <dd>
                     <% if(est_delivery_time.hour > 0) { %>
-                    <%= est_delivery_time.hour %> hr
+                        <%= est_delivery_time.hour %> <%= _lp.STORE_INFO_HR %>
                     <% } %>
                     <% if(est_delivery_time.minutes > 0) { %>
-                        <%= est_delivery_time.minutes %> min
+                        <%= est_delivery_time.minutes %> <%= _lp.STORE_INFO_MIN %>
                     <% } %>
                     <% if(est_delivery_time.minutes == 0 && est_delivery_time.hour == 0) { %>
-                        ASAP
+                        <%= _lp.STORE_INFO_ASAP %>
                     <% } %>
                     </dd>
-                    <dt>Delivery Radius</dt>
-                    <dd><%= delivery_radius %>
-                    <% if(distance_mearsure.toLowerCase() == 'km') { %>
-                        km
-                    <% } else { %>
-                        Mile<% if(delivery_radius > 1) { %>s<% } %>
+                    
+                    <% delivery_geojson_enabled = false; %>
+                    
+                    <% if(delivery_post_code_lookup_enabled) { %>
+                        <dt class="clip"> <%= _lp.STORE_INFO_DELIVERY_AREA %> </dt>
+                        <dd><%= delivery_post_codes %></dd>
+                    <% } else if(!delivery_geojson_enabled) { %>
+                        <dt class="clip"> <%= _lp.STORE_INFO_DELIVERY_RADIUS %> </dt>
+                        <dd><%= delivery_radius %>
+                        <% if(distance_mearsure.toLowerCase() == 'km') { %>
+                            <%= _lp.STORE_INFO_KM %>
+                        <% } else { %>
+                            <%= _lp.STORE_INFO_MILE %><% if (delivery_radius > 1) { %><%= _lp.STORE_INFO_MILE_END %><% } %>
+                        <% } %>
+                        </dd>
                     <% } %>
-                    </dd>
                 <% } %>
             </dl>
             <div class='clear_both'> </div>
@@ -68,7 +87,7 @@
 
             <% if(address instanceof Object) { %>
             <li>
-                <span class="title">Address</span>
+                <span class="title clip"> <%= _lp.STORE_INFO_ADDRESS %> </span>
                 <address class="desc">
                     <span><%= address.line1 %></span>
                     <span><%= address.line2 %></span>
@@ -78,23 +97,23 @@
 
             <% if(timetable) { %>
             <li class="hours">
-                <span class="title">Hours</span>
+                <span class="title clip"> <%= _lp.STORE_INFO_HOURS %> </span>
                 <ul class="desc">
                     <% _.each(timetable, function(day, i) { %>
                     <li class="row <%= (timetable.length - 1 == i ? 'last' : i == 0 ? 'first' : '') %>">
                         <% if(day.hours instanceof Array) { %>
-                            <span class="weekDay"><%= day.weekDay %></span>
-                           <span class="time">
-                            <% _.each(day.hours, function(day, i) { %>
-                            <%= day.from %>&nbsp;&ndash;&nbsp;<%= day.to %><br>
-                            <% }); %>
+                            <span class="weekDay clip"> <%= day.weekDay %> </span>
+                            <span class="time clip">
+                                <% _.each(day.hours, function(day, i) { %>
+                                <%= day.from %>&nbsp;&ndash;&nbsp;<%= day.to %><br>
+                                <% }); %>
                             </span>
                         <% } else if(day.hours) { %>
-                            <span class="weekDay"><%= day.weekDay %></span>
-                            <span class="time">Round the clock</span>
+                            <span class="weekDay clip"> <%= day.weekDay %> </span>
+                            <span class="time clip"> <%= _lp.STORE_INFO_ROUND_THE_CLOCK %> </span>
                         <% } else { %>
-                            <span class="weekDay"><%= day.weekDay %></span>
-                            <span class="time closed">Closed</span>
+                            <span class="weekDay clip"> <%= day.weekDay %> </span>
+                            <span class="time closed clip"> <%= _lp.STORE_INFO_CLOSED %> </span>
                         <% } %>
                     </li>
                     <% }); %>
@@ -104,21 +123,21 @@
 
             <% if(phone) { %>
             <li>
-                <span class="title">Phone</span>
+                <span class="title clip"> <%= _lp.STORE_INFO_PHONE %> </span>
                 <a class="desc phone" href="tel:<%= phone %>"><%= phoneFormat(phone) %></a>
             </li>
             <% } %>
 
             <% if (email) { %>
                 <li>
-                    <span class="title"> Email </span>
+                    <span class="title clip"> <%= _lp.STORE_INFO_EMAIL %> </span>
                     <a class="desc email" href="mailto:<%= email %>"> <%= email %> </a>
                 </li>
             <% } %>
 
             <% if(access_to_location) { %>
             <li>
-                <span class="title">Access</span>
+                <span class="title clip"> <%= _lp.STORE_INFO_ACCESS %> </span>
                 <span class="desc"><%= access_to_location %></span>
             </li>
             <% } %>

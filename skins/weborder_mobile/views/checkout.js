@@ -23,48 +23,36 @@
 define(["checkout_view"], function(checkout_view) {
     'use strict';
 
-    var CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView.extend({
-        name: 'checkout',
-        mod: 'main',
+    var CoreDeliveryAddressesView = App.Views.DeliveryAddressesView,
+        CoreCheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView,
+        DeliveryAddressesView, CheckoutAddressView, CheckoutMainView;
+
+
+    DeliveryAddressesView = CoreDeliveryAddressesView.extend({
         initialize: function() {
-            this.listenTo(this, 'address-with-states', this.showDeliveryWithStates, this);
-            this.listenTo(this, 'address-without-states', this.showDelivery, this);
-            this.listenTo(this, 'delivery-to-seat', this.showDeliveryToSeat, this);
-            this.listenTo(this, 'address-hide', this.removePrevStyles, this);
-
-            var count = 1;
-            if (App.Data.orderFromSeat instanceof Object) {
-                var level = App.Data.orderFromSeat.enable_level,
-                    section = App.Data.orderFromSeat.enable_sector,
-                    row = App.Data.orderFromSeat.enable_row;
-
-                if (level) count++;
-                if (section) count++;
-                if (row) count++;
+            CoreDeliveryAddressesView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.options.customer, 'change:shipping_services', this.updateShippingWrapper, this);
+            this.updateShippingWrapper();
+        },
+        updateShippingWrapper: function() {
+            var customer = this.options.customer,
+                status = customer.get('load_shipping_status'),
+                select = this.$('.select.shipping');
+            if(!status || 'pending' == status || ('resolved' == status && !customer.get('shipping_services').length)) {
+                select.attr('disabled', 'disabled');
+            } else {
+                select.removeAttr('disabled');
             }
-            this.numSeatBoxes = count;
-            App.Views.CoreCheckoutView.CoreCheckoutMainView.prototype.initialize.apply(this, arguments);
-        },
-        showDelivery: function() {
-            this.removePrevStyles();
-            this.$('.contact_info').addClass('address-without-states');
-        },
-        showDeliveryWithStates: function() {
-            this.removePrevStyles();
-            this.$('.contact_info').addClass('address-with-states');
-        },
-        showDeliveryToSeat: function() {
-            this.removePrevStyles();
-            this.$('.contact_info').addClass('delivery-to-seat-' + this.numSeatBoxes);
-        },
-        removePrevStyles: function() {
-            this.$('.contact_info').removeClass('address-with-states').
-                                    removeClass('address-without-states').
-                                    removeClass('delivery-to-seat-' + this.numSeatBoxes);
         }
     });
 
+    CheckoutAddressView = DeliveryAddressesView.extend({
+        name: 'checkout',
+        mod: 'address'
+    });
+
     return new (require('factory'))(checkout_view.initViews.bind(checkout_view), function() {
-        App.Views.CheckoutView.CheckoutMainView = CheckoutMainView;
+        App.Views.DeliveryAddressesView = DeliveryAddressesView;
+        App.Views.CoreCheckoutView.CoreCheckoutAddressView = CheckoutAddressView;
     });
 });

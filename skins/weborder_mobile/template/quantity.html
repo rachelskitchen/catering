@@ -1,14 +1,19 @@
 <script type="text/template" id="quantity_main-template">
-    <span class="title color-style1">Quantity</span>
+    <span class="title color-style1"> <span> <%= _lp.QUANTITY_QUANTITY %> </span> </span>
     <div>
-        <span class="quantity"><%= quantity %></span>
+        <div class="quantity_edit_center">
+            <div class='quantity_edit_inner input_beauty border2'>
+            <input class="quantity_edit_input" type="number" inputmode="numeric" value="<%= quantity %>" min="1" >
+            </input>
+            </div>
+        </div>
         <div class="increase"></div>
         <div class="decrease"></div>
     </div>
 </script>
 
 <script type="text/template" id="quantity_weight-template">
-    <span class="title color-style1">Weight <% if(uom) print("/ " + uom); %></span>
+    <span class="title color-style1"> <%= _lp.QUANTITY_WEIGHT %> <% if (uom) print('/ ' + uom); %> </span>
     <div>
         <div class='weight_edit_center'>
                 <div class='weight_edit_inner input_beauty border2'>

@@ -114,6 +114,21 @@ define(["revel_view", "generator"], function(revel_view) {
     var FooterCheckoutView = App.Views.FactoryView.extend({
         name: 'footer',
         mod: 'checkout',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(App.Data.customer, 'change:shipping_services', this.updateConfirmButtonState, this);
+            this.updateConfirmButtonState();
+        },
+        updateConfirmButtonState: function() {
+            var customer = App.Data.customer,
+                status = customer.get('load_shipping_status'),
+                confirm = this.$('#confirmOrder');
+            if ('pending' == status) {
+                confirm.addClass('disabled');
+            } else {
+                confirm.removeClass('disabled');
+            }
+        },
         events: {
             "click #confirmOrder": "confirmOrder",
             "click .profile": "profile"
@@ -179,7 +194,8 @@ define(["revel_view", "generator"], function(revel_view) {
             //App.Views.FactoryView.prototype.render.apply(this, arguments);
             var payment = App.Data.settings.get_payment_process(),
                 rows = payment.payment_count,
-                isDelivery = App.Data.myorder.checkout.get("dining_option") === 'DINING_OPTION_DELIVERY';
+                dining_option = App.Data.myorder.checkout.get("dining_option"),
+                isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING';
 
             payment.credit_card_button && payment.gift_card && rows--;
 
@@ -258,7 +274,6 @@ define(["revel_view", "generator"], function(revel_view) {
         returnToMenu: function() {
             if (this.model.get('success_payment')) {
                 App.Data.myorder.empty_myorder();
-                App.Data.card.empty_card_number();
                 App.Data.router.navigate('index', true);
             } else {
                 App.Data.router.navigate('confirm', true);
@@ -287,6 +302,44 @@ define(["revel_view", "generator"], function(revel_view) {
         mod: 'loyalty'
     });
 
+    var FooterRewardsCardView = App.Views.FactoryView.extend({
+        name: 'footer',
+        mod: 'rewards_card',
+        bindings: {
+            '.submit-card': 'classes: {disabled: disableBtn}',
+        },
+        events: {
+            'click .submit-card': 'submit'
+        },
+        computeds: {
+            disableBtn: {
+                deps: ['rewardsCard_number', 'rewardsCard_captchaValue', 'rewardsCard_captchaKey'],
+                get: function(number, captchaValue, captchaKey) {
+                    return !(number && captchaValue && captchaKey);
+                }
+            }
+        },
+        submit: function() {
+            this.getBinding('$rewardsCard').trigger('onGetRewards');
+        }
+    });
+
+    var FooterRewardsView = App.Views.FactoryView.extend({
+        name: 'footer',
+        mod: 'rewards',
+        bindings: {
+            '.apply-reward': 'classes: {disabled: select(rewardsCard_redemption_code, false, true)}',
+        },
+        events: {
+            'click .apply-reward': 'apply'
+        },
+        apply: function() {
+            var rewardsCard = this.getBinding('$rewardsCard');
+            rewardsCard.trigger('beforeRedemptionApplied');
+            rewardsCard.trigger('onRedemptionApplied');
+        }
+    });
+
     function setCallback(prop) {
         return function() {
             var tab = this.model.get(prop);
@@ -306,5 +359,7 @@ define(["revel_view", "generator"], function(revel_view) {
         App.Views.FooterView.FooterMaintenanceDirectoryView = FooterMaintenanceDirectoryView;
         App.Views.FooterView.FooterProfileView = App.Views.RevelView.RevelProfileFooterView;
         App.Views.FooterView.FooterLoyaltyView = FooterLoyaltyView;
+        App.Views.FooterView.FooterRewardsCardView = FooterRewardsCardView;
+        App.Views.FooterView.FooterRewardsView = FooterRewardsView;
     });
 });
