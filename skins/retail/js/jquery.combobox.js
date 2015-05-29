@@ -70,11 +70,11 @@
                     setTimeout(function() {
                         moveCursorToTheEnd(e.target);
                         selectbox.fadeIn(100);
-                    }, 1);
+                    }, 0);
                 }).blur(function() {
                     setTimeout(function() {
                         selectbox.fadeOut(100);
-                    }, 1);
+                    }, 300);
                 }).keyup(function(e) {
                     if (e.which == 13) {
                         inputbox.trigger("blur");
