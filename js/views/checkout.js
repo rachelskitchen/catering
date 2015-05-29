@@ -616,10 +616,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 });
         },
         enableApplyBtn: function() {
-            this.$(".btnApply").removeAttr("disabled").removeClass("applied").text(_loc.CHECKOUT_DISC_CODE_APPLY);
+            this.$('.btnApply').removeClass('applied').text(_loc.CHECKOUT_DISC_CODE_APPLY);
         },
         disableApplyBtn: function() {
-            this.$(".btnApply").attr("disabled", "disabled").addClass("applied").text(_loc.CHECKOUT_DISC_CODE_APPLIED);
+            this.$('.btnApply').addClass('applied').text(_loc.CHECKOUT_DISC_CODE_APPLIED);
         }
     });
 
