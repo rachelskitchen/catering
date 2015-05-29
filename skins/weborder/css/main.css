@@ -971,7 +971,8 @@ section.maintenance #header .btn {
     height: 100%;
     border-radius: 2px;
     padding: 0 10px;
-    font-size: inherit;
+    font-size: 17px;
+    padding-bottom: 1px;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
