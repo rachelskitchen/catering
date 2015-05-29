@@ -473,7 +473,8 @@
             'MERCURY_RETURN_MESSAGE_VALIDATION_SERVER_SIDE_FAILURE': 'Подозрение на попытку взлома',
             'MERCURY_RETURN_MESSAGE_VALIDATE_NAME_FAIL':      'Введены неверные данные в поле имя владельца карты',
             'MERCURY_RETURN_MESSAGE_DEFAULT':                 'Неизвестная ошибка',
-            'ERROR_DURING_TOKENIZATION':                      'Ошибка во время токенизации'
+            'ERROR_DURING_TOKENIZATION':                      'Ошибка во время токенизации',
+            'ERROR_CAN_NOT_LOAD_THE_GOOGLE_MAPS_SERVICE':     'Не удалось загрузить службу Google Maps. Страница будет перезагружена.'
         },
         'DINING_OPTION_NAME': {
             'DINING_OPTION_TOGO':            'С собой',
