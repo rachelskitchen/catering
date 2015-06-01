@@ -459,7 +459,22 @@
             'ERROR_INTEGRITY_TEST_MAIN':                      'Не найдена функция testA_xx в main.js (functions.js). Попробуйте вручную очистить кэш браузера и перезагрузить страницу.',
             'MODIFIER_FREE':                                  'бесплатно',
             'ERROR_PAYPAL_DIRECTIONS_NO_RESULT':              'Невозможно получить маршрут',
-            'NO_REWARDS_AVAILABLE':                           'Для указанной карты нет данных по накопленным баллам'
+            'NO_REWARDS_AVAILABLE':                           'Для указанной карты нет данных по накопленным баллам',
+            'MERCURY_RETURN_MESSAGE_SUCCESS':                 'Успех',
+            'MERCURY_RETURN_MESSAGE_AUTH_FAIL':               'Аутентификация не прошла',
+            'MERCURY_RETURN_MESSAGE_CARD_DECLINED':           'Карта Отклонена',
+            'MERCURY_RETURN_MESSAGE_CANCEL':                  'Платеж Отменен',
+            'MERCURY_RETURN_MESSAGE_SESSION_TIMEOUT':         'Таймаут Cессии',
+            'MERCURY_RETURN_MESSAGE_MAINTENANCE_MODE':        'Режим Обслуживания',
+            'MERCURY_RETURN_MESSAGE_SAVE_CARD_INFO_FAIL':     'Не удалось сохранить информацию о карте',
+            'MERCURY_RETURN_MESSAGE_LOAD_CARD_INFO_FAIL':     'Не удалось загрузить информацию о карте',
+            'MERCURY_RETURN_MESSAGE_PROCESS_CARD_INFO_FAIL':  'Не удалось обработать информацию о карте',
+            'MERCURY_RETURN_MESSAGE_VALIDATION_CC_FAIL':      'Неверный номер карты или контрольная сумма по Mod10, проверьте еще раз',
+            'MERCURY_RETURN_MESSAGE_VALIDATION_SERVER_SIDE_FAILURE': 'Подозрение на попытку взлома',
+            'MERCURY_RETURN_MESSAGE_VALIDATE_NAME_FAIL':      'Введены неверные данные в поле имя владельца карты',
+            'MERCURY_RETURN_MESSAGE_DEFAULT':                 'Неизвестная ошибка',
+            'ERROR_DURING_TOKENIZATION':                      'Ошибка во время токенизации',
+            'ERROR_CAN_NOT_LOAD_THE_GOOGLE_MAPS_SERVICE':     'Не удалось загрузить службу Google Maps. Страница будет перезагружена.'
         },
         'DINING_OPTION_NAME': {
             'DINING_OPTION_TOGO':            'С собой',

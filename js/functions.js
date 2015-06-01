@@ -1295,19 +1295,19 @@ var MERCURY_RETURN_CODE = {
 };
 
 var MERCURY_RETURN_MESSAGE = {};
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SUCCESS] = "Success";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.AUTH_FAIL] = "Auth Fail";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.CARD_DECLINED] = "Card Declined";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.CANCEL] = "Payment Canceled";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SESSION_TIMEOUT] = "Session Timeout";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.MAINTENANCE_MODE] = "Maintenance Mode";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SAVE_CARD_INFO_FAIL] = "Save Card Info Fail";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.LOAD_CARD_INFO_FAIL] = "Load Card Info Fail";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.PROCESS_CARD_INFO_FAIL] = "Process Card Info Fail";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_CC_FAIL] = "Credit Card failed Mod10 check multiple times";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_SERVER_SIDE_FAILURE] = "Possible tampering suspected";
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATE_NAME_FAIL] = "Invalid data entered in cardholder name field";
-MERCURY_RETURN_MESSAGE_DEFAULT = "Unknown error";
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SUCCESS] = MSG.MERCURY_RETURN_MESSAGE_SUCCESS;
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.AUTH_FAIL] = MSG.MERCURY_RETURN_MESSAGE_AUTH_FAIL;
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.CARD_DECLINED] = MSG.MERCURY_RETURN_MESSAGE_CARD_DECLINED;
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.CANCEL] = MSG.MERCURY_RETURN_MESSAGE_CANCEL;
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SESSION_TIMEOUT] = MSG.MERCURY_RETURN_MESSAGE_SESSION_TIMEOUT;
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.MAINTENANCE_MODE] = MSG.MERCURY_RETURN_MESSAGE_MAINTENANCE_MODE;
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SAVE_CARD_INFO_FAIL] = MSG.MERCURY_RETURN_MESSAGE_SAVE_CARD_INFO_FAIL;
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.LOAD_CARD_INFO_FAIL] = MSG.MERCURY_RETURN_MESSAGE_LOAD_CARD_INFO_FAIL;
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.PROCESS_CARD_INFO_FAIL] = MSG.MERCURY_RETURN_MESSAGE_PROCESS_CARD_INFO_FAIL;
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_CC_FAIL] = MSG.MERCURY_RETURN_MESSAGE_VALIDATION_CC_FAIL;
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_SERVER_SIDE_FAILURE] = MSG.MERCURY_RETURN_MESSAGE_VALIDATION_SERVER_SIDE_FAILURE;
+MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATE_NAME_FAIL] = MSG.MERCURY_RETURN_MESSAGE_VALIDATE_NAME_FAIL;
+MERCURY_RETURN_MESSAGE_DEFAULT = MSG.MERCURY_RETURN_MESSAGE_DEFAULT;
 
 var MercuryPaymentProcessor = {
     clearQueryString: function(queryString) {
@@ -1515,7 +1515,7 @@ var QuickBooksPaymentProcessor = {
                     myorder.submit_order_and_pay(payment_type, validationOnly, capturePhase);
                 },
                 error: function (data) {
-                    data.errorMsg = MSG.ERROR_OCCURRED + ' Error during tokenization';
+                    data.errorMsg = MSG.ERROR_OCCURRED + ' ' + MSG.ERROR_DURING_TOKENIZATION;
                     myorder.paymentResponse = {status: 'error', errorMsg: data.errorMsg};
                     myorder.trigger('paymentResponse');
                 }
@@ -1555,7 +1555,7 @@ var AdyenPaymentProcessor = {
                 payment_info.transaction_id = get_parameters.pspReference;
                 payment_info.order_id = get_parameters.merchantReference
             } else {
-                payment_info.errorMsg = returnCode ? returnCode : 'Payment Canceled';
+                payment_info.errorMsg = returnCode ? returnCode : MSG.MERCURY_RETURN_MESSAGE_CANCEL;
             }
         }
         return payment_info;
@@ -1582,7 +1582,7 @@ var PayPalPaymentProcessor = {
                 payment_info.payer_id = get_parameters.PayerID;
                 payment_info.payment_id = checkout.payment_id;
             }  else {
-                payment_info.errorMsg = 'Payment Canceled';
+                payment_info.errorMsg = MSG.MERCURY_RETURN_MESSAGE_CANCEL;
             }
         }
         return payment_info;

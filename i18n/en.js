@@ -455,7 +455,22 @@
             'ERROR_INTEGRITY_TEST_MAIN':                      'There is no testA_xx function in main.js (functions.js). Try manually clear the browser cache and restart.',
             'MODIFIER_FREE':                                  'free',
             'ERROR_PAYPAL_DIRECTIONS_NO_RESULT':              'Unable to get directions',
-            'NO_REWARDS_AVAILABLE':                           'No rewards are available for this card number'
+            'NO_REWARDS_AVAILABLE':                           'No rewards are available for this card number',
+            'MERCURY_RETURN_MESSAGE_SUCCESS':                 'Success',
+            'MERCURY_RETURN_MESSAGE_AUTH_FAIL':               'Auth Fail',
+            'MERCURY_RETURN_MESSAGE_CARD_DECLINED':           'Card Declined',
+            'MERCURY_RETURN_MESSAGE_CANCEL':                  'Payment Canceled',
+            'MERCURY_RETURN_MESSAGE_SESSION_TIMEOUT':         'Session Timeout',
+            'MERCURY_RETURN_MESSAGE_MAINTENANCE_MODE':        'Maintenance Mode',
+            'MERCURY_RETURN_MESSAGE_SAVE_CARD_INFO_FAIL':     'Save Card Info Fail',
+            'MERCURY_RETURN_MESSAGE_LOAD_CARD_INFO_FAIL':     'Load Card Info Fail',
+            'MERCURY_RETURN_MESSAGE_PROCESS_CARD_INFO_FAIL':  'Process Card Info Fail',
+            'MERCURY_RETURN_MESSAGE_VALIDATION_CC_FAIL':      'Credit Card failed Mod10 check multiple times',
+            'MERCURY_RETURN_MESSAGE_VALIDATION_SERVER_SIDE_FAILURE': 'Possible tampering suspected',
+            'MERCURY_RETURN_MESSAGE_VALIDATE_NAME_FAIL':      'Invalid data entered in cardholder name field',
+            'MERCURY_RETURN_MESSAGE_DEFAULT':                 'Unknown error',
+            'ERROR_DURING_TOKENIZATION':                      'Error during tokenization',
+            'ERROR_CAN_NOT_LOAD_THE_GOOGLE_MAPS_SERVICE':     'Can\'t load the google maps service. The page will be reloaded.'
         },
         'DINING_OPTION_NAME': {
             'DINING_OPTION_TOGO':            'Take Out',
