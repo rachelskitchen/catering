@@ -432,6 +432,9 @@ ul.categories {
     .content_arrow:hover, .arrow:hover {
         background: #eee;
     }
+    .app-gallery-scroll:hover {
+        background: rgba(228, 241, 248, 0.8) !important;
+    }
 }
 
 /* start input beauty */
