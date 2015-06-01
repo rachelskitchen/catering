@@ -428,7 +428,7 @@ define(["backbone", "factory"], function(Backbone) {
                 this.updateState.counter = 0;
             }
 
-            var title = 'State' + (++this.updateState.counter);
+            var title = App.Data.settings.get("settings_skin").name_app;
             url = url || location.href;
 
             if(replaceState) {
