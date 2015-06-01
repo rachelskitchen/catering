@@ -466,6 +466,9 @@ aside:after, aside:before {
     .content_arrow:hover, .arrow:hover, #content .content_arrow:hover, #cart .content_arrow:hover {
         background: #76C2E2;
     }
+    .app-gallery-scroll:hover {
+        background: rgba(228, 241, 248, 0.8) !important;
+    }
 }
 
 /* start input beauty */
