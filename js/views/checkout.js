@@ -244,7 +244,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             data.orderFromSeat = App.Data.orderFromSeat || {};
             this.$el.html(this.template(data));
 
-            inputTypeNumberMask(this.$('input[name=level], input[name=section], input[name=row], input[name=seat]'), /^[\d\w]{0,4}$/);
+            inputTypeNumberMask(this.$('input[name=level]'), /^[\d\w]{0,4}$/, data.level);
+            inputTypeNumberMask(this.$('input[name=section]'), /^[\d\w]{0,4}$/, data.section);
+            inputTypeNumberMask(this.$('input[name=row]'), /^[\d\w]{0,4}$/, data.row);
+            inputTypeNumberMask(this.$('input[name=seat]'), /^[\d\w]{0,4}$/, data.seat);
         },
         events: {
             'change input': 'onChangeElem',
