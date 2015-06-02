@@ -18,8 +18,10 @@
     font-weight: bold;
     vertical-align: top;
     line-height: 28px;
-    width: 100px;
+    max-width: 150px;
+    min-width: 70px;
     display: inline-block;
+    text-align: right;
 }
 
 .quantity_select {
