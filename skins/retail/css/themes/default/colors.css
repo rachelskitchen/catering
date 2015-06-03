@@ -539,6 +539,14 @@ aside:after, aside:before {
     width: 9px;
     background: transparent;
 }
+.vertical-scrollbar::-webkit-scrollbar-button:start:decrement,
+.vertical-scrollbar::-webkit-scrollbar-button:end:increment {
+     display: block;
+}
+.vertical-scrollbar::-webkit-scrollbar-button:start:increment,
+.vertical-scrollbar::-webkit-scrollbar-button:end:decrement {
+    display: none;
+}
 .vertical-scrollbar::-webkit-scrollbar-button:start:vertical {
     height: 3px;
     background: url('data:image/gif;base64,R0lGODlhCQADAPIAAAAAAFu+5yaZyjOt4AAAAAAAAAAAAAAAACH5BAEAAAQALAAAAAAJAAMAAAgWAAkIDCAggMCDBAUUPEhggEIBAwQGBAA7');
