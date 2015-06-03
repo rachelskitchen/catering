@@ -1,5 +1,5 @@
 <script type="text/template" id="store_info_about-template">
-    <div class='about_content'>
+    <div class='about_content vertical-scrollbar'>
         <% if (title.length == 0 && content.length == 0 && images.length == 0) {
                 content = "No information";
            }
@@ -19,7 +19,7 @@
 </script>
 
 <script type="text/template" id="store_info_map-template">
-    <div class='info_map_wrapper'>
+    <div class='info_map_wrapper vertical-scrollbar'>
         <div id="mapBox"></div>
         <div class="view_larger_map">
             <%= _lp.STORE_INFO_VIEW %> <a href="" target="_blank" class="map_url"> </a> <%= _lp.STORE_INFO_IN_LARGER_MAP %>
