@@ -31,6 +31,7 @@
     overflow-x: hidden;
     padding: 0 20px 0 10px;
     text-align: justify;
+    margin-right: 5px;
 }
 
 .about_content h2 {
@@ -46,6 +47,7 @@
     left: 20px;
     right: -10px;
     overflow-x: hidden;
+    margin-right: 5px;
 }
 
 #mapBox {

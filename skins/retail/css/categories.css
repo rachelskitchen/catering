@@ -240,6 +240,7 @@
     height: 100%;
     padding-right: 75px;
     overflow-x: hidden;
+    margin-right: 5px;
 }
 #content .subcategories.hide ~ .content {
     top: 60px;
