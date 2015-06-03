@@ -31,13 +31,31 @@ define(["backbone", "factory"], function(Backbone) {
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'add_card', this.setData, this);
-            this.listenTo(this.model, "change:captchaImage", this.updateCaptureImage, this);
-            this.listenTo(this.model, "change:captchaKey", this.updateCaptureKey, this);
+            this.reload_captcha();
+        },
+        bindings: {
+            'img.captcha': 'updateCaptcha: url',
+            '#id_captcha_key': 'value: captchaKey'
         },
         events: {
             'click .btn-reload': 'reload_captcha'
         },
+        computeds: {
+            url: {
+                deps: ['captchaImage', '_settings_host'],
+                get: function(captchaImage, _settings_host) {
+                    if(captchaImage) {
+                        return _settings_host + captchaImage;
+                    } else {
+                        return '';
+                    }
+                }
+            }
+        },
         reload_captcha: function() {
+            this.removeCaptchaSpinner();
+            this.createCaptchaSpinner();
+            this.model.set('captchaImage', '');
             this.model.loadCaptcha();
         },
         render: function() {
@@ -89,13 +107,16 @@ define(["backbone", "factory"], function(Backbone) {
                 };
             this.model.set(data);
         },
-        updateCaptureImage: function() {
-            this.$('.captcha').attr("src", App.Data.settings.get('host') + this.model.get('captchaImage'));
+        createCaptchaSpinner: function() {
+            this.$('.captcha').hide();
+            this.$('.captcha-spinner').spinner();
+            this.captchaSpinner = this.$('.ui-spinner');
         },
-        updateCaptureKey: function() {
-            this.$('#id_captcha_key').attr("src", this.model.get('captchaKey'));
+        removeCaptchaSpinner: function() {
+            this.$('.captcha').show();
+            this.captchaSpinner && this.captchaSpinner.remove();
+            delete this.captchaSpinner;
         }
-
     });
 
     return new (require('factory'))(function() {
