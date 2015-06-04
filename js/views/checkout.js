@@ -72,8 +72,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
             this.$el.html(this.template(model));
 
-            inputTypeNumberMask(this.$('.phone'), /^\+?\d{0,15}$/, model.phone, true);
-            inputTypeNumberMask(this.$('input.rewardCard'), /^\d*$/, model.rewardCard, true);
+            inputTypeMask(this.$('.phone'), /^\+?\d{0,15}$/, model.phone, 'tel');
+            inputTypeMask(this.$('input.rewardCard'), /^\d*$/, model.rewardCard, 'text');
             this.$('.firstName, .lastName').numberMask({pattern: /^.*$/ }).on("keypressNumber", function(event) {
                 try {
                     var start = event.target.selectionStart,
@@ -244,10 +244,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             data.orderFromSeat = App.Data.orderFromSeat || {};
             this.$el.html(this.template(data));
 
-            inputTypeNumberMask(this.$('input[name=level]'), /^[\d\w]{0,4}$/, data.level);
-            inputTypeNumberMask(this.$('input[name=section]'), /^[\d\w]{0,4}$/, data.section);
-            inputTypeNumberMask(this.$('input[name=row]'), /^[\d\w]{0,4}$/, data.row);
-            inputTypeNumberMask(this.$('input[name=seat]'), /^[\d\w]{0,4}$/, data.seat);
+            inputTypeMask(this.$('input[name=level]'), /^[\d\w]{0,4}$/, data.level, 'number');
+            inputTypeMask(this.$('input[name=section]'), /^[\d\w]{0,4}$/, data.section, 'number');
+            inputTypeMask(this.$('input[name=row]'), /^[\d\w]{0,4}$/, data.row, 'number');
+            inputTypeMask(this.$('input[name=seat]'), /^[\d\w]{0,4}$/, data.seat, 'number');
         },
         events: {
             'change input': 'onChangeElem',
@@ -585,7 +585,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             var data = this.model.toJSON();
             data.iPad = iPad();
             this.$el.html(this.template(data));
-            inputTypeStringMask(this.$('input'), /^[\d\w]{1,200}$/, '');
+            inputTypeMask(this.$('input'), /^[\d\w]{1,200}$/, '');
 
             return this;
         },
@@ -640,7 +640,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             data.discount_allow = App.Settings.accept_discount_code === true;
             data.discount_code_applied = this.model.get("last_discount_code");
             this.$el.html(this.template(data));
-            inputTypeStringMask(this.$('input'), /^[\d\w]{1,200}$/, '');
+            inputTypeMask(this.$('input'), /^[\d\w]{1,200}$/, '');
             return this;
         },
         events: {

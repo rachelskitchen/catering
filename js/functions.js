@@ -844,22 +844,27 @@ function replaceAll(find, replace, str) {
     return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
 }
 
-
 /**
- * use mask for input field type is a string
+ * use mask for input field
+ * type can be 'number', 'float', 'text' or 'tel'
  */
-function inputTypeStringMask(el, pattern, initial) {
-    inputTypeNumberMask(el, pattern, initial, true);
-}
-
-/**
- * use mask for input field type=number
- */
-function inputTypeNumberMask(el, pattern, initial, dontChangeType) {
-    if (cssua.userAgent.mobile && !dontChangeType) {
+function inputTypeMask(el, pattern, initial, type) {
+    if (type == 'number') {
         el.attr("type", "number");
     }
-   
+    else if (type == 'float') { //for float numbers (1.23)
+        if (parseFloat(cssua.userAgent.android) >= 5 || cssua.userAgent.ios)
+            el.attr("type", "number");
+        else
+            el.attr("type", "tel"); // Bug 13910 - Android: CVV > the 1st digit zero is removed from the field (for 'number' keyboard)
+            // As well some devices have problem with numeric (type='number') keypad - don't have '.', ',' symbols (Bug 11032)
+    } 
+    else if (type == 'text') {
+        el.attr("type", "text");
+    } else {
+        //don't change type if type=undefined, it can be for <input type=text(tel) ..> only
+    } 
+    
     var prev = initial && initial.toString() || '';
     el.on('input', function(a) {
         if (!pattern.test(a.target.value) || !a.target.value && !this.validity.valid) {

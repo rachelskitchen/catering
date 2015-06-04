@@ -38,7 +38,7 @@
         },
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            inputTypeNumberMask(this.$('.rewards-input'), /^\d*$/, this.model.get('number'), true);
+            inputTypeMask(this.$('.rewards-input'), /^\d*$/, this.model.get('number'), 'number');
             this.updateCaptcha();
         },
         computeds: {

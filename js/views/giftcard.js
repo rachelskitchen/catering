@@ -65,10 +65,10 @@ define(["backbone", "factory"], function(Backbone) {
             this.$el.html(this.template(model));
 
             var captcha = this.$('#id_captcha_value');
-            inputTypeNumberMask(captcha, /^\w{0,4}$/, '', true); //#14495 bug
+            inputTypeMask(captcha, /^\w{0,4}$/, ''); //#14495 bug
 
             cardNumber = this.$('.number');
-            inputTypeNumberMask(cardNumber, /^\d{0,19}$/);
+            inputTypeMask(cardNumber, /^\d{0,19}$/, '', 'number');
             if (cssua.userAgent.mobile) {
                 var ios_version_old = false;
                 if (cssua.userAgent.ios && cssua.userAgent.ios.substr(0, 1) == 6) {

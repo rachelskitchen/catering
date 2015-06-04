@@ -91,9 +91,9 @@ define(["backbone", "factory"], function(Backbone) {
             if (model.sold_by_weight) {
                 var elem = self.$('.weight_edit_input');
 
-                // shoudn't change type attribute for android platforms
-                // because some devices have problem with numeric keypad - don't have '.', ',' symbols (bug 11032)
-                inputTypeNumberMask(elem, new RegExp(this.reg_str), null, cssua.ua.android);
+                // because some Android devices have problem with numeric keypad - don't have '.', ',' symbols (bug 11032) 
+                // -> so we should point 'float' as type of below:
+                inputTypeMask(elem, new RegExp(this.reg_str), null, 'float');
             }
         },
         events: {
