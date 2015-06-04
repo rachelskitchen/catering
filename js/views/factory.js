@@ -50,6 +50,19 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         }
     });
 
+    Backbone.Epoxy.binding.addHandler('updateCaptcha', function($el, value) {
+        var view = this.view;
+        value && $el.on('load', removeSpinner).error(removeSpinner);
+        $el.attr('src', value);
+        function removeSpinner() {
+            $el.off('load error');
+            // need to remove spinner only when current element's `src` attribute corresponds `value`
+            if($el.attr('src') === value) {
+                view.removeCaptchaSpinner();
+            }
+        }
+    });
+
     App.Views.FactoryView = Backbone.Epoxy.View.extend({
         constructor: function(options) {
             // Extend Backbone.Epoxy.View.prototype.bindingSources to implement the ability to pass `bindingSources` via Backbone.View options.

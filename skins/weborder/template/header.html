@@ -50,10 +50,10 @@
             var title = '',
                 content = '';
             if (delivery_post_code_lookup_enabled) {
-                title = _lp.HEADER_DELIVERY_AREA;
+                title = _lp.HEADER_DELIVERY_AREA + ":";
                 content = delivery_post_codes;
             } else if (!delivery_geojson_enabled) {
-                title = _lp.HEADER_DELIVERY_RADIUS;
+                title = _lp.HEADER_DELIVERY_RADIUS + ":";
                 content = max_delivery_distance + ' ';
                 if (distance_mearsure.toLowerCase() == 'km') {
                     content += _lp.HEADER_DELIVERY_KM;
@@ -65,8 +65,8 @@
                 }
             }
         %>
-        <span title="<%= title %>: <%= content %>">
-            <span class="clip"> <%= title %>: </span>
+        <span title="<%= title %> <%= content %>">
+            <span class="clip"> <%= title %> </span>
             <%= content %>
         </span>
     </div>
