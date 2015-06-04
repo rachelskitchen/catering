@@ -143,7 +143,8 @@ img[src=''] {
     -webkit-overflow-scrolling: touch;
 }
 
-#content li {
+#content li,
+#content dl {
     -webkit-transform: translate3d(0,0,0); /*it's for scrolling, fixes the issue when blank space can appear on first time quick scroll */
 }
 

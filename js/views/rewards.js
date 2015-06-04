@@ -30,7 +30,7 @@
             '.rewards-input': 'value: number, events: ["input"]',
             '.rewards-captcha-input': 'value: captchaValue, events: ["input"]',
             '.submit-card': 'classes: {disabled: disableBtn}',
-            '.captcha-image': 'updateCaptcha: url, classes:{test: url}'
+            '.captcha-image': 'updateCaptcha: url'
         },
         events: {
             'click .submit-card': 'submit',
@@ -55,20 +55,6 @@
                         return _settings_host + captchaImage;
                     } else {
                         return '';
-                    }
-                }
-            }
-        },
-        bindingHandlers: {
-            updateCaptcha: function($el, value) {
-                var view = this.view;
-                value && $el.on('load', removeSpinner).error(removeSpinner);
-                $el.attr('src', value);
-                function removeSpinner() {
-                    $el.off('load error');
-                    // need to remove spinner only when current element's `src` attribute corresponds `value`
-                    if($el.attr('src') === value) {
-                        view.removeCaptchaSpinner();
                     }
                 }
             }
