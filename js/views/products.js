@@ -135,10 +135,10 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             this.$el.html(this.template(model));
 
             if (model.is_gift) {
-                inputTypeNumberMask(this.$('.gift_card_number'), /^(\d|-){0,255}$/, '');
+                inputTypeMask(this.$('.gift_card_number'), /^(\d|-){0,255}$/, '', 'number');
             }
             if (this.gift_price) {
-                inputTypeNumberMask(this.$('.gift_card_price'), new RegExp(this.giftCardPriceRegStr), '', cssua.ua.android);
+                inputTypeMask(this.$('.gift_card_price'), new RegExp(this.giftCardPriceRegStr), '', 'float');
             }
 
             if (App.skin == App.Skins.RETAIL)

@@ -44,9 +44,8 @@ define(["backbone", "factory"], function(Backbone) {
             model.isFirefox = /firefox/i.test(navigator.userAgent);
             model.tip_allow = App.Data.settings.get('settings_system').accept_tips_online === true;
             this.$el.html(this.template(model));
-            // shoudn't change type attribute for android platforms
-            // because some devices have problem with numeric keypad - don't have '.', ',' symbols (bug 11032)
-            inputTypeNumberMask(this.$('.tipAmount'), new RegExp(this.tipAmountRegStr), '0.00', cssua.ua.android);
+            // because some devices have problem with numeric keypad - don't have '.', ',' symbols (bug 11032) -> use 'float' type:
+            inputTypeMask(this.$('.tipAmount'), new RegExp(this.tipAmountRegStr), '0.00', 'float');
             this.setBtnSelected(model.type ? (model.amount ? model.percent : "Other") : "None");
             return this;
         },
