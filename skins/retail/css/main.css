@@ -234,6 +234,7 @@ footer {
     font-size: 8px;
     height: 100%;
     max-width: 100%;
+    min-width: 47px;
     position: absolute;
     text-align: left;
     width: auto;
