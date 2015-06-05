@@ -58,6 +58,13 @@ define(["done_view", "generator"], function(done_view) {
                 $(this).focus();
             });
             this.iOSSafariCaretFix();
+            // Fix for #16070
+            this.$el.on("focusin", function () {
+                setTimeout(function(){
+                    var title = $('h1.title');
+                    title.text(title.text());
+                },0);
+            })
             return this;
         },
         content_change: function() {
