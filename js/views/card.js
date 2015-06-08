@@ -68,8 +68,8 @@ define(["backbone", "factory"], function(Backbone) {
             expYear.val(this.model.escape('expDate'));
             $('option:selected', expYear).length === 0 && $('option:first', expYear).prop('selected',true);
 
-            inputTypeMask(cardNumber, /^\d{0,19}$/, '', 'number');
-            inputTypeMask(securityCode, /^(\d{0,4})$/, '', 'number');
+            inputTypeMask(cardNumber, /^\d{0,19}$/, '', 'numeric');
+            inputTypeMask(securityCode, /^(\d{0,4})$/, '', 'numeric');
             if (cssua.userAgent.mobile) {
                 var ios_version_old = false;
                 if (cssua.userAgent.ios && cssua.userAgent.ios.substr(0, 1) == 6) {

@@ -68,12 +68,11 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             model.business_name = settings.business_name;
             model.address = settings.address;
             model.isMobile = typeof cssua.ua.mobile != 'undefined';
-            model.rewardCardType = cssua.ua.mobile ? /android/i.test(cssua.ua.mobile) ? 'tel' : 'number' : 'text'; // too hard logic due to some native android browsers don't correctly display placeholder attribute for input[type='number']
 
             this.$el.html(this.template(model));
 
             inputTypeMask(this.$('.phone'), /^\+?\d{0,15}$/, model.phone, 'tel');
-            inputTypeMask(this.$('input.rewardCard'), /^\d*$/, model.rewardCard, 'text');
+            inputTypeMask(this.$('input.rewardCard'), /^\d*$/, model.rewardCard, 'numeric');
             this.$('.firstName, .lastName').numberMask({pattern: /^.*$/ }).on("keypressNumber", function(event) {
                 try {
                     var start = event.target.selectionStart,
@@ -244,10 +243,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             data.orderFromSeat = App.Data.orderFromSeat || {};
             this.$el.html(this.template(data));
 
-            inputTypeMask(this.$('input[name=level]'), /^[\d\w]{0,4}$/, data.level, 'number');
-            inputTypeMask(this.$('input[name=section]'), /^[\d\w]{0,4}$/, data.section, 'number');
-            inputTypeMask(this.$('input[name=row]'), /^[\d\w]{0,4}$/, data.row, 'number');
-            inputTypeMask(this.$('input[name=seat]'), /^[\d\w]{0,4}$/, data.seat, 'number');
+            inputTypeMask(this.$('input[name=level]'), /^[\d\w]{0,4}$/, data.level, 'numeric');
+            inputTypeMask(this.$('input[name=section]'), /^[\d\w]{0,4}$/, data.section, 'numeric');
+            inputTypeMask(this.$('input[name=row]'), /^[\d\w]{0,4}$/, data.row, 'numeric');
+            inputTypeMask(this.$('input[name=seat]'), /^[\d\w]{0,4}$/, data.seat, 'numeric');
         },
         events: {
             'change input': 'onChangeElem',
@@ -585,7 +584,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             var data = this.model.toJSON();
             data.iPad = iPad();
             this.$el.html(this.template(data));
-            inputTypeMask(this.$('input'), /^[\d\w]{1,200}$/, '');
+            inputTypeMask(this.$('input'), /^[\d\w]{1,200}$/, '', 'text');
 
             return this;
         },
@@ -640,7 +639,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             data.discount_allow = App.Settings.accept_discount_code === true;
             data.discount_code_applied = this.model.get("last_discount_code");
             this.$el.html(this.template(data));
-            inputTypeMask(this.$('input'), /^[\d\w]{1,200}$/, '');
+            inputTypeMask(this.$('input'), /^[\d\w]{1,200}$/, '', 'text');
             return this;
         },
         events: {

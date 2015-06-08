@@ -135,7 +135,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             this.$el.html(this.template(model));
 
             if (model.is_gift) {
-                inputTypeMask(this.$('.gift_card_number'), /^(\d|-){0,255}$/, '', 'number');
+                inputTypeMask(this.$('.gift_card_number'), /^(\d|-){0,255}$/, '', 'numeric');
             }
             if (this.gift_price) {
                 inputTypeMask(this.$('.gift_card_price'), new RegExp(this.giftCardPriceRegStr), '', 'float');
