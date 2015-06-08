@@ -70,6 +70,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             inputTypeMask(cardNumber, /^\d{0,19}$/, '', 'numeric');
             inputTypeMask(securityCode, /^(\d{0,4})$/, '', 'numeric');
+            inputTypeMask(this.$('.zip'), /^(\d{0,9})$/, '', 'numeric');
             if (cssua.userAgent.mobile) {
                 if (cssua.userAgent.android) {
                     /*
