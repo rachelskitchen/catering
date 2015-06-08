@@ -68,7 +68,7 @@ define(["backbone", "factory"], function(Backbone) {
             inputTypeMask(captcha, /^\w{0,4}$/, ''); //#14495 bug
 
             cardNumber = this.$('.number');
-            inputTypeMask(cardNumber, /^\d{0,19}$/, '', 'number');
+            inputTypeMask(cardNumber, /^\d{0,19}$/, '', 'numeric');
             if (cssua.userAgent.mobile) {
                 var ios_version_old = false;
                 if (cssua.userAgent.ios && cssua.userAgent.ios.substr(0, 1) == 6) {

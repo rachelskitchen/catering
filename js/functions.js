@@ -846,24 +846,38 @@ function replaceAll(find, replace, str) {
 
 /**
  * use mask for input field
- * type can be 'number', 'float', 'text' or 'tel'
+ * type can be 'integer', (number keyboard for numbers like 100)  
+ *             'float', (number or tel keyboard for floats like 5.25) 
+ *             'numeric' (number or tel keyboard for strings of digits "000123456" (zero can be in front of it)
+ *             'text', (for general text keyboard) 
+ *             'tel' (for phones)
  */
 function inputTypeMask(el, pattern, initial, type) {
-    if (type == 'number') {
-        el.attr("type", "number");
-    }
-    else if (type == 'float') { //for float numbers (1.23)
-        if (parseFloat(cssua.userAgent.android) >= 5 || cssua.userAgent.ios)
+    if (cssua.userAgent.mobile) { //change the type only for mobile devices, desktop browsers add the arrows up/down for number keyboard 
+        if (type == 'integer') {
             el.attr("type", "number");
-        else
-            el.attr("type", "tel"); // Bug 13910 - Android: CVV > the 1st digit zero is removed from the field (for 'number' keyboard)
-            // As well some devices have problem with numeric (type='number') keypad - don't have '.', ',' symbols (Bug 11032)
-    } 
-    else if (type == 'text') {
-        el.attr("type", "text");
-    } else {
-        //don't change type if type=undefined, it can be for <input type=text(tel) ..> only
-    } 
+        }
+        else if (type == 'float') { //for float numbers (1.23)
+            if (parseFloat(cssua.userAgent.android) >= 5 || cssua.userAgent.ios)
+                el.attr("type", "number");
+            else
+                el.attr("type", "tel"); 
+                // Some devices have problem with numeric (type='number') keypad - don't have '.', ',' symbols (Bug 11032)
+        }     
+        else if (type == 'numeric') { //for numeric text (e.g 000123456)
+            if (parseFloat(cssua.userAgent.android) >= 4.3 || parseFloat(cssua.userAgent.ios) >= 7)
+                el.attr("type", "number");
+            else {
+                el.attr("type", "tel"); // Bug 13910 - Android: CVV > the 1st digit zero is removed from the field (for 'number' keyboard)
+                //Android and iOS devices (ver <= 6) removes automatically '0' digit in 'number' fields if it's the first digit   
+            }
+        } 
+        else if (type == 'text') {
+            el.attr("type", "text");
+        } else {
+            //don't change type if type=undefined, it should be for <input type=text(tel) ..> only
+        }
+    }
     
     var prev = initial && initial.toString() || '';
     el.on('input', function(a) {
