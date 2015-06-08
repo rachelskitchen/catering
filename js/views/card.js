@@ -71,18 +71,12 @@ define(["backbone", "factory"], function(Backbone) {
             inputTypeMask(cardNumber, /^\d{0,19}$/, '', 'numeric');
             inputTypeMask(securityCode, /^(\d{0,4})$/, '', 'numeric');
             if (cssua.userAgent.mobile) {
-                var ios_version_old = false;
-                if (cssua.userAgent.ios && cssua.userAgent.ios.substr(0, 1) == 6) {
-                    ios_version_old = true;
-                }
-                var hack = false;
                 if (cssua.userAgent.android) {
                     /*
                     Hack for bug: https://code.google.com/p/android/issues/detail?id=24626.
                     Bug of Revel Systems: http://bugzilla.revelup.com/bugzilla/show_bug.cgi?id=5368.
                     */
                     if (check_android_old_version(cssua.userAgent.android)) { // checking version OS Android (old version is Android <= 4.2.1)
-                        hack = true;
                         cardNumber.attr("type", "text");
                         cardNumber.focus(function() {
                             $(this).attr("type", "number");
@@ -98,12 +92,7 @@ define(["backbone", "factory"], function(Backbone) {
                             $(this).attr("type", "text");
                         });
                     }
-                }
-                if (!hack) {
-                    if (ios_version_old) {
-                        cardNumber.attr("type", "text");
-                    }
-                }
+                }               
             }
 
             this.$('.first_name, .last_name').numberMask({pattern: /^.*$/ }).on("keypressNumber", function(event) {
