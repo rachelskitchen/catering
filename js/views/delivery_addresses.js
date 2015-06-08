@@ -49,6 +49,7 @@ define(['backbone', 'factory'], function(Backbone) {
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.updateAddress();
+            inputTypeMask(this.$('input[name=zipcode]'), /^(\d{0,9})$/, '', 'numeric');
         },
         getAddress: function() {
             var customer = this.options.customer.toJSON(),
