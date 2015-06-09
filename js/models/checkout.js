@@ -119,10 +119,10 @@ define(["backbone"], function(Backbone) {
                 err = [];
 
             if(orderFromSeat instanceof Object && dining_option === 'DINING_OPTION_DELIVERY_SEAT') {
-                orderFromSeat.enable_level && !this.get('level') && err.push('Level');
-                orderFromSeat.enable_sector && !this.get('section') && err.push('Section');
-                orderFromSeat.enable_row && !this.get('row') && err.push('Row');
-                !this.get('seat') && err.push('Seat');
+                orderFromSeat.enable_level && !this.get('level') && err.push(_loc.CHECKOUT_LEVEL);
+                orderFromSeat.enable_sector && !this.get('section') && err.push(_loc.CHECKOUT_SECTION);
+                orderFromSeat.enable_row && !this.get('row') && err.push(_loc.CHECKOUT_ROW);
+                !this.get('seat') && err.push(_loc.CHECKOUT_SEAT);
             }
 
             if(err.length) {
