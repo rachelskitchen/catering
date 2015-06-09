@@ -595,8 +595,7 @@ define(["backbone", "factory"], function(Backbone) {
         },
         loyalty: function(header, footer) {
             this.prepare('loyalty', function() {
-                var RevelAPI = App.Data.RevelAPI,
-                    request = RevelAPI.getLoyaltyPoints();
+                var RevelAPI = App.Data.RevelAPI;
 
                 App.Data.header.set('page_title', 'Loyalty');
                 App.Data.mainModel.set({
@@ -611,7 +610,7 @@ define(["backbone", "factory"], function(Backbone) {
                     }
                 });
 
-                request.then(this.change_page.bind(this));
+                this.change_page();
             });
         },
         initRevelAPI: function() {
@@ -765,8 +764,9 @@ define(["backbone", "factory"], function(Backbone) {
             }, this);
 
             function updateReward() {
-                var phone = profileCustomer.get('phone');
-                phone && rewardsCard.set('number', phone);
+                var phone = profileCustomer.get('phone'),
+                    onlyDigits = phone && phone.match(/\d+/); // parse only digits (number may be +19491112233)
+                Array.isArray(onlyDigits) && onlyDigits[0] && rewardsCard.set('number', onlyDigits[0]);
             }
         }
     });
