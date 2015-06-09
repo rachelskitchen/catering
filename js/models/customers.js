@@ -219,11 +219,11 @@ define(["backbone", "geopoint"], function(Backbone) {
                 empty = [],
                 address = this.get('addresses'),
                 req = {
-                    street_1: 'Address Line 1',
-                    city: 'City',
-                    state: 'State',
-                    province: 'Province',
-                    zipcode: 'Zip Code'
+                    street_1: _loc.CHECKOUT_ADDRESS_LINE1,
+                    city: _loc.CHECKOUT_CITY,
+                    state: _loc.CARD_STATE,
+                    province: _loc.CHECKOUT_PROVINCE,
+                    zipcode: _loc.CHECKOUT_ZIP_CODE
                 };
 
             address = address[address.length -1];
