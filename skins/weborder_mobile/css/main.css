@@ -612,3 +612,9 @@ span.cancel-input:before {
     text-decoration: underline;
     cursor: pointer;
 }
+
+/* bug18769 fix */
+#content > .content {
+    width: 100%;
+    overflow: hidden;
+}
