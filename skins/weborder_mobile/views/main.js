@@ -218,6 +218,7 @@ define(["done_view", "generator"], function(done_view) {
         var w = 640,
             h = 700,
             fsDefault = 10,
+            fsMin = 4,
             coef = 1,
             resizing = false,
             interval;
@@ -234,7 +235,13 @@ define(["done_view", "generator"], function(done_view) {
             else {
                 coef = wCoef;
             }
-            $('body').css('font-size', Math.round(fsDefault * coef));
+            
+            var fontSize = Math.round(fsDefault * coef);
+            if (fontSize < fsMin) {
+                fontSize = fsMin;
+            }
+
+            $('body').css('font-size', fontSize);
             resizing = false;
         };
 
