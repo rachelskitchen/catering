@@ -516,18 +516,9 @@ function loadCSS(name, loadModelCSS) {
     var id = typeof btoa == 'function' ? btoa(name) : encodeURIComponent(name),
         elem;
 
-    // 'load' event on the LINK element doesn't fire on:
-    //     *) Safari at least 5.1.7 (the latest version for Windows OS): Safari/534.57.2;
-    //     *) Samsung tablet GT-P5210 with Android 4.4.2: Safari/534.30;
-    //     *) Other browsers which browser installed with version less Safari/536.25 (Safari 6).
-    // More information:
-    //     1) https://bugs.webkit.org/show_bug.cgi?id=38995 - the bug in WebKit Bugzilla;
-    //     2) http://trac.webkit.org/changeset/108809 - the changeset #108809.
-    //     3) http://en.wikipedia.org/wiki/Safari_version_history - Safari version history.
-    // The web-team decided that the 'load' event on the LINK element doesn't fire on browser version less Safari/536.25 because it is not exactly known version which was fixed this browser bug but it is known approximate date.
-    var loadEventUnsupported = false,
-        safariClientBrowser = /Safari\/(\d+(.\d+)?)/.exec(window.navigator.userAgent);
-    if (safariClientBrowser && parseFloat(safariClientBrowser[1]) < 536.25) loadEventUnsupported = true;
+    // Detect 'load' event of link element is supported by browser or not.
+    // The result is kept in localStorage to skip this process in further app starts.
+    loadCSS.linkLoadEventSupported = loadCSS.linkLoadEventSupported || getData('linkLoadEventSupported', true);
 
     /**
      * Resolve current CSS file.
@@ -543,35 +534,69 @@ function loadCSS(name, loadModelCSS) {
         elem = loadCSS.cache[id];
     } else {
         elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css" type="text/css" />');
-        if (!loadEventUnsupported) {
-            // bug #18285 - no timeout for app assets
-            /**
-             * User notification.
-             */
-            var error = function() {
-                App.Data.errors.alert(ERROR[RESOURCES.CSS], true, true); // user notification
-            };
-            var timer = window.setTimeout(function() {
-                elem.remove();
-                error(); // user notification
-            }, App.Data.settings.get('timeout'));
+        // bug #18285 - no timeout for app assets
+        /**
+         * User notification.
+         */
+        var error = function() {
+            App.Data.errors.alert(ERROR[RESOURCES.CSS], true, true); // user notification
+        };
+        var timer = window.setTimeout(error, App.Data.settings.get('timeout'));
 
-            elem.on('load', function() {
-                clearTimeout(timer);
-                resolve(); // resolve current CSS file
-            });
-            elem.on('error', function() {
-                clearTimeout(timer);
-                error(); // user notification
-            });
-        }
+        elem.on('load', function() {
+            onCSSLoaded(true, resolve);
+        });
+        elem.on('error', function() {
+            onCSSLoaded(true, error);
+        });
     }
 
     if($('link[href="' + name + '.css"]').length === 0) {
         $('head').append(elem);
-        if (loadEventUnsupported || cache) resolve(); // resolve current CSS file
+        if (cache) {
+            resolve();  // resolve current CSS file
+        } else if(!loadCSS.linkLoadEventSupported) {
+            detectLinkLoadEvent(elem.get(0)); // detect when CSS is apllied to DOM
+        }
     } else {
         resolve(); // resolve current CSS file
+    }
+
+    // Some browsers don't support 'load' event for link element. Need to detect the 'load' event via JavaScript.
+    //     *) Safari at least 5.1.7 (the latest version for Windows OS): Safari/534.57.2;
+    //     *) Samsung tablet GT-P5210 with Android 4.4.2: Safari/534.30;
+    //     *) Other browsers which browser installed with version less Safari/536.25 (Safari 6).
+    //     *) PayPal android app on Samsung Galaxy S3.
+    //
+    // More information:
+    //     1) https://bugs.webkit.org/show_bug.cgi?id=38995 - the bug in WebKit Bugzilla;
+    //     2) http://trac.webkit.org/changeset/108809 - the changeset #108809.
+    //     3) http://en.wikipedia.org/wiki/Safari_version_history - Safari version history.
+    //
+    // Link href should be in the same domain as the page host. Otherwise Browser Security Policy disallows to check it and timeout will be running forever.
+    // (This restriction is acceptable for CSS links passed to loadCSS())
+    function detectLinkLoadEvent(el) {
+        // this method is discussed in http://stackoverflow.com/questions/2635814/javascript-capturing-load-event-on-link
+        try {
+            var isLoaded = (el.sheet && el.sheet.cssRules.length > 0)
+                || (el.styleSheet && el.styleSheet.cssText.length > 0)
+                || (el.innerHTML && el.innerHTML.length > 0);
+
+            // if loading CSS just been applied to DOM need to call a resolve() and stop detectLinkLoadEvent.timer
+            if(isLoaded) {
+                return onCSSLoaded(false, resolve);
+            }
+        } catch(e) {}
+
+        detectLinkLoadEvent.timer = setTimeout(detectLinkLoadEvent.bind(window, el), 100);
+    }
+
+    function onCSSLoaded(linkLoadEventSupported, cb) {
+        clearTimeout(timer);
+        clearTimeout(detectLinkLoadEvent.timer);
+        loadCSS.linkLoadEventSupported = linkLoadEventSupported;
+        setData('linkLoadEventSupported', linkLoadEventSupported, true);
+        typeof cb == 'function' && cb();
     }
 
     return elem;
