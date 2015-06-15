@@ -50,6 +50,9 @@
     height: 2.3em;
     cursor: pointer;
 }
+#content .modifier label:active {
+    background: transparent;
+}
 
 #content .modifier label.no-controls {
     cursor: default;
