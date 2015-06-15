@@ -453,9 +453,9 @@ function loadCSS(name, loadModelCSS) {
     if($('link[href="' + name + '.css"]').length === 0) {
         $('head').append(elem);
         if (cache) {
-            resolve();  // resolve current CSS file
+            detectLinkLoadEvent(elem.get(0), loadCSS.linkLoadEventSupported); // detect when CSS is applied to DOM
         } else if(!loadCSS.linkLoadEventSupported) {
-            detectLinkLoadEvent(elem.get(0)); // detect when CSS is apllied to DOM
+            detectLinkLoadEvent(elem.get(0), false); // detect when CSS is applied to DOM
         }
     } else {
         resolve(); // resolve current CSS file
@@ -474,7 +474,7 @@ function loadCSS(name, loadModelCSS) {
     //
     // Link href should be in the same domain as the page host. Otherwise Browser Security Policy disallows to check it and timeout will be running forever.
     // (This restriction is acceptable for CSS links passed to loadCSS())
-    function detectLinkLoadEvent(el) {
+    function detectLinkLoadEvent(el, linkLoadEventSupported) {
         // this method is discussed in http://stackoverflow.com/questions/2635814/javascript-capturing-load-event-on-link
         try {
             var isLoaded = (el.sheet && el.sheet.cssRules.length > 0)
@@ -483,11 +483,11 @@ function loadCSS(name, loadModelCSS) {
 
             // if loading CSS just been applied to DOM need to call a resolve() and stop detectLinkLoadEvent.timer
             if(isLoaded) {
-                return onCSSLoaded(false, resolve);
+                return onCSSLoaded(linkLoadEventSupported, resolve);
             }
         } catch(e) {}
 
-        detectLinkLoadEvent.timer = setTimeout(detectLinkLoadEvent.bind(window, el), 100);
+        detectLinkLoadEvent.timer = setTimeout(detectLinkLoadEvent.bind(window, el, linkLoadEventSupported), 100);
     }
 
     function onCSSLoaded(linkLoadEventSupported, cb) {
