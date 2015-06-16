@@ -1,10 +1,12 @@
 var tests_list = [
     // "../core/js/utest/test_Settings",
-    "../core/js/utest/test_Card",
+    // -- "../core/js/utest/test_Card",
     // "../core/js/utest/test_Categories",
     // "../core/js/utest/test_Customers",
-    "../core/js/utest/test_Filters",
-    "../core/js/utest/test_Rewards",
+    // -- "../core/js/utest/test_Filters",
+    // -- "../core/js/utest/test_Rewards",
+    // -- "../core/js/utest/test_Locale",
+    "../core/js/utest/test_Products"
 /*
     "../core/js/utest/test_Checkout",
     "../core/js/utest/test_ChildProducts",
@@ -21,7 +23,6 @@ var tests_list = [
     "../core/js/utest/test_Timetable",
     "../core/js/utest/test_Tips",
     "../core/js/utest/test_Total"*/
-    '../core/js/utest/test_Locale'
 ];
 
 //tests_list = [ "../dev/js/utest/test_Myorder" ];

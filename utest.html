@@ -1,7 +1,7 @@
 <html>
 <head>
   <script type="text/javascript" src="../core/js/libs/jquery/jquery.js"></script>
-  
+
   <link rel="shortcut icon" type="image/png" href="js/utest/jasmine/lib/jasmine2/jasmine_favicon.png">
   <link rel="stylesheet" type="text/css" href="js/utest/jasmine/lib/jasmine2/jasmine.css">
 
@@ -19,6 +19,7 @@
     <script language="javascript" type="text/javascript">
         "use strict";
         var is_browser_unsupported = false;
+        var is_minimized_version = !(/\/dev\//.test(window.location.href) || /\/core\//.test(window.location.href));
     </script>
   <script src="../core/js/libs/require.js" data-main="js/mainTest"></script>
 </head>
