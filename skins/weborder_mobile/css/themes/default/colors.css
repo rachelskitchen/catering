@@ -25,17 +25,17 @@ body {
     background-size: 100%;
 }
 #section {
-    background-image: linear-gradient(bottom, #545454 0%, #585858 45%, #696969 100%);
     background-image: -moz-linear-gradient(bottom, #545454 0%, #585858 45%, #696969 100%);
     background-image: -webkit-linear-gradient(bottom, #545454 0%, #585858 45%, #696969 100%);
     background-image: -ms-linear-gradient(bottom, #545454 0%, #585858 45%, #696969 100%);
+    background-image: linear-gradient(bottom, #545454 0%, #585858 45%, #696969 100%);
 }
 #content {
-    background-image: linear-gradient(bottom, #ececec 0%, #ececec 45%, #f2f2f2 100%);
     background-image: -moz-linear-gradient(bottom, #ececec 0%, #ececec 45%, #f2f2f2 100%);
     background-image: -webkit-linear-gradient(bottom, #ececec 0%, #ececec 45%, #f2f2f2 100%);
     background-image: -ms-linear-gradient(bottom, #ececec 0%, #ececec 45%, #f2f2f2 100%);
-    box-shadow: 0em 0.2em 0.2em 0.3em rgba(60, 167, 222, 0.2);
+    background-image: linear-gradient(bottom, #ececec 0%, #ececec 45%, #f2f2f2 100%);
+    box-shadow: 0 0.2em 0.2em 0.3em rgba(60, 167, 222, 0.2);
 }
 #content .modifiers-bottom-line:before {
     border-color: #5c5d5d;
