@@ -21,7 +21,7 @@ require(['app'], function(app) {
     // set REVEL_HOST
     //app.REVEL_HOST = window.location.origin;
     app.REVEL_HOST = 'https://weborder-dev-branch.revelup.com';
-        
+
     if(!app.REVEL_HOST)
         return alert('REVEL_HOST is undefined. Please assign it in main.js file. (Need add app.REVEL_HOST = <url>;)');
 
@@ -35,7 +35,7 @@ require(['app'], function(app) {
         // init errors object and check browser version
         var errors = App.Data.errors = new App.Models.Errors();
         window.alert_message = function(){};
-        
+
         // init settings object
         var settings = App.Data.settings = new App.Models.Settings({
             supported_skins: app.skins.available
@@ -93,15 +93,15 @@ require(['app'], function(app) {
         }
         else {
 
-            if (App.Data.devMode == true) { 
+            if (App.Data.devMode == true) {
                 //starting the tests without code coverage testing:
                 require(tests_list, function() {
                     $(window).trigger('load');
                 });
             }
-            else { 
+            else {
                 require(['jasmine_blanket'], function(blanket) {
-                    
+
                     blanket.options('debug', true);
                     blanket.options('filter', 'js');
                     blanket.options('antifilter', [ 'js/libs/', 'js/utest/' ]);
