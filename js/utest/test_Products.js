@@ -1,30 +1,24 @@
-define(['products'], function() {
-
-    var products;
-
-    $.ajax({
-        type: "GET",
-        url: "js/utest/data/Products.json",
-        dataType: "json",
-        async: false,
-        success: function(data) {
-            products = data;
-        }
-    });
+define(['products', 'js/utest/data/Products'], function(products, data) {
+    'use strict';
 
     describe("App.Models.Product", function() {
 
-        var model, def, ex, defJSON, defJSONansw, defJSON2, defJSON2answ, childJSON;
+        var model, def, defInitialized;
 
         beforeEach(function() {
+            def = deepClone(data.defaults);
+            defInitialized = deepClone(data.defaults_initialized);
+
+            spyOn(App.Data.settings, 'get_img_default').and.returnValue(defInitialized.image);
+            spyOn(App.Data.settings, 'get').and.callFake(function(key) {
+                if(key === 'img_path') {
+                    return defInitialized.img;
+                } else {
+                    return Backbone.Model.prototype.get.apply(App.Data.settings, arguments);
+                }
+            });
+
             model = new App.Models.Product();
-            def = deepClone(products.def);
-            ex = deepClone(products.ex);
-            defJSON = deepClone(products.defJSON);
-            defJSONansw = deepClone(products.defJSONansw);
-            defJSON2 = deepClone(products.defJSON2);
-            defJSON2answ = deepClone(products.defJSON2answ);
-            childJSON = deepClone(products.childJSON);
         });
 
         it('Environment', function() {
@@ -32,200 +26,565 @@ define(['products'], function() {
         });
 
         it('Create model', function() {
-            expect(model.toJSON()).toEqual(def);
+            expect(model.toJSON()).toEqual(defInitialized);
         });
 
-    //     describe('Function addJSON', function() {
+        describe('initialize()', function() {
+            var skin = App.skin;
 
-    //         it('field image not empty', function() {
-    //             spyOn(model, 'set');
-    //             model.addJSON(defJSON);
-    //             expect(model.set).toHaveBeenCalledWith(defJSON);
-    //         });
+            beforeEach(function() {
+                spyOn(model, 'listenTo');
+                spyOn(model, 'images');
+            });
 
-    //         it('field image empty', function() {
-    //             model.set('image', 'test');
-    //             model.addJSON(defJSON2);
-    //             expect(model.toJSON().image).toEqual('test');
-    //         });
+            afterEach(function() {
+                App.skin = skin;
+            });
 
-    //         it('load child products', function() {
-    //             var add = spyOn(App.Collections.ChildProducts.prototype, 'addJSON').and.returnValue(new App.Collections.ChildProducts);
-    //             model.addJSON(childJSON);
-    //             expect(add).toHaveBeenCalledWith(childJSON.child_products);
-    //             expect(model.get('child_products').__proto__).toBe(App.Collections.ChildProducts.prototype);
-    //         });
-    //     });
 
-    //     describe('Function clone', function() {
+            it('`image` is empty', function() {
+                model.initialize();
 
-    //         it('clone without child', function() {
-    //             model.addJSON(ex);
-    //             var clone = model.clone();
-    //             expect(clone.toJSON()).toEqual(ex);
-    //             expect(clone.cid).not.toBe(model.cid);
-    //             expect(clone.__proto__).toBe(model.__proto__);
-    //         });
+                generalBehavior();
+                expect(model.get('image')).toEqual(defInitialized.image);
+            });
 
-    //         it('clone child products', function() {
-    //             spyOn(App.Collections.ChildProducts.prototype, 'addJSON').and.returnValue(new App.Collections.ChildProducts);
-    //             model.addJSON(childJSON);
-    //             var clon = spyOn(model.get('child_products'), 'clone').and.returnValue(new App.Collections.ChildProducts);
-    //             var clone = model.clone();
-    //             expect(clon).toHaveBeenCalled();
-    //             expect(clone.get('child_products').__proto__).toBe(App.Collections.ChildProducts.prototype);
-    //             expect(clone.get('child_products').models).not.toBe(model.get('child_products').models);
-    //         });
-    //     });
+            it('`image` exists', function() {
+                var productWithImage = data.product_with_image;
 
-    //     describe('Function update', function() {
+                model.addJSON(_.extend({}, productWithImage));
+                model.initialize();
 
-    //         it('update without child', function() {
-    //             var clone = model.clone().addJSON(ex);
-    //             expect(model.toJSON()).toEqual(def);
-    //             expect(model.update(clone).toJSON()).toEqual(ex);
-    //         });
+                generalBehavior();
+                expect(model.get('image')).toEqual(productWithImage.image);
+            });
 
-    //         it('update with child', function() {
-    //             spyOn(App.Collections.ChildProducts.prototype, 'addJSON').and.returnValue(new App.Collections.ChildProducts);
-    //             model.addJSON(childJSON);
-    //             var update = spyOn(model.get('child_products'), 'update').and.returnValue(new App.Collections.ChildProducts);
-    //             model.update(model);
-    //             expect(update).toHaveBeenCalledWith(model.get('child_products'));
-    //         });
-    //     });
+            it('skin isn\'t RETAIL', function() {
+                App.skin = !App.Skins.RETAIL;
 
-    //     // get active product, depends on child and selected attributes
-    //     describe('Function get_product', function() {
+                model.initialize();
 
-    //         it('without child. attribute_type = 0', function() {
-    //             expect(model.get_product()).toBe(model);
-    //         });
+                generalBehavior(model);
+                expect(model.listenTo).not.toHaveBeenCalled();
+                expect(model.images).not.toHaveBeenCalled();
+            });
 
-    //         it('without child. attribute_type = 2', function() {
-    //             model.set('attribute_type', 2);
-    //             expect(model.get_product()).toBe(model);
-    //         });
+            it('skin is RETAIL', function() {
+                App.skin = App.Skins.RETAIL;
 
-    //         it('without child. attribute_type = 1', function() {
-    //             model.set('attribute_type', 1);
-    //             expect(model.get_product()).toBe(model);
-    //         });
+                model.initialize();
 
-    //         it('attribute_type = 1. get by id', function() {
-    //             // don't have model with this id
-    //             expect(model.get_product(176)).toBeNull();
+                generalBehavior();
+                expect(model.listenTo).toHaveBeenCalled();
+                expect(model.images).toHaveBeenCalled();
+            });
 
-    //             // current model with this id
-    //             model.set('id', 176);
-    //             expect(model.get_product(176)).toBe(model);
+            function generalBehavior() {
+                expect(model.get('img')).toBe(defInitialized.img);
+                expect(model.get('checked_gift_cards')).toEqual(defInitialized.checked_gift_cards);
+            }
+        });
 
-    //             // child model with this id
-    //             spyOn(App.Collections.ChildProducts.prototype, 'addJSON').and.returnValue(new App.Collections.ChildProducts);
-    //             model.addJSON(childJSON);
-    //             var obj = {};
-    //             spyOn(App.Collections.ChildProducts.prototype, 'get_product_id').and.returnValue(obj);
-    //             expect(model.get_product(176)).toBe(obj);
-    //             expect(App.Collections.ChildProducts.prototype.get_product_id).toHaveBeenCalledWith(176);
-    //         });
+        describe('addJSON(data)', function() {
+            var model;
 
-    //         it('with child. attribute_type = 1', function() {
-    //             spyOn(App.Collections.ChildProducts.prototype, 'addJSON').and.returnValue(new App.Collections.ChildProducts);
-    //             model.addJSON(childJSON);
-    //             var get = spyOn(model.get('child_products'), 'get_product').and.returnValue(new App.Models.Product);
-    //             expect(model.get_product().__proto__).toBe(App.Models.Product.prototype);
-    //             expect(get).toHaveBeenCalledWith({
-    //                 attribute_1_selected: childJSON.attribute_1_selected,
-    //                 attribute_2_selected: childJSON.attribute_2_selected,
-    //                 attribute_1_enable: childJSON.attribute_1_enable,
-    //                 attribute_2_enable: childJSON.attribute_2_enable
-    //             });
-    //         });
-    //     });
+            function generalBehavior() {
+                expect(model.checkStockAmount).toHaveBeenCalled();
+            }
 
-    //     // get active modifiers, depends on child and selected attributes
-    //     describe('Function get_modifiers', function() {
+            beforeEach(function() {
+                model = new App.Models.Product();
+                spyOn(model, 'checkStockAmount');
+                spyOn(model, 'set').and.callFake(function() {
+                    return App.Models.Product.prototype.set.apply(model, arguments);
+                });
+            });
 
-    //         it('without child. attribute_type = 0', function() {
-    //             expect(model.get_modifiers()).toBeNull();
-    //         });
+            it('data.image is empty', function() {
+                var modelData = _.clone(data.addJSON_without_image);
+                model.addJSON(_.clone(modelData));
+                expect(model.set).toHaveBeenCalledWith(_.extend({}, modelData, {image: defInitialized.image}));
+                generalBehavior();
+            });
 
-    //         it('without child. attribute_type = 2', function() {
-    //             model.set('attribute_type', 2);
-    //             expect(model.get_modifiers()).toBeNull();
-    //         });
+            it('data.image exists', function() {
+                var modelData = _.clone(data.addJSON_with_image);
+                model.addJSON(_.clone(modelData));
+                expect(model.set).toHaveBeenCalledWith(modelData);
+                generalBehavior();
+            });
 
-    //         it('without child. attribute_type = 1', function() {
-    //             model.set('attribute_type', 1);
-    //             expect(model.get_modifiers()).toBeNull();
-    //         });
+            it('data.is_gift is false', function() {
+                var modelData = _.clone(data.addJSON_is_gift_false);
+                model.addJSON(_.clone(modelData));
+                expect(model.set).toHaveBeenCalledWith(modelData);
+                generalBehavior();
+            });
 
-    //         it('with child. attribute_type = 1', function() {
-    //             spyOn(App.Collections.ChildProducts.prototype, 'addJSON').and.returnValue(new App.Collections.ChildProducts);
-    //             model.addJSON(childJSON);
-    //             var get = spyOn(model.get('child_products'), 'get_modifiers').and.returnValue(new App.Models.Product);
-    //             expect(model.get_modifiers().__proto__).toBe(App.Models.Product.prototype);
-    //             expect(get).toHaveBeenCalledWith({
-    //                 attribute_1_selected: childJSON.attribute_1_selected,
-    //                 attribute_2_selected: childJSON.attribute_2_selected,
-    //                 attribute_1_enable: childJSON.attribute_1_enable,
-    //                 attribute_2_enable: childJSON.attribute_2_enable
-    //             });
-    //         });
-    //     });
+            it('data.is_gift is true', function() {
+                var modelData = _.clone(data.addJSON_is_gift_true);
+                model.addJSON(_.clone(modelData));
+                expect(model.set).toHaveBeenCalledWith(_.extend({}, modelData, {sold_by_weight: defInitialized.sold_by_weight}));
+                generalBehavior();
+            });
 
-    //     // get enabled attributes pair
-    //     describe('Function get_attributes_list', function() {
+            it('parseInt(data.original_tax, 10) isn\'t NaN', function() {
+                var modelData = _.clone(data.addJSON_with_original_tax1);
+                model.addJSON(_.clone(modelData));
+                expect(model.set).toHaveBeenCalledWith(modelData);
 
-    //         it('get_attributes_list without child or attribute_type != 1', function() {
-    //             expect(model.get_attributes_list()).toEqual({});
-    //             model.set('attribute_type', 1);
-    //             expect(model.get_attributes_list()).toEqual({});
-    //             model.set('attribute_type', 2);
-    //             expect(model.get_attributes_list()).toEqual({});
-    //         });
+                modelData = _.clone(data.addJSON_with_original_tax2);
+                model.addJSON(_.clone(modelData));
+                expect(model.set).toHaveBeenCalledWith(modelData);
 
-    //         it('get_attributes_list with child and attribute_type = 1', function() {
-    //             spyOn(App.Collections.ChildProducts.prototype, 'addJSON').and.returnValue(new App.Collections.ChildProducts);
-    //             model.addJSON(childJSON);
-    //             var get = spyOn(model.get('child_products'), 'get_attributes_list').and.returnValue({});
-    //             expect(model.get_attributes_list()).toEqual({});
-    //             expect(get).toHaveBeenCalled();
-    //         });
+                generalBehavior();
+            });
 
-    //     });
+            it('parseInt(data.original_tax, 10) is NaN', function() {
+                var modelData = _.clone(data.addJSON_without_original_tax);
+                model.addJSON(_.clone(modelData));
+                expect(model.set).toHaveBeenCalledWith(_.extend({}, modelData, {original_tax: modelData.tax}));
+                generalBehavior();
+            });
 
-    //     // get child products
-    //     describe('Function get_child_products', function() {
+            it('data.created_date exists', function() {
+                var modelData = _.clone(data.addJSON_with_created_date);
+                model.addJSON(_.clone(modelData));
+                expect(model.set).toHaveBeenCalledWith(modelData);
+                generalBehavior();
+            });
 
-    //         var arg,
-    //             ajaxStub = function() {
-    //                 arg = arguments;
-    //             },
-    //             childAjaxJSON, addChild;
+            it('data.created_date doesn\'t exist', function() {
+                var modelData = _.clone(data.addJSON_without_created_date);
+                model.addJSON(_.clone(modelData));
+                expect(model.set).toHaveBeenCalledWith(_.extend({}, modelData, {created_date: defInitialized.created_date}));
+                generalBehavior();
+            });
 
-    //         beforeEach(function() {
-    //             childAjaxJSON = deepClone(products.childAjaxJSON);
+            it('data.attribute_type isn\'t 1 (parent product), data.child_products doesn\'t exist', function() {
+                var modelData = _.clone(data.addJSON_without_created_date);
+                model.addJSON(_.clone(modelData));
+                expect(model.get('child_products')).toBe(model.defaults.child_products);
+                generalBehavior();
+            });
 
-    //             spyOn($,'ajax').and.callFake(ajaxStub);
-    //             addChild = spyOn(App.Collections.ChildProducts.prototype, 'add_child').and.returnValue(new App.Models.ChildProduct);
-    //         });
+            it('data.attribute_type is 1 (parent product), data.child_products is array', function() {
+                var modelData = _.clone(data.addJSON_parent_with_child_products),
+                    child_products,
+                    child1,
+                    child2;
 
-    //         it('try to get child for not parent product', function() {
-    //             model.get_child_products();
-    //             expect($.ajax).not.toHaveBeenCalled();
-    //         });
+                model.addJSON(_.clone(modelData));
 
-    //         it('get child for parent product', function() {
-    //             model.set('attribute_type', 1);
-    //             model.get_child_products();
-    //             var data = {status: "OK", data: childAjaxJSON};
-    //             arg[0].success(data);
+                child_products = model.get('child_products');
+                child1 = child_products.at(0).get('product').toJSON();
+                child2 = child_products.at(1).get('product').toJSON();
 
-    //             expect(addChild.calls.count()).toBe(childAjaxJSON.length);
-    //             expect(addChild.calls.mostRecent().args[0]).toBe(childAjaxJSON[1]);
-    //         });
-    //     });
+                expect(child_products instanceof App.Collections.ChildProducts).toBe(true);
+                expect(child1).toEqual(_.extend({}, defInitialized, modelData.child_products[0].product));
+                expect(child2).toEqual(_.extend({}, defInitialized, modelData.child_products[1].product));
+                generalBehavior();
+            });
+
+            it('data.attribute_type is 1 (parent product), data.child_products is an instance of App.Collections.ChildProducts', function() {
+                var modelData = _.clone(data.addJSON_parent_with_child_products),
+                    child_products,
+                    child1,
+                    child2;
+
+                model.addJSON(_.extend({}, modelData, {child_products: new App.Collections.ChildProducts(modelData.child_products)}));
+
+                child_products = model.get('child_products');
+                child1 = child_products.at(0).get('product').toJSON();
+                child2 = child_products.at(1).get('product').toJSON();
+
+                expect(child_products instanceof App.Collections.ChildProducts).toBe(true);
+                expect(child1).toEqual(_.extend({}, defInitialized, modelData.child_products[0].product));
+                expect(child2).toEqual(_.extend({}, defInitialized, modelData.child_products[1].product));
+                generalBehavior();
+            });
+        });
+
+        describe('clone()', function() {
+            var model;
+
+            beforeEach(function() {
+                model = new App.Models.Product();
+            });
+
+            it('without child products', function() {
+                var modelData = _.clone(data.addJSON_parent_without_child_products),
+                    clone;
+
+                model.addJSON(_.clone(modelData));
+                clone = model.clone();
+
+                expect(clone).not.toEqual(model);
+                expect(clone.toJSON()).toEqual(model.toJSON());
+            });
+
+            it('with child products', function() {
+                var modelData = _.clone(data.addJSON_parent_with_child_products),
+                    modelWithoutChildProducts,
+                    cloneWithoutChildProducts,
+                    modelChild1, modelChild2,
+                    cloneChild1, cloneChild2,
+                    clone;
+
+                model.addJSON(_.clone(modelData));
+                clone = model.clone();
+
+                modelWithoutChildProducts = _.extend({}, model.toJSON(), {child_products: ''});
+                cloneWithoutChildProducts = _.extend({}, clone.toJSON(), {child_products: ''});
+                modelChild1 = model.get('child_products').at(0);
+                modelChild2 = model.get('child_products').at(1);
+                cloneChild1 = clone.get('child_products').at(0);
+                cloneChild2 = clone.get('child_products').at(1);
+
+                expect(clone).not.toEqual(model);
+                expect(cloneWithoutChildProducts).toEqual(modelWithoutChildProducts);
+                expect(clone.get('child_products')).not.toEqual(model.get('child_products'));
+                expect(cloneChild1).not.toEqual(modelChild1);
+                expect(cloneChild1.get('product')).not.toEqual(modelChild1.get('product'));
+                expect(cloneChild1.get('product').toJSON()).toEqual(modelChild1.get('product').toJSON());
+                expect(cloneChild2).not.toEqual(modelChild2);
+                expect(cloneChild2.get('product')).not.toEqual(modelChild2.get('product'));
+                expect(cloneChild2.get('product').toJSON()).toEqual(modelChild2.get('product').toJSON());
+            });
+        });
+
+        describe('update()', function() {
+            var model;
+
+            function updateWithProducts(model) {
+                var modelData = _.clone(data.addJSON_parent_with_child_products),
+                    clone = model.clone(),
+                    initModel = model,
+                    modelWithoutChildProducts,
+                    modelChild1, modelChild2;
+
+                clone.addJSON(_.clone(modelData));
+                model.update(clone);
+
+                modelWithoutChildProducts = _.extend({}, model.toJSON(), {child_products: null});
+                modelChild1 = model.get('child_products').at(0).get('product').toJSON();
+                modelChild2 = model.get('child_products').at(1).get('product').toJSON();
+
+                expect(model).toBe(initModel);
+                expect(modelWithoutChildProducts).toEqual(_.extend({}, defInitialized, modelData, {child_products: null}));
+                expect(modelChild1).toEqual(_.extend({}, defInitialized, modelData.child_products[0].product));
+                expect(modelChild2).toEqual(_.extend({}, defInitialized, modelData.child_products[1].product));
+            }
+
+            beforeEach(function() {
+                model = new App.Models.Product();
+            });
+
+            it('without child products', function() {
+                var modelData = _.clone(data.addJSON_parent_without_child_products),
+                    clone = model.clone(),
+                    initModel = model;
+
+                clone.addJSON(_.clone(modelData));
+                model.update(clone);
+
+                expect(model).toBe(initModel);
+                expect(model.toJSON()).toEqual(_.extend({}, defInitialized, modelData));
+            });
+
+            it('with child products, own `child_products` is null', function() {
+                var initChildProducts = model.get('child_products');
+                updateWithProducts(model);
+                expect(model.get('child_products')).not.toBe(initChildProducts);
+            });
+
+            it('with child products, own `child_products` is an instance of App.Collections.ChildProducts', function() {
+                var initChildProducts = new App.Collections.ChildProducts();
+                model.set('child_products', initChildProducts);
+                updateWithProducts(model);
+                expect(model.get('child_products')).toBe(initChildProducts);
+            });
+        });
+
+        describe('get_product(id)', function() {
+            var model, id;
+
+            beforeEach(function() {
+                model = new App.Models.Product();
+                id = 1;
+            });
+
+            it('id is passed, equal model.get("id")', function() {
+                model.set('id', id);
+                expect(model.get_product(id)).toBe(model);
+            });
+
+            it('id is passed, not equal model.get("id"); `child_products` is null', function() {
+                expect(model.get_product(id)).toBe(model.defaults.child_products);
+            });
+
+            it('id is passed, not equal model.get("id"); `child_products` exists', function() {
+                model.addJSON(_.clone(data.addJSON_parent_with_child_products));
+                var children = model.get('child_products');
+                spyOn(children, 'get_product_id');
+                model.get_product(id);
+
+                expect(children.get_product_id).toHaveBeenCalledWith(id);
+            });
+
+            it('id is undefined, `attribute_type` is 0 (usual product)', function() {
+                model.set('attribute_type', 0);
+                expect(model.get_product()).toBe(model);
+            });
+
+            it('id is undefined, `attribute_type` is 2 (child product)', function() {
+                model.set('attribute_type', 2);
+                expect(model.get_product()).toBe(model);
+            });
+
+            it('id is undefined, `attribute_type` is 1 (parent product), `child_products` is null', function() {
+                model.set('attribute_type', 1);
+                expect(model.get_product()).toBe(model);
+            });
+
+            it('id is undefined, `attribute_type` is 1 (parent product), `child_products` is assigned, selected child exists', function() {
+                var attrs = _.clone(data.get_product_attributes),
+                    child = 2,
+                    children;
+
+                model.addJSON(_.clone(data.addJSON_parent_with_child_products));
+                model.set(attrs);
+
+                children = model.get('child_products');
+                spyOn(children, 'get_product').and.callFake(function() {
+                    return child;
+                });
+
+                model.get_product();
+
+                expect(children.get_product).toHaveBeenCalledWith(attrs);
+                expect(model.get_product()).toBe(child);
+            });
+
+            it('id is undefined, `attribute_type` is 1 (parent product), `child_products` is assigned, selected child doesn\'t exist', function() {
+                var attrs = _.clone(data.get_product_attributes),
+                    children;
+
+                model.addJSON(_.clone(data.addJSON_parent_with_child_products));
+                model.set(attrs);
+
+                children = model.get('child_products');
+                spyOn(children, 'get_product').and.callFake(function() {
+                    return null;
+                });
+
+                model.get_product();
+
+                expect(children.get_product).toHaveBeenCalledWith(attrs);
+                expect(model.get_product()).toBe(model);
+            });
+        });
+
+        describe('get_modifiers()', function() {
+            var model;
+
+            beforeEach(function() {
+                model = new App.Models.Product();
+            });
+
+            it('`attribute_type` is 0 (usual product)', function() {
+                expect(model.get_modifiers()).toBeNull();
+            });
+
+            it('`attribute_type` is 2 (child product)', function() {
+                model.set('attribute_type', 2);
+                expect(model.get_modifiers()).toBeNull();
+            });
+
+            it('`attribute_type` = 1 (parent product), `child_products` is null (without children)', function() {
+                model.set('attribute_type', 1);
+                expect(model.get_modifiers()).toBeNull();
+            });
+
+            it('`attribute_type` = 1, `child_products` exists (with children)', function() {
+                var attrs = _.clone(data.get_product_attributes),
+                    children;
+
+                model.addJSON(_.clone(data.addJSON_parent_with_child_products));
+                model.set(attrs);
+
+                children = model.get('child_products');
+                spyOn(children, 'get_modifiers');
+                model.get_modifiers();
+
+                expect(children.get_modifiers).toHaveBeenCalledWith(attrs);
+            });
+        });
+
+        describe('get_attributes_list()', function() {
+            var model, defaultList;
+
+            beforeEach(function() {
+                model = new App.Models.Product();
+                defaultList = {};
+            });
+
+            it('`attribute_type` is 0 (usual product)', function() {
+                expect(model.get_attributes_list()).toEqual(defaultList);
+            });
+
+            it('`attribute_type` is 2 (child product)', function() {
+                model.set('attribute_type', 2);
+                expect(model.get_attributes_list()).toEqual(defaultList);
+            });
+
+            it('`attribute_type` = 1 (parent product), `child_products` is null (without children)', function() {
+                model.set('attribute_type', 1);
+                expect(model.get_attributes_list()).toEqual(defaultList);
+            });
+
+            it('`attribute_type` = 1, `child_products` exists (with children)', function() {
+                model.addJSON(_.clone(data.addJSON_parent_with_child_products));
+
+                var children = model.get('child_products');
+                spyOn(children, 'get_attributes_list');
+                model.get_attributes_list();
+
+                expect(children.get_attributes_list).toHaveBeenCalledWith();
+            });
+        });
+
+        describe('get_attribute(type)', function() {
+            var model;
+
+            beforeEach(function() {
+                model = new App.Models.Product();
+            });
+
+            it('type is neither 1 nor 2', function() {
+                spyOn(model, 'get');
+                model.get_attribute();
+                expect(model.get).toHaveBeenCalledWith('attribute_1_enable');
+            });
+
+            it('type is 1 or 2, attribute is disabled', function() {
+                spyOn(model, 'get_attributes_list');
+
+                model.set('attribute_1_enable', false);
+                model.get_attribute(1);
+                expect(model.get_attributes_list).not.toHaveBeenCalled();
+
+                model.set('attribute_2_enable', false);
+                model.get_attribute(2);
+                expect(model.get_attributes_list).not.toHaveBeenCalled();
+            });
+
+            it('type is 1 or 2, attribute is enabled', function() {
+                var data1 = _.clone(data.get_attribute_1_data),
+                    data2 = _.clone(data.get_attribute_2_data),
+                    value1 = 1,
+                    value2 = 2;
+
+                spyOn(model, 'get_attributes_list').and.callFake(function() {
+                    var res = {
+                        attribute_1_all: {},
+                        attribute_2_all: {}
+                    };
+                    res.attribute_1_all[data1.attribute_1_selected] = value1;
+                    res.attribute_2_all[data2.attribute_2_selected] = value2;
+                    return res;
+                });
+
+                model.set(data1);
+                model.set(data2);
+
+                expect(model.get_attribute(1)).toEqual({
+                    name: data1.attribute_1_name,
+                    value: value1,
+                    selected: data1.attribute_1_selected
+                });
+
+                expect(model.get_attribute(2)).toEqual({
+                    name: data2.attribute_2_name,
+                    value: value2,
+                    selected: data2.attribute_2_selected
+                });
+            });
+        });
+
+        describe('get_attributes()', function() {
+            var model;
+
+            beforeEach(function() {
+                model = new App.Models.Product();
+                model.set(_.extend({}, data.get_attribute_1_data, data.get_attribute_2_data));
+                spyOn(model, 'get_attribute').and.callFake(function(type) {
+                    return model.get('attribute_' + type + '_enable') ? type : false;
+                });
+            });
+
+            it('attribute1 is selected, attribute2 is unselected', function() {
+                model.set('attribute_2_enable', false);
+
+                expect(model.get_attributes()).toEqual([1])
+                expect(model.get_attribute).toHaveBeenCalledWith(1);
+                expect(model.get_attribute).toHaveBeenCalledWith(2);
+            });
+
+            it('attribute1 is unselected, attribute2 is selected', function() {
+                model.set('attribute_1_enable', false);
+
+                expect(model.get_attributes()).toEqual([2]);
+                expect(model.get_attribute).toHaveBeenCalledWith(1);
+                expect(model.get_attribute).toHaveBeenCalledWith(2);
+            });
+
+            it('attribute1 is selected, attribute2 is selected', function() {
+                expect(model.get_attributes()).toEqual([1, 2]);
+                expect(model.get_attribute).toHaveBeenCalledWith(1);
+                expect(model.get_attribute).toHaveBeenCalledWith(2);
+            });
+
+            it('attribute1 is unselected, attribute2 is unselected', function() {
+                model.set({
+                    attribute_1_enable: false,
+                    attribute_2_enable: false
+                });
+                expect(model.get_attributes()).toBe(undefined);
+                expect(model.get_attribute).toHaveBeenCalledWith(1);
+                expect(model.get_attribute).toHaveBeenCalledWith(2);
+            });
+        });
+
+        // describe('get_child_products()', function() {
+        //     var arg,
+        //         ajaxStub = function() {
+        //             arg = arguments;
+        //         },
+        //         childAjaxJSON, addChild;
+
+        //     beforeEach(function() {
+        //         childAjaxJSON = deepClone(products.childAjaxJSON);
+
+        //         spyOn($,'ajax').and.callFake(ajaxStub);
+        //         addChild = spyOn(App.Collections.ChildProducts.prototype, 'add_child').and.returnValue(new App.Models.ChildProduct);
+        //     });
+
+        //     it('try to get child for not parent product', function() {
+        //         model.get_child_products();
+        //         expect($.ajax).not.toHaveBeenCalled();
+        //     });
+
+        //     it('get child for parent product', function() {
+        //         model.set('attribute_type', 1);
+        //         model.get_child_products();
+        //         var data = {status: "OK", data: childAjaxJSON};
+        //         arg[0].success(data);
+
+        //         expect(addChild.calls.count()).toBe(childAjaxJSON.length);
+        //         expect(addChild.calls.mostRecent().args[0]).toBe(childAjaxJSON[1]);
+        //     });
+        // });
 
 
 
