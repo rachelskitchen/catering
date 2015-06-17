@@ -162,9 +162,12 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
                 $('.ios-safari-caret:hidden', data).each(function() {
                     var field = $(this),
                         fieldTop = field.parent().offset().top,
-                        fieldHeight = field.height();
+                        fieldHeight = field.height(),
+                        fieldFontSize = parseFloat(field.css('font-size')),
+                        fieldCaretTop = fieldTop + (fieldHeight - fieldFontSize) / 2,
+                        fieldCaretBottom = fieldTop + (fieldHeight - (fieldHeight - fieldFontSize) / 2);
 
-                    if(dataTop < fieldTop + fieldHeight && dataTop + dataHeight > fieldTop)
+                    if (dataTop < fieldTop + (fieldCaretBottom - fieldTop) && dataTop + dataHeight > fieldCaretTop)
                         field.show();
                 });
 
@@ -172,9 +175,12 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
                 $('.ios-safari-caret:focus:visible', data).each(function() {
                     var field = $(this),
                         fieldTop = field.parent().offset().top,
-                        fieldHeight = field.height();
+                        fieldHeight = field.height(),
+                        fieldFontSize = parseFloat(field.css('font-size')),
+                        fieldCaretTop = fieldTop + (fieldHeight - fieldFontSize) / 2,
+                        fieldCaretBottom = fieldTop + (fieldHeight - (fieldHeight - fieldFontSize) / 2);
 
-                    if(dataTop > fieldTop + fieldHeight / 2 || dataTop + dataHeight < fieldTop)
+                    if (dataTop >= fieldTop + (fieldCaretBottom - fieldTop) || dataTop + dataHeight <= fieldCaretTop)
                         field.hide();
                 });
             });
