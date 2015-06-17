@@ -5,7 +5,7 @@ var tests_list = [
     // "../core/js/utest/test_Customers",
     // -- "../core/js/utest/test_Filters",
     // -- "../core/js/utest/test_Rewards",
-    // -- "../core/js/utest/test_Locale",
+    "../core/js/utest/test_Locale",
     "../core/js/utest/test_Products"
 /*
     "../core/js/utest/test_Checkout",
