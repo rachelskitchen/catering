@@ -90,7 +90,7 @@ define(["backbone", 'products', 'modifiers'], function(Backbone) {
             var self = this;
 
             this.length = 0;
-            data && data.forEach(function(element) {
+            Array.isArray(data) && data.forEach(function(element) {
                 var add = new App.Models.ChildProduct();
                 add.addJSON(element);
                 self.add(add);
