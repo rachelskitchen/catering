@@ -157,6 +157,11 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             original_tax: null, // used to save origin tax rate to restore in Retail mode
             timetables: null
         },
+        /**
+         * @method
+         * Sets `img` as App.Data.settings.get("img_path"), `checked_gift_cards` as {}, default image (if `image` attribute is empty), `original_tax`.
+         * Converts `created_date` to milliseconds.
+         */
         initialize: function() {
             this.set({
                 img: App.Data.settings.get("img_path"),
@@ -176,7 +181,12 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
         },
         /**
          * @method
-         * Sets a passed data as own attributes, an default image, original tax, children products and checks stock amount.
+         * Sets a passed data as own attributes.
+         * Handles special cases for the following attributes:
+         *  - `image`: if data.image is empty changes `image` value on App.Data.settings.get_img_default() result.
+         *  - `is_gift`: if data.is_gift is true changes `sold_by_weight` value on false.
+         *  - `original_tax`: if data.original_tax cannot be converted to integer changes `original_tax` value on data.tax.
+         *  - `created_date`: converts `created_date` value to milliseconds.
          *
          * @param {object} data - literal object containing product data.
          *
@@ -193,6 +203,11 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                 data.original_tax = data.tax;
 
             data.created_date = new Date(data.created_date).valueOf();
+
+            if(isNaN(data.created_date)) {
+                data.created_date = 0;
+            }
+
             this.set(data);
             if (data.attribute_type === 1 && data.child_products) {
                 var children = new App.Collections.ChildProducts();
@@ -220,7 +235,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
         },
         /**
          * @method
-         * Updates the model.
+         * Updates the model. Keep in mind it doesn't handle special cases for `is_gift`, `original_tax`, `created_date` attributes like addJSON() method.
          *
          * @param {App.Models.Product} newProduct - product model.
          *
@@ -228,8 +243,15 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
          */
         update: function(newProduct) {
             for(var key in newProduct.attributes) {
-                var value = newProduct.get(key);
-                if (value && value.update) { this.get(key).update(value); }
+                var value = newProduct.get(key),
+                    valueConstructor;
+                if (value && value.update) {
+                    valueConstructor = Object.getPrototypeOf(value).constructor;
+                    if(!(this.get(key) instanceof valueConstructor)) {
+                        this.set(key, new valueConstructor(), {silent: true});
+                    }
+                    this.get(key).update(value);
+                }
                 else { this.set(key, value, {silent: true}); }
             }
             return this;
