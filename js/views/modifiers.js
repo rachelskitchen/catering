@@ -54,6 +54,10 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             model.name = this.model.escape('name');
             model.modifierClassName = this.options.modifierClass.escape('name').replace(/ /g,'_');
 
+            var is_split_selector = App.Settings.enable_split_modifiers ||  model.isSize || model.isSpecial;
+            var is_quantity_selector = App.Settings.enable_quantity_modifiers ||  model.isSize || model.isSpecial;
+            model.mdf_width = is_split_selector * 55 + is_quantity_selector * 55;
+
             if (model.isSpecial) {
                 this.model.set('selected', false);
             }
