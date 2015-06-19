@@ -271,7 +271,7 @@
 <script type="text/template" id="checkout_discount_code-template">
     <label class="discount-label"> <span class="clip"> <%= _lp.CHECKOUT_DISCOUNT_CODE %>: </span> </label>
     <div class="input_beauty discount-code-input">
-        <input type="text" name="discount_code" class="<% if (iPad) print('ipad'); %>" value="<%= discount_code %>">
+        <input type="text" name="discount_code" class="ios-safari-caret <% if (iPad) print('ipad'); %>" value="<%= discount_code %>">
     </div>
     <span class="btnApply discount-code-btn clip"> <%= _lp.CHECKOUT_DISC_CODE_APPLY %> </span>
 </script>

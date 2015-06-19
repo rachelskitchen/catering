@@ -20,13 +20,15 @@
         <span class="free">(<span class="value"></span>)</span>
         <% } %>
     </label>
-        <span class='mdf_split select-wrapper'>
+    <div class="mdf_spacer" style="width: <%= mdf_width %>px">
+        <span class='mdf_split select-wrapper' style="display:none;">
             <div class="selected_option"></div>
             <select></select>
         </span>
-        <span class='mdf_quantity select-wrapper'>
+        <span class='mdf_quantity select-wrapper' style="display:none;">
             <select></select>
         </span>
+    </div>
 </script>
 
 <script type="text/template" id="modifiers_list-template">

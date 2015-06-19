@@ -40,7 +40,7 @@
                 <% if (is_gift && not_size && _settings.online_orders) { %>
                     <span class='currency_symbol gift_card_symbol' ><%=currency_symbol%></span>
                     <div class="input_beauty border2">
-                        <input type="text" id="price" name="gift_card_price" value='<%= price %>' class="gift_card_price price" />
+                        <input type="text" id="price" name="gift_card_price" value="<%= price %>" class="ios-safari-caret gift_card_price price">
                     </div>
                 <% } else { %>
                     <span class="currency_symbol"><%= currency_symbol %></span>

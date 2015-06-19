@@ -173,6 +173,10 @@
     padding-left: 8px;
 }
 
+.mdf_spacer {
+    display: inline-block;
+}
+
 .mdf_split select {
     padding-right: 28px !important;
     padding-left: 22px !important;

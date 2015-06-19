@@ -25,9 +25,9 @@
                 <dd class="current_establishment">
                     <a class="change_establishment" href="javascript: void(0);"> <%= _lp.STORE_INFO_CHANGE_STORE %> </a>
                 </dd>
-                
+
                 <% delivery_for_online_orders = true; %>
-                
+
                 <% if(delivery_for_online_orders) { %>
                     <dt class="clip"> <%= _lp.STORE_INFO_DELIVERY %> </dt>
                     <dd>
@@ -51,9 +51,9 @@
                         <%= _lp.STORE_INFO_ASAP %>
                     <% } %>
                     </dd>
-                    
+
                     <% delivery_geojson_enabled = false; %>
-                    
+
                     <% if(delivery_post_code_lookup_enabled) { %>
                         <dt class="clip"> <%= _lp.STORE_INFO_DELIVERY_AREA %> </dt>
                         <dd><%= delivery_post_codes %></dd>
