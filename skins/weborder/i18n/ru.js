@@ -108,6 +108,7 @@
         'PRODUCTS_PRICE':                  'Цена',
         'PRODUCTS_AVAILABLE':              'Доступно',
         'PRODUCTS_GIFT_CARD':              '№ подарочной карты',
+        'PRODUCTS_GIFT_CARD_NUMBER':       '№ подарочной карты',
         'QUANTITY_HOW_MANY':               'Количество',
         'QUANTITY_ENTER_WEIGHT':           'Вес',
         'STORE_INFO_NO_INFORMATION':       'Нет информации',

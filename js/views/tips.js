@@ -44,9 +44,14 @@ define(["backbone", "factory"], function(Backbone) {
             model.isFirefox = /firefox/i.test(navigator.userAgent);
             model.tip_allow = App.Data.settings.get('settings_system').accept_tips_online === true;
             this.$el.html(this.template(model));
+            var tipAmount = this.$('.tipAmount');
             // because some devices have problem with numeric keypad - don't have '.', ',' symbols (bug 11032) -> use 'float' type:
-            inputTypeMask(this.$('.tipAmount'), new RegExp(this.tipAmountRegStr), '0.00', 'float');
+            inputTypeMask(tipAmount, new RegExp(this.tipAmountRegStr), '0.00', 'float');
             this.setBtnSelected(model.type ? (model.amount ? model.percent : "Other") : "None");
+            if (model.type && !model.amount) {
+                tipAmount.focus();
+                this.moveCursorToTheEnd(tipAmount[0]);
+            }
             return this;
         },
         events: {
@@ -90,6 +95,14 @@ define(["backbone", "factory"], function(Backbone) {
             // Also need restore previos (or 0.00 if it was unset) value if new value is '.'.
             if(!pattern.test(newAmount)) {
                 amount.val(round_monetary_currency(this.model.get('sum')));
+            }
+        },
+        moveCursorToTheEnd: function(input) {
+            try {
+                input.selectionStart = input.selectionEnd = input.value.length;
+            } catch (ex) {
+                // Chrome does not support selection for input element's type 'number'
+                input.value = input.value;
             }
         }
     });

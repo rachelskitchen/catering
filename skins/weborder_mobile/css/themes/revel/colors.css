@@ -22,7 +22,7 @@ body {
 }
 #content {
     background: #fff;
-    box-shadow: 0em 0.2em 0.2em 0.2em rgba(50, 50, 50, 0.2);
+    box-shadow: 0 0.2em 0.2em 0.2em rgba(50, 50, 50, 0.2);
 }
 .modifiers-bottom-line:before {
     border-color: #2699ca;

@@ -162,20 +162,54 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
                 $('.ios-safari-caret:hidden', data).each(function() {
                     var field = $(this),
                         fieldTop = field.parent().offset().top,
-                        fieldHeight = field.height();
+                        fieldHeight = field.height(),
+                        fieldTagName = field.prop('tagName');
 
-                    if(dataTop < fieldTop + fieldHeight && dataTop + dataHeight > fieldTop)
-                        field.show();
+                    switch (fieldTagName) {
+                        case 'INPUT':
+                            var fieldLineHeight = parseFloat(field.css('line-height')),
+                                fieldFontSize = parseFloat(field.css('font-size')),
+                                fieldFontSize = (!isNaN(fieldLineHeight) && fieldLineHeight > fieldFontSize) ? fieldLineHeight : fieldFontSize,
+                                fieldTopIndent = parseFloat(field.css('margin-top')) + parseFloat(field.css('border-top-width')) + parseFloat(field.css('padding-top')),
+                                fieldCaretPaddingTop = (fieldHeight - fieldFontSize) / 2,
+                                fieldCaretTop = fieldTop + fieldTopIndent + fieldCaretPaddingTop,
+                                fieldCaretBottom = fieldTop + fieldTopIndent + (fieldHeight - fieldCaretPaddingTop);
+
+                            if (dataTop < fieldTop + (fieldCaretBottom - fieldTop) && dataTop + dataHeight > fieldCaretTop)
+                                field.show();
+                            break;
+                        case 'TEXTAREA':
+                            if (dataTop < fieldTop + fieldHeight && dataTop + dataHeight > fieldTop)
+                                field.show();
+                            break;
+                    }
                 });
 
                 // if input is in focus and outside of visible area it should be hidden
                 $('.ios-safari-caret:focus:visible', data).each(function() {
                     var field = $(this),
                         fieldTop = field.parent().offset().top,
-                        fieldHeight = field.height();
+                        fieldHeight = field.height(),
+                        fieldTagName = field.prop('tagName');
 
-                    if(dataTop > fieldTop + fieldHeight / 2 || dataTop + dataHeight < fieldTop)
-                        field.hide();
+                    switch (fieldTagName) {
+                        case 'INPUT':
+                            var fieldLineHeight = parseFloat(field.css('line-height')),
+                                fieldFontSize = parseFloat(field.css('font-size')),
+                                fieldFontSize = (!isNaN(fieldLineHeight) && fieldLineHeight > fieldFontSize) ? fieldLineHeight : fieldFontSize,
+                                fieldTopIndent = parseFloat(field.css('margin-top')) + parseFloat(field.css('border-top-width')) + parseFloat(field.css('padding-top')),
+                                fieldCaretPaddingTop = (fieldHeight - fieldFontSize) / 2,
+                                fieldCaretTop = fieldTop + fieldTopIndent + fieldCaretPaddingTop,
+                                fieldCaretBottom = fieldTop + fieldTopIndent + (fieldHeight - fieldCaretPaddingTop);
+
+                            if (dataTop >= fieldTop + (fieldCaretBottom - fieldTop) || dataTop + dataHeight <= fieldCaretTop)
+                                field.hide();
+                            break;
+                        case 'TEXTAREA':
+                            if (dataTop > fieldTop + fieldHeight / 2 || dataTop + dataHeight < fieldTop)
+                                field.hide();
+                            break;
+                    }
                 });
             });
         },

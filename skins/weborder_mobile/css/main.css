@@ -125,8 +125,7 @@ img[src=''] {
     bottom: 0.8em;
     right: 0.8em;
     z-index: 10;
-    overflow-x: hidden;
-    overflow-y: hidden;
+    overflow: hidden;
 }
 
 #content {

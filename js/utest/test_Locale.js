@@ -10,7 +10,7 @@ define(['locale'], function() {
         });
 
         it('Environment', function() {
-            expect(App.Models.Card).toBeDefined();
+            expect(App.Models.Locale).toBeDefined();
         });
 
         it('Create model', function() {
