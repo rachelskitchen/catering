@@ -362,6 +362,7 @@
             'STORE_IS_CLOSED':             'Ошибка: магазин закрыт',
             'BLOCK_STORE_IS_CLOSED':       'Извините, ваш заказ не может быть обработан, т.к. магазин закрыт',
             'FORCED_MODIFIER':             'Выберите по крайней мере | %d модификатор(ов) в %s',
+            'FORCED_MODIFIER_MAX':         'Выбирите не более чем | %d модификатора(ов) в %s',
             'SELECT_SIZE_MODIFIER':        'Выберите размер',
             'SELECT_PRODUCT_ATTRIBUTES':   'Выберите все атрибуты',
             'BLOCK_WEIGHT_IS_NOT_VALID':   'Вес продукта не установлен или нулевой',
