@@ -244,7 +244,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 dining_option = this.collection ? this.collection.checkout.get('dining_option') : '',
                 isDelivery = dining_option == 'DINING_OPTION_DELIVERY',
 
-                forced = modifiers.checkForced();
+                forced = modifiers.checkForced(),
+                exceeded = modifiers.checkForcedMax();
 
             if (product.get("sold_by_weight") && !this.get("weight")) {
                 return {
@@ -269,14 +270,21 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
 
             if (size || size === undefined) {
                 if(Array.isArray(forced)) {
+                    return format_error(forced, 'min');
+                }
+                if(Array.isArray(exceeded)) {
+                    return format_error(exceeded, 'max');
+                }
+                function format_error (error_mdfs, min_max) {
                     return {
                         status: 'ERROR',
                         errorMsg: function() {
-                            var tmpl = ERROR.FORCED_MODIFIER.split('|');
-                            return tmpl[0].trim() + ' ' + forced.map(function(modifier) {
-                                var minAmount = modifier.get('minimum_amount'),
+                            var tmpl = min_max == 'min' ? ERROR.FORCED_MODIFIER : ERROR.FORCED_MODIFIER_MAX;
+                                tmpl = tmpl.split('|');
+                            return tmpl[0].trim() + ' ' + error_mdfs.map(function(modifier) {
+                                var Amount = modifier.get(min_max == 'min' ?  'minimum_amount' : 'maximum_amount'),
                                     modifierClass = modifier.get('name'),
-                                    msg = tmpl[1].replace('%d', minAmount).replace('%s', '&lsquo;' + modifierClass + '&rsquo;');
+                                    msg = tmpl[1].replace('%d', Amount).replace('%s', '&lsquo;' + modifierClass + '&rsquo;');
                                 return msg;
                             }).join(', ')
                         }()
