@@ -43,7 +43,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             this.listenTo(this.model, 'change:free_amount', this.update_free, this);
         },
         render: function() {
-            var model = this.model.toJSON();
+            var model = this.model.toJSON(),
+                modifierBlock = this.options.modifierClass;
             model.type = this.options.type === SIZE || this.options.type === SPECIAL ? 'radio' : 'checkbox';
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
             model.price = round_monetary_currency(model.price);
@@ -52,7 +53,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             model.isInventoryMatrix = false;
             model.isSize = this.options.type === SIZE;
             model.name = this.model.escape('name');
-            model.modifierClassName = this.options.modifierClass.escape('name').replace(/ /g,'_');
+            model.modifierClassName = modifierBlock.escape('name').replace(/ /g,'_');
 
             if (model.isSpecial) {
                 this.model.set('selected', false);
@@ -60,11 +61,24 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
 
             this.$el.html(this.template(model));
 
-            var option_el,
-                mdf_qauntity_el = this.$(".mdf_quantity select");
-            for (var i=1; i <= 5; i++) {
+            var option_el, max_quantity,
+                maximum_amount = modifierBlock.get("maximum_amount"),
+                mdf_quantity_el = this.$(".mdf_quantity select");
+                
+            if (!maximum_amount) {
+                max_quantity = 5; //default value
+            }
+            else {
+                if (App.Settings.enable_split_modifiers) {
+                    max_quantity = maximum_amount * 2;
+                }
+                else {
+                    max_quantity = maximum_amount;
+                }
+            }
+            for (var i=1; i <= max_quantity; i++) {
                 option_el = $('<option>').val(i).text("x" + i);
-                mdf_qauntity_el.append(option_el);
+                mdf_quantity_el.append(option_el);
             }
 
             var mdf_split_el = this.$(".mdf_split select");
@@ -103,7 +117,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                     this.model.set('selected', checked);
                 }
             } else {
-                if(checked && maximumAmount > 0 && modifierBlock.get('modifiers').where({selected: true}).length >= maximumAmount) {
+                if(checked && maximumAmount > 0 && modifierBlock.get('modifiers').get_selected_qty() >= maximumAmount) {
                     return el.prop('checked', false);
                 }
                 this.model.set('selected', checked);
@@ -390,7 +404,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             var checked = this.subViews[0].$el.find('input:checked').parent(),
                 unchecked = this.subViews[0].$el.find('input:not(:checked)').parent(),
                 maximumAmount = this.model.get('maximum_amount');
-            if(!this.type && maximumAmount > 0 && this.model.get('modifiers').where({selected: true}).length >= maximumAmount) {
+            if(!this.type && maximumAmount > 0 && this.model.get('modifiers').get_selected_qty() >= maximumAmount) {
                 checked.fadeTo(100, 1);
                 checked.removeClass('fade-out');
                 unchecked.fadeTo(100, 0.5);

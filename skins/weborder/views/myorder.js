@@ -99,29 +99,7 @@ define(["myorder_view"], function(myorder_view) {
             } else {
                 App.Data.errors.alert(check.errorMsg); // user notification
             }
-        },
-        check: function () {
-            var check = this.model.check_order(),
-                self = this;
-
-            if (check.status === 'OK') {
-                this.model.get_product().check_gift(function() {
-                    if (self.options.action === 'add') {
-                        App.Data.myorder.add(self.model);
-                    } else {
-                        var index = App.Data.myorder.indexOf(self.model) - 1;
-                        App.Data.myorder.remove(self.options.real);
-                        App.Data.myorder.add(self.model, {at: index});
-                    }
-
-                    $('#popup .cancel').trigger('click');
-                }, function(errorMsg) {
-                    App.Data.errors.alert(errorMsg); // user notification
-                });
-            } else {
-                App.Data.errors.alert(check.errorMsg); // user notification
-            }
-        },
+        },       
         change_height: function(e) {
             var prev_height = this.prev_height || 0,
                 inner_height = $('#popup').outerHeight(),

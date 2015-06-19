@@ -159,6 +159,17 @@ define(["backbone"], function(Backbone) {
             });
             return sum;
         },
+        /*
+        *
+        *  get selected modifiers quantity
+        */
+        get_selected_qty: function() {
+            var qty = 0;
+            this.where({selected: true}).forEach(function(modifier) {
+                qty += modifier.get("quantity") * modifier.half_price_koeff();
+            });
+            return qty;
+        },
         /**
          * prepare information for submit order
          */
@@ -695,12 +706,30 @@ define(["backbone"], function(Backbone) {
          */
         checkForced: function() {
             var unselected = this.where({forced: true}).filter(function(modifierBlock) {
-                var selected = modifierBlock.get('modifiers').where({selected: true}),
-                    minimumAmount = modifierBlock.get('minimum_amount');
-                return selected.length >= minimumAmount ? false : true;
+                var minimumAmount = modifierBlock.get('minimum_amount'),
+                    qty = modifierBlock.get('modifiers').get_selected_qty();
+
+                return qty >= minimumAmount ? false : true;
             });
 
             return unselected.length > 0 ? unselected : true;
+        },
+         /**
+         *
+         * return array with selected force modifiers with qty > then maximum
+         */
+        checkForcedMax: function() {
+            var exceeded = this.where({forced: true}).filter(function(modifierBlock) {
+                var maxAmount = modifierBlock.get('maximum_amount');
+
+                if (maxAmount == null || maxAmount == undefined)
+                    return false;
+
+                var qty = modifierBlock.get('modifiers').get_selected_qty();                
+                return qty > maxAmount ? true : false;
+            });
+
+            return exceeded.length > 0 ? exceeded : true;
         },
         /**
          * unselect all special modifiers

@@ -358,6 +358,7 @@
             'STORE_IS_CLOSED':             'Error: Store is closed',
             'BLOCK_STORE_IS_CLOSED':       'We\'re sorry, your order cannot be processed because the store is closed',
             'FORCED_MODIFIER':             'Please select at least | %d modifier(s) in %s',
+            'FORCED_MODIFIER_MAX':         'Please select no more than | %d modifier(s) in %s',
             'SELECT_SIZE_MODIFIER':        'Select a size please',
             'SELECT_PRODUCT_ATTRIBUTES':   'Please select all attributes',
             'BLOCK_WEIGHT_IS_NOT_VALID':   'The product weight is not set or zero',
