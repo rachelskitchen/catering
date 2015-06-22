@@ -367,15 +367,15 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
         get_child_products: function() {
             var type = this.get('attribute_type'),
                 settings = App.Data.settings,
-                def = $.Deferred();
+                def = Backbone.$.Deferred();
 
             if (type === 1 && !this.get('child_products')) {
                 this.set('child_products', new App.Collections.ChildProducts);
                 var child = this.get('child_products'),
                     self = this;
 
-                $.ajax({
-                    url: settings.get("host") + "/weborders/attributes/",
+                Backbone.$.ajax({
+                    url: "/weborders/attributes/",
                     data: {
                         product: this.get('id')
                     },
@@ -428,7 +428,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
         },
         /**
          * @method
-         * @returns true if all enabled attributes are selected, false otherwise.
+         * @returns true if all enabled attributes are selected (or all attributes are disabled), false otherwise.
          */
         check_selected: function() {
             var attr1 = this.get('attribute_1_selected'),
@@ -464,9 +464,9 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             } else if (checked_gift_cards[gift_number] === true) {
                 success();
             } else {
-                $.ajax({
+                Backbone.$.ajax({
                     type: "POST",
-                    url: App.Data.settings.get("host") + "/weborders/check_gift/",
+                    url: "/weborders/check_gift/",
                     dataType: 'JSON',
                     data: {
                         card: gift_number,
@@ -491,7 +491,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
          * @method
          * Adds host to images links.
          */
-        images: function(model, imgs) {
+        images: function() {
             var img = this.get('image'),
                 imgs = this.get('images'),
                 settings = App.Data.settings,
@@ -611,10 +611,11 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
         get_products: function(id_category, search) {
             var self = this,
                 settings = App.Data.settings,
-                fetching = $.Deferred(); // deferred for check if all product load;
-            $.ajax({
+                fetching = Backbone.$.Deferred(); // deferred for check if all product load;
+
+            Backbone.$.ajax({
                 type: "GET",
-                url: settings.get("host") + "/weborders/products/",
+                url: "/weborders/products/",
                 data: {
                     category: id_category,
                     establishment: settings.get("establishment"),
@@ -634,6 +635,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                     self.onProductsError();
                 }
             });
+
             return fetching;
         },
         /**

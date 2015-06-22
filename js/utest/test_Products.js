@@ -564,415 +564,828 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
             });
         });
 
-        // describe('get_child_products()', function() {
-        //     var arg,
-        //         ajaxStub = function() {
-        //             arg = arguments;
-        //         },
-        //         childAjaxJSON, addChild;
+        describe('get_child_products()', function() {
+            var model, def, ajax, ajaxData, child, childPassed, initInventory, ajaxOpts,
+                ajaxOptsPattern = {
+                    url: "/weborders/attributes/"
+                };
 
-        //     beforeEach(function() {
-        //         childAjaxJSON = deepClone(products.childAjaxJSON);
+            beforeEach(function() {
+                model = new App.Models.Product();
+                def = Backbone.$.Deferred();
+                ajax = Backbone.$.Deferred();
+                child = new App.Collections.ChildProducts;
+                childPassed = undefined;
 
-        //         spyOn($,'ajax').and.callFake(ajaxStub);
-        //         addChild = spyOn(App.Collections.ChildProducts.prototype, 'add_child').and.returnValue(new App.Models.ChildProduct);
-        //     });
+                spyOn(Backbone.$, 'Deferred').and.callFake(function() {
+                    return def;
+                });
 
-        //     it('try to get child for not parent product', function() {
-        //         model.get_child_products();
-        //         expect($.ajax).not.toHaveBeenCalled();
-        //     });
+                spyOn(Backbone.$, 'ajax').and.callFake(function(options) {
+                    ajax.done(options.success.bind(window, ajaxData));
+                    ajaxOpts = options;
+                    return ajax;
+                });
 
-        //     it('get child for parent product', function() {
-        //         model.set('attribute_type', 1);
-        //         model.get_child_products();
-        //         var data = {status: "OK", data: childAjaxJSON};
-        //         arg[0].success(data);
+                spyOn(model, 'set').and.callFake(function(prop, value) {
+                    if(prop === 'child_products') {
+                        childPassed = value;
+                    }
+                    return Backbone.Model.prototype.set.apply(model, arguments);
+                });
 
-        //         expect(addChild.calls.count()).toBe(childAjaxJSON.length);
-        //         expect(addChild.calls.mostRecent().args[0]).toBe(childAjaxJSON[1]);
-        //     });
-        // });
+                spyOn(model, 'get').and.callFake(function(prop) {
+                    if(prop === 'child_products' && childPassed) {
+                        return child;
+                    }
+                    return Backbone.Model.prototype.get.apply(model, arguments);
+                });
 
+                spyOn(model, 'listenTo');
+                spyOn(child, 'add_child');
 
+                initInventory = App.Data.settings.get("settings_system").cannot_order_with_empty_inventory;
 
-    //     // get child products
-    //     describe('Function update_active', function() {
+            });
 
-    //         var attr;
+            afterEach(function() {
+                App.Data.settings.get("settings_system").cannot_order_with_empty_inventory = initInventory;
+            });
 
-    //         beforeEach(function() {
-    //            attr = false;
-    //            spyOn(App.Collections.ChildProducts.prototype, 'check_active').and.callFake(function() {
-    //                 return attr;
-    //             });
-    //         });
+            it('`attribute_type` is 0 (usual product)', function() {
+                model.set('attribute_type', 0);
+                model.get_child_products();
 
-    //         it('without child', function() {
-    //             expect(model.update_active()).toBe(false);
-    //         });
+                expect(model.set).not.toHaveBeenCalledWith('child_products');
+                expect(Backbone.$.ajax).not.toHaveBeenCalled();
+                expect(def.state()).toBe('resolved');
+            });
 
-    //         it('with child, return false', function() {
-    //             model.set('child_products', new App.Collections.ChildProducts());
-    //             model.update_active();
-    //             expect(model.get('active')).toBe(false);
-    //         });
+            it('`attribute_type` is 2 (child product)', function() {
+                model.set('attribute_type', 2);
+                model.get_child_products();
 
-    //         it('with child, return true', function() {
-    //             model.set('child_products', new App.Collections.ChildProducts());
-    //             attr = true;
-    //             model.update_active();
-    //             expect(model.get('active')).toBe(true);
-    //             expect(App.Collections.ChildProducts.prototype.check_active).toHaveBeenCalled();
-    //         });
-    //     });
+                expect(model.set).not.toHaveBeenCalledWith('child_products');
+                expect(Backbone.$.ajax).not.toHaveBeenCalled();
+                expect(def.state()).toBe('resolved');
+            });
 
-    //     //create model from ajax
-    //     describe('Function create', function() {
+            it('`attribute_type` is 1 (parent product), `child_products` exists', function() {
+                model.addJSON(_.clone(data.addJSON_parent_with_child_products));
+                model.get_child_products();
 
-    //         it('with image', function() {
-    //             spyOn(model, 'set');
-    //             model.create(defJSON);
-    //             expect(model.set).toHaveBeenCalledWith(defJSON);
-    //         });
+                expect(model.set).not.toHaveBeenCalledWith('child_products');
+                expect(Backbone.$.ajax).not.toHaveBeenCalled();
+                expect(def.state()).toBe('resolved');
+            });
 
-    //         it('without image', function() {
-    //             spyOn(model, 'set');
-    //             model.create(defJSON2);
-    //             defJSON2.image = App.Data.settings.get("settings_skin").img_default;
-    //             expect(model.set).toHaveBeenCalledWith(defJSON2);
-    //         });
-    //     });
+            it('`attribute_type` is 1 (parent product), `child_products` is null, failure response', function() {
+                model.addJSON(_.clone(data.addJSON_parent_without_child_products));
+                model.get_child_products();
+                ajax.reject();
 
-    //     //check if all attributes selected
-    //     describe('Function check_selected', function() {
+                expect(model.set).toHaveBeenCalledWith('child_products', childPassed);
+                expect(Backbone.$.ajax).toHaveBeenCalled();
+                checkAjaxRequest();
+                expect(def.state()).toBe('pending');
+            });
 
-    //         var childSelectedJSON;
+            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status isn\'t "OK"', function() {
+                ajaxData = {status: 'ERROR'};
+                spyOn(App.Data.errors, 'alert');
 
-    //         beforeEach(function() {
-    //             spyOn(App.Collections.ChildProducts.prototype, 'addJSON').and.returnValue(new App.Collections.ChildProducts);
-    //             childSelectedJSON = deepClone(products.childSelectedJSON);
-    //             model.addJSON(childSelectedJSON);
-    //         });
+                model.addJSON(_.clone(data.addJSON_parent_without_child_products));
+                model.get_child_products();
+                ajax.resolve();
 
-    //         it('attribute_1 disable, attribute_2 unchecked', function() {
-    //             model.set('attribute_1_enable', false);
-    //             expect(model.check_selected()).toBe(false);
-    //         });
+                expect(model.set).toHaveBeenCalledWith('child_products', childPassed);
+                expect(Backbone.$.ajax).toHaveBeenCalled();
+                checkAjaxRequest();
+                expect(App.Data.errors.alert).toHaveBeenCalledWith(MSG.ERROR_GET_CHILD_PRODUCTS, true);
+                expect(def.state()).toBe('resolved');
+            });
 
-    //         it('attribute_1 disable, attribute_2 checked', function() {
-    //             model.set('attribute_1_enable', false);
-    //             model.set('attribute_2_selected', 2);
-    //             expect(model.check_selected()).toBe(true);
-    //         });
+            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", "cannot_order_with_empty_inventory" is false', function() {
+                ajaxData = deepClone(data.get_child_products);
 
-    //         it('attribute_2 disable, attribute_1 unchecked', function() {
-    //             model.unset('attribute_2_name');
-    //             expect(model.check_selected()).toBe(false);
-    //         });
+                App.Data.settings.get("settings_system").cannot_order_with_empty_inventory = false;
+                successResponse(ajaxData.data);
+                expect(ajaxData.data[0].product.stock_amount).toBe(999);
+            });
 
-    //         it('attribute_2 disable, attribute_1 checked', function() {
-    //             model.set('attribute_2_enable', false);
-    //             model.set('attribute_1_selected', 2);
-    //             expect(model.check_selected()).toBe(true);
-    //         });
+            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", "cannot_order_with_empty_inventory" is true', function() {
+                ajaxData = deepClone(data.get_child_products);
+                var stockAmount = ajaxData.data[0].product.stock_amount;
 
-    //         it('attribute_1 and attribute_2 enable, attribute_1 checked, attribute_2 unchecked', function() {
-    //             model.set('attribute_1_selected', 1);
-    //             expect(model.check_selected()).toBe(false);
-    //         });
+                App.Data.settings.get("settings_system").cannot_order_with_empty_inventory = true;
+                successResponse(ajaxData.data);
+                expect(ajaxData.data[0].product.stock_amount).toBe(stockAmount);
+            });
 
-    //         it('attribute_1 and attribute_2 enable, attribute_1 checked, attribute_2 checked', function() {
-    //             model.set('attribute_1_selected', 1);
-    //             model.set('attribute_2_selected', 2);
-    //             expect(model.check_selected()).toBe(true);
-    //         });
-    //     });
+            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", response.data[i].product.image is empty', function() {
+                ajaxData = deepClone(data.get_child_products);
+                ajaxData.data[0].product.image = '';
 
-    //     //check if gift card number setted if product is gift
-    //     describe('Function check_gift', function() {
+                successResponse(ajaxData.data);
+                expect(ajaxData.data[0].product.image).toBe(model.get('image'));
+            });
 
-    //         var obj = {
-    //                 success: function() {},
-    //                 error: function() {}
-    //             };
+            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", response.data[i].product.image exists', function() {
+                var image = '/test1111.png';
+                ajaxData = deepClone(data.get_child_products);
+                ajaxData.data[0].product.image = image;
 
-    //         beforeEach(function() {
-    //             spyOn(obj, 'success');
-    //             spyOn(obj, 'error');
-    //         });
+                successResponse(ajaxData.data);
+                expect(ajaxData.data[0].product.image).toBe(image);
+            });
 
-    //         it('for not gift product', function() {
-    //            model.set('is_gift', false) ;
-    //            model.check_gift(obj.success, obj.error);
-    //            expect(obj.success).toHaveBeenCalled();
-    //         });
+            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", response.data[i].product.image exists, response.data[i].product.images is null', function() {
+                var image = '/test1111.png';
+                ajaxData = deepClone(data.get_child_products);
+                ajaxData.data[0].product.image = image;
+                ajaxData.data[0].product.images = null;
 
-    //         it('for gift product without gift card number', function() {
-    //            model.set('is_gift', true) ;
-    //            model.set('gift_card_number', '');
-    //            model.check_gift(obj.success, obj.error);
-    //            expect(obj.error).toHaveBeenCalled();
-    //         });
+                successResponse(ajaxData.data);
+                expect(ajaxData.data[0].product.images).toBe(null);
+            });
 
-    //         it('for gift product with gift card number, but price is 0', function() {
-    //            model.set('is_gift', true) ;
-    //            model.set('gift_card_number', '123');
-    //            model.set('price', '0.00');
-    //            model.check_gift(obj.success, obj.error);
-    //            expect(obj.error).toHaveBeenCalled();
-    //         });
+            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", response.data[i].product.image is empty, response.data[i].product.images isn\'t array', function() {
+                ajaxData = deepClone(data.get_child_products);
+                ajaxData.data[0].product.image = '';
+                ajaxData.data[0].product.images = 12312;
 
-    //         it('for gift product with gift card number, price not 0', function() {
-    //            var args;
-    //            model.set('is_gift', true) ;
-    //            model.set('gift_card_number', '123');
-    //            model.set('price', 123);
-    //            spyOn($, 'ajax').and.callFake(function() {
-    //                args = arguments[0];
-    //            });
-    //            model.check_gift(obj.success, obj.error);
-    //            args.success({status: 'OK'});
-    //            expect(obj.success).toHaveBeenCalled();
-    //         });
+                successResponse(ajaxData.data);
+                expect(ajaxData.data[0].product.images).toBe(12312);
+            });
 
-    //         describe('for gift product. Check ajax request.', function() {
-    //             var args;
+            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", response.data[i].product.image is empty, response.data[i].product.images is empty array', function() {
+                ajaxData = deepClone(data.get_child_products);
+                ajaxData.data[0].product.image = '';
+                ajaxData.data[0].product.images = [];
+                model.set('images', ['test1.png', 'test2.png']);
 
-    //             beforeEach(function() {
-    //                 args = null;
-    //                 spyOn($, 'ajax').and.callFake(function() {
-    //                     args = arguments[0];
-    //                 });
-    //                 model.set('is_gift', true) ;
-    //                 model.set('gift_card_number', '123');
-    //                 model.set('price', 123);
-    //             });
+                successResponse(ajaxData.data);
+                expect(ajaxData.data[0].product.images).toEqual(model.get('images'));
+            });
 
-    //             it('invalid card. Not checked before', function() {
-    //                 model.check_gift(obj.success, obj.error);
-    //                 args.success({status: 'ERROR'});
-    //                 expect(obj.error).toHaveBeenCalled();
-    //                 expect(model.get('checked_gift_cards')['123']).toBe(false);
-    //             });
+            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", response.data[i].product.image is empty, response.data[i].product.images is array (length > 0)', function() {
+                var images = ['test1.png', 'test2.png'];
+                ajaxData = deepClone(data.get_child_products);
+                ajaxData.data[0].product.image = '';
+                ajaxData.data[0].product.images = images;
 
-    //             it('invalid card. Checked before', function() {
-    //                 model.set('checked_gift_cards', {'123': false});
-    //                 model.check_gift(obj.success, obj.error);
-    //                 expect(args).toBeNull();
-    //                 expect(obj.error).toHaveBeenCalled();
-    //             });
+                successResponse(ajaxData.data);
+                expect(ajaxData.data[0].product.images).toEqual(images);
+            });
 
-    //             it('correct card. Not checked before', function() {
-    //                 model.check_gift(obj.success, obj.error);
-    //                 args.success({status: 'OK'});
-    //                 expect(obj.success).toHaveBeenCalled();
-    //                 expect(model.get('checked_gift_cards')['123']).toBe(true);
-    //             });
+            function checkAjaxRequest() {
+                expect(ajaxOpts.url).toBe(ajaxOptsPattern.url);
+            }
 
-    //             it('correct card. Checked before', function() {
-    //                 model.set('checked_gift_cards', {'123': true});
-    //                 model.check_gift(obj.success, obj.error);
-    //                 expect(args).toBeNull();
-    //                 expect(obj.success).toHaveBeenCalled();
-    //             });
-    //         });
-    //     });
+            function successResponse(ajaxData) {
+                model.addJSON(_.clone(data.addJSON_parent_without_child_products));
+                model.get_child_products();
+                ajax.resolve();
 
-    //     describe('Function check_repeat', function() {
-    //         var obj = {
-    //                 total: {
-    //                     get_bag_charge: function() {},
-    //                     get_delivery_charge: function() {}
-    //                 },
-    //                 checkout: {
-    //                     get: function() {}
-    //                 }
-    //             },
-    //             bag_charge,
-    //             delivery_charge,
-    //             dining_option,
-    //             actual_data;
+                expect(Backbone.$.ajax).toHaveBeenCalled();
+                checkAjaxRequest();
+                expect(model.set).toHaveBeenCalledWith('child_products', childPassed);
+                expect(model.get).toHaveBeenCalledWith('child_products');
+                expect(model.listenTo).toHaveBeenCalledWith(child, 'change:active', model.update_active);
+                Array.isArray(ajaxData) && ajaxData.forEach(function(item) {
+                    expect(child.add_child).toHaveBeenCalledWith(item);
+                });
+                expect(def.state()).toBe('resolved');
+            }
+        });
 
-    //         beforeEach(function() {
-    //             bag_charge = 10;
-    //             delivery_charge = 5;
-    //             dining_option = 'DINING_OPTION_TOGO';
-    //             actual_data = {
-    //                 available: true,
-    //                 is_gift: false,
-    //                 is_cold: false,
-    //                 price: 8,
-    //                 uom: 'uom',
-    //                 tax: 9,
-    //                 sold_by_weight : false
-    //             };
-    //             model.set(actual_data);
-    //             model.set('actual_data', actual_data);
-    //             spyOn(obj.total, 'get_bag_charge').and.callFake(function() {
-    //                 return bag_charge;
-    //             });
-    //             spyOn(obj.total, 'get_delivery_charge').and.callFake(function() {
-    //                 return delivery_charge;
-    //             });
-    //             spyOn(obj.checkout, 'get').and.callFake(function() {
-    //                 return dining_option;
-    //             });
-    //         });
+        describe('update_active()', function() {
+            var model, child, active;
 
-    //         it('no changes', function() {
-    //             expect(model.check_repeat(obj)).toBe(0);
-    //         });
+            beforeEach(function() {
+                model = new App.Models.Product(),
+                child = new App.Collections.ChildProducts();
 
-    //         it('is bag charge item, not change price', function() {
-    //             model.set('name', MSG.BAG_CHARGE_ITEM);
-    //             model.set('price', bag_charge);
-    //             expect(model.check_repeat(obj)).toBe('remove');
-    //         });
+                spyOn(child, 'check_active').and.callFake(function() {
+                    return active;
+                });
+                spyOn(model, 'get').and.callFake(function() {
+                    return child;
+                });
+                spyOn(model, 'set');
+            });
 
-    //         it('is bag charge item, change price', function() {
-    //             model.set('name', MSG.BAG_CHARGE_ITEM);
-    //             model.set('price', bag_charge + 1);
-    //             expect(model.check_repeat(obj)).toBe('remove changed');
-    //         });
+            it('`child_products` is null', function() {
+                child = null;
+                expect(model.update_active()).toBe(false);
+            });
 
-    //         it('is delivery charge item, not change price', function() {
-    //             model.set('name', MSG.DELIVERY_ITEM);
-    //             model.set('price', delivery_charge);
-    //             expect(model.check_repeat(obj)).toBe('remove');
-    //         });
+            it('`child_products` exists, child.check_active() returns false', function() {
+                checkActive(false);
+            });
 
-    //         it('is delivery charge item, change price', function() {
-    //             model.set('name', MSG.DELIVERY_ITEM);
-    //             model.set('price', delivery_charge + 1);
-    //             expect(model.check_repeat(obj)).toBe('remove changed');
-    //         });
+            it('`child_products` exists, child.check_active() returns true', function() {
+                checkActive(true);
+            });
 
-    //         it('is unavailable', function() {
-    //             model.get('actual_data').available = false;
-    //             expect(model.check_repeat(obj)).toBe('remove changed');
-    //         });
+            function checkActive(value) {
+                active = value;
+                model.update_active();
+                expect(model.set).toHaveBeenCalledWith('active', active);
+            }
+        });
 
-    //         it('from gift to not gift', function() {
-    //             model.set('is_gift', true);
-    //             expect(model.check_repeat(obj)).toBe('changed');
-    //         });
+        describe('check_selected()', function() {
+            var model, attrs;
 
-    //         it('from not gift to gift', function() {
-    //             model.get('actual_data').is_gift = true;
-    //             expect(model.check_repeat(obj)).toBe('remove changed');
-    //         });
+            beforeEach(function() {
+                model = new App.Models.Product(),
+                attrs = _.clone(data.get_product_attributes);
 
-    //         it('changed is_cold', function() {
-    //             model.set('is_cold', true);
-    //             expect(model.check_repeat(obj)).toBe('changed');
-    //         });
+                spyOn(model, 'get').and.callFake(function(prop) {
+                    return attrs[prop];
+                });
+            });
 
-    //         it('changed price', function() {
-    //             model.set('price', 100);
-    //             expect(model.check_repeat(obj)).toBe('changed');
-    //         });
+            it('attribute1 is enabled and selected, attribute2 is enabled and selected', function() {
+                expect(model.check_selected()).toBe(true);
+            });
 
-    //         it('changed tax for gift product', function() {
-    //             model.set('is_gift', true);
-    //             model.get('actual_data').is_gift = true;
-    //             model.set('tax', 10);
-    //             expect(model.check_repeat(obj)).toBe(0);
-    //         });
+            it('attribute1 is disabled and selected, attribute2 is enabled and selected', function() {
+                attrs.attribute_1_enable = false;
+                expect(model.check_selected()).toBe(true);
 
-    //         it('changed tax for is_cold and dining options to go', function() {
-    //             model.set('is_cold', true);
-    //             model.get('actual_data').is_cold = true;
-    //             model.set('tax', 10);
-    //             expect(model.check_repeat(obj)).toBe(0);
-    //         });
+                attrs.attribute_1_selected = null;
+                expect(model.check_selected()).toBe(true);
+            });
 
-    //         it('changed tax for other', function() {
-    //             model.set('tax', 10);
-    //             expect(model.check_repeat(obj)).toBe('changed');
-    //         });
-    //     });
+            it('attribute1 is enabled and unselected, attribute2 is enabled and selected', function() {
+                attrs.attribute_1_selected = null;
+                expect(model.check_selected()).toBe(false);
+            });
 
+            it('attribute1 is enabled and selected, attribute2 is disabled and selected', function() {
+                attrs.attribute_2_enable = false;
+                expect(model.check_selected()).toBe(true);
+
+                attrs.attribute_2_selected = null;
+                expect(model.check_selected()).toBe(true);
+            });
+
+            it('attribute1 is enabled and selected, attribute2 is enabled and unselected', function() {
+                attrs.attribute_2_selected = null;
+                expect(model.check_selected()).toBe(false);
+            });
+
+            it('attribute1 is disabled and selected, attribute2 is disabled and selected', function() {
+                attrs.attribute_1_enable = false;
+                attrs.attribute_2_enable = false;
+                expect(model.check_selected()).toBe(true);
+
+                attrs.attribute_1_selected = null;
+                attrs.attribute_2_selected = null;
+                expect(model.check_selected()).toBe(true);
+            });
+
+            it('attribute1 is enabled and unselected, attribute2 is enabled and unselected', function() {
+                attrs.attribute_1_selected = null;
+                attrs.attribute_2_selected = null;
+                expect(model.check_selected()).toBe(false);
+            });
+        });
+
+        describe('check_gift(success, error)', function() {
+            var ajaxOpts, checkedGiftCards, ajax, ajaxData,
+                obj = {
+                    success: function() {},
+                    error: function() {}
+                },
+                ajaxOptsPattern = {
+                    type: "POST",
+                    url: "/weborders/check_gift/",
+                    dataType: 'JSON'
+                };
+
+            beforeEach(function() {
+                model = new App.Models.Product();
+                model.set({
+                    is_gift: true,
+                    gift_card_number: '123',
+                    price: 12
+                });
+
+                ajax = Backbone.$.Deferred();
+                checkedGiftCards = {};
+
+                spyOn(obj, 'success');
+                spyOn(obj, 'error');
+                spyOn(Backbone.$, 'ajax').and.callFake(function(opts) {
+                    ajaxOpts = opts;
+                    ajax.done(opts.success.bind(window, ajaxData));
+                    return ajax;
+                });
+                spyOn(model, 'get').and.callFake(function(prop) {
+                    if(prop === 'checked_gift_cards') {
+                        return checkedGiftCards;
+                    }
+                    return Backbone.Model.prototype.get.apply(model, arguments);
+                });
+            });
+
+            it('product isn\'t gift', function() {
+                model.set('is_gift', false) ;
+                model.check_gift(obj.success, obj.error);
+                expect(obj.success).toHaveBeenCalled();
+            });
+
+            it('product is gift, gift card number is undefined', function() {
+                model.set('gift_card_number', '');
+                model.check_gift(obj.success, obj.error);
+                expect(obj.error).toHaveBeenCalled();
+            });
+
+            it('product is gift, gift card number is valid, price is 0', function() {
+                model.set('price', '0.00');
+                model.check_gift(obj.success, obj.error);
+                expect(obj.error).toHaveBeenCalled();
+            });
+
+            it('product is gift, gift card number is valid, price isn\'t 0', function() {
+                model.check_gift(obj.success, obj.error);
+                expect(Backbone.$.ajax).toHaveBeenCalled();
+                checkAjaxOpts();
+            });
+
+            it('product is gift, gift card number has been already checked with `false` result', function() {
+                checkedGiftCards = {'123': false};
+                model.check_gift(obj.success, obj.error);
+                expect(obj.error).toHaveBeenCalled();
+            });
+
+            it('product is gift, gift card number has been already checked with `true` result', function() {
+                checkedGiftCards = {'123': true};
+                model.check_gift(obj.success, obj.error);
+                expect(obj.success).toHaveBeenCalled();
+            });
+
+            it('product is gift, gift card number is valid, price isn\'t 0, failure request', function() {
+                ajaxData = {status: 'ERROR'};
+                model.check_gift(obj.success, obj.error);
+                ajax.reject();
+
+                checkAjaxOpts();
+                expect(obj.success).not.toHaveBeenCalled();
+                expect(obj.error).not.toHaveBeenCalled();
+            });
+
+            it('product is gift, gift card number is valid, price isn\'t 0, response.status isn\'t "OK"', function() {
+                ajaxData = {status: 'ERROR'};
+                model.check_gift(obj.success, obj.error);
+                ajax.resolve();
+
+                checkAjaxOpts();
+                expect(obj.success).not.toHaveBeenCalled();
+                expect(obj.error).toHaveBeenCalled();
+                expect(checkedGiftCards[model.get('gift_card_number')]).toBe(false);
+            });
+
+            it('product is gift, gift card number is valid, price isn\'t 0, response.status is "OK"', function() {
+                ajaxData = {status: 'OK'};
+                model.check_gift(obj.success, obj.error);
+                ajax.resolve();
+
+                checkAjaxOpts();
+                expect(obj.success).toHaveBeenCalled();
+                expect(obj.error).not.toHaveBeenCalled();
+                expect(checkedGiftCards[model.get('gift_card_number')]).toBe(true);
+            });
+
+            function checkAjaxOpts() {
+                expect(ajaxOpts.type).toBe(ajaxOptsPattern.type);
+                expect(ajaxOpts.url).toBe(ajaxOptsPattern.url);
+                expect(ajaxOpts.dataType).toBe(ajaxOptsPattern.dataType);
+                expect(ajaxOpts.data).toEqual({
+                    card: model.get('gift_card_number'),
+                    establishment: App.Data.settings.get("establishment")
+                });
+            }
+        });
+
+        describe('images()', function() {
+            var model, defImg, host;
+
+            beforeEach(function() {
+                model = new App.Models.Product();
+                defImg = App.Data.settings.get('settings_skin').img_default;
+                host = App.Data.settings.get('host');
+                model.addJSON(_.clone(data.addJSON_with_image));
+            });
+
+            it('`images` isn\'t array', function() {
+                emptyImages();
+            });
+
+            it('`images` is empty array', function() {
+                emptyImages();
+            });
+
+            it('`images` is array with data, images[i] is default image', function() {
+                // defImg is array
+                testUrl([defImg[0]]);
+
+                // defImg is url
+                var testImage = 'test2.png';
+                App.Data.settings.get('settings_skin').img_default = testImage;
+                testUrl([testImage]);
+                App.Data.settings.get('settings_skin').img_default = defImg;
+            });
+
+            it('`images` is array with data, images[i] isn\'t default image, images[i] has absolute path', function() {
+                // http protocol
+                testUrl(['http://test.revelup.com/test.png']);
+
+                // https protocol
+                testUrl(['https://test.revelup.com/test.png']);
+            });
+
+            it('`images` is array with data, images[i] isn\'t default image, images[i] has relative path', function() {
+                var images = ['test.png', '/path/to/test.png']
+                model.set('images', images);
+                model.images();
+                expect(model.get('images')).toEqual(images.map(addHost));
+                expect(model.get('image')).toEqual(addHost(images[0]));
+
+                function addHost(url) {
+                    return host + url.replace(/^([^\/])/, '/$1');
+                }
+            });
+
+            function testUrl(images) {
+                model.set('images', images);
+                model.images();
+                expect(model.get('images')).toEqual(images);
+                expect(model.get('image')).toBe(images[0]);
+            }
+
+            function emptyImages() {
+                var image = model.get('image');
+                model.set('images', null);
+                model.images();
+                expect(model.get('images')).toEqual([image]);
+                expect(model.get('image')).toBe(image);
+            }
+        });
+
+        describe('isParent()', function() {
+            var model;
+
+            beforeEach(function() {
+                model = new App.Models.Product();
+            });
+
+            it('`attribute_type` is 0 (usual product)', function() {
+                model.set('attribute_type', 0);
+                expect(model.isParent()).toBe(false);
+            });
+
+            it('`attribute_type` is 1 (parent product)', function() {
+                model.set('attribute_type', 1);
+                expect(model.isParent()).toBe(true);
+            });
+
+            it('`attribute_type` is 2 (child product)', function() {
+                model.set('attribute_type', 2);
+                expect(model.isParent()).toBe(false);
+            });
+        });
+
+        describe('checkStockAmount()', function() {
+            var model, inventory;
+
+            beforeEach(function() {
+                model = new App.Models.Product();
+                inventory = App.Data.settings.get("settings_system").cannot_order_with_empty_inventory;
+            });
+
+            afterEach(function() {
+                App.Data.settings.get("settings_system").cannot_order_with_empty_inventory = inventory;
+            });
+
+            it('system_settings.cannot_order_with_empty_inventory is false', function() {
+                App.Data.settings.get("settings_system").cannot_order_with_empty_inventory = false;
+                model.checkStockAmount();
+
+                expect(model.get('stock_amount')).toBe(999);
+            });
+
+            it('system_settings.cannot_order_with_empty_inventory is true', function() {
+                var stockAmount = 5;
+                App.Data.settings.get("settings_system").cannot_order_with_empty_inventory = true;
+                model.set('stock_amount', stockAmount);
+                model.checkStockAmount();
+
+                expect(model.get('stock_amount')).toBe(stockAmount);
+            });
+        });
+
+        it('restoreTax()', function() {
+            var model = new App.Models.Product(),
+                original_tax = 4;
+
+            spyOn(model, 'set');
+            spyOn(model, 'get').and.callFake(function() {
+                return original_tax;
+            });
+
+            model.restoreTax();
+            expect(model.get).toHaveBeenCalledWith('original_tax');
+            expect(model.set).toHaveBeenCalledWith('tax', original_tax);
+        });
     });
 
-    // describe("App.Collections.Products", function() {
+    describe("App.Collections.Products", function() {
+        var collection;
 
-    //     var model, defColl, defCollAns, defCollAnsLoad;
+        beforeEach(function() {
+            collection = new App.Collections.Products();
+        });
 
-    //     beforeEach(function() {
-    //         model = new App.Collections.Products();
-    //         defColl = deepClone(products.defColl);
-    //         defCollAns = deepClone(products.defCollAns);
-    //         defCollAnsLoad = deepClone(products.defCollAnsLoad);
-    //     });
+        it('Environment', function() {
+            expect(App.Collections.Products).toBeDefined();
+        });
 
-    //     it('Environment', function() {
-    //         expect(App.Collections.Products).toBeDefined();
-    //     });
+        it('Create collection', function() {
+            var constructorPrototype = App.Collections.Products.prototype;
+            expect(collection.toJSON()).toEqual([]);
+            expect(collection.sortStrategy).toBe(constructorPrototype.sortStrategy);
+            expect(collection.sortKey).toBe(constructorPrototype.sortKey);
+            expect(collection.sortOrder).toBe(constructorPrototype.sortOrder);
+            expect(collection.model).toBe(constructorPrototype.model);
+        });
 
-    //     it('Create model', function() {
-    //         expect(model.toJSON()).toEqual([]);
-    //     });
+        describe('modelId(attrs)', function() {
+            var collection;
 
-    //     it('Function comparator', function() {
-    //         model.add(defColl);
-    //         expect(model.at(0).toJSON().id).toEqual(defCollAns[1].id);
-    //         expect(model.at(1).toJSON().id).toEqual(defCollAns[0].id);
-    //     });
+            beforeEach(function() {
+                collection = new App.Collections.Products();
+            });
 
-    //     it('Function get_product', function() {
-    //         var prod1 = new App.Models.Product({id: 1}),
-    //             prod2 = new App.Models.Product({id: 20});
-    //             prod3 = new App.Models.Product({id: 300});
+            it('item doesn\'t have `compositeId` attribute', function() {
+                var itemData = _.clone(data.modelId_item_without_compositeId)
+                collection.add(itemData);
+                expect(collection.modelId(itemData)).toBe(itemData.id);
+            });
 
-    //         model.add(prod1);
-    //         model.add([prod2, prod3]);
+            it('item has `compositeId` attribute', function() {
+                var itemData = _.clone(data.modelId_item_with_compositeId)
+                collection.add(itemData);
+                expect(collection.modelId(itemData)).toBe(itemData.compositeId);
+            });
+        });
 
-    //         // product with this id is not in the collection
-    //         expect(model.get_product(3)).toBeUndefined();
+        it('initialize()', function() {
+            spyOn(collection, 'listenTo');
+            collection.initialize();
+            expect(collection.listenTo).toHaveBeenCalledWith(collection, 'change:active', collection.check_active);
+        });
 
-    //         // product with this id is in the collection
-    //         expect(model.get_product(20)).toBe(prod2);
-    //     });
+        describe('get_product(id)', function() {
+            var collection, item, result;
 
-    //     it('Function get_products', function() {
-    //         var arg,
-    //             ajaxStub = function() {
-    //                 arg = arguments;
-    //             };
+            beforeEach(function() {
+                collection = new App.Collections.Products();
+                item = new App.Models.Product();
+                collection.add(item);
+                result = undefined;
+                spyOn(item, 'get_product').and.callFake(function() {
+                    return result;
+                });
+            });
 
-    //         spyOn($,'ajax').and.callFake(ajaxStub);
-    //         var create = spyOn(App.Models.Product.prototype, 'create').and.returnValue(new App.Models.Product);
+            it('id is valid', function() {
+                var id = 12;
+                result = item;
 
-    //         model.get_products(50);
+                expect(collection.get_product(id)).toBe(item);
+                expect(item.get_product).toHaveBeenCalledWith(id);
+            });
 
-    //         arg[0].successResp(defColl);
-    //         expect(create.calls.count()).toBe(2);
-    //         expect(create.calls.mostRecent().args[0]).toEqual(defColl[1]);
-    //         expect(arg[0].url).toBe("testHost/weborders/products/");
-    //     });
+            it('id is invalid', function() {
+                var id = 12;
 
-    //     describe('Function check_active', function() {
+                expect(collection.get_product(id)).toBe(result);
+                expect(item.get_product).toHaveBeenCalledWith(id);
+            });
+        });
 
-    //         beforeEach(function() {
-    //             model.add(deepClone(products.check_active));
-    //             App.Data.categories = {
-    //                 set_inactive: function() {}
-    //             };
-    //             spyOn(App.Data.categories, 'set_inactive');
-    //         });
+        describe('get_products(id_category, search)', function() {
+            var collection, ajaxData, ajax, ajaxOpts, fetching, skin,
+                ajaxPattern = {
+                    type: 'GET',
+                    url: "/weborders/products/",
+                    dataType: 'json'
+                };
 
-    //         it('one active, one inactive', function() {
-    //             model.check_active(model.get({id: 1}));
-    //             expect(App.Data.categories.set_inactive).not.toHaveBeenCalled();
-    //         });
+            beforeEach(function() {
+                collection = new App.Collections.Products();
+                ajax = Backbone.$.Deferred();
+                fetching = Backbone.$.Deferred();
+                ajaxData = undefined;
 
-    //         it('all inactive', function() {
-    //             model.check_active(model.get({id: 3}));
-    //             expect(App.Data.categories.set_inactive).toHaveBeenCalledWith(56);
-    //         });
-    //     });
-    // });
+                spyOn(Backbone.$, 'Deferred').and.callFake(function(options) {
+                    return fetching;
+                });
+
+                spyOn(Backbone.$, 'ajax').and.callFake(function(options) {
+                    ajaxOpts = options;
+                    ajax.fail(options.error);
+                    ajax.done(options.successResp.bind(window, ajaxData));
+                    return ajax;
+                });
+
+                spyOn(window, 'format_timetables').and.callFake(function(timetables) {
+                    return timetables;
+                });
+
+                spyOn(App.Data.settings, 'get').and.callFake(function(prop) {
+                    if(prop === 'skin') {
+                        return skin;
+                    }
+                    return Backbone.Model.prototype.get.apply(App.Data.settings, arguments);
+                });
+            });
+
+            it('failure request', function() {
+                spyOn(collection, 'onProductsError');
+                collection.get_products();
+                ajax.reject();
+
+                checkAjaxRequest();
+                expect(fetching.state()).toBe('pending');
+                expect(collection.onProductsError).toHaveBeenCalled();
+            });
+
+            it('id_category is passed, response.status is "OK"', function() {
+                var id_category = 12;
+                ajaxData = _.clone(data.get_products_without_gift_card);
+                collection.get_products(id_category);
+                ajax.resolve();
+
+                successfulResponse();
+                expect(ajaxOpts.data.category).toBe(id_category);
+            });
+
+            it('search is passed, response.status is "OK"', function() {
+                var search = 'product';
+                ajaxData = _.clone(data.get_products_without_gift_card);
+                collection.get_products(undefined, search);
+                ajax.resolve();
+
+                successfulResponse();
+                expect(ajaxOpts.data.search).toBe(search);
+            });
+
+            it('response.status is "OK", response.data[i].is_gift is true, skin isn\'t `mlb`', function() {
+                ajaxData = _.clone(data.get_products_without_gift_card);
+                ajaxData[0].is_gift = true;
+                skin = 'retail';
+                collection.get_products(12);
+                ajax.resolve();
+
+                successfulResponse();
+            });
+
+            it('response.status is "OK", response.data[i].is_gift is true, skin is `mlb`', function() {
+                ajaxData = _.clone(data.get_products_without_gift_card);
+                ajaxData[0].is_gift = true;
+                skin = 'mlb';
+                collection.get_products(12);
+                ajax.resolve();
+
+                checkAjaxRequest();
+                expect(fetching.state()).toBe('resolved');
+                expect(window.format_timetables).not.toHaveBeenCalled();
+                expect(collection.length).toBe(0);
+            });
+
+            function successfulResponse() {
+                checkAjaxRequest();
+                expect(fetching.state()).toBe('resolved');
+                expect(window.format_timetables).toHaveBeenCalledWith(ajaxData[0].timetables);
+                expect(collection.length).toBe(1);
+                expect(collection.at(0).get('compositeId')).toBe(ajaxData[0].id + '_' + ajaxData[0].id_category);
+            }
+
+            function checkAjaxRequest() {
+                expect(ajaxOpts.type).toBe(ajaxPattern.type);
+                expect(ajaxOpts.url).toBe(ajaxPattern.url);
+                expect(ajaxOpts.dataType).toBe(ajaxPattern.dataType);
+                expect(ajaxOpts.data.establishment).toBe(App.Data.settings.get('establishment'));
+            }
+        });
+
+        it('onProductsError()', function() {
+            spyOn(App.Data.errors, 'alert');
+            collection.onProductsError();
+            expect(App.Data.errors.alert).toHaveBeenCalledWith(MSG.ERROR_PRODUCTS_LOAD, true);
+        });
+
+        describe('check_active(model)', function() {
+            var collection, product, categories;
+
+            beforeEach(function() {
+                collection = new App.Collections.Products();
+                product = new App.Models.Product();
+                collection.add(product);
+                categories = App.Data.categories;
+                App.Data.categories = {set_inactive: new Function()};
+
+                spyOn(App.Data.categories, 'set_inactive');
+            });
+
+            afterEach(function() {
+                App.Data.categories = categories;
+            });
+
+            it('all items are inactive', function() {
+                product.set('active', false);
+                collection.check_active(product);
+
+                expect(App.Data.categories.set_inactive).toHaveBeenCalledWith(product.get('id_category'));
+            });
+
+            it('at least one item is active', function() {
+                product.set('active', true);
+                collection.check_active(product);
+
+                expect(App.Data.categories.set_inactive).not.toHaveBeenCalled();
+            });
+        });
+
+        describe('check_active(model)', function() {
+            var collection, product, categories;
+
+            beforeEach(function() {
+                collection = new App.Collections.Products();
+                product = new App.Models.Product();
+                collection.add(product);
+                categories = App.Data.categories;
+                App.Data.categories = {set_inactive: new Function()};
+
+                spyOn(App.Data.categories, 'set_inactive');
+            });
+
+            afterEach(function() {
+                App.Data.categories = categories;
+            });
+
+            it('all items are inactive', function() {
+                product.set('active', false);
+                collection.check_active(product);
+
+                expect(App.Data.categories.set_inactive).toHaveBeenCalledWith(product.get('id_category'));
+            });
+
+            it('at least one item is active', function() {
+                product.set('active', true);
+                collection.check_active(product);
+
+                expect(App.Data.categories.set_inactive).not.toHaveBeenCalled();
+            });
+        });
+
+        describe('getAttributeValues(type)', function() {
+            // var collection, product, categories;
+
+            // beforeEach(function() {
+            //     collection = new App.Collections.Products();
+            //     product = new App.Models.Product();
+            //     collection.add(product);
+            //     categories = App.Data.categories;
+            //     App.Data.categories = {set_inactive: new Function()};
+
+            //     spyOn(App.Data.categories, 'set_inactive');
+            // });
+
+            // afterEach(function() {
+            //     App.Data.categories = categories;
+            // });
+
+            // it('all items are inactive', function() {
+            //     product.set('active', false);
+            //     collection.check_active(product);
+
+            //     expect(App.Data.categories.set_inactive).toHaveBeenCalledWith(product.get('id_category'));
+            // });
+
+            // it('at least one item is active', function() {
+            //     product.set('active', true);
+            //     collection.check_active(product);
+
+            //     expect(App.Data.categories.set_inactive).not.toHaveBeenCalled();
+            // });
+        });
+    });
 
     // describe("App.Collections.Products static methods", function() {
 

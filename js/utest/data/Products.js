@@ -197,6 +197,38 @@ define([], function() {
             "attribute_2_selected": 2,
             "attribute_2_enable": true,
             "attribute_2_name": 'Test 2',
-        }
+        },
+        "get_child_products": {
+            "status": 'OK',
+            "data": [{
+                "product": {
+                    "name": 'Test',
+                    "price": 10,
+                    "stock_amount": 5
+                }
+            }]
+        },
+        "modelId_item_without_compositeId": {
+            "name": 'test',
+            "image": 'test.png',
+            "id": 12,
+            "price": 123
+        },
+        "modelId_item_with_compositeId": {
+            "name": 'test',
+            "image": 'test.png',
+            "id": 12,
+            "price": 123,
+            "compositeId": '12_23'
+        },
+        "get_products_without_gift_card": [
+            {
+                "id": 1,
+                "name": 'Test 1',
+                "category_id": 1,
+                "timetables": null,
+                "is_gift": false
+            }
+        ]
     };
 });
