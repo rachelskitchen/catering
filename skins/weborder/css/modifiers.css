@@ -72,17 +72,6 @@
     cursor: pointer;
     min-height: 30px;
 }
-
-@media only screen and (max-device-width: 949px) {
-    .modifiers_table .modifier {
-        min-width: 270px !important;
-    }
-    .mdf_quantity select {
-        width: 48px;
-        padding-left: 10px !important;
-    }
-}
-
 .modifiers_table .modifier .input {
     display: inline-block;
     height: 21px;
@@ -155,6 +144,9 @@
 .mdf_split select {
     font-size: 14px;
     font-weight: normal;
+}
+
+.mdf_split select {
     width: 50px;
 }
 
@@ -171,6 +163,7 @@
 .mdf_quantity select {
     padding-right: 18px;
     padding-left: 8px;
+    max-width: 80px;
 }
 
 .mdf_spacer {
@@ -189,4 +182,14 @@
     width: 18px;
     height: 17px;
     pointer-events:none;
+}
+
+@media only screen and (max-device-width: 949px) {
+    .modifiers_table .modifier {
+        min-width: 270px !important;
+    }
+    .mdf_quantity select {
+        padding-left: 10px !important;
+        padding-right: 24px;
+    }
 }
