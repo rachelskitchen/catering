@@ -134,7 +134,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 product;
 
             product_load.then(function() {
-                product = App.Data.products[id_category].get(id_product);
+                product = App.Data.products[id_category].get_product(id_product);
                 product.get_child_products().then(product_child_load.resolve);
             });
 

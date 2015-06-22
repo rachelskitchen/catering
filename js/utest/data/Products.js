@@ -31,7 +31,8 @@ define([], function() {
             "active": true,
             "created_date": null,
             "original_tax": null,
-            "timetables": null
+            "timetables": null,
+            "compositeId": null
         },
         "defaults_initialized": {
             "description": null,
@@ -64,7 +65,8 @@ define([], function() {
             "active": true,
             "created_date": 0,
             "original_tax": 0,
-            "timetables": null
+            "timetables": null,
+            "compositeId": null
         },
         "product_with_image": {
             "description": "some product",
@@ -97,7 +99,8 @@ define([], function() {
             "active": true,
             "created_date": '2015/01/01',
             "original_tax": null,
-            "timetables": null
+            "timetables": null,
+            "compositeId": '12_1'
         },
         "addJSON_without_image": {
             "image": "",
@@ -180,20 +183,20 @@ define([], function() {
             ]
         },
         "get_product_attributes": {
-            attribute_1_selected: 1,
-            attribute_1_enable: true,
-            attribute_2_selected: 2,
-            attribute_2_enable: true
+            "attribute_1_selected": 1,
+            "attribute_1_enable": true,
+            "attribute_2_selected": 2,
+            "attribute_2_enable": true
         },
         "get_attribute_1_data": {
-            attribute_1_selected: 1,
-            attribute_1_enable: true,
-            attribute_1_name: 'Test 1',
+            "attribute_1_selected": 1,
+            "attribute_1_enable": true,
+            "attribute_1_name": 'Test 1',
         },
         "get_attribute_2_data": {
-            attribute_2_selected: 2,
-            attribute_2_enable: true,
-            attribute_2_name: 'Test 2',
+            "attribute_2_selected": 2,
+            "attribute_2_enable": true,
+            "attribute_2_name": 'Test 2',
         }
     };
 });

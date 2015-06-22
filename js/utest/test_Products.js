@@ -319,6 +319,14 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
                 expect(model.get_product(id)).toBe(model);
             });
 
+            it('id is passed, equal model.get("id"), types of id and model.get("id") are different', function() {
+                model.set('id', String(id));
+                expect(model.get_product(id)).toBe(model);
+
+                model.set('id', id);
+                expect(model.get_product(String(id))).toBe(model);
+            });
+
             it('id is passed, not equal model.get("id"); `child_products` is null', function() {
                 expect(model.get_product(id)).toBe(model.defaults.child_products);
             });
