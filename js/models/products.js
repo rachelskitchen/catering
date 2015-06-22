@@ -123,6 +123,9 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
          *
          * @property {} defaults.timetables -
          * @default null
+         *
+         * @property {string} defaults.compositeId - the unique product id (used for a model identification in App.Collections.Products)
+         * @default null
          */
         defaults: {
             description: null,
@@ -155,7 +158,8 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             active: true,
             created_date: null,
             original_tax: null, // used to save origin tax rate to restore in Retail mode
-            timetables: null
+            timetables: null,
+            compositeId: null
         },
         /**
          * @method
@@ -268,7 +272,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                 child = this.get('child_products');
 
             if (id) {
-                if (this.get('id') === id) {
+                if (parseInt(this.get('id'), 10) === parseInt(id, 10)) {
                     return this;
                 } else {
                     return child && child.get_product_id(id);
@@ -563,6 +567,16 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
         model: App.Models.Product,
         /**
          * @method
+         * Sets `compositeId` as unique id of model. `id` attribute cannot be used due to a product with the same `id` may be in one collection (has multiple categories).
+         *
+         * @params {object} attrs - literal object containing model attributes.
+         * @returns unique id of model.
+         */
+        modelId: function(attrs) {
+            return attrs['compositeId'] || App.Collections.CollectionSort.prototype.modelId.apply(this, arguments);
+        },
+        /**
+         * @method
          * Adds listener for checking product activity. If all products are inactive category gets inactive.
          */
         initialize: function() {
@@ -571,6 +585,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
         /**
          * @method
          * Finds product by id.
+         * Please use this method instead of get(), because models are identified in collection via 'compositeId' attribute.
          *
          * @param {string} id - product id.
          * @returns product model if id is valid.
@@ -610,6 +625,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                     for (var i = 0; i < data.length; i++) {
                         if(data[i].is_gift && settings.get('skin') === 'mlb') continue; // mlb skin does not support gift cards (bug #9395)
                         data[i].timetables = format_timetables(data[i].timetables);
+                        data[i].compositeId = data[i].id + '_' + data[i].id_category;
                         self.add(data[i]);
                     }
                     fetching.resolve();

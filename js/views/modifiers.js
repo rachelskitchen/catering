@@ -237,7 +237,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             model.id = this.options.data.name.replace(/ /g,'_') + this.options.id;
             model.name = this.options.name;
             model.modifierClassName = this.options.name;
-
+model.mdf_width = 110;
             this.listenLocked = setInterval(this.controlCheckboxes.bind(this), 300);
 
             this.$el.html(this.template(model));
