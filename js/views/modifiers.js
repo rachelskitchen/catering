@@ -49,15 +49,11 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
             model.price = round_monetary_currency(model.price);
             model.slength = model.price.length;
-            model.isSpecial = this.options.type === SPECIAL;
+            model.isSpecial = this.isSpecial();
             model.isInventoryMatrix = false;
-            model.isSize = this.options.type === SIZE;
+            model.isSize = this.isSize();
             model.name = this.model.escape('name');
             model.modifierClassName = modifierBlock.escape('name').replace(/ /g,'_');
-
-            var is_split_selector = App.Settings.enable_split_modifiers ||  model.isSize || model.isSpecial;
-            var is_quantity_selector = App.Settings.enable_quantity_modifiers ||  model.isSize || model.isSpecial;
-            model.mdf_width = is_split_selector * 55 + is_quantity_selector * 55;
 
             if (model.isSpecial) {
                 this.model.set('selected', false);
@@ -97,6 +93,12 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             this.update_free();
 
             return this;
+        },
+        isSpecial: function() {
+            return this.options.type === SPECIAL;
+        },
+        isSize: function() {
+            return this.options.type === SIZE;
         },
         add_special: function() {
             if(!App.Settings.online_orders) {
@@ -237,7 +239,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             model.id = this.options.data.name.replace(/ /g,'_') + this.options.id;
             model.name = this.options.name;
             model.modifierClassName = this.options.name;
-model.mdf_width = 110;
+
             this.listenLocked = setInterval(this.controlCheckboxes.bind(this), 300);
 
             this.$el.html(this.template(model));
