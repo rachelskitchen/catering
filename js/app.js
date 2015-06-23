@@ -74,7 +74,7 @@
             devPath: /\/dev\//.test(location.href),
             images: {},
             log: {},
-            curLocale: window.navigator.language.replace(/-.*/g, '') 
+            curLocale: window.navigator.language.replace(/-.*/g, '')
         },
         Models: {},
         lastModelViews: {},
