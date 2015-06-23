@@ -699,6 +699,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
      * @static
      * Loads products for category
      *
+     * @param {number} id_category - category id.
      * @returns deferred object.
      */
     App.Collections.Products.init = function(id_category) {
@@ -718,6 +719,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
      * @method
      * Loads products for several categories in one request
      *
+     * @param {array} ids - array containing categories ids.
      * @returns deferred object.
      */
     App.Collections.Products.get_slice_products = function(ids) {
