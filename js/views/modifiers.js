@@ -68,7 +68,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             var option_el, max_quantity,
                 maximum_amount = modifierBlock.get("maximum_amount"),
                 mdf_quantity_el = this.$(".mdf_quantity select");
-                
+
             if (!maximum_amount) {
                 max_quantity = 5; //default value
             }
