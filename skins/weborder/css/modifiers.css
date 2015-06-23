@@ -193,3 +193,10 @@
         padding-right: 24px;
     }
 }
+
+@-moz-document url-prefix() {
+    .mdf_quantity select {
+        padding-left: 8px !important; /* sumsung tab fix, bug 25260 */
+        width: 65px; /* max-width is not working for FireFox select tags */
+    }
+}
