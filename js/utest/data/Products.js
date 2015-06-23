@@ -229,6 +229,24 @@ define([], function() {
                 "timetables": null,
                 "is_gift": false
             }
+        ],
+        "getAttributeValues_items": [
+            {
+                "id": 1,
+                "name": 'Test 1',
+                "category_id": 1,
+                "attribute_type": 1,
+                "attribute_1_values": ['f1', 'a1', 'c1'],
+                "attribute_2_values": ['f2', 'a2', 'c2']
+            },
+            {
+                "id": 2,
+                "name": 'Test 2',
+                "category_id": 1,
+                "attribute_type": 1,
+                "attribute_1_values": ['f1', 'd1', 'e1'],
+                "attribute_2_values": ['f2', 'd2', 'e2']
+            },
         ]
     };
 });

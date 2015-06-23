@@ -1355,74 +1355,126 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
         });
 
         describe('getAttributeValues(type)', function() {
-            // var collection, product, categories;
+            var collection;
 
-            // beforeEach(function() {
-            //     collection = new App.Collections.Products();
-            //     product = new App.Models.Product();
-            //     collection.add(product);
-            //     categories = App.Data.categories;
-            //     App.Data.categories = {set_inactive: new Function()};
+            beforeEach(function() {
+                collection = new App.Collections.Products();
+            });
 
-            //     spyOn(App.Data.categories, 'set_inactive');
-            // });
+            it('no items', function() {
+                expectEmptyResult();
+            });
 
-            // afterEach(function() {
-            //     App.Data.categories = categories;
-            // });
+            it('items exist, no parent items', function() {
+                var items = deepClone(data.getAttributeValues_items);
+                items[0].attribute_type = 0;
+                items[1].attribute_type = 2;
+                collection.add(items);
 
-            // it('all items are inactive', function() {
-            //     product.set('active', false);
-            //     collection.check_active(product);
+                expectEmptyResult();
+            });
 
-            //     expect(App.Data.categories.set_inactive).toHaveBeenCalledWith(product.get('id_category'));
-            // });
+            it('items exist, parent items exist, `attribute_1_values` and `attribute_2_values` aren\'t array', function() {
+                var items = deepClone(data.getAttributeValues_items);
+                items[0].attribute_1_values = null;
+                items[0].attribute_2_values = null;
+                items[1].attribute_1_values = null;
+                items[1].attribute_2_values = null;
+                collection.add(items);
 
-            // it('at least one item is active', function() {
-            //     product.set('active', true);
-            //     collection.check_active(product);
+                expectEmptyResult();
+            });
 
-            //     expect(App.Data.categories.set_inactive).not.toHaveBeenCalled();
-            // });
+            it('items exist, parent items exist, `attribute_1_values` and `attribute_2_values` are array', function() {
+                var items = deepClone(data.getAttributeValues_items),
+                    result1 = _.union(items[0].attribute_1_values, items[1].attribute_1_values).sort(),
+                    result2 = _.union(items[0].attribute_2_values, items[1].attribute_2_values).sort();
+                collection.add(items);
+
+                expect(collection.getAttributeValues(0)).toEqual(result1);
+                expect(collection.getAttributeValues(1)).toEqual(result1);
+                expect(collection.getAttributeValues(2)).toEqual(result2);
+            });
+
+            function expectEmptyResult() {
+                expect(collection.getAttributeValues(0)).toEqual([]);
+                expect(collection.getAttributeValues(1)).toEqual([]);
+                expect(collection.getAttributeValues(2)).toEqual([]);
+            }
         });
     });
 
-    // describe("App.Collections.Products static methods", function() {
+    describe("App.Collections.Products.init(id_category)", function() {
+        var collection, products,
+            category = 12;
 
-    //     beforeEach(function() {
-    //         this.products = App.Data.products;
-    //         App.Data.products = [];
-    //     });
+        beforeEach(function() {
+            collection = new App.Collections.Products();
+            products = App.Data.products;
+            App.Data.products = {};
+            App.Data.products[category] = {};
 
-    //     afterEach(function() {
-    //         App.Data.products = this.products;
-    //     });
+            spyOn(App.Collections.Products.prototype, 'get_products').and.returnValue(Backbone.$.Deferred());
+        });
 
-    //     it("Function init", function() {
-    //         spyOn(App.Collections.Products.prototype, 'get_products');
-    //         App.Collections.Products.init(5);
+        afterEach(function() {
+            App.Data.products = products;
+        });
 
-    //         expect(App.Data.products[5]).toBeDefined();
-    //         expect(App.Collections.Products.prototype.get_products).toHaveBeenCalledWith(5);
-    //         var count = App.Collections.Products.prototype.get_products.callCount;
+        it("collection already exists", function() {
+            var result = App.Collections.Products.init(category);
 
-    //         App.Collections.Products.init(5);
-    //         expect(App.Collections.Products.prototype.get_products.callCount).toBe(count);
-    //     });
+            expect(result.state()).toBe('resolved');
+            expect(App.Collections.Products.prototype.get_products).not.toHaveBeenCalled();
+        });
 
-    //     it("Function get_slice_products", function() {
-    //         var dfd = $.Deferred();
-    //         spyOn(App.Collections.Products.prototype, 'get_products').and.returnValue(dfd);
-    //         spyOn(App.Collections.Products.prototype, 'where').and.returnValue({name: 'test'});
-    //         App.Data.products[6] = 'defined';
-    //         App.Collections.Products.get_slice_products([5, 6]);
+        it("collection doesn\'t exist", function() {
+            var category = 1,
+                result = App.Collections.Products.init(category);
 
-    //         expect(App.Collections.Products.prototype.get_products).toHaveBeenCalledWith([5]);
-    //         dfd.resolve();
+            expect(result.state()).toBe('pending');
+            expect(App.Data.products[category] instanceof App.Collections.Products).toBe(true);
+            expect(App.Collections.Products.prototype.get_products).toHaveBeenCalledWith(category);
+        });
+    });
 
-    //         expect(App.Data.products[5]).toBeDefined();
-    //         expect(App.Data.products[5].length).toBe(1);
-    //         expect(App.Data.products[5].at(0).get('name')).toBe('test');
-    //     });
-    // });
+    describe("App.Collections.Products.get_slice_products(ids)", function() {
+        var collection, products, def, ids,
+            category = 12;
+
+        beforeEach(function() {
+            collection = new App.Collections.Products();
+            products = App.Data.products;
+            App.Data.products = {};
+            App.Data.products[category] = {};
+            def = Backbone.$.Deferred();
+
+            spyOn(App.Collections.Products.prototype, 'get_products').and.callFake(function(categories) {
+                ids = categories;
+                return def;
+            });
+        });
+
+        afterEach(function() {
+            App.Data.products = products;
+        });
+
+        it("collections already exist", function() {
+            var result = App.Collections.Products.get_slice_products([category]);
+
+            expect(result.state()).toBe('resolved');
+            expect(App.Collections.Products.prototype.get_products).not.toHaveBeenCalled();
+        });
+
+        it("collections don\'t exist", function() {
+            var category2 = 1,
+                result = App.Collections.Products.get_slice_products([category, category2]);
+            def.resolve();
+
+            expect(result.state()).toBe('resolved');
+            expect(App.Collections.Products.prototype.get_products).toHaveBeenCalled();
+            expect(ids).toEqual([category2]);
+            expect(App.Data.products[category2] instanceof App.Collections.Products).toBe(true);
+        });
+    });
 });
