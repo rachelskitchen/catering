@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "checkout_view"], function(Backbone) {
+define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
     'use strict';
 
     App.Views.CoreConfirmView = {};
@@ -44,7 +44,19 @@ define(["backbone", "checkout_view"], function(Backbone) {
             return this;
         },
         afterRender: function() {
-            this.subViews.push(App.Views.GeneratorView.create(this.options.submode == 'Gift' ? 'GiftCard' : 'Card', {
+            var mode;
+            switch(this.options.submode) {
+                case 'Gift':
+                    mode = 'GiftCard';
+                    break;
+                case 'Stanford':
+                    mode = 'StanfordCard';
+                    break;
+                default:
+                    mode = 'Card';
+                    break;
+            }
+            this.subViews.push(App.Views.GeneratorView.create(mode, {
                 el: this.$('#credit-card'),
                 mod: 'Main',
                 model: this.options.card

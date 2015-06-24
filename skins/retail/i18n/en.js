@@ -35,6 +35,7 @@
         'CHECKOUT_PAYPAL':                 'Checkout with PayPal',
         'CHECKOUT_PAY_CREDIT_CARD':        'Pay with Credit Card',
         'CHECKOUT_PAY_GIFT_CARD':          'Pay with Gift Card',
+        'CHECKOUT_PAY_STANFORD_CARD':      'Pay with Stanford Card',
         'CHECKOUT_PAY':                    'Pay',
         'CHECKOUT_CREDIT_CARD':            'Credit Card',
         'CHECKOUT_GIFT_CARD':              'Gift Card',

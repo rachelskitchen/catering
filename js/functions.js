@@ -56,7 +56,8 @@ var PAYMENT_TYPE = {
     CREDIT: 2,
     PAYPAL: 3,
     NO_PAYMENT: 4,
-    GIFT: 5
+    GIFT: 5,
+    STANFORD: 6
 };
 
 // Dining options
@@ -1033,6 +1034,7 @@ function format_timetables(timetables, separator) {
     }
     return res.join(separator);
 }
+// End of timetable functions
 
 var PaymentProcessor = {
     clearQueryString: function(payment_type, isNotHash) {
@@ -1052,7 +1054,7 @@ var PaymentProcessor = {
         var credit_card_button = creditCardPaymentProcessor != null;
 
         if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
-            && !credit_card_button && !processors.paypal && !processors.cash && !processors.gift_card) {
+            && !credit_card_button && !processors.paypal && !processors.cash && !processors.gift_card && !processors.stanford_card) {
             return undefined;
         }
 
@@ -1062,6 +1064,7 @@ var PaymentProcessor = {
         processors.paypal && payment_count++;
         processors.cash && payment_count++;
         processors.gift_card && payment_count++;
+        processors.stanford_card && payment_count++;
 
         return {
             payment_count: payment_count,
@@ -1661,7 +1664,21 @@ var GiftCardPaymentProcessor = {
         return payment_info;
     }
 };
-// End of timetable functions
+
+var StanfordCardPaymentProcessor = {
+    clearQueryString: function(queryString) {
+        return queryString;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        var giftcard = App.Data.stanfordCard && App.Data.stanfordCard.toJSON();
+        payment_info.cardInfo = {
+            cardNumber: $.trim(giftcard.cardNumber),
+            captchaKey: giftcard.captchaKey,
+            captchaValue: giftcard.captchaValue
+        };
+        return payment_info;
+    }
+};
 
 /*
 * removeClassRegexp: removes all classes by regular expression

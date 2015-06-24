@@ -393,6 +393,8 @@ define(["backbone", "async"], function(Backbone) {
                                     }
                                 }
                             })();
+// temp hack
+                            settings_system.payment_processor.stanford_card = true;
 
                             self.set("settings_system", settings_system);
                             App.Settings = App.Data.settings.get("settings_system");

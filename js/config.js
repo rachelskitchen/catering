@@ -85,7 +85,8 @@ define({
         filters: 'js/models/filters',
         locale: 'js/models/locale',
         rewards: 'js/models/rewards',
-        rewards_view: 'js/views/rewards'
+        rewards_view: 'js/views/rewards',
+        stanfordcard_view: 'js/views/stanfordcard',
     },
     waitSeconds: 30,
     shim: {
@@ -220,6 +221,9 @@ define({
         },
         'locale': {
             deps: ['backbone']
+        },
+        'stanfordcard_view': {
+            deps: ['factory']
         }
     },
     map: {
