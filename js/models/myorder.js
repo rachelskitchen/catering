@@ -1313,10 +1313,18 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             if(notifications)
                 order.notifications = notifications;
 
-            if(rewardsCard.number && rewardsCard.redemption_code) {
-                order_info.rewards_card = {
-                    redemption: rewardsCard.redemption_code
-                };
+            if(rewardsCard.number) {
+                if (rewardsCard.redemption_code) {
+                    // To redeem points card number must be provided in separate request together with captcha
+                    order_info.rewards_card = {
+                        redemption: rewardsCard.redemption_code
+                    };
+                } else {
+                    // Just collect points
+                    order_info.rewards_card = {
+                        number: rewardsCard.number
+                    };
+                }
             }
 
             if(checkout.dining_option === 'DINING_OPTION_SHIPPING') {
