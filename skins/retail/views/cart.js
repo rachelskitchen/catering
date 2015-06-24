@@ -137,6 +137,7 @@ define(["products_view"], function(Backbone) {
                 el: this.$('.pay_button'),
                 mod: 'PayButton',
                 collection: this.collection,
+                checkout: this.collection.checkout,
                 flag: 'checkout'
             }));
 

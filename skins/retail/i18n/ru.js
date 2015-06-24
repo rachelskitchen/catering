@@ -35,6 +35,7 @@
         'CHECKOUT_PAYPAL':                 'PayPal',
         'CHECKOUT_PAY_CREDIT_CARD':        'Кредитная карта',
         'CHECKOUT_PAY_GIFT_CARD':          'Подарочная карта',
+        'CHECKOUT_PAY_STANFORD_CARD':      'Stanford карта',
         'CHECKOUT_PAY':                    'Оформить заказ',
         'CHECKOUT_CREDIT_CARD':            'Кредитная карта',
         'CHECKOUT_GIFT_CARD':              'Подарочная карта',

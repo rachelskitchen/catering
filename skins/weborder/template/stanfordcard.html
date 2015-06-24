@@ -1,0 +1,22 @@
+<script type="text/template" id="stanfordcard_main-template">
+    <div class="card_title"> <%= _lp.STANFORDCARD_TITLE %> </div>
+    <div>
+        <label for="stanfordCardNumber"> <span class="bold required clip"><%= _lp.GIFTCARD_NUMBER %>:</span> </label>
+        <div class="input_beauty">
+            <input type="text" id="stanfordCardNumber" class="number-input">
+        </div>
+    </div>
+    <div>
+        <label for="stanfordCaptchaValue"> <span class="bold required clip"><%= _lp.GIFTCARD_CAPTCHA %>:</span> </label>
+        <div class="input_beauty">
+            <input type="text" autocomplete="off" id="stanfordCaptchaValue" name="captcha-input">
+        </div>
+    </div>
+    <div class="captcha_container">
+        <div class="captcha_wrap">
+            <img class="captcha" width="100%" height="100%">
+            <div class="captcha-spinner"></div>
+        </div>
+        <div class="btn btn-reload"> <span class="clip"> <%= _lp.GIFTCARD_RELOAD %> </span> </div>
+    </div>
+</script>
