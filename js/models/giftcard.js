@@ -28,16 +28,17 @@ define(["backbone"], function(Backbone) {
             cardNumber: '',
             captchaImage: '',
             captchaKey: '',
-            captchaValue: ''
+            captchaValue: '',
+            type: 'giftcard'
         },
         /**
         * Save current state model in storage (detected automatic).
         */
         saveCard: function() {
-            setData('giftcard',this);
+            setData(this.get('type'), this);
         },
         loadCard: function() {
-            var data = getData('giftcard');
+            var data = getData(this.get('type'));
             data = data instanceof Object ? data : {};
             delete data.img;
             this.set(data);

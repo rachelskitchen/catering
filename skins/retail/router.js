@@ -612,6 +612,10 @@ define(["main_router"], function(main_router) {
                     App.Data.giftcard = new App.Models.GiftCard;
                 }
 
+                if(!App.Data.stanfordCard && App.Settings.payment_processor.stanford_card) {
+                    App.Data.stanfordCard = new App.Models.GiftCard({type: 'stanfordcard'});
+                }
+
                 if (!App.Data.customer) {
                     App.Data.customer = new App.Models.Customer();
                 }

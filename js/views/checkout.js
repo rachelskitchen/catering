@@ -563,7 +563,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     collection: self.collection,
                     className: 'confirmPayCard',
                     timetable: App.Data.timetables,
-                    card: self.collection.rewardsCard,
+                    card: App.Data.stanfordCard,
                     two_columns_view: true
                 });
             });

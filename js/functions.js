@@ -1186,6 +1186,9 @@ var PaymentProcessor = {
             case PAYMENT_TYPE.GIFT:
                 payment_processor = GiftCardPaymentProcessor;
                 break;
+            case PAYMENT_TYPE.STANFORD:
+                payment_processor = StanfordCardPaymentProcessor;
+                break;
             case PAYMENT_TYPE.NO_PAYMENT:
                 payment_processor = NoPaymentPaymentProcessor;
                 break;
@@ -1670,11 +1673,11 @@ var StanfordCardPaymentProcessor = {
         return queryString;
     },
     processPayment: function(myorder, payment_info, pay_get_parameter) {
-        var giftcard = App.Data.stanfordCard && App.Data.stanfordCard.toJSON();
+        var stanfordCard = App.Data.stanfordCard && App.Data.stanfordCard.toJSON();
         payment_info.cardInfo = {
-            cardNumber: $.trim(giftcard.cardNumber),
-            captchaKey: giftcard.captchaKey,
-            captchaValue: giftcard.captchaValue
+            cardNumber: $.trim(stanfordCard.cardNumber),
+            captchaKey: stanfordCard.captchaKey,
+            captchaValue: stanfordCard.captchaValue
         };
         return payment_info;
     }

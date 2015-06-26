@@ -169,6 +169,13 @@ define(["revel_view", "generator"], function(revel_view) {
         }
     });
 
+    var FooterStanfordCardView = FooterCardView.extend({
+        proceed: function() {
+            var model = App.Data.stanfordCard;
+            model && model.trigger('add_card');
+        }
+    });
+
     var FooterConfirmView = App.Views.FactoryView.extend({
         name: 'footer',
         mod: 'confirm',
@@ -353,6 +360,7 @@ define(["revel_view", "generator"], function(revel_view) {
         App.Views.FooterView.FooterCheckoutView = FooterCheckoutView;
         App.Views.FooterView.FooterCardView = FooterCardView;
         App.Views.FooterView.FooterGiftCardView = FooterGiftCardView;
+        App.Views.FooterView.FooterStanfordCardView = FooterStanfordCardView;
         App.Views.FooterView.FooterConfirmView = FooterConfirmView;
         App.Views.FooterView.FooterDoneView = FooterDoneView;
         App.Views.FooterView.FooterMaintenanceView = FooterMaintenanceView;
