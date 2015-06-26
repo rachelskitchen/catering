@@ -202,7 +202,7 @@ define(['filters'], function() {
                 });
             });
 
-            it('`items` argument contains items are not Backbone models', function() {
+            it('`items` list are not Backbone models', function() {
                 expect(filter2.applyFilter([{}, {}, {}])).toEqual({
                     valid: [],
                     invalid: []

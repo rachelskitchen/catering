@@ -3,20 +3,21 @@ define(['categories'], function() {
 
     describe("App.Models.Categories", function() {
 
-        var def, model;
+        var def, model,
+            settings = App.Data.settings;
 
         beforeEach(function() {
             model = new App.Models.Category();
             def = {
-                description : '',
+                description: '',
                 id: null,
-                image: './skins/weborder/img/none.png',
+                image: settings.get_img_default(),
                 name: null,
                 parent_name: null,
                 parent_sort: null,
                 sort: null,
                 sort_val: null,
-                img : './skins/weborder/img/',
+                img: settings.get('img_path'),
                 active: true,
                 timetables: null
             };
@@ -39,7 +40,8 @@ define(['categories'], function() {
                 success = arguments[0].successResp;
                 error = arguments[0].error;
                 arg = arguments;
-            };
+            },
+            settings = App.Data.settings;
 
         $.ajax({
             type: "GET",
@@ -56,13 +58,13 @@ define(['categories'], function() {
             id = {
                 description: null,
                 id: 50,
-                image: './skins/weborder/img/none.png',
+                image: settings.get_img_default(),
                 name: 'sub2',
                 parent_name: 'Menu2',
                 parent_sort: 5,
                 sort: 1,
                 sort_val: 5001,
-                img : './skins/weborder/img/',
+                img: settings.get('img_path'),
                 active: true,
                 timetables: null
             };
