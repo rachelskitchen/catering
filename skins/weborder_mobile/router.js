@@ -39,6 +39,7 @@ define(["main_router"], function(main_router) {
         headerModes.Checkout = headerModes.OneButton;
         headerModes.Card = headerModes.Main;
         headerModes.GiftCard = headerModes.Main;
+        headerModes.StanfordCard = headerModes.Main;
         headerModes.Confirm = headerModes.OneButton;
         headerModes.Done = headerModes.Main;
         headerModes.Location = {mod: 'Location', className: 'two_button location'};
@@ -58,6 +59,7 @@ define(["main_router"], function(main_router) {
         footerModes.Checkout = {mod: 'Checkout'};
         footerModes.Card = {mod: 'Card'};
         footerModes.GiftCard = {mod: 'GiftCard'};
+        footerModes.StanfordCard = {mod: 'StanfordCard'};
         footerModes.Confirm = {mod: 'Confirm'};
         footerModes.Done = {mod: 'Done'};
         footerModes.Location = footerModes.Main;
@@ -83,6 +85,7 @@ define(["main_router"], function(main_router) {
             "checkout" : "checkout",
             "card" : "card",
             "giftcard" : "gift_card",
+            "stanfordcard": "stanford_card",
             "confirm": "confirm",
             "done": "done",
             "location": "location",
@@ -579,6 +582,28 @@ define(["main_router"], function(main_router) {
                 this.change_page();
             });
         },
+        stanford_card: function() {
+            this.prepare('stanfordcard', function() {
+                if(!App.Data.stanfordCard)
+                    App.Data.stanfordCard = new App.Models.GiftCard({type: 'stanfordcard'});
+
+                App.Data.header.set({
+                    page_title: _loc['HEADER_STANFORD_CARD_PT']
+                });
+
+                App.Data.mainModel.set({
+                    header: headerModes.StanfordCard,
+                    footer: footerModes.StanfordCard,
+                    content: {
+                        modelName: 'StanfordCard',
+                        model: App.Data.stanfordCard,
+                        mod: 'Main'
+                    }
+                });
+
+                this.change_page();
+            });
+        },
         confirm: function() {
             var load = $.Deferred();
             if (App.Data.myorder.length === 0) {
@@ -631,7 +656,7 @@ define(["main_router"], function(main_router) {
                 return this.navigate('index', true);
             }
             this.prepare('done', function() {
-                
+
                 // if App.Data.customer doesn't exist (success payment -> history.back() to #confirm -> history.forward() to #done)
                 // need to init it.
                 if(!App.Data.customer) {
@@ -662,7 +687,7 @@ define(["main_router"], function(main_router) {
             var settings = App.Data.settings.get('settings_system');
 
             this.prepare('store_info', function() {
-               
+
                 App.Data.header.set({
                     page_title: (settings instanceof Object) ? settings.business_name : _loc['HEADER_LOCATION_PT'],
                     back_title: _loc['HEADER_LOCATION_BT'],
@@ -686,7 +711,7 @@ define(["main_router"], function(main_router) {
         },
         map: function() {
             this.prepare('store_info', function() {
-                
+
                 App.Data.header.set({
                     page_title: _loc['HEADER_MAP_PT'],
                     back_title: _loc['HEADER_MAP_BT'],

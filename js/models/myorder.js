@@ -904,6 +904,17 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 }
             }
 
+            if (options.stanfordcard) {
+                var stanfordcard = App.Data.stanfordCard,
+                    check_card = stanfordcard.check();
+
+                if (stanfordcard.status === 'ERROR') {
+                    errorMsg = check_card.errorMsg;
+                } else if (check_card.status === 'ERROR_EMPTY_FIELDS') {
+                    fields = fields.concat(check_card.errorList);
+                }
+            }
+
             if (options.checkout) {
                 var checkout = this.checkout,
                     check_checkout = checkout.check();

@@ -20,53 +20,14 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory"], function(Backbone) {
+define(["factory", "giftcard_view"], function(factory) {
     'use strict';
 
     App.Views.CoreStanfordCardView = {};
 
-    App.Views.CoreStanfordCardView.CoreStanfordCardMainView = App.Views.FactoryView.extend({
+    App.Views.CoreStanfordCardView.CoreStanfordCardMainView = App.Views.CoreGiftCardView.CoreGiftCardMainView.extend({
         name: 'stanfordcard',
-        mod: 'main',
-        bindings: {
-            '.number-input': 'value: number, events: ["input"]',
-            '.captcha-input': 'value: captchaValue, events: ["input"]',
-            '.captcha-image': 'updateCaptcha: url'
-        },
-        events: {
-            'click .update-captcha': 'updateCaptcha'
-        },
-        initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            inputTypeMask(this.$('.number-input'), /^\d*$/, this.model.get('number'), 'numeric');
-            this.updateCaptcha();
-        },
-        computeds: {
-            url: {
-                deps: ['captchaImage', '_settings_host'],
-                get: function(captchaImage, _settings_host) {
-                    if(captchaImage) {
-                        return _settings_host + captchaImage;
-                    } else {
-                        return '';
-                    }
-                }
-            }
-        },
-        updateCaptcha: function() {
-            this.removeCaptchaSpinner();
-            this.createCaptchaSpinner();
-            this.model.set('captchaImage', '');
-            this.model.loadCaptcha();
-        },
-        createCaptchaSpinner: function() {
-            this.$('.captcha-spinner').spinner();
-            this.captchaSpinner = this.$('.ui-spinner');
-        },
-        removeCaptchaSpinner: function() {
-            this.captchaSpinner && this.captchaSpinner.remove();
-            delete this.captchaSpinner;
-        }
+        mod: 'main'
     });
 
     return new (require('factory'))(function() {

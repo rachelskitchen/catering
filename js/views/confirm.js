@@ -87,13 +87,25 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             self.collection.check_order({
                 card: self.options.submode == 'Credit',
                 giftcard: self.options.submode == 'Gift',
+                stanfordcard: self.options.submode == 'Stanford',
                 order: true,
                 tip: true,
                 customer: true,
                 checkout: true
             }, function() {
-                self.collection.create_order_and_pay(self.options.submode == 'Gift' ?
-                                                     PAYMENT_TYPE.GIFT : PAYMENT_TYPE.CREDIT);
+                var paymentType;
+                switch(self.options.submode) {
+                    case 'Gift':
+                        paymentType = PAYMENT_TYPE.GIFT;
+                        break;
+                    case 'Stanford':
+                        paymentType = PAYMENT_TYPE.STANFORD;
+                        break;
+                    default:
+                        paymentType = PAYMENT_TYPE.CREDIT;
+                        break;
+                }
+                self.collection.create_order_and_pay(paymentType);
                 !self.canceled && self.collection.trigger('showSpinner');
             });
         }
