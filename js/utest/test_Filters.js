@@ -19,7 +19,7 @@ define(['filters'], function() {
             }
         });
 
-        //without items
+        // with items and comparing with a price
         filter2 = new App.Models.Filter({
             filterItems: [{
                 value: 1,
@@ -32,6 +32,8 @@ define(['filters'], function() {
                 return item.get('price') === filter.get('value');
             }
         });
+
+        // with items and comparing with a cost
         filter3 = new App.Models.Filter({
             filterItems: [{
                 value: 2,
@@ -186,7 +188,7 @@ define(['filters'], function() {
 
             it('`compare` is undefined', function() {
                 filter1.set({compare: null});
-                expect(filter1.applyFilter()).toEqual(emptyResult);
+                expect(filter1.applyFilter([])).toEqual(emptyResult);
             });
 
             it('`items` argument isn\'t passed', function() {
@@ -195,6 +197,13 @@ define(['filters'], function() {
 
             it('`items` argument is empty array', function() {
                 expect(filter2.applyFilter([])).toEqual({
+                    valid: [],
+                    invalid: []
+                });
+            });
+
+            it('`items` argument contains items are not Backbone models', function() {
+                expect(filter2.applyFilter([{}, {}, {}])).toEqual({
                     valid: [],
                     invalid: []
                 });
