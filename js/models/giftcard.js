@@ -1,4 +1,4 @@
-/*
+/**
  * Revel Systems Online Ordering Application
  *
  *  Copyright (C) 2014 by Revel Systems
@@ -20,25 +20,22 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone"], function(Backbone) {
+define(["backbone", "captcha"], function(Backbone) {
     'use strict';
 
-    App.Models.GiftCard = Backbone.Model.extend({
-        defaults: {
+    App.Models.GiftCard = App.Models.Captcha.extend({
+        defaults: _.extend({}, App.Models.Captcha.prototype.defaults, {
             cardNumber: '',
-            captchaImage: '',
-            captchaKey: '',
-            captchaValue: '',
-            type: 'giftcard'
-        },
+            storageKey: 'giftcard'
+        }),
         /**
         * Save current state model in storage (detected automatic).
         */
         saveCard: function() {
-            setData(this.get('type'), this);
+            setData(this.get('storageKey'), this);
         },
         loadCard: function() {
-            var data = getData(this.get('type'));
+            var data = getData(this.get('storageKey'));
             data = data instanceof Object ? data : {};
             delete data.img;
             this.set(data);
@@ -63,14 +60,6 @@ define(["backbone"], function(Backbone) {
                     status: "OK"
                 };
             };
-        },
-        loadCaptcha: function() {
-            var self = this;
-            $.getJSON(App.Data.settings.get("host") + '/weborders/captcha/?establishment=1', {}, function(json) {
-                self.set('captchaImage', json.captcha_image)
-                self.set('captchaKey', json.captcha_key)
-            });
-
         }
     });
 });

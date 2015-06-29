@@ -17,6 +17,9 @@
 .confirmPayCard .left-panel {
     margin-top: 150px;
 }
+.confirmPayCard.stanford-card .left-panel {
+    margin-top: 0;
+}
 .confirmPayCard .right-panel-wrap {
     display: table-cell;
     vertical-align: top;
@@ -51,6 +54,10 @@
     padding-left: 5px;
     padding-right: 5px;
 }
+.confirmPayCard.stanford-card .card_title {
+    margin-top: 8px;
+}
+
 .confirmPayCard .pickup_time {
     margin: 15px 10px 5px 10px;
     text-align: center;

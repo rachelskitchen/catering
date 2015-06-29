@@ -9,13 +9,34 @@
     <div class="right-panel-wrap">
         <div class="panel right-panel">
             <div class="cart_title clip"> <%= _lp.CONFIRM_REVIEW_ORDER %> </div>
-            <%
-                var title = isDelivery ? _lp.CONFIRM_DELIVERY_TIME : _lp.CONFIRM_ARRIVAL_TIME,
-                    content = pickup_time;
-            %>
-            <div class="pickup_time" title="<%= title %>: <%= content %>">
-                <span class="clip"> <%= title %> </span>
-                <span class="clip"> <%= content %> </span>
+            <div class="pickup_time">
+                <span class="clip pickup-time-title"></span>
+                <span class="clip pickup-time"></span>
+            </div>
+            <div class="order-items-wrap">
+                 <div class="order-items"></div>
+            </div>
+            <ul class="total_block"></ul>
+            <div class="btn btn-submit"> <span class="clip"> <%= _lp.CONFIRM_SUBMIT %> </span> </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="confirm_stanford_card-template">
+    <div class="left-panel-wrap">
+        <div class="panel">
+           <div class="left-panel">
+               <div id="credit-card"></div>
+               <div class="stanford-plans"></div>
+           </div>
+        </div>
+    </div>
+    <div class="right-panel-wrap">
+        <div class="panel right-panel">
+            <div class="cart_title clip"> <%= _lp.CONFIRM_REVIEW_ORDER %> </div>
+            <div class="pickup_time">
+                <span class="clip pickup-time-title"></span>
+                <span class="clip pickup-time"></span>
             </div>
             <div class="order-items-wrap">
                  <div class="order-items"></div>
