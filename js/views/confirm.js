@@ -111,6 +111,30 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
         }
     });
 
+    App.Views.CoreConfirmView.CoreConfirmStanfordCardView = App.Views.CoreConfirmView.CoreConfirmPayCardView.extend({
+        events: {
+            'click .btn-submit.submit-payment': 'submit_payment',
+            'click .btn-submit.submit-card': 'submit_card',
+        },
+        submit_payment: function() {
+            var self = this;
+            saveAllData();
+
+            self.collection.check_order({
+                order: true,
+                tip: true,
+                customer: true,
+                checkout: true
+            }, function() {
+                self.collection.create_order_and_pay(PAYMENT_TYPE.STANFORD);
+                !self.canceled && self.collection.trigger('showSpinner');
+            });
+        },
+        submit_card: function() {
+            console.log('submit_card')
+        }
+    });
+
     return new (require('factory'))(function() {
         App.Views.ConfirmView = {};
         App.Views.ConfirmView.ConfirmPayCardView = App.Views.CoreConfirmView.CoreConfirmPayCardView;
