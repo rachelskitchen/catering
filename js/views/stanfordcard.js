@@ -27,12 +27,64 @@ define(["factory", "giftcard_view"], function(factory) {
 
     App.Views.CoreStanfordCardView.CoreStanfordCardMainView = App.Views.CoreGiftCardView.CoreGiftCardMainView.extend({
         name: 'stanfordcard',
-        mod: 'main'
+        mod: 'main',
+        bindings: _.extend({}, App.Views.CoreGiftCardView.CoreGiftCardMainView.prototype.bindings, {
+            '.number-input': 'value: number, events:["keyup", "blur", "touchend"], attr: {readonly: planId}',
+            '.captcha-input': 'value: captchaValue, events:["keyup", "blur", "touchend"], attr: {readonly: planId}',
+            '.btn-reload': 'classes: {disabled: planId}',
+            '.cancel-input': 'toggle: planId'
+        }),
+        events: {
+            'click .btn-reload': 'reload_captcha',
+            'click .cancel-input': 'reset'
+        },
+        reset: function() {
+            this.model.reset();
+            this.reload_captcha();
+        }
+    });
+
+    App.Views.CoreStanfordCardView.CoreStanfordCardPlanView = App.Views.FactoryView.extend({
+        name: 'stanfordcard',
+        mod: 'plan',
+        tagName: 'li',
+        className: 'stanford-plan',
+        bindings: {
+            ':el': 'classes: {active: selected}',
+            '.name': 'text: name',
+            '.balance': 'text: currencyFormat(balance)'
+        },
+        events: {
+            'click': 'select'
+        },
+        select: function() {
+            this.model.set('selected', true);
+        }
+    });
+
+    App.Views.CoreStanfordCardView.CoreStanfordCardPlansView = App.Views.FactoryView.extend({
+        name: 'stanfordcard',
+        mod: 'plans',
+        bindings: {
+            ':el': 'toggle: plansLength',
+            '.list': 'collection: $collection'
+        },
+        computeds: {
+            plansLength: {
+                deps: ['$collection'],
+                get: function(plans) {
+                    return plans.length;
+                }
+            }
+        },
+        itemView: App.Views.CoreStanfordCardView.CoreStanfordCardPlanView
     });
 
     return new (require('factory'))(function() {
         App.Views.StanfordCardView = {};
         App.Views.StanfordCardView.StanfordCardMainView = App.Views.CoreStanfordCardView.CoreStanfordCardMainView;
+        App.Views.StanfordCardView.StanfordCardPlansView = App.Views.CoreStanfordCardView.CoreStanfordCardPlansView;
+        App.Views.StanfordCardView.StanfordCardPlanView = App.Views.CoreStanfordCardView.CoreStanfordCardPlanView;
     });
 
 });

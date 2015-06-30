@@ -44,24 +44,35 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             return this;
         },
         afterRender: function() {
-            var mode;
-            switch(this.options.submode) {
-                case 'Gift':
-                    mode = 'GiftCard';
-                    break;
-                case 'Stanford':
-                    mode = 'StanfordCard';
-                    break;
-                default:
-                    mode = 'Card';
-                    break;
-            }
-            this.subViews.push(App.Views.GeneratorView.create(mode, {
+            this.subViews.push(App.Views.GeneratorView.create(this.options.submode == 'Gift' ? 'GiftCard' : 'Card', {
                 el: this.$('#credit-card'),
                 mod: 'Main',
                 model: this.options.card
             }));
 
+            this.addCart();
+        },
+        events: {
+            'click .btn-submit': 'submit_payment'
+        },
+        submit_payment: function() {
+            var self = this;
+            this.options.card.trigger('add_card');
+            saveAllData();
+
+            self.collection.check_order({
+                card: self.options.submode == 'Credit',
+                giftcard: self.options.submode == 'Gift',
+                order: true,
+                tip: true,
+                customer: true,
+                checkout: true
+            }, function() {
+                self.collection.create_order_and_pay(self.options.submode == 'Gift' ? PAYMENT_TYPE.GIFT : PAYMENT_TYPE.CREDIT);
+                !self.canceled && self.collection.trigger('showSpinner');
+            });
+        },
+        addCart: function() {
             this.subViews.push(App.Views.GeneratorView.create('MyOrder', {
                 el: this.$('.order-items'),
                 mod: 'List',
@@ -75,46 +86,47 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
                 model: this.collection.total,
                 collection: this.collection
             }));
-        },
-        events: {
-            'click .btn-submit': 'submit_payment'
-        },
-        submit_payment: function() {
-            var self = this;
-            this.options.card.trigger('add_card');
-            saveAllData();
-
-            self.collection.check_order({
-                card: self.options.submode == 'Credit',
-                giftcard: self.options.submode == 'Gift',
-                stanfordcard: self.options.submode == 'Stanford',
-                order: true,
-                tip: true,
-                customer: true,
-                checkout: true
-            }, function() {
-                var paymentType;
-                switch(self.options.submode) {
-                    case 'Gift':
-                        paymentType = PAYMENT_TYPE.GIFT;
-                        break;
-                    case 'Stanford':
-                        paymentType = PAYMENT_TYPE.STANFORD;
-                        break;
-                    default:
-                        paymentType = PAYMENT_TYPE.CREDIT;
-                        break;
-                }
-                self.collection.create_order_and_pay(paymentType);
-                !self.canceled && self.collection.trigger('showSpinner');
-            });
         }
     });
 
     App.Views.CoreConfirmView.CoreConfirmStanfordCardView = App.Views.CoreConfirmView.CoreConfirmPayCardView.extend({
+        name: 'confirm',
+        mod: 'stanford_card',
+        initialize: function() {
+            this.listenTo(this.options.card, 'onStanfordCardError', this.showErrorMsg, this);
+            App.Views.CoreConfirmView.CoreConfirmPayCardView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            '.submit-order': 'toggle: card_planId',
+            '.submit-card': 'toggle: select(card_planId, false, true), classes: {disabled: isBtnDisabled}',
+        },
         events: {
-            'click .btn-submit.submit-payment': 'submit_payment',
-            'click .btn-submit.submit-card': 'submit_card',
+            'click .btn-submit.submit-order': 'submit_payment',
+            'click .btn-submit.submit-card': 'submit_card'
+        },
+        computeds: {
+            isBtnDisabled: {
+                deps: ['card_number', 'card_captchaKey', 'card_captchaValue'],
+                get: function(number, cKey, cValue) {
+                    return !number || !cKey || !cValue;
+                }
+            }
+        },
+        afterRender: function() {
+            this.subViews.push(App.Views.GeneratorView.create('StanfordCard', {
+                el: this.$('#credit-card'),
+                mod: 'Main',
+                model: this.options.card
+            }));
+
+            this.subViews.push(App.Views.GeneratorView.create('StanfordCard', {
+                el: this.$('.stanford-plans'),
+                mod: 'Plans',
+                model: this.options.card,
+                collection: this.options.card.get('plans')
+            }));
+
+            this.addCart();
         },
         submit_payment: function() {
             var self = this;
@@ -131,12 +143,17 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             });
         },
         submit_card: function() {
-            console.log('submit_card')
+            this.collection.trigger('showSpinner');
+            this.options.card.getPlans().then(this.collection.trigger.bind(this.collection, 'hideSpinner'));
+        },
+        showErrorMsg: function(msg) {
+            App.Data.errors.alert(msg);
         }
     });
 
     return new (require('factory'))(function() {
         App.Views.ConfirmView = {};
         App.Views.ConfirmView.ConfirmPayCardView = App.Views.CoreConfirmView.CoreConfirmPayCardView;
+        App.Views.ConfirmView.ConfirmStanfordCardView = App.Views.CoreConfirmView.CoreConfirmStanfordCardView;
     });
 });

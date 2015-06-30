@@ -1054,7 +1054,7 @@ var PaymentProcessor = {
         var credit_card_button = creditCardPaymentProcessor != null;
 
         if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
-            && !credit_card_button && !processors.paypal && !processors.cash && !processors.gift_card && !processors.stanford_card) {
+            && !credit_card_button && !processors.paypal && !processors.cash && !processors.gift_card && !processors.stanford) {
             return undefined;
         }
 
@@ -1064,7 +1064,7 @@ var PaymentProcessor = {
         processors.paypal && payment_count++;
         processors.cash && payment_count++;
         processors.gift_card && payment_count++;
-        processors.stanford_card && payment_count++;
+        processors.stanford && payment_count++;
 
         return {
             payment_count: payment_count,
@@ -1675,9 +1675,7 @@ var StanfordCardPaymentProcessor = {
     processPayment: function(myorder, payment_info, pay_get_parameter) {
         var stanfordCard = App.Data.stanfordCard && App.Data.stanfordCard.toJSON();
         payment_info.cardInfo = {
-            cardNumber: $.trim(stanfordCard.cardNumber),
-            captchaKey: stanfordCard.captchaKey,
-            captchaValue: stanfordCard.captchaValue
+            planId: $.trim(stanfordCard.planId)
         };
         return payment_info;
     }

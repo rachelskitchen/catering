@@ -5,6 +5,7 @@
         <div class="input_beauty">
             <input type="text" id="stanfordCardNumber" class="number-input">
         </div>
+        <span class="cancel-input"></span>
     </div>
     <div>
         <label for="stanfordCaptchaValue"> <span class="bold required clip"><%= _lp.GIFTCARD_CAPTCHA %>:</span> </label>
@@ -19,4 +20,16 @@
         </div>
         <div class="btn btn-reload"> <span class="clip"> <%= _lp.GIFTCARD_RELOAD %> </span> </div>
     </div>
+</script>
+
+<script type="text/template" id="stanfordcard_plans-template">
+    <div class="card_title"><%= _lp.STANFORD_PLANS %></div>
+    <ul class="list"></ul>
+</script>
+
+<script type="text/template" id="stanfordcard_plan-template">
+    <span>
+        <span class="row name"></span>
+        <span class="row row-balance"><%= _lp.STANFORD_BALANCE %> <span class="balance"></span></span>
+    </span>
 </script>

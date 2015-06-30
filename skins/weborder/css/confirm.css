@@ -56,6 +56,7 @@
 }
 .confirmPayCard.stanford-card .card_title {
     margin-top: 8px;
+    margin-bottom: 8px !important;
 }
 
 .confirmPayCard .pickup_time {
@@ -82,6 +83,49 @@
 .confirmPayCard .captcha_container {
     position: relative;
     left: 230px;
+}
+.confirmPayCard.stanford-card .btn-submit.disabled {
+    margin: 10px 10px 13px;
+    box-shadow: none;
+}
+.stanford-card .stanford-plans {
+    margin-top: 50px;
+}
+.stanford-card .stanford-plans .list {
+    max-height: 330px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.stanford-card .stanford-plan {
+    margin: 5px 19px;
+    padding: 10px;
+    border-width: 1px;
+    border-style: solid;
+    position: relative;
+}
+.stanford-card .stanford-plan .row {
+    display: block;
+    cursor: pointer;
+}
+.stanford-card .stanford-plan .name {
+    font-weight: bold;
+}
+.stanford-card .stanford-plan .row-balance {
+    font-size: 16px;
+    padding-top: 4px;
+}
+.stanford-card .stanford-plan.active:after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+.stanford-card .cancel-input {
+    line-height: 32px;
+    right: 5px;
 }
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
@@ -118,6 +162,10 @@
     line-height: 20px;
     margin-top: 14px;
     margin-left: 14px;
+}
+.confirmPayCard .btn-reload.disabled {
+    margin-top: 17px;
+    margin-left: 17px;
 }
 
 #popup .order-items {

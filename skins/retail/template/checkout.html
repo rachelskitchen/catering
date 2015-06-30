@@ -161,10 +161,7 @@
         <% if(gift_card) { %>
             <div class="btn gift-card"> <span class="clip"> <%= _lp.CHECKOUT_PAY_GIFT_CARD %> </span> </div>
         <% } %>
-        <% if(stanford_card) { %>
-            <div class="btn stanford-card"> <span class="clip"> <%= _lp.CHECKOUT_PAY_STANFORD_CARD %> </span> </div>
-        <% } %>
-        <% if(stanford_card) { %>
+        <% if(stanford) { %>
             <div class="btn stanford-card"> <span class="clip"> <%= _lp.CHECKOUT_PAY_STANFORD_CARD %> </span> </div>
         <% } %>
     <% } else if (flag) { %>
@@ -182,7 +179,7 @@
         <% if(cash) { %>
             <div class="btn cash"> <span class="clip"> </span> </div>
         <% } %>
-        <% if(stanford_card) { %>
+        <% if(stanford) { %>
             <div class="btn stanford-card"> <span class="clip"> <%= _lp.CHECKOUT_STANFORD_CARD %> </span> </div>
         <% } %>
     <% } %>

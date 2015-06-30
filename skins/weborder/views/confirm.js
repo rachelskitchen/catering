@@ -65,7 +65,18 @@ define(["confirm_view"], function(confirm_view) {
         }
     });
 
+    var ConfirmStanfordCardView = App.Views.CoreConfirmView.CoreConfirmStanfordCardView.extend({
+        bindings: mixProto('bindings'),
+        computeds: mixProto('computeds'),
+        bindingFilters: mixProto('bindingFilters')
+    });
+
+    function mixProto(prop) {
+        return _.extend({}, App.Views.CoreConfirmView.CoreConfirmStanfordCardView.prototype[prop], ConfirmPayCardView.prototype[prop]);
+    }
+
     return new (require('factory'))(confirm_view.initViews.bind(confirm_view), function() {
         App.Views.ConfirmView.ConfirmPayCardView = ConfirmPayCardView;
+        App.Views.ConfirmView.ConfirmStanfordCardView = ConfirmStanfordCardView;
     });
 });
