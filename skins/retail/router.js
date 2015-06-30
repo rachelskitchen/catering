@@ -613,7 +613,7 @@ define(["main_router"], function(main_router) {
                 }
 
                 if(!App.Data.stanfordCard && App.Settings.payment_processor.stanford) {
-                    App.Data.stanfordCard = new App.Models.GiftCard({type: 'stanfordcard'});
+                    App.Data.stanfordCard = new App.Models.StanfordCard();
                 }
 
                 if (!App.Data.customer) {
