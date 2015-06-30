@@ -560,8 +560,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             }, function() {
                 App.Data.mainModel.set('popup', {
                     modelName: 'Confirm',
-                    mod: 'PayCard',
-                    submode: 'Stanford',
+                    mod: 'StanfordCard',
                     collection: self.collection,
                     checkout: self.collection.checkout,
                     className: 'confirmPayCard stanford-card',

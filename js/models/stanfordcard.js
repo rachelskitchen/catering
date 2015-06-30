@@ -120,6 +120,7 @@ define(["backbone", "captcha"], function(Backbone) {
             } else if(Array.isArray(plans)) {
                 plans = new App.Collections.StanfordCardPlans(plans);
             }
+            this.set('plans', plans);
             this.listenTo(plans, 'change:selected', this.updatePlanId, this);
         },
         /**
@@ -156,16 +157,20 @@ define(["backbone", "captcha"], function(Backbone) {
          */
         getPlans: function() {
             var est = App.Data.settings.get('establishment'),
-                data = this.toJSON();
+                req = Backbone.$.Deferred(),
+                plans = this.get('plans'),
+                data = this.toJSON(),
+                self = this;
 
             // abort execution if one of 'captchaKey', 'captchaValue', 'number' is invalid
-            if(!data.number.length || !data.captchaKey || !data.captchaValue || !data.number) {
-                return;
+            if(typeof data.number != 'string' || !data.number.length || !data.captchaKey || !data.captchaValue) {
+                req.resolve();
+                return req;
             }
 
             // send request
             Backbone.$.ajax({
-                url: '/weborders/reward_cards/',
+                url: '/weborders/stanford_card/',
                 type: 'POST',
                 data: JSON.stringify({
                     establishment: est,
@@ -179,17 +184,20 @@ define(["backbone", "captcha"], function(Backbone) {
                     // {status: 'OK', data:[...]} - card number exists
                     // {status: 'ERROR', data: []} - card number doesn't exist
                     // {status: 'ERROR', errorMsg: '...'} - invalid captcha
-                    var plans = this.get('plans');
                     if(!Array.isArray(data.data)) {
                         self.trigger('onStanfordCardError', data.errorMsg);
                     } else if(!data.data.length) {
                         plans.reset();
-                        self.trigger('onStanfordCardError', 'no available plans');
+                        self.trigger('onStanfordCardError', _loc.STANFORD_NO_PLANS);
                     } else {
                         plans.reset(data.data);
+                        plans.at(0).set('selected', true);
                     }
-                }
+                },
+                complete: req.resolve.bind(req)
             });
+
+            return req;
         }
     });
 });
