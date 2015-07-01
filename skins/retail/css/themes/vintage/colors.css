@@ -260,8 +260,7 @@ aside:after, aside:before {
     background: -webkit-linear-gradient(top,  #f9f9f9 0%,#eaeaea 100%);
     background: -o-linear-gradient(top,  #f9f9f9 0%,#eaeaea 100%);
     background: linear-gradient(to bottom,  #f9f9f9 0%,#eaeaea 100%);
-    border: 2px solid #781a00;
-    border-radius: 19px;
+    border-color: #781a00;
     box-shadow: 0 2px 0 0 #D5E4E9, 0 3px 3px 1px #C8CFD1;
 }
 #modifiers_popup .info {

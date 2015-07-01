@@ -129,7 +129,8 @@ define(["main_router"], function(main_router) {
                     about: this.navigate.bind(this, 'about', true),
                     loyalty: this.trigger.bind(this, 'navigateToLoyalty'),
                     menu: this.navigate.bind(this, 'menu', true),
-                    profile: this.trigger.bind(this, 'navigateToProfile')
+                    profile: this.trigger.bind(this, 'navigateToProfile'),
+                    stanfordcard: this.navigate.bind(this, 'stanfordcard', true),
                 });
                 var mainModel = App.Data.mainModel = new App.Models.MainModel();
                 var ests = App.Data.establishments;
@@ -585,7 +586,7 @@ define(["main_router"], function(main_router) {
         stanford_card: function() {
             this.prepare('stanfordcard', function() {
                 if(!App.Data.stanfordCard)
-                    App.Data.stanfordCard = new App.Models.GiftCard({type: 'stanfordcard'});
+                    App.Data.stanfordCard = new App.Models.StanfordCard();
 
                 App.Data.header.set({
                     page_title: _loc['HEADER_STANFORD_CARD_PT']
@@ -593,12 +594,22 @@ define(["main_router"], function(main_router) {
 
                 App.Data.mainModel.set({
                     header: headerModes.StanfordCard,
-                    footer: footerModes.StanfordCard,
-                    content: {
+                    footer: _.extend(footerModes.StanfordCard, {
+                        mainModel: App.Data.mainModel,
+                        card: App.Data.stanfordCard,
+                        myorder: App.Data.myorder
+                    }),
+                    content: [{
                         modelName: 'StanfordCard',
                         model: App.Data.stanfordCard,
                         mod: 'Main'
-                    }
+                    }, {
+                        modelName: 'StanfordCard',
+                        model: App.Data.stanfordCard,
+                        collection: App.Data.stanfordCard.get('plans'),
+                        mod: 'Plans',
+                        className: 'stanford-card-plans'
+                    }]
                 });
 
                 this.change_page();
@@ -613,6 +624,7 @@ define(["main_router"], function(main_router) {
             }
 
             this.prepare('confirm', function() {
+                var payments = App.Data.settings.get_payment_process();
 
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card;
@@ -623,9 +635,15 @@ define(["main_router"], function(main_router) {
                     back: this.navigate.bind(this, 'checkout', true)
                 });
 
+                App.Data.footer.set('payments', payments);
+
                 App.Data.mainModel.set({
                     header: headerModes.Confirm,
-                    footer: footerModes.Confirm,
+                    footer: _.extend(footerModes.Confirm, {
+                        payments: new Backbone.Model(payments),
+                        checkout: App.Data.myorder.checkout,
+                        mainModel: App.Data.mainModel
+                    }),
                     content: [
                         {
                             modelName: 'Total',

@@ -98,19 +98,11 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
         },
         bindings: {
             '.submit-order': 'toggle: card_planId',
-            '.submit-card': 'toggle: select(card_planId, false, true), classes: {disabled: isBtnDisabled}',
+            '.submit-card': 'toggle: not(card_planId), classes: {disabled: any(not(card_number), not(card_captchaKey), not(card_captchaValue))}',
         },
         events: {
             'click .btn-submit.submit-order': 'submit_payment',
             'click .btn-submit.submit-card': 'submit_card'
-        },
-        computeds: {
-            isBtnDisabled: {
-                deps: ['card_number', 'card_captchaKey', 'card_captchaValue'],
-                get: function(number, cKey, cValue) {
-                    return !number || !cKey || !cValue;
-                }
-            }
         },
         afterRender: function() {
             this.subViews.push(App.Views.GeneratorView.create('StanfordCard', {
