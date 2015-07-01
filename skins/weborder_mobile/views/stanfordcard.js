@@ -27,7 +27,7 @@
         StanfordCardMainView;
 
     StanfordCardMainView = CoreStanfordCardMainView.extend({
-        bindings: _.extend(CoreStanfordCardMainView.prototype.bindings, {
+        bindings: _.extend({}, CoreStanfordCardMainView.prototype.bindings, {
             '.btn-reload': 'classes: {"btn-disabled": planId}'
         }),
         initialize: function() {

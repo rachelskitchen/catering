@@ -29,7 +29,7 @@ define(["backbone"], function(Backbone) {
      */
     App.Models.Captcha = Backbone.Model.extend({
         /**
-         * @prop {object} defaults - literal object containing attribute with default values.
+         * @prop {object} defaults - literal object containing attributes with default values.
          *
          * @prop {string} defaults.captchaImage - captcha image url.
          * @default ''.
@@ -51,7 +51,7 @@ define(["backbone"], function(Backbone) {
          */
         loadCaptcha: function() {
             var self = this;
-            $.getJSON('/weborders/captcha/?establishment=' + App.Data.settings.get('establishment'), {}, function(json) {
+            Backbone.$.getJSON('/weborders/captcha/?establishment=' + App.Data.settings.get('establishment'), {}, function(json) {
                 self.set('captchaImage', json.captcha_image);
                 self.set('captchaKey', json.captcha_key);
             });
