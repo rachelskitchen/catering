@@ -254,8 +254,7 @@ aside:after, aside:before {
     background: -webkit-linear-gradient(top,  #f9f9f9 0%,#eaeaea 100%);
     background: -o-linear-gradient(top,  #f9f9f9 0%,#eaeaea 100%);
     background: linear-gradient(to bottom,  #f9f9f9 0%,#eaeaea 100%);
-    border: 2px solid #60c2e2;
-    border-radius: 19px;
+    border-color: #60c2e2;
 }
 #modifiers_popup .info {
     border-color: #a3a3a3;

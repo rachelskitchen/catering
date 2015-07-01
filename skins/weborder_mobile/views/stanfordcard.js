@@ -1,4 +1,4 @@
-/*
+/**
  * Revel Systems Online Ordering Application
  *
  *  Copyright (C) 2014 by Revel Systems
@@ -20,31 +20,19 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["stanfordcard_view"], function(stanfordcard_view) {
+ define(["stanfordcard_view"], function(stanfordcard_view) {
     'use strict';
 
-    var StanfordCardMainView = App.Views.CoreStanfordCardView.CoreStanfordCardMainView.extend({
+    var CoreStanfordCardMainView = App.Views.CoreStanfordCardView.CoreStanfordCardMainView,
+        StanfordCardMainView;
+
+    StanfordCardMainView = CoreStanfordCardMainView.extend({
+        bindings: _.extend(CoreStanfordCardMainView.prototype.bindings, {
+            '.btn-reload': 'classes: {"btn-disabled": planId}'
+        }),
         initialize: function() {
-            App.Views.CoreStanfordCardView.CoreStanfordCardMainView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'add_card', this.onProceed, this);
-            this.listenTo(App.Data.myorder, "paymentFailed", function(message) {
-                App.Data.mainModel.trigger("loadCompleted");
-                message && App.Data.errors.alert(message); // user notification
-            }, this);
-        },
-        onProceed: function() {
-            this.setData();
-            App.Data.myorder.check_order({
-                order: true,
-                tip: true,
-                customer: true,
-                checkout: true,
-                giftcard: false,
-                stanfordcard: true
-            }, function() {
-                App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.STANFORD);
-                App.Data.mainModel.trigger('loadStarted');
-            });
+            this.listenTo(this.model, 'resetNumber', this.reset, this);
+            CoreStanfordCardMainView.prototype.initialize.apply(this, arguments);
         }
     });
 
