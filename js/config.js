@@ -216,7 +216,7 @@ define({
             deps: ['backbone']
         },
         'rewards': {
-            deps: ['backbone']
+            deps: ['captcha']
         },
         'rewards_view': {
             deps: ['factory']

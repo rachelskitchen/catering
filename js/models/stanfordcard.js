@@ -140,6 +140,7 @@ define(["backbone", "captcha"], function(Backbone) {
                 number: this.defaults.number,
                 captchaKey: this.defaults.captchaKey,
                 captchaValue: this.defaults.captchaValue,
+                captchaImage: this.defaults.captchaImage,
                 planId: this.defaults.planId
             });
             this.get('plans').reset();
@@ -182,7 +183,7 @@ define(["backbone", "captcha"], function(Backbone) {
                 success: function(data) {
                     // expect response that may have following formats:
                     // {status: 'OK', data:[...]} - card number exists
-                    // {status: 'ERROR', data: []} - card number doesn't exist
+                    // {status: 'OK', data: []} - card number doesn't exist
                     // {status: 'ERROR', errorMsg: '...'} - invalid captcha
                     if(!Array.isArray(data.data)) {
                         self.trigger('onStanfordCardError', data.errorMsg);
