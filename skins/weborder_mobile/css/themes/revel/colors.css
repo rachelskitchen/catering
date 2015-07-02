@@ -415,3 +415,9 @@ span.cancel-input:active:before {
     background-size: 100%;
     background-repeat: no-repeat;
 }
+.search {
+    background: #d0d0d0;
+}
+.searchString input {
+    color: #707070;
+}

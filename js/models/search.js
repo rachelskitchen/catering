@@ -82,4 +82,18 @@ define(['products'], function() {
             });
         }
     });
+
+    App.Models.SearchLine = Backbone.Model.extend({
+        defaults: {
+            searchString: '',
+            isShow: true,
+            search: null //the instance of App.Collections.Search
+        },
+        initialize: function() {
+            this.listenTo(this, 'change:searchString', this.updateSearch, this);
+        },
+        updateSearch: function() {
+            this.get('search').search(this.get('searchString'));
+        } 
+    });
 });

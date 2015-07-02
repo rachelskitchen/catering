@@ -85,7 +85,8 @@ define({
         filters: 'js/models/filters',
         locale: 'js/models/locale',
         rewards: 'js/models/rewards',
-        rewards_view: 'js/views/rewards'
+        rewards_view: 'js/views/rewards',
+        search_line_view: 'js/views/search_line'
     },
     waitSeconds: 30,
     shim: {

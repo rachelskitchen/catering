@@ -32,8 +32,10 @@ define(["main_router"], function(main_router) {
     function defaultRouterData() {
         headerModes.Main = {mod: 'Main', className: 'main'};
         headerModes.OneButton = {mod: 'OneButton', className: 'one_button'};
+        headerModes.TwoButton = {mod: 'TwoButton', className: 'two_button'};
         headerModes.Products = headerModes.OneButton;
-        headerModes.Dir = headerModes.OneButton;
+        headerModes.Dir = headerModes.TwoButton;
+        headerModes.Search ={mod: 'TwoButton', className: 'two_button search'};
         headerModes.Modifiers = {mod: 'Modifiers', className: 'two_button modifiers'};
         headerModes.Myorder = {mod: 'TwoButton', className: 'two_button myorder'};
         headerModes.Checkout = headerModes.OneButton;
@@ -76,6 +78,7 @@ define(["main_router"], function(main_router) {
         routes: {
             "": "index",
             "index": "index",
+            "search": "search",
             "products/:id_category": "products",
             "modifiers/:id_category/:id_product": "modifiers_add",
             "modifiers_edit/:index": "modifiers_edit",
@@ -273,7 +276,13 @@ define(["main_router"], function(main_router) {
                     });
                 }
 
-                var header = {page_title: _loc['HEADER_INDEX_PT']};
+                var header = {
+                    page_title: _loc['HEADER_INDEX_PT'],
+                    back_title: undefined,
+                    forward_title: _loc['HEADER_INDEX_FT'],
+                    forward: self.navigate.bind(self, 'search', true)
+                };               
+
                 if(App.Data.dirMode)
                     header = Backbone.$.extend(header, {
                         back_title: _loc['HEADER_INDEX_BT'],
@@ -283,7 +292,7 @@ define(["main_router"], function(main_router) {
                 App.Data.header.set(header);
 
                 App.Data.mainModel.set({
-                    header: !App.Data.dirMode ? headerModes.Main : headerModes.Dir,
+                    header: headerModes.Dir,
                     footer: footerModes.Main,
                     content: [
                         {
@@ -303,6 +312,72 @@ define(["main_router"], function(main_router) {
                     this.change_page();
 
                 App.Data.settings.load_geoloc();
+            });
+        },
+        search: function() {
+            var self = this;
+            this.prepare('search', function() {
+                // load content block for categories
+                if (!App.Data.categories) {
+                    App.Data.categories = new App.Collections.Categories();
+                    App.Data.categories.loadData = App.Data.categories.get_categories();
+                    App.Data.categories.loadData.then(function() {
+                        App.Data.categories.trigger("load_complete");
+                        self.change_page();
+                    });
+                }
+
+                if (!App.Data.search) {
+                    App.Data.search = new App.Collections.Search();
+                }
+                if (!App.Data.searchLine) {
+                    App.Data.searchLine = new App.Models.SearchLine({search: App.Data.search});                    
+                }
+                var header = {
+                    page_title: _loc['HEADER_SEARCH_PT'],
+                    back_title: _loc['HEADER_SEARCH_BT'],
+                    forward_title: '',
+                    back: self.navigate.bind(self, 'index', true),
+                    forward: function(){
+                        var is_show = App.Data.searchLine.get('isShow') == true;
+                        if (is_show) {
+                            $('.content .search').hide();
+                            $('.content.search_list').css('top', '0em');
+                        } else {
+                            $('.content .search').show();
+                            $('.content.search_list').css('top', '');// use default css value
+                        }
+                        App.Data.searchLine.set('isShow', !is_show);
+                    }
+                };
+                App.Data.header.set(header);
+
+                App.Data.mainModel.set({
+                    header: headerModes.Search,
+                    footer: footerModes.Main,
+                    content: [
+                        {
+                            modelName: 'SearchLine',
+                            model: App.Data.searchLine,
+                            mod: 'Main'
+                        },                       
+                        {
+                            modelName: 'Product',
+                            collection: new App.Collections.Products(),
+                            search: App.Data.search,
+                            mod: 'SearchList',
+                            className: 'content search_list custom-scroll'
+                        }
+                    ]
+                });                
+
+                if(App.Data.categories.loadData.state() == 'resolved')
+                    this.change_page();
+
+                var pattern = App.Data.searchLine.get('searchString')
+                if (pattern) {
+                   App.Data.search.search(pattern);
+                }
             });
         },
         products: function(id_category) {
@@ -354,7 +429,7 @@ define(["main_router"], function(main_router) {
                         page_title: _loc['HEADER_MODIFIERS_PT'],
                         back_title: _loc['HEADER_MODIFIERS_BT'],
                         forward_title: _loc['HEADER_MODIFIERS_ADD_FT'],
-                        back: self.navigate.bind(self, 'products/' + id_category, true),
+                        back: window.history.back.bind(window.history),
                         forward: function() {
                             var check = order.check_order();
 
