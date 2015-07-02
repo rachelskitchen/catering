@@ -1133,6 +1133,14 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 };
             }
 
+            // add info for stanford card
+            if(params && params.type === PAYMENT_TYPE.STANFORD && params.planId) {
+                order.paymentInfo = {
+                    type: params.type,
+                    cardInfo: {planId: params.planId}
+                }
+            }
+
             var myorder_json = JSON.stringify(order);
             request = $.ajax({
                 type: "POST",
@@ -1357,7 +1365,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                         reportErrorFrm(MSG.ERROR_OCCURRED + ' ' + MSG.ERROR_INCORRECT_AJAX_DATA);
                         return;
                     }
-                    myorder.paymentResponse = data instanceof Object ? data : {};
+                    myorder.paymentResponse = data instanceof Object ? _.extend(data, {paymentType: payment_type}) : {};
                     myorder.paymentResponse.capturePhase = capturePhase;
 
                     switch(data.status) {
@@ -1366,6 +1374,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                                 successValidation = Backbone.$.Deferred();
                                 successValidation.then(myorder.trigger.bind(myorder, 'paymentResponseValid'));
                             } else {
+                                App.Data.stanfordCard && payment_type === PAYMENT_TYPE.STANFORD && App.Data.stanfordCard.updatePlans(data.balances.stanford);
                                 myorder.trigger('paymentResponse');
                             }
 

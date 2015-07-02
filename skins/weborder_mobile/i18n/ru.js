@@ -37,6 +37,7 @@
         'DONE_SEAT':                       'Место',
         'DONE_REWARD_CARD_POINTS':         'Накопленные баллы',
         'DONE_AMOUNT_CHARGED':             'Всего оплачено',
+        'DONE_STANFORD_CARD_BALANCE':      'баланс',
         'FOOTER_ABOUT':                    'О нас',
         'FOOTER_LOYALTY':                  'Бонусы',
         'FOOTER_LOCATION':                 'Карта',

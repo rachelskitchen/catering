@@ -321,5 +321,52 @@ define(['stanfordcard', 'js/utest/data/StanfordCard'], function(stanfordcard, da
                 expect(_data.captchaValue).toBe(card.get('captchaValue'));
             }
         });
+
+        describe('getSelectedPlan()', function() {
+            var plans;
+
+            beforeEach(function() {
+                plans = new App.Collections.StanfordCardPlans([data.PLAN_1, data.PLAN_2]);
+                card.set('plans', plans);
+            });
+
+            it('`planId` is null', function() {
+                card.set('planId', null);
+                expect(card.getSelectedPlan()).toBe(null);
+            });
+
+            it('`planId` is string, no plan is selected', function() {
+                var plan1 = plans.at(0),
+                    plan2 = plans.at(1);
+                plan1.set('selected', false);
+                plan2.set('selected', false);
+                card.set('planId', plan1.get('id'));
+                expect(card.getSelectedPlan()).toBe(null);
+            });
+
+            it('`planId` is string, a plan is selected', function() {
+                var plan1 = plans.at(0),
+                    plan2 = plans.at(1);
+                plan1.set('selected', false);
+                plan2.set('selected', true);
+                card.set('planId', plan2.get('id'));
+                expect(card.getSelectedPlan()).toBe(plan2);
+            });
+        });
+
+        describe('updatePlans(data)', function() {
+            it('data is not an array', function() {
+                var plans = card.get('plans');
+                spyOn(plans, 'set');
+                card.updatePlans();
+                expect(plans.set).not.toHaveBeenCalled();
+            });
+
+            it('data is an array', function() {
+                card.updatePlans([data.PLAN_1, data.PLAN_2]);
+                expect(card.get('plans').at(0).toJSON()).toEqual(data.PLAN_1);
+                expect(card.get('plans').at(1).toJSON()).toEqual(data.PLAN_2);
+            });
+        });
     });
 });

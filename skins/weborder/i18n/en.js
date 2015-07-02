@@ -96,6 +96,7 @@
         'MAIN_REWARD_CARD_POINTS':         'Reward Card Points',
         'MAIN_TOTAL_AMOUNT_CHARGED':       'Total Amount Charged',
         'MAIN_RETURN_TO_MENU':             'Return to Menu',
+        'MAIN_STANFORD_CARD_BALANCE':      'balance',
         'MODIFIERS_BUTTON_ADD':            'Add',
         'MODIFIERS_OPTIONAL':              'Optional',
         'MODIFIERS_OPTIONAL_UP':           'up to',

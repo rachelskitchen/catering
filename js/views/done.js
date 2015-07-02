@@ -58,6 +58,10 @@ define(["backbone", "factory"], function(Backbone) {
                 model.reward_points = get.reward_points || '';
                 model.symbol = App.Data.settings.get('settings_system').currency_symbol;
 
+                model.stanfordCard = get.paymentType === PAYMENT_TYPE.STANFORD && App.Data.stanfordCard && App.Data.stanfordCard.getSelectedPlan()
+                    ?  App.Data.stanfordCard.getSelectedPlan().toJSON()
+                    : '';
+
                 model.isOrderFromSeat = App.Data.orderFromSeat instanceof Object;
                 model.isDeliverToSeat = checkout.get("dining_option") === 'DINING_OPTION_DELIVERY_SEAT';
                 model.level = checkout.get("level");

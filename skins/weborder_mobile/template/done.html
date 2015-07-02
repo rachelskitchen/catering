@@ -32,6 +32,17 @@
             </span>
         </dd>
         <% } %>
+        <% if(stanfordCard) { %>
+        <dt> <span class="clip">&ldquo;<%= stanfordCard.name %>&rdquo; <%= _lp.DONE_STANFORD_CARD_BALANCE %>: </span> </dt>
+        <dd>
+            <span>
+                <strong>
+                    <span class="currency_symbol"><%= symbol %></span>
+                    <span class="price"><%= stanfordCard.balance %></span>
+                </strong>
+            </span>
+        </dd>
+        <% } %>
         <dt> <span class="clip"> <%= _lp.DONE_AMOUNT_CHARGED %>: </span> </dt>
         <dd>
             <span>

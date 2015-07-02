@@ -199,6 +199,26 @@ define(["backbone", "captcha"], function(Backbone) {
             });
 
             return req;
+        },
+        /**
+         * @method
+         * @returns {App.Models.StanfordCardPlan} a selected plan or null.
+         */
+        getSelectedPlan: function() {
+            var planId = this.get('planId'),
+                selected = this.get('plans').where({id: planId, selected: true});
+            return planId && selected.length ? selected[0] : null;
+        },
+        /**
+         * @method
+         * Updates plans.
+         *
+         * @param {Array} data.
+         */
+        updatePlans: function(data) {
+            if(Array.isArray(data)) {
+                this.get('plans').set(data);
+            }
         }
     });
 });
