@@ -61,6 +61,9 @@
         'GIFTCARD_RELOAD':                 'Перезагрузить',
         'HEADER_INDEX_PT':                 'Меню',
         'HEADER_INDEX_BT':                 'Директория',
+        'HEADER_INDEX_FT':                 'Поиск',
+        'HEADER_SEARCH_PT':                'Поиск товаров',
+        'HEADER_SEARCH_BT':                'Категории',
         'HEADER_PRODUCTS_BT':              'Категории',
         'HEADER_MODIFIERS_PT':             'Модификаторы',
         'HEADER_MODIFIERS_BT':             'Отмена',
@@ -203,6 +206,8 @@
             'покупок будут потрачены'
         ],
         'REWARDS_ENTER_CAPTCHA':           'Введите код с картинки',
-        'CONFIRM_SUBMIT':                  'Отправить'
+        'CONFIRM_SUBMIT':                  'Отправить',
+        'SEARCH_ENTER_STRING':             'Введите строку поиска',
+        'PRODUCTS_NOT_FOUND':              'Продукты не найдены'
     } // end of locale
 }); // end of module

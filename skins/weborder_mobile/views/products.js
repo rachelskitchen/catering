@@ -80,6 +80,14 @@ define(["products_view"], function(products_view) {
             this.subViews.removeFromDOMTree();
             this.collection.sortEx();
             App.Views.LazyListView.prototype.render.apply(this, arguments);
+            if (!this.collection.length) {
+                var view = App.Views.GeneratorView.create('Product', {
+                    el: $('<li class="product list-none"></li>'),
+                    mod: 'ListNone'
+                });
+                this.$('.products').append(view.el);
+                this.subViews.push(view);
+            }
             return this;
         },
         addItem: function(model) {
@@ -106,9 +114,24 @@ define(["products_view"], function(products_view) {
         }
     });
 
+    var ProductSearchListView = ProductListView.extend({
+        name: 'product',
+        mod: 'list',
+        initialize: function() {
+            this.defaultCollection = this.collection;
+            ProductListView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.options.search, 'onSearchComplete', this.update_table, this);
+        },
+        update_table: function(model) {
+            this.collection = model ? model.get('products') : this.defaultCollection;
+            this.render();
+        }
+    });
+
     return new (require('factory'))(products_view.initViews.bind(products_view), function() {
         App.Views.ProductView.ProductModifiersView = ProductModifiersView;
         App.Views.ProductView.ProductListItemView = ProductListItemView;
         App.Views.ProductView.ProductListView = ProductListView;
+        App.Views.ProductView.ProductSearchListView = ProductSearchListView;
     });
 });

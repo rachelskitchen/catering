@@ -61,6 +61,9 @@
         'GIFTCARD_RELOAD':                 'Reload',
         'HEADER_INDEX_PT':                 'Menu',
         'HEADER_INDEX_BT':                 'Directory',
+        'HEADER_INDEX_FT':                 'Search',
+        'HEADER_SEARCH_PT':                'Products search',
+        'HEADER_SEARCH_BT':                'Categories',
         'HEADER_PRODUCTS_BT':              'Categories',
         'HEADER_MODIFIERS_PT':             'Modifiers',
         'HEADER_MODIFIERS_BT':             'Cancel',
@@ -203,6 +206,8 @@
             'Purchases will be redeemed'
         ],
         'REWARDS_ENTER_CAPTCHA':           'Enter Captcha Characters',
-        'CONFIRM_SUBMIT':                  'Submit'
+        'CONFIRM_SUBMIT':                  'Submit',
+        'SEARCH_ENTER_STRING':             'Enter search string',
+        'PRODUCTS_NOT_FOUND':              'No products found'
     } // end of locale
 }); // end of module

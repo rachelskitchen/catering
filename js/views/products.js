@@ -183,10 +183,16 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         }
     });
 
+    App.Views.CoreProductView.CoreProductListNoneView = App.Views.ItemView.extend({
+        name: 'product',
+        mod: 'list_none'
+    });
+
     return new (require('factory'))(function() {
         App.Views.ProductView = {};
         App.Views.ProductView.ProductListItemView = App.Views.CoreProductView.CoreProductListItemView;
         App.Views.ProductView.ProductListView = App.Views.CoreProductView.CoreProductListView;
         App.Views.ProductView.ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView;
+        App.Views.ProductView.ProductListNoneView = App.Views.CoreProductView.CoreProductListNoneView;
     });
 });

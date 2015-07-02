@@ -157,3 +157,11 @@
     font-size: 2.7em;
 }
 /* gift card info block end */
+
+#content ul.products li.list-none {
+    border: none;
+    cursor: default;
+    font-size: 3em;
+    padding: 1em;
+}
+

@@ -42,6 +42,7 @@ define(["backbone", "factory", "generator"], function() {
             App.Views.HeaderView.HeaderMainView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:back_title', this.updateBackTitle, this);
             this.listenTo(this.model, 'change:page_title', this.showBtn, this);
+            this.listenTo(this.model, 'change:hide_left_button', this.showBtn, this);
         },
         render: function() {
             App.Views.HeaderView.HeaderMainView.prototype.render.apply(this, arguments);
@@ -60,7 +61,8 @@ define(["backbone", "factory", "generator"], function() {
         },
         showBtn: function() {
             // bug 13280
-            this.model.get('page_title') && this.$('.leftBtn').show();
+            if (this.model.get('page_title') && this.model.get('back_title'))
+                this.$('.leftBtn').show();
         }
     });
 

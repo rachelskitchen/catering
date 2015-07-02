@@ -24,6 +24,12 @@
             "templates": ["products"],
             "core": ["categories", "products"]
         },
+        "search": {
+            "css": ["store_info", "products", "search_line"],
+            "views": ["store_info", "products"],
+            "templates": ["store_info", "products", "search_line"],
+            "core": ["categories", "products", "search", "search_line_view"]
+        },
         "modifiers": {
             "css": ["modifiers", "products", "quantity", "instructions", "myorder"],
             "views": ["products", "quantity", "instructions", "myorder"],

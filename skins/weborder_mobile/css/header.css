@@ -116,3 +116,15 @@
     width: 3.3em;
 }
 /* modifiers mod end */
+
+#header .search .rightBtn:before {
+    content: '\f002';
+    font-family: 'FontAwesome';
+    padding-top: 0.2em;
+}
+#header .search h1 {
+    left: 6.0em;
+}
+#header .search .leftBtn {
+  max-width: 5.2em; 
+}
