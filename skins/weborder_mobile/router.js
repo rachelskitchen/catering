@@ -360,14 +360,15 @@ define(["main_router"], function(main_router) {
                             model: App.Data.searchLine,
                             mod: 'Main',
                             cacheId: true
-                        },                       
+                        }, 
                         {
                             modelName: 'Product',
                             collection: new App.Collections.Products(),
                             search: App.Data.search,
                             mod: 'SearchList',
                             className: 'content search_list custom-scroll',
-                            cacheId: true
+                            cacheId: true,
+                            content_elem: '#content .search_list'
                         }
                     ]
                 });                
