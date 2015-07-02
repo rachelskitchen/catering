@@ -338,15 +338,14 @@ define(["main_router"], function(main_router) {
                     back_title: _loc['HEADER_SEARCH_BT'],
                     forward_title: '',
                     back: self.navigate.bind(self, 'index', true),
-                    forward: function(){
+                    forward: function() {
                         var is_show = App.Data.searchLine.get('isShow') == true;
                         if (is_show) {
-                            $('.content .search').hide();
                             $('.content.search_list').css('top', '0em');
                         } else {
-                            $('.content .search').show();
                             $('.content.search_list').css('top', '');// use default css value
                         }
+                        $('.content .search').toggle();
                         App.Data.searchLine.set('isShow', !is_show);
                     }
                 };
@@ -359,25 +358,22 @@ define(["main_router"], function(main_router) {
                         {
                             modelName: 'SearchLine',
                             model: App.Data.searchLine,
-                            mod: 'Main'
+                            mod: 'Main',
+                            cacheId: true
                         },                       
                         {
                             modelName: 'Product',
                             collection: new App.Collections.Products(),
                             search: App.Data.search,
                             mod: 'SearchList',
-                            className: 'content search_list custom-scroll'
+                            className: 'content search_list custom-scroll',
+                            cacheId: true
                         }
                     ]
                 });                
 
                 if(App.Data.categories.loadData.state() == 'resolved')
                     this.change_page();
-
-                var pattern = App.Data.searchLine.get('searchString')
-                if (pattern) {
-                   App.Data.search.search(pattern);
-                }
             });
         },
         products: function(id_category) {
