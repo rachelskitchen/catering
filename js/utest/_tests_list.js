@@ -4,9 +4,11 @@ var tests_list = [
     // "../core/js/utest/test_Categories",
     // "../core/js/utest/test_Customers",
     "../core/js/utest/test_Filters",
+    "../core/js/utest/test_Captcha",
     "../core/js/utest/test_Rewards",
     "../core/js/utest/test_Locale",
-    "../core/js/utest/test_Products"
+    "../core/js/utest/test_Products",
+    "../core/js/utest/test_StanfordCard"
 /*
     "../core/js/utest/test_Checkout",
     "../core/js/utest/test_ChildProducts",

@@ -1,0 +1,38 @@
+.stanford-card-plans {
+    font-size: 3em;
+    margin-top: 2em;
+}
+
+.stanford-card-plans > * {
+    padding: 0 1em;
+}
+
+.stanford-card-plans .plans-title {
+    text-align: center;
+}
+
+.stanford-card-plans .stanford-plan {
+    padding: 0.5em;
+    margin: 1em 0;
+    border-width: 1px;
+    border-style: solid;
+    position: relative;
+}
+
+.stanford-card-plans .stanford-plan:after {
+    content: '';
+    display: block;
+    width: 1.5em;
+    height: 1.5em;
+    position: absolute;
+    top: 0.2em;
+    right: 0.2em;
+}
+
+.stanford-card-plans .row {
+    display: block;
+}
+
+.stanford-card-plans .row-balance {
+    font-size: 0.8em;
+}

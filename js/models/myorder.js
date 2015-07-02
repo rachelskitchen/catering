@@ -904,6 +904,17 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 }
             }
 
+            if (options.stanfordcard) {
+                var stanfordcard = App.Data.stanfordCard,
+                    check_card = stanfordcard.check();
+
+                if (stanfordcard.status === 'ERROR') {
+                    errorMsg = check_card.errorMsg;
+                } else if (check_card.status === 'ERROR_EMPTY_FIELDS') {
+                    fields = fields.concat(check_card.errorList);
+                }
+            }
+
             if (options.checkout) {
                 var checkout = this.checkout,
                     check_checkout = checkout.check();
@@ -1120,6 +1131,14 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 order_info.rewards_card = {
                     redemption: rewardsCard.redemption_code
                 };
+            }
+
+            // add info for stanford card
+            if(params && params.type === PAYMENT_TYPE.STANFORD && params.planId) {
+                order.paymentInfo = {
+                    type: params.type,
+                    cardInfo: {planId: params.planId}
+                }
             }
 
             var myorder_json = JSON.stringify(order);
@@ -1346,7 +1365,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                         reportErrorFrm(MSG.ERROR_OCCURRED + ' ' + MSG.ERROR_INCORRECT_AJAX_DATA);
                         return;
                     }
-                    myorder.paymentResponse = data instanceof Object ? data : {};
+                    myorder.paymentResponse = data instanceof Object ? _.extend(data, {paymentType: payment_type}) : {};
                     myorder.paymentResponse.capturePhase = capturePhase;
 
                     switch(data.status) {
@@ -1355,6 +1374,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                                 successValidation = Backbone.$.Deferred();
                                 successValidation.then(myorder.trigger.bind(myorder, 'paymentResponseValid'));
                             } else {
+                                App.Data.stanfordCard && payment_type === PAYMENT_TYPE.STANFORD && App.Data.stanfordCard.updatePlans(data.balances.stanford);
                                 myorder.trigger('paymentResponse');
                             }
 

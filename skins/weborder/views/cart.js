@@ -110,6 +110,7 @@ define(["products_view"], function() {
                 el: this.$('.pay_button'),
                 mod: 'PayButton',
                 collection: this.collection,
+                checkout: this.collection.checkout,
                 flag: 'checkout'
             }));
 

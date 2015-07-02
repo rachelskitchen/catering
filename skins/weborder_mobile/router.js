@@ -39,6 +39,7 @@ define(["main_router"], function(main_router) {
         headerModes.Checkout = headerModes.OneButton;
         headerModes.Card = headerModes.Main;
         headerModes.GiftCard = headerModes.Main;
+        headerModes.StanfordCard = headerModes.Main;
         headerModes.Confirm = headerModes.OneButton;
         headerModes.Done = headerModes.Main;
         headerModes.Location = {mod: 'Location', className: 'two_button location'};
@@ -58,6 +59,7 @@ define(["main_router"], function(main_router) {
         footerModes.Checkout = {mod: 'Checkout'};
         footerModes.Card = {mod: 'Card'};
         footerModes.GiftCard = {mod: 'GiftCard'};
+        footerModes.StanfordCard = {mod: 'StanfordCard'};
         footerModes.Confirm = {mod: 'Confirm'};
         footerModes.Done = {mod: 'Done'};
         footerModes.Location = footerModes.Main;
@@ -83,6 +85,7 @@ define(["main_router"], function(main_router) {
             "checkout" : "checkout",
             "card" : "card",
             "giftcard" : "gift_card",
+            "stanfordcard": "stanford_card",
             "confirm": "confirm",
             "done": "done",
             "location": "location",
@@ -126,7 +129,8 @@ define(["main_router"], function(main_router) {
                     about: this.navigate.bind(this, 'about', true),
                     loyalty: this.trigger.bind(this, 'navigateToLoyalty'),
                     menu: this.navigate.bind(this, 'menu', true),
-                    profile: this.trigger.bind(this, 'navigateToProfile')
+                    profile: this.trigger.bind(this, 'navigateToProfile'),
+                    stanfordcard: this.navigate.bind(this, 'stanfordcard', true),
                 });
                 var mainModel = App.Data.mainModel = new App.Models.MainModel();
                 var ests = App.Data.establishments;
@@ -579,6 +583,39 @@ define(["main_router"], function(main_router) {
                 this.change_page();
             });
         },
+        stanford_card: function() {
+            this.prepare('stanfordcard', function() {
+                if(!App.Data.stanfordCard)
+                    App.Data.stanfordCard = new App.Models.StanfordCard();
+
+                App.Data.header.set({
+                    page_title: _loc['HEADER_STANFORD_CARD_PT']
+                });
+
+                App.Data.mainModel.set({
+                    header: headerModes.StanfordCard,
+                    footer: _.extend(footerModes.StanfordCard, {
+                        mainModel: App.Data.mainModel,
+                        card: App.Data.stanfordCard,
+                        myorder: App.Data.myorder
+                    }),
+                    content: [{
+                        modelName: 'StanfordCard',
+                        model: App.Data.stanfordCard,
+                        mod: 'Main',
+                        myorder: App.Data.myorder
+                    }, {
+                        modelName: 'StanfordCard',
+                        model: App.Data.stanfordCard,
+                        collection: App.Data.stanfordCard.get('plans'),
+                        mod: 'Plans',
+                        className: 'stanford-card-plans'
+                    }]
+                });
+
+                this.change_page();
+            });
+        },
         confirm: function() {
             var load = $.Deferred();
             if (App.Data.myorder.length === 0) {
@@ -588,6 +625,7 @@ define(["main_router"], function(main_router) {
             }
 
             this.prepare('confirm', function() {
+                var payments = App.Data.settings.get_payment_process();
 
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card;
@@ -598,9 +636,15 @@ define(["main_router"], function(main_router) {
                     back: this.navigate.bind(this, 'checkout', true)
                 });
 
+                App.Data.footer.set('payments', payments);
+
                 App.Data.mainModel.set({
                     header: headerModes.Confirm,
-                    footer: footerModes.Confirm,
+                    footer: _.extend(footerModes.Confirm, {
+                        payments: new Backbone.Model(payments),
+                        checkout: App.Data.myorder.checkout,
+                        mainModel: App.Data.mainModel
+                    }),
                     content: [
                         {
                             modelName: 'Total',
@@ -631,7 +675,7 @@ define(["main_router"], function(main_router) {
                 return this.navigate('index', true);
             }
             this.prepare('done', function() {
-                
+
                 // if App.Data.customer doesn't exist (success payment -> history.back() to #confirm -> history.forward() to #done)
                 // need to init it.
                 if(!App.Data.customer) {
@@ -662,7 +706,7 @@ define(["main_router"], function(main_router) {
             var settings = App.Data.settings.get('settings_system');
 
             this.prepare('store_info', function() {
-               
+
                 App.Data.header.set({
                     page_title: (settings instanceof Object) ? settings.business_name : _loc['HEADER_LOCATION_PT'],
                     back_title: _loc['HEADER_LOCATION_BT'],
@@ -686,7 +730,7 @@ define(["main_router"], function(main_router) {
         },
         map: function() {
             this.prepare('store_info', function() {
-                
+
                 App.Data.header.set({
                     page_title: _loc['HEADER_MAP_PT'],
                     back_title: _loc['HEADER_MAP_BT'],

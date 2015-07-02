@@ -127,6 +127,12 @@
                                 <td><%= reward_points %></td>
                             </tr>
                             <% } %>
+                            <% if(stanfordCard) { %>
+                            <tr>
+                                <td>&ldquo;<%= stanfordCard.name %>&rdquo; <%= _lp.MAIN_STANFORD_CARD_BALANCE %>: </td>
+                                <td><%= symbol %><%= stanfordCard.balance %></td>
+                            </tr>
+                            <% } %>
                             <tr>
                                 <td> <%= _lp.MAIN_TOTAL_AMOUNT_CHARGED %>: </td>
                                 <td class='bold'><%= symbol %><%= total %></td>
