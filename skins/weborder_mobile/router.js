@@ -602,7 +602,8 @@ define(["main_router"], function(main_router) {
                     content: [{
                         modelName: 'StanfordCard',
                         model: App.Data.stanfordCard,
-                        mod: 'Main'
+                        mod: 'Main',
+                        myorder: App.Data.myorder
                     }, {
                         modelName: 'StanfordCard',
                         model: App.Data.stanfordCard,

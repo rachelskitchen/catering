@@ -37,6 +37,7 @@
         'DONE_SEAT':                       'Seat',
         'DONE_REWARD_CARD_POINTS':         'Reward Card Points',
         'DONE_AMOUNT_CHARGED':             'Amount Charged',
+        'DONE_STANFORD_CARD_BALANCE':      'balance',
         'FOOTER_ABOUT':                    'About',
         'FOOTER_LOYALTY':                  'Loyalty',
         'FOOTER_LOCATION':                 'Location',

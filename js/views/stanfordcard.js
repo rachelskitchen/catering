@@ -38,9 +38,30 @@ define(["factory", "giftcard_view"], function(factory) {
             'click .btn-reload': 'reload_captcha',
             'click .cancel-input': 'reset'
         },
+        initialize: function() {
+            App.Views.CoreGiftCardView.CoreGiftCardMainView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'change:planId', this.updateCartTotals, this);
+            this.updateCartTotals(this.model, this.model.get('planId'));
+        },
         reset: function() {
             this.model.reset();
             this.reload_captcha();
+        },
+        removeFromDOMTree: function() {
+            this.updateCartTotals();
+            App.Views.CoreGiftCardView.CoreGiftCardMainView.prototype.removeFromDOMTree.apply(this, arguments);
+        },
+        remove: function() {
+            this.updateCartTotals();
+            App.Views.CoreGiftCardView.CoreGiftCardMainView.prototype.remove.apply(this, arguments);
+        },
+        updateCartTotals: function(model, planId) {
+            var myorder = this.options.myorder;
+            if(planId) {
+                myorder.update_cart_totals({type: PAYMENT_TYPE.STANFORD, planId: planId});
+            } else {
+                myorder.update_cart_totals();
+            }
         }
     });
 

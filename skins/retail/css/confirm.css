@@ -153,7 +153,7 @@
     height: 20px;
     font-size: 15px;
     line-height: 20px;
-    width: 70px;
+    max-width: 80px;
     margin-top: 14px;
     margin-left: 36px;
 }

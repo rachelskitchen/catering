@@ -108,7 +108,8 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             this.subViews.push(App.Views.GeneratorView.create('StanfordCard', {
                 el: this.$('#credit-card'),
                 mod: 'Main',
-                model: this.options.card
+                model: this.options.card,
+                myorder: this.collection
             }));
 
             this.subViews.push(App.Views.GeneratorView.create('StanfordCard', {
