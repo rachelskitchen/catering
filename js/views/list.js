@@ -99,8 +99,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.list_elem = this.options.list_elem || "li";
             this.image_url_key = this.options.image_url_key || "image"; //it's name of image property in a model
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.collection, 'sort', this.sort);
-            $(this.content_elem).on('scroll', this.onScroll.bind(this));
+            this.listenTo(this.collection, 'sort', this.sort);           
         },
         render: function(sortedModels) {
             this.sortedModels = sortedModels ? sortedModels : this.collection.models;
@@ -110,6 +109,7 @@ define(["backbone", "factory"], function(Backbone) {
                 this.sortedModels.forEach(this.addItem.bind(this));
                 this.onScroll();
                 this.trigger('itemsInserted'); // need trigger event to notify when items is inserted to DOM
+                $(this.content_elem).on('scroll', this.onScroll.bind(this));
             }).bind(this), 0);
             return this;
         },
