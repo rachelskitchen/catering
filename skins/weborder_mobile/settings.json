@@ -54,6 +54,12 @@
             "templates": ["giftcard"],
             "core": ["giftcard", "jquery_numbermask"]
         },
+        "stanfordcard": {
+            "css": ["card", "stanfordcard"],
+            "templates": ["stanfordcard"],
+            "views": ["stanfordcard"],
+            "core": ["giftcard", "jquery_numbermask", "stanfordcard", "stanfordcard_view"]
+        },
         "confirm": {
             "css": ["total", "checkout", "card", "tips"],
             "views": ["checkout", "card", "giftcard"],

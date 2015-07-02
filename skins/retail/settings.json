@@ -34,8 +34,8 @@
         "checkout": {
             "css": ["checkout", "confirm", "card", "rewards"],
             "views": ["cart", "checkout", "cart", "rewards"],
-            "templates": ["cart", "checkout", "cart", "confirm", "card", "giftcard", "rewards"],
-            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "card_view", "giftcard_view", "confirm_view"]
+            "templates": ["cart", "checkout", "cart", "confirm", "card", "giftcard", "rewards", "stanfordcard"],
+            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "card_view", "giftcard_view", "confirm_view", "stanfordcard", "stanfordcard_view"]
         },
         "confirm": {
             "views": [],
