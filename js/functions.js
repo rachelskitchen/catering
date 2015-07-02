@@ -1210,6 +1210,8 @@ var PaymentProcessor = {
             payment_processor = AdyenPaymentProcessor;
         } else if (payment.worldpay) {
             payment_processor = WorldPayPaymentProcessor;
+        } else if (payment.freedompay) {
+            payment_processor = FreedomPayPaymentProcessor;
         }
         return payment_processor;
     },
@@ -1680,6 +1682,29 @@ var StanfordCardPaymentProcessor = {
         payment_info.cardInfo = {
             planId: $.trim(stanfordCard.planId)
         };
+        return payment_info;
+    }
+};
+
+var FreedomPayPaymentProcessor = {
+    clearQueryString: function(queryString) {
+        qStr = queryString.replace(/&?transid=[^&]*/, '');
+
+        return qStr;
+    },
+    showCreditCardDialog: function() {
+        return false;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        if (pay_get_parameter) {
+            var get_parameters = App.Data.get_parameters;
+            if (pay_get_parameter === 'true') {
+                payment_info.transaction_id = get_parameters.transid;
+            } else {
+                //TODO: better message
+                payment_info.errorMsg = 'Payment failed.';
+            }
+        }
         return payment_info;
     }
 };
