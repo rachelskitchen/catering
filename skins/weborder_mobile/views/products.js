@@ -119,8 +119,60 @@ define(["products_view"], function(products_view) {
         mod: 'list',
         initialize: function() {
             this.defaultCollection = this.collection;
+            setTimeout(this.swipeDetectInitialize.bind(this), 0);
             ProductListView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.options.search, 'onSearchComplete', this.update_table, this);
+            this.listenTo(this.model, 'change:isShow', this.update_search_line, this);            
+        },
+        swipeDetectInitialize: function() {
+            var self = this;
+            this.swipe_surface = this.$el[0];
+            this.swipe_up_threshold = this.$("li").outerHeight() * 2;
+            this.lastScrollTop = this.swipe_surface.scrollTop;
+            swipe_detect(this.swipe_surface,  function(swipedir){
+                    //swipedir contains either "none", "left", "right", "up", or "down"
+                    if (swipedir =='down') {
+                        var is_show = self.model.get('isShow') == true;
+                        if (!is_show && self.swipe_surface.scrollTop <= self.swipe_up_threshold) {
+                           self.model.set('isShow', true);
+                        }
+                    }
+                });
+        },
+        onScroll: function(event) {
+            if (!this.scrollTimer && this.model.get('isShow') && this.lastScrollTop < this.swipe_surface.scrollTop &&
+                 this.swipe_surface.scrollTop > this.swipe_up_threshold) {
+                this.scrollTimer = setTimeout((function(){
+                    this.scrollTimer = null;
+                    this.model.set('isShow', false);
+                }).bind(this), 3000);
+            }
+            this.lastScrollTop = this.swipe_surface.scrollTop;           
+            App.Views.LazyListView.prototype.onScroll.apply(this, arguments);
+        },
+        killScrollTimer: function() {
+            if (this.scrollTimer) {
+                clearTimeout(this.scrollTimer);
+                this.scrollTimer = null;
+            }
+        },
+        update_search_line: function(){
+            this.model.get('isShow') ? this.showSearchLine() : this.hideSearchLine();
+        },
+        showSearchLine: function() {
+            this.killScrollTimer();
+            //.animate({width:'toggle'},350);
+            //$('.content.search_list').css('top', '');// use default css value
+            //$('.content .search').show();
+            $('.content .search').animate({top: "8.4em"}, 350);
+            $('.content.search_list').animate({top: "9.0em"}, 350);
+        },
+        hideSearchLine: function() {
+            this.killScrollTimer();
+            //$('.content.search_list').css('top', '0em');
+            //$('.content .search').hide();
+            $('.content.search_list').animate({top: "0em"}, 350);
+            $('.content .search').animate({top: "-1em"}, 350);
         },
         update_table: function(model) {
             this.collection = model ? model.get('products') : this.defaultCollection;

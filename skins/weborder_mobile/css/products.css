@@ -163,5 +163,6 @@
     cursor: default;
     font-size: 3em;
     padding: 1em;
+    min-height: 3em;
 }
 
