@@ -339,14 +339,7 @@ define(["main_router"], function(main_router) {
                     forward_title: '',
                     back: self.navigate.bind(self, 'index', true),
                     forward: function() {
-                        var is_show = App.Data.searchLine.get('isShow') == true;
-                        if (is_show) {
-                            $('.content.search_list').css('top', '0em');
-                        } else {
-                            $('.content.search_list').css('top', '');// use default css value
-                        }
-                        $('.content .search').toggle();
-                        App.Data.searchLine.set('isShow', !is_show);
+                        App.Data.searchLine.set('isShow', !App.Data.searchLine.get('isShow'));
                     }
                 };
                 App.Data.header.set(header);
@@ -363,6 +356,7 @@ define(["main_router"], function(main_router) {
                         }, 
                         {
                             modelName: 'Product',
+                            model: App.Data.searchLine,
                             collection: new App.Collections.Products(),
                             search: App.Data.search,
                             mod: 'SearchList',
