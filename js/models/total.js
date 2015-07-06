@@ -1,4 +1,4 @@
-/*
+/**
  * Revel Systems Online Ordering Application
  *
  *  Copyright (C) 2014 by Revel Systems
@@ -25,7 +25,7 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
 
     App.Models.Total = Backbone.Model.extend({
         defaults: {
-            total: 0,
+            subtotal: 0,
             tax: 0,
             surcharge: 0,
             tip: null,
@@ -57,8 +57,8 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
         /**
          * get Total
          */
-        get_total: function() {
-            return round_monetary_currency(this.get('total'));
+        get_subtotal: function() {
+            return round_monetary_currency(this.get('subtotal'));
         },
         /**
          * get Tax
@@ -75,14 +75,13 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
         /**
          * Get total sum of order (subtotal + surcharge + tax) without tip.
          */
-        get_subtotal: function() { // total + surcharge + tax
+        get_total: function() { // subtotal + surcharge + tax
             var tax = this.get_tax() * 1,
-                total = this.get_total() * 1,
-                subtotal = total,
+                subtotal = this.get_subtotal() * 1,
                 surcharge = this.get_surcharge() * 1;
 
             if(!App.TaxCodes.is_tax_included(this.get('tax_country'))) {
-                subtotal = total + surcharge + tax;
+                subtotal += surcharge + tax;
             }
 
             return round_monetary_currency(subtotal);
@@ -100,12 +99,12 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             return round_monetary_currency(this.get('tip').get_tip(this.get_subtotal()));
         },
         /**
-         * Get total sum of order (subtotal + tax + tip).
+         * Get total sum of order (subtotal + surcharge + tax + tip).
          */
-        get_grand: function() { // total + surcharge + tax + tip
-            var subtotal = this.get_subtotal() * 1, // get total sum of order (subtotal + tax) without tip
+        get_grand: function() { // subtotal + surcharge + tax + tip
+            var total = this.get_total() * 1, // get total sum of order (subtotal + surcharge + tax) without tip
                 tip = this.get_tip() * 1, // get tip
-                grand_total = subtotal + tip;
+                grand_total = total + tip;
 
             return round_monetary_currency(grand_total);
         },
@@ -144,7 +143,7 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             var delivery = this.get('delivery'),
                 min_amount = delivery.get('min_amount'),
                 charge = delivery.get('charge'),
-                diff = min_amount - (this.get('total') - charge); // delivery item now in cart, so we need to decrease total
+                diff = min_amount - (this.get('subtotal') - charge); // delivery item now in cart, so we need to decrease total
 
             if(!delivery.get('enable'))
                 return null;
@@ -157,7 +156,7 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
         empty: function() {
             this.set({
                 tax : 0,
-                total : 0,
+                subtotal : 0,
                 surcharge: 0
             });
             this.get('tip').empty();
@@ -166,7 +165,7 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
          * save information from total model to local storage
          */
         saveTotal: function() {
-            setData('total',this);
+            setData('total', this);
             this.get('tip').saveTip();
         },
         /**
@@ -186,9 +185,9 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
          */
         get_all: function() {
             return {
-                final_total: parseFloat(this.get_subtotal()),
+                final_total: parseFloat(this.get_total()),
                 surcharge: parseFloat(this.get_surcharge()),
-                subtotal: parseFloat(this.get_total()),
+                subtotal: parseFloat(this.get_subtotal()),
                 tax: parseFloat(this.get_tax()),
                 tip: parseFloat(this.get_tip()),
                 total_discounts: parseFloat(this.get_discounts_str())

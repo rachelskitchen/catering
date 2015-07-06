@@ -41,7 +41,7 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
         },
         computeds: {
             totalFrm: {
-                deps: ['total', 'dining_option'], // depends on attr. 'total' of this.model
+                deps: ['subtotal', 'dining_option'], // depends on attr. 'total' of this.model
                 get: function() {
                     return this.get_subtotal();
                 }
@@ -60,7 +60,7 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
             if (this.collection.get_only_product_quantity() == 0) {
                 return round_monetary_currency(0);
             }
-            return this.collection.total.get_total();
+            return this.collection.total.get_subtotal();
         },
         integrity_test: function() { // #23033
             if (typeof testA_5 != 'function') {
