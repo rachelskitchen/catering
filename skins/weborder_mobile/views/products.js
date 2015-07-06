@@ -122,7 +122,8 @@ define(["products_view"], function(products_view) {
             setTimeout(this.swipeDetectInitialize.bind(this), 0);
             ProductListView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.options.search, 'onSearchComplete', this.update_table, this);
-            this.listenTo(this.model, 'change:isShow', this.update_search_line, this);            
+            this.listenTo(this.model, 'change:isShow', this.update_search_line, this); 
+            this.showSearchLine();           
         },
         swipeDetectInitialize: function() {
             var self = this;
@@ -133,7 +134,7 @@ define(["products_view"], function(products_view) {
                     //swipedir contains either "none", "left", "right", "up", or "down"
                     if (swipedir =='down') {
                         var is_show = self.model.get('isShow') == true;
-                        if (!is_show && self.swipe_surface.scrollTop <= self.swipe_up_threshold) {
+                        if (!is_show && self.swipe_surface.scrollTop <= self.swipe_up_threshold * 2) {
                            self.model.set('isShow', true);
                         }
                     }
@@ -145,7 +146,7 @@ define(["products_view"], function(products_view) {
                 this.scrollTimer = setTimeout((function(){
                     this.scrollTimer = null;
                     this.model.set('isShow', false);
-                }).bind(this), 3000);
+                }).bind(this), 4000);
             }
             this.lastScrollTop = this.swipe_surface.scrollTop;           
             App.Views.LazyListView.prototype.onScroll.apply(this, arguments);
@@ -160,19 +161,18 @@ define(["products_view"], function(products_view) {
             this.model.get('isShow') ? this.showSearchLine() : this.hideSearchLine();
         },
         showSearchLine: function() {
-            this.killScrollTimer();
-            //.animate({width:'toggle'},350);
-            //$('.content.search_list').css('top', '');// use default css value
-            //$('.content .search').show();
-            $('.content .search').animate({top: "8.4em"}, 350);
-            $('.content.search_list').animate({top: "9.0em"}, 350);
+            this.killScrollTimer();           
+            $('.content.search_list').animate({top: "9.0em"}, 300);
+            $('.content .search').animate({top: "0em"}, 300);
+            $('.content .triangle').animate({top: "8.7em"}, 300);
+            //$('.search .rightBtn').hide();
         },
         hideSearchLine: function() {
             this.killScrollTimer();
-            //$('.content.search_list').css('top', '0em');
-            //$('.content .search').hide();
-            $('.content.search_list').animate({top: "0em"}, 350);
-            $('.content .search').animate({top: "-1em"}, 350);
+            $('.content.search_list').animate({top: "0em"}, 300);
+            $('.content .search').animate({top: "-8.8em"}, 300);
+            $('.content .triangle').animate({top: "0em"}, 300);
+            //$('.search .rightBtn').show();
         },
         update_table: function(model) {
             this.collection = model ? model.get('products') : this.defaultCollection;

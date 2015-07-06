@@ -2,15 +2,22 @@
 #content .search {
     height: 9.0em;
     z-index: 10;
-    position: fixed;
-    right: 0.8em;
-    left: 0.8em;
+    position: absolute;
+    right: 0em;
+    left: 0em;
     overflow: hidden;
+}
+
+#content .search_line .triangle {
+    left: 50%;
+    position: absolute;
+    top: 8.7em;
+    z-index: 10;
 }
 
 #content .searchString {
     margin-left: 2.5em;
-    margin-top: 1.4em;
+    margin-top: 1.5em;
     margin-right: 2.5em;
 }
 
