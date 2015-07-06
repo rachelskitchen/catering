@@ -123,7 +123,7 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
          */
         set_delivery_charge: function(charge) {
             this.get('delivery').set('charge', charge);
-        }, 
+        },
          /**
          * @method
          * @returns {string} formatted shipping charge amount
