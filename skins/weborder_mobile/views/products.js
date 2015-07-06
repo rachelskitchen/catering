@@ -169,9 +169,9 @@ define(["products_view"], function(products_view) {
         },
         hideSearchLine: function() {
             this.killScrollTimer();
-            $('.content.search_list').animate({top: "0em"}, 300);
-            $('.content .search').animate({top: "-8.8em"}, 300);
-            $('.content .triangle').animate({top: "0em"}, 300);
+            $('.content.search_list').animate({top: "0em"}, 500);
+            $('.content .search').animate({top: "-8.8em"}, 500);
+            $('.content .triangle').animate({top: "0em"}, 500);
             //$('.search .rightBtn').show();
         },
         update_table: function(model) {
