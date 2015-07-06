@@ -1,18 +1,19 @@
 /* Search Line View */
-#content .search {
-    height: 9.0em;
+#content .search_wrap {
     z-index: 10;
     position: absolute;
     right: 0em;
-    left: 0em;
+    left: 0em; 
+}
+
+#content .search {
+    height: 9.0em;
     overflow: hidden;
 }
 
 #content .search_line .triangle {
-    left: 50%;
-    position: absolute;
-    top: 8.7em;
-    z-index: 10;
+    margin-left: 50%;
+    margin-top: -0.3em;
 }
 
 #content .searchString {
@@ -31,7 +32,7 @@
     padding-left: 0.5em;
     box-sizing: border-box;
     font-family: FontAwesome, 'Helvetica Neue', Arial, Verdana;
-    line-height: 2.0em;
+    line-height: 1.4em;
 }
 
 #content .content.search_list {
