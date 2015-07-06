@@ -352,6 +352,7 @@ define(["main_router"], function(main_router) {
                             modelName: 'SearchLine',
                             model: App.Data.searchLine,
                             mod: 'Main',
+                            className: 'content search_line',
                             cacheId: true
                         }, 
                         {

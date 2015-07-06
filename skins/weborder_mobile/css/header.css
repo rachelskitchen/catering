@@ -116,11 +116,20 @@
     width: 3.3em;
 }
 /* modifiers mod end */
-
+#header .search .rightBtn {
+    background: none;
+    box-shadow: none;
+}
 #header .search .rightBtn:before {
     content: '\f002';
     font-family: 'FontAwesome';
     padding-top: 0.2em;
+    box-shadow: none;
+    border: 0;
+    background: none;
+    color: #B2B2B2;
+    font-weight: lighter;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.6);
 }
 #header .search h1 {
     left: 6.0em;
