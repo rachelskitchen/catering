@@ -62,7 +62,7 @@
         'HEADER_INDEX_PT':                 'Меню',
         'HEADER_INDEX_BT':                 'Директория',
         'HEADER_INDEX_FT':                 'Поиск',
-        'HEADER_SEARCH_PT':                'Поиск товаров',
+        'HEADER_SEARCH_PT':                'Поиск Товаров',
         'HEADER_SEARCH_BT':                'Категории',
         'HEADER_PRODUCTS_BT':              'Категории',
         'HEADER_MODIFIERS_PT':             'Модификаторы',

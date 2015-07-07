@@ -23,6 +23,8 @@
 define(['backbone', 'backbone_epoxy'], function(Backbone) {
     'use strict';
 
+    Backbone.Epoxy.binding.allowedParams.params = true; //allows to write in a custom binding additional params like "valueTimeout:valName,params:{timeout:1000}, ..."
+
     // add filters
     Backbone.Epoxy.binding.addFilter('currencyFormat', function(value) {
         return App.Settings.currency_symbol + round_monetary_currency(value);
@@ -60,6 +62,35 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             if($el.attr('src') === value) {
                 view.removeCaptchaSpinner();
             }
+        }
+    });
+    
+    Backbone.Epoxy.binding.addHandler("valueTimeout", {
+        // it's custom binding to get the value for <input> element by 'blur','change' events AND by 'input' (key press) event by the timout specified.
+        // timeout param is used for 'input' events only.
+        // Usage example:  "#search-input": "valueTimeout:searchString,params:{timeout:1500},events:['input','blur','change']"
+        init: function( $element, value, bindings, context ) {
+            // Initialize the binding handler...
+            this.timeout = context.params.timeout;
+            if (!this.timeout) {
+                console.error("timeout param is not specified for valueTimeout binding");
+            }
+        },
+        set: function( $element, value) {
+            $element.val(value);
+        },
+        get: function( $element, value, event ) {
+            if (event.type == 'blur' || event.type == 'change') {
+                return $element.val().trim();
+            }
+            if (this.inputTimeout) {
+                clearTimeout(this.inputTimeout);
+            }
+            this.inputTimeout = setTimeout((function(){
+                this.$el.trigger("change");
+                this.inputTimeout = null;
+            }).bind(this), this.timeout);
+            return value;
         }
     });
 
@@ -259,3 +290,48 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
 
     return ViewModule;
 });
+
+/*
+* the function detects swiping in either of the 4 directions (left, right, up, or down) for mobile devices
+*/
+function swipe_detect(el, callback){  
+    var touchsurface = el,
+    swipedir,
+    startX,
+    startY,
+    distX,
+    distY,
+    threshold = 100, //required min distance traveled to be considered swipe
+    restraint = 100, // maximum distance allowed at the same time in perpendicular direction
+    allowedTime = 500, // maximum time allowed to travel that distance
+    elapsedTime,
+    startTime,
+    handleswipe = callback || function(swipedir){}
+  
+    touchsurface.addEventListener('touchstart', function(e){
+        var touchobj = e.changedTouches[0]
+        swipedir = 'none'
+        dist = 0
+        startX = touchobj.pageX
+        startY = touchobj.pageY
+        startTime = new Date().getTime() // record time when finger first makes contact with surface
+        //e.preventDefault()
+    }, false)
+  
+    touchsurface.addEventListener('touchmove', function(e){
+        var touchobj = e.changedTouches[0]
+        distX = touchobj.pageX - startX // get horizontal dist traveled by finger while in contact with surface
+        distY = touchobj.pageY - startY // get vertical dist traveled by finger while in contact with surface
+        elapsedTime = new Date().getTime() - startTime // get time elapsed
+        if (elapsedTime <= allowedTime){ // first condition for awipe met
+            if (Math.abs(distX) >= threshold && Math.abs(distY) <= restraint){ // 2nd condition for horizontal swipe met
+                swipedir = (distX < 0)? 'left' : 'right' // if dist traveled is negative, it indicates left swipe
+            }
+            else if (Math.abs(distY) >= threshold && Math.abs(distX) <= restraint){ // 2nd condition for vertical swipe met
+                swipedir = (distY < 0)? 'up' : 'down' // if dist traveled is negative, it indicates up swipe
+            }
+        }
+        handleswipe(swipedir)
+        //e.preventDefault()
+    }, false)
+}

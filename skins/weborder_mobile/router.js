@@ -35,7 +35,7 @@ define(["main_router"], function(main_router) {
         headerModes.TwoButton = {mod: 'TwoButton', className: 'two_button'};
         headerModes.Products = headerModes.OneButton;
         headerModes.Dir = headerModes.TwoButton;
-        headerModes.Search ={mod: 'TwoButton', className: 'two_button search'};
+        headerModes.Search ={mod: 'OneButton', className: 'one_button search'};
         headerModes.Modifiers = {mod: 'Modifiers', className: 'two_button modifiers'};
         headerModes.Myorder = {mod: 'TwoButton', className: 'two_button myorder'};
         headerModes.Checkout = headerModes.OneButton;
@@ -336,11 +336,7 @@ define(["main_router"], function(main_router) {
                 var header = {
                     page_title: _loc['HEADER_SEARCH_PT'],
                     back_title: _loc['HEADER_SEARCH_BT'],
-                    forward_title: '',
-                    back: self.navigate.bind(self, 'index', true),
-                    forward: function() {
-                        App.Data.searchLine.set('isShow', !App.Data.searchLine.get('isShow'));
-                    }
+                    back: self.navigate.bind(self, 'index', true)
                 };
                 App.Data.header.set(header);
 
@@ -352,6 +348,7 @@ define(["main_router"], function(main_router) {
                             modelName: 'SearchLine',
                             model: App.Data.searchLine,
                             mod: 'Main',
+                            mainModel: App.Data.mainModel,
                             className: 'content search_line',
                             cacheId: true
                         }, 

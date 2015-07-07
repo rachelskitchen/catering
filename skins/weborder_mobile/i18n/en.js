@@ -62,7 +62,7 @@
         'HEADER_INDEX_PT':                 'Menu',
         'HEADER_INDEX_BT':                 'Directory',
         'HEADER_INDEX_FT':                 'Search',
-        'HEADER_SEARCH_PT':                'Products search',
+        'HEADER_SEARCH_PT':                'Products Search',
         'HEADER_SEARCH_BT':                'Categories',
         'HEADER_PRODUCTS_BT':              'Categories',
         'HEADER_MODIFIERS_PT':             'Modifiers',
