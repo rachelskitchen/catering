@@ -1,4 +1,4 @@
-/*
+/**
  * Revel Systems Online Ordering Application
  *
  *  Copyright (C) 2014 by Revel Systems
@@ -31,7 +31,7 @@ define(["backbone"], function(Backbone) {
             min_amount: 0 // min total amount for delivery enable. Only sum of products and modifiers
         },
         initialize: function(opts) {
-            var settings = App.Data.settings.get('settings_system'),
+            var settings = App.Settings,
                 set = {
                     charge: settings.delivery_charge,
                     enable: settings.delivery_for_online_orders,
@@ -41,6 +41,16 @@ define(["backbone"], function(Backbone) {
 
             opts = opts instanceof Object ? opts : {};
             this.set($.extend({}, this.defaults, set, opts));
+        },
+        getCharge: function() {
+            return this.get('enable') ? this.get('charge') : 0;
+        },
+        getRemainingAmount: function(subtotal) {
+            var min_amount = this.get('min_amount'),
+                charge = this.get('charge'),
+                diff = this.get('enable') ? min_amount - (subtotal - charge) : null
+
+            return diff
         }
     });
 });

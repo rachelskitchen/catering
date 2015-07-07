@@ -56,7 +56,7 @@ define(["backbone"], function(Backbone) {
         /**
          * @method
          * @param {number} subtotal - subtotal amount to calculate percent.
-         * @returns tips amount.
+         * @returns {number} tips amount.
          */
         get_tip: function(subtotal) {
             var type = this.get('type'),
