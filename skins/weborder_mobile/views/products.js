@@ -143,6 +143,9 @@ define(["products_view"], function(products_view) {
         onScroll: function(event) {
             if (!this.scrollTimer && this.model.get('isShow') && this.lastScrollTop < this.swipe_surface.scrollTop &&
                  this.swipe_surface.scrollTop > this.swipe_up_threshold) {
+                setTimeout(function(){
+                   $(".content.search_list")[0].focus();//remove the focus out from search string input
+                }, 0);
                 this.scrollTimer = setTimeout((function(){
                     this.scrollTimer = null;
                     if (!$("#search-input").is(':focus') && this.swipe_surface.scrollTop > this.swipe_up_threshold) {  //don't hide the input which is in focus or close to the top of the scroll                      
@@ -166,13 +169,11 @@ define(["products_view"], function(products_view) {
             this.killScrollTimer();           
             $('.content.search_list').animate({top: "9.0em"}, 300);
             $('.content .search_wrap').animate({top: "0em"}, 300);
-            //$('.search .rightBtn').hide();
         },
         hideSearchLine: function() {
             this.killScrollTimer();
             $('.content.search_list').animate({top: "0em"}, 400);
             $('.content .search_wrap').animate({top: "-8.8em"}, 400);
-            //$('.search .rightBtn').show();
         },
         update_table: function(model) {
             this.collection = model ? model.get('products') : this.defaultCollection;

@@ -22,19 +22,41 @@
 
 define(["search_line_view"], function(products_view) {
     'use strict';
-  
+
     var SearchLineMainView = App.Views.FactoryView.extend({
         name: 'search_line',
         mod: 'main',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.options.mainModel, 'loadCompleted', this.page_changed, this);
+        },
+        page_changed: function() {
+            if (this.model.get("searchString") == '' || !cssua.userAgent.mobile) {
+                setTimeout( (function(){ 
+                    this.$("#search-input")[0].focus(); 
+                }).bind(this), 0);
+            }
         },
         render: function() {
             this.$el.html(this.template());
             this.applyBindings();
         },
         bindings: {
-            "#search-input": "value:searchString,events:['blur','change']"
+            "#search-input": "valueTimeout:searchString,params:{timeout:1500},events:['input','blur','change']",
+        },
+        events: {
+            "click #delete-btn": "onDelete",
+            "input #search-input": "onInput"
+        },
+        onInput: function() {
+            if (this.$("#search-input").val().length > 0)
+                this.$("#delete-btn").show();
+            else
+                this.$("#delete-btn").hide();
+        },
+        onDelete: function() {
+            this.model.set("searchString", "");
+            this.onInput();
         }
     });
 

@@ -38,7 +38,6 @@ define(['products'], function() {
                 App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT); // user notification
                 load.resolve();
             }
-
             results.get_products(undefined, pattern).then(function() {
                 self.set({products: results});
                 load.resolve();
@@ -83,7 +82,7 @@ define(['products'], function() {
         }
     });
 
-    App.Models.SearchLine = Backbone.Model.extend({
+    App.Models.SearchLine = Backbone.Epoxy.Model.extend({
         defaults: {
             searchString: '',
             isShow: true,
@@ -93,7 +92,11 @@ define(['products'], function() {
             this.listenTo(this, 'change:searchString', this.updateSearch, this);
         },
         updateSearch: function() {
-            this.get('search').search(this.get('searchString'));
+            if (this.get('searchString')) {
+                this.get('search').search(this.get('searchString'));
+            } else {
+                this.get('search').search(null);
+            }
         } 
     });
 });
