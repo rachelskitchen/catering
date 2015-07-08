@@ -36,6 +36,8 @@
         'DONE_ROW':                        'Row',
         'DONE_SEAT':                       'Seat',
         'DONE_REWARD_CARD_POINTS':         'Reward Card Points',
+        'DONE_REWARD_CARD_VISITS':         'Points for Visits',
+        'DONE_REWARD_CARD_PURCHASES':      'Points for Purchases',
         'DONE_AMOUNT_CHARGED':             'Amount Charged',
         'DONE_STANFORD_CARD_BALANCE':      'balance',
         'FOOTER_ABOUT':                    'About',

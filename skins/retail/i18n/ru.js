@@ -80,6 +80,8 @@
         'MAIN_ROW':                        'Ряд',
         'MAIN_SEAT':                       'Место',
         'MAIN_REWARD_CARD_POINTS':         'Баллы накопительной карты',
+        'MAIN_REWARD_CARD_VISITS':         'Баллы за посещения',
+        'MAIN_REWARD_CARD_PURCHASES':      'Баллы за покупки',
         'MAIN_TOTAL_AMOUNT_CHARGED':       'Всего оплачено',
         'MAIN_RETURN_TO_MENU':             'Вернуться в Меню',
         'MAIN_STANFORD_CARD_BALANCE':      'баланс',

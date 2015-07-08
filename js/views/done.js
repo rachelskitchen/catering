@@ -55,7 +55,17 @@ define(["backbone", "factory"], function(Backbone) {
                 model.email = App.Data.customer.get('email');
                 model.status = 'success';
 
-                model.reward_points = get.reward_points || '';
+
+                model.reward_points = '';
+                model.reward_visits = '';
+                model.reward_purchases = '';
+
+                if(_.isObject(get.balances) && _.isObject(get.balances.rewards)) {
+                    model.reward_points = typeof get.balances.rewards.current_points == 'number' ? get.balances.rewards.current_points : model.reward_points;
+                    model.reward_visits = typeof get.balances.rewards.points_by_visits == 'number' ? get.balances.rewards.points_by_visits : model.reward_visits;
+                    model.reward_purchases = typeof get.balances.rewards.points_by_purchases == 'number' ? get.balances.rewards.points_by_purchases : model.reward_purchases;
+                }
+
                 model.symbol = App.Data.settings.get('settings_system').currency_symbol;
 
                 model.stanfordCard = get.paymentType === PAYMENT_TYPE.STANFORD && App.Data.stanfordCard && App.Data.stanfordCard.getSelectedPlan()

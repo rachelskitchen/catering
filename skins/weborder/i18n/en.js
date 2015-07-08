@@ -94,6 +94,8 @@
         'MAIN_ROW':                        'Row',
         'MAIN_SEAT':                       'Seat',
         'MAIN_REWARD_CARD_POINTS':         'Reward Card Points',
+        'MAIN_REWARD_CARD_VISITS':         'Points for Visits',
+        'MAIN_REWARD_CARD_PURCHASES':      'Points for Purchases',
         'MAIN_TOTAL_AMOUNT_CHARGED':       'Total Amount Charged',
         'MAIN_RETURN_TO_MENU':             'Return to Menu',
         'MAIN_STANFORD_CARD_BALANCE':      'balance',

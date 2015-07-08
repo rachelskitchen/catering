@@ -32,6 +32,22 @@
             </span>
         </dd>
         <% } %>
+        <% if(reward_visits) { %>
+        <dt> <span class="clip"> <%= _lp.DONE_REWARD_CARD_VISITS %>: </span> </dt>
+        <dd>
+            <span>
+                <%= reward_visits %>
+            </span>
+        </dd>
+        <% } %>
+        <% if(reward_purchases) { %>
+        <dt> <span class="clip"> <%= _lp.DONE_REWARD_CARD_PURCHASES %>: </span> </dt>
+        <dd>
+            <span>
+                <%= reward_purchases %>
+            </span>
+        </dd>
+        <% } %>
         <% if(stanfordCard) { %>
         <dt> <span class="clip">&ldquo;<%= stanfordCard.name %>&rdquo; <%= _lp.DONE_STANFORD_CARD_BALANCE %>: </span> </dt>
         <dd>

@@ -127,11 +127,22 @@
                                 <td><%= reward_points %></td>
                             </tr>
                             <% } %>
+                            <% if(reward_visits) { %>
+                            <tr>
+                                <td> <%= _lp.MAIN_REWARD_CARD_VISITS %>: </td>
+                                <td><%= reward_visits %></td>
+                            </tr>
+                            <% } %>
+                            <% if(reward_purchases) { %>
+                            <tr>
+                                <td> <%= _lp.MAIN_REWARD_CARD_PURCHASES %>: </td>
+                                <td><%= reward_purchases %></td>
+                            </tr>
+                            <% } %>
                             <% if(stanfordCard) { %>
                             <tr>
                                 <td>&ldquo;<%= stanfordCard.name %>&rdquo; <%= _lp.MAIN_STANFORD_CARD_BALANCE %>: </td>
                                 <td><%= symbol %><%= stanfordCard.balance %></td>
-                            </tr>
                             <% } %>
                             <tr>
                                 <td> <%= _lp.MAIN_TOTAL_AMOUNT_CHARGED %>: </td>
