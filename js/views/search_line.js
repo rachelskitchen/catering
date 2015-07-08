@@ -28,21 +28,13 @@ define(["search_line_view"], function(products_view) {
         mod: 'main',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.options.mainModel, 'loadCompleted', this.page_changed, this);
-        },
-        page_changed: function() {
-            if (this.model.get("searchString") == '' || !cssua.userAgent.mobile) {
-                setTimeout( (function(){ 
-                    this.$("#search-input")[0].focus(); 
-                }).bind(this), 0);
-            }
-        },
+        },       
         render: function() {
             this.$el.html(this.template());
             this.applyBindings();
         },
         bindings: {
-            "#search-input": "valueTimeout:searchString,params:{timeout:1500},events:['input','blur','change']",
+            "#search-input": "valueTimeout:searchString,params:{timeout:1500},events:['input','blur','change']"
         },
         events: {
             "click #delete-btn": "onDelete",
