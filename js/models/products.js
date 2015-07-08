@@ -613,8 +613,10 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                 settings = App.Data.settings,
                 fetching = Backbone.$.Deferred(); // deferred for check if all product load;
             
-            if (search == null)
-                search = undefined;
+            if (search == null || search == undefined) {
+                fetching.resolve();
+                return fetching;
+            }
 
             Backbone.$.ajax({
                 type: "GET",
