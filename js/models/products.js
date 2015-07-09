@@ -613,8 +613,8 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                 settings = App.Data.settings,
                 fetching = Backbone.$.Deferred(); // deferred for check if all product load;
             
-            if (search == null || search == undefined) {
-                fetching.resolve();
+            if (id_category == undefined && (search == null || search == undefined)) {
+                fetching.resolve();//this is the search request with an undefined pattern
                 return fetching;
             }
 

@@ -82,10 +82,12 @@ define(["backbone", "factory"], function(Backbone) {
                 }
                 return order ? -1 * result : result;
             });
-            this.subViews.reduce(function(x, y) {
-                x.$el.after(y.$el);
-                return y;
-            });
+            if (this.subViews.length > 0) {
+                this.subViews.reduce(function(x, y) {
+                    x.$el.after(y.$el);
+                    return y;
+                });
+            }
         }
     });
 

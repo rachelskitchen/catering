@@ -14,10 +14,10 @@
             "js" : ["jquery.contentarrow", "jquery.combobox"]
         },
         "index": {
-            "css": ["categories", "subcategories"],
+            "css": ["categories", "subcategories", "search_line"],
             "views": ["categories", "subcategories"],
-            "templates": ["categories", "subcategories"],
-            "core": ["categories"]
+            "templates": ["categories", "subcategories", "search_line"],
+            "core": ["categories", "search", "search_line_view"]
         },
         "about": {
             "views": ["store_info"],
