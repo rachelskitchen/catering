@@ -282,6 +282,7 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.card.loadCard();
                 App.Data.giftcard = new App.Models.GiftCard();
                 App.Data.giftcard.loadCard();
+                App.Data.stanfordCard && App.Data.stanfordCard.restoreCard();
                 this.loadCustomer();
                 App.Data.myorder.loadOrders();
                 App.Data.establishments && App.Data.establishments.removeSavedEstablishment();

@@ -500,5 +500,10 @@
         'TOTAL_TAX':                 'Налог', // except: Directory, Directory Mobile
         'TOTAL_TIP':                 'Чаевые', // except: Retail, Directory, Directory Mobile, MLB
         'TOTAL_GRAND_TOTAL':         'Итого', // except: Directory, Directory Mobile, MLB, PayPal
+
+        'YES':                       'Да',
+        'NO':                        'Нет',
+        'CANCEL':                    'Отменить',
+        'OK':                        'Ok'
     } // end of locale
 }); // end of module

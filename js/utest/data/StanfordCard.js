@@ -27,7 +27,9 @@ define([], function() {
             'planId': null,
             'captchaValue': '',
             'captchaImage': '',
-            'captchaKey': ''
+            'captchaKey': '',
+            'validated': false,
+            'needToAskStudentStatus': true
         },
         'CARD_1': {
             'number': '233324',

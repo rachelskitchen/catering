@@ -933,6 +933,7 @@ function saveAllData() {
     App.Data.card && App.Data.card.saveCard();
     App.Data.customer.saveCustomer();
     App.Data.customer.saveAddresses();
+    App.Data.stanfordCard && App.Data.stanfordCard.saveCard();
     settings.saveSettings();
     ests && ests.saveEstablishment(settings.get('establishment'));
 }

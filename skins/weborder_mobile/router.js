@@ -41,6 +41,7 @@ define(["main_router"], function(main_router) {
         headerModes.GiftCard = headerModes.Main;
         headerModes.StanfordCard = headerModes.Main;
         headerModes.Confirm = headerModes.OneButton;
+        headerModes.StanfordIsStudent = headerModes.OneButton;
         headerModes.Done = headerModes.Main;
         headerModes.Location = {mod: 'Location', className: 'two_button location'};
         headerModes.BackToMenu = {mod: 'OneButton', className: 'one_button back_to_menu'};
@@ -60,6 +61,8 @@ define(["main_router"], function(main_router) {
         footerModes.Card = {mod: 'Card'};
         footerModes.GiftCard = {mod: 'GiftCard'};
         footerModes.StanfordCard = {mod: 'StanfordCard'};
+        footerModes.StanfordIsStudent = {mod: 'StanfordIsStudent'};
+        footerModes.StanfordStudentVerification = {mod: 'StanfordStudentVerification'};
         footerModes.Confirm = {mod: 'Confirm'};
         footerModes.Done = {mod: 'Done'};
         footerModes.Location = footerModes.Main;
@@ -86,6 +89,8 @@ define(["main_router"], function(main_router) {
             "card" : "card",
             "giftcard" : "gift_card",
             "stanfordcard": "stanford_card",
+            "stanford_is_student": "stanford_is_student",
+            "stanford_student_verification": "stanford_student_verification",
             "confirm": "confirm",
             "done": "done",
             "location": "location",
@@ -186,6 +191,26 @@ define(["main_router"], function(main_router) {
                 this.listenTo(ests, 'resetEstablishmentData', mainModel.trigger.bind(mainModel, 'showSpinnerAndHideContent'), this);
 //common
                 this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
+
+                // init Stanford Card model if it's turned on
+                if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
+                    App.Data.stanfordCard = new App.Models.StanfordCard();
+                }
+
+                var limitHashes = ["card", "giftcard", "stanfordcard", "confirm", "pay"];
+                if(App.Data.stanfordCard && App.Data.stanfordCard.get('needToAskStudentStatus')) {
+                    Array.prototype.push.apply(this.lockedRoutes, limitHashes);
+                }
+
+                App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'change:needToAskStudentStatus', function(stanfordCard, needToAskStudentStatus) {
+                    if(needToAskStudentStatus) {
+                        Array.prototype.push.apply(self.lockedRoutes, limitHashes);
+                    } else {
+                        var args = _.clone(limitHashes);
+                        args.unshift(self.lockedRoutes);
+                        self.lockedRoutes = _.without.apply(_, args);
+                    }
+                });
 
                 this.navigationControl();
 
@@ -585,8 +610,6 @@ define(["main_router"], function(main_router) {
         },
         stanford_card: function() {
             this.prepare('stanfordcard', function() {
-                if(!App.Data.stanfordCard)
-                    App.Data.stanfordCard = new App.Models.StanfordCard();
 
                 App.Data.header.set({
                     page_title: _loc['HEADER_STANFORD_CARD_PT']
@@ -610,6 +633,57 @@ define(["main_router"], function(main_router) {
                         collection: App.Data.stanfordCard.get('plans'),
                         mod: 'Plans',
                         className: 'stanford-card-plans'
+                    }]
+                });
+
+                this.change_page();
+            });
+        },
+        stanford_is_student: function() {
+            this.prepare('stanford_is_student', function() {
+
+                App.Data.header.set({
+                    page_title: _loc['STANFORD'],
+                    back_title: _loc['HEADER_CONFIRM_BT'],
+                    back: this.navigate.bind(this, 'checkout', true)
+                });
+
+                App.Data.mainModel.set({
+                    header: headerModes.StanfordIsStudent,
+                    footer: _.extend(footerModes.StanfordIsStudent, {
+                        mainModel: App.Data.mainModel,
+                        card: App.Data.stanfordCard
+                    }),
+                    content: [{
+                        modelName: 'StanfordCard',
+                        model: App.Data.stanfordCard,
+                        mod: 'StudentStatus'
+                    }]
+                });
+
+                this.change_page();
+            });
+        },
+        stanford_student_verification: function() {
+            this.prepare('stanford_student_verification', function() {
+
+                App.Data.header.set({
+                    page_title: _loc['STANFORD_VERIFICATION'],
+                    back_title: _loc['HEADER_CONFIRM_BT'],
+                    back: this.navigate.bind(this, 'checkout', true)
+                });
+
+                App.Data.mainModel.set({
+                    header: headerModes.StanfordIsStudent,
+                    footer: _.extend(footerModes.StanfordStudentVerification, {
+                        mainModel: App.Data.mainModel,
+                        card: App.Data.stanfordCard
+                    }),
+                    content: [{
+                        modelName: 'StanfordCard',
+                        model: App.Data.stanfordCard,
+                        mod: 'Main',
+                        myorder: App.Data.myorder
                     }]
                 });
 
