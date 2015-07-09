@@ -1,14 +1,9 @@
 .subcategories {
     position: absolute;
-    right: 27px;
+    right: 200px;
     top: 65px;
     padding: 0 5px;
     z-index: 101;
-}
-.subcategories > span {
-    font-weight: bold;
-    line-height: 26px;
-    vertical-align: top;
 }
 .subcategories select {
     font-size:16px;

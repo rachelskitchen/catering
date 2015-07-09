@@ -91,6 +91,7 @@
         'MAIN_REWARD_CARD_POINTS':         'Reward Card Points',
         'MAIN_TOTAL_AMOUNT_CHARGED':       'Total Amount Charged',
         'MAIN_RETURN_TO_MENU':             'Return to Menu',
+        'CATEGORIES_SEARCH':               'Search',
         'MODIFIERS_BUTTON_ADD':            'Add',
         'MODIFIERS_OPTIONAL':              'Optional',
         'MODIFIERS_OPTIONAL_UP':           'up to',
@@ -121,7 +122,6 @@
         'STORE_INFO_PHONE':                'Phone',
         'STORE_INFO_EMAIL':                'Email',
         'STORE_INFO_ACCESS':               'Access',
-        'SUBCATEGORIES_SKIP_TO':           'Skip to',
         'SUBCATEGORIES_SUBCATEGORIES':     'Sub-Categories',
         'TIPS_ADD_TIP':                    'Add a Tip',
         'TIPS_NONE':                       'None',
@@ -148,6 +148,8 @@
         'REWARDS_PURCHASES_REDEMPTION_AMOUNT': [
             'Purchase will be redeemed',
             'Purchases will be redeemed'
-        ]
+        ],
+        'SEARCH_ENTER_STRING':             'Search',
+        'PRODUCTS_NOT_FOUND':              'No products found'
     } // end of locale
 }); // end of module

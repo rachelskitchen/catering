@@ -91,6 +91,7 @@
         'MAIN_REWARD_CARD_POINTS':         'Баллы накопительной карты',
         'MAIN_TOTAL_AMOUNT_CHARGED':       'Всего оплачено',
         'MAIN_RETURN_TO_MENU':             'Вернуться в Меню',
+        'CATEGORIES_SEARCH':               'Поиск',
         'MODIFIERS_BUTTON_ADD':            'Добавить',
         'MODIFIERS_OPTIONAL':              'Опционально',
         'MODIFIERS_OPTIONAL_UP':           'до',
@@ -121,7 +122,6 @@
         'STORE_INFO_PHONE':                'Телефон',
         'STORE_INFO_EMAIL':                'Эл. почта',
         'STORE_INFO_ACCESS':               'Доступ',
-        'SUBCATEGORIES_SKIP_TO':           'Перейти в',
         'SUBCATEGORIES_SUBCATEGORIES':     'Подкатегории',
         'TIPS_ADD_TIP':                    'Оставить чаевые',
         'TIPS_NONE':                       'Нет',
@@ -148,6 +148,8 @@
         'REWARDS_PURCHASES_REDEMPTION_AMOUNT': [
             'покупка будет потрачена',
             'покупок будет потрачено'
-        ]
+        ],
+        'SEARCH_ENTER_STRING':             'Поиск',
+        'PRODUCTS_NOT_FOUND':              'Продукты не найдены'
     } // end of locale
 }); // end of module

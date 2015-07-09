@@ -281,6 +281,13 @@ define(["main_router"], function(main_router) {
                 //    this.change_page();
                 }
 
+                if (!App.Data.search) {
+                    App.Data.search = new App.Collections.Search();
+                }
+                if (!App.Data.searchLine) {
+                    App.Data.searchLine = new App.Models.SearchLine({search: App.Data.search});                    
+                }
+
                 App.Data.header.set('tab_index', 0);
                 App.Data.mainModel.set('mod', 'Main');
 
@@ -301,8 +308,15 @@ define(["main_router"], function(main_router) {
                             mod: 'Select'
                         },
                         {
+                            modelName: 'SearchLine',
+                            model: App.Data.searchLine,
+                            mod: 'Main',
+                            className: 'content search_line'
+                        },
+                        {
                             modelName: 'Categories',
                             collection: App.Data.categories,
+                            search: App.Data.search,
                             mod: 'MainProducts'
                         }
                     ]
