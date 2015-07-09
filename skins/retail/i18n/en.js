@@ -109,6 +109,8 @@
         'STANFORD_PLANS':                  'Available Plans',
         'STANFORD_NO_PLANS':               'You do not have any plan at this time.',
         'STANFORD_BALANCE':                'Balance:',
+        'STANFORD_STUDENT_QUESTION':       'Are you a Stanford Student?',
+        'STANFORD_STUDENT_INSTRUCTIONS':   'You must bring your Stanford ID when you pick up your order.',
         'REWARDS_INFORMATION':             'Information',
         'REWARDS_NUMBER':                  'Rewards #',
         'REWARDS_TOTAL_POINTS':            'Total Points',

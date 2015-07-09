@@ -103,11 +103,19 @@ define(["backbone", "captcha"], function(Backbone) {
          *
          * @prop {number} defaults.planId - the selected Stanford Card plan.
          * @default null.
+         *
+         * @prop {boolean} defaults.validated - `true` value means that card number is already checked on server and exists.
+         * @default false.
+         *
+         * @prop {boolean} defaults.needToAskStudentStatus - `true` value means that a customer should be asked about student status.
+         * @default true.
          */
         defaults: _.extend({}, App.Models.Captcha.prototype.defaults, {
             number: '',
             plans: null,
-            planId: null
+            planId: null,
+            validated: false,
+            needToAskStudentStatus: true
         }),
         /**
          * @method
@@ -122,6 +130,7 @@ define(["backbone", "captcha"], function(Backbone) {
             }
             this.set('plans', plans);
             this.listenTo(plans, 'change:selected', this.updatePlanId, this);
+            this.listenTo(this, 'change:validated', this.doNotAskStudentStatus, this);
         },
         /**
          * @method
@@ -141,7 +150,8 @@ define(["backbone", "captcha"], function(Backbone) {
                 captchaKey: this.defaults.captchaKey,
                 captchaValue: this.defaults.captchaValue,
                 captchaImage: this.defaults.captchaImage,
-                planId: this.defaults.planId
+                planId: this.defaults.planId,
+                validated: this.defaults.validated
             });
             this.get('plans').reset();
         },
@@ -190,9 +200,11 @@ define(["backbone", "captcha"], function(Backbone) {
                     } else if(!data.data.length) {
                         plans.reset();
                         self.trigger('onStanfordCardError', _loc.STANFORD_NO_PLANS);
+                        self.set('validated', true);
                     } else {
                         plans.reset(data.data);
                         plans.at(0).set('selected', true);
+                        self.set('validated', true);
                     }
                 },
                 complete: req.resolve.bind(req)
@@ -218,6 +230,44 @@ define(["backbone", "captcha"], function(Backbone) {
         updatePlans: function(data) {
             if(Array.isArray(data)) {
                 this.get('plans').set(data);
+            }
+        },
+        /**
+         * @method
+         * Set 'needToAskStudentStatus' attribute value to false.
+         *
+         * @param {App.Models.StanfordCard} model - the same model.
+         * @param {boolean} value - the value of 'validated' attribute.
+         */
+        doNotAskStudentStatus: function(model, value) {
+            if(model === this) {
+                value && this.set('needToAskStudentStatus', false);
+            } else {
+                this.set('needToAskStudentStatus', false);
+            }
+        },
+        /**
+         * @method
+         * Saves model data in a storage. 'stanfordcard' key is used.
+         */
+        saveCard: function() {
+            var data = _.extend(this.toJSON(), {
+                plans: this.get('plans').toJSON()
+            });
+            setData('stanfordcard', data);
+        },
+        /**
+         * @method
+         * Restores model data from a storage. 'stanfordcard' key is used.
+         */
+        restoreCard: function() {
+            var data = getData('stanfordcard'),
+                plans;
+            if(_.isObject(data)) {
+                plans = data.plans;
+                delete data.plans;
+                this.set(data);
+                Array.isArray(plans) && this.get('plans').reset(plans);
             }
         }
     });

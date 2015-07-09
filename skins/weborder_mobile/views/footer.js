@@ -140,7 +140,11 @@ define(["revel_view", "generator"], function(revel_view) {
                 checkout: true,
                 validationOnly: true
             }, function() {
-                App.Data.router.navigate('confirm', true);
+                if(App.Data.stanfordCard && App.Data.stanfordCard.get('needToAskStudentStatus')) {
+                    App.Data.router.navigate('stanford_is_student', true);
+                } else {
+                    App.Data.router.navigate('confirm', true);
+                }
             });
         },
         profile: setCallback('profile')
@@ -222,6 +226,46 @@ define(["revel_view", "generator"], function(revel_view) {
         reset: function() {
             this.options.card.trigger('resetNumber')
         }
+    });
+
+    var FooterStanfordIsStudentView = FooterCardView.extend({
+        name: "footer",
+        mod: "stanford_is_card",
+        events: {
+            "click .no": "no",
+            "click .yes": "yes"
+        },
+        no: function() {
+            this.options.card.set('needToAskStudentStatus', false);
+            App.Data.router.navigate('confirm', true);
+        },
+        yes: function() {
+            App.Data.router.navigate('stanford_student_verification', true);
+        }
+    });
+
+    var FooterStanfordStudentVerificationView = FooterStanfordCardView.extend({
+        name: "footer",
+        mod: "stanford_student_verification",
+        events: {
+            "click .cancel": "cancel",
+            "click .proceed-plans": "submitCard"
+        },
+        cancel: function() {
+            App.Data.router.navigate('checkout', true);
+        },
+        submitCard: function() {
+            var mainModel = this.options.mainModel,
+                card = this.options.card;
+            mainModel.trigger('loadStarted');
+            card.getPlans().then(function() {
+                if(card.get('validated')) {
+                    App.Data.router.navigate('confirm', true);
+                } else {
+                    mainModel.trigger('loadCompleted');
+                }
+            });
+        },
     });
 
     var FooterConfirmView = App.Views.FactoryView.extend({
@@ -422,5 +466,7 @@ define(["revel_view", "generator"], function(revel_view) {
         App.Views.FooterView.FooterLoyaltyView = FooterLoyaltyView;
         App.Views.FooterView.FooterRewardsCardView = FooterRewardsCardView;
         App.Views.FooterView.FooterRewardsView = FooterRewardsView;
+        App.Views.FooterView.FooterStanfordIsStudentView = FooterStanfordIsStudentView;
+        App.Views.FooterView.FooterStanfordStudentVerificationView = FooterStanfordStudentVerificationView;
     });
 });

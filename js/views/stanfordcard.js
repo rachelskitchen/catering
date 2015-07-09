@@ -101,11 +101,28 @@ define(["factory", "giftcard_view"], function(factory) {
         itemView: App.Views.CoreStanfordCardView.CoreStanfordCardPlanView
     });
 
+    App.Views.CoreStanfordCardView.CoreStanfordStudentStatusView = App.Views.FactoryView.extend({
+        name: 'stanfordcard',
+        mod: 'student',
+        events: {
+            'click .btn-yes': 'yes',
+            'click .btn-no': 'no',
+        },
+        yes: function() {
+            this.model.trigger('onStudent');
+        },
+        no: function() {
+            this.model.doNotAskStudentStatus();
+            this.model.trigger('onNotStudent');
+        }
+    });
+
     return new (require('factory'))(function() {
         App.Views.StanfordCardView = {};
         App.Views.StanfordCardView.StanfordCardMainView = App.Views.CoreStanfordCardView.CoreStanfordCardMainView;
         App.Views.StanfordCardView.StanfordCardPlansView = App.Views.CoreStanfordCardView.CoreStanfordCardPlansView;
         App.Views.StanfordCardView.StanfordCardPlanView = App.Views.CoreStanfordCardView.CoreStanfordCardPlanView;
+        App.Views.StanfordCardView.StanfordCardStudentStatusView = App.Views.CoreStanfordCardView.CoreStanfordStudentStatusView;
     });
 
 });

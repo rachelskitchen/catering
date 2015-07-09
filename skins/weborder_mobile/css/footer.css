@@ -376,6 +376,7 @@
     width: 34% !important;
 }
 
-#footer ul.stanford-card .btn1 {
+#footer ul.stanford-card .btn1, #footer ul.stanford-is-student .btn1 {
     position: relative;
 }
+

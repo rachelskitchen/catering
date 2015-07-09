@@ -36,3 +36,15 @@
 .stanford-card-plans .row-balance {
     font-size: 0.8em;
 }
+
+.stanford-student-question {
+    font-size: 3em;
+    text-align: center;
+    padding: 2em;
+}
+
+.stanford-student-instructions {
+    font-size: 3em;
+    padding: 1em;
+    text-align: center;
+}

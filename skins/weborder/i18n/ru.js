@@ -137,6 +137,8 @@
         'STANFORD_PLANS':                  'Доступные планы',
         'STANFORD_NO_PLANS':               'У Вас нет ниодного доступного плана.',
         'STANFORD_BALANCE':                'Баланс:',
+        'STANFORD_STUDENT_QUESTION':       'Вы студент Stanford?',
+        'STANFORD_STUDENT_INSTRUCTIONS':   'Вы должны предоставить Stanford ID, когда будете забирать заказ.',
         'REWARDS_INFORMATION':             'Накопленные баллы',
         'REWARDS_NUMBER':                  'Номер карты',
         'REWARDS_TOTAL_POINTS':            'Кол-во баллов',

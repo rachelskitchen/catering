@@ -10,7 +10,7 @@
             "model": ["main", "header", "filter", "categories"],
             "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "quantity", "categories"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "quantity", "categories"],
-            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "search", "subcategories"],
+            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "search", "subcategories", "stanfordcard"],
             "js" : ["jquery.contentarrow", "jquery.combobox"]
         },
         "index": {
@@ -33,9 +33,9 @@
         },
         "checkout": {
             "css": ["checkout", "confirm", "card", "rewards"],
-            "views": ["cart", "checkout", "cart", "rewards"],
+            "views": ["cart", "checkout", "cart", "rewards", "stanfordcard"],
             "templates": ["cart", "checkout", "cart", "confirm", "card", "giftcard", "rewards", "stanfordcard"],
-            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "card_view", "giftcard_view", "confirm_view", "stanfordcard", "stanfordcard_view"]
+            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "card_view", "giftcard_view", "confirm_view"]
         },
         "confirm": {
             "views": [],

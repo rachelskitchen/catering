@@ -135,6 +135,7 @@ define(['stanfordcard', 'js/utest/data/StanfordCard'], function(stanfordcard, da
                 expect(card.get).toHaveBeenCalledWith('plans');
                 expect(card.set).toHaveBeenCalledWith('plans', plans);
                 expect(card.listenTo).toHaveBeenCalledWith(plans, 'change:selected', card.updatePlanId, card);
+                expect(card.listenTo).toHaveBeenCalledWith(card, 'change:validated', card.doNotAskStudentStatus, card);
             }
         });
 
@@ -198,6 +199,7 @@ define(['stanfordcard', 'js/utest/data/StanfordCard'], function(stanfordcard, da
             expect(result.captchaValue).toBe(data.CARD_DEFAULT.captchaValue);
             expect(result.captchaImage).toBe(data.CARD_DEFAULT.captchaImage);
             expect(result.captchaKey).toBe(data.CARD_DEFAULT.captchaKey);
+            expect(result.validated).toBe(data.CARD_DEFAULT.validated);
             expect(result.plans.length).toBe(0);
         });
 
@@ -226,6 +228,10 @@ define(['stanfordcard', 'js/utest/data/StanfordCard'], function(stanfordcard, da
 
                 spyOn(card.get('plans'), 'reset').and.callFake(function() {
                     return Backbone.Collection.prototype.reset.apply(card.get('plans'), arguments);
+                });
+
+                spyOn(card, 'set').and.callFake(function() {
+                    return Backbone.Model.prototype.set.apply(card, arguments);
                 });
             });
 
@@ -279,6 +285,7 @@ define(['stanfordcard', 'js/utest/data/StanfordCard'], function(stanfordcard, da
                 expect(result.state()).toBe('resolved');
                 expect(card.trigger).toHaveBeenCalledWith('onStanfordCardError', _loc.STANFORD_NO_PLANS);
                 expect(card.get('plans').reset).toHaveBeenCalled();
+                expect(card.set).toHaveBeenCalledWith('validated', true);
             });
 
             it('request is successful, data.status is "OK", data.data is an array with items', function() {
@@ -291,6 +298,7 @@ define(['stanfordcard', 'js/utest/data/StanfordCard'], function(stanfordcard, da
                 expect(result.state()).toBe('resolved');
                 expect(card.get('plans').reset).toHaveBeenCalledWith(ajaxData.data);
                 expect(card.get('plans').at(0).get('selected')).toBe(true);
+                expect(card.set).toHaveBeenCalledWith('validated', true);
             });
 
             it('request is successful, data.status is "ERROR"', function() {
@@ -366,6 +374,102 @@ define(['stanfordcard', 'js/utest/data/StanfordCard'], function(stanfordcard, da
                 card.updatePlans([data.PLAN_1, data.PLAN_2]);
                 expect(card.get('plans').at(0).toJSON()).toEqual(data.PLAN_1);
                 expect(card.get('plans').at(1).toJSON()).toEqual(data.PLAN_2);
+            });
+        });
+
+        describe('doNotAskStudentStatus(model, value)', function() {
+            beforeEach(function() {
+                spyOn(card, 'set');
+            });
+
+            it('model is valid, value is false', function() {
+                card.doNotAskStudentStatus(card, false);
+                expect(card.set).not.toHaveBeenCalled();
+            });
+
+            it('model is valid, value is true', function() {
+                card.doNotAskStudentStatus(card, true);
+                expect(card.set).toHaveBeenCalledWith('needToAskStudentStatus', false);
+            });
+
+            it('model is invalid', function() {
+                card.doNotAskStudentStatus();
+                expect(card.set).toHaveBeenCalledWith('needToAskStudentStatus', false);
+            });
+        });
+
+        it('saveCard()', function() {
+            var _data, _key;
+            spyOn(window, 'setData').and.callFake(function(key, data) {
+                _data = data;
+                _key = key;
+            });
+            card.saveCard();
+
+            expect(window.setData).toHaveBeenCalled();
+            expect(_key).toBe('stanfordcard');
+            expect(_data).toEqual(_.extend(card.toJSON(), {
+                plans: card.get('plans').toJSON()
+            }));
+        });
+
+        describe('restoreCard()', function() {
+            var storageData, plans;
+
+            beforeEach(function() {
+                plans = card.get('plans');
+                storageData = null;
+
+                spyOn(window, 'getData').and.callFake(function() {
+                    return storageData;
+                });
+
+                spyOn(card, 'set').and.callFake(function() {
+                    return Backbone.Model.prototype.set.apply(card, arguments);
+                });
+
+                spyOn(plans, 'reset');
+            });
+
+            it('storage data is null', function() {
+                card.restoreCard();
+
+                expect(window.getData).toHaveBeenCalledWith('stanfordcard');
+                expect(card.set).not.toHaveBeenCalled();
+                expect(plans.reset).not.toHaveBeenCalled();
+            });
+
+            it('storage data is literal object, plans is not an array', function() {
+                storageData = {
+                    number: '213234',
+                    plans: null,
+                    planId: null,
+                    validated: true,
+                    needToAskStudentStatus: false
+                }
+                card.restoreCard();
+
+                expect(window.getData).toHaveBeenCalledWith('stanfordcard');
+                expect(card.set).toHaveBeenCalled();
+                expect(card.get('plans')).toBe(plans);
+                expect(plans.reset).not.toHaveBeenCalled();
+            });
+
+            it('storage data is literal object, plans is an array', function() {
+                var plansArray = [];
+                storageData = {
+                    number: '213234',
+                    plans: plansArray,
+                    planId: null,
+                    validated: true,
+                    needToAskStudentStatus: false
+                }
+                card.restoreCard();
+
+                expect(window.getData).toHaveBeenCalledWith('stanfordcard');
+                expect(card.set).toHaveBeenCalled();
+                expect(card.get('plans')).toBe(plans);
+                expect(plans.reset).toHaveBeenCalledWith(plansArray);
             });
         });
     });

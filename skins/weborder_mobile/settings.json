@@ -10,7 +10,7 @@
             "model": ["main", "header", "footer", "revel"],
             "templates": ["main", "header", "footer", "revel"],
             "views": ["main", "header", "footer", "logo"],
-            "core": ["geopoint", "jquery_numbermask", "revel_view"]
+            "core": ["geopoint", "jquery_numbermask", "revel_view", "stanfordcard"]
         },
         "index": {
             "css": ["store_info", "categories"],
@@ -59,6 +59,18 @@
             "templates": ["stanfordcard"],
             "views": ["stanfordcard"],
             "core": ["giftcard", "jquery_numbermask", "stanfordcard", "stanfordcard_view"]
+        },
+        "stanford_is_student": {
+            "css": ["stanfordcard"],
+            "templates": ["stanfordcard"],
+            "views": ["stanfordcard"],
+            "core": ["giftcard", "jquery_numbermask"]
+        },
+        "stanford_student_verification": {
+            "css": ["card", "stanfordcard"],
+            "templates": ["stanfordcard"],
+            "views": ["stanfordcard"],
+            "core": ["giftcard", "jquery_numbermask"]
         },
         "confirm": {
             "css": ["total", "checkout", "card", "tips"],
