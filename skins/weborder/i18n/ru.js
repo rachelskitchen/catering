@@ -99,6 +99,8 @@
         'MAIN_TOTAL_AMOUNT_CHARGED':       'Всего оплачено',
         'MAIN_RETURN_TO_MENU':             'Вернуться в Меню',
         'MAIN_STANFORD_CARD_BALANCE':      'баланс',
+        'MAIN_STANFORD_CARD_BALANCE_MEAL': 'Обед',
+        'MAIN_STANFORD_CARD_BALANCE_MEALS':'Обеда',
         'MODIFIERS_BUTTON_ADD':            'Добавить',
         'MODIFIERS_OPTIONAL':              'Опционально',
         'MODIFIERS_OPTIONAL_UP':           'до',

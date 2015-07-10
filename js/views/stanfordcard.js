@@ -71,7 +71,7 @@ define(["factory", "giftcard_view"], function(factory) {
         tagName: 'li',
         className: 'stanford-plan',
         bindings: {
-            ':el': 'classes: {active: selected}',
+            ':el': 'classes: {active: selected}, toggle: equal(type, "D")',
             '.name': 'text: name',
             '.balance': 'text: currencyFormat(balance)'
         },
