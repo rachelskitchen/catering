@@ -40,6 +40,8 @@
         'DONE_REWARD_CARD_PURCHASES':      'Points for Purchases',
         'DONE_AMOUNT_CHARGED':             'Amount Charged',
         'DONE_STANFORD_CARD_BALANCE':      'balance',
+        'DONE_STANFORD_CARD_BALANCE_MEAL': 'Meal',
+        'DONE_STANFORD_CARD_BALANCE_MEALS':'Meals',
         'FOOTER_ABOUT':                    'About',
         'FOOTER_LOYALTY':                  'Loyalty',
         'FOOTER_LOCATION':                 'Location',

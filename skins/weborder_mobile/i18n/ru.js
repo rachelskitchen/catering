@@ -40,6 +40,8 @@
         'DONE_REWARD_CARD_PURCHASES':      'Баллы за покупки',
         'DONE_AMOUNT_CHARGED':             'Всего оплачено',
         'DONE_STANFORD_CARD_BALANCE':      'баланс',
+        'DONE_STANFORD_CARD_BALANCE_MEAL': 'Обед',
+        'DONE_STANFORD_CARD_BALANCE_MEALS':'Обеда',
         'FOOTER_ABOUT':                    'О нас',
         'FOOTER_LOYALTY':                  'Бонусы',
         'FOOTER_LOCATION':                 'Карта',

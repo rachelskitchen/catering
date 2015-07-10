@@ -85,6 +85,8 @@
         'MAIN_TOTAL_AMOUNT_CHARGED':       'Total Amount Charged',
         'MAIN_RETURN_TO_MENU':             'Return to Menu',
         'MAIN_STANFORD_CARD_BALANCE':      'balance',
+        'MAIN_STANFORD_CARD_BALANCE_MEAL': 'Meal',
+        'MAIN_STANFORD_CARD_BALANCE_MEALS':'Meals',
         'MODIFIERS_PLEASE_SELECT':         'Please select a',
         'MYORDER_ADD_AMOUNT_TO':           'Add amount to',
         'MYORDER_EDIT':                    'Edit',

@@ -60,17 +60,17 @@ define(["backbone", "factory"], function(Backbone) {
                 model.reward_visits = '';
                 model.reward_purchases = '';
 
-                if(_.isObject(get.balances) && _.isObject(get.balances.rewards)) {
-                    model.reward_points = typeof get.balances.rewards.current_points == 'number' ? get.balances.rewards.current_points : model.reward_points;
-                    model.reward_visits = typeof get.balances.rewards.points_by_visits == 'number' ? get.balances.rewards.points_by_visits : model.reward_visits;
-                    model.reward_purchases = typeof get.balances.rewards.points_by_purchases == 'number' ? get.balances.rewards.points_by_purchases : model.reward_purchases;
+                var balances = _.isObject(get.balances) ? get.balances : {};
+
+                if(_.isObject(balances.rewards)) {
+                    model.reward_points = typeof balances.rewards.current_points == 'number' ? balances.rewards.current_points : model.reward_points;
+                    model.reward_visits = typeof balances.rewards.points_by_visits == 'number' ? balances.rewards.points_by_visits : model.reward_visits;
+                    model.reward_purchases = typeof balances.rewards.points_by_purchases == 'number' ? balances.rewards.points_by_purchases : model.reward_purchases;
                 }
 
                 model.symbol = App.Data.settings.get('settings_system').currency_symbol;
 
-                model.stanfordCard = get.paymentType === PAYMENT_TYPE.STANFORD && App.Data.stanfordCard && App.Data.stanfordCard.getSelectedPlan()
-                    ?  App.Data.stanfordCard.getSelectedPlan().toJSON()
-                    : '';
+                model.stanfordCardBalances = get.paymentType === PAYMENT_TYPE.STANFORD && Array.isArray(balances.stanford) ? balances.stanford : null;
 
                 model.isOrderFromSeat = App.Data.orderFromSeat instanceof Object;
                 model.isDeliverToSeat = checkout.get("dining_option") === 'DINING_OPTION_DELIVERY_SEAT';

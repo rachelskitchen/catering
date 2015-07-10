@@ -99,6 +99,8 @@
         'MAIN_TOTAL_AMOUNT_CHARGED':       'Total Amount Charged',
         'MAIN_RETURN_TO_MENU':             'Return to Menu',
         'MAIN_STANFORD_CARD_BALANCE':      'balance',
+        'MAIN_STANFORD_CARD_BALANCE_MEAL': 'Meal',
+        'MAIN_STANFORD_CARD_BALANCE_MEALS':'Meals',
         'MODIFIERS_BUTTON_ADD':            'Add',
         'MODIFIERS_OPTIONAL':              'Optional',
         'MODIFIERS_OPTIONAL_UP':           'up to',

@@ -48,16 +48,26 @@
             </span>
         </dd>
         <% } %>
-        <% if(stanfordCard) { %>
-        <dt> <span class="clip">&ldquo;<%= stanfordCard.name %>&rdquo; <%= _lp.DONE_STANFORD_CARD_BALANCE %>: </span> </dt>
+        <% if(stanfordCardBalances) { %>
+        <% _.each(stanfordCardBalances, function(stanfordCard) { %>
+        <dt><span class="clip">&ldquo;<%= stanfordCard.name %>&rdquo; <%= _lp.DONE_STANFORD_CARD_BALANCE %>: </span></dt>
         <dd>
             <span>
                 <strong>
+                <% if(stanfordCard.type == 'D') { %>
                     <span class="currency_symbol"><%= symbol %></span>
                     <span class="price"><%= stanfordCard.balance %></span>
+                <% } else if(stanfordCard.balance == 1) { %>
+                    <span class="price"><%= stanfordCard.balance %></span>
+                    <span><%= _lp.DONE_STANFORD_CARD_BALANCE_MEAL %></span>
+                <%} else { %>
+                    <span class="price"><%= stanfordCard.balance %></span>
+                    <span><%= _lp.DONE_STANFORD_CARD_BALANCE_MEALS %></span>
+                <% } %>
                 </strong>
             </span>
         </dd>
+        <% }); %>
         <% } %>
         <dt> <span class="clip"> <%= _lp.DONE_AMOUNT_CHARGED %>: </span> </dt>
         <dd>

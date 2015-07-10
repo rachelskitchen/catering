@@ -129,11 +129,19 @@
                                 <td><%= reward_purchases %></td>
                             </tr>
                             <% } %>
-                            <% if(stanfordCard) { %>
+                            <% if(stanfordCardBalances) { %>
+                            <% _.each(stanfordCardBalances, function(stanfordCard) { %>
                             <tr>
                                 <td>&ldquo;<%= stanfordCard.name %>&rdquo; <%= _lp.MAIN_STANFORD_CARD_BALANCE %>: </td>
+                                <% if(stanfordCard.type == 'D') { %>
                                 <td><%= symbol %><%= stanfordCard.balance %></td>
+                                <% } else if(stanfordCard.balance == 1) { %>
+                                <td><%= stanfordCard.balance %> <%= _lp.MAIN_STANFORD_CARD_BALANCE_MEAL %></td>
+                                <%} else { %>
+                                <td><%= stanfordCard.balance %> <%= _lp.MAIN_STANFORD_CARD_BALANCE_MEALS %></td>
+                                <% } %>
                             </tr>
+                            <% }); %>
                             <% } %>
                             <tr>
                                 <td> <%= _lp.MAIN_TOTAL_AMOUNT_CHARGED %>: </td>

@@ -202,8 +202,10 @@ define(["backbone", "captcha"], function(Backbone) {
                         self.trigger('onStanfordCardError', _loc.STANFORD_NO_PLANS);
                         self.set('validated', true);
                     } else {
+                        var firstDollarPlan;
                         plans.reset(data.data);
-                        plans.at(0).set('selected', true);
+                        firstDollarPlan = plans.where({type: 'D'})[0];  //only dollar plans are available for selection at the moment
+                        firstDollarPlan && firstDollarPlan.set('selected', true);
                         self.set('validated', true);
                     }
                 },
