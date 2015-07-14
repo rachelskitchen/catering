@@ -450,7 +450,7 @@ footer {
     border-style: solid;
 }
 .btn {
-    font-size: 27px;
+    font-size: 26px;
     position: relative;
     height: 40px;
     border-width: 5px;
@@ -940,7 +940,7 @@ section.maintenance .back {
     margin: 15px;
     height: 48px;
 }
-#alert .btn {
+#alert .btn, .btn-popup {
     min-width: 100px;
     max-width: 180px;
     height: 34px;

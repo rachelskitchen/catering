@@ -42,7 +42,8 @@
 #content ul.card span {
     font-size: 3em;
     display: inline-block;
-    width: 32%;
+    max-width: 46%;
+    min-width: 32%;
     height: 100%;
     float: left;
     line-height: 2em;

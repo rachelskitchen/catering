@@ -56,7 +56,8 @@ var PAYMENT_TYPE = {
     CREDIT: 2,
     PAYPAL: 3,
     NO_PAYMENT: 4,
-    GIFT: 5
+    GIFT: 5,
+    STANFORD: 6
 };
 
 // Dining options
@@ -932,6 +933,7 @@ function saveAllData() {
     App.Data.card && App.Data.card.saveCard();
     App.Data.customer.saveCustomer();
     App.Data.customer.saveAddresses();
+    App.Data.stanfordCard && App.Data.stanfordCard.saveCard();
     settings.saveSettings();
     ests && ests.saveEstablishment(settings.get('establishment'));
 }
@@ -1033,6 +1035,7 @@ function format_timetables(timetables, separator) {
     }
     return res.join(separator);
 }
+// End of timetable functions
 
 var PaymentProcessor = {
     clearQueryString: function(payment_type, isNotHash) {
@@ -1052,7 +1055,7 @@ var PaymentProcessor = {
         var credit_card_button = creditCardPaymentProcessor != null;
 
         if ((skin == App.Skins.WEBORDER || skin == App.Skins.WEBORDER_MOBILE || skin == App.Skins.RETAIL)
-            && !credit_card_button && !processors.paypal && !processors.cash && !processors.gift_card) {
+            && !credit_card_button && !processors.paypal && !processors.cash && !processors.gift_card && !processors.stanford) {
             return undefined;
         }
 
@@ -1062,6 +1065,7 @@ var PaymentProcessor = {
         processors.paypal && payment_count++;
         processors.cash && payment_count++;
         processors.gift_card && payment_count++;
+        processors.stanford && payment_count++;
 
         return {
             payment_count: payment_count,
@@ -1183,6 +1187,9 @@ var PaymentProcessor = {
             case PAYMENT_TYPE.GIFT:
                 payment_processor = GiftCardPaymentProcessor;
                 break;
+            case PAYMENT_TYPE.STANFORD:
+                payment_processor = StanfordCardPaymentProcessor;
+                break;
             case PAYMENT_TYPE.NO_PAYMENT:
                 payment_processor = NoPaymentPaymentProcessor;
                 break;
@@ -1204,6 +1211,8 @@ var PaymentProcessor = {
             payment_processor = AdyenPaymentProcessor;
         } else if (payment.worldpay) {
             payment_processor = WorldPayPaymentProcessor;
+        } else if (payment.freedompay) {
+            payment_processor = FreedomPayPaymentProcessor;
         }
         return payment_processor;
     },
@@ -1339,19 +1348,22 @@ var MERCURY_RETURN_CODE = {
 };
 
 var MERCURY_RETURN_MESSAGE = {};
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SUCCESS] = MSG.MERCURY_RETURN_MESSAGE_SUCCESS;
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.AUTH_FAIL] = MSG.MERCURY_RETURN_MESSAGE_AUTH_FAIL;
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.CARD_DECLINED] = MSG.MERCURY_RETURN_MESSAGE_CARD_DECLINED;
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.CANCEL] = MSG.MERCURY_RETURN_MESSAGE_CANCEL;
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SESSION_TIMEOUT] = MSG.MERCURY_RETURN_MESSAGE_SESSION_TIMEOUT;
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.MAINTENANCE_MODE] = MSG.MERCURY_RETURN_MESSAGE_MAINTENANCE_MODE;
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SAVE_CARD_INFO_FAIL] = MSG.MERCURY_RETURN_MESSAGE_SAVE_CARD_INFO_FAIL;
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.LOAD_CARD_INFO_FAIL] = MSG.MERCURY_RETURN_MESSAGE_LOAD_CARD_INFO_FAIL;
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.PROCESS_CARD_INFO_FAIL] = MSG.MERCURY_RETURN_MESSAGE_PROCESS_CARD_INFO_FAIL;
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_CC_FAIL] = MSG.MERCURY_RETURN_MESSAGE_VALIDATION_CC_FAIL;
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_SERVER_SIDE_FAILURE] = MSG.MERCURY_RETURN_MESSAGE_VALIDATION_SERVER_SIDE_FAILURE;
-MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATE_NAME_FAIL] = MSG.MERCURY_RETURN_MESSAGE_VALIDATE_NAME_FAIL;
-MERCURY_RETURN_MESSAGE_DEFAULT = MSG.MERCURY_RETURN_MESSAGE_DEFAULT;
+
+$(window).on('LocalizationCompleted', function() {
+    MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SUCCESS] = MSG.MERCURY_RETURN_MESSAGE_SUCCESS;
+    MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.AUTH_FAIL] = MSG.MERCURY_RETURN_MESSAGE_AUTH_FAIL;
+    MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.CARD_DECLINED] = MSG.MERCURY_RETURN_MESSAGE_CARD_DECLINED;
+    MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.CANCEL] = MSG.MERCURY_RETURN_MESSAGE_CANCEL;
+    MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SESSION_TIMEOUT] = MSG.MERCURY_RETURN_MESSAGE_SESSION_TIMEOUT;
+    MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.MAINTENANCE_MODE] = MSG.MERCURY_RETURN_MESSAGE_MAINTENANCE_MODE;
+    MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.SAVE_CARD_INFO_FAIL] = MSG.MERCURY_RETURN_MESSAGE_SAVE_CARD_INFO_FAIL;
+    MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.LOAD_CARD_INFO_FAIL] = MSG.MERCURY_RETURN_MESSAGE_LOAD_CARD_INFO_FAIL;
+    MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.PROCESS_CARD_INFO_FAIL] = MSG.MERCURY_RETURN_MESSAGE_PROCESS_CARD_INFO_FAIL;
+    MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_CC_FAIL] = MSG.MERCURY_RETURN_MESSAGE_VALIDATION_CC_FAIL;
+    MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATION_SERVER_SIDE_FAILURE] = MSG.MERCURY_RETURN_MESSAGE_VALIDATION_SERVER_SIDE_FAILURE;
+    MERCURY_RETURN_MESSAGE[MERCURY_RETURN_CODE.VALIDATE_NAME_FAIL] = MSG.MERCURY_RETURN_MESSAGE_VALIDATE_NAME_FAIL;
+    MERCURY_RETURN_MESSAGE_DEFAULT = MSG.MERCURY_RETURN_MESSAGE_DEFAULT;
+});
 
 var MercuryPaymentProcessor = {
     clearQueryString: function(queryString) {
@@ -1661,7 +1673,42 @@ var GiftCardPaymentProcessor = {
         return payment_info;
     }
 };
-// End of timetable functions
+
+var StanfordCardPaymentProcessor = {
+    clearQueryString: function(queryString) {
+        return queryString;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        var stanfordCard = App.Data.stanfordCard && App.Data.stanfordCard.toJSON();
+        payment_info.cardInfo = {
+            planId: $.trim(stanfordCard.planId)
+        };
+        return payment_info;
+    }
+};
+
+var FreedomPayPaymentProcessor = {
+    clearQueryString: function(queryString) {
+        qStr = queryString.replace(/&?transid=[^&]*/, '');
+
+        return qStr;
+    },
+    showCreditCardDialog: function() {
+        return false;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        if (pay_get_parameter) {
+            var get_parameters = App.Data.get_parameters;
+            if (pay_get_parameter === 'true') {
+                payment_info.transaction_id = get_parameters.transid;
+            } else {
+                //TODO: better message
+                payment_info.errorMsg = 'Payment failed.';
+            }
+        }
+        return payment_info;
+    }
+};
 
 /*
 * removeClassRegexp: removes all classes by regular expression
