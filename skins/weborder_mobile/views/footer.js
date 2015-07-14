@@ -140,7 +140,11 @@ define(["revel_view", "generator"], function(revel_view) {
                 checkout: true,
                 validationOnly: true
             }, function() {
-                App.Data.router.navigate('confirm', true);
+                if(App.Data.stanfordCard && App.Data.stanfordCard.get('needToAskStudentStatus')) {
+                    App.Data.router.navigate('stanford_is_student', true);
+                } else {
+                    App.Data.router.navigate('confirm', true);
+                }
             });
         },
         profile: setCallback('profile')
@@ -169,16 +173,133 @@ define(["revel_view", "generator"], function(revel_view) {
         }
     });
 
+    var FooterStanfordCardView = FooterCardView.extend({
+        name: "footer",
+        mod: "stanford_card",
+        bindings: {
+            '.proceed': 'classes: {"proceed-plans": not(card_planId), "proceed-order": card_planId, disabled: any(not(card_number), not(card_captchaKey), not(card_captchaValue))}',
+            '.reset': 'classes: {disabled: not(card_planId)}'
+        },
+        events: {
+            "click .cancel": "cancel",
+            "click .proceed-plans": "submitCard",
+            "click .proceed-order": "submitOrder",
+            "click .reset": "reset"
+        },
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            var myorder = this.options.myorder;
+            this.listenTo(myorder, 'cancelPayment', function() {
+                this.canceled = true;
+            }, this);
+            this.listenTo(myorder, "paymentFailed", function(message) {
+                this.options.mainModel.trigger("loadCompleted");
+                message && App.Data.errors.alert(message); // user notification
+            }, this);
+            this.listenTo(this.options.card, 'onStanfordCardError', this.onStanfordCardError, this);
+        },
+        submitCard: function() {
+            var mainModel = this.options.mainModel,
+                card = this.options.card;
+            mainModel.trigger('loadStarted');
+            this.options.card.getPlans().then(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+        },
+        submitOrder: function() {
+            var myorder = this.options.myorder,
+                mainModel = this.options.mainModel;
+            myorder.check_order({
+                order: true,
+                tip: true,
+                customer: true,
+                checkout: true,
+            }, function() {
+                myorder.create_order_and_pay(PAYMENT_TYPE.STANFORD);
+                !self.canceled && mainModel.trigger('loadStarted');
+                delete self.canceled;
+                saveAllData();
+                App.Data.router.navigate('confirm', true);
+            });
+        },
+        onStanfordCardError: function(msg) {
+            App.Data.errors.alert(msg);
+        },
+        reset: function() {
+            this.options.card.trigger('resetNumber')
+        }
+    });
+
+    var FooterStanfordIsStudentView = FooterCardView.extend({
+        name: "footer",
+        mod: "stanford_is_card",
+        events: {
+            "click .no": "no",
+            "click .yes": "yes"
+        },
+        no: function() {
+            this.options.card.set('needToAskStudentStatus', false);
+            App.Data.router.navigate('confirm', true);
+        },
+        yes: function() {
+            App.Data.router.navigate('stanford_student_verification', true);
+        }
+    });
+
+    var FooterStanfordStudentVerificationView = FooterStanfordCardView.extend({
+        name: "footer",
+        mod: "stanford_student_verification",
+        events: {
+            "click .cancel": "cancel",
+            "click .proceed-plans": "submitCard"
+        },
+        cancel: function() {
+            App.Data.router.navigate('checkout', true);
+        },
+        submitCard: function() {
+            var mainModel = this.options.mainModel,
+                card = this.options.card;
+            mainModel.trigger('loadStarted');
+            card.getPlans().then(function() {
+                if(card.get('validated')) {
+                    App.Data.router.navigate('confirm', true);
+                } else {
+                    mainModel.trigger('loadCompleted');
+                }
+            });
+        },
+    });
+
     var FooterConfirmView = App.Views.FactoryView.extend({
         name: 'footer',
         mod: 'confirm',
+        bindings: {
+            '#cash > span': 'text: cashBtnText',
+            '.confirm': 'classes:{rows: any(equal(rows, 2), equal(rows, 3), equal(rows, 4)), "rows-2": equal(rows, 2), "rows-3": equal(rows, 3), "rows-4": equal(rows, 4)}'
+        },
+        computeds: {
+            cashBtnText: {
+                deps: ['checkout_dining_option'],
+                get: function(dining_option) {
+                    var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING';
+                    return isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE;
+                }
+            },
+            rows: {
+                deps: ['payments_payment_count', 'payments_credit_card_button', 'payments_gift_card'],
+                get: function(payment_count, credit_card_button, gift_card) {
+                    credit_card_button && gift_card && --payment_count;
+                    this.options.mainModel.trigger('resizeSection', payment_count);
+                    return payment_count;
+                }
+            }
+        },
         events: {
             "click #creditCard": "creditCard",
             "click #creditCardRedirect": "creditCard",
             "click #pay": "pay",
             "click #payPaypal": "pay",
             "click #giftcard": "giftCard",
-            "click #cash": "cash"
+            "click #cash": "cash",
+            "click #stanford": 'stanfordCard'
         },
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
@@ -186,35 +307,17 @@ define(["revel_view", "generator"], function(revel_view) {
                 this.canceled = true;
             }, this);
             this.listenTo(App.Data.myorder, "paymentFailed", function(message) {
-                App.Data.mainModel.trigger("loadCompleted");
+                this.options.mainModel.trigger("loadCompleted");
                 message && App.Data.errors.alert(message); // user notification
             }, this);
         },
-        render: function() {
-            //App.Views.FactoryView.prototype.render.apply(this, arguments);
-            var payment = App.Data.settings.get_payment_process(),
-                rows = payment.payment_count,
-                dining_option = App.Data.myorder.checkout.get("dining_option"),
-                isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING';
-
-            payment.credit_card_button && payment.gift_card && rows--;
-
-            payment.cashBtnText = isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE;
-
-            this.$el.html(this.template(payment));
-            if (rows === 2) {
-                $('#section').addClass('doubleFooter_section');
-                this.$('.confirm').addClass('double');
-            } else if(rows === 3) {
-                $('#section').addClass('tripleFooter_section');
-                this.$('.confirm').addClass('triple');
-            }
-            return this;
-        },
         remove: function() {
-            $(window).off("resize", this.resizePromoMessage);
             App.Views.FactoryView.prototype.remove.apply(this, arguments);
-            $('#section').removeClass('doubleFooter_section').removeClass('tripleFooter_section');
+            this.options.mainModel.trigger('restoreSection');
+        },
+        removeFromDOMTree: function() {
+            App.Views.FactoryView.prototype.removeFromDOMTree.apply(this, arguments);
+            this.options.mainModel.trigger('restoreSection');
         },
         creditCard: function() {
            this.model.trigger('payWithCreditCard');
@@ -257,7 +360,8 @@ define(["revel_view", "generator"], function(revel_view) {
                 saveAllData();
                 App.Data.router.navigate('confirm', true);
             });
-        }
+        },
+        stanfordCard: setCallback('stanfordcard')
     });
 
     var FooterDoneView = App.Views.FactoryView.extend({
@@ -353,6 +457,7 @@ define(["revel_view", "generator"], function(revel_view) {
         App.Views.FooterView.FooterCheckoutView = FooterCheckoutView;
         App.Views.FooterView.FooterCardView = FooterCardView;
         App.Views.FooterView.FooterGiftCardView = FooterGiftCardView;
+        App.Views.FooterView.FooterStanfordCardView = FooterStanfordCardView;
         App.Views.FooterView.FooterConfirmView = FooterConfirmView;
         App.Views.FooterView.FooterDoneView = FooterDoneView;
         App.Views.FooterView.FooterMaintenanceView = FooterMaintenanceView;
@@ -361,5 +466,7 @@ define(["revel_view", "generator"], function(revel_view) {
         App.Views.FooterView.FooterLoyaltyView = FooterLoyaltyView;
         App.Views.FooterView.FooterRewardsCardView = FooterRewardsCardView;
         App.Views.FooterView.FooterRewardsView = FooterRewardsView;
+        App.Views.FooterView.FooterStanfordIsStudentView = FooterStanfordIsStudentView;
+        App.Views.FooterView.FooterStanfordStudentVerificationView = FooterStanfordStudentVerificationView;
     });
 });

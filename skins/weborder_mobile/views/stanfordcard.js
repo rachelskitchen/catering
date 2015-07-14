@@ -1,4 +1,4 @@
-/*
+/**
  * Revel Systems Online Ordering Application
  *
  *  Copyright (C) 2014 by Revel Systems
@@ -20,29 +20,23 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-if (is_minimized_version) {
-    require.config({
-        urlArgs: "ver=" + autoVersion
+ define(["stanfordcard_view"], function(stanfordcard_view) {
+    'use strict';
+
+    var CoreStanfordCardMainView = App.Views.CoreStanfordCardView.CoreStanfordCardMainView,
+        StanfordCardMainView;
+
+    StanfordCardMainView = CoreStanfordCardMainView.extend({
+        bindings: _.extend({}, CoreStanfordCardMainView.prototype.bindings, {
+            '.btn-reload': 'classes: {"btn-disabled": planId}'
+        }),
+        initialize: function() {
+            this.listenTo(this.model, 'resetNumber', this.reset, this);
+            CoreStanfordCardMainView.prototype.initialize.apply(this, arguments);
+        }
     });
-}
 
-require(['app'], function() {
-    if (is_browser_unsupported) {
-        return;
-    }
-
-    var app = require('app'),
-        skins = app.skins;
-
-    // add skins
-    skins.set('WEBORDER', 'weborder');
-    skins.set('WEBORDER_MOBILE', 'weborder_mobile');
-    skins.set('RETAIL', 'retail');
-
-    // set REVEL_HOST for getting data from it
-    app.REVEL_HOST = 'https://weborder-dev-branch.revelup.com';
-
-
-    // run app
-    app.init();
+    return new (require('factory'))(stanfordcard_view.initViews.bind(stanfordcard_view), function() {
+        App.Views.StanfordCardView.StanfordCardMainView = StanfordCardMainView;
+    });
 });

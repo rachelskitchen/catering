@@ -1,0 +1,68 @@
+<script type="text/template" id="stanfordcard_main-template">
+    <div class="card_title"> <%= _lp.STANFORDCARD_TITLE %> </div>
+    <div>
+        <label for="stanfordCardNumber"> <span class="bold required clip"><%= _lp.GIFTCARD_NUMBER %>:</span> </label>
+        <div class="input_beauty stanford-input">
+            <input type="text" id="stanfordCardNumber" class="number-input">
+        </div>
+        <span class="cancel-input"></span>
+    </div>
+    <div>
+        <label for="stanfordCaptchaValue"> <span class="bold required clip"><%= _lp.GIFTCARD_CAPTCHA %>:</span> </label>
+        <div class="input_beauty stanford-input">
+            <input type="text" autocomplete="off" id="stanfordCaptchaValue" name="captcha-input" class="captcha-input">
+        </div>
+    </div>
+    <div class="captcha_container">
+        <div class="captcha_wrap">
+            <img class="captcha" width="100%" height="100%">
+            <div class="captcha-spinner"></div>
+        </div>
+        <div class="btn btn-reload"> <span class="clip"> <%= _lp.GIFTCARD_RELOAD %> </span> </div>
+    </div>
+</script>
+
+<script type="text/template" id="stanfordcard_plans-template">
+    <div class="card_title"><%= _lp.STANFORD_PLANS %></div>
+    <ul class="list"></ul>
+</script>
+
+<script type="text/template" id="stanfordcard_plan-template">
+    <span>
+        <span class="row name"></span>
+        <span class="row row-balance"><%= _lp.STANFORD_BALANCE %> <span class="balance"></span></span>
+    </span>
+</script>
+
+<script type="text/template" id="stanfordcard_student-template">
+    <h3><%= _lp.STANFORD_STUDENT_QUESTION %></h3>
+    <p class="stanford-student-instructions"><%= _lp.STANFORD_STUDENT_INSTRUCTIONS %></p>
+    <div class="btn btn-popup btn-no unselectable"><span class="clip"><%= _lp.NO %></span></div>
+    <div class="btn btn-popup btn-yes unselectable"><span class="clip"><%= _lp.YES %></span></div>
+</script>
+
+<script type="text/template" id="stanfordcard_popup-template">
+    <h3><%= _lp.STANFORDCARD_TITLE %></h3>
+    <div class="row">
+        <label for="stanfordCardNumber"> <span class="bold required clip"><%= _lp.GIFTCARD_NUMBER %>:</span> </label>
+        <div class="input_beauty">
+            <input type="text" id="stanfordCardNumber" class="number-input">
+        </div>
+        <span class="cancel-input"></span>
+    </div>
+    <div class="row">
+        <label for="stanfordCaptchaValue"> <span class="bold required clip"><%= _lp.GIFTCARD_CAPTCHA %>:</span> </label>
+        <div class="input_beauty">
+            <input type="text" autocomplete="off" id="stanfordCaptchaValue" name="captcha-input" class="captcha-input">
+        </div>
+    </div>
+    <div class="captcha_container">
+        <div class="captcha_wrap">
+            <img class="captcha" width="100%" height="100%">
+            <div class="captcha-spinner"></div>
+        </div>
+        <span class="rewards-card-btn btn-reload"><span class="clip"><%= _lp.GIFTCARD_RELOAD %></span></span>
+    </div>
+    <div class="btn btn-popup btn-cancel unselectable"><span class="clip"><%= _lp.CANCEL %></span></div>
+    <div class="btn btn-popup btn-submit unselectable"><span class="clip"><%= _lp.CONFIRM_SUBMIT %></span></div>
+</script>

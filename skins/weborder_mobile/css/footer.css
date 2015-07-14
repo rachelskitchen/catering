@@ -189,31 +189,27 @@
 
 /* card mod end */
 /* confirm mod start */
-
-.doubleFooter_section {
-    margin-bottom: 10.2em;
-}
-
-.tripleFooter_section {
-    margin-bottom: 20.4em;
-}
-
 #footer ul.confirm {
     height: 100%;
 }
 
-#footer ul.confirm.double {
+#footer ul.confirm.rows {
     position: absolute;
+}
+
+#footer ul.confirm.rows-2 {
     bottom: 100%;
 }
 
-#footer ul.confirm.triple {
-    position: absolute;
+#footer ul.confirm.rows-3 {
     bottom: 200%;
 }
 
-#footer ul.confirm.double li:last-child:before,
-#footer ul.confirm.triple li:last-child:before {
+#footer ul.confirm.rows-4 {
+    bottom: 300%;
+}
+
+#footer ul.confirm.rows li:last-child:before {
     content: '';
     display: block;
     width: 100%;
@@ -371,3 +367,16 @@
     font-size: 3em;
     top: 0;
 }
+
+#footer ul.stanford-card li {
+    width: 33% !important;
+}
+
+#footer ul.stanford-card li:nth-child(2) {
+    width: 34% !important;
+}
+
+#footer ul.stanford-card .btn1, #footer ul.stanford-is-student .btn1 {
+    position: relative;
+}
+

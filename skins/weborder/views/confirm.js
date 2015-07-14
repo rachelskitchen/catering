@@ -24,39 +24,59 @@ define(["confirm_view"], function(confirm_view) {
     'use strict';
 
     var ConfirmPayCardView = App.Views.CoreConfirmView.CoreConfirmPayCardView.extend({
-        render: function() {
-            var new_model = {}, offset,
-                pickup = this.collection.checkout.get("pickupTS"),
-                currentTime = this.options.timetable.base(),
-                time = currentTime.getTime(),
-                isASAP = this.collection.checkout.get("isPickupASAP");
-
-            new_model.isDelivery = this.collection.checkout.get("dining_option") === 'DINING_OPTION_DELIVERY';
-
-            if (pickup) pickup = new Date(time > pickup ? time : pickup);
-
-            if (isASAP) {
-                if (new_model.isDelivery) {
-                   offset = App.Settings.estimated_delivery_time;
-                } else {
-                   offset = App.Settings.estimated_order_preparation_time;
+        bindings: {
+            '.pickup_time': 'attr:{title:tooltip(title, pickupTime)}',
+            '.pickup-time-title': 'text:title',
+            '.pickup-time': 'text:pickupTime'
+        },
+        computeds: {
+            title: {
+                deps: ['checkout_dining_option'],
+                get: function(dining_option) {
+                    var _lp = this.getBinding('$_lp').toJSON();
+                    return dining_option === 'DINING_OPTION_DELIVERY' ? _lp.CONFIRM_DELIVERY_TIME : _lp.CONFIRM_ARRIVAL_TIME;
                 }
-                new_model.pickup_time = offset > 0 ?
-                    _loc['CONFIRM_TODAY_ASAP'] + ' (' + offset + ' ' + _loc['CONFIRM_MINUTES'] + ')' :
-                    _loc['CONFIRM_TODAY_ASAP'];
-            } else {
-                new_model.pickup_time = format_date_3(pickup);
+            },
+            pickupTime: {
+                deps: ['checkout_pickupTS', 'checkout_isPickupASAP', 'checkout_dining_option'],
+                get: function(pickup, isASAP, dining_option) {
+                    var _lp = this.getBinding('$_lp').toJSON(),
+                        settings = this.getBinding('$_system_settings').toJSON(),
+                        offset = dining_option === 'DINING_OPTION_DELIVERY' ? settings.estimated_delivery_time : settings.estimated_order_preparation_time,
+                        currentTime = this.options.timetable.base(),
+                        time = currentTime.getTime();
+
+                    if (pickup) pickup = new Date(time > pickup ? time : pickup);
+
+                    if (isASAP) {
+                        return offset > 0 ?
+                            _lp.CONFIRM_TODAY_ASAP + ' (' + offset + ' ' + _lp.CONFIRM_MINUTES + ')' :
+                            _lp.CONFIRM_TODAY_ASAP;
+                    } else {
+                        return format_date_3(pickup);
+                    }
+                }
             }
-
-            this.$el.html(this.template(new_model));
-
-            this.afterRender();
-
-            return this;
+        },
+        bindingFilters: {
+            tooltip: function(title, pickupTime) {
+                return title + ': ' + pickupTime;
+            }
         }
     });
 
+    var ConfirmStanfordCardView = App.Views.CoreConfirmView.CoreConfirmStanfordCardView.extend({
+        bindings: mixProto('bindings'),
+        computeds: mixProto('computeds'),
+        bindingFilters: mixProto('bindingFilters')
+    });
+
+    function mixProto(prop) {
+        return _.extend({}, App.Views.CoreConfirmView.CoreConfirmStanfordCardView.prototype[prop], ConfirmPayCardView.prototype[prop]);
+    }
+
     return new (require('factory'))(confirm_view.initViews.bind(confirm_view), function() {
         App.Views.ConfirmView.ConfirmPayCardView = ConfirmPayCardView;
+        App.Views.ConfirmView.ConfirmStanfordCardView = ConfirmStanfordCardView;
     });
 });
