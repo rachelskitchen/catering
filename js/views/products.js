@@ -77,6 +77,14 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             this.collection.each( function(item) {
                 self.addItem(item);
             });
+            if (!this.collection.length) {
+                var view = App.Views.GeneratorView.create('Product', {
+                    el: $('<li class="product list-none"></li>'),
+                    mod: 'ListNone'
+                });
+                this.$('.products').append(view.el);
+                this.subViews.push(view);
+            }         
             return this;
         },
         addItem: function(model) {
