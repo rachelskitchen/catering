@@ -2,7 +2,6 @@ var tests_list = [
     '../core/js/utest/test_Card',
     '../core/js/utest/test_Captcha',
     '../core/js/utest/test_Categories',
-    '../core/js/utest/test_Checkout',
     '../core/js/utest/test_Filters',
     '../core/js/utest/test_Locale',
     '../core/js/utest/test_Products',
@@ -11,6 +10,7 @@ var tests_list = [
     '../core/js/utest/test_Tips',
     '../core/js/utest/test_Total'
     /*
+    '../core/js/utest/test_Checkout',
     '../core/js/utest/test_ChildProducts',
     '../core/js/utest/test_Customers',
     '../core/js/utest/test_Delivery',
