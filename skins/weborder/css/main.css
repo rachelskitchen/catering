@@ -329,6 +329,7 @@ footer {
     margin-top: -7px;
 }
 .current_establishment {
+    display: none;
     position: absolute;
     width: 70%;
     height: 100%;
