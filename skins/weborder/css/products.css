@@ -90,6 +90,14 @@
 .product_table .product .cost .price {
     font-weight: normal;
 }
+.product_table .product.list-none {
+    margin-top: 15px;
+    margin-left: 10px;
+    cursor: default;
+}
+.product_table .product.list-none:hover {
+    background: inherit;
+}
 
 /* styles for product list with hidden description */
 .product_table .product.short {

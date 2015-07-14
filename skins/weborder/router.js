@@ -300,11 +300,14 @@ define(["main_router"], function(main_router) {
                             collection: App.Data.categories,
                             mod: 'Slider',
                             model: App.Data.mainModel,
+                            searchLine: App.Data.searchLine,
+                            search: App.Data.search,
                             loaded: dfd
                         },
                         {
                             modelName: 'SubCategories',
                             collection: App.Data.categories,
+                            search: App.Data.search,
                             mod: 'Select'
                         },
                         {

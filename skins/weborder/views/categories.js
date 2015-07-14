@@ -73,6 +73,7 @@ define(["generator", "list"], function() {
             $(window).resize(this.create_slider.bind(this));
             this.listenTo(this.model, "loadCompleted", this.create_slider.bind(this));
             this.listenTo(this.model, 'onMenu', selectFirstItem, this);
+            this.listenTo(this.options.search, 'onSearchComplete', this.reset_selection, this);
 
             var self = this;
             this.options.loaded.then(selectFirstItem);
@@ -92,11 +93,17 @@ define(["generator", "list"], function() {
 
             el.parents('ul').find('label').removeClass('checked');
             label.addClass('checked');
+            this.on_menu_change();
         },
         render: function() {
             App.Views.ListView.prototype.render.apply(this, arguments);
             this.collection.each(this.addItem.bind(this));
             return this;
+        },
+        reset_selection: function() {
+            this.collection.parent_selected = null;
+            this.collection.trigger('change:parent_selected', this.collection);
+            this.$('ul').find('label').removeClass('checked');
         },
         update_slider_render: function() {
             this.create_slider();
@@ -163,6 +170,10 @@ define(["generator", "list"], function() {
                 this.$('.arrow_right').show();
             }
         },
+        on_menu_change: function() {
+            this.options.searchLine.empty_search_line();
+            this.collection.trigger("show_subcategory");
+        },
         slide_right: function() {
             var ul = this.$('.categories');
             ul.css('left', -this.slider_index * this.slider_elem_width + 'px');
@@ -172,6 +183,7 @@ define(["generator", "list"], function() {
             });
 
             this.update_slider();
+            this.on_menu_change();
         },
         slide_left: function() {
             var ul = this.$('.categories');
@@ -182,6 +194,7 @@ define(["generator", "list"], function() {
             });
 
             this.update_slider();
+            this.on_menu_change();
         }
     });
 
@@ -199,7 +212,8 @@ define(["generator", "list"], function() {
         computeds: {
             category_name: function() {
                 var subname = this.getBinding("parent_name") == _loc.CATEGORIES_SEARCH ? _loc.CATEGORIES_SEARCH + ": " : "";
-                return subname + this.getBinding("name");
+                var name = this.getBinding("name") ? this.getBinding("name") : "";
+                return subname + name;
             }
         },
         show_hide: function() {
@@ -313,7 +327,7 @@ define(["generator", "list"], function() {
             value = isCategories ? value : model.get('pattern');
 
             // if search result and result is empty
-            if(data && (!data.get('products') || data.get('products').length == 0))
+            if(data && (!data.get('products')))
                 return;           
 
             this.subViews.forEach(function(view) {

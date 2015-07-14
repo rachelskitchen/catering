@@ -47,6 +47,8 @@ define(["generator", "list"], function() {
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.listenTo(this.collection, 'change:parent_selected', this.parent_change);
+            this.listenTo(this.collection, 'show_subcategory', this.show);
+            this.listenTo(this.options.search, 'onSearchComplete', this.hide, this);
         },
         events: {
             'change select' : 'select_change'
@@ -75,6 +77,14 @@ define(["generator", "list"], function() {
 
             this.collection.selected = val;
             this.collection.trigger('change:selected', this.collection, val);
+        },
+        show: function() {
+            this.$("select").removeAttr("disabled");
+            this.$(".select-wrapper").removeClass("disabled");
+        },
+        hide: function() {
+            this.$("select").attr("disabled", "disabled");
+            this.$(".select-wrapper").addClass("disabled");
         }
     });
 
