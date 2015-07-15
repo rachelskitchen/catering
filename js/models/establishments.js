@@ -98,9 +98,12 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         /**
         * Get establishments from backend.
         */
-        getEstablishments: function() {
+        getEstablishments: function(is_once) {
             var dfd = Backbone.$.Deferred(),
                 self = this;
+            if (is_once && this.length > 0) {
+                return dfd.resolve();
+            }
             Backbone.$.ajax({
                 url: '/weborders/locations/',
                 data: {
