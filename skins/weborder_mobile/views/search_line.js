@@ -20,29 +20,24 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-if (is_minimized_version) {
-    require.config({
-        urlArgs: "ver=" + autoVersion
+define(["search_line_view"], function(search_line_view) {
+    'use strict';
+
+    var SearchLineSpinnerView = App.Views.CoreSearchLineView.CoreSearchLineMainView.extend({
+        name: 'search_line',
+        mod: 'spinner',
+        render: function() {
+            App.Views.CoreSearchLineView.CoreSearchLineMainView.prototype.render.apply(this, arguments);
+            this.$(".search-line-spinner").view_spinner({
+                model: this.model.get('search'),
+                show_event: "onSearchStart",
+                hide_event: "onSearchComplete",
+                cache_id: "search-spinner"
+            });
+        }
     });
-}
 
-require(['app'], function() {
-    if (is_browser_unsupported) {
-        return;
-    }
-
-    var app = require('app'),
-        skins = app.skins;
-
-    // add skins
-    skins.set('WEBORDER', 'weborder');
-    skins.set('WEBORDER_MOBILE', 'weborder_mobile');
-    skins.set('RETAIL', 'retail');
-
-    // set REVEL_HOST for getting data from it
-    // use srv=dev, srv=qa, etc. in the url path instead of changing app.REVEL_HOST here 
-    app.REVEL_HOST = window.location.origin;    
-
-    // run app
-    app.init();
+    return new (require('factory'))(search_line_view.initViews.bind(search_line_view), function() {
+        App.Views.SearchLineView.SearchLineSpinnerView = SearchLineSpinnerView;
+    });
 });

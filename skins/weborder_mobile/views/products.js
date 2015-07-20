@@ -171,13 +171,13 @@ define(["products_view"], function(products_view) {
         },
         showSearchLine: function() {
             this.killScrollTimer();           
-            $('.content.search_list').animate({top: "9.1em"}, 300);
+            $('.content.search_list').animate({top: "8.7em"}, 300);
             $('.content .search_wrap').animate({top: "0em"}, 300);
         },
         hideSearchLine: function() {
             this.killScrollTimer();
             $('.content.search_list').animate({top: "0em"}, 400);
-            $('.content .search_wrap').animate({top: "-8.1em"}, 400);
+            $('.content .search_wrap').animate({top: "-8.7em"}, 400);
         },
         update_table: function(model) {
             this.collection = model ? model.get('products') : this.defaultCollection;

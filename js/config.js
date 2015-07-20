@@ -86,7 +86,8 @@ define({
         locale: 'js/models/locale',
         rewards: 'js/models/rewards',
         rewards_view: 'js/views/rewards',
-        search_line_view: 'js/views/search_line'
+        search_line_view: 'js/views/search_line',
+        spinner_view: 'js/views/spinner'
     },
     waitSeconds: 30,
     shim: {
@@ -209,6 +210,12 @@ define({
         },
         'establishments_view': {
             deps: ['backbone', 'factory', 'generator', 'list']
+        },
+        'search_line_view': {
+            deps: ['backbone', 'factory']
+        },
+        'spinner_view': {
+            deps: ['backbone', 'factory', 'generator']
         },
         'filters': {
             deps: ['backbone']

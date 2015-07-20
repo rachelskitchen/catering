@@ -141,3 +141,9 @@
 .categories_table > li:last-child {
     border-bottom: none;
 }
+.categories_table li:first-child .category_description {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-right: 350px;
+}

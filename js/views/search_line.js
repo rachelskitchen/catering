@@ -20,10 +20,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["search_line_view"], function(products_view) {
+define(["backbone", "factory"], function() {
     'use strict';
 
-    var SearchLineMainView = App.Views.FactoryView.extend({
+    App.Views.CoreSearchLineView = {};
+
+    App.Views.CoreSearchLineView.CoreSearchLineMainView = App.Views.FactoryView.extend({
         name: 'search_line',
         mod: 'main',
         initialize: function() {
@@ -54,6 +56,6 @@ define(["search_line_view"], function(products_view) {
 
     return new (require('factory'))(function() {
         App.Views.SearchLineView = {};
-        App.Views.SearchLineView.SearchLineMainView = SearchLineMainView;
+        App.Views.SearchLineView.SearchLineMainView = App.Views.CoreSearchLineView.CoreSearchLineMainView;
     });
 });

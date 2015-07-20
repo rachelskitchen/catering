@@ -66,6 +66,10 @@ define(['products'], function() {
             if (cache.length && cache[0].get('completed') == undefined) {
                 return this;
             }
+            this.status = 'searchStart';
+            if(cache.length > 0) {
+                this.status = 'searchComplete';
+            }
             this.trigger('onSearchStart', search);
             if(cache.length > 0) {
                 return this.trigger('onSearchComplete', cache[0]);
@@ -77,6 +81,7 @@ define(['products'], function() {
             this.add(search);
             search.get_products().then(function() {
                 search.set('completed', true, {silent: true});
+                self.status = 'searchComplete';
                 self.trigger('onSearchComplete', search);
             });
         }

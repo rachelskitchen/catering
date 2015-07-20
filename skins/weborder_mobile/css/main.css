@@ -617,3 +617,16 @@ span.cancel-input:before {
     width: 100%;
     overflow: hidden;
 }
+
+.search-line-spinner {
+  position: absolute;
+  top: 2.3em;
+  left: 50%;
+  margin-left: -0.7em;
+  z-index: 100000;
+  color: #249ad4;
+}
+.search-line-spinner .fa-spinner {
+  font-size: 4em;  
+}
+
