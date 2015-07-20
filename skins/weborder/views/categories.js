@@ -317,7 +317,9 @@ define(["generator", "list"], function() {
             this.listenTo(this.collection, 'change:parent_selected', this.update_table);
             this.listenTo(this.options.search, 'onSearchComplete', this.update_table, this);
             this.$('.categories_products_wrapper').contentarrow();
-            this.$('.products_spinner').css('position', 'absolute').spinner();            
+            this.$('.products_spinner').css('position', 'absolute').spinner();
+            this.listenTo(this.options.search, 'onSearchStart', this.showSearchSpinner, this);
+            this.listenTo(this.options.search, 'onSearchComplete', this.hideSpinner, this);      
         },
         update_table: function(model, value) {
            var isCategories = typeof value != 'undefined',
@@ -356,7 +358,13 @@ define(["generator", "list"], function() {
         },
         hideSpinner: function(delay) {
             var spinner = this.$('.products_spinner');
-            setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), delay >= 0 ? delay : 500);
+            this.spinnerTimeout = setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), delay >= 0 ? delay : 500);
+        },
+        showSearchSpinner: function() {
+            if (this.options.search.status != 'searchComplete') {
+                clearTimeout(this.spinnerTimeout);
+                this.showSpinner();
+            }
         },
         remove: function() {
             this.$('.categories_products_wrapper').contentarrow('destroy');

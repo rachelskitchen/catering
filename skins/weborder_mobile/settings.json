@@ -26,9 +26,9 @@
         },
         "search": {
             "css": ["store_info", "products", "search_line"],
-            "views": ["store_info", "products"],
+            "views": ["store_info", "products", "search_line"],
             "templates": ["store_info", "products", "search_line"],
-            "core": ["categories", "products", "search", "search_line_view"]
+            "core": ["categories", "products", "search", "spinner_view"]
         },
         "modifiers": {
             "css": ["modifiers", "products", "quantity", "instructions", "myorder"],

@@ -208,6 +208,6 @@
         'REWARDS_ENTER_CAPTCHA':           'Введите код с картинки',
         'CONFIRM_SUBMIT':                  'Отправить',
         'SEARCH_ENTER_STRING':             'Поиск',
-        'PRODUCTS_NOT_FOUND':              'Продукты не найдены'
+        'PRODUCTS_NOT_FOUND':              'Товары не найдены'
     } // end of locale
 }); // end of module
