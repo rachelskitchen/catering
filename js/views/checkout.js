@@ -331,9 +331,9 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             } else if (time === 'closed') {
                 pickupTS = null;
             } else {
-                format = new TimeFrm(0, 0, 'usa');
+                format = new TimeFrm(0, 0);
                 format.load_from_str(time);
-                var timeSplit = format.toString('24hour').split(':');
+                var timeSplit = format.toString('24 hour').split(':');
                 pickupTS = new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeSplit[0], timeSplit[1]).getTime();
             }
             this.model.set({

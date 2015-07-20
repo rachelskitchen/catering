@@ -48,7 +48,6 @@ define(["backbone"], function(Backbone) {
         delivery_time: 0, // order delivery time
         preparation_time: 0, // order preparation time
         enable_asap: true,
-        format: 'usa',              // pickup time format
         defaults: {
             timetable: [],            // input param is like [{to:'06:00', from:'05:00'}, {to:'19:00', from:'07:00'}, {to:'23:00', from:'21:00'}]
                                         // if timetable = true or null => the store opened all the day,
@@ -64,7 +63,6 @@ define(["backbone"], function(Backbone) {
             this.delivery_time = times.estimated_delivery_time;
             this.preparation_time = times.estimated_order_preparation_time;
             this.enable_asap = times.enable_asap_due_time;
-
         },
         /**
          * Set property "Timetable" to use it.
@@ -129,8 +127,8 @@ define(["backbone"], function(Backbone) {
             var sorted = deepClone(periods).
                     map(function(el) {
                         return {
-                            from: new TimeFrm().load_from_str(el.from).get_minutes(),
-                            to: new TimeFrm().load_from_str(el.to).get_minutes()
+                            from: new TimeFrm(0, 0, '24 hour').load_from_str(el.from).get_minutes(),
+                            to: new TimeFrm(0, 0, '24 hour').load_from_str(el.to).get_minutes()
                         };
                     }).
                     sort(function(v1,v2) {
@@ -220,7 +218,7 @@ define(["backbone"], function(Backbone) {
             params = params || {};
             var options = [],
                 isDelivery = params.isDelivery,
-                t = new TimeFrm(0, 0, this.format),
+                t = new TimeFrm(0, 0),
                 isToday = params.today,
                 asap = false,
                 offest = (this.get_dining_offset(isDelivery) / 60 / 1000),
@@ -307,9 +305,10 @@ define(["backbone"], function(Backbone) {
             server_time: 0      // timezone offset in minutes
         },
         initialize: function() {
-            if (!this.get('timetables')) this.set('timetables', App.Data.settings.get("settings_system").timetables);
-            if (!this.get('holidays')) this.set('holidays', App.Data.settings.get("settings_system").holidays);
-            if (!this.get('server_time')) this.set('server_time', App.Data.settings.get('settings_system').server_time);
+            var times = App.Data.settings.get('settings_system');
+            if (!this.get('timetables')) this.set('timetables', times.timetables);
+            if (!this.get('holidays')) this.set('holidays', times.holidays);
+            if (!this.get('server_time')) this.set('server_time', times.server_time);
             this.workingDay = new App.Models.WorkingDay();
         },
         /**
@@ -437,8 +436,8 @@ define(["backbone"], function(Backbone) {
                             var timetable_in_format = [];
                             for (var i = 0; i < current_day_timetable.length; i++) {
                                 var time = current_day_timetable[i],
-                                    time_from = new TimeFrm(time.from.split(":")[0] * 1, time.from.split(":")[1] * 1, "usa").toString(),
-                                    time_to = new TimeFrm(time.to.split(":")[0] * 1, time.to.split(":")[1] * 1, "usa").toString();
+                                    time_from = new TimeFrm(time.from.split(":")[0] * 1, time.from.split(":")[1] * 1).toString(),
+                                    time_to = new TimeFrm(time.to.split(":")[0] * 1, time.to.split(":")[1] * 1).toString();
 
                                 timetable_in_format.push({
                                     from: time_from, // output of time in requirement format
