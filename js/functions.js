@@ -158,6 +158,36 @@ function getCookie(name) {
     ));
     return matches ? decodeURIComponent(matches[1]) : undefined;
 }
+
+Date.prototype.format = function(date_format) {
+    date_format = date_format || App.Data.settings.get('settings_system').date_format || "mm/dd/yyyy";
+    var month = _loc.ARRAY_MONTH[this.getMonth()];
+    var wday = _loc.DAYS_OF_WEEK[Object.keys(_loc.DAYS_OF_WEEK)[(this.getDay() + 6) % 7]];
+    var wday_short = _loc.DAYS_OF_WEEK_SHORT[Object.keys(_loc.DAYS_OF_WEEK_SHORT)[(this.getDay() + 6) % 7]];
+    var map = { //1 Dec 2014: new Date(2014, 11, 1).format("yyyy yy MMM Mmm MM Mm mm DDD Ddd DD Dd dd d")
+        'yyyy': this.getFullYear(), //2014
+        'yy': String(this.getFullYear()).substr(2, 2), //14
+        'MMM': month.substr(0, 3).toUpperCase(), //DEC
+        'Mmm': month.substr(0, 3), //Dec
+        'MM': month.toUpperCase(), //DECEMBER
+        'Mm': month, //December
+        'mm': ('0' + (this.getMonth() + 1)).slice(-2), //12
+        'DDD': wday_short.toUpperCase(), //MON
+        'Ddd': wday_short, //Mon
+        'DD': wday.toUpperCase(), //MONDAY
+        'Dd': wday, //Monday
+        'dd': ('0' + this.getDate()).slice(-2), //01
+        'd': this.getDate() //1
+    };
+
+    var re = new RegExp(Object.keys(map).join("|"), "gi");
+    date_format = date_format.replace(re, function(matched) {
+        return map[matched];
+    });
+
+    return date_format;
+}
+
 /**
  * Formatting a date in the format "YYYY-MM-DDTHH:MM:SS".
  */
@@ -168,22 +198,8 @@ function format_date_1(date) {
  * Formatting a date in the format "MM/DD/YYYY HH:MM(am/pm)".
  */
 function format_date_2(date) {
-    var time_prefix = _loc['TIME_PREFIXES'],
-        js_date = new Date(date),
-        current_date_year = js_date.getFullYear(),
-        current_date_month = js_date.getMonth() + 1,
-        current_date_day = js_date.getDate(),
-        current_date_hours = js_date.getHours(),
-        am_pm = (current_date_hours > 11) ? time_prefix['TIME_PM'] : time_prefix['TIME_AM'],
-        current_date_minutes = js_date.getMinutes();
-    if (current_date_month < 10) current_date_month = "0" + current_date_month;
-    if (current_date_day < 10) current_date_day = "0" + current_date_day;
-    current_date_hours = current_date_hours > 12 ? current_date_hours - 12 : current_date_hours;
-    if (current_date_hours == 0) {
-       current_date_hours = 12;
-    }
-    if (current_date_minutes < 10) current_date_minutes = "0" + current_date_minutes;
-    return current_date_month + '/' + current_date_day + '/' + current_date_year + ' ' + current_date_hours + ':' + current_date_minutes + am_pm;
+    var js_date = new Date(date);
+    return js_date.format() + ' '  + new TimeFrm(js_date.getHours(), js_date.getMinutes());
 }
 /**
  * Formatting a date in the format "(Yesterday/Today/Tomorrow) at HH:MM(am/pm) | MONTH DD(st/nd/rd/th) at HH:MM(am/pm)".
@@ -223,15 +239,7 @@ function format_date_3(date) {
                 break;
         }
     }
-    var current_date_hours = js_date.getHours();
-    var am_pm = (current_date_hours > 11) ? time_prefix['TIME_PM'] : time_prefix['TIME_AM'];
-    current_date_hours = current_date_hours > 12 ? current_date_hours - 12 : current_date_hours;
-    if (current_date_hours == 0) {
-       current_date_hours = 12;
-    }
-    var current_date_minutes = js_date.getMinutes();
-    if (current_date_minutes < 10) current_date_minutes = "0" + current_date_minutes;
-    result += ' ' + time_prefix['TIME_AT'] + ' ' + current_date_hours + ':' + current_date_minutes + am_pm;
+    result += ' ' + time_prefix['TIME_AT'] + ' ' + new TimeFrm(js_date.getHours(), js_date.getMinutes());
     return result;
 }
 /**
@@ -532,7 +540,7 @@ function isNumber(num) {
 function TimeFrm(hour, min, frm_type){
     var def = {
         minutes: 0,
-        frm_type: '24hour' // or usa
+        frm_type: '24 hour' // or 12 hour
     };
 
     $.extend(this, def);
@@ -541,8 +549,8 @@ function TimeFrm(hour, min, frm_type){
         this.minutes = hour * 60 + min;
     }
 
+    frm_type = frm_type || App.Data.settings.get('settings_system').time_format;
     if (typeof(frm_type) === 'string') {
-
        this.frm_type = frm_type;
     }
 }
@@ -562,7 +570,7 @@ TimeFrm.prototype.load_from_str = function(time_str) {
 /* private functions load_from_str_ft */
 TimeFrm.prototype.load_from_str_ft = { };
 
-TimeFrm.prototype.load_from_str_ft['24hour'] = function(time_str) {
+TimeFrm.prototype.load_from_str_ft['24 hour'] = function(time_str) {
     var time, hour, min;
 
     time = time_str.split(":");
@@ -583,7 +591,7 @@ TimeFrm.prototype.load_from_str_ft['24hour'] = function(time_str) {
 };
 
 //this is for future, not tested yet:
-TimeFrm.prototype.load_from_str_ft['usa'] = function(time_str) {
+TimeFrm.prototype.load_from_str_ft['12 hour'] = function(time_str) {
     var time, hour, min, am_pm,
         hour_from_midnight;
 
@@ -631,7 +639,7 @@ TimeFrm.prototype.toString = function(frm_type) {
 /* private functions toString_ft */
 TimeFrm.prototype.toString_ft = { };
 
-TimeFrm.prototype.toString_ft['usa'] = function() {
+TimeFrm.prototype.toString_ft['12 hour'] = function() {
     /* it outputs the time in format 10:01am or 12:45pm */
 
     var time_prefix = _loc['TIME_PREFIXES'],
@@ -658,7 +666,7 @@ TimeFrm.prototype.toString_ft['usa'] = function() {
     return thetime;
 };
 
-TimeFrm.prototype.toString_ft['24hour'] = function() {
+TimeFrm.prototype.toString_ft['24 hour'] = function() {
 
     var hour = parseInt( this.minutes / 60 ),
         minutes = this.minutes % 60;
@@ -824,7 +832,7 @@ function pickupToString(date) {
     var skin = App.Data.settings.get('skin'),
         result,
         d = new Date(date),
-        time = new TimeFrm(d.getHours(), d.getMinutes(), 'usa');
+        time = new TimeFrm(d.getHours(), d.getMinutes());
     //"Mon Dec 30 2013 10:30:00 GMT+0400 (Russian Standard Time)"
     switch (skin) {
         case 'weborder':
@@ -955,7 +963,7 @@ function trace() {
 
 function format_time(time) {
     time = time.split(":")
-    return new TimeFrm(time[0] * 1, time[1] * 1, "usa").toString();
+    return new TimeFrm(time[0] * 1, time[1] * 1).toString();
 }
 
 function format_days(days, day_time) {
