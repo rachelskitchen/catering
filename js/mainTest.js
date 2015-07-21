@@ -28,7 +28,7 @@ require(['app'], function(app) {
     // set config for require
     require.config(app.config);
 
-    require(['cssua', 'errors', 'tests_list', 'e2e_list', 'settings', 'tax', 'main_router', 'locale'], function() {
+    require(['cssua', 'functions', 'errors', 'tests_list', 'e2e_list', 'settings', 'tax', 'main_router', 'locale'], function() {
         // invoke beforeStart onfig
         app.beforeInit();
 

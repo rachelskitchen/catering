@@ -257,6 +257,76 @@
     cursor: pointer;
 }
 
+#popup h3 {
+    font-size: 24px;
+    font-weight: bold;
+    padding: 20px;
+}
+
+.stanford-student-status {
+    width: 500px !important;
+}
+
+.stanford-student-instructions {
+    padding: 0 20px;
+}
+
+.stanford-student-status .btn-popup, .stanford-student-card .btn-popup {
+    margin: 20px;
+}
+
+.stanford-student-card .btn-popup.disabled {
+    margin: 23px;
+}
+
+.stanford-student-card {
+    width: 500px !important;
+}
+
+.stanford-student-card .row {
+    height: 39px;
+    position: relative;
+}
+
+.stanford-student-card label {
+    display: inline-block;
+    float: left;
+    width: 200px;
+    text-align: right;
+    line-height: 37px;
+}
+
+.stanford-student-card .input_beauty {
+  left: 220px;
+}
+
+.stanford-student-card .captcha_wrap {
+    display: inline-block;
+    vertical-align: top;
+    text-align: center;
+    margin-right: 5px;
+    margin-top: 4px;
+    margin-left: 116px;
+    width: 120px;
+    height: 48px;
+    font-size: 8px;
+    position: relative;
+}
+
+.stanford-student-card .captcha-spinner {
+    height: 100%;
+}
+
+.stanford-student-card .btn-reload {
+    display: inline-block;
+    max-width: 145px;
+    margin-top: 5px;
+    line-height: 48px;
+    line-height: 48px;
+    vertical-align: top;
+    text-decoration: underline;
+    cursor: pointer;
+}
 
 /* for tablets */
 @media only screen and (max-device-width: 949px) {

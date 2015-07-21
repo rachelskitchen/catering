@@ -1,4 +1,4 @@
-/*
+/**
  * Revel Systems Online Ordering Application
  *
  *  Copyright (C) 2014 by Revel Systems
@@ -23,23 +23,70 @@
 define(["backbone", 'tip', 'delivery'], function(Backbone) {
     'use strict';
 
+    /**
+     * @class
+     * Represents cart total model.
+     */
     App.Models.Total = Backbone.Model.extend({
+        /**
+         * @prop {object} defaults - literal object containing attributes with default values.
+         *
+         * @prop {number} defaults.subtotal - the subtotal amount.
+         * @prop 0.
+         *
+         * @prop {number} defaults.tax - order tax amount.
+         * @prop 0.
+         *
+         * @prop {number} defaults.surcharge - the surcharge amount.
+         * @default 0.
+         *
+         * @prop {App.Models.Tip} defaults.tip - the Tip model.
+         * @default null.
+         *
+         * @prop {App.Models.Delivery} defaults.delivery - the Delivery model.
+         * @default null.
+         *
+         * @prop {number} defaults.bag_charge - the auto bag charge amount.
+         * @default 0.
+         *
+         * @prop {number} defaults.discounts - sum of all discounts applied.
+         * @default 0.
+         *
+         * @prop {string} defaults.tax_country - tax country code.
+         * @default ''.
+         *
+         * @prop {number} defaults.prevailing_surcharge - the prevailing surcharge rate.
+         * @default 0.
+         *
+         * @prop {number} defaults.prevailing_tax - the prevailing tax rate.
+         * @default 0.
+         *
+         * @prop {number} defaults.shipping - the shipping charge amount.
+         * @default 0.
+         *
+         * @prop {number} defaults.shipping_discount - the shipping discount amount.
+         * @default 0.
+         */
         defaults: {
-            total: 0,
+            subtotal: 0,
             tax: 0,
             surcharge: 0,
             tip: null,
             delivery: null,
-            bag_charge: null,
+            bag_charge: 0,
             discounts: 0, //sum of all discounts
             tax_country: '',
-            prevailing_surcharge: null,
-            prevailing_tax: null,
-            shipping: null,
+            prevailing_surcharge: 0,
+            prevailing_tax: 0,
+            shipping: 0,
             shipping_discount: 0
         },
+        /**
+         * @method
+         * Set values for `bag_charge`, `tax_country`, `prevailing_surcharge`, `prevailing_tax`, `tip`, `delivery` attributes.
+         */
         initialize: function(opts) {
-            var settings = App.Data.settings.get("settings_system"),
+            var settings = App.Settings,
                 delivery = opts && opts.delivery_item || {},
                 set = {
                     bag_charge: settings.auto_bag_charge,
@@ -49,128 +96,137 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
                     tip: new App.Models.Tip(),
                     delivery: new App.Models.Delivery(delivery)
                 };
-            opts && delete opts.delivery_item;
             this.unset('delivery_item');
-            opts = opts instanceof Object ? opts : {};
-            this.set($.extend({}, this.defaults, set, opts));
+            this.set(set);
         },
         /**
-         * get Total
+         * @method
+         * @returns {string} subtotal amount formatted as a string.
          */
-        get_total: function() {
-            return round_monetary_currency(this.get('total'));
+        get_subtotal: function() {
+            return round_monetary_currency(this.get('subtotal'));
         },
         /**
-         * get Tax
+         * @method
+         * @returns {string} tax amount formatted as a string.
          */
         get_tax: function() { // tax
             return round_monetary_currency(this.get('tax'));
         },
         /**
-         * get Surcharge
+         * @method
+         * @returns {string} surcharge amount formatted as a string.
          */
         get_surcharge: function() {
             return round_monetary_currency(this.get('surcharge'));
         },
         /**
-         * Get total sum of order (subtotal + surcharge + tax) without tip.
+         * @method
+         * Calculates total amount as `subtotal` + `surcharge` + `tax` for tax excluded countries
+         * and as `subtotal` for tax included countries.
+         *
+         * @returns {string} total amount formatted as a string.
          */
-        get_subtotal: function() { // total + surcharge + tax
+        get_total: function() { // subtotal + surcharge + tax
             var tax = this.get_tax() * 1,
-                total = this.get_total() * 1,
-                subtotal = total,
+                subtotal = this.get_subtotal() * 1,
                 surcharge = this.get_surcharge() * 1;
 
             if(!App.TaxCodes.is_tax_included(this.get('tax_country'))) {
-                subtotal = total + surcharge + tax;
+                subtotal += surcharge + tax;
             }
 
             return round_monetary_currency(subtotal);
         },
         /**
-         * get total discount
+         * @method
+         * @returns {string} discounts amount formatted as a string.
          */
         get_discounts_str: function() {
             return round_monetary_currency(this.get('discounts'));
         },
-        /*
-         * Get tip.
+        /**
+         * @method
+         * @returns {string} tip amount formatted as a string.
          */
         get_tip: function() {
             return round_monetary_currency(this.get('tip').get_tip(this.get_subtotal()));
         },
         /**
-         * Get total sum of order (subtotal + tax + tip).
+         * @method
+         * Calculates grand total amount as `subtotal` + `surcharge` + `tax` + `tip` for tax excluded countries
+         * and as `subtotal` + `tip` for tax included countries.
+         *
+         * @returns {string} grand total amount formatted as a string.
          */
-        get_grand: function() { // total + surcharge + tax + tip
-            var subtotal = this.get_subtotal() * 1, // get total sum of order (subtotal + tax) without tip
+        get_grand: function() { // subtotal + surcharge + tax + tip
+            var total = this.get_total() * 1, // get total sum of order (subtotal + surcharge + tax) without tip
                 tip = this.get_tip() * 1, // get tip
-                grand_total = subtotal + tip;
+                grand_total = total + tip;
 
             return round_monetary_currency(grand_total);
         },
         /**
-         * Get delivery charge. return 0 if delivery is disabled.             *
+         * @method
+         * @returns {string} delivery charge amount formatted as a string.
          */
         get_delivery_charge: function() {
-            var delivery = this.get('delivery'),
-                charge = delivery.get('enable') ? delivery.get('charge') : 0;
-            return round_monetary_currency(charge);
+            return round_monetary_currency(this.get('delivery').getCharge());
         },
         /**
          * @method
-         * Sets delivery charge for total model
+         * Sets delivery charge for total model.
+         *
+         * @param {number} charge - delivery charge amount.
          */
         set_delivery_charge: function(charge) {
             this.get('delivery').set('charge', charge);
-        }, 
-         /**
+        },
+        /**
          * @method
-         * @returns {string} formatted shipping charge amount
+         * @returns {string} shipping charge amount formatted as a string.
          */
         get_shipping_charge: function() {
             return round_monetary_currency(this.get('shipping') || 0);
         },
         /**
-         * get bag charge
+         * @method
+         * @returns {string} bag charge amount formatted as a string.
          */
         get_bag_charge: function() {
             return round_monetary_currency(this.get('bag_charge'));
         },
         /**
-         * Get remaining delivery amount. Return null if delivery is disabled, 0 if total is enough else return remaining amount
+         * @method
+         * @returns {string} remaining delivery amount formatted as a string or `null` if delivery is disabled.
          */
         get_remaining_delivery_amount: function() {
-            var delivery = this.get('delivery'),
-                min_amount = delivery.get('min_amount'),
-                charge = delivery.get('charge'),
-                diff = min_amount - (this.get('total') - charge); // delivery item now in cart, so we need to decrease total
-
-            if(!delivery.get('enable'))
-                return null;
-
+            var diff = this.get('delivery').getRemainingAmount(this.get('subtotal'));
             return round_monetary_currency(diff > 0 ? diff : 0);
         },
         /**
-         * clear total model
+         * @method
+         * Clears total model.
          */
         empty: function() {
             this.set({
                 tax : 0,
-                total : 0,
+                subtotal : 0,
                 surcharge: 0
             });
             this.get('tip').empty();
         },
         /**
-         * save information from total model to local storage
+         * @method
+         * Saves the model in a storage. 'total' key is used.
          */
         saveTotal: function() {
-            setData('total',this);
+            setData('total', this);
             this.get('tip').saveTip();
         },
         /**
-         * load information from local storage
+         * @method
+         * Restores the model data from a storage. 'total' key is used.
          */
         loadTotal: function() {
             var json = getData('total');
@@ -182,18 +238,32 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             this.get('tip').loadTip();
         },
         /**
-         * get all model information for make order
+         * @method
+         * @returns {object} {
+         *    final_total:     <get_total()>
+         *    surcharge:       <get_surcharge()>
+         *    subtotal:        <get_subtotal()>
+         *    tax:             <get_tax()>
+         *    tip:             <get_tip()>
+         *    total_discounts: <get_discounts_str()>
+         * }
          */
         get_all: function() {
             return {
-                final_total: parseFloat(this.get_subtotal()),
+                final_total: parseFloat(this.get_total()),
                 surcharge: parseFloat(this.get_surcharge()),
-                subtotal: parseFloat(this.get_total()),
+                subtotal: parseFloat(this.get_subtotal()),
                 tax: parseFloat(this.get_tax()),
                 tip: parseFloat(this.get_tip()),
                 total_discounts: parseFloat(this.get_discounts_str())
             };
         },
+        /**
+         * @method
+         * Deeply clones the model.
+         *
+         * @returns {App.Models.Total} a new total model.
+         */
         clone: function() {
             var total = new App.Models.Total();
             for (var key in this.attributes) {

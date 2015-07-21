@@ -102,8 +102,8 @@ define(["backbone", "factory"], function(Backbone) {
         },
         setData: function() {
             var data = {
-                    cardNumber: this.$('.number').val(),
-                    captchaValue: this.$('#id_captcha_value').val()
+                    cardNumber: this.$('.number-input').val(),
+                    captchaValue: this.$('.captcha-input').val()
                 };
             this.model.set(data);
         },

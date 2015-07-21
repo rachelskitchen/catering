@@ -43,6 +43,7 @@ require(['app'], function() {
     // use srv=dev, srv=qa, etc. in the url path instead of changing app.REVEL_HOST here 
     app.REVEL_HOST = window.location.origin;    
 
+
     // run app
     app.init();
 });

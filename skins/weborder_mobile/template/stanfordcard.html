@@ -1,0 +1,37 @@
+<script type="text/template" id="stanfordcard_main-template">
+    <ul class="card <% if(isFirefox) { %>firefox<% } %>">
+        <li class="required border">
+            <input type="text" placeholder="<%= _lp.GIFTCARD_NUMBER %>" class="number number-input ios-safari-caret" value="<%= cardNumber %>" min="0">
+        </li>
+        <li class="required border">
+            <input type="hidden" value="<%=cardNumber%>" id="id_captcha_key" name="captcha_key" />
+            <input type="text" placeholder="<%= _lp.GIFTCARD_CAPTCHA %>" class="captcha-input ios-safari-caret" min="0" id="id_captcha_value" name="captcha_value">
+        </li>
+        <li class="captcha_container">
+            <div class="captcha_wrap">
+                <img alt="" class="captcha" width="100%" height="100%">
+                <div class="captcha-spinner"></div>
+            </div>
+            <span class="btn btn-reload">
+                <p class="clip"> <%= _lp.GIFTCARD_RELOAD %> </p>
+            </span>
+        </li>
+    </ul>
+</script>
+
+<script type="text/template" id="stanfordcard_plans-template">
+    <div class="plans-title color-style1"><%= _lp.STANFORD_PLANS %></div>
+    <ul class="list"></ul>
+</script>
+
+<script type="text/template" id="stanfordcard_plan-template">
+    <span>
+        <span class="row name"></span>
+        <span class="row row-balance"><%= _lp.STANFORD_BALANCE %> <span class="balance color-style1"></span></span>
+    </span>
+</script>
+
+<script type="text/template" id="stanfordcard_student-template">
+    <h3 class="stanford-student-question"><%= _lp.STANFORD_STUDENT_QUESTION %></h3>
+    <p class="stanford-student-instructions"><%= _lp.STANFORD_STUDENT_INSTRUCTIONS %></p>
+</script>

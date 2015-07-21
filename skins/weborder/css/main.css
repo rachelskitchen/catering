@@ -329,6 +329,7 @@ footer {
     margin-top: -7px;
 }
 .current_establishment {
+    display: none;
     position: absolute;
     width: 70%;
     height: 100%;
@@ -926,7 +927,7 @@ section.maintenance #header .btn {
     margin: 15px;
     height: 48px;
 }
-#alert .btn {
+#alert .btn, .btn-popup {
     min-width: 100px;
     max-width: 180px;
     height: 34px;

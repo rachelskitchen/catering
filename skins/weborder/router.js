@@ -85,6 +85,11 @@ define(["main_router"], function(main_router) {
                 });
                 ests.getModelForView().set('clientName', mainModel.get('clientName'));
 
+                // init Stanford Card model if it's turned on
+                if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
+                    App.Data.stanfordCard = new App.Models.StanfordCard();
+                }
+
                 // listen to navigation control
                 this.navigationControl();
 
@@ -139,13 +144,55 @@ define(["main_router"], function(main_router) {
             // onCheckoutClick event occurs when 'checkout' button is clicked
             this.listenTo(App.Data.myorder, 'onCheckoutClick', this.navigate.bind(this, 'checkout', true));
 
-            // onPay event occurs when 'Pay' button is clicked
-            this.listenTo(App.Data.myorder, 'onPay', function() {
+            // show payment processors list
+            function showPaymentProcessors() {
+                delete showPaymentProcessors.pending;
                 App.Data.mainModel.set('popup', {
                     modelName: 'Checkout',
                     mod: 'Pay',
                     collection: App.Data.myorder
                 });
+            }
+
+            // onPay event occurs when 'Pay' button is clicked
+            this.listenTo(App.Data.myorder, 'onPay', function() {
+                var stanfordCard = App.Data.stanfordCard;
+
+                // need to check if Stanford Card is turned on and ask a customer about student status
+                if(stanfordCard && stanfordCard.get('needToAskStudentStatus')) {
+                    showPaymentProcessors.pending = true; // assing 'pending' status to showPaymentProcessors() function
+                    App.Data.mainModel.set('popup', {
+                        modelName: 'StanfordCard',
+                        mod: 'StudentStatus',
+                        model: stanfordCard,
+                        className: 'stanford-student-status'
+                    });
+                } else {
+                    showPaymentProcessors();
+                }
+            });
+
+            // onNotStudent event occurs when a customer answers 'No' on student status question.
+            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onNotStudent', showPaymentProcessors);
+
+            // onCancelStudentVerification event occurs when a customer cancels student verification.
+            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onCancelStudentVerification', App.Data.mainModel.unset.bind(App.Data.mainModel, 'popup'));
+
+            // onStudent event occurs when a customer answers 'Yes' on student status question.
+            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onStudent', function() {
+                App.Data.mainModel.set('popup', {
+                    modelName: 'StanfordCard',
+                    mod: 'Popup',
+                    model: App.Data.stanfordCard,
+                    myorder: App.Data.myorder,
+                    className: 'stanford-student-card'
+                });
+            });
+
+            // 'change:validated' event occurs after Stanford Card validation on backend.
+            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'change:validated', function() {
+                // if showPaymentProcessors() function is waiting for stanfordCard resolution need to invoke it.
+                showPaymentProcessors.pending && showPaymentProcessors();
             });
 
             // showSpinner event
