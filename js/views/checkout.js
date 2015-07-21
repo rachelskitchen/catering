@@ -331,9 +331,9 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             } else if (time === 'closed') {
                 pickupTS = null;
             } else {
-                format = new TimeFrm(0, 0, 'usa');
+                format = new TimeFrm(0, 0);
                 format.load_from_str(time);
-                var timeSplit = format.toString('24hour').split(':');
+                var timeSplit = format.toString('24 hour').split(':');
                 pickupTS = new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeSplit[0], timeSplit[1]).getTime();
             }
             this.model.set({
@@ -385,7 +385,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.subViews.push(App.Views.GeneratorView.create('Checkout', {
                 el: this.$('.btn_wrapper'),
                 mod: 'PayButton',
-                collection: this.collection
+                collection: this.collection,
+                checkout: this.collection.checkout
             }));
             return this;
         }
@@ -394,6 +395,33 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
     App.Views.CoreCheckoutView.CoreCheckoutPayButtonView = App.Views.FactoryView.extend({
         name: 'checkout',
         mod: 'pay_button',
+        bindings: {
+            '.cash > span': 'text: applyCashLabel(checkout_dining_option)',
+            '.btn.pay': 'classes: {disabled: shipping_pending}'
+        },
+        bindingFilters: {
+            applyCashLabel: function(dining_option) {
+                var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING';
+                return isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE;
+            }
+        },
+        bindingSources: {
+            shipping: function() {
+                var customer = App.Data.customer,
+                    status = customer.get('load_shipping_status'),
+                    model = new Backbone.Model({pending: getStatus()});
+
+                model.listenTo(customer, 'change:shipping_services', function() {
+                    model.set('pending', getStatus());
+                });
+
+                return model;
+
+                function getStatus() {
+                    return customer.get('load_shipping_status') == 'pending';
+                }
+            }
+        },
         initialize: function() {
             var payment = App.Data.settings.get_payment_process();
             this.listenTo(this.collection, 'cancelPayment', function() {
@@ -405,19 +433,6 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.flag = this.options.flag === 'checkout',
             this.needPreValidate = payment.payment_count == 1 && this.flag;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.collection.checkout, 'change:dining_option', this.change_cash_text);
-            this.listenTo(App.Data.customer, 'change:shipping_services', this.updatePayButtonState, this);
-            this.updatePayButtonState();
-        },
-        updatePayButtonState: function() {
-            var customer = App.Data.customer,
-                status = customer.get('load_shipping_status'),
-                pay = this.$('.btn.pay');
-            if ('pending' == status) {
-                pay.addClass('disabled');
-            } else {
-                pay.removeClass('disabled');
-            }
         },
         render: function() {
             var payment = Backbone.$.extend(App.Data.settings.get_payment_process(), {
@@ -425,24 +440,19 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             });
 
             this.$el.html(this.template(payment));
-            this.change_cash_text();
             return this;
         },
         events: {
             'click .pay': 'pay_event',
             'click .credit-card': 'credit_card',
             'click .gift-card': 'gift_card',
+            'click .stanford-card': 'stanford_card',
             'click .paypal': function() {
                 this.pay(PAYMENT_TYPE.PAYPAL);
             },
             'click .cash': function(){
                 this.pay(PAYMENT_TYPE.NO_PAYMENT);
             }
-        },
-        change_cash_text: function() {
-            var dining_option = this.collection.checkout.get("dining_option"),
-                isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING';
-            this.$('.cash > span').html(isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE);
         },
         gift_card: function() {
             var self = this;
@@ -459,6 +469,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     mod: 'PayCard',
                     submode: 'Gift',
                     collection: self.collection,
+                    checkout: self.collection.checkout,
                     className: 'confirmPayCard',
                     timetable: App.Data.timetables,
                     card: App.Data.giftcard,
@@ -501,6 +512,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     mod: 'PayCard',
                     submode: 'Credit',
                     collection: self.collection,
+                    checkout: self.collection.checkout,
                     className: 'confirmPayCard',
                     timetable: App.Data.timetables,
                     card: App.Data.card,
@@ -534,6 +546,28 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 validationOnly: true
             }, function() {
                 self.collection.trigger('onPay');
+            });
+        },
+        stanford_card: function() {
+            var self = this;
+            $('#popup .cancel').trigger('click');
+            App.Data.myorder.check_order({
+                order: true,
+                tip: true,
+                customer: true,
+                checkout: true,
+                validationOnly: this.needPreValidate
+            }, function() {
+                App.Data.mainModel.set('popup', {
+                    modelName: 'Confirm',
+                    mod: 'StanfordCard',
+                    collection: self.collection,
+                    checkout: self.collection.checkout,
+                    className: 'confirmPayCard stanford-card',
+                    timetable: App.Data.timetables,
+                    card: App.Data.stanfordCard,
+                    two_columns_view: true
+                });
             });
         }
     });

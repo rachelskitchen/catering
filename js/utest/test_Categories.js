@@ -1,20 +1,23 @@
 define(['categories'], function() {
+    'use strict';
+
     describe("App.Models.Categories", function() {
 
-        var def, model;
+        var def, model,
+            settings = App.Data.settings;
 
         beforeEach(function() {
             model = new App.Models.Category();
             def = {
-                description : '',
+                description: '',
                 id: null,
-                image: 'test/img_default',
+                image: settings.get_img_default(),
                 name: null,
                 parent_name: null,
                 parent_sort: null,
                 sort: null,
                 sort_val: null,
-                img : 'test/path/',
+                img: settings.get('img_path'),
                 active: true,
                 timetables: null
             };
@@ -32,12 +35,13 @@ define(['categories'], function() {
 
     describe("App.Collections.Categories", function() {
 
-        var def, model, categories, success, error, id, arg,
+        var model, categories, success, error, id, arg,
             ajaxStub = function() {
                 success = arguments[0].successResp;
                 error = arguments[0].error;
                 arg = arguments;
-            };
+            },
+            settings = App.Data.settings;
 
         $.ajax({
             type: "GET",
@@ -51,25 +55,18 @@ define(['categories'], function() {
 
         beforeEach(function() {
             model = new App.Collections.Categories();
-            def = {
-                id: null,
-                name: null,
-                image: 'test/img_default',
-                sort: null,
-                img : 'test/path/',
-                description : ''
-            }, id = {
-                sort: 1,
-                parent_name: "Menu2",
+            id = {
                 description: null,
-                parent_sort: 5,
-                image: 'test/img_default',
                 id: 50,
-                name: "sub2",
+                image: settings.get_img_default(),
+                name: 'sub2',
+                parent_name: 'Menu2',
+                parent_sort: 5,
+                sort: 1,
                 sort_val: 5001,
-                timetables: null,
-                img : 'test/path/',
-                active: true
+                img: settings.get('img_path'),
+                active: true,
+                timetables: null
             };
         });
 
@@ -82,6 +79,7 @@ define(['categories'], function() {
             expect(model.parent_selected).toBeNull();
             spyOn($,'ajax').and.callFake(ajaxStub);
             model.get_categories();
+            error();
             success(categories);
             expect(model.length).toBe(4);
             expect(arg[0].url).toBe("testHost/weborders/product_categories/");

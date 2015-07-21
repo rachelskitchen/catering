@@ -30,6 +30,14 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         return App.Settings.currency_symbol + round_monetary_currency(value);
     });
 
+    Backbone.Epoxy.binding.addFilter('equal', function(pattern, value) {
+        return pattern == value;
+    });
+
+    Backbone.Epoxy.binding.addFilter('strictEqual', function() {
+        return pattern === value;
+    });
+
     Backbone.Epoxy.binding.addFilter('weightPriceFormat', function(weight, price) {
         var currency_symbol = App.Settings.currency_symbol,
             scales = App.Settings.scales,

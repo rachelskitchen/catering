@@ -1,7 +1,10 @@
 define(['card', 'revel_api'], function() {
+    'use strict';
+
     describe("App.Models.Card", function() {
 
-        var model, def;
+        var model, def,
+            locale = App.Data.locale.toJSON();
 
         beforeEach(function() {
             model = new App.Models.Card();
@@ -110,64 +113,64 @@ define(['card', 'revel_api'], function() {
 
             it("Card number", function() {
                 // empty card number
-                expect(model.check().errorMsg.indexOf('Card Number')).not.toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_NUMBER)).not.toBe(-1);
                 expect(model.check().status).toBe('ERROR_EMPTY_FIELDS');
                 expect(Array.isArray(model.check().errorList)).toBe(true);
 
                 // incorrect first number
                 model.set('cardNumber', '12345678901234567');
-                expect(model.check().errorMsg.indexOf('Card Number')).not.toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_NUMBER)).not.toBe(-1);
 
                 // valid card number
                 model.set('cardNumber', '5555555555555555');
-                expect(model.check().errorMsg.indexOf('Card Number')).toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_NUMBER)).toBe(-1);
 
                 // very long card number
                 model.set('cardNumber', '12345678901234567890');
-                expect(model.check().errorMsg.indexOf('Card Number')).not.toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_NUMBER)).not.toBe(-1);
 
                 // very short card number
                 model.set('cardNumber', '123456789012');
-                expect(model.check().errorMsg.indexOf('Card Number')).not.toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_NUMBER)).not.toBe(-1);
             });
 
             it("Security code", function() {
                 // valid card number
                 model.set('cardNumber', '5555555555555555');
                 model.set('securityCode', '123');
-                expect(model.check().errorMsg.indexOf('Card Number')).toBe(-1);
-                expect(model.check().errorMsg.indexOf('Security Code')).toBe(-1);
-               
+                expect(model.check().errorMsg.indexOf(locale.CARD_NUMBER)).toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_SECURITY_CODE)).toBe(-1);
+
                 model.set('securityCode', '1234');
-                expect(model.check().errorMsg.indexOf('Security Code')).toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_SECURITY_CODE)).toBe(-1);
 
                 model.set('securityCode', '12345');
-                expect(model.check().errorMsg.indexOf('Security Code')).not.toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_SECURITY_CODE)).not.toBe(-1);
 
                 model.set('securityCode', 'abc');
-                expect(model.check().errorMsg.indexOf('Security Code')).not.toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_SECURITY_CODE)).not.toBe(-1);
             });
 
             it('Credit card payments', function() {
                 this.skin = App.Data.settings.get('skin');
                 App.Data.settings.set('skin', 'notmlb');
                 // not paypal direct credit card
-                expect(model.check().errorMsg.indexOf('First Name')).toBe(-1);
-                expect(model.check().errorMsg.indexOf('Last Name')).toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_FIRST_NAME)).toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_LAST_NAME)).toBe(-1);
 
                 // paypal direct credit card, but empty fields
                 payment.paypal = true;
                 payment.paypal_direct_credit_card = true;
-                expect(model.check().errorMsg.indexOf('First Name')).not.toBe(-1);
-                expect(model.check().errorMsg.indexOf('Last Name')).not.toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_FIRST_NAME)).not.toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_LAST_NAME)).not.toBe(-1);
 
                 // paypal direct credit card and not empty fields
                 model.set({
                     firstName: 'first',
                     secondName: 'second'
                 });
-                expect(model.check().errorMsg.indexOf('First Name')).toBe(-1);
-                expect(model.check().errorMsg.indexOf('Last Name')).toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_FIRST_NAME)).toBe(-1);
+                expect(model.check().errorMsg.indexOf(locale.CARD_LAST_NAME)).toBe(-1);
 
                 App.Data.settings.set('skin', this.skin);
             });

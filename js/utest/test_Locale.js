@@ -1,4 +1,6 @@
 define(['locale'], function() {
+    'use strict';
+
     describe('App.Models.Locale', function() {
 
         var model, def;

@@ -37,6 +37,8 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'hideRevelPopup', this.hideRevelPopup, this);
             this.listenToOnce(this.model, 'showSpinnerAndHideContent', this.showSpinnerAndHideContent, this); // show a spinner and hide a content
             this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
+            this.listenTo(this.model, 'resizeSection', this.resizeSection, this);
+            this.listenTo(this.model, 'restoreSection', this.restoreSection, this);
 
             this.iOSFeatures();
 
@@ -211,6 +213,18 @@ define(["done_view", "generator"], function(done_view) {
         blurEffect: function() {
             // http://caniuse.com/#search=filter
             this.model.get('isBlurContent') ? this.blurBg() : this.unblurBg();
+        },
+        resizeSection: function(rows) {
+            var className = 'footer-sections-' + rows;
+            this.$('#section').addClass(className);
+            if(!Array.isArray(this.resizeSection.classes)) {
+                this.resizeSection.classes = [];
+            }
+            this.resizeSection.classes.push(className);
+        },
+        restoreSection: function() {
+            this.$('#section').removeClass(this.resizeSection.classes.join(' '));
+            this.resizeSection.classes.length = 0;
         }
     });
 
@@ -235,7 +249,7 @@ define(["done_view", "generator"], function(done_view) {
             else {
                 coef = wCoef;
             }
-            
+
             var fontSize = Math.round(fsDefault * coef);
             if (fontSize < fsMin) {
                 fontSize = fsMin;

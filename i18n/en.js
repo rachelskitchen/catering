@@ -496,5 +496,9 @@
         'TOTAL_TAX':                 'Tax', // except: Directory, Directory Mobile
         'TOTAL_TIP':                 'Tip', // except: Retail, Directory, Directory Mobile, MLB
         'TOTAL_GRAND_TOTAL':         'Grand Total', // except: Directory, Directory Mobile, MLB, PayPal
+        'YES':  'Yes',
+        'NO': 'No',
+        'CANCEL': 'Cancel',
+        'OK': 'Ok'
     } // end of locale
 }); // end of module

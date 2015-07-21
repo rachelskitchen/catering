@@ -1,27 +1,34 @@
 define(['checkout'], function() {
+    'use strict';
+
     describe("App.Models.Checkout", function() {
 
-        var model, def;
+        var model, def,
+            settings = App.Data.settings;
 
         beforeEach(function() {
             model = new App.Models.Checkout();
             spyOn(window, "getData");
             spyOn(window, "setData");
             def = {
-                img : App.Data.settings.get("img_path"),
-                pickupTime : '',
+                img: settings.get('img_path'),
+                pickupTime: '',
                 pickupTS: null,
                 isPickupASAP: false,
-                special : '',
-                section : "",
-                row : "",
-                seat : "",
-                email : "",
-                level: "",
-                dining_option: '',
+                special: '',
+                section: '',
+                row: '',
+                seat: '',
+                level: '',
+                email: '',
                 rewardCard: '',
+                dining_option: '',
                 selected_dining_option: '',
-                notes : ''
+                notes : '',
+                sections: [],
+                levels: [],
+                discount_code: '',
+                last_discount_code: ''
             };
         });
 
@@ -44,12 +51,12 @@ define(['checkout'], function() {
             model.loadCheckout(); // load state model from storage (detected automatic)
             expect(getData).toHaveBeenCalledWith('checkout');
         });
-        
+
         it('Function revert_dining_option', function() {
             model.set('selected_dining_option', '');
             model.revert_dining_option();
             expect(model.get('dining_option', 'DINING_OPTION_TOGO'));
-            
+
             model.set('selected_dining_option', 'test');
             model.revert_dining_option();
             expect(model.get('dining_option', 'test'));
@@ -68,15 +75,15 @@ define(['checkout'], function() {
         describe('Function check', function() {
 
             beforeEach(function() {
-                this.skin = App.Data.settings.get('skin');
+                this.skin = settings.get('skin');
             });
 
             afterEach(function() {
-                App.Data.settings.set('skin', this.skin);
+                settings.set('skin', this.skin);
             });
 
             it('skin mlb', function() {
-                App.Data.settings.set('skin', 'mlb');
+                settings.set('skin', 'mlb');
 
                 expect(model.check().errorMsg.indexOf('Section')).not.toBe(-1);
 
@@ -95,7 +102,7 @@ define(['checkout'], function() {
             });
 
             it('skin paypal not order from seat', function() {
-                App.Data.settings.set('skin', 'paypal');
+                settings.set('skin', 'paypal');
 
                 expect(model.check().errorMsg.indexOf(MSG.ERROR_STORE_IS_CLOSED)).not.toBe(-1);
 
@@ -104,7 +111,7 @@ define(['checkout'], function() {
             });
 
             it('skin paypal order from seat dining', function() {
-                App.Data.settings.set('skin', 'paypal');
+                settings.set('skin', 'paypal');
                 this.seat = App.Data.orderFromSeat;
                 App.Data.orderFromSeat = {};
                 model.set('dining_option', 'DINING_OPTION_DELIVERY_SEAT');
@@ -138,14 +145,14 @@ define(['checkout'], function() {
             });
 
             it('skin dining option online', function() {
-                App.Data.settings.set('skin', 'weborder');
+                settings.set('skin', 'weborder');
                 model.set('dining_option', 'DINING_OPTION_ONLINE');
 
                 expect(model.check().status).toBe('OK');
             });
 
             it('skin weborder', function() {
-                App.Data.settings.set('skin', 'weborder');
+                settings.set('skin', 'weborder');
 
                 expect(model.check().errorMsg.indexOf(MSG.ERROR_STORE_IS_CLOSED)).not.toBe(-1);
 
@@ -154,7 +161,7 @@ define(['checkout'], function() {
             });
 
             it('skin weborder_mobile', function() {
-                App.Data.settings.set('skin', 'weborder_mobile');
+                settings.set('skin', 'weborder_mobile');
 
                 expect(model.check().errorMsg.indexOf(MSG.ERROR_STORE_IS_CLOSED)).not.toBe(-1);
 

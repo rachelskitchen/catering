@@ -478,6 +478,7 @@ img[src=''] {
 .btn.btn-disabled:active, .btn.btn-disabled:before, .btn.btn-disabled:before {
     cursor: default;
     z-index: -1;
+    pointer-events: none;
 }
 
 /* fix for Samsung Galaxy S4 native browser (Bug #16151) */
@@ -616,6 +617,18 @@ span.cancel-input:before {
 #content > .content {
     width: 100%;
     overflow: hidden;
+}
+
+.footer-sections-2 {
+    margin-bottom: 10.2em;
+}
+
+.footer-sections-3 {
+    margin-bottom: 20.4em;
+}
+
+.footer-sections-4 {
+    margin-bottom: 30.6em;
 }
 
 .search-line-spinner {

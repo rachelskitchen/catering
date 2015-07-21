@@ -803,7 +803,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             if (total) {
                 total = total["total"];
                 this.total.set({
-                    total: total.total,
+                    subtotal: total.subtotal,
                     tax: total.tax,
                     surcharge: total.surcharge,
                     discounts: total.discounts
@@ -817,7 +817,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
          * check collection myorders
          */
         _check_cart: function(opts) {
-            var subtotal = this.total.get_subtotal() * 1,
+            var total = this.total.get_total() * 1,
                 tip = this.total.get_tip() * 1,
                 isDelivery = this.checkout.get('dining_option') === 'DINING_OPTION_DELIVERY',
                 isOnlyGift = this.checkout.get('dining_option') === 'DINING_OPTION_ONLINE';
@@ -831,7 +831,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 };
             }
 
-            if (opts.tip && tip > subtotal) {
+            if (opts.tip && tip > total) {
                 return {
                     status: 'ERROR',
                     errorMsg: MSG.ERROR_GRATUITY_EXCEEDS
@@ -898,6 +898,17 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                     check_card = giftcard.check();
 
                 if (giftcard.status === 'ERROR') {
+                    errorMsg = check_card.errorMsg;
+                } else if (check_card.status === 'ERROR_EMPTY_FIELDS') {
+                    fields = fields.concat(check_card.errorList);
+                }
+            }
+
+            if (options.stanfordcard) {
+                var stanfordcard = App.Data.stanfordCard,
+                    check_card = stanfordcard.check();
+
+                if (stanfordcard.status === 'ERROR') {
                     errorMsg = check_card.errorMsg;
                 } else if (check_card.status === 'ERROR_EMPTY_FIELDS') {
                     fields = fields.concat(check_card.errorList);
@@ -1049,7 +1060,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
 
             if (self.get_only_product_quantity() < 1) {
                 self.total.set({
-                    total: 0,
+                    subtotal: 0,
                     tax: 0,
                     surcharge: 0,
                     discounts: 0
@@ -1120,6 +1131,14 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 order_info.rewards_card = {
                     redemption: rewardsCard.redemption_code
                 };
+            }
+
+            // add info for stanford card
+            if(params && params.type === PAYMENT_TYPE.STANFORD && params.planId) {
+                order.paymentInfo = {
+                    type: params.type,
+                    cardInfo: {planId: params.planId}
+                }
             }
 
             var myorder_json = JSON.stringify(order);
@@ -1241,7 +1260,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             }
 
             myorder.total.set({
-                total: json.subtotal,
+                subtotal: json.subtotal,
                 tax: json.tax,
                 surcharge: json.surcharge,
                 discounts: json.discounts,
@@ -1346,7 +1365,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                         reportErrorFrm(MSG.ERROR_OCCURRED + ' ' + MSG.ERROR_INCORRECT_AJAX_DATA);
                         return;
                     }
-                    myorder.paymentResponse = data instanceof Object ? data : {};
+                    myorder.paymentResponse = data instanceof Object ? _.extend(data, {paymentType: payment_type}) : {};
                     myorder.paymentResponse.capturePhase = capturePhase;
 
                     switch(data.status) {
@@ -1355,6 +1374,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                                 successValidation = Backbone.$.Deferred();
                                 successValidation.then(myorder.trigger.bind(myorder, 'paymentResponseValid'));
                             } else {
+                                App.Data.stanfordCard && payment_type === PAYMENT_TYPE.STANFORD && App.Data.stanfordCard.updatePlans(data.balances.stanford);
                                 myorder.trigger('paymentResponse');
                             }
 

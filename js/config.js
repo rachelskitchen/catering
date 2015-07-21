@@ -86,6 +86,9 @@ define({
         locale: 'js/models/locale',
         rewards: 'js/models/rewards',
         rewards_view: 'js/views/rewards',
+        stanfordcard: 'js/models/stanfordcard',
+        stanfordcard_view: 'js/views/stanfordcard',
+        captcha: 'js/models/captcha',        
         search_line_view: 'js/views/search_line',
         spinner_view: 'js/views/spinner'
     },
@@ -158,7 +161,7 @@ define({
             deps: ["backbone"]
         },
         "giftcard": {
-            deps: ["backbone"]
+            deps: ["captcha"]
         },
         "checkout": {
             deps: ["backbone"]
@@ -221,13 +224,22 @@ define({
             deps: ['backbone']
         },
         'rewards': {
-            deps: ['backbone']
+            deps: ['captcha']
         },
         'rewards_view': {
             deps: ['factory']
         },
         'locale': {
             deps: ['backbone']
+        },
+        'captcha': {
+            deps: ['backbone']
+        },
+        'stanfordcard': {
+            deps: ['captcha']
+        },
+        'stanfordcard_view': {
+            deps: ['factory']
         }
     },
     map: {

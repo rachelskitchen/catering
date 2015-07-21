@@ -1,4 +1,4 @@
-/*
+/**
  * Revel Systems Online Ordering Application
  *
  *  Copyright (C) 2014 by Revel Systems
@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(['backbone'], function(Backbone) {
+define(['backbone', 'captcha'], function(Backbone) {
     'use strict';
 
     var REDEMPTION_CODES = {
@@ -78,7 +78,7 @@ define(['backbone'], function(Backbone) {
      * @class App.Models.RewardsCard
      * Represents customer's rewards card data.
      */
-    App.Models.RewardsCard = Backbone.Model.extend({
+    App.Models.RewardsCard = App.Models.Captcha.extend({
         /**
          * @property {Object} defaults - the set of model attributes with default values.
          *
@@ -97,16 +97,13 @@ define(['backbone'], function(Backbone) {
          * @property {number} defaults.redemption_code - code of selected rewards type. 1 - points reward, 2 - visits reward, 3 - purchases reward.
          * @defaults null.
          */
-        defaults: {
+        defaults: _.extend({}, App.Models.Captcha.prototype.defaults, {
             purchases: new App.Models.Rewards,
             points: new App.Models.Rewards,
             visits: new App.Models.Rewards,
             number: '',
-            redemption_code: null,
-            captchaImage: '',
-            captchaKey: '',
-            captchaValue: ''
-        },
+            redemption_code: null
+        }),
         /**
          * @method
          * Ensures 'purchases', 'points', 'visits' attributes are instances of App.Models.Rewards.
@@ -238,17 +235,6 @@ define(['backbone'], function(Backbone) {
         resetData: function() {
             this.set(this.defaults);
             this.trigger('onResetData');
-        },
-        /**
-         * @method
-         * Loads captcha data.
-         */
-        loadCaptcha: function() {
-            var self = this;
-            Backbone.$.getJSON('/weborders/captcha/?establishment=1', {}, function(json) {
-                self.set('captchaImage', json.captcha_image);
-                self.set('captchaKey', json.captcha_key);
-            });
         },
         /**
          * @method

@@ -168,8 +168,7 @@ ul.categories {
     background: -webkit-linear-gradient(top,  #f9f9f9 0%,#eaeaea 100%);
     background: -o-linear-gradient(top,  #f9f9f9 0%,#eaeaea 100%);
     background: linear-gradient(to bottom,  #f9f9f9 0%,#eaeaea 100%);
-    border: 2px solid #8DCEE3;
-    border-radius: 19px;
+    border-color: #8DCEE3;
     box-shadow: 0 2px 0 0 #D5E4E9, 0 3px 3px 1px #C8CFD1;
 }
 .action_button, #modifiers_popup .product_instructions .add_instructions,
@@ -193,7 +192,6 @@ ul.categories {
     background: -o-linear-gradient(top,  #f9f9f9 0%,#eaeaea 100%);
     background: linear-gradient(to bottom,  #f9f9f9 0%,#eaeaea 100%);
     border: 2px solid #AAA;
-    border-radius: 19px;
     box-shadow: 0 2px 0 0 #D5D5D5, 0 3px 3px 1px #C8CFD1;
     color: #a5a5a5;
 }
@@ -561,20 +559,26 @@ span.cancel-input:active:before {
 .color-style1 {
     color: #fff;
 }
-.reward-selection li {
+.reward-selection li, .stanford-plan {
     border-color: #fff;
 }
-.reward-selection li.active {
+.reward-selection li.active, .stanford-plan.active {
     background-color: rgba(255, 255, 255, 0.2);
 }
 .points-selection .order-item {
     border-bottom-color: #fff;
 }
-.reward-selection li.active:after {
+.reward-selection li.active:after, .stanford-plan.active:after {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSIxOTciIGhlaWdodD0iMTU4IiB4bWw6c3BhY2U9InByZXNlcnZlIj48cG9seWdvbiBmaWxsPSIjZmZmZmZmIiBwb2ludHM9IjE3NCwwIDYxLDExMyAyMiw3NCAwLDk3IDM4LDEzNSA2MSwxNTggMTk3LDIyIi8+PC9zdmc+');
     background-size: 100%;
     background-repeat: no-repeat;
 }
 .rewards-info .info {
     color: #44a0c7;
+}
+.stanford-card .cancel-input:before {
+    background: #999;
+}
+.stanford-card .btn.disabled, .stanford-card .btn.disabled:before {
+    box-shadow: none;
 }
