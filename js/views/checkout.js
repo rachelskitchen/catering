@@ -325,7 +325,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
             this.model.set('pickupTimeReview',index);
 
-            if(time && time.indexOf('ASAP') != -1) {
+            if(time && time.indexOf(_loc['TIME_PREFIXES']['ASAP']) != -1) {
                 pickupTS = App.Data.timetables.base().getTime();
                 isPickupASAP = true;
             } else if (time === 'closed') {
