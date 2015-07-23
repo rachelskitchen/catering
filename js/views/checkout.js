@@ -279,32 +279,46 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         },
         render: function() {
             var days;
+            var self = this;
 
             this.templateData.pickupTimeLabel = '';
             this.$el.html(this.template(this.templateData));
 
-            days = this.$('select.day');
-            this.pickupTime.forEach(function(day, i) {
-                days.append('<option value="' + i + '">' + day.weekDay + '</option>');
-            });
+            var today = new Date();
+            today.setHours(0,0,0,0);
+            var maxDate = new Date();
+            maxDate.setDate(maxDate.getDate() + this.pickupTime.length - 1);
 
-            var js_date = new Date();
-            var field = this.$('#datepicker')[0];
+            var field = this.$('#datepicker');
+            field.val(_loc['DAYS']['TODAY']);
             var picker = new Pikaday({
-                field: field,
-                //trigger: this.$('#datepicker-button')[0],
-                minDate: js_date,
-                maxDate: js_date + 5,
-                //yearRange: [js_date.getFullYear(),js_date.getFullYear()],
+                field: field[0],
+                minDate: today,
+                maxDate: maxDate,
+                //position: 'bottom left',
+                firstDay : _loc['PIKADAY']['FIRST_DAY'],
+                i18n: _loc['PIKADAY']['i18n'],
                 onSelect: function(date) {
-                    field.value = date.format("Dd, Mm dd"); //picker.toString();
+                    var one_day = 1000 * 60 * 60 * 24;
+                    var diffDays = parseInt((date - today) / one_day);
+                    switch (diffDays) {
+                       case 0:
+                          field.val(_loc['DAYS']['TODAY']);
+                          break;
+                       case 1:
+                          field.val(_loc['DAYS']['TOMORROW']);
+                          break;
+                       default:
+                          field.val(date.format()); //field.val(date.format("Dd, Mm dd"));
+                    }
+                    field.data("day", diffDays);
+                    self.changeDay({target: { value: diffDays }});
                 }
             });
 
             return this;
         },
         events: {
-            'change select.day': 'changeDay',
             'change select.time': 'changeTime'
         },
         changeDay: function(e) {
@@ -328,9 +342,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.model.set('pickupDay',index);
             this.changeTime({target: { value : 0 }});
         },
+
         changeTime: function(e) {
             var index = e.target.value*1,
-                day = this.$('select.day').val(),
+                day = this.$('input.pikaday').data("day"),
                 time = this.pickupTime[day].workingDay[index],
                 date = this.pickupTime[day].date,
                 format = new TimeFrm,
@@ -358,9 +373,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         setPickupDay: function() {
             var pickupDay = this.model.get('pickupDay') || 0,
                 pickupTime = this.model.get('pickupTimeReview') || 0,
-                day = this.$('select.day');
+                day = this.$('input.pikaday'),
+                pikaday =  this.$('input.pikaday');
 
-            day.val(pickupDay);
+            day.data("day", pickupDay);
             this.changeDay({target: { value: pickupDay }});
             this.model.set('pickupTimeReview', pickupTime);
             this.setPickupTime();

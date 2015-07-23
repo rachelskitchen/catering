@@ -6,12 +6,12 @@
     "color_schemes": ["default", "blue_&_white", "vintage"],
     "routing": {
         "main": {
-            "css": ["main", "myorder", "jquery.contentarrow", "products", "modifiers", "instructions", "quantity", "jquery.combobox", "pikaday"],
+            "css": ["main", "myorder", "jquery.contentarrow", "products", "modifiers", "instructions", "quantity", "jquery.combobox"],
             "model": ["main", "header"],
             "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "instructions", "quantity"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "instructions", "quantity"],
             "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "stanfordcard"],
-            "js" : ["jquery.contentarrow", "jquery.combobox", "pikaday"]
+            "js" : ["jquery.contentarrow", "jquery.combobox"]
         },
         "index": {
             "css": ["categories", "subcategories", "search_line"],
@@ -32,10 +32,11 @@
             "css":  ["store_info"]
         },
         "checkout": {
-            "css": ["checkout", "confirm", "card", "rewards"],
+            "css": ["checkout", "confirm", "card", "rewards", "pikaday"],
             "views": ["cart", "checkout", "cart", "confirm", "rewards", "stanfordcard"],
             "templates": ["cart", "checkout", "cart", "tips", "confirm", "card", "giftcard", "rewards", "stanfordcard"],
-            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "card_view", "giftcard_view", "tips_view"]
+            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "card_view", "giftcard_view", "tips_view"],
+            "js": ["pikaday"]
         },
         "confirm": {
             "views": [],
