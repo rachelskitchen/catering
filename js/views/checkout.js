@@ -288,6 +288,19 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 days.append('<option value="' + i + '">' + day.weekDay + '</option>');
             });
 
+            var js_date = new Date();
+            var field = this.$('#datepicker')[0];
+            var picker = new Pikaday({
+                field: field,
+                //trigger: this.$('#datepicker-button')[0],
+                minDate: js_date,
+                maxDate: js_date + 5,
+                //yearRange: [js_date.getFullYear(),js_date.getFullYear()],
+                onSelect: function(date) {
+                    field.value = date.format("Dd, Mm dd"); //picker.toString();
+                }
+            });
+
             return this;
         },
         events: {
