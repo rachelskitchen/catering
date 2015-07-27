@@ -2,125 +2,21 @@
     "name_app": "Web Ordering App",
     "styles": [],
     "scripts": [],
-    "color_schemes": ["default", "revel"],
+    "color_schemes": ["default"],
     "img_default": "none.png",
     "routing": {
         "main": {
-            "css": [ "main", "header", "footer", "revel"],
-            "model": ["main", "header", "footer", "revel"],
-            "templates": ["main", "header", "footer", "revel"],
-            "views": ["main", "header", "footer", "logo"],
-            "core": ["geopoint", "jquery_numbermask", "revel_view", "stanfordcard"]
+            "css": [ "main", "header"],
+            "model": ["main", "header", "revel"],
+            "templates": ["main", "header"],
+            "views": ["main", "header"],
+            "core": ["geopoint", "stanfordcard"]
         },
         "index": {
-            "css": ["store_info", "categories"],
-            "views": ["store_info", "categories"],
-            "templates": ["store_info", "categories"],
+            "css": [],
+            "views": [],
+            "templates": [],
             "core": ["categories"]
-        },
-        "products": {
-            "css": ["products"],
-            "views": ["products"],
-            "templates": ["products"],
-            "core": ["categories", "products"]
-        },
-        "search": {
-            "css": ["store_info", "products", "search_line"],
-            "views": ["store_info", "products", "search_line"],
-            "templates": ["store_info", "products", "search_line"],
-            "core": ["categories", "products", "search", "spinner_view"]
-        },
-        "modifiers": {
-            "css": ["modifiers", "products", "quantity", "instructions", "myorder"],
-            "views": ["products", "quantity", "instructions", "myorder"],
-            "templates": ["modifiers", "products", "quantity", "instructions", "myorder"],
-            "core": ["categories", "products", "modifiers", "modifiers_view"]
-        },
-        "myorder": {
-            "css": ["myorder", "total", "checkout"],
-            "views": ["myorder", "checkout"],
-            "templates": ["myorder", "total", "checkout"],
-            "core": ["total_view"]
-        },
-        "checkout": {
-            "css": ["checkout"],
-            "views": ["checkout"],
-            "templates": ["checkout"],
-            "core": ["card", "giftcard", "checkout", "products", "delivery_addresses", "customers"]
-        },
-        "card": {
-            "css": ["card"],
-            "views": ["card"],
-            "templates": ["card"],
-            "core": ["card", "jquery_numbermask"]
-        },
-        "giftcard": {
-            "css": ["card"],
-            "views": ["giftcard"],
-            "templates": ["giftcard"],
-            "core": ["giftcard", "jquery_numbermask"]
-        },
-        "stanfordcard": {
-            "css": ["card", "stanfordcard"],
-            "templates": ["stanfordcard"],
-            "views": ["stanfordcard"],
-            "core": ["giftcard", "jquery_numbermask", "stanfordcard", "stanfordcard_view"]
-        },
-        "stanford_is_student": {
-            "css": ["stanfordcard"],
-            "templates": ["stanfordcard"],
-            "views": ["stanfordcard"],
-            "core": ["giftcard", "jquery_numbermask"]
-        },
-        "stanford_student_verification": {
-            "css": ["card", "stanfordcard"],
-            "templates": ["stanfordcard"],
-            "views": ["stanfordcard"],
-            "core": ["giftcard", "jquery_numbermask"]
-        },
-        "confirm": {
-            "css": ["total", "checkout", "card", "tips"],
-            "views": ["checkout", "card", "giftcard"],
-            "templates": ["total", "checkout", "card", "giftcard", "tips"],
-            "core": ["tip", "checkout", "card", "giftcard", "jquery_numbermask", "total_view", "tips_view"]
-        },
-        "done": {
-            "css": ["done"],
-            "views": [],
-            "templates": ["done"],
-            "core": ["products", "modifiers", "tip", "checkout", "card", "giftcard", "customers"]
-        },
-        "store_info": {
-            "css": ["store_info"],
-            "views": ["store_info"],
-            "templates": ["store_info"],
-            "core": ["jquery_gallery", "about"],
-            "cssCore": ["libs/jquery/jquery.gallery/jquery.gallery"]
-        },
-        "pay": {
-            "core": ["checkout", "products", "modifiers", "card", "giftcard", "tip", "customers"]
-        },
-        "maintenance": {
-            "css": ["maintenance"],
-            "views": ["maintenance"],
-            "templates": ["maintenance"]
-        },
-        "profile": {
-            "css": [],
-            "views": [],
-            "templates": [],
-            "core": []
-        },
-        "loyalty": {
-            "css": [],
-            "views": [],
-            "templates": [],
-            "core": []
-        },
-        "rewards": {
-            "css": ["rewards"],
-            "views": ["rewards"],
-            "templates": ["rewards"]
         }
     }
 }

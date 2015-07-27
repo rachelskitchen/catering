@@ -40,9 +40,9 @@ require(['app'], function() {
     skins.set('RETAIL', 'retail');
 
     // set REVEL_HOST for getting data from it
-    // use srv=dev, srv=qa, etc. in the url path instead of changing app.REVEL_HOST here 
-    app.REVEL_HOST = window.location.origin;    
-
+    // use srv=dev, srv=qa, etc. in the url path instead of changing app.REVEL_HOST here
+    app.REVEL_HOST = window.location.origin;
+app.REVEL_HOST = "https://weborder-dev-branch.revelup.com/";
 
     // run app
     app.init();

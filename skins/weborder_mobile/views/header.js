@@ -26,12 +26,8 @@ define(["backbone", "factory", "generator"], function() {
     var HeaderMainView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'main',
-        initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'change:page_title', this.updateTitle);
-        },
-        updateTitle: function() {
-            this.$('h1').text(this.model.get('page_title'));
+        bindings: {
+           '.title': 'text:page_title'
         }
     });
 

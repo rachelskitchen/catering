@@ -25,10 +25,7 @@ define(["backbone"], function(Backbone) {
 
     App.Models.HeaderModel = Backbone.Model.extend({
         defaults: {
-            page_title: "",
-            back_title: "",
-            forward_title: "",
-            img: App.Data.settings.get("img_path")
+            page_title: ""
         }
     });
 });
