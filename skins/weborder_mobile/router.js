@@ -23,107 +23,52 @@
 define(["main_router"], function(main_router) {
     'use strict';
 
-    var headerModes = {},
-        footerModes = {};
+    var headerModes = {};
 
     /**
     * Default router data.
     */
     function defaultRouterData() {
         headerModes.Main = {mod: 'Main', className: 'main'};
-        headerModes.OneButton = {mod: 'OneButton', className: 'one_button'};
-        headerModes.TwoButton = {mod: 'TwoButton', className: 'two_button'};
-        headerModes.Products = headerModes.OneButton;
-        headerModes.Dir = headerModes.TwoButton;
-        headerModes.Search ={mod: 'OneButton', className: 'one_button search'};
-        headerModes.Modifiers = {mod: 'Modifiers', className: 'two_button modifiers'};
-        headerModes.Myorder = {mod: 'TwoButton', className: 'two_button myorder'};
-        headerModes.Checkout = headerModes.OneButton;
-        headerModes.Card = headerModes.Main;
-        headerModes.GiftCard = headerModes.Main;
-        headerModes.StanfordCard = headerModes.Main;
-        headerModes.Confirm = headerModes.OneButton;
-        headerModes.StanfordIsStudent = headerModes.OneButton;
-        headerModes.Done = headerModes.Main;
-        headerModes.Location = {mod: 'Location', className: 'two_button location'};
-        headerModes.BackToMenu = {mod: 'OneButton', className: 'one_button back_to_menu'};
-        headerModes.Map = headerModes.OneButton;
-        headerModes.About = {mod: 'TwoButton', className: 'two_button'};
-        headerModes.Gallery = headerModes.Map;
-        headerModes.Maintenance = {};
-        headerModes.Maintenance.WithoutButtons = {mod: 'Maintenance', className: 'maintenance'};
-        headerModes.Maintenance.WithButtons = headerModes.OneButton
-        headerModes.Profile = {mod: 'OneButton', className: 'one_button profile'};
-
-        footerModes.Main = {mod: 'Main'};
-        footerModes.Products = footerModes.Main;
-        footerModes.Modifiers = footerModes.Main;
-        footerModes.Myorder = footerModes.Main;
-        footerModes.Checkout = {mod: 'Checkout'};
-        footerModes.Card = {mod: 'Card'};
-        footerModes.GiftCard = {mod: 'GiftCard'};
-        footerModes.StanfordCard = {mod: 'StanfordCard'};
-        footerModes.StanfordIsStudent = {mod: 'StanfordIsStudent'};
-        footerModes.StanfordStudentVerification = {mod: 'StanfordStudentVerification'};
-        footerModes.Confirm = {mod: 'Confirm'};
-        footerModes.Done = {mod: 'Done'};
-        footerModes.Location = footerModes.Main;
-        footerModes.Map = footerModes.Main;
-        footerModes.About = footerModes.Main;
-        footerModes.Gallery = footerModes.Main;
-        footerModes.Maintenance = {mod: 'Maintenance'};
-        footerModes.MaintenanceDirectory = {mod: 'MaintenanceDirectory'};
-        footerModes.Profile = {mod: 'Profile'};
-        footerModes.Loyalty = {mod: 'Loyalty'};
-        footerModes.RewardsCard = {mod: 'RewardsCard', rewardsCard: App.Data.myorder.rewardsCard};
-        footerModes.Rewards = {mod: 'Rewards', rewardsCard: App.Data.myorder.rewardsCard};
     }
 
     var Router = App.Routers.RevelOrderingRouter.extend({
         routes: {
             "": "index",
             "index": "index",
-            "search": "search",
-            "products/:id_category": "products",
-            "modifiers/:id_category/:id_product": "modifiers_add",
-            "modifiers_edit/:index": "modifiers_edit",
-            "myorder": "myorder",
-            "checkout" : "checkout",
-            "card" : "card",
-            "giftcard" : "gift_card",
-            "stanfordcard": "stanford_card",
-            "stanford_is_student": "stanford_is_student",
-            "stanford_student_verification": "stanford_student_verification",
-            "confirm": "confirm",
-            "done": "done",
-            "location": "location",
-            "map": "map",
-            "about": "about",
-            "gallery": "gallery",
-            "maintenance": "maintenance",
-            "pay": "pay",
-            "profile(/:step)": "profile",
-            "loyalty": "loyalty",
-            "rewards_card_submit": "rewards_card_submit",
-            "rewards": "rewards",
-            "*other": "index"
+            // "search": "search",
+            // "products/:id_category": "products",
+            // "modifiers/:id_category/:id_product": "modifiers_add",
+            // "modifiers_edit/:index": "modifiers_edit",
+            // "myorder": "myorder",
+            // "checkout" : "checkout",
+            // "card" : "card",
+            // "giftcard" : "gift_card",
+            // "stanfordcard": "stanford_card",
+            // "stanford_is_student": "stanford_is_student",
+            // "stanford_student_verification": "stanford_student_verification",
+            // "confirm": "confirm",
+            // "done": "done",
+            // "location": "location",
+            // "map": "map",
+            // "about": "about",
+            // "gallery": "gallery",
+            // "maintenance": "maintenance",
+            // "pay": "pay",
+            // "profile(/:step)": "profile",
+            // "loyalty": "loyalty",
+            // "rewards_card_submit": "rewards_card_submit",
+            // "rewards": "rewards",
+            // "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
         initialize: function() {
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
             var self = this;
 
-            // used for footer view
-            App.Settings.isRetailMode = ServiceType.RETAIL == App.Settings.type_of_service;
-
             // set locked routes if online orders are disabled
             if(!App.Settings.online_orders) {
-                this.lockedRoutes = ['modifiers_edit', 'myorder', 'checkout', 'card', 'giftcard', 'confirm', 'done', 'pay'];
-            }
-
-            // if it is Revel's WebView need change color_scheme on 'revel'
-            if(cssua.ua.revelsystemswebview) {
-                App.Settings.color_scheme = 'revel';
+                this.lockedRoutes = [];
             }
 
             // load main, header, footer necessary files
@@ -131,7 +76,7 @@ define(["main_router"], function(main_router) {
                 App.Views.Generator.enableCache = true;
                 // set header, footer, main models
                 App.Data.header = new App.Models.HeaderModel();
-                App.Data.footer = new App.Models.FooterModel({
+                App.Data.footer = new Backbone.Model();/*new App.Models.FooterModel({
                     myorder: this.navigate.bind(this, 'myorder', true),
                     location: this.navigate.bind(this, 'location', true),
                     about: this.navigate.bind(this, 'about', true),
@@ -139,7 +84,7 @@ define(["main_router"], function(main_router) {
                     menu: this.navigate.bind(this, 'menu', true),
                     profile: this.trigger.bind(this, 'navigateToProfile'),
                     stanfordcard: this.navigate.bind(this, 'stanfordcard', true),
-                });
+                });*/
                 var mainModel = App.Data.mainModel = new App.Models.MainModel();
                 var ests = App.Data.establishments;
 
@@ -147,7 +92,7 @@ define(["main_router"], function(main_router) {
                 this.initRevelAPI();
 
                 // only establishment with reward cards option enabled can show RevelAPI buttons
-                App.Settings.RevelAPI = App.Settings.RevelAPI  && App.Settings.enable_reward_cards_collecting;
+                App.Settings.RevelAPI = App.Settings.RevelAPI && App.Settings.enable_reward_cards_collecting;
 
                 // listen to credit card payment
                 this.listenTo(App.Data.footer, 'payWithCreditCard', function() {
@@ -306,34 +251,20 @@ define(["main_router"], function(main_router) {
                 }
 
                 var header = {
-                    page_title: _loc['HEADER_INDEX_PT'],
-                    back_title: undefined,
-                    forward_title: _loc['HEADER_INDEX_FT'],
-                    forward: self.navigate.bind(self, 'search', true)
-                };               
+                    page_title: App.Settings.business_name || '',
+                };
 
                 if(App.Data.dirMode)
                     header = Backbone.$.extend(header, {
-                        back_title: _loc['HEADER_INDEX_BT'],
                         back: this.navigateDirectory.bind(this)
                     });
 
                 App.Data.header.set(header);
 
                 App.Data.mainModel.set({
-                    header: headerModes.Dir,
-                    footer: footerModes.Main,
+                    header: headerModes.Main,
                     content: [
-                        {
-                            modelName: 'StoreInfo',
-                            mod: 'Main',
-                            cacheId: true
-                        },
-                        {
-                            modelName: 'Categories',
-                            collection: App.Data.categories,
-                            mod: 'Main'
-                        }
+
                     ]
                 });
 
@@ -360,7 +291,7 @@ define(["main_router"], function(main_router) {
                     App.Data.search = new App.Collections.Search();
                 }
                 if (!App.Data.searchLine) {
-                    App.Data.searchLine = new App.Models.SearchLine({search: App.Data.search});                    
+                    App.Data.searchLine = new App.Models.SearchLine({search: App.Data.search});
                 }
                 var header = {
                     page_title: _loc['HEADER_SEARCH_PT'],
@@ -379,7 +310,7 @@ define(["main_router"], function(main_router) {
                             mod: 'Spinner',
                             className: 'content search_line',
                             cacheId: true
-                        }, 
+                        },
                         {
                             modelName: 'Product',
                             model: App.Data.searchLine,
@@ -391,7 +322,7 @@ define(["main_router"], function(main_router) {
                             content_elem: '#content .search_list'
                         }
                     ]
-                });                
+                });
 
                 if(App.Data.categories.loadData.state() == 'resolved')
                     this.change_page();

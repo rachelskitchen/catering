@@ -1,24 +1,8 @@
 <script type="text/template" id="header_main-template">
-    <h1 class="title"><%= page_title %></h1>
-</script>
-
-<script type="text/template" id="header_one_button-template">
-    <div class="btn header_block_buttons header_block_button_left leftBtn">
-        <span class="clip"> <%= back_title %> </span>
-    </div>
-    <h1 class="title"><%= page_title %></h1>
-</script>
-
-<script type="text/template" id="header_two_button-template">
-    <div class="btn header_block_buttons header_block_button_left leftBtn">
-        <span class="clip"> <%= back_title %> </span>
-    </div>
-    <h1 class="title clip"><%= page_title %></h1>
-    <% if(_settings.online_orders) { %>
-    <div class="btn header_block_buttons header_block_button_right rightBtn enable">
-        <span class="clip"> <%= forward_title %> </span>
-    </div>
-    <% } %>
+    <div class="btn-header btn-back fl-left font-color7"></div>
+    <div class="btn-header btn-cart fl-right font-color2" data-count="3"></div>
+    <div class="btn-header btn-search fl-right font-color7"></div>
+    <h1 class="font-color2"><span class="title font-size1"></span></h1>
 </script>
 
 <script type="text/template" id="header_maintenance-template">
