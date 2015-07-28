@@ -56,6 +56,7 @@
         'GIFTCARD_CAPTCHA': 'Код с картинки',
         'GIFTCARD_RELOAD': 'Обновить',
         'STANFORDCARD_TITLE': 'Введите номер Stanford карты',
+        'STANFORDCARD_TITLE_INFO': 'Данные вашей Standford карты',
         'HEADER_MENU': 'Меню',
         'HEADER_ABOUT': 'О нас',
         'HEADER_MAP': 'Карта',
