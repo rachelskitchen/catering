@@ -58,6 +58,7 @@
         'GIFTCARD_CAPTCHA': 'Captcha',
         'GIFTCARD_RELOAD': 'Reload',
         'STANFORDCARD_TITLE': 'Enter your Stanford Card Number',
+        'STANFORDCARD_TITLE_INFO': 'Your Stanford Card Information',
         'HEADER_SEARCH': 'Search',
         'HEADER_SHOP': 'Shop',
         'HEADER_ABOUT': 'About',

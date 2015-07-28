@@ -97,7 +97,6 @@
 }
 .stanford-card .stanford-plan .row {
     display: block;
-    cursor: pointer;
 }
 .stanford-card .stanford-plan .name {
     font-weight: bold;
@@ -121,6 +120,13 @@
 }
 .stanford-card .stanford-input {
     right: 40px !important;
+}
+.stanford-card .stanford-plan {
+    cursor: pointer;
+}
+.stanford-card .stanford-plan.disabled {
+    opacity: 0.5;
+    cursor: default;
 }
 /* for tablets */
 @media only screen and (max-device-width: 949px) {

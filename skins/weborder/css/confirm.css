@@ -104,7 +104,6 @@
 }
 .stanford-card .stanford-plan .row {
     display: block;
-    cursor: pointer;
 }
 .stanford-card .stanford-plan .name {
     font-weight: bold;
@@ -121,6 +120,13 @@
     position: absolute;
     top: 5px;
     right: 5px;
+}
+.stanford-card .stanford-plan {
+    cursor: pointer;
+}
+.stanford-card .stanford-plan.disabled {
+    opacity: 0.5;
+    cursor: default;
 }
 .stanford-card .cancel-input {
     line-height: 32px;

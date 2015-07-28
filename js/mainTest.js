@@ -29,6 +29,7 @@ require(['app'], function(app) {
     require.config(app.config);
 
     require(['cssua', 'functions', 'errors', 'tests_list', 'e2e_list', 'settings', 'tax', 'main_router', 'locale'], function() {
+        app.get = parse_get_params();
         // invoke beforeStart onfig
         app.beforeInit();
 
