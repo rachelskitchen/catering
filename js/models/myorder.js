@@ -1374,7 +1374,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                                 successValidation = Backbone.$.Deferred();
                                 successValidation.then(myorder.trigger.bind(myorder, 'paymentResponseValid'));
                             } else {
-                                App.Data.stanfordCard && payment_type === PAYMENT_TYPE.STANFORD && App.Data.stanfordCard.updatePlans(data.balances.stanford);
+                                if (data.balances && data.balances.stanford) {                                    
+                                    App.Data.stanfordCard && payment_type === PAYMENT_TYPE.STANFORD && App.Data.stanfordCard.updatePlans(data.balances.stanford);
+                                }
                                 myorder.trigger('paymentResponse');
                             }
 

@@ -339,7 +339,8 @@ function round_monetary_currency(value, precision, up) {
     }
     return result.toFixed(2);
 }
-
+//alias for round_monetary_currency function:
+var round_money = round_monetary_currency;
 
 /**
  *  Sync load template
