@@ -29,10 +29,13 @@ define(["factory", "giftcard_view"], function(factory) {
         name: 'stanfordcard',
         mod: 'main',
         bindings: _.extend({}, App.Views.CoreGiftCardView.CoreGiftCardMainView.prototype.bindings, {
-            '.number-input': 'value: number, events:["keyup", "blur", "touchend"], attr: {readonly: planId}',
-            '.captcha-input': 'value: captchaValue, events:["keyup", "blur", "touchend"], attr: {readonly: planId}',
-            '.btn-reload': 'classes: {disabled: planId}',
-            '.cancel-input': 'toggle: planId'
+            '.number-input': 'value: number, events:["keyup", "blur", "touchend"], attr: {readonly: validated}',
+            '.captcha-input': 'value: captchaValue, events:["keyup", "blur", "touchend"], attr: {readonly: validated}',
+            '.btn-reload': 'classes: {disabled: validated}',
+            '.cancel-input': 'toggle: validated',
+            '.captcha_input_line': 'toggle: not(validated)',
+            '.captcha_container': 'toggle: not(validated)',
+            '.card_title': 'text:select(validated, _lp_STANFORDCARD_TITLE_INFO, _lp_STANFORDCARD_TITLE)'
         }),
         events: {
             'click .btn-reload': 'reload_captcha',
@@ -70,8 +73,11 @@ define(["factory", "giftcard_view"], function(factory) {
         mod: 'plan',
         tagName: 'li',
         className: 'stanford-plan',
+        initialize: function(options) {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
         bindings: {
-            ':el': 'classes: {active: selected}, toggle: equal(type, "D")',
+            ':el': 'classes: {active: selected, disabled: not(is_enough_funds)}, toggle: equal(type, "D")',
             '.name': 'text: name',
             '.balance': 'text: currencyFormat(balance)'
         },
@@ -79,7 +85,9 @@ define(["factory", "giftcard_view"], function(factory) {
             'click': 'select'
         },
         select: function() {
-            this.model.set('selected', true);
+            if (this.model.is_enough_funds()) {
+                this.model.set('selected', true);
+            }
         }
     });
 

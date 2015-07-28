@@ -51,8 +51,25 @@ define(["backbone", "captcha"], function(Backbone) {
             name: '',
             type: 'D',
             balance: 0,
-            selected: false
-        }
+            selected: false,
+            is_enough_funds: false
+        },
+        initialize: function() {
+            this.listenTo(this, "change:balance", this.check_funds, this);
+            this.listenTo(App.Data.myorder.total, "change:grandTotal", this.check_funds, this);
+            this.check_funds();
+        },
+        check_funds: function() {
+            this.set({"is_enough_funds": this.is_enough_funds()});
+            App.Data.stanfordCard.get('plans').trigger("change:selected");
+        },
+        is_enough_funds: function() {
+            var is_enough = parseFloat(round_money(this.get("balance"))) >= parseFloat(App.Data.myorder.total.get_grand());
+            if (!is_enough) {
+                this.set('selected', false);
+            }
+            return is_enough;
+        },
     });
 
     /**
@@ -137,8 +154,11 @@ define(["backbone", "captcha"], function(Backbone) {
          * Updates `planId` attribute value.
          */
         updatePlanId: function() {
-            var selected = this.get('plans').where({selected: true});
-            this.set('planId', selected.length ? selected[0].get('id') : this.defaults.planId);
+            var selected = this.getSelectedPlan();
+            if (!selected) {
+                selected = this.selectFirstAvailablePlan();
+            }
+            this.set('planId', selected ? selected.get('id') : this.defaults.planId);
         },
         /**
          * @method
@@ -202,10 +222,8 @@ define(["backbone", "captcha"], function(Backbone) {
                         self.trigger('onStanfordCardError', _loc.STANFORD_NO_PLANS);
                         self.set('validated', true);
                     } else {
-                        var firstDollarPlan;
                         plans.reset(data.data);
-                        firstDollarPlan = plans.where({type: 'D'})[0];  //only dollar plans are available for selection at the moment
-                        firstDollarPlan && firstDollarPlan.set('selected', true);
+                        self.selectFirstAvailablePlan();
                         self.set('validated', true);
                     }
                 },
@@ -216,12 +234,21 @@ define(["backbone", "captcha"], function(Backbone) {
         },
         /**
          * @method
-         * @returns {App.Models.StanfordCardPlan} a selected plan or null.
+         * @returns {App.Models.StanfordCardPlan} a selected plan or undefined.
          */
         getSelectedPlan: function() {
-            var planId = this.get('planId'),
-                selected = this.get('plans').where({id: planId, selected: true});
-            return planId && selected.length ? selected[0] : null;
+            return this.get('plans').findWhere({selected: true});
+        },
+        /**
+        * @method selects the first available plan.
+        * @returns the first available plan or null.
+        */
+        selectFirstAvailablePlan: function() {
+            var firstDollarPlan = _.find(this.get('plans').models, function(model){
+                    return model.get('type') == 'D' && model.is_enough_funds();
+                });
+            firstDollarPlan && firstDollarPlan.set('selected', true);
+            return firstDollarPlan;
         },
         /**
          * @method

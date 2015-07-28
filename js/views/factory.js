@@ -105,6 +105,7 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
     App.Views.FactoryView = Backbone.Epoxy.View.extend({
         constructor: function(options) {
             this.options = _.extend({}, options);
+            this.appData = App.Data;
 
             // Extend Backbone.Epoxy.View.prototype.bindingSources to implement the ability to pass `bindingSources` via Backbone.View options.
             // All Backbone.Model's, Backbone.Collection's instances existing in options will be added to `bindingSources` (overrides existing pairs in this.prototype.bindingSources).
