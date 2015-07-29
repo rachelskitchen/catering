@@ -50,3 +50,7 @@
     padding: 1em;
     text-align: center;
 }
+
+.stanfordcard .number-input[readonly=readonly] {
+    opacity: 0.5;
+}
