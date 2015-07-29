@@ -350,7 +350,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                     special_request: special,
                     price: price,
                     product: product.id,
-                    product_name_override: product.name,
+                    product_name_override: this.overrideProductName(product.name),
                     quantity: this.get('quantity'),
                     product_sub_id: for_discounts ? this.get('product_sub_id') : undefined,
                 };
@@ -375,6 +375,16 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             }
 
             return item_obj;
+        },
+        overrideProductName: function(name) {
+            switch (name) {
+                case MSG.BAG_CHARGE_ITEM:
+                    return 'Bag Charge';
+                case MSG.DELIVERY_ITEM:
+                    return 'Delivery Charge';
+                default:
+                    return name;
+            }
         },
         removeFreeModifiers: function() {
             var modifiers = this.get_modifiers();
@@ -1374,7 +1384,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                                 successValidation = Backbone.$.Deferred();
                                 successValidation.then(myorder.trigger.bind(myorder, 'paymentResponseValid'));
                             } else {
-                                if (data.balances && data.balances.stanford) {                                    
+                                if (data.balances && data.balances.stanford) {
                                     App.Data.stanfordCard && payment_type === PAYMENT_TYPE.STANFORD && App.Data.stanfordCard.updatePlans(data.balances.stanford);
                                 }
                                 myorder.trigger('paymentResponse');
