@@ -132,6 +132,10 @@
     line-height: 32px;
     right: 5px;
 }
+.stanford-card .number-input[readonly=readonly] {
+    opacity: 0.5;
+    background: rgb(224, 224, 224);
+}
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
     .confirmPayCard .captcha_container {
