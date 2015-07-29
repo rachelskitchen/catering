@@ -350,7 +350,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                     special_request: special,
                     price: price,
                     product: product.id,
-                    product_name_override: this.overrideProductName(product.name),
+                    product_name_override: this.overrideProductName(product),
                     quantity: this.get('quantity'),
                     product_sub_id: for_discounts ? this.get('product_sub_id') : undefined,
                 };
@@ -376,15 +376,18 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
 
             return item_obj;
         },
-        overrideProductName: function(name) {
-            switch (name) {
-                case MSG.BAG_CHARGE_ITEM:
-                    return 'Bag Charge';
-                case MSG.DELIVERY_ITEM:
-                    return 'Delivery Charge';
-                default:
-                    return name;
+        overrideProductName: function(product) {
+            if (product.id == null) {
+                switch (product.name) {
+                    case MSG.BAG_CHARGE_ITEM:
+                        return 'Bag Charge';
+                    case MSG.DELIVERY_ITEM:
+                        return 'Delivery Charge';
+                    default:
+                        trace("Product name '" + product.name + "' should be overridden");
+                }
             }
+            return product.name;
         },
         removeFreeModifiers: function() {
             var modifiers = this.get_modifiers();
