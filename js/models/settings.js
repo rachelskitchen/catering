@@ -394,6 +394,10 @@ define(["backbone", "async"], function(Backbone) {
                                 }
                             })();
 
+                            if (settings_system.payment_processor.stanford == undefined) {
+                                settings_system.payment_processor.stanford = false; //tmp fix for consistency of new frontand with old Backend (lower then release/1527)
+                            }
+
                             self.set("settings_system", settings_system);
                             App.Settings = App.Data.settings.get("settings_system");
 
