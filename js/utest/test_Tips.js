@@ -13,7 +13,8 @@ define(['tip'], function() {
                 amount: true, // true - %, false - $
                 percents : [10,15,20], // percent variant
                 sum : 0, // sum if amount false
-                percent : 0 // percent if amount true
+                percent : 0, // percent if amount true
+                tipTotal: 0
             };
         });
 
