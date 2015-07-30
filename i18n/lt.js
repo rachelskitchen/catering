@@ -37,6 +37,16 @@ define([], function() {
             ASAP: "Skubiai",
             MINUTES: "min."
         },
+        PIKADAY: {
+            FIRST_DAY: 1,
+            i18n: {
+                previousMonth: 'Previous Month',
+                nextMonth: 'Next Month',
+                months: ["January", "Vasaris", "Kovas", "Balandis", "Gegužė", "Birželis", "Liepa", "Rugpjūtis", "Rugsėjis", "Spalis", "Lapkritis", "Gruodis"],
+                weekdays: ["Sekmadienis", "Pirmadienis", "Antradienis", "Trečiadienis", "Ketvirtadienis", "Penktadienis", "Šeštadienis"],
+                weekdaysShort: ["Sek", "Pir", "Ant", "Tre", "Ket", "Pen", "Šeš"]
+            }
+        },
         FILTERS: {
             STORE_TYPE_RESTAURANT: "Restoranas",
             STORE_TYPE_RETAIL: "Prekyba mažmena",

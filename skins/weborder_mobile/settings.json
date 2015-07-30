@@ -43,10 +43,10 @@
             "core": ["total_view"]
         },
         "checkout": {
-            "css": ["checkout"],
+            "css": ["checkout", "pikaday"],
             "views": ["checkout"],
             "templates": ["checkout"],
-            "core": ["card", "giftcard", "checkout", "products", "delivery_addresses", "customers"]
+            "core": ["card", "giftcard", "checkout", "products", "delivery_addresses", "customers", "pikaday"]
         },
         "card": {
             "css": ["card"],

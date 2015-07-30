@@ -37,6 +37,16 @@ define([], function() {
             ASAP: "So schnell wie möglich",
             MINUTES: "Min."
         },
+        PIKADAY: {
+            FIRST_DAY: 1,
+            i18n: {
+                previousMonth: 'Previous Month',
+                nextMonth: 'Next Month',
+                months: ["January", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+                weekdays: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+                weekdaysShort: ["So", "Mon", "Die", "Mi", "Don", "Frei", "Sa"]
+            }
+        },
         FILTERS: {
             STORE_TYPE_RESTAURANT: "Restaurant",
             STORE_TYPE_RETAIL: "Einzelhandel",
