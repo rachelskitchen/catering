@@ -1217,12 +1217,20 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
 
             it('failure request', function() {
                 spyOn(collection, 'onProductsError');
-                collection.get_products();
+                var id_category = 12;
+                collection.get_products(id_category);
+                 
                 ajax.reject();
 
                 checkAjaxRequest();
                 expect(fetching.state()).toBe('pending');
                 expect(collection.onProductsError).toHaveBeenCalled();
+            });
+
+            it('request with no product_id or search param', function() {
+                spyOn(collection, 'onProductsError');
+                var deferred = collection.get_products();
+                expect(deferred.state()).toBe('resolved');               
             });
 
             it('id_category is passed, response.status is "OK"', function() {
