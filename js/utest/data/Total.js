@@ -12,7 +12,8 @@ define([], function() {
             prevailing_surcharge: 0,
             prevailing_tax: 0,
             shipping: 0,
-            shipping_discount: 0
+            shipping_discount: 0,
+            grandTotal: 0
         },
         "SYSTEM_SETTINGS": {
             auto_bag_charge: 5,
