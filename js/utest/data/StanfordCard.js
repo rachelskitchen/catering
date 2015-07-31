@@ -5,21 +5,25 @@ define([], function() {
             'name': '',
             'type': 'D',
             'balance': 0,
-            'selected': false
+            'selected': false,
+            'is_enough_funds': false
         },
+        'TOTAL_AMOUNT': 10,
         'PLAN_1': {
             'id': '21',
             'name': 'Plan 1',
             'type': 'D',
             'balance': 12,
-            'selected': false
+            'selected': false,
+            'is_enough_funds' : true
         },
         'PLAN_2': {
             'id': '1335',
             'name': 'Plan 2',
             'type': 'M',
             'balance': 5,
-            'selected': false
+            'selected': false,
+            'is_enough_funds' : false
         },
         'CARD_DEFAULT': {
             'number': '',
