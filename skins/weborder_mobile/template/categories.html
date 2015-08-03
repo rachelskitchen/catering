@@ -1,22 +1,13 @@
 <script type="text/template" id="categories_main-template">
-    <ul class="categories"></ul>
+    <ul class="categories list"></ul>
 </script>
 
 <script type="text/template" id="categories_item-template">
-    <% if(!hide_images) { %>
-        <div class="block_img img">
-            <div class="img bg-style1">
-                <img alt="<%= name %> <%= id %>"/>
-            </div>
-        </div>
-    <% } %>
-    <dl <% if(hide_images){ %>class="noimage"<% } %>>
-        <dt><%= name %></dt>
-        <dd>
-            <%= parent_name %>
-            <% if (timetables) {%>
-            <span class="timetables"><%= timetables %></span>
-            <% } %>
-        </dd>
-    </dl>
+    <div class="title font-color3"><%= name %></div>
+    <div class="desc font-color4">
+        <%= parent_name %>
+        <% if (timetables) {%>
+        <span class="timetables"><%= timetables %></span>
+        <% } %>
+    </div>
 </script>

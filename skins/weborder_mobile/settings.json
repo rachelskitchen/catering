@@ -13,9 +13,9 @@
             "core": ["geopoint", "stanfordcard"]
         },
         "index": {
-            "css": [],
-            "views": [],
-            "templates": [],
+            "css": ["categories"],
+            "views": ["categories"],
+            "templates": ["categories"],
             "core": ["categories"]
         }
     }

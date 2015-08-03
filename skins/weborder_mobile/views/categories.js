@@ -22,6 +22,16 @@
 
 define(["categories_view"], function(categories_view) {
 
+    // Represents a parent category. Model's attributes look like {name: <parent_name>, sort: <parent_sort>, subcategories: [<id1>, <id2>, ...]}
+    var ParentCategoryView = App.Views.FactoryView.extend({
+
+    });
+
+    var ParentsCategoriesView = App.Views.FactoryView.extend({
+
+    });
+
+
     var CategoriesItemView = App.Views.LazyItemView.extend({
         name: 'categories',
         mod: 'item',
@@ -30,12 +40,36 @@ define(["categories_view"], function(categories_view) {
             this.listenTo(this.model, 'change:active', this.show_hide);
             this.show_hide();
         },
-        render: function() {
-            var self = this;
-            var model = self.model.toJSON();
-            model.hide_images = App.Data.settings.get('settings_system').hide_images;
-            self.$el.html(self.template(model));
-            return this;
+        bindings: {
+
+        },
+        events: {
+            "click": "showProducts"
+        },
+        showProducts: function(e) {
+            e.preventDefault();
+            var id = this.model.get('id');
+            App.Data.router.navigate("products/" + id, true);
+        },
+        show_hide: function() {
+            if (!this.model.get('active')) {
+                this.$el.hide();
+            } else {
+                this.$el.show();
+            }
+        }
+    });
+
+    var CategoriesItemView = App.Views.LazyItemView.extend({
+        name: 'categories',
+        mod: 'item',
+        initialize: function() {
+            App.Views.LazyItemView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'change:active', this.show_hide);
+            this.show_hide();
+        },
+        bindings: {
+
         },
         events: {
             "click": "showProducts"
@@ -84,7 +118,7 @@ define(["categories_view"], function(categories_view) {
     });
 
     return new (require('factory'))(categories_view.initViews.bind(categories_view), function() {
-        App.Views.CategoriesView.CategoriesItemView = CategoriesItemView;
+        // App.Views.CategoriesView.CategoriesItemView = CategoriesItemView;
         App.Views.CategoriesView.CategoriesMainView = CategoriesMainView;
     });
 });

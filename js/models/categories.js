@@ -88,6 +88,40 @@ define(["backbone", "collection_sort"], function(Backbone) {
             this.where({id: id}).forEach(function(el) {
                 el.set('active', false);
             });
+        },
+        /**
+         * @method
+         * @returns {Array} [{
+         *                      name: <parent_name>
+         *                      sort: <parent_sort>
+         *                      subcategories: [<id1>, <id2>, ...]
+         *                   }, ...]
+         */
+        getParents: function() {
+            var parents = {};
+
+            this.each(function(item) {
+                if(!item.active) {
+                    return;
+                }
+
+                if(item.parent_name in parents) {
+                    addSubCategory();
+                } else {
+                    parents[item.parent_name] = {
+                        name: item.parent_name,
+                        sort: item.parent_sort,
+                        subcategories: []
+                    };
+                    addSubCategory();
+                }
+
+                function addSubCategory() {
+                    parents[item.parent_name].subcategories.push(item.get('id'));
+                }
+            });
+
+            return _.toArray(parents);
         }
     });
 });

@@ -28,17 +28,13 @@ define(["list", "generator"], function(list_view) {
     App.Views.CoreCategoriesView.CoreCategoriesItemView = App.Views.ItemView.extend({
         name: 'categories',
         mod: 'item',
-        initialize: function() {
-            App.Views.ItemView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'change:active', this.show_hide);
-            this.show_hide();
+        bindings: {
+            ':el': 'toggle: active'
         },
         render: function() {
-            var self = this;
-            var model = self.model.toJSON();
-            model.hide_images = App.Data.settings.get('settings_system').hide_images;
-            self.$el.html(self.template(model));
-            self.afterRender.call(self, model.parent_sort + model.sort.toString());
+            var model = this.model.toJSON();
+            App.Views.ItemView.prototype.render.apply(this, arguments);
+            this.afterRender(model.parent_sort + model.sort.toString());
             return this;
         },
         events: {
@@ -48,13 +44,6 @@ define(["list", "generator"], function(list_view) {
             e.preventDefault();
             var id = this.model.get('id');
             App.Data.router.navigate("products/" + id, true);
-        },
-        show_hide: function() {
-            if (!this.model.get('active')) {
-                this.$el.hide();
-            } else {
-                this.$el.show();
-            }
         }
     });
 

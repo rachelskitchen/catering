@@ -251,7 +251,7 @@ define(["main_router"], function(main_router) {
                 }
 
                 var header = {
-                    page_title: App.Settings.business_name || '',
+                    page_title: App.Settings.business_name || ''
                 };
 
                 if(App.Data.dirMode)
@@ -264,7 +264,19 @@ define(["main_router"], function(main_router) {
                 App.Data.mainModel.set({
                     header: headerModes.Main,
                     content: [
-
+                        {
+                            modelName: 'Header',
+                            model: App.Data.header,
+                            mod: 'Tabs',
+                            className: 'tabs bg-color3 font-color8 animation',
+                            cacheId: true
+                        },
+                        {
+                            modelName: 'Categories',
+                            collection: App.Data.categories,
+                            mod: 'Main',
+                            cacheId: true
+                        }
                     ]
                 });
 

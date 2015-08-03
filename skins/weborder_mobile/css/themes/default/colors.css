@@ -56,6 +56,11 @@
     color: #bce0f0;
 }
 
+/* [grey] header buttons */
+.font-color8 {
+    color: #93a6ad;
+}
+
 #header .btn-cart {
     background: #1a6398;
 }
@@ -63,4 +68,20 @@
 #header .btn-cart[data-count]::after {
     border-color: #fff;
     background: #f22828;
+}
+
+.tabs::after {
+    background-color: #1a99cd;
+}
+
+.tab-center {
+    border-color: #5f6972;
+}
+
+.list > li {
+    border-color: #d6e3e9;
+}
+
+.list > li::after {
+    color: #d1d6d9;
 }

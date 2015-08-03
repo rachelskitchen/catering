@@ -34,7 +34,7 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         return pattern == value;
     });
 
-    Backbone.Epoxy.binding.addFilter('strictEqual', function() {
+    Backbone.Epoxy.binding.addFilter('strictEqual', function(pattern, value) {
         return pattern === value;
     });
 
@@ -72,7 +72,7 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             }
         }
     });
-    
+
     Backbone.Epoxy.binding.addHandler("valueTimeout", {
         // it's custom binding to get the value for <input> element by 'blur','change' events AND by 'input' (key press) event by the timout specified.
         // timeout param is used for 'input' events only.
@@ -302,7 +302,7 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
 /*
 * the function detects swiping in either of the 4 directions (left, right, up, or down) for mobile devices
 */
-function swipe_detect(el, callback){  
+function swipe_detect(el, callback){
     var touchsurface = el,
     swipedir,
     startX,
@@ -315,7 +315,7 @@ function swipe_detect(el, callback){
     elapsedTime,
     startTime,
     handleswipe = callback || function(swipedir){}
-  
+
     touchsurface.addEventListener('touchstart', function(e){
         var touchobj = e.changedTouches[0]
         swipedir = 'none'
@@ -325,7 +325,7 @@ function swipe_detect(el, callback){
         startTime = new Date().getTime() // record time when finger first makes contact with surface
         //e.preventDefault()
     }, false)
-  
+
     touchsurface.addEventListener('touchmove', function(e){
         var touchobj = e.changedTouches[0]
         distX = touchobj.pageX - startX // get horizontal dist traveled by finger while in contact with surface
