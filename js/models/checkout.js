@@ -42,6 +42,7 @@ define(["backbone"], function(Backbone) {
                 notes: '',
                 sections: [],
                 levels: [],
+                other_dining_options: null,
                 discount_code: '',
                 last_discount_code: ''
             };
@@ -65,6 +66,10 @@ define(["backbone"], function(Backbone) {
 
             if(typeof sections == 'string' && sections.length > 0)
                 this.set('sections', sections.split(','));
+
+            if (!this.get('other_dining_options')) {
+                this.set('other_dining_options', new App.Data.DiningOtherOptions( App.Settings.other_dining_option_details ));
+            }
         },
         /**
          * Save current state model in storage (detected automatic).
@@ -79,6 +84,7 @@ define(["backbone"], function(Backbone) {
             var data = getData('checkout');
             data = data instanceof Object ? data : {};
             delete data.img;
+            data.other_dining_options = new App.Data.DiningOtherOptions( data.other_dining_options );
             this.set(data);
             this.trigger("change:dining_option", this, this.get("dining_option"));
         },
@@ -90,13 +96,17 @@ define(["backbone"], function(Backbone) {
         },
         check: function() {
             var isStoreClosed = this.isStoreClosed(),
-                orderFromSeat = this.checkOrderFromSeat();
+                orderFromSeat = this.checkOrderFromSeat(),
+                otherDiningOptions = this.checkOtherDiningOptions();
 
             if(isStoreClosed)
                 return isStoreClosed;
 
             if(orderFromSeat)
                 return orderFromSeat;
+
+            if(otherDiningOptions)
+                return otherDiningOptions;
 
             return {
                 status: "OK"
@@ -133,6 +143,27 @@ define(["backbone"], function(Backbone) {
                 };
             }
         },
+        checkOtherDiningOptions: function() {
+            var other_dining_options = this.get("other_dining_options"),
+                dining_option = this.get('dining_option'),
+                err = [];
+
+            if (dining_option === 'DINING_OPTION_OTHER') {
+                other_dining_options.each(function(model){
+                    if (model.get("required") && !model.get("value")) {
+                        err.push(model.get("name"));
+                    }
+                });
+            }
+
+            if(err.length) {
+                return {
+                    status: "ERROR_EMPTY_FIELDS",
+                    errorMsg: MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, err.join(', ')),
+                    errorList: err
+                };
+            }
+        },
         isColdUntaxable: function() {
             var delivery_cold_untaxed = App.Settings.delivery_cold_untaxed,
                 dining_option = this.get('dining_option'),
@@ -147,4 +178,24 @@ define(["backbone"], function(Backbone) {
             return dining_option != 'DINING_OPTION_EATIN' && dining_option != 'DINING_OPTION_ONLINE';
         }
     });
+    
+    App.Data.DiningOtherOptions = Backbone.Collection.extend({ 
+        model: Backbone.Model.extend({
+            defaults: {
+                name: '',
+                choices: null,
+                required: true,
+                value: '' //it can be an option for choices OR '' or 'some string' for inputs (when choices is null) 
+            },
+            initialize: function() {
+                if (typeof this.get('choices') == 'string') { 
+                    this.set('choices', this.get('choices').split(','));
+                }
+            },
+            reset: function() {
+                this.set('value', '');
+            }
+        })
+    });
+   
 });

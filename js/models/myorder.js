@@ -1501,6 +1501,17 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             phone && call_name.push(phone);
             return call_name;
         },
+        getOtherDiningOptionCallName: function(phone) {
+            var other_dining_options = this.checkout.get('other_dining_options'),
+                call_name = [],
+                seatInfo = '';
+            other_dining_options.each(function(model){
+                seatInfo += ' ' + model.get('name') + ': ' + model.get('value');
+            });
+            seatInfo.length > 0 && call_name.push($.trim(seatInfo));
+            phone && call_name.push(phone);
+            return call_name;
+        },
         getCustomerData: function() {
             var checkout = this.checkout.toJSON(),
                 customer = App.Data.customer.toJSON(),
@@ -1512,6 +1523,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
 
             if(App.Data.orderFromSeat instanceof Object) {
                 checkout.dining_option == 'DINING_OPTION_DELIVERY_SEAT' ? call_name.push.apply(call_name,  this.getOrderSeatCallName(customer.phone)) : call_name.push(customer.phone);
+            } else if(checkout.dining_option == 'DINING_OPTION_OTHER') {
+                call_name.push.apply(call_name,  this.getOtherDiningOptionCallName(customer.phone));
             } else {
                 checkout.pickupTime && call_name.push(checkout.pickupTime);
                 if (customer.phone) {

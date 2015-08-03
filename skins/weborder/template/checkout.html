@@ -41,6 +41,8 @@
 
     <div class="delivery_seat"></div>
 
+    <div class="delivery_other"></div>
+
     <% if(enableRewardCard) { %>
     <div class="row">
         <label for="rewardCard"> <span class="clip"> <%= _lp.CHECKOUT_REWARD_CARD %>: </span> </label>
@@ -211,6 +213,25 @@
             </div>
         </div>
     <% } %>
+</script>
+
+<script type="text/template" id="checkout_other-template">
+    <div class="list"></div>
+</script>
+<script type="text/template" id="checkout_other_item-template">
+    <div class="row">
+        <label> <span class="<% if (required) print('required'); %> bold clip"><%= name %>:</span> </label>
+        <% if (Array.isArray(choices) && choices.length) { %>
+            <div class="select select-wrapper">
+                <select class="section-select" name="<%= name %>">
+                </select>
+            </div>
+        <% } else { %>
+            <div class="input_beauty">
+                <input type="text" name="<%= name %>" value="<%= value %>" class="ios-safari-caret">
+            </div>
+        <% } %>
+    </div>
 </script>
 
 <script type="text/template" id="checkout_pay-template">

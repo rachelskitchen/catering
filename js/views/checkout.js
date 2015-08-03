@@ -37,6 +37,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         initialize: function() {
             this.listenTo(this.model, 'change:dining_option', this.controlAddress, this);
             this.listenTo(this.model, 'change:dining_option', this.controlDeliverySeat, this);
+            this.listenTo(this.model, 'change:dining_option', this.controlDeliveryOther, this);
             this.listenTo(this.options.rewardsCard, 'change:number', this.updateData, this);
             this.listenTo(this.options.customer, 'change:first_name change:last_name change:email change:phone', this.updateData, this);
             this.customer = this.options.customer;
@@ -51,6 +52,9 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
             this.model.get('dining_option') === 'DINING_OPTION_DELIVERY_SEAT' &&
                  this.controlDeliverySeat(null, 'DINING_OPTION_DELIVERY_SEAT');
+
+            this.model.get('dining_option') === 'DINING_OPTION_OTHER' &&
+                 this.controlDeliveryOther(null, 'DINING_OPTION_OTHER');     
         },
         render: function() {
             var settings = App.Data.settings.get('settings_system'),
@@ -142,6 +146,18 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     this.trigger('address-without-states');
             } else {
                 this.trigger('address-hide');
+            }
+        },
+        controlDeliveryOther: function(model, value) {
+            if(value === 'DINING_OPTION_OTHER') {
+                if (!this.otherView) {                    
+                  
+                    this.otherView = new App.Views.CoreCheckoutView.CoreCheckoutOtherView({model: this.model, collection: this.model.get('other_dining_options')});
+                    this.$('.delivery_other').append(this.otherView.el);
+                }
+                this.$('.delivery_other').show();
+            } else {
+                this.$('.delivery_other').hide();
             }
         },
         controlDeliverySeat: function(model, value) {
@@ -260,6 +276,28 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.model.set(e.target.name, e.target.value);
         }
     });
+
+    App.Views.CoreCheckoutView.CoreCheckoutOtherItemView = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'other_item',
+        bindings: {
+            'input': 'value: value, events:["input","blur","change"]',
+            'select': 'value: value, options:choices, optionsDefault:{label:name, value:""}'
+        }
+    });
+
+    App.Views.CoreCheckoutView.CoreCheckoutOtherView = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'other',
+        className: 'checkout_other_view',
+        bindings: {
+            '.list': 'collection: $collection'
+        },
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        itemView: App.Views.CoreCheckoutView.CoreCheckoutOtherItemView        
+    });    
 
     App.Views.CoreCheckoutView.CoreCheckoutPickupView = App.Views.FactoryView.extend({
         name: 'checkout',
