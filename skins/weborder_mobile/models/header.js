@@ -25,7 +25,8 @@ define(["backbone"], function(Backbone) {
 
     App.Models.HeaderModel = Backbone.Model.extend({
         defaults: {
-            page_title: ""
+            page_title: "",
+            tab: 0
         }
     });
 });

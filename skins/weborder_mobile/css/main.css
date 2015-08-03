@@ -79,13 +79,42 @@ h1, h2, h3 {
     font-size: 3em;
 }
 
+.animation, .animation::before, .animation::after {
+    -webkit-transition: all linear 0.2s;
+    -moz-transition: all linear 0.2s;
+    -ms-transition: all linear 0.2s;
+    -o-transition: all linear 0.2s;
+    transition: all linear 0.2s;
+}
+
 /* header block start */
 
 #header, #section {
     width: 100%;
 }
 
-/* children are div containers */
-#header > *, #section > * {
-    margin: 0 1.4em;
+.list > li {
+    min-height: 5.5em;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    position: relative;
+    padding: 2em 2em 2em 0;
+}
+
+.list > li::after {
+    content: '\f105';
+    font-family: FontAwesome;
+    font-size: 4em;
+    position: absolute;
+    right: 0em;
+    top: 50%;
+    margin-top: -0.5em;
+}
+
+.list .title {
+    font-size: 3em;
+}
+
+.list .desc {
+    font-size: 2em;
 }
