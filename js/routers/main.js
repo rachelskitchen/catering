@@ -48,19 +48,8 @@ define(["backbone", "factory"], function(Backbone) {
                 }
             }
 
-            var orderFromSeat = App.Settings.order_from_seat || [];
-            if(orderFromSeat[0]) {
-                App.Data.orderFromSeat = {
-                    enable_level: orderFromSeat[1],
-                    enable_sector: orderFromSeat[2],
-                    enable_row: orderFromSeat[3]
-                };
-            } else {
-                delete _loc.DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
-            }
-
             for (var dining_option in DINING_OPTION) {
-                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_option]) == -1 || (App.Data.orderFromSeat && dining_option == 'DINING_OPTION_OTHER')) {
+                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_option]) == -1) {
                     delete _loc.DINING_OPTION_NAME[dining_option];
                 }
             }

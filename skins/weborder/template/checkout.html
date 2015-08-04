@@ -154,70 +154,10 @@
     <% } %>
 </script>
 
-<script type="text/template" id="checkout_seat-template">
-    <% if(isDeliverToSeat) { %>
-        <% if (orderFromSeat.enable_level) { %>
-            <div class="row">
-                <label for="deliveryLevel"> <span class="required bold clip"><%= _lp.CHECKOUT_LEVEL %>:</span> </label>
-                <% if (levels.length) { %>
-                    <div class="select select-wrapper">
-                        <select class="level-select" name="level">
-                            <option value="" <% if (level == '') { %> selected="selected" <% } %>>
-                                <%= _lp.CHECKOUT_LEVEL %>
-                            </option>
-                            <% _.each(levels, function(l) { %>
-                            <option value="<%= l %>" <% if (level == l) { %>selected="selected"<% }; %>><%= l %></option>
-                            <% }); %>
-                        </select>
-                    </div>
-                <% } else { %>
-                    <div class="input_beauty">
-                        <input type="text" id="deliveryLevel" name="level" value="<%= level %>" maxlength="4" class="ios-safari-caret">
-                    </div>
-                <% } %>
-            </div>
-        <% } %>
-        <% if (orderFromSeat.enable_sector) { %>
-            <div class="row">
-                <label for="deliverySection"> <span class="required bold clip"><%= _lp.CHECKOUT_SECTION %>:</span> </label>
-                <% if (sections.length) { %>
-                    <div class="select select-wrapper">
-                        <select class="section-select" name="section">
-                            <option value="" <% if (section == '') { %> selected="selected" <% } %>>
-                                <%= _lp.CHECKOUT_SECTION %>
-                            </option>
-                            <% _.each(sections, function(s) { %>
-                            <option value="<%= s %>" <% if (section == s) { %>selected="selected"<% }; %>><%= s %></option>
-                            <% }); %>
-                        </select>
-                    </div>
-                <% } else { %>
-                    <div class="input_beauty">
-                        <input type="text" id="deliverySection" name="section" value="<%= section %>" maxlength="4" class="ios-safari-caret">
-                    </div>
-                <% } %>
-            </div>
-        <% } %>
-        <% if (orderFromSeat.enable_row) { %>
-            <div class="row">
-                <label for="deliveryRow"> <span class="required bold clip"><%= _lp.CHECKOUT_ROW %>:</span> </label>
-                <div class="input_beauty">
-                    <input type="text" id="deliveryRow" name="row" value="<%= row %>" maxlength="4" class="ios-safari-caret">
-                </div>
-            </div>
-        <% } %>
-        <div class="row">
-            <label for="deliverySeat"> <span class="required bold clip"><%= _lp.CHECKOUT_SEAT %>:</span> </label>
-            <div class="input_beauty">
-                <input type="text" id="deliverySeat" name="seat" value="<%= seat %>" maxlength="4" class="ios-safari-caret">
-            </div>
-        </div>
-    <% } %>
-</script>
-
 <script type="text/template" id="checkout_other-template">
     <div class="list"></div>
 </script>
+
 <script type="text/template" id="checkout_other_item-template">
     <div class="row">
         <label> <span class="<% if (required) print('required'); %> bold clip"><%= name %>:</span> </label>
