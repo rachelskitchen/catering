@@ -120,6 +120,7 @@
 
             // it's for testing:
             app.get['srv'] == 'qa' && (app.REVEL_HOST = 'https://qa.revelup.com');
+            app.get['srv'] == 'qa2' && (app.REVEL_HOST = 'https://qa2.revelup.com');
             app.get['srv'] == 'mlb' && (app.REVEL_HOST = 'https://mlb-dev.revelup.com');
             app.get['srv'] == 'dev' && (app.REVEL_HOST = 'https://weborder-dev-branch.revelup.com');
             app.get['srv'] == 'qa-dev' && (app.REVEL_HOST = 'https://weborder-qa-dev-branch.revelup.com');
