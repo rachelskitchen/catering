@@ -160,7 +160,7 @@
 
 <script type="text/template" id="checkout_other_item-template">
     <div class="row">
-        <label> <span class="<% if (required) print('required'); %> bold clip"><%= name %>:</span> </label>
+        <label> <span class="bold clip" isrequired><%= name %>:</span> </label>
         <% if (Array.isArray(choices) && choices.length) { %>
             <div class="select select-wrapper">
                 <select class="section-select" name="<%= name %>">
@@ -181,7 +181,6 @@
         </div>
     </div>
 </script>
-
 
 <script type="text/template" id="checkout_pay_button-template">
     <% if (payment_count === 1 && flag) {%>

@@ -235,7 +235,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         mod: 'other_item',
         bindings: {
             'input': 'value: value, events:["input","blur","change"]',
-            'select': 'value: value, options:choices, optionsDefault:{label:name, value:""}'
+            'select': 'value: value, options:choices, optionsDefault:{label:name, value:""}',
+            '[isrequired]': 'classes:{required:required}'
         }
     });
 

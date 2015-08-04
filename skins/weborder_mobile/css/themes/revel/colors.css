@@ -163,7 +163,7 @@ select {
 #content ul.categories li:active {
     box-shadow: 0 0 6em rgba(0, 170, 234, 0.3) inset;
 }
-.input.required:before, .select.required:after {
+.input.required:before, .select.required:after, .select-wrapper.required:before {
     color: #f00;
 }
 .select {
