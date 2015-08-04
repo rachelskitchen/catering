@@ -395,10 +395,7 @@ define(["backbone", "async"], function(Backbone) {
 
                             settings_system.other_dining_option_details = [{"name": "XLevel", "choices": "1,2,3,4,5", "required": false}, {"name": "XTest", "required": false}, {"name": "XSection", "choices": "A,B,C,D,E"}, {"name": "XSeat"}];
                             settings_system.dining_options.push(6);
-                            // add DELIVER_TO_SEAT if 'order_from_seat' is checked on
-                            //if(settings_system.order_from_seat[0] && settings_system.dining_options.indexOf(DINING_OPTION.DINING_OPTION_DELIVERY_SEAT) == -1) {
-                            //    settings_system.dining_options.push(DINING_OPTION.DINING_OPTION_DELIVERY_SEAT);
-                            //}
+
                             //remove DINING_OPTION_OTHER from dinning_options when other_dining_option_details is undefined or empty array:
                             var other_index;
                             if (!Array.isArray(settings_system.other_dining_option_details) || settings_system.other_dining_option_details.length == 0) {  
@@ -418,8 +415,6 @@ define(["backbone", "async"], function(Backbone) {
                                 var dining_options = settings_system.dining_options;
                                 if(dining_options.length > 0) {
                                     for(var dining_option in DINING_OPTION) {
-                                        // if order_from_seat is checked on 'Delivery to seat' overrides 'Other' (rules in bug 14657)
-                                        //if(dining_options[0] == DINING_OPTION[dining_option] && (!settings_system.order_from_seat[0] || dining_option != 'DINING_OPTION_OTHER')) {
                                         if(dining_options[0] == DINING_OPTION[dining_option]) {
                                             settings_system.default_dining_option = dining_option;
                                             break;

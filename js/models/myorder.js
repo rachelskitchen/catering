@@ -1025,7 +1025,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
         preparePickupTime: function() {
             var only_gift = this.checkout.get('dining_option') === 'DINING_OPTION_ONLINE';
 
-            if(!only_gift && typeof App.Data.orderFromSeat === 'undefined') {
+            if(!only_gift) {
                 var pickup = this.checkout.get('pickupTS'),
                     currentTime = App.Data.timetables.base(),
                     delivery = this.checkout.get('dining_option') === 'DINING_OPTION_DELIVERY',
@@ -1521,9 +1521,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
 
             contactName && call_name.push(contactName);
 
-            if(App.Data.orderFromSeat instanceof Object) {
-                checkout.dining_option == 'DINING_OPTION_DELIVERY_SEAT' ? call_name.push.apply(call_name,  this.getOrderSeatCallName(customer.phone)) : call_name.push(customer.phone);
-            } else if(checkout.dining_option == 'DINING_OPTION_OTHER') {
+            if (checkout.dining_option == 'DINING_OPTION_OTHER') {
                 call_name.push.apply(call_name,  this.getOtherDiningOptionCallName(customer.phone));
             } else {
                 checkout.pickupTime && call_name.push(checkout.pickupTime);

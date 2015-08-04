@@ -468,7 +468,6 @@ define([], function() {
             DINING_OPTION_DRIVETHROUGH: "Autoteenindus",
             DINING_OPTION_ONLINE: "Veebitellimine",
             DINING_OPTION_OTHER: "Muu",
-            DINING_OPTION_DELIVERY_SEAT: "Kohaletoimetamise koht",
             DINING_OPTION_SHIPPING: "Tarne"
         },
         TOTAL_DISCOUNTS: "Allahindlused",

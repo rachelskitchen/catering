@@ -110,7 +110,7 @@ define(['checkout'], function() {
                 expect(model.check().status).toBe('OK');
             });
 
-            it('skin paypal order from seat dining', function() {
+            /*it('skin paypal order from seat dining', function() {
                 settings.set('skin', 'paypal');
                 this.seat = App.Data.orderFromSeat;
                 App.Data.orderFromSeat = {};
@@ -142,7 +142,7 @@ define(['checkout'], function() {
                 expect(model.check().status).toBe('OK');
 
                 App.Data.orderFromSeat = this.seat;
-            });
+            });*/
 
             it('skin dining option online', function() {
                 settings.set('skin', 'weborder');

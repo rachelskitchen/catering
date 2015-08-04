@@ -468,7 +468,6 @@ define([], function() {
             DINING_OPTION_DRIVETHROUGH: "Atsiimti įvažiavus automobiliu",
             DINING_OPTION_ONLINE: "Užsakymas internetu",
             DINING_OPTION_OTHER: "Kita",
-            DINING_OPTION_DELIVERY_SEAT: "Pristatyti į vietą",
             DINING_OPTION_SHIPPING: "Užsakymo siuntimas"
         },
         TOTAL_DISCOUNTS: "Nuolaidos",

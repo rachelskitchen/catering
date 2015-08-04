@@ -494,7 +494,6 @@
             'DINING_OPTION_DRIVETHROUGH': 'За рулем',
             'DINING_OPTION_ONLINE': 'Онлайн заказ',
             'DINING_OPTION_OTHER': 'Другой',
-            'DINING_OPTION_DELIVERY_SEAT': 'Доставка к месту',
             'DINING_OPTION_SHIPPING': 'Сторонняя служба доставки'
         },
 
@@ -977,7 +976,6 @@ define(function() {
             DINING_OPTION_DRIVETHROUGH: "За рулем",
             DINING_OPTION_ONLINE: "Онлайн заказ",
             DINING_OPTION_OTHER: "Другой",
-            DINING_OPTION_DELIVERY_SEAT: "Доставка к месту",
             DINING_OPTION_SHIPPING: "Сторонняя служба доставки"
         },
         TOTAL_DISCOUNTS: "Скидки",
