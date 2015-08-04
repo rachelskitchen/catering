@@ -315,6 +315,9 @@ function template_helper(name,mod) {
     else {
         id = "#" + name + "-template";
     }
+    if ($(id)[0] == undefined) {
+        console.error("Can't find the template: " + id);
+    }
     return _.template($(id).html());
 }
 /**
