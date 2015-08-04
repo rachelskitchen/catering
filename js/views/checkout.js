@@ -758,5 +758,6 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         App.Views.CheckoutView.CheckoutPayView = App.Views.CoreCheckoutView.CoreCheckoutPayView;
         App.Views.CheckoutView.CheckoutPayButtonView = App.Views.CoreCheckoutView.CoreCheckoutPayButtonView;
         App.Views.CheckoutView.CheckoutPageView = App.Views.CoreCheckoutView.CoreCheckoutPageView;
+        App.Views.CheckoutView.CheckoutOtherView = App.Views.CoreCheckoutView.CoreCheckoutOtherView;
     });
 });
