@@ -72,8 +72,8 @@ define(["backbone", "factory"], function(Backbone) {
 
                 model.stanfordCardBalances = get.paymentType === PAYMENT_TYPE.STANFORD && Array.isArray(balances.stanford) ? balances.stanford : null;
 
-                model.isOrderFromSeat = App.Data.orderFromSeat instanceof Object;
-                model.isDeliverToSeat = checkout.get("dining_option") === 'DINING_OPTION_DELIVERY_SEAT';
+                model.isDiningOptionOther =  dining_option === 'DINING_OPTION_OTHER';
+
                 model.level = checkout.get("level");
                 model.section = checkout.get("section");
                 model.row = checkout.get("row");

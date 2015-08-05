@@ -1515,15 +1515,11 @@ define(['myorder'], function() {
                 
                 this.skin = App.Data.settings.get('skin');
                 App.Data.settings.set('skin', 'mlb');
-                
-                this.seat = App.Data.orderFromSeat;
-                App.Data.orderFromSeat = 'defined';
             });
             
             afterEach(function() {
                 App.Data.timetables = this.timetables;
                 App.Data.settings.set('skin', this.skin);
-                App.Data.orderFromSeat = this.seat;
             });
             
             it('check pass', function() {
@@ -1548,19 +1544,10 @@ define(['myorder'], function() {
                     model.create_order_and_pay();
                     expect(model.submit_order_and_pay).toHaveBeenCalled();
                 });
-                
-                it ('+ change orderSeat', function() {
-                    App.Data.orderFromSeat = undefined;
-                    App.Data.settings.set('skin', 'weborder');
-                    model.checkout.set('dining_option', 'DINING_OPTION_TOGO');
-                    model.create_order_and_pay();
-                    expect(model.submit_order_and_pay).not.toHaveBeenCalled();
-                });
             });
             
-            describe('weborder skin, not gift, not order seat', function() {
+            describe('weborder skin, not gift', function() {
                 beforeEach(function() {
-                    App.Data.orderFromSeat = undefined;
                     App.Data.settings.set('skin', 'weborder');
                     model.checkout.set('dining_option', 'DINING_OPTION_TOGO');
                 });
@@ -1706,9 +1693,6 @@ define(['myorder'], function() {
                 spyOn(App.Data.customer, 'get_customer_name').and.returnValue('customer name');
                 //spyOn(App.Models.Myorder.prototype, 'getCustomerData').and.returnValue({call_name: 'customer call name'});
                                
-                this.order_seat = App.Data.orderFromSeat;
-                App.Data.orderFromSeat = undefined;
-                
                 payment_process = {
                     paypal_direct_credit_card: false,
                     usaepay: false
@@ -1729,7 +1713,6 @@ define(['myorder'], function() {
                App.Data.settings.set('skin', this.skin);
                App.Data.card = this.card;
                App.Data.customer = this.customer;
-               App.Data.orderFromSeat = this.order_seat;
             });
             
             it('empty models. Default state', function() {
@@ -1784,7 +1767,7 @@ define(['myorder'], function() {
                     expect(ajax.data.orderInfo.call_name).toBe('customer name / pickup time / phone');
                 });
                 
-                describe('order from seat', function() {
+                describe('TODO: other options', function() {
                     
                     beforeEach(function() {
                         App.Data.orderFromSeat = {};
@@ -1832,7 +1815,7 @@ define(['myorder'], function() {
                     expect(ajax.data.orderInfo.call_name).toBe('');
                 });
                 
-                it('first name, phone, sec, row, seat', function() {
+                it('TODO: first name, phone, sec, row, seat', function() {
                     checkout.row = 'row'; 
                     checkout.seat = 'seat';  
                     checkout.section = 'section';     

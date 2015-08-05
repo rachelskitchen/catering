@@ -6,7 +6,7 @@
         <dd>
             <span><%= order_id %></span>
         </dd>
-        <% if (!isOnlyGift && !isOrderFromSeat) { %>
+        <% if (!isOnlyGift) { %>
             <dt> <span class="clip"> <%= pickup_type %>: </span> </dt>
             <dd>
                 <span>
@@ -15,7 +15,7 @@
                 </span>
             </dd>
         <% } %>
-        <% if(isDeliverToSeat) { %>
+        <% if(isDiningOptionOther) { %>
             <dt> <span class="clip"> <%= _lp.DONE_DELIVERY_INFO %>: </span> </dt>
             <dd>
                 <% if (level) { %> <%= _lp.DONE_LEVEL %> <span> <%= level %>, </span> <% } %>

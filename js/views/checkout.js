@@ -260,8 +260,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.listenTo(this.model, 'change:dining_option', this.listenOrderType, this);
 
             this.templateData = {
-                isFirefox: /firefox/i.test(navigator.userAgent),
-                isOrderFromSeat: App.Data.orderFromSeat instanceof Object
+                isFirefox: /firefox/i.test(navigator.userAgent)
             };
 
             this.isDelivery = this.model.get('dining_option') === 'DINING_OPTION_DELIVERY';
@@ -383,7 +382,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         listenOrderType: function(model, value) {
             this.isDelivery = this.model.get('dining_option') === 'DINING_OPTION_DELIVERY';
             this.pickupTime = this.options.timetable.getPickupList(this.isDelivery);
-            if (value === 'DINING_OPTION_DELIVERY') {
+            if (value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_OTHER') {
                 this.$('.pickup').text(_loc.CONFIRM_DELIVERY_TIME);
             } else {
                 this.$('.pickup').text(_loc.CONFIRM_ARRIVAL_TIME);
