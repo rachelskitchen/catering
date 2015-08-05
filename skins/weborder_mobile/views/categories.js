@@ -22,103 +22,72 @@
 
 define(["categories_view"], function(categories_view) {
 
-    // Represents a parent category. Model's attributes look like {name: <parent_name>, sort: <parent_sort>, subcategories: [<id1>, <id2>, ...]}
-    var ParentCategoryView = App.Views.FactoryView.extend({
-
-    });
-
-    var ParentsCategoriesView = App.Views.FactoryView.extend({
-
-    });
-
-
-    var CategoriesItemView = App.Views.LazyItemView.extend({
-        name: 'categories',
+    // Represents a parent category. Model's attributes look like {name: <parent_name>, sort: <parent_sort>, subcategories: App.Collections.ParentCategories}
+    var CategoryParentsItemView = App.Views.FactoryView.extend({
+        name: 'parent-categories',
         mod: 'item',
-        initialize: function() {
-            App.Views.LazyItemView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'change:active', this.show_hide);
-            this.show_hide();
-        },
+        tagName: 'li',
+        className: 'parent-category',
         bindings: {
-
+            '.title': 'text: name'
         },
         events: {
-            "click": "showProducts"
+            'click': 'onClick'
         },
-        showProducts: function(e) {
-            e.preventDefault();
-            var id = this.model.get('id');
-            App.Data.router.navigate("products/" + id, true);
-        },
-        show_hide: function() {
-            if (!this.model.get('active')) {
-                this.$el.hide();
-            } else {
-                this.$el.show();
-            }
+        onClick: function() {
+            var ids = this.model.get('ids');
+            App.Data.router.navigate('products/' + ids, true);
         }
     });
 
-    var CategoriesItemView = App.Views.LazyItemView.extend({
-        name: 'categories',
-        mod: 'item',
-        initialize: function() {
-            App.Views.LazyItemView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'change:active', this.show_hide);
-            this.show_hide();
-        },
+    var CategoriesParentsView = App.Views.FactoryView.extend({
+        name: 'parent-categories',
+        mod: 'list',
         bindings: {
-
+            '.categories': 'collection: $collection'
         },
-        events: {
-            "click": "showProducts"
-        },
-        showProducts: function(e) {
-            e.preventDefault();
-            var id = this.model.get('id');
-            App.Data.router.navigate("products/" + id, true);
-        },
-        show_hide: function() {
-            if (!this.model.get('active')) {
-                this.$el.hide();
-            } else {
-                this.$el.show();
-            }
-        }
+        itemView: CategoryParentsItemView
     });
 
-    var CategoriesMainView = App.Views.LazyListView.extend({
+    var CategoriesItemView = App.Views.FactoryView.extend({
+        name: 'categories',
+        mod: 'item',
+        tagName: 'li',
+        initialize: function() {
+            // need to add model.products to bindingSource to provide handlers for 'reset', 'add', 'remove' events.
+            this.bindingSources = _.extend({}, this.bindingSources, {
+                _products: this.model.get('products')
+            });
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            '.category': 'text: name',
+            '.products': 'collection: $_products',
+            '.timetables': 'text: timetables'
+        },
+        itemView: App.Views.ProductView.ProductListItemView
+    });
+
+    var CategoriesMainView = App.Views.FactoryView.extend({
         name: 'categories',
         mod: 'main',
         initialize: function() {
-            App.Views.LazyListView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.collection, 'load_complete', this.render, this);
+            // need to add model.subs to bindingSource to provide handlers for 'reset', 'add', 'remove' events.
+            this.bindingSources = _.extend({}, this.bindingSources, {
+                _subs: this.model.get('subs')
+            });
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
-        render: function() {
-            this.collection.sortEx();
-            App.Views.LazyListView.prototype.render.apply(this, arguments);
-            return this;
+        bindings: {
+            '.categories': 'collection: $_subs'
         },
-        addItem: function(model) {
-            var view = App.Views.GeneratorView.create('Categories', {
-                el: $('<li></li>'),
-                mod: 'Item',
-                model: model
-            }, model.cid);
-
-            //trace("AddItem=>",model.get('name'),model.cid, model.escape('parent_sort'), model.escape('sort'), model.get("sort_val"));
-            App.Views.LazyListView.prototype.addItem.call(this, view, this.$('.categories'));
-
-            // Right now culcImageSize() is useless because category images can't be download to Revel servers,
-            // images are accessed via external url only
-            //this.culcImageSize(model);
-            this.subViews.push(view);
-        }
+        itemView: CategoriesItemView
     });
 
     return new (require('factory'))(categories_view.initViews.bind(categories_view), function() {
-        // App.Views.CategoriesView.CategoriesItemView = CategoriesItemView;
+        App.Views.CategoriesView.CategoriesItemView = CategoriesItemView;
         App.Views.CategoriesView.CategoriesMainView = CategoriesMainView;
+        App.Views.CategoriesView.CategoriesParentsView = CategoriesParentsView;
+        App.Views.CategoriesView.CategoryParentsItemView = CategoryParentsItemView;
     });
 });

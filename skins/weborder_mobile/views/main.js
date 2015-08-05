@@ -28,7 +28,6 @@ define(["done_view", "generator"], function(done_view) {
         initialize: function() {
             this.listenTo(this.model, 'change:content', this.content_change, this);
             this.listenTo(this.model, 'change:header', this.header_change, this);
-            this.listenTo(this.model, 'change:footer', this.footer_change, this);
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
             this.listenTo(this.model, 'showPromoMessage', this.showPromoMessage, this);
@@ -74,7 +73,7 @@ define(["done_view", "generator"], function(done_view) {
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
 
-            while(this.subViews.length > 2) {
+            while(this.subViews.length > 1) {
                 view = this.subViews.pop();
                 view.removeFromDOMTree();
             }
@@ -90,33 +89,19 @@ define(["done_view", "generator"], function(done_view) {
         },
         header_change: function() {
             var data = _.defaults(this.model.get('header'), this.header_defaults());
-            this.subViews[0] && this.subViews[0].remove();
+            this.subViews[0] && this.subViews[0].removeFromDOMTree();
             this.subViews[0] = App.Views.GeneratorView.create(data.modelName, data);
             this.$('#header').append(this.subViews[0].el);
-        },
-        footer_change : function() {
-            var data = _.defaults(this.model.get('footer'), this.footer_defaults());
-            this.subViews[1] && this.subViews[1].remove();
-            this.subViews[1] = App.Views.GeneratorView.create(data.modelName, data);
-            this.$('#footer').append(this.subViews[1].el);
         },
         header_defaults: function() {
             return {
                 model: App.Data.header,
-                className: 'header',
                 modelName: 'Header'
             }
         },
-        footer_defaults : function() {
-            return {
-                model : App.Data.footer,
-                className : 'footer',
-                modelName : 'Footer'
-            };
-        },
         content_defaults : function() {
             return {
-                className : 'content'
+                // className : 'content'
             };
         },
         addContent: function(data, removeClass) {
@@ -127,10 +112,10 @@ define(["done_view", "generator"], function(done_view) {
                 delete data.className;
 
             var subView = App.Views.GeneratorView.create(data.modelName, data, data.cacheId ? id : undefined);
-            if(this.subViews.length > 2)
+            if(this.subViews.length > 1)
                 this.subViews.push(subView);
             else
-                this.subViews[2] = subView;
+                this.subViews[1] = subView;
 
             return subView.el;
         },

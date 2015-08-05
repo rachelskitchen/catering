@@ -94,13 +94,15 @@ define(["backbone", "collection_sort"], function(Backbone) {
          * @returns {Array} [{
          *                      name: <parent_name>
          *                      sort: <parent_sort>
-         *                      subcategories: [<id1>, <id2>, ...]
+         *                      subcategories: App.Collections.Categories
          *                   }, ...]
          */
         getParents: function() {
             var parents = {};
 
             this.each(function(item) {
+                item = item.toJSON();
+
                 if(!item.active) {
                     return;
                 }
@@ -111,13 +113,16 @@ define(["backbone", "collection_sort"], function(Backbone) {
                     parents[item.parent_name] = {
                         name: item.parent_name,
                         sort: item.parent_sort,
-                        subcategories: []
+                        ids: '',
+                        subs: []
                     };
                     addSubCategory();
                 }
 
                 function addSubCategory() {
-                    parents[item.parent_name].subcategories.push(item.get('id'));
+                    var parent = parents[item.parent_name];
+                    parent.subs.push(item);
+                    parent.ids += parent.ids.length ? ',' + item.id : item.id;
                 }
             });
 

@@ -20,19 +20,47 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
- define(['categories'], function() {
+ define(['categories', 'products'], function() {
     'use strict';
 
+    /**
+     * @class
+     * Represents parent category.
+     */
     App.Models.ParentCategory = Backbone.Model.extend({
+        /**
+         * @property {object} defaults - literal object containing attributes with default values
+         *
+         * @property {string} defaults.name - parent category name.
+         * @default ''.
+         *
+         * @property {number} default.sort - sort number.
+         * @default null.
+         *
+         * @property {string} default.ids - comma separted list of subcategories.
+         * @default ''.
+         *
+         * @property {App.Collections.Categories} default.subs - collection of subcategories.
+         * @default null.
+         */
         defaults: {
-            id: '',
+            name: '',
+            sort: null,
+            ids: '',
             subs: null
         },
         initialize: function() {
             var subs = this.get('subs');
+            if(subs instanceof App.Collections.Categories) {
+                subs = subs.toJSON();
+            } else if(!Array.isArray(subs)) {
+                subs = [];
+            }
+            subs = this.addProducts(subs);
             this.set('subs', new App.Collections.Categories(subs));
         },
         addSub: function(data) {
+            this.addProducts(data);
             this.get('subs').add(data);
         },
         addAllSubs: function() {
@@ -58,11 +86,41 @@
             function deactivateAllSubs() {
                 subs.where({active: true}).length == 0 && allSubs.set('active', false);
             }
+        },
+        addProducts: function(subs) {
+            if(Array.isArray(subs)) {
+                _.each(subs, addProducts);
+            } else {
+                addProducts(subs);
+            }
+
+            function addProducts(sub) {
+                var products = new App.Collections.Products();
+                if(sub instanceof Backbone.Model) {
+                    sub.set('products', products);
+                } else if(_.isObject(sub)) {
+                    sub.products = products;
+                }
+            }
+
+            return subs;
         }
     });
 
+    /**
+     * @class
+     * Represents collection of parent categories.
+     */
     App.Collections.SubCategories = Backbone.Collection.extend({
+        /**
+         * @property {Function} model - constructor of items.
+         * @default App.Models.ParentCategory.
+         */
         model: App.Models.ParentCategory,
+        /**
+         * @property {string} comparator - attribute that used for sorting.
+         */
+        comparator: 'sort',
         getSubs: function(id) {
             var parent = this.get(id);
             if(parent)

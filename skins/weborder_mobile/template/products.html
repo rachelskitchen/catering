@@ -1,40 +1,14 @@
-<script type="text/template" id="product_list-template">
-    <ul class="products"></ul>
-</script>
-
 <script type="text/template" id="product_list_item-template">
-    <% if(!hide_images) { %>
-        <div class="block_img">
-            <div class="img bg-style1">
-                <img alt="<%= name %> <%= id %>"/>
-            </div>
-        </div>
-    <% } %>
-    <dl <% if(hide_images){ %>class="noimage"<% } %>>
-        <dt class="s<%= price_length %>">
-            <span class="cost">
-                <span class="currency_symbol"><%= currency_symbol %></span>
-                <span class="price"><%= price %></span>
-                <% if(sold_by_weight && uom) { %>
-                    <span class="uom">/ <%= uom %></span>
-                <% } %>
-            </span>
-            <span class="name_title">
-                <span class="name">
-                    <%= name %>
-                </span>
-            </span>
-        </dt>
-    </dl>
+    <div>
+        <div class="price font-size2 font-color5"></div>
+        <div class="title font-size1 font-color3"></div>
+        <div class="desc font-size2 font-color5"></div>
+    <div>
 </script>
 
 <script type="text/template" id="product_modifiers-template">
-    <% if(!hide_images) { %>
-        <div class="block_img"> <div class="bg-style1"> <img alt="<%= name %> <%= id %>"/> </div> </div>
-    <% } %>
-    <dl class="<%
-            if (hide_images) print('noimage');
-        %>">
+    <span class="test"></span>
+    <dl>
         <dt class="s<%= price_length %>">
             <span class="cost">
                 <% if (is_gift && not_size && _settings.online_orders) { %>
@@ -63,6 +37,7 @@
             <% } %>
         </dd>
     </dl>
+
     <% if (is_gift && _settings.online_orders) { %>
     <div class='gift_card <%if (hide_images) print('noimage');%>'>
         <p> <span class="clip"> <%= _lp.PRODUCTS_GIFT_CARD_NUMBER %>: </span> </p>

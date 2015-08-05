@@ -1,13 +1,21 @@
 <script type="text/template" id="categories_main-template">
-    <ul class="categories list"></ul>
+    <ul class="categories"></ul>
 </script>
 
 <script type="text/template" id="categories_item-template">
-    <div class="title font-color3"><%= name %></div>
-    <div class="desc font-color4">
-        <%= parent_name %>
-        <% if (timetables) {%>
-        <span class="timetables"><%= timetables %></span>
-        <% } %>
+    <div class="list-title font-color3">
+        <span>
+            <span class="category font-size1 font-color1 text-shadow1"></span>
+            <em class="timetables font-size2 font-color5"></em>
+        </span>
     </div>
+    <ul class="products list"></ul>
+</script>
+
+<script type="text/template" id="parent-categories_list-template">
+    <ul class="categories list"></ul>
+</script>
+
+<script type="text/template" id="parent-categories_item-template">
+    <div class="title font-color3 font-size1"></div>
 </script>

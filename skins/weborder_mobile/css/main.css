@@ -79,6 +79,10 @@ h1, h2, h3 {
     font-size: 3em;
 }
 
+.font-size2 {
+    font-size: 2em;
+}
+
 .animation, .animation::before, .animation::after {
     -webkit-transition: all linear 0.2s;
     -moz-transition: all linear 0.2s;
@@ -94,11 +98,11 @@ h1, h2, h3 {
 }
 
 .list > li {
-    min-height: 5.5em;
+    min-height: 7.5em;
     border-bottom-width: 1px;
     border-bottom-style: solid;
     position: relative;
-    padding: 2em 2em 2em 0;
+    padding: 1em 2em 1em 0;
 }
 
 .list > li::after {
@@ -111,10 +115,59 @@ h1, h2, h3 {
     margin-top: -0.5em;
 }
 
-.list .title {
-    font-size: 3em;
+.list > li::before {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 7.5em;
+    vertical-align: middle;
 }
 
-.list .desc {
-    font-size: 2em;
+.list > li > * {
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.list > li * {
+    pointer-events: none;
+}
+
+.list > li div {
+    display: inline-block;
+}
+
+.list > li > div {
+    width: 98%;
+}
+
+.list-title {
+    min-height: 6em;
+    text-align: center;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    position: relative;
+}
+
+.list-title::before {
+    content: '';
+    display: inline-block;
+    height: 6em;
+    vertical-align: middle;
+}
+
+.list-title::after {
+    content: '';
+    display: block;
+    width: 2.5em;
+    height: 1.4em;
+    position: absolute;
+    left: 50%;
+    bottom: -1.4em;
+    margin-left: -1.25em;
+}
+
+.list-title > * {
+    display: inline-block;
+    vertical-align: middle;
+    width: 98%;
 }
