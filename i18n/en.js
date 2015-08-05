@@ -508,6 +508,9 @@
         'YES': 'Yes',
         'NO': 'No',
         'CANCEL': 'Cancel',
-        'OK': 'Ok'
+        'OK': 'Ok',
+        'DELIVERY_TIME': 'Delivery Time',
+        'PICKUP_TIME': 'Pickup Time',
+        'DELIVERY_INFO': 'Delivery Info'
     } // end of locale
 }); // end of module

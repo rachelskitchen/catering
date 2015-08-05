@@ -110,14 +110,13 @@
                                 <td><%= pickup_time_date %></td>
                             </tr>
                             <% } %>
-                            <% if(isDeliverToSeat) { %>
+                            <% if (isDiningOptionOther) { %>
                             <tr>
                                 <td> <%= _lp.MAIN_DELIVERY_INFO %>: </td>
                                 <td>
-                                    <% if (level) { %> <%= _lp.MAIN_LEVEL %> <span><%= level %></span>, <% } %>
-                                    <% if (section) { %> <%= _lp.MAIN_SECTION %> <span><%= section %></span>, <% } %>
-                                    <% if (row) { %> <%= _lp.MAIN_ROW %> <span><%= row %></span>, <% } %>
-                                    <% if (seat) { %> <%= _lp.MAIN_SEAT %> <span><%= seat %></span> <% } %>
+                                    <% for (var i = 0; i < other_dining_options.length; i++) { %>
+                                        <%= other_dining_options[i].name %> <span><%= other_dining_options[i].value %></span><% if(i < other_dining_options.length - 1) print(","); %>
+                                    <% } %>
                                 </td>
                             </tr>
                             <% } %>
