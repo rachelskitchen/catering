@@ -57,7 +57,7 @@ define(["backbone"], function(Backbone) {
         },
         initialize: function() {
             var times = App.Data.settings.get('settings_system');
-            this.pickup_time_interval = times.online_order_time_slot || 1;
+            this.pickup_time_interval = Math.abs(times.online_order_time_slot) || 1;
             this.start_time = times.online_order_start_time_offset;
             this.end_time = times.online_order_end_time_offset;
             this.delivery_time = times.estimated_delivery_time;
