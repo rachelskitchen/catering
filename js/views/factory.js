@@ -49,6 +49,17 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         return line;
     });
 
+    Backbone.Epoxy.binding.addFilter('weightFormat', function(price) {
+        var currency_symbol = App.Settings.currency_symbol,
+            scales = App.Settings.scales,
+            uom = _.isObject(scales) ? scales.default_weighing_unit : '',
+            line = currency_symbol + round_monetary_currency(price);
+        if(uom) {
+            line += '/' + uom;
+        }
+        return line;
+    });
+
     // add handlers
     Backbone.Epoxy.binding.addHandler('loadSpinner', function($el, value) {
         if(value) {

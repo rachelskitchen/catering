@@ -9,14 +9,26 @@
             "css": [ "main", "header"],
             "model": ["main", "header", "revel"],
             "templates": ["main", "header"],
-            "views": ["main", "header"],
+            "views": ["main", "header", "products"],
             "core": ["geopoint", "stanfordcard"]
         },
         "index": {
             "css": ["categories"],
             "views": ["categories"],
             "templates": ["categories"],
-            "core": ["categories"]
+            "core": ["categories", "products", "subcategories"]
+        },
+        "products": {
+            "css": ["categories", "products"],
+            "views": ["categories"],
+            "templates": ["products", "categories"],
+            "core": ["categories", "products", "subcategories"]
+        },
+        "modifiers": {
+            "css": ["modifiers", "products", "quantity", "instructions", "myorder"],
+            "views": ["products", "quantity", "instructions", "myorder"],
+            "templates": ["modifiers", "products", "quantity", "instructions", "myorder"],
+            "core": ["categories", "products", "modifiers", "modifiers_view"]
         }
     }
 }

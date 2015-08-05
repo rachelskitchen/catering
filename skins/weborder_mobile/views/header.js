@@ -23,11 +23,21 @@
 define(["factory"], function() {
     'use strict';
 
+    function setCallback(prop) {
+        return function() {
+            var cb = this.model.get(prop);
+            typeof cb == 'function' && cb();
+        };
+    }
+
     var HeaderMainView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'main',
         bindings: {
            '.title': 'text:page_title'
+        },
+        events: {
+            'click .btn-back': setCallback('back')
         }
     });
 

@@ -1,3 +1,7 @@
 .categories {
     margin: 0 1.4em;
 }
+
+.categories .timetables {
+    display: block;
+}

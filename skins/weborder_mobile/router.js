@@ -37,8 +37,8 @@ define(["main_router"], function(main_router) {
             "": "index",
             "index": "index",
             // "search": "search",
-            // "products/:id_category": "products",
-            // "modifiers/:id_category/:id_product": "modifiers_add",
+            "products/:ids": "products",
+            "modifiers/:id_category/:id_product": "modifiers",
             // "modifiers_edit/:index": "modifiers_edit",
             // "myorder": "myorder",
             // "checkout" : "checkout",
@@ -237,29 +237,27 @@ define(["main_router"], function(main_router) {
             };
             App.Routers.RevelOrderingRouter.prototype.getEstablishments.apply(this, arguments);
         },
+        initCategories: function() {
+            if (!App.Data.categories) {
+                App.Data.categories = new App.Collections.Categories();
+                App.Data.parentCategories = new App.Collections.SubCategories();
+                App.Data.categories.loadData = App.Data.categories.get_categories();
+                App.Data.categories.loadData.then(function() {
+                    App.Data.parentCategories.add(App.Data.categories.getParents());
+                });
+            }
+
+            return App.Data.categories.loadData;
+        },
         index: function() {
-            var self = this;
             this.prepare('index', function() {
-                // load content block for categories
-                if (!App.Data.categories) {
-                    App.Data.categories = new App.Collections.Categories();
-                    App.Data.categories.loadData = App.Data.categories.get_categories();
-                    App.Data.categories.loadData.then(function() {
-                        App.Data.categories.trigger("load_complete");
-                        self.change_page();
-                    });
-                }
+                // load categories
+                this.initCategories().then(this.change_page.bind(this));
 
-                var header = {
-                    page_title: App.Settings.business_name || ''
-                };
-
-                if(App.Data.dirMode)
-                    header = Backbone.$.extend(header, {
-                        back: this.navigateDirectory.bind(this)
-                    });
-
-                App.Data.header.set(header);
+                App.Data.header.set({
+                    page_title: App.Settings.business_name || '',
+                    back: App.Data.dirMode ? this.navigateDirectory.bind(this) : null
+                });
 
                 App.Data.mainModel.set({
                     header: headerModes.Main,
@@ -273,8 +271,8 @@ define(["main_router"], function(main_router) {
                         },
                         {
                             modelName: 'Categories',
-                            collection: App.Data.categories,
-                            mod: 'Main',
+                            collection: App.Data.parentCategories,
+                            mod: 'Parents',
                             cacheId: true
                         }
                     ]
@@ -340,43 +338,65 @@ define(["main_router"], function(main_router) {
                     this.change_page();
             });
         },
-        products: function(id_category) {
-            var self = this;
+        products: function(ids) {
+            var self = this,
+                _ids = JSON.parse('[' + ids + ']'),
+                fetched;
+
+            if(typeof this.products.fetched == 'undefined') {
+                this.products.fetched = {};
+            }
+
+            fetched = this.products.fetched;
 
             this.prepare('products', function() {
-                App.Data.header.set('page_title', '');
+                var content = {
+                    modelName: 'Header',
+                    model: App.Data.header,
+                    mod: 'Tabs',
+                    className: 'tabs bg-color3 font-color8 animation',
+                    cacheId: true
+                };
 
-                // load content block for categories
-                if (!App.Data.categories) {
-                    App.Data.categories = new App.Collections.Categories();
-                    App.Data.categories.loadData = App.Data.categories.get_categories();
-                } else {
-                    App.Data.categories.loadData.resolve();
-                }
-
-                $.when(App.Data.categories.loadData, App.Collections.Products.init(id_category)).then(function() {
-                    App.Data.header.set({
-                        page_title: App.Data.categories.get(id_category).get('name'),
-                        back_title: _loc['HEADER_PRODUCTS_BT'],
-                        back: self.navigate.bind(self, 'index', true)
-                    });
-
-                    App.Data.products[id_category].trigger("load_complete");
-                    self.change_page();
+                App.Data.header.set({
+                    page_title: App.Settings.business_name || '',
+                    back: self.navigate.bind(self, 'index', true)
                 });
 
                 App.Data.mainModel.set({
-                    header: headerModes.Products,
-                    footer: footerModes.Products,
-                    content: {
-                        modelName: 'Product',
-                        collection: App.Data.products[id_category],
-                        mod: 'List'
-                    }
+                    header: headerModes.Main,
+                    content: content
+                });
+
+                // load categories and products
+                $.when(this.initCategories(), App.Collections.Products.get_slice_products(_ids)).then(function() {
+                    var parentCategory = App.Data.parentCategories.findWhere({ids: ids}),
+                        subs = parentCategory.get('subs');
+
+                    !fetched[ids] && subs.each(function(category) {
+                        var products = App.Data.products[category.get('id')];
+                        category.get('products').reset(products ? products.toJSON() : []);
+                    });
+
+                    fetched[ids] = true;
+
+                    App.Data.mainModel.set({
+                        content: [
+                            content,
+                            {
+                                modelName: 'Categories',
+                                model: parentCategory,
+                                mod: 'Main',
+                                cacheId: true
+                            }
+                        ]
+                    });
+
+                    self.change_page();
                 });
             });
         },
-        modifiers_add: function(id_category, id_product) {
+        modifiers: function(id_category, id_product) {
             this.prepare('modifiers', function() {
                 var self = this,
                     order = new App.Models.Myorder(),
@@ -408,8 +428,7 @@ define(["main_router"], function(main_router) {
                     });
 
                     App.Data.mainModel.set({
-                        header: App.Settings.online_orders ? headerModes.Modifiers : Backbone.$.extend(headerModes.Modifiers, {className: 'one_button'}),
-                        footer: footerModes.Modifiers,
+                        header: headerModes.Main,//App.Settings.online_orders ? headerModes.Modifiers : Backbone.$.extend(headerModes.Modifiers, {className: 'one_button'}),
                         content: {
                             modelName: 'MyOrder',
                             model: order,
