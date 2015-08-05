@@ -304,7 +304,7 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             this.listenTo(myorder, 'paymentResponse', function() {
-                var card = App.Data.card,
+                var is_gift, card = App.Data.card,
                     customer = App.Data.customer;
 
                 App.Data.settings.usaepayBack = true;
@@ -313,8 +313,12 @@ define(["backbone", "factory"], function(Backbone) {
                 switch (status) {
                     case 'ok':
                         PaymentProcessor.completeTransaction();        // complete payment transaction
-                        myorder.clearData();                           // cleaning of the cart
+                        is_gift = myorder.change_only_gift_dining_option();
+                        myorder.clearData();                           // cleaning of the cart, reset dining_option to 'DININ_OPTION_ONLINE'
                         card && card.clearData();                      // removal of information about credit card
+                        if (!is_gift) {
+                            myorder.checkout.revert_dining_option();   //restore dinin_option from selected_dining_option
+                        }
                         customer && customer.resetShippingServices();  // clear shipping service selected
                         break;
                     case 'error':

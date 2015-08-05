@@ -1320,6 +1320,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             order_info.lastPickupTime = checkout.lastPickupTime;
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.notes = checkout.notes;
+            if (checkout.dining_option == "DINING_OPTION_OTHER")  {
+                order_info.notes += "\n" + _loc.DELIVERY_INFO + ": " + this.getOtherDiningOptionCallName();
+            }
             order_info.asap = checkout.isPickupASAP;
             order_info.discount = this.discount.get("id") ? this.discount.toJSON() : undefined;
 
@@ -1506,7 +1509,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 call_name = [],
                 seatInfo = '';
             other_dining_options.each(function(model){
-                seatInfo += ' ' + model.get('name') + ': ' + model.get('value');
+                if (model.get('value')) {
+                    seatInfo += ' ' + model.get('name') + ': ' + model.get('value');
+                }
             });
             seatInfo.length > 0 && call_name.push($.trim(seatInfo));
             phone && call_name.push(phone);
@@ -1521,15 +1526,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
 
             contactName && call_name.push(contactName);
 
-            if (checkout.dining_option == 'DINING_OPTION_OTHER') {
-                call_name.push.apply(call_name,  this.getOtherDiningOptionCallName(customer.phone));
-            } else {
-                checkout.pickupTime && call_name.push(checkout.pickupTime);
-                if (customer.phone) {
-                    call_name.push(customer.phone);
-                }
+            checkout.pickupTime && call_name.push(checkout.pickupTime);
+            if (customer.phone) {
+                call_name.push(customer.phone);
             }
-
+        
             if (customer.phone) {
                 payment_info.phone = customer.phone;
             }
@@ -1565,7 +1566,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
 
             this.total.empty(); //this is for reliability cause of raunding errors exist.
 
-            this.checkout.set('dining_option', 'DINING_OPTION_ONLINE');
+            this.checkout.set('dining_option', 'DINING_OPTION_ONLINE');            
             this.checkout.set('notes', '');
         },
         removeFreeModifiers: function() {
