@@ -395,6 +395,8 @@ define(["backbone", "async"], function(Backbone) {
 
                             settings_system.other_dining_option_details = [{"name": "XLevel", "choices": "1,2,3,4,5", "required": false}, {"name": "XTest", "required": false}, {"name": "XSection", "choices": "A,B,C,D,E"}, {"name": "XSeat"}];
                             settings_system.dining_options.push(6);
+                            settings_system.editable_dining_options[0] = true;
+                            settings_system.editable_dining_options[2] = "Other for delivery";
 
                             //remove DINING_OPTION_OTHER from dinning_options when other_dining_option_details is undefined or empty array:
                             var other_index;
@@ -403,10 +405,6 @@ define(["backbone", "async"], function(Backbone) {
                                 if (other_index != -1) {
                                     settings_system.dining_options.splice(other_index, 1);
                                 }
-                            }
-
-                            if (Array.isArray(settings_system.order_from_seat)) {
-                                settings_system.order_from_seat[0] = false; // tmp fix for consistency of new frontand with old Backend (lower then release/1528)
                             }
 
                             // Set default dining option.

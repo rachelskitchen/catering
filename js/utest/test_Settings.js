@@ -232,10 +232,6 @@ define([], function() {
                 expect(sys.online_order_time_slot >= 0).toBeTruthy();
             });
 
-            it("Order from seat", function() {
-                expect(sys.order_from_seat instanceof Array).toBeTruthy();
-            });
-
             it("Order notes allow", function() {
                 expect(typeof(sys.order_notes_allow)).toBe("boolean");
             });

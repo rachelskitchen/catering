@@ -13,12 +13,6 @@
     "delivery_cold_untaxed": true,
     "delivery_for_online_orders": true,
     "about_description": "Anyone who reads Old and Middle English literary texts will be familiar with the mid-brown volumes of the EETS ...",
-    "order_from_seat": [
-      false,
-      true,
-      true,
-      true
-    ],
     "hide_products_description": true,
     "hide_images": false,
     "prevailing_tax": 10.0,

@@ -35,59 +35,6 @@
     </dl>
 </script>
 
-<script type="text/template" id="checkout_seat-template">
-    <% if(isDeliverToSeat) { %>
-        <% if(orderFromSeat.enable_level) { %>
-            <% if(levels.length) { %>
-            <div class="select-wrapper">
-                <label class="select required">
-                    <select class="level" name="level">
-                        <option value="" <% if (level == '') { %> selected="selected" <% } %>>
-                            <%= _lp.CHECKOUT_LEVEL %>
-                        </option>
-                        <% _.each(levels, function(l) { %>
-                        <option value="<%= l %>" <% if (level == l) { %>selected="selected"<% }; %>><%= l %></option>
-                        <% }); %>
-                    </select>
-                </label>
-            </div>
-            <% } else { %>
-            <label class="input label required border">
-                <input type="text" placeholder="<%= _lp.CHECKOUT_LEVEL %>" name="level" class="level ios-safari-caret bg-style1" maxlength="4" value="<%= level %>">
-            </label>
-            <% } %>
-        <% } %>
-        <% if(orderFromSeat.enable_sector) { %>
-            <% if(sections.length) { %>
-            <div class="select-wrapper">
-                <label class="select required">
-                    <select class="section" name="section">
-                        <option value="" <% if (section == '') { %> selected="selected" <% } %>>
-                            <%= _lp.CHECKOUT_SECTION %>
-                        </option>
-                        <% _.each(sections, function(s) { %>
-                        <option value="<%= s %>" <% if (section == s) { %>selected="selected"<% }; %>><%= s %></option>
-                        <% }); %>
-                    </select>
-                </label>
-            </div>
-            <% } else { %>
-            <label class="input label required border">
-                <input type="text" placeholder="<%= _lp.CHECKOUT_SECTION %>" name="section" class="section ios-safari-caret bg-style1" maxlength="4" value="<%= section %>">
-            </label>
-            <% } %>
-        <% } %>
-        <% if(orderFromSeat.enable_row) { %>
-            <label class="input label required border">
-                <input type="text" placeholder="<%= _lp.CHECKOUT_ROW %>" name="row" class="row ios-safari-caret bg-style1" maxlength="4" value="<%= row %>">
-            </label>
-        <% } %>
-            <label class="input label required border">
-                <input type="text" placeholder="<%= _lp.CHECKOUT_SEAT %>" name="seat" class="seat ios-safari-caret bg-style1" maxlength="4" value="<%= seat %>">
-            </label>
-    <% } %>
-</script>
-
 <script type="text/template" id="checkout_other-template">
     <div class="list"></div>
 </script>
@@ -108,7 +55,7 @@
 </script>
 
 <script type="text/template" id="checkout_pickup-template">
-    <dl class="checkout <% if(isFirefox) { %>firefox<% } %> <% if (isOrderFromSeat) { print('hidden'); } %>">
+    <dl class="checkout <% if(isFirefox) { %>firefox<% } %>">
         <dt class="pickup color-style1"><%= pickupTimeLabel %></dt>
         <dd>
             <div>
