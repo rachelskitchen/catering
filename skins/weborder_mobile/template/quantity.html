@@ -1,23 +1,23 @@
 <script type="text/template" id="quantity_main-template">
-    <span class="title color-style1"> <span> <%= _lp.QUANTITY_QUANTITY %> </span> </span>
-    <div>
-        <div class="quantity_edit_center">
-            <div class='quantity_edit_inner input_beauty border2'>
-                <input class="ios-safari-caret quantity_edit_input" type="number" inputmode="numeric" value="<%= quantity %>" min="1">
-            </div>
+    <div class="list-title title">
+        <span class="font-color1 font-size1"><%= _lp.QUANTITY_QUANTITY %></span>
+    </div>
+    <div class="controls">
+        <div class="increase btn-qty fl-right">
+            <span class="plus font-color1">+</span>
         </div>
-        <div class="increase"></div>
-        <div class="decrease"></div>
+        <div class="decrease btn-qty fl-left">
+            <span class="minus font-color1">&ndash;</span>
+        </div>
+        <input class="ios-safari-caret quantity_edit_input font-size1 font-color5" type="number" inputmode="numeric" value="<%= quantity %>" min="1">
     </div>
 </script>
 
 <script type="text/template" id="quantity_weight-template">
-    <span class="title color-style1"> <%= _lp.QUANTITY_WEIGHT %> <% if (uom) print('/ ' + uom); %> </span>
-    <div>
-        <div class='weight_edit_center'>
-                <div class='weight_edit_inner input_beauty border2'>
-                    <input class="ios-safari-caret weight_edit_input" value="<%= weight %>">
-                </div>
-            </div>
+    <div class="list-title title">
+        <span class="font-color1 font-size1"><%= _lp.QUANTITY_WEIGHT %> <% if (uom) print('/ ' + uom); %></span>
+    </div>
+    <div class="controls">
+        <input class="ios-safari-caret weight_edit_input font-size1 font-color5" value="<%= weight %>">
     </div>
 </script>

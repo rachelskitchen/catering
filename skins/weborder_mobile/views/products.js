@@ -27,100 +27,55 @@ define(["products_view"], function(products_view) {
         name: 'product',
         mod: 'modifiers',
         bindings: {
-            '.test': 'text: editPrice(currencyFormat(initial_price))'
+            '.price': 'value: monetaryFormat(price), events: ["input"], attr: {size: length(monetaryFormat(price)), readonly: not(giftMode)} ',
+            '.currency': 'text: _system_settings_currency_symbol, toggle: not(uom)',
+            '.uom': 'text: uom, toggle: uom',
+            '.title': 'text: _product_name',
+            '.desc': 'text: _product_description, toggle: _product_description',
+            '.timetable': 'toggle: _product_timetables',
+            '.timetable span': 'text: _product_timetables',
+            '.gift-card': 'classes: {hidden: not(all(_product_is_gift, _system_settings_online_orders))}',
+            '.gift-card-number': 'value: _product_gift_card_number, events: ["input"]'
         },
-        bindingFilters: {
-            editPrice: function(priceString) {
-                return priceString.replace(/(\d{1,3}(\.\d{0,2})?)/,'<span>$1</span>');
+        computeds: {
+            giftMode: {
+                deps: ['_product_is_gift', '_system_settings_online_orders'],
+                get: function(isGift, onlineOrders) {
+                    var modifiers = this.model.get_modifiers(),
+                        not_size = modifiers && modifiers.getSizeModel() === undefined;
+                    return isGift && onlineOrders && not_size;
+                }
+            },
+            uom: {
+                deps: ['_system_settings_scales', '_product_sold_by_weight'],
+                get: function(scales, sold_by_weight) {
+                    return scales.default_weighing_unit && sold_by_weight ? '/ ' + scales.default_weighing_unit : false;
+                }
+            },
+            price: {
+                deps: ['initial_price'],
+                get: function(initial_price) {
+                    return initial_price;
+                },
+                set: function(value) {
+                    var product = this.model.get_product();
+
+                    value = parseFloat(value);
+
+                    if(!isNaN(value)) {
+                        this.model.set('initial_price', value);
+                        product.set('price', value);
+                    } else {
+                        this.model.trigger('change:initial_price');
+                    }
+                }
             }
         },
         initialize: function() {
-            this.product = this.model.get_product();
-            this.modifiers = this.model.get_modifiers();
-            this.giftCardPriceRegStr = '^\\d{0,3}(\\.\\d{0,2})?$';
+            this.extendBindingSources({_product: this.model.get_product()});
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'change:initial_price', this.update_price, this);
-        },
-        events: {
-            'change .gift_card_number': 'gift_change',
-            'change .gift_card_price': 'gift_price_change'
-        },
-        render: function() {
-            var model = this.product.toJSON(),
-                settings = App.Data.settings;
-
-            model.hide_images = settings.get('settings_system').hide_images;
-            model.currency_symbol = settings.get('settings_system').currency_symbol;
-            model.price = round_monetary_currency(this.model.get('initial_price'));
-            model.price_length = model.price.length;
-            model.not_size = this.modifiers && this.modifiers.getSizeModel() === undefined;
-            model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
-            model.images = Array.isArray(model.images) ? model.images : [];
-
-            if (App.skin == App.Skins.RETAIL && model.images[0] == settings.get_img_default()) {
-                model.images[0] = settings.get_img_default(2); //to load noneMatrix.png
-            }
-
-            this.gift_price = model.is_gift && model.not_size;
-
-            this.$el.html(this.template(model));
-
-            if (model.is_gift) {
-                inputTypeMask(this.$('.gift_card_number'), /^(\d|-){0,255}$/, '', 'numeric');
-            }
-            if (this.gift_price) {
-                inputTypeMask(this.$('.gift_card_price'), new RegExp(this.giftCardPriceRegStr), '', 'float');
-            }
-
-            if (App.skin == App.Skins.RETAIL)
-                this.$('.img').attr('data-default-index', 2);
-            loadSpinner(this.$('.img'));
-
-            return this;
-        },
-        gift_change: function(e) {
-            this.product.set('gift_card_number', e.currentTarget.value);
-        },
-        gift_price_change: function(e) {
-            var newPrice = e.currentTarget.value,
-                formatPrice = parseFloat(newPrice),
-                pattern = new RegExp(this.giftCardPriceRegStr.replace(/(.*)0(.*)0(.*)/, '$11$22$3').replace(/[\(\)\?]/g, ''));
-
-            if(!isNaN(formatPrice)) {
-                this.model.set('initial_price', formatPrice);
-                this.product.set('price', formatPrice);
-            }
-
-            // If input field value does not match "XX.XX" need format it.
-            // Also need restore previos (or 0.00 if it was unset) value if new value is '.'.
-            if(!pattern.test(newPrice)) {
-                e.currentTarget.value = round_monetary_currency(this.model.get('initial_price'));
-            }
-        },
-        update_price: function() {
-            var dt = this.$('dt'),
-                initial_price = round_monetary_currency(this.model.get('initial_price'));
-
-            if (dt.length) {
-                dt.prop('className', dt.prop('className').replace(/(\s+)?s\d+(?=\s|$)/, ''));
-                dt.addClass('s' + initial_price.length);
-            }
-
-            if (this.gift_price) {
-                this.$('.price').val(initial_price);
-            } else {
-                this.$('.price').text(initial_price);
-            }
         }
     });
-
-    // App.Views.CoreProductView.CoreProductModifiersView.extend({
-        /*render: function() {
-            App.Views.CoreProductView.CoreProductModifiersView.prototype.render.apply(this, arguments);
-            $('img', this.$el).attr('src', this.product.get("logo_url_final") ? this.product.get("logo_url_final") : this.product.get("image"));
-            this.product.get('is_gift') && this.$el.addClass('is_gift');
-        }*/
-    // });
 
     var ProductListItemView = App.Views.FactoryView.extend({
         name: 'product',

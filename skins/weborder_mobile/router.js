@@ -387,7 +387,8 @@ define(["main_router"], function(main_router) {
                                 modelName: 'Categories',
                                 model: parentCategory,
                                 mod: 'Main',
-                                cacheId: true
+                                cacheId: true,
+                                cacheIdUniq: ids
                             }
                         ]
                     });
@@ -432,7 +433,9 @@ define(["main_router"], function(main_router) {
                         content: {
                             modelName: 'MyOrder',
                             model: order,
-                            mod: 'Matrix'
+                            mod: 'Matrix',
+                            cacheId: true,
+                            cacheIdUniq: id_category.toString() + id_product
                         }
                     });
 

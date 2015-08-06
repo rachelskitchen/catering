@@ -7,45 +7,19 @@
 </script>
 
 <script type="text/template" id="product_modifiers-template">
-    <span class="test"></span>
-    <dl>
-        <dt class="s<%= price_length %>">
-            <span class="cost">
-                <% if (is_gift && not_size && _settings.online_orders) { %>
-                    <span class='currency_symbol gift_card_symbol' ><%=currency_symbol%></span>
-                    <div class="input_beauty border2">
-                        <input type="text" id="price" name="gift_card_price" value="<%= price %>" class="ios-safari-caret gift_card_price price">
-                    </div>
-                <% } else { %>
-                    <span class="currency_symbol"><%= currency_symbol %></span>
-                    <span class="price"><%= price %></span>
-                <% } %>
-                <% if(sold_by_weight && uom) { %>
-                    <span class="uom">/ <%= uom %></span>
-                <% } %>
-            </span>
-            <span class="name_title <% if (is_gift && not_size) print('gift_name') ; %>">
-                <span class="name">
-                    <%= name %>
-                </span>
-            </span>
-        </dt>
-        <dd>
-            <%= description %>
-            <% if (timetables) { %>
-                <span class="timetables"> <%= _lp.PRODUCTS_AVAILABLE %>: <%= timetables %> </span>
-            <% } %>
-        </dd>
-    </dl>
-
-    <% if (is_gift && _settings.online_orders) { %>
-    <div class='gift_card <%if (hide_images) print('noimage');%>'>
-        <p> <span class="clip"> <%= _lp.PRODUCTS_GIFT_CARD_NUMBER %>: </span> </p>
-        <div class="input_beauty border2">
-            <input type="text" name="gift_card_number" value='<%= gift_card_number %>' class="gift_card_number" />
+    <div class="product-modifiers font-color2 bg-color9">
+        <div class="font-size1 fl-right">
+            <span class="currency"></span>
+            <input type="text" class="price ios-safari-caret">
+            <span class="uom"></span>
         </div>
-    </div>
-    <% } %>
+        <div class="title font-size1"></div>
+        <div class="desc info font-size2"></div>
+        <div class="timetable info font-size2"><%= _lp.PRODUCTS_AVAILABLE %>: <span></span></div>
+        <label class="gift-card info font-size2">
+            <%= _lp.PRODUCTS_GIFT_CARD_NUMBER %>: <input type="text" class="gift-card-number ios-safari-caret" />
+        </label>
+    <div>
 </script>
 
 <script type="text/template" id="product_main-template">
