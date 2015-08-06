@@ -1,4 +1,4 @@
-﻿define(function() {
+﻿define([], function() {
     return {
         'SUBCATEGORIES_VIEW_ALL': 'View All',
         'STORES_MI': 'mi',
@@ -512,5 +512,5 @@
         'DELIVERY_TIME': 'Delivery Time',
         'PICKUP_TIME': 'Pickup Time',
         'DELIVERY_INFO': 'Delivery Info'
-    } // end of locale
+    }; // end of locale
 }); // end of module
