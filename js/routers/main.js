@@ -48,19 +48,8 @@ define(["backbone", "factory"], function(Backbone) {
                 }
             }
 
-            var orderFromSeat = App.Settings.order_from_seat || [];
-            if(orderFromSeat[0]) {
-                App.Data.orderFromSeat = {
-                    enable_level: orderFromSeat[1],
-                    enable_sector: orderFromSeat[2],
-                    enable_row: orderFromSeat[3]
-                };
-            } else {
-                delete _loc.DINING_OPTION_NAME.DINING_OPTION_DELIVERY_SEAT;
-            }
-
             for (var dining_option in DINING_OPTION) {
-                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_option]) == -1 || (App.Data.orderFromSeat && dining_option == 'DINING_OPTION_OTHER')) {
+                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_option]) == -1) {
                     delete _loc.DINING_OPTION_NAME[dining_option];
                 }
             }
@@ -315,7 +304,7 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             this.listenTo(myorder, 'paymentResponse', function() {
-                var card = App.Data.card,
+                var is_gift, card = App.Data.card,
                     customer = App.Data.customer;
 
                 App.Data.settings.usaepayBack = true;
@@ -324,8 +313,12 @@ define(["backbone", "factory"], function(Backbone) {
                 switch (status) {
                     case 'ok':
                         PaymentProcessor.completeTransaction();        // complete payment transaction
-                        myorder.clearData();                           // cleaning of the cart
+                        is_gift = myorder.change_only_gift_dining_option();
+                        myorder.clearData();                           // cleaning of the cart, reset dining_option to 'DININ_OPTION_ONLINE'
                         card && card.clearData();                      // removal of information about credit card
+                        if (!is_gift) {
+                            myorder.checkout.revert_dining_option();   //restore dinin_option from selected_dining_option
+                        }
                         customer && customer.resetShippingServices();  // clear shipping service selected
                         break;
                     case 'error':

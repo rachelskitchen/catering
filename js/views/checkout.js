@@ -36,7 +36,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         },
         initialize: function() {
             this.listenTo(this.model, 'change:dining_option', this.controlAddress, this);
-            this.listenTo(this.model, 'change:dining_option', this.controlDeliverySeat, this);
+            this.listenTo(this.model, 'change:dining_option', this.controlDeliveryOther, this);
             this.listenTo(this.options.rewardsCard, 'change:number', this.updateData, this);
             this.listenTo(this.options.customer, 'change:first_name change:last_name change:email change:phone', this.updateData, this);
             this.customer = this.options.customer;
@@ -49,8 +49,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.model.get('dining_option') === 'DINING_OPTION_SHIPPING' &&
                  this.controlAddress(null, 'DINING_OPTION_SHIPPING');
 
-            this.model.get('dining_option') === 'DINING_OPTION_DELIVERY_SEAT' &&
-                 this.controlDeliverySeat(null, 'DINING_OPTION_DELIVERY_SEAT');
+            this.model.get('dining_option') === 'DINING_OPTION_OTHER' &&
+                 this.controlDeliveryOther(null, 'DINING_OPTION_OTHER');     
         },
         render: function() {
             var settings = App.Data.settings.get('settings_system'),
@@ -144,16 +144,16 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 this.trigger('address-hide');
             }
         },
-        controlDeliverySeat: function(model, value) {
-            if(value === 'DINING_OPTION_DELIVERY_SEAT') {
-                if (!this.seatView) {
-                    this.seatView = new App.Views.CoreCheckoutView.CoreCheckoutSeatView({model: this.model});
-                    this.$('.delivery_seat').append(this.seatView.el);
+        controlDeliveryOther: function(model, value) {
+            if(value === 'DINING_OPTION_OTHER') {
+                if (!this.otherView) {                    
+                  
+                    this.otherView = new App.Views.CoreCheckoutView.CoreCheckoutOtherView({model: this.model, collection: this.model.get('other_dining_options')});
+                    this.$('.delivery_other').append(this.otherView.el);
                 }
-                this.trigger('delivery-to-seat');
-                this.$('.delivery_seat').show();
+                this.$('.delivery_other').show();
             } else {
-                this.$('.delivery_seat').hide();
+                this.$('.delivery_other').hide();
             }
         },
         updateData: function() {
@@ -230,36 +230,28 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         mod: 'address'
     });
 
-    App.Views.CoreCheckoutView.CoreCheckoutSeatView = App.Views.FactoryView.extend({
+    App.Views.CoreCheckoutView.CoreCheckoutOtherItemView = App.Views.FactoryView.extend({
         name: 'checkout',
-        mod: 'seat',
-        initialize: function() {
-            this.listenTo(this.model, 'change', this.render, this);
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-        },
-        render: function() {
-            var data = this.model.toJSON();
-            data.isDeliverToSeat = this.model.get('dining_option') === 'DINING_OPTION_DELIVERY_SEAT';
-            data.orderFromSeat = App.Data.orderFromSeat || {};
-            this.$el.html(this.template(data));
-
-            inputTypeMask(this.$('input[name=level]'), /^[\d\w]{0,4}$/, data.level, 'numeric');
-            inputTypeMask(this.$('input[name=section]'), /^[\d\w]{0,4}$/, data.section, 'numeric');
-            inputTypeMask(this.$('input[name=row]'), /^[\d\w]{0,4}$/, data.row, 'numeric');
-            inputTypeMask(this.$('input[name=seat]'), /^[\d\w]{0,4}$/, data.seat, 'numeric');
-        },
-        events: {
-            'change input': 'onChangeElem',
-            'change select': 'onChangeSelect'
-        },
-        onChangeElem: function(e) {
-            e.target.value = e.target.value.toUpperCase();
-            this.model.set(e.target.name, e.target.value);
-        },
-        onChangeSelect: function(e) {
-            this.model.set(e.target.name, e.target.value);
+        mod: 'other_item',
+        bindings: {
+            'input': 'valueTrim: value, events:["blur","change"]',
+            'select': 'value: value, options:choices, optionsDefault:{label:name, value:""}',
+            '[isrequired]': 'classes:{required:required}'
         }
     });
+
+    App.Views.CoreCheckoutView.CoreCheckoutOtherView = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'other',
+        className: 'checkout_other_view',
+        bindings: {
+            '.list': 'collection: $collection'
+        },
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        itemView: App.Views.CoreCheckoutView.CoreCheckoutOtherItemView        
+    });    
 
     App.Views.CoreCheckoutView.CoreCheckoutPickupView = App.Views.FactoryView.extend({
         name: 'checkout',
@@ -268,8 +260,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.listenTo(this.model, 'change:dining_option', this.listenOrderType, this);
 
             this.templateData = {
-                isFirefox: /firefox/i.test(navigator.userAgent),
-                isOrderFromSeat: App.Data.orderFromSeat instanceof Object
+                isFirefox: /firefox/i.test(navigator.userAgent)
             };
 
             this.isDelivery = this.model.get('dining_option') === 'DINING_OPTION_DELIVERY';
@@ -391,7 +382,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         listenOrderType: function(model, value) {
             this.isDelivery = this.model.get('dining_option') === 'DINING_OPTION_DELIVERY';
             this.pickupTime = this.options.timetable.getPickupList(this.isDelivery);
-            if (value === 'DINING_OPTION_DELIVERY') {
+            if (value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_OTHER') {
                 this.$('.pickup').text(_loc.CONFIRM_DELIVERY_TIME);
             } else {
                 this.$('.pickup').text(_loc.CONFIRM_ARRIVAL_TIME);
@@ -766,5 +757,6 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         App.Views.CheckoutView.CheckoutPayView = App.Views.CoreCheckoutView.CoreCheckoutPayView;
         App.Views.CheckoutView.CheckoutPayButtonView = App.Views.CoreCheckoutView.CoreCheckoutPayButtonView;
         App.Views.CheckoutView.CheckoutPageView = App.Views.CoreCheckoutView.CoreCheckoutPageView;
+        App.Views.CheckoutView.CheckoutOtherView = App.Views.CoreCheckoutView.CoreCheckoutOtherView;
     });
 });

@@ -468,7 +468,6 @@ define([], function() {
             DINING_OPTION_DRIVETHROUGH: "Drive",
             DINING_OPTION_ONLINE: "Commande en ligne",
             DINING_OPTION_OTHER: "Autre",
-            DINING_OPTION_DELIVERY_SEAT: "Livrer à table",
             DINING_OPTION_SHIPPING: "Envoi"
         },
         TOTAL_DISCOUNTS: "Réductions",

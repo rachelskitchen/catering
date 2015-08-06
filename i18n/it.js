@@ -468,7 +468,6 @@ define([], function() {
             DINING_OPTION_DRIVETHROUGH: "Drive Through",
             DINING_OPTION_ONLINE: "Ordine online",
             DINING_OPTION_OTHER: "Altro",
-            DINING_OPTION_DELIVERY_SEAT: "Consegnare al tavolo",
             DINING_OPTION_SHIPPING: "Spedizione"
         },
         TOTAL_DISCOUNTS: "Sconti",

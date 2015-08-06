@@ -94,23 +94,12 @@
                                 <td> <%= _lp.MAIN_ORDER_ID %>: </td>
                                 <td><%= order_id %></td>
                             </tr>
-                            <% if (false && !isOnlyGift && !isOrderFromSeat) { %>
+                            <% if (false && !isOnlyGift) { %>
                             <tr>
                                 <td><%= pickup_type %>:</td>
                                 <td><%= pickup_time_date %></td>
                             </tr>
-                            <% } %>
-                            <% if(false && isDeliverToSeat) { %>
-                            <tr>
-                                <td> <%= _lp.MAIN_DELIVERY_INFO %>: </td>
-                                <td>
-                                    <% if (level) { %> <%= _lp.MAIN_LEVEL %> <span> <%= level %>, </span> <% } %>
-                                    <% if (section) { %> <%= _lp.MAIN_SECTION %> <span> <%= section %>, </span> <% } %>
-                                    <% if (row) { %> <%= _lp.MAIN_ROW %> <span> <%= row %>, </span> <% } %>
-                                    <% if (seat) { %> <%= _lp.MAIN_SEAT %> <span> <%= seat %> </span> <% } %>
-                                </td>
-                            </tr>
-                            <% } %>
+                            <% } %>                            
                             <% if(reward_points) { %>
                             <tr>
                                 <td> <%= _lp.MAIN_REWARD_CARD_POINTS %>: </td>

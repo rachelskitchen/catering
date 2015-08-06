@@ -102,6 +102,20 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         }
     });
 
+    Backbone.Epoxy.binding.addHandler("valueTrim", {
+        //
+        // it's custom binding to get the value.trim() for <input> element by 'blur','change' events.
+        // timeout param is used for 'input' events only.
+        // Usage example:  "#my_input": "valueTrim:value,events:['blur','change']"
+        //
+        set: function( $element, value) {
+            $element.val(value.trim());
+        },
+        get: function( $element, value, event ) {
+            return $element.val().trim();
+        }
+    });
+
     App.Views.FactoryView = Backbone.Epoxy.View.extend({
         constructor: function(options) {
             this.options = _.extend({}, options);

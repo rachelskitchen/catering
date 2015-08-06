@@ -40,8 +40,7 @@ define(["backbone"], function(Backbone) {
                 dining_option: '',
                 selected_dining_option: '', // It set when dining_option has changed on DINING_OPTION_ONLINE. It is used for recovery user selection of Order Type
                 notes: '',
-                sections: [],
-                levels: [],
+                other_dining_options: null,
                 discount_code: '',
                 last_discount_code: ''
             };
@@ -55,16 +54,10 @@ define(["backbone"], function(Backbone) {
                     this.set('selected_dining_option', prev);
                 }
             }, this);
-            // fill sections and levels
-            var order_from_seat = App.Data.settings.get('settings_system').order_from_seat,
-                levels = Array.isArray(order_from_seat) ? order_from_seat[4] : '',
-                sections = Array.isArray(order_from_seat) ? order_from_seat[5] : '';
 
-            if(typeof levels == 'string' && levels.length > 0)
-                this.set('levels', levels.split(','));
-
-            if(typeof sections == 'string' && sections.length > 0)
-                this.set('sections', sections.split(','));
+            if (!this.get('other_dining_options')) {
+                this.set('other_dining_options', new App.Data.DiningOtherOptions( App.Settings.other_dining_option_details ));
+            }
         },
         /**
          * Save current state model in storage (detected automatic).
@@ -79,6 +72,7 @@ define(["backbone"], function(Backbone) {
             var data = getData('checkout');
             data = data instanceof Object ? data : {};
             delete data.img;
+            data.other_dining_options = new App.Data.DiningOtherOptions( data.other_dining_options );
             this.set(data);
             this.trigger("change:dining_option", this, this.get("dining_option"));
         },
@@ -90,13 +84,17 @@ define(["backbone"], function(Backbone) {
         },
         check: function() {
             var isStoreClosed = this.isStoreClosed(),
-                orderFromSeat = this.checkOrderFromSeat();
+                orderFromSeat = this.checkOrderFromSeat(),
+                otherDiningOptions = this.checkOtherDiningOptions();
 
             if(isStoreClosed)
                 return isStoreClosed;
 
             if(orderFromSeat)
                 return orderFromSeat;
+
+            if(otherDiningOptions)
+                return otherDiningOptions;
 
             return {
                 status: "OK"
@@ -106,7 +104,7 @@ define(["backbone"], function(Backbone) {
             var dining_option = this.get('dining_option');
             if(App.skin == App.Skins.RETAIL)
                 return false;
-            if(this.get('pickupTS') === null && dining_option !== 'DINING_OPTION_DELIVERY_SEAT' && dining_option !== 'DINING_OPTION_ONLINE') {
+            if(this.get('pickupTS') === null && dining_option !== 'DINING_OPTION_OTHER' && dining_option !== 'DINING_OPTION_ONLINE') {
                 return {
                     status: 'ERROR',
                     errorMsg: MSG.ERROR_STORE_IS_CLOSED
@@ -114,15 +112,21 @@ define(["backbone"], function(Backbone) {
             }
         },
         checkOrderFromSeat: function() {
-            var orderFromSeat = App.Data.orderFromSeat,
+        },
+        /**
+         *  check if all 'Other' dining options was selected
+         */
+        checkOtherDiningOptions: function() {
+            var other_dining_options = this.get("other_dining_options"),
                 dining_option = this.get('dining_option'),
                 err = [];
 
-            if(orderFromSeat instanceof Object && dining_option === 'DINING_OPTION_DELIVERY_SEAT') {
-                orderFromSeat.enable_level && !this.get('level') && err.push(_loc.CHECKOUT_LEVEL);
-                orderFromSeat.enable_sector && !this.get('section') && err.push(_loc.CHECKOUT_SECTION);
-                orderFromSeat.enable_row && !this.get('row') && err.push(_loc.CHECKOUT_ROW);
-                !this.get('seat') && err.push(_loc.CHECKOUT_SEAT);
+            if (dining_option === 'DINING_OPTION_OTHER') {
+                other_dining_options.each(function(model){
+                    if (model.get("required") && !model.get("value")) {
+                        err.push(model.get("name"));
+                    }
+                });
             }
 
             if(err.length) {
@@ -147,4 +151,23 @@ define(["backbone"], function(Backbone) {
             return dining_option != 'DINING_OPTION_EATIN' && dining_option != 'DINING_OPTION_ONLINE';
         }
     });
+    
+    App.Data.DiningOtherOptions = Backbone.Collection.extend({ 
+        model: Backbone.Model.extend({
+            defaults: {
+                name: '',
+                choices: null,
+                required: true,
+                value: '' //it can be an option for choices OR '' or 'some string' for inputs (when choices is null) 
+            },
+            initialize: function() {
+                if (typeof this.get('choices') == 'string') {
+                    this.set('choices', this.get('choices').split(','));
+                }
+            },
+            reset: function() {
+                this.set('value', '');
+            }
+        })
+    });   
 });
