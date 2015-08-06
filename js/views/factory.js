@@ -60,6 +60,10 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         return line;
     });
 
+    Backbone.Epoxy.binding.addFilter('monetaryFormat', function(price) {
+        return round_monetary_currency(price);
+    });
+
     // add handlers
     Backbone.Epoxy.binding.addHandler('loadSpinner', function($el, value) {
         if(value) {
@@ -112,6 +116,25 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             return value;
         }
     });
+
+    Backbone.Epoxy.binding.addHandler('replaceToTemplate', {
+        init: function($el, value, bindings, context) {
+            this.oldHTML = $el.html();
+            this.replaceRegExp = typeof context.replaceRegExp == 'string' ? context.replaceRegExp : '';
+        },
+        set: function($el, value) {
+            var template = this.view.$(value);
+            if(template.length && this.replaceRegExp.length) {
+                $el.html($el.html().replace(new RegExp(this.replaceRegExp, 'g'), template.html()));
+            }
+        },
+        clean: function() {
+            delete this.oldHTML;
+            delete this.replaceRegExp;
+        }
+    });
+
+    Backbone.Epoxy.binding.addHandler('replaceRegExp');
 
     App.Views.FactoryView = Backbone.Epoxy.View.extend({
         constructor: function(options) {
@@ -289,6 +312,15 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
                     $('html').removeClass('ipad');
                 }
             }
+        },
+        /**
+         * @method
+         * Extends 'bindingSources'.
+         *
+         * @param {object} data - new binding sources items.
+         */
+        extendBindingSources: function(data) {
+            _.extend(this.bindingSources, data);
         }
     });
 

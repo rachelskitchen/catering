@@ -108,6 +108,10 @@ define(["done_view", "generator"], function(done_view) {
             var id = 'content_' + data.modelName + '_' + data.mod;
             data = _.defaults(data, this.content_defaults());
 
+            if(data.cacheIdUniq) {
+                id += '_' + data.cacheIdUniq;
+            }
+
             if(removeClass)
                 delete data.className;
 

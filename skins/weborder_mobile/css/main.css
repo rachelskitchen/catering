@@ -83,6 +83,14 @@ h1, h2, h3 {
     font-size: 2em;
 }
 
+.font-size3 {
+    font-size: 2.5em;
+}
+
+.hidden {
+    display: none !important;
+}
+
 .animation, .animation::before, .animation::after {
     -webkit-transition: all linear 0.2s;
     -moz-transition: all linear 0.2s;

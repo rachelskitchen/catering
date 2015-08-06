@@ -116,3 +116,23 @@
     background-repeat: no-repeat;
     background-position: 50%;
 }
+
+.product-modifiers input:not([readonly]) {
+    border: 1px solid #fff;
+}
+
+.quantity .btn-qty {
+    border-color: #1a99cd;
+}
+
+.quantity .btn-qty:active {
+    background: #1a99cd;
+}
+
+.quantity .btn-qty:active span {
+    color: #fff;
+}
+
+.quantity input {
+    border-color: #1a99cd;
+}
