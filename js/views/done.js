@@ -41,10 +41,10 @@ define(["backbone", "factory"], function(Backbone) {
                 this.model.success = true;
                 App.Data.myorder.order_id = get.orderId;
 
-                if (dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_DELIVERY_SEAT' || dining_option === 'DINING_OPTION_SHIPPING')
-                    model.pickup_type = 'Delivery Time';
+                if (dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_OTHER' || dining_option === 'DINING_OPTION_SHIPPING')
+                    model.pickup_type = _loc.DELIVERY_TIME;
                 else
-                    model.pickup_type = 'Pickup Time';
+                    model.pickup_type = _loc.PICKUP_TIME;
 
                 model.order_id = get.orderId;
                 model.total = round_monetary_currency(get.total); // order total
@@ -54,7 +54,6 @@ define(["backbone", "factory"], function(Backbone) {
 
                 model.email = App.Data.customer.get('email');
                 model.status = 'success';
-
 
                 model.reward_points = '';
                 model.reward_visits = '';
@@ -72,12 +71,10 @@ define(["backbone", "factory"], function(Backbone) {
 
                 model.stanfordCardBalances = get.paymentType === PAYMENT_TYPE.STANFORD && Array.isArray(balances.stanford) ? balances.stanford : null;
 
-                model.isOrderFromSeat = App.Data.orderFromSeat instanceof Object;
-                model.isDeliverToSeat = checkout.get("dining_option") === 'DINING_OPTION_DELIVERY_SEAT';
-                model.level = checkout.get("level");
-                model.section = checkout.get("section");
-                model.row = checkout.get("row");
-                model.seat = checkout.get("seat");
+                model.isDiningOptionOther = dining_option === 'DINING_OPTION_OTHER';
+                model.other_dining_options = _.filter( checkout.get("other_dining_options").toJSON(), function(model){
+                    return model.value;
+                });
             } else {
                 var error = get.errorMsg.replace(/\+/g, ' ').replace(/%\d+/g, '');
                 this.model.success = false;

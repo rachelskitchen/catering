@@ -19,13 +19,17 @@
     top: 0;
 }
 
-#content .checkout .input.required:before {
+#content .checkout .required:before {
     content: '*';
     position: absolute;
     font-size: 1em;
     left: -0.8em;
     z-index: 1;
     font-weight: bold;
+}
+
+#content .checkout .select-wrapper.required:before {
+    font-size: 3em;
 }
 
 #content .checkout .input input {
@@ -60,6 +64,7 @@
 
 #content .checkout .select {
     font-size: 3em;
+    margin-bottom: 1.5em;
 }
 
 #content .checkout dl {

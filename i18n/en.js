@@ -491,7 +491,6 @@
             'DINING_OPTION_DRIVETHROUGH': 'Drive Through',
             'DINING_OPTION_ONLINE': 'Online Ordering',
             'DINING_OPTION_OTHER': 'Other',
-            'DINING_OPTION_DELIVERY_SEAT': 'Deliver to Seat',
             'DINING_OPTION_SHIPPING': 'Shipping'
         },
 
@@ -509,6 +508,9 @@
         'YES': 'Yes',
         'NO': 'No',
         'CANCEL': 'Cancel',
-        'OK': 'Ok'
+        'OK': 'Ok',
+        'DELIVERY_TIME': 'Delivery Time',
+        'PICKUP_TIME': 'Pickup Time',
+        'DELIVERY_INFO': 'Delivery Info'
     } // end of locale
 }); // end of module
