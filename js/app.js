@@ -127,15 +127,6 @@
             app.get['srv'] == 'ee-dev' && (app.REVEL_HOST = 'https://eegorov-dev-branch.revelup.com');
             app.get['srv'] == 'ap-dev' && (app.REVEL_HOST = 'https://apakhunov-dev-branch.revelup.com');
 
-            App.Data.is_stanford_mode = false;
-            if (app.get['stanford']) {
-                try {
-                    App.Data.is_stanford_mode = !!JSON.parse(app.get['stanford']);
-                } catch (e) {
-                    App.Data.is_stanford_mode = false;
-                }
-            }
-
             // invoke beforeStart onfig
             app.beforeInit();
 
