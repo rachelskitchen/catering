@@ -1,6 +1,9 @@
 /* main mod start */
 .quantity {
     margin: 0 1.4em;
+    padding-bottom: 3em;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
 }
 
 .quantity .controls {
@@ -26,7 +29,7 @@
     margin-left: 1.6em;
 }
 
-.quantity .plus, .quantity .minus {
+.quantity .btn-qty span {
     font-size: 5em;
     pointer-events: none;
 }

@@ -11,13 +11,29 @@
     color: #1a99cd;
 }
 
+.font-color-active1:active {
+    color: #1a99cd;
+}
+
 /* [blue] header */
 .bg-color1 {
     background-color: #1a99cd;
 }
 
+.bg-color-active1:active {
+    background-color: #1a99cd;
+}
+
+.border-color1 {
+    border-color: #1a99cd;
+}
+
 /* [white] header background */
 .font-color2 {
+    color: #fff;
+}
+
+.font-color-active2:active {
     color: #fff;
 }
 
@@ -44,6 +60,10 @@
 /* [dark] modifiers font color */
 .font-color5 {
     color: #717d8b;
+}
+
+.border-color5 {
+    border-color: #717d8b;
 }
 
 /* [green] modifier price color */
@@ -101,7 +121,7 @@
     background: -webkit-linear-gradient(left,  #fff 0%, #f4f7f8 35%, #f4f7f8 65%, #fff 100%); /* Chrome10+,Safari5.1+ */
     background: -ms-linear-gradient(left,  #fff 0%,#f4f7f8 35%, #f4f7f8 65%, #fff 100%); /* IE10+ */
     background: linear-gradient(to right,  #fff 0%, #f4f7f8 35%, #f4f7f8 65%, #fff 100%); /* W3C */
-    border-bottom-color: #d6e3e9;
+    border-color: #d6e3e9;
 }
 
 .list-title::after {
@@ -121,18 +141,15 @@
     border: 1px solid #fff;
 }
 
-.quantity .btn-qty {
-    border-color: #1a99cd;
+.quantity, .modifier_class_wrapper .modifiers {
+    border-color: #d6e3e9;
 }
 
-.quantity .btn-qty:active {
+.modifier input:checked + .input {
     background: #1a99cd;
-}
-
-.quantity .btn-qty:active span {
-    color: #fff;
-}
-
-.quantity input {
     border-color: #1a99cd;
+}
+
+.modifier .mdf_split::before {
+    color: #1a99cd;
 }

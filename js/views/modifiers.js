@@ -214,7 +214,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             var qty_type = this.$(".mdf_split select").val();
             if (qty_type != undefined) {
                 this.model.set('qty_type', qty_type*1);
-                var selopt = this.$(".mdf_split .selected_option");
+                var selopt = this.$(".mdf_split .selected_option, .mdf_split.selected_option");
                 removeClassRegexp(selopt, "option_\\d+");
                 selopt.addClass("option_" + qty_type);
             }

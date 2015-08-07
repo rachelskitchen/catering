@@ -1,41 +1,28 @@
 <script type="text/template" id="modifiers_item-template">
-    <label for="modifier<%= id %>" class="s<%= slength %> <% if (isSpecial) { %>special_label<% } %> <% if(!_settings.online_orders) {print('no-controls');} %>">
+    <label for="modifier<%= id %>" class="s<%= slength %> <% if (isSpecial) { %>special_label<% } %> <% if(!_settings.online_orders) {print('no-controls');} %> font-size3 font-color5">
         <% if (!isSpecial) { %>
         <input type="<%= type %>" id="modifier<%= id %>" name="modifier<%= modifierClassName %>">
-        <span class="input <%= type %>"></span>
-        <% } else { %>
-            <div class="input special_button btn">
-                <span class="clip"> <%= _lp.MODIFIERS_ADD %> </span>
-            </div>
+        <span class="input <%= type %> font-color2 border-color5"></span>
+        <% }  else { %>
+        <span class="special_button fl-right btn-inline font-color-active1"><%= _lp.MODIFIERS_ADD %></span>
         <% } %>
-        <span class="title <% if(isSpecial) { %>special<% } %>"><%= name %></span>
         <% if(isSize) { %>
-            <span class="cost">
+            <span class="cost fl-right">
                 <span class="currency_symbol"><%= currency_symbol %></span>
                 <span class="price"><%= price %></span>
             </span>
         <% } else if(!isSpecial && !isInventoryMatrix) { %>
-            <span class="cost">
+            <span class="cost fl-right">
                 <span class="plus">+</span>
                 <span class="currency_symbol"><%= currency_symbol %></span>
                 <span class="price"><%= price %></span>
             </span>
         <% } %>
-        <span class="free"><span class="value"></span></span>
+        <span class="free fl-right font-color6"><span class="value"></span></span>
+        <label class="mdf_quantity select-wrapper fl-right font-color5 border-color5 bg-color2" style="display:none;"><select></select></label>
+        <label class="mdf_split select-wrapper selected_option option_0 fl-right font-color5 border-color5 bg-color2" style="display:none;"><select></select></label>
+        <span class="title <% if(isSpecial) { %>special<% } %>"><%= name %></span>
     </label>
-    <div class="split-qty-wrapper">
-        <div class="mdf_split" style="display:none;">
-            <span class='mdf_split_in select'>
-                <div class="selected_option"></div>
-                <select></select>
-            </span>
-        </div>
-        <div class="mdf_quantity" style="display:none;">
-            <span class='mdf_quantity_in select'>
-                <select></select>
-            </span>
-        </div>
-    </div>
 </script>
 
 <script type="text/template" id="modifiers_list-template">
@@ -43,8 +30,13 @@
 </script>
 
 <script type="text/template" id="modifiers_classes_item-template">
-    <dt class="modifier_class color-style1"><%= name %><% if(free_modifiers && _settings.online_orders) { %><span class="free">(<%= free_modifiers %>)</span><% } %></dt>
-    <dd class="modifier_class_list modifiers-bottom-line"></dd>
+    <div class="modifier_class list-title">
+        <span class="font-color1 font-size3"><%= name %></span>
+        <% if(free_modifiers && _settings.online_orders) { %>
+        <span class="free font-color6 font-size2">(<%= free_modifiers %>)</span>
+        <% } %>
+    </div>
+    <div class="modifier_class_list modifiers-bottom-line"></div>
 </script>
 
 <script type="text/template" id="modifiers_classes_list-template">
@@ -52,6 +44,8 @@
 </script>
 
 <script type="text/template" id="modifiers_classes_matrix-template">
-    <h2> <%= _lp.MODIFIERS_PLEASE_SELECT %>: <%= attributes %> </h2>
+    <h2 class="list-title matrix-title">
+        <span class="font-size3 font-color5"><%= _lp.MODIFIERS_PLEASE_SELECT %>: <%= attributes %></span>
+    </h2>
     <dl class="modifier_classes modifiers-bottom-line"></dl>
 </script>
