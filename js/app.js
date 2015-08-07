@@ -103,7 +103,7 @@
     // start app
     function init() {
         var app = require('app');
-       
+
         if(app.skins.available.length == 0)
             return alert('No skin is available. Please add at least one skin (need add skins.set(\'WEBORDER\', \'weborder\') in main.js).');
 
@@ -126,6 +126,15 @@
             app.get['srv'] == 'qa-dev' && (app.REVEL_HOST = 'https://weborder-qa-dev-branch.revelup.com');
             app.get['srv'] == 'ee-dev' && (app.REVEL_HOST = 'https://eegorov-dev-branch.revelup.com');
             app.get['srv'] == 'ap-dev' && (app.REVEL_HOST = 'https://apakhunov-dev-branch.revelup.com');
+
+            App.Data.is_stanford_mode = false;
+            if (app.get['stanford']) {
+                try {
+                    App.Data.is_stanford_mode = !!JSON.parse(app.get['stanford']);
+                } catch (e) {
+                    App.Data.is_stanford_mode = false;
+                }
+            }
 
             // invoke beforeStart onfig
             app.beforeInit();
