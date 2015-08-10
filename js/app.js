@@ -103,7 +103,7 @@
     // start app
     function init() {
         var app = require('app');
-       
+
         if(app.skins.available.length == 0)
             return alert('No skin is available. Please add at least one skin (need add skins.set(\'WEBORDER\', \'weborder\') in main.js).');
 
