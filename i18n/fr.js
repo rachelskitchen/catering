@@ -470,6 +470,7 @@ define([], function() {
         TOTAL_SURCHARGE: "Supplément",
         TOTAL_TAX: "Taxe",
         TOTAL_TIP: "Pourboire",
-        TOTAL_GRAND_TOTAL: "Total général"
+        TOTAL_GRAND_TOTAL: "Total général",
+        UPDATE: ""
     }
 });

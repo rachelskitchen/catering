@@ -34,10 +34,26 @@ define(["factory"], function() {
         name: 'header',
         mod: 'main',
         bindings: {
-           '.title': 'text:page_title'
+           '.title': 'text:page_title',
+           '.btn-back': 'toggle: back',
+           '.btn-cart': 'classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}'
         },
         events: {
             'click .btn-back': setCallback('back')
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+
+            var tabs = App.Views.GeneratorView.create('Header', {
+                model: this.model,
+                mod: 'Tabs',
+                className: 'tabs bg-color3 font-color8 animation'
+            }, 'header_tabs');
+
+            this.subViews.push(tabs);
+            this.$el.append(tabs.el);
+
+            return this;
         }
     });
 
@@ -60,6 +76,23 @@ define(["factory"], function() {
         }
     });
 
+    var HeaderModifiersView = App.Views.FactoryView.extend({
+        name: 'header',
+        mod: 'modifiers',
+        tagName: 'ul',
+        bindings: {
+            '.title': 'text:page_title, classes: {"icon-check": not(link)}',
+            '.btn-link-title': 'text:link_title',
+            '.btn-link': 'toggle: link',
+            '.btn-cart': 'toggle: not(link), attr: {"data-count": cartItemsQuantity}, classes: {"qty-visible": cartItemsQuantity}'
+        },
+        events: {
+            'click .btn-link': setCallback('link'),
+            'click .btn-back': setCallback('back'),
+            'click .btn-cart': setCallback('cart')
+        }
+    });
+
     var HeaderMaintenanceView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'maintenance'
@@ -69,6 +102,7 @@ define(["factory"], function() {
         App.Views.HeaderView = {};
         App.Views.HeaderView.HeaderMainView = HeaderMainView;
         App.Views.HeaderView.HeaderTabsView = HeaderTabsView;
+        App.Views.HeaderView.HeaderModifiersView = HeaderModifiersView;
         App.Views.HeaderView.HeaderMaintenanceView = HeaderMaintenanceView;
     });
 });

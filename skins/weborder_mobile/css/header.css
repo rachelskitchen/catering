@@ -1,5 +1,7 @@
 #header {
     min-height: 7em;
+    position: fixed;
+    z-index: 100;
 }
 
 #header > * {
@@ -9,6 +11,10 @@
 #header h1 {
     text-align: center;
     padding: 0 11em;
+}
+
+#header h1.sm {
+    padding: 0 15em;
 }
 
 #header h1::before {
@@ -38,7 +44,7 @@
     position: relative;
 }
 
-#header .btn-cart[data-count]::after {
+#header .btn-cart.qty-visible::after {
     content: attr(data-count);
     display: block;
     padding: 0.15em 0.5em;
@@ -59,6 +65,10 @@
     height: 5em;
     margin-top: 1em;
     margin-right: 8em;
+}
+
+#header .btn-back.lg {
+    margin-right: 12em;
 }
 
 #header .btn-back::before {
@@ -87,10 +97,21 @@
     margin-top: .3em;
 }
 
+#header .btn-link {
+    line-height: 7em;
+    font-weight: 100;
+    width: 15em;
+}
+
+#header .btn-link:active {
+    text-decoration: underline;
+}
+
 .tabs {
     height: 5.5em;
     line-height: 5.5em;
     padding: 1em 0;
+    margin: 0 -1.4em;
     position: relative;
 }
 

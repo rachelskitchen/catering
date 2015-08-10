@@ -470,6 +470,7 @@ define([], function() {
         TOTAL_SURCHARGE: "Zuschlag",
         TOTAL_TAX: "Steuer",
         TOTAL_TIP: "Trinkgeld",
-        TOTAL_GRAND_TOTAL: "Gesamtsumme"
+        TOTAL_GRAND_TOTAL: "Gesamtsumme",
+        UPDATE: ""
     }
 });

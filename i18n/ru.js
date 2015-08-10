@@ -504,6 +504,7 @@
         'YES': 'Да',
         'NO': 'Нет',
         'CANCEL': 'Отменить',
-        'OK': 'Ok'
+        'OK': 'Ok',
+        'UPDATE': 'Обновить'
     } // end of locale
 }); // end of module

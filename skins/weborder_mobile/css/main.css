@@ -87,6 +87,10 @@ h1, h2, h3 {
     font-size: 2.5em;
 }
 
+.font-size4 {
+    font-size: 2.8em;
+}
+
 .hidden {
     display: none !important;
 }
@@ -225,4 +229,23 @@ h1, h2, h3 {
     background-color: inherit;
     pointer-events: none;
     transform: scaleX(.7);
+}
+
+.icon-check::before {
+    content: '\f00c';
+    font-family: "FontAwesome";
+    display: inline-block;
+    padding-right: 5px;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
 }

@@ -470,6 +470,7 @@ define([], function() {
         TOTAL_SURCHARGE: "Recargo",
         TOTAL_TAX: "Impuesto",
         TOTAL_TIP: "Propina",
-        TOTAL_GRAND_TOTAL: "Total general"
+        TOTAL_GRAND_TOTAL: "Total general",
+        UPDATE: ""
     }
 });
