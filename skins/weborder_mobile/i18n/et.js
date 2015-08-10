@@ -197,6 +197,10 @@ define([], function() {
         REWARDS_VISITS_REDEMPTION_AMOUNT: ["Visit will be redeemed", "Külastused lunastatakse"],
         REWARDS_PURCHASES_REDEMPTION_AMOUNT: ["Purchase will be redeemed", "Ostud lunastatakse"],
         REWARDS_ENTER_CAPTCHA: "Sisestage kontrollkoodi tähemärgid",
-        CONFIRM_SUBMIT: "Kinnita"
+        CONFIRM_SUBMIT: "Kinnita",
+        PRODUCT_ADDED: "",
+        PRODUCT_UPDATED: "",
+        ADD_TO_CART: "",
+        CUSTOMIZE: ""
     }
 });

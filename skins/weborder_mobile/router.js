@@ -30,6 +30,7 @@ define(["main_router"], function(main_router) {
     */
     function defaultRouterData() {
         headerModes.Main = {mod: 'Main', className: 'main'};
+        headerModes.Modifiers = {mod: 'Modifiers', className: 'modifiers'};
     }
 
     var Router = App.Routers.RevelOrderingRouter.extend({
@@ -38,7 +39,7 @@ define(["main_router"], function(main_router) {
             "index": "index",
             // "search": "search",
             "products/:ids": "products",
-            "modifiers/:id_category/:id_product": "modifiers",
+            "modifiers/:id_category(/:id_product)": "modifiers",
             // "modifiers_edit/:index": "modifiers_edit",
             // "myorder": "myorder",
             // "checkout" : "checkout",
@@ -75,16 +76,10 @@ define(["main_router"], function(main_router) {
             this.prepare('main', function() {
                 App.Views.Generator.enableCache = true;
                 // set header, footer, main models
-                App.Data.header = new App.Models.HeaderModel();
-                App.Data.footer = new Backbone.Model();/*new App.Models.FooterModel({
-                    myorder: this.navigate.bind(this, 'myorder', true),
-                    location: this.navigate.bind(this, 'location', true),
-                    about: this.navigate.bind(this, 'about', true),
-                    loyalty: this.trigger.bind(this, 'navigateToLoyalty'),
-                    menu: this.navigate.bind(this, 'menu', true),
-                    profile: this.trigger.bind(this, 'navigateToProfile'),
-                    stanfordcard: this.navigate.bind(this, 'stanfordcard', true),
-                });*/
+                App.Data.header = new App.Models.HeaderModel({
+                    cart: this.navigate.bind(this, 'cart')
+                });
+                App.Data.footer = new Backbone.Model();
                 var mainModel = App.Data.mainModel = new App.Models.MainModel();
                 var ests = App.Data.establishments;
 
@@ -261,21 +256,12 @@ define(["main_router"], function(main_router) {
 
                 App.Data.mainModel.set({
                     header: headerModes.Main,
-                    content: [
-                        {
-                            modelName: 'Header',
-                            model: App.Data.header,
-                            mod: 'Tabs',
-                            className: 'tabs bg-color3 font-color8 animation',
-                            cacheId: true
-                        },
-                        {
-                            modelName: 'Categories',
-                            collection: App.Data.parentCategories,
-                            mod: 'Parents',
-                            cacheId: true
-                        }
-                    ]
+                    content: {
+                        modelName: 'Categories',
+                        collection: App.Data.parentCategories,
+                        mod: 'Parents',
+                        cacheId: true
+                    }
                 });
 
                 if(App.Data.categories.loadData.state() == 'resolved')
@@ -350,22 +336,13 @@ define(["main_router"], function(main_router) {
             fetched = this.products.fetched;
 
             this.prepare('products', function() {
-                var content = {
-                    modelName: 'Header',
-                    model: App.Data.header,
-                    mod: 'Tabs',
-                    className: 'tabs bg-color3 font-color8 animation',
-                    cacheId: true
-                };
-
                 App.Data.header.set({
                     page_title: App.Settings.business_name || '',
                     back: self.navigate.bind(self, 'index', true)
                 });
 
                 App.Data.mainModel.set({
-                    header: headerModes.Main,
-                    content: content
+                    header: headerModes.Main
                 });
 
                 // load categories and products
@@ -381,16 +358,13 @@ define(["main_router"], function(main_router) {
                     fetched[ids] = true;
 
                     App.Data.mainModel.set({
-                        content: [
-                            content,
-                            {
-                                modelName: 'Categories',
-                                model: parentCategory,
-                                mod: 'Main',
-                                cacheId: true,
-                                cacheIdUniq: ids
-                            }
-                        ]
+                        content: {
+                            modelName: 'Categories',
+                            model: parentCategory,
+                            mod: 'Main',
+                            cacheId: true,
+                            cacheIdUniq: ids
+                        }
                     });
 
                     self.change_page();
@@ -400,36 +374,37 @@ define(["main_router"], function(main_router) {
         modifiers: function(id_category, id_product) {
             this.prepare('modifiers', function() {
                 var self = this,
-                    order = new App.Models.Myorder(),
-                    dfdOrder = order.add_empty(id_product * 1, id_category * 1);
+                    header = App.Data.header,
+                    isEditMode = !id_product,
+                    order = isEditMode ? App.Data.myorder.at(id_category) : new App.Models.Myorder();
 
-                dfdOrder.then(function() {
-                    order = order.clone();
+                if(!order)
+                    return this.navigate('index', true);
 
-                    App.Data.header.set({
-                        page_title: _loc['HEADER_MODIFIERS_PT'],
-                        back_title: _loc['HEADER_MODIFIERS_BT'],
-                        forward_title: _loc['HEADER_MODIFIERS_ADD_FT'],
-                        back: window.history.back.bind(window.history),
-                        forward: function() {
-                            var check = order.check_order();
+                if(isEditMode) {
+                    setHeaderToUpdate();
+                    showProductDetails();
+                } else {
+                    setHeaderToAdd();
+                    order.add_empty(id_product * 1, id_category * 1).then(showProductDetails);
+                }
 
-                            if (check.status === 'OK') {
-                                order.get_product().check_gift(function() {
-                                    App.Data.myorder.add(order);
-                                    App.Data.router.navigate("index", true);
-                                }, function(errorMsg) {
-                                    App.Data.errors.alert(errorMsg); // user notification
-                                });
-                            } else {
-                                App.Data.errors.alert(check.errorMsg); // user notification
-                            }
-                        },
-                        order: order
-                    });
+                header.set({
+                    page_title: _loc.CUSTOMIZE,
+                    back: back,
+                    cart: cart
+                });
+
+                App.Data.mainModel.set({
+                    header: headerModes.Modifiers,//App.Settings.online_orders ? headerModes.Modifiers : Backbone.$.extend(headerModes.Modifiers, {className: 'one_button'}),
+                });
+
+                function showProductDetails() {
+                    if(!isEditMode) {
+                        order = order.clone();
+                    }
 
                     App.Data.mainModel.set({
-                        header: headerModes.Main,//App.Settings.online_orders ? headerModes.Modifiers : Backbone.$.extend(headerModes.Modifiers, {className: 'one_button'}),
                         content: {
                             modelName: 'MyOrder',
                             model: order,
@@ -440,7 +415,35 @@ define(["main_router"], function(main_router) {
                     });
 
                     self.change_page();
-                });
+                }
+
+                function back() {
+                    self.stopListening(order, 'change', setHeaderToUpdate);
+                    window.history.back();
+                }
+
+                function cart() {
+                    self.stopListening(order, 'change', setHeaderToUpdate);
+                    header.set('cart', self.navigate.bind(self, 'cart', true), {silent: true});
+                    self.navigate('cart', true);
+                }
+
+                function setHeaderToUpdate() {
+                    header.set({
+                        link_title: _loc.UPDATE,
+                        link: header.updateProduct.bind(header, order, order.clone())
+                    });
+                }
+
+                function setHeaderToAdd() {
+                    header.set({
+                        link_title: _loc.ADD_TO_CART,
+                        link: function() {
+                            header.addProduct(order);
+                            self.listenTo(order, 'change', setHeaderToUpdate);
+                        }
+                    });
+                }
             });
         },
         modifiers_edit: function(index) {

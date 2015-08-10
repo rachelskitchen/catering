@@ -197,6 +197,10 @@ define([], function() {
         REWARDS_VISITS_REDEMPTION_AMOUNT: ["Visit will be redeemed", "Les visites seront échangées."],
         REWARDS_PURCHASES_REDEMPTION_AMOUNT: ["Purchase will be redeemed", "Les achats seront échangés."],
         REWARDS_ENTER_CAPTCHA: "Saisir les caractères Captcha",
-        CONFIRM_SUBMIT: "Soumettre"
+        CONFIRM_SUBMIT: "Soumettre",
+        PRODUCT_ADDED: "",
+        PRODUCT_UPDATED: "",
+        ADD_TO_CART: "",
+        CUSTOMIZE: ""
     }
 });

@@ -499,6 +499,7 @@
         'YES': 'Yes',
         'NO': 'No',
         'CANCEL': 'Cancel',
-        'OK': 'Ok'
+        'OK': 'Ok',
+        'UPDATE': 'Update'
     } // end of locale
 }); // end of module

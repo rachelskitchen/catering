@@ -88,10 +88,12 @@ define(["done_view", "generator"], function(done_view) {
             content.scrollTop(0);
         },
         header_change: function() {
-            var data = _.defaults(this.model.get('header'), this.header_defaults());
+            var data = _.defaults(this.model.get('header'), this.header_defaults()),
+                $header = this.$('#header');
             this.subViews[0] && this.subViews[0].removeFromDOMTree();
             this.subViews[0] = App.Views.GeneratorView.create(data.modelName, data);
-            this.$('#header').append(this.subViews[0].el);
+            $header.append(this.subViews[0].el);
+            this.$('#content').css('padding-top', $header.height());
         },
         header_defaults: function() {
             return {

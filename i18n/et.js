@@ -470,6 +470,7 @@ define([], function() {
         TOTAL_SURCHARGE: "Lisatasu",
         TOTAL_TAX: "Maks",
         TOTAL_TIP: "Jootraha",
-        TOTAL_GRAND_TOTAL: "Lõppsumma"
+        TOTAL_GRAND_TOTAL: "Lõppsumma",
+        UPDATE: ""
     }
 });

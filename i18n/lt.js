@@ -470,6 +470,7 @@ define([], function() {
         TOTAL_SURCHARGE: "Priemoka",
         TOTAL_TAX: "Mokesčiai",
         TOTAL_TIP: "Arbatpinigiai",
-        TOTAL_GRAND_TOTAL: "Iš viso"
+        TOTAL_GRAND_TOTAL: "Iš viso",
+        UPDATE: ""
     }
 });

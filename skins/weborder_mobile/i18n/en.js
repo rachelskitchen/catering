@@ -224,6 +224,10 @@
         'REWARDS_ENTER_CAPTCHA': 'Enter Captcha Characters',
         'CONFIRM_SUBMIT': 'Submit',
         'SEARCH_ENTER_STRING': 'Search',
-        'PRODUCTS_NOT_FOUND': 'No products found'
+        'PRODUCTS_NOT_FOUND': 'No products found',
+        'PRODUCT_ADDED': 'Product Added',
+        'PRODUCT_UPDATED': 'Product Updated',
+        'ADD_TO_CART': 'Add to cart',
+        'CUSTOMIZE': 'Customize'
     } // end of locale
 }); // end of module

@@ -470,6 +470,7 @@ define([], function() {
         TOTAL_SURCHARGE: "Supplemento",
         TOTAL_TAX: "Imposta",
         TOTAL_TIP: "Mancia",
-        TOTAL_GRAND_TOTAL: "Somma totale"
+        TOTAL_GRAND_TOTAL: "Somma totale",
+        UPDATE: ""
     }
 });
