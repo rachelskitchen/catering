@@ -39,7 +39,8 @@ define(["factory"], function() {
            '.btn-cart': 'classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}'
         },
         events: {
-            'click .btn-back': setCallback('back')
+            'click .btn-back': setCallback('back'),
+            'click .btn-cart': setCallback('cart')
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);

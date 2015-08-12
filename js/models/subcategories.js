@@ -50,6 +50,7 @@
             subs: null
         },
         initialize: function() {
+            self = this;
             var subs = this.get('subs');
             if(subs instanceof App.Collections.Categories) {
                 subs = subs.toJSON();

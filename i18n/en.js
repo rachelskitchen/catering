@@ -500,6 +500,7 @@
         'NO': 'No',
         'CANCEL': 'Cancel',
         'OK': 'Ok',
-        'UPDATE': 'Update'
+        'UPDATE': 'Update',
+        'CHECKOUT': 'Checkout'
     } // end of locale
 }); // end of module

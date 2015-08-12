@@ -22,7 +22,7 @@ define(["backbone"], function(Backbone) {
                 b = isNaN(b) ? null : b;
 
                 if (a == b && this.sortKey != 'name') {
-                    //for equal attributes sort models by attr 'name': 
+                    //for equal attributes sort models by attr 'name':
                     a = oa.get('name');
                     b = ob.get('name');
                     return a < b ? -1 : a > b ? 1 : 0;
@@ -31,7 +31,7 @@ define(["backbone"], function(Backbone) {
                 return this.strategies.sort.call(this,a,b);
             },
             sort: function(a,b) {
-                var asc = this.sortOrderEx;
+                var asc = (this.sortOrder == "asc") * 2 - 1; // true/false change to 1/-1.
                 if (a == null && b == null) return 0; // undefined or null
                 if (a == null) return 1 * asc;
                 if (b == null) return -1 * asc;
@@ -48,7 +48,6 @@ define(["backbone"], function(Backbone) {
         sortEx: function(strategy, modelKey) {
             this.sortStrategy = this.strategies[strategy] && strategy || this.sortStrategy; // return last expression. so need return strategy, not this.strategies[strategy]
             this.sortKey = this.model.prototype.defaults[modelKey] !== undefined && modelKey || this.sortKey;
-            this.sortOrderEx = (this.sortOrder == "asc") * 2 - 1; // true/false change to 1/-1.
 
             //var t1 = (new Date).getTime();
             var collection = this[this.sortedModelsKey].sort(this.strategies[this.sortStrategy].bind(this));

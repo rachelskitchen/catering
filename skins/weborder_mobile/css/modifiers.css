@@ -1,11 +1,7 @@
-.modifier_class_wrapper {
-    margin: 0 1.4em;
-}
-
 .modifier_class_wrapper .modifiers {
     border-bottom-width: 1px;
     border-bottom-style: solid;
-    padding-top: 1.5em;
+    /*padding-top: 1.5em;*/
 }
 
 .modifiers .matrix-title {

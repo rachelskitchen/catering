@@ -471,6 +471,7 @@ define([], function() {
         TOTAL_TAX: "Mokesčiai",
         TOTAL_TIP: "Arbatpinigiai",
         TOTAL_GRAND_TOTAL: "Iš viso",
-        UPDATE: ""
+        UPDATE: "",
+        CHECKOUT: ""
     }
 });

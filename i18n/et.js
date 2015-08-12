@@ -471,6 +471,7 @@ define([], function() {
         TOTAL_TAX: "Maks",
         TOTAL_TIP: "Jootraha",
         TOTAL_GRAND_TOTAL: "Lõppsumma",
-        UPDATE: ""
+        UPDATE: "",
+        CHECKOUT: ""
     }
 });

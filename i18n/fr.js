@@ -471,6 +471,7 @@ define([], function() {
         TOTAL_TAX: "Taxe",
         TOTAL_TIP: "Pourboire",
         TOTAL_GRAND_TOTAL: "Total général",
-        UPDATE: ""
+        UPDATE: "",
+        CHECKOUT: ""
     }
 });

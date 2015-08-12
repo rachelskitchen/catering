@@ -57,11 +57,23 @@ define(["myorder_view"], function(myorder_view) {
         editItem: function(e) {
             e.preventDefault();
             var index = this.model.collection.models.indexOf(this.model);
-            App.Data.router.navigate('modifiers_edit/' + index, true);
+            App.Data.router.navigate('modifiers/' + index, true);
+        }
+    });
+
+    var MyOrderListView = App.Views.CoreMyOrderView.CoreMyOrderListView.extend({
+        bindings: {
+            ':el': 'toggle: items'
+        },
+        computeds: {
+            items: function() {
+                return this.getBinding('$collection').get_only_product_quantity();
+            }
         }
     });
 
     return new (require('factory'))(myorder_view.initViews.bind(myorder_view), function() {
+        App.Views.MyOrderView.MyOrderListView = MyOrderListView;
         App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
         App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
     });

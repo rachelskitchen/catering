@@ -40,8 +40,7 @@ define(["main_router"], function(main_router) {
             // "search": "search",
             "products/:ids": "products",
             "modifiers/:id_category(/:id_product)": "modifiers",
-            // "modifiers_edit/:index": "modifiers_edit",
-            // "myorder": "myorder",
+            "cart": "cart",
             // "checkout" : "checkout",
             // "card" : "card",
             // "giftcard" : "gift_card",
@@ -117,6 +116,10 @@ define(["main_router"], function(main_router) {
                         mainModel.trigger('loadStarted');
                         App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
                     }
+                });
+
+                this.listenTo(App.Data.myorder, 'add remove', function() {
+                    App.Data.header.set('cartItemsQuantity', App.Data.myorder.get_only_product_quantity());
                 });
 
                 new App.Views.MainView.MainMainView({
@@ -348,7 +351,13 @@ define(["main_router"], function(main_router) {
                 // load categories and products
                 $.when(this.initCategories(), App.Collections.Products.get_slice_products(_ids)).then(function() {
                     var parentCategory = App.Data.parentCategories.findWhere({ids: ids}),
+                        subs;
+
+                    if(parentCategory) {
                         subs = parentCategory.get('subs');
+                    } else {
+                        return self.navigate('index', true);
+                    }
 
                     !fetched[ids] && subs.each(function(category) {
                         var products = App.Data.products[category.get('id')];
@@ -390,13 +399,12 @@ define(["main_router"], function(main_router) {
                 }
 
                 header.set({
-                    page_title: _loc.CUSTOMIZE,
                     back: back,
                     cart: cart
                 });
 
                 App.Data.mainModel.set({
-                    header: headerModes.Modifiers,//App.Settings.online_orders ? headerModes.Modifiers : Backbone.$.extend(headerModes.Modifiers, {className: 'one_button'}),
+                    header: headerModes.Modifiers
                 });
 
                 function showProductDetails() {
@@ -409,8 +417,7 @@ define(["main_router"], function(main_router) {
                             modelName: 'MyOrder',
                             model: order,
                             mod: 'Matrix',
-                            cacheId: true,
-                            cacheIdUniq: id_category.toString() + id_product
+                            cacheId: false
                         }
                     });
 
@@ -430,15 +437,17 @@ define(["main_router"], function(main_router) {
 
                 function setHeaderToUpdate() {
                     header.set({
+                        page_title: _loc.CUSTOMIZE,
                         link_title: _loc.UPDATE,
-                        link: header.updateProduct.bind(header, order, order.clone())
+                        link: App.Settings.online_orders ? header.updateProduct.bind(header, order, order.clone()) : header.defaults.link
                     });
                 }
 
                 function setHeaderToAdd() {
                     header.set({
+                        page_title: _loc.CUSTOMIZE,
                         link_title: _loc.ADD_TO_CART,
-                        link: function() {
+                        link: !App.Settings.online_orders ? header.defaults.link : function() {
                             header.addProduct(order);
                             self.listenTo(order, 'change', setHeaderToUpdate);
                         }
@@ -446,58 +455,10 @@ define(["main_router"], function(main_router) {
                 }
             });
         },
-        modifiers_edit: function(index) {
-            index = parseInt(index);
-            this.prepare('modifiers', function() {
-                var self = this,
-                    _order = App.Data.myorder.at(index),
-                    order;
-
-                if(!_order)
-                    return this.navigate('myorder', true);
-
-                order = _order.clone();
-
-                App.Data.header.set({
-                    page_title: _loc['HEADER_MODIFIERS_PT'],
-                    back_title: _loc['HEADER_MODIFIERS_BT'],
-                    forward_title: _loc['HEADER_MODIFIERS_EDIT_FT'],
-                    back: this.navigate.bind(this, 'myorder', true),
-                    forward: function() {
-                        var check = order.check_order();
-
-                        if (check.status === 'OK') {
-                            order.get_product().check_gift(function() {
-                                App.Data.myorder.remove(_order);
-                                App.Data.myorder.add(order, {at: index});
-                                App.Data.router.navigate("index", true);
-                            }, function(errorMsg) {
-                                App.Data.errors.alert(errorMsg); // user notification
-                            });
-                        } else {
-                            App.Data.errors.alert(check.errorMsg); // user notification
-                        }
-                    }
-                });
-
-                App.Data.mainModel.set({
-                    header: headerModes.Modifiers,
-                    footer: footerModes.Modifiers,
-                    content: {
-                        modelName: 'MyOrder',
-                        model: order,
-                        mod: 'Matrix'
-                    }
-                });
-
-                this.change_page();
-            });
-        },
-        myorder: function() {
-            this.prepare('myorder', function() {
+        cart: function() {
+            this.prepare('cart', function() {
                 App.Data.header.set({
                     page_title: _loc['HEADER_MYORDER_PT'],
-                    back_title: _loc['HEADER_MYORDER_BT'],
                     forward_title: _loc['HEADER_MYORDER_FT'],
                     back: this.navigate.bind(this, 'index', true),
                     forward: this.navigate.bind(this, 'checkout', true)
@@ -506,8 +467,7 @@ define(["main_router"], function(main_router) {
                 var isNote = App.Data.settings.get('settings_system').order_notes_allow;
 
                 App.Data.mainModel.set({
-                    header: headerModes.Myorder,
-                    footer: footerModes.Myorder,
+                    header: headerModes.Main,
                     content: [
                         {
                             modelName: 'MyOrder',
@@ -516,24 +476,16 @@ define(["main_router"], function(main_router) {
                             className: 'myorderList custom-scroll' + (isNote ? ' isNote' : '')
                         },
                         {
-                            modelName: 'Checkout',
-                            model: App.Data.myorder.checkout,
-                            mod: 'DiscountCode2',
-                            className: 'discountBlock' + (isNote ? ' isNote' : ''),
-                            myorder: App.Data.myorder
-                        },
-                        {
-                            modelName: 'Total',
-                            model: App.Data.myorder.total,
-                            mod: 'Main',
-                            className: 'myorderSubtotal' + (isNote ? ' isNote' : ''),
-                            collection: App.Data.myorder
-                        },
-                        {
                             modelName: 'MyOrder',
                             model: App.Data.myorder.checkout,
                             mod: 'Note',
                             className: 'myorderNote'
+                        },
+                        {
+                            modelName: 'Total',
+                            model: App.Data.myorder.total,
+                            mod: 'Cart',
+                            className: 'fixed-bottom total-cart bg-color10'
                         }
                     ]
                 });

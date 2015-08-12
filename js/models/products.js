@@ -561,6 +561,11 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
          */
         sortOrder: "asc", //or "desc"
         /**
+         * @property {Function} comparator - comparator function.
+         * @default App.Collections.CollectionSort.prototype.strategies.sortNumbers
+         */
+        comparator: App.Collections.CollectionSort.prototype.strategies.sortNumbers,
+        /**
          * @property {App.Models.Product} model - items constructor.
          * @default App.Models.Product
          */

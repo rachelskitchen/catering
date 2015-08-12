@@ -46,6 +46,7 @@ define(["backbone", "collection_sort"], function(Backbone) {
         sortStrategy: "sortNumbers",
         sortKey: "sort_val",
         sortOrder: "asc", //or "desc"
+        comparator: 'sort',
         img: App.Data.settings.get("img_path"),
         /**
         * Get categories from backend.

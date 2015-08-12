@@ -69,7 +69,7 @@ define(["done_view", "generator"], function(done_view) {
             return this;
         },
         content_change: function() {
-            var view, content = this.$('#content'),
+            var view, content = this.$('#section'),
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
 
@@ -86,6 +86,7 @@ define(["done_view", "generator"], function(done_view) {
                 content.append(this.addContent(data));
 
             content.scrollTop(0);
+            this.setContentPadding();
         },
         header_change: function() {
             var data = _.defaults(this.model.get('header'), this.header_defaults()),
@@ -93,7 +94,7 @@ define(["done_view", "generator"], function(done_view) {
             this.subViews[0] && this.subViews[0].removeFromDOMTree();
             this.subViews[0] = App.Views.GeneratorView.create(data.modelName, data);
             $header.append(this.subViews[0].el);
-            this.$('#content').css('padding-top', $header.height());
+            this.setContentPadding();
         },
         header_defaults: function() {
             return {
@@ -216,6 +217,19 @@ define(["done_view", "generator"], function(done_view) {
         restoreSection: function() {
             this.$('#section').removeClass(this.resizeSection.classes.join(' '));
             this.resizeSection.classes.length = 0;
+        },
+        setContentPadding: function() {
+            var top = Array.prototype.reduce.call(this.$('.fixed-top'), iteration, 0),
+                bottom = Array.prototype.reduce.call(this.$('.fixed-bottom'), iteration, 0);
+
+            this.$('#section').css({
+                'padding-top': top + 'px',
+                'padding-bottom': bottom + 'px',
+            });
+
+            function iteration(iterRes, item) {
+                return iterRes + (Backbone.$(item).height() || 0);
+            }
         }
     });
 
