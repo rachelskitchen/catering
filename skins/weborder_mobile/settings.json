@@ -29,6 +29,12 @@
             "views": ["products", "quantity", "instructions", "myorder"],
             "templates": ["modifiers", "products", "quantity", "instructions", "myorder"],
             "core": ["categories", "products", "modifiers", "modifiers_view"]
+        },
+        "cart": {
+            "css": ["myorder", "total"],
+            "views": ["myorder", "total"],
+            "templates": ["myorder", "total"],
+            "core": []
         }
     }
 }

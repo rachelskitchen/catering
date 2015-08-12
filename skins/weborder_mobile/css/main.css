@@ -51,6 +51,19 @@ textarea, input {
     border-radius: 0;
 }
 
+textarea {
+    border-width: 1px;
+    border-style: solid;
+    resize: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ie-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0.5em;
+    font-family: inherit;
+}
+}
+
 ul {
     list-style: none;
 }
@@ -107,6 +120,10 @@ h1, h2, h3 {
 
 #header, #section {
     width: 100%;
+}
+
+#section > * {
+    padding: 0 1.4em;
 }
 
 .list > li {
@@ -248,4 +265,47 @@ h1, h2, h3 {
 
 .text-right {
     text-align: right;
+}
+
+#main-spinner {
+    background-color: rgba(0,0,0,.6);
+    z-index: 101;
+    position: fixed !important;
+    top: 0;
+}
+
+.fixed-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+
+.fixed-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+}
+
+.btn {
+    padding: 0.5em 1em;
+    border-radius: 2em;
+    font-weight: 200;
+    letter-spacing: 0.05em;
+}
+
+.mask {
+    mask-image: url('../img/img-mask.svg');
+    mask-size: 100%;
+    mask-repeat: no-repeat;
+    -moz-mask-image: url('../img/img-mask.svg');
+    -moz-mask-size: 100%;
+    -moz-mask-repeat: no-repeat;
+    -webkit-mask-image: url('../img/img-mask.svg');
+    -webkit-mask-size: 100%;
+    -webkit-mask-repeat: no-repeat;
+    -ms-mask-image: url('../img/img-mask.svg');
+    -ms-mask-size: 100%;
+    -ms-mask-repeat: no-repeat;
 }

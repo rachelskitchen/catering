@@ -471,6 +471,7 @@ define([], function() {
         TOTAL_TAX: "Steuer",
         TOTAL_TIP: "Trinkgeld",
         TOTAL_GRAND_TOTAL: "Gesamtsumme",
-        UPDATE: ""
+        UPDATE: "",
+        CHECKOUT: ""
     }
 });

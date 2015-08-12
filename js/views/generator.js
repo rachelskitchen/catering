@@ -46,13 +46,13 @@ define(['backbone'], function(Backbone) {
         /**
          * Clear cache if store was changed.
          */
-        clearCache: function() {
+        clearCache: function(key) {
             for (var view in cache) {
                 if (!~view.indexOf('CoreEstablishments')) cache[view].remove();
             }
             cache = {};
         }
     };
-window.cache = cache;
+
     App.Views.GeneratorView = new App.Views.Generator();
 });

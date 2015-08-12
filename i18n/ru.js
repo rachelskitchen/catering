@@ -505,6 +505,7 @@
         'NO': 'Нет',
         'CANCEL': 'Отменить',
         'OK': 'Ok',
-        'UPDATE': 'Обновить'
+        'UPDATE': 'Обновить',
+        'CHECKOUT': 'Checkout'
     } // end of locale
 }); // end of module

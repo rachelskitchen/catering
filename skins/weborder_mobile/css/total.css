@@ -1,80 +1,9 @@
-/* total mod myorder start */
-
-#content .myorderSubtotal {
-    position: absolute;
-    bottom: 0.8em;
-    left: 1.5em;
-    right: 1.5em;
-    height: 7.0em;
-    text-align: right;
-    padding: 0.5em 0 0.8em;
-    border-top-width: 1px;
-    border-top-style: solid;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+.total-cart {
+    width: 100%;
 }
 
-#content .myorderSubtotal.isNote {
-    bottom: 15.6em;
+.total-cart .btn {
+    margin: 0.5em 2em;
+    border-width: 1px;
+    border-style: solid;
 }
-
-#content .myorderSubtotal > div {
-    font-size: 2.8em;
-    font-weight: bold;
-}
-
-#content .myorderSubtotal > div span.clip {
-    display: inline-block;
-    vertical-align: bottom;
-    width: 30%;
-}
-
-#content .myorderSubtotal .currency_symbol {
-    position: relative;
-    left: 0.2em;
-}
-
-/* total mod myorder end */
-/* total mod confirm start */
-
-#content ul.confirm {
-    list-style: none;
-    margin: 1.5em;
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    padding-bottom: 2em;
-}
-
-#content ul.confirm li {
-    font-size: 2.8em;
-    clear: both;
-    height: 1.5em;
-}
-
-#content ul.confirm span.title {
-    float: left;
-    width: 60%;
-}
-
-#content ul.confirm span.cost {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    display: inline-block;
-    width: 40%;
-    float: right;
-    font-weight: bold;
-    text-align: right;
-}
-
-#content ul.confirm span.currency_symbol {
-    position: relative;
-    left: 0.2em;
-}
-#content ul.confirm span.plus {
-    position: relative;
-    left: 0.3em;
-}
-
-/* total mod confirm end */

@@ -71,8 +71,7 @@ define(["backbone"], function(Backbone) {
                     self.set({
                         link: self.defaults.link,
                         link_title: self.defaults.link_title,
-                        page_title: _loc.PRODUCT_ADDED,
-                        cartItemsQuantity: App.Data.myorder.get_only_product_quantity()
+                        page_title: _loc.PRODUCT_ADDED
                     });
                     window.history.replaceState({}, '', '#modifiers/' + (App.Data.myorder.length - 1));
                 }, function(errorMsg) {

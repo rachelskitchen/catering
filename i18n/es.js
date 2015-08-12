@@ -471,6 +471,7 @@ define([], function() {
         TOTAL_TAX: "Impuesto",
         TOTAL_TIP: "Propina",
         TOTAL_GRAND_TOTAL: "Total general",
-        UPDATE: ""
+        UPDATE: "",
+        CHECKOUT: ""
     }
 });

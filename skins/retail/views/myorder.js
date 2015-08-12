@@ -83,7 +83,7 @@ define(["myorder_view"], function(myorder_view) {
             } else {
                 App.Data.errors.alert(check.errorMsg); // user notification
             }
-        },        
+        },
         renderModifiers: function() {
             var model = this.model,
                 product = model.get('product'),
@@ -119,7 +119,7 @@ define(["myorder_view"], function(myorder_view) {
                     real: model,
                     action: 'update'
                 });
-        },
+        }/*,
         getData: function() {
             var data = App.Views.CoreMyOrderView.CoreMyOrderItemView.prototype.getData.apply(this, arguments),
                 attrs = this.model.get_attributes();
@@ -127,7 +127,7 @@ define(["myorder_view"], function(myorder_view) {
             return $.extend(data, {
                 attrs: attrs || []
             });
-        }
+        }*/
     });
 
     return new (require('factory'))(myorder_view.initViews.bind(myorder_view), function() {

@@ -31,12 +31,12 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         render: function() {
             var price, model = this.model.toJSON();
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
-            
+
             if (this.model.isMaxPriceFree())
                 price = model.max_price_amount;
             else
                 price = this.model.isFree() ? model.free_amount : this.model.getSum();
-            
+
             model.price = round_monetary_currency( price );
             model.half_price_str = MSG.HALF_PRICE_STR[this.model.get('qty_type')];
             this.$el.html(this.template(model));
@@ -172,7 +172,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             });
             self.subViews.push(view);
             self.$('.discount_place').append(view.el);
-    
+
             return this;
         },
         getData: function() {
@@ -196,6 +196,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             model.image = product.get_product().get('image');
             model.id = product.get_product().get('id');
             model.is_service_fee = this.model.isServiceFee();
+            model.attrs = this.model.get_attributes() || [];
+
             if (model.sold_by_weight) {
                 num_digits = App.Data.settings.get("settings_system").scales.number_of_digits_to_right_of_decimal;
                 model.weight = model.weight.toFixed(num_digits);
@@ -255,7 +257,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         },
         render: function() {
             this.$el.html(this.template());
-            
+
             this.collection.each(this.addItem.bind(this));
         },
         addItem: function(model) {
@@ -275,7 +277,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 this.$('.service_fees').append(view.el);
                 return;
             }
-            
+
             if (model === App.Data.myorder.bagChargeItem) {
                 this.bagChargeItemView = view;
                 if (this.subViews.indexOf(this.bagChargeItemView) == -1 &&
@@ -316,7 +318,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     self.subViews.splice(i, 1);
                     var bag_charge_index = self.subViews.indexOf(self.bagChargeItemView);
                     if (self.collection.get_only_product_quantity() < 1) {
-                        if (bag_charge_index != -1) { 
+                        if (bag_charge_index != -1) {
                             Backbone.View.prototype.remove.call(self.bagChargeItemView);
                             self.subViews.splice(bag_charge_index, 1);
                         }
@@ -341,6 +343,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.$el.html(this.template(data));
         },
         change_note: function(e) {
+debugger
             this.model.set('notes', e.target.value);
         }
     });

@@ -1,334 +1,61 @@
-/* myorder mod list start */
-#content .myorderList {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 9.5em;
-    overflow: auto;
+.myorderList {
+    margin-bottom: 10em;
 }
 
-#content .myorderList.isNote {
-    bottom: 24.3em;
+.myorderList .qty {
+    border-radius: 5em;
+    font-weight: 300;
+    padding: 0.45em 0.6em;
+    margin: -0.15em 0.5em 0 0;
 }
 
-#content ul.items {
-    list-style: none;
+.myorderList .currency_symbol {
+    margin-right: -0.2em;
 }
 
-/* myorder mod list end */
-
-/* myorder mod item start */
-#content ul.items > li {
-    border-top-width: 1px;
-    border-top-style: solid;
-    padding: 1.5em 0;
-    margin: 0 1.5em;
+.myorder.items > li, .bag_charge.items > li,
+.discount.items > li, .service_fees.items > li {
+    padding: 2em 0;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
 }
 
-#content ul.myorder > li:first-child {
-    border-top: none;
-}
-
-#content ul.items ul {
-    list-style: none;
-    font-size: 2.4em;
-    margin-left: 1em;
-}
-
-#content ul.items h3 {
-    font-size: 2.8em;
-    height: 1.5em;
-    position: relative;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-
-#content ul.items .currency_symbol,
-#content ul.items .plus {
-    position: relative;
-    left: 0.24em;
-}
-
-#content ul.items h3 .cost {
-    position: absolute;
-    right: 0;
-    width: 1.3em;
-    text-align: right;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-
-#content ul.items h3 .name {
-    position: absolute;
-    left: 0;
-    right: 1.3em;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-
-#content ul.items ul li {
-    position: relative;
-    padding: 0.2em 0 0;
-    height: 1.5em;
-}
-
-#content ul.items ul .cost {
-    position: absolute;
-    right: 0;
-    width: 5.3em;
-    text-align: right;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-
-#content ul.items ul .name {
-    position: absolute;
-    left: 0;
-    right: 5.4em;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-
-#content ul.myorder ul .special {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-
-#content ul.myorder .btns {
-    padding-top: 1.8em;
-    height: 3.5em;
-}
-
-#content ul.myorder .btns span {
-    display: inline-block;
-    font-size: 2.4em;
-    cursor: pointer;
-    float: right;
-    padding: 0.1em 0.5em 0.1em 1.5em;
-    border-radius: 1.2em;
-    border-width: 1px;
-    border-style: solid;
-    position: relative;
-    max-width: 7em;
-}
-
-#content ul.myorder .btns span:active {
-    border-width: 1px;
-    border-style: solid;
-}
-
-#content ul.myorder .btns span:first-child {
-    margin-left: 1em;
-}
-
-#content ul.myorder .btns span.remove:before {
-    content: '\f00d';
-    position: absolute;
-    top: 50%;
-    left: 0.45em;
-    font-family: FontAwesome;
+.myorderList .product-name {
+    margin-left: 2em;
     display: block;
-    height: 1em;
-    margin-top: -0.5em;
 }
 
-#content ul.myorder .btns span.edit:before {
-    content: '\f044 ';
-    position: absolute;
-    top: 50%;
-    left: 0.4em;
-    font-family: FontAwesome;
-    display: block;
-    height: 1em;
-    margin-top: -0.5em;
-}
-
-#content ul.myorder li.s2 .cost {
-    width: 2.9em;
-}
-
-#content ul.myorder li.s2 .name {
-    right: 2.9em;
-}
-
-#content ul.myorder li.s3 .cost {
-    width: 3.6em;
-}
-
-#content ul.myorder li.s3 .name {
-    right: 3.6em;
-}
-
-#content ul.myorder li.s4 .cost {
-    width: 4.2em;
-}
-
-#content ul.myorder li.s4 .name {
-    right: 4.2em;
-}
-
-#content ul.myorder li.s5 .cost {
-    width: 4.6em;
-}
-
-#content ul.myorder li.s5 .name {
-    right: 4.6em;
-}
-
-#content ul.myorder li.s6 .cost {
-    width: 5.1em;
-}
-
-#content ul.myorder li.s6 .name {
-    right: 5.1em;
-}
-
-#content ul.myorder li.s7 .cost {
-    width: 5.6em;
-}
-
-#content ul.myorder li.s7 .name {
-    right: 5.6em;
-}
-
-#content ul.myorder li.s8 .cost {
-    width: 6.3em;
-}
-
-#content ul.myorder li.s8 .name {
-    right: 6.3em;
-}
-
-#content ul.items h3.s2 .cost {
-    width: 2.1em;
-}
-
-#content ul.items h3.s2 .name {
-    right: 2.1em;
-}
-
-#content ul.items h3.s3 .cost {
-    width: 2.8em;
-}
-
-#content ul.items h3.s3 .name {
-    right: 2.8em;
-}
-
-#content ul.items h3.s4 .cost {
-    width: 3.3em;
-}
-
-#content ul.items h3.s4 .name {
-    right: 3.3em;
-}
-
-#content ul.items h3.s5 .cost {
-    width: 3.3em;
-}
-
-#content ul.items h3.s5 .name {
-    right: 3.3em;
-}
-
-#content ul.items h3.s6 .cost {
-    width: 4.3em;
-}
-
-#content ul.items h3.s6 .name {
-    right: 4.4em;
-}
-
-#content ul.items h3.s7 .cost {
-    width: 4.9em;
-}
-
-#content ul.items h3.s7 .name {
-    right: 4.9em;
-}
-
-#content ul.items h3.s8 .cost {
-    width: 5.4em;
-}
-
-#content ul.items h3.s8 .name {
-    right: 5.4em;
-}
-
-/* myorder discount_code template */
-#content .discountBlock {
-    position: absolute;
-    bottom: 3em;
-    left: 1.0em;
-    right: 1.0em;
-    height: 4.2em;
-    z-index: 100;
-}
-#content .discountBlock.isNote {
-    bottom: 19.0em;
-}
-#content .discountBlock .discount_field {
-    height: 1.8em;
-    font-size: 2.4em;
-    margin-top: 0.2em;
+.myorderList .cost {
     margin-left: 0.5em;
-    width: 7em;
-    position: relative;
 }
-#content .discountBlock .discount_field:before {
-    content: '';
-    display: block;
-    position: absolute;
-    top: -2px;
-    bottom: -2px;
-    left: -2px;
-    right: -2px;
-    z-index: 0;
+
+.myorderList .btns {
+    margin-top: 2em;
 }
-#content .discountBlock input {
-    display: block;
+
+.myorderList .modifier_place > li, .myorderList .attrs, .myorderList .discount_place > li {
+    margin: 0.5em 0;
+    padding-left: 3em;
+}
+
+.myorderList .edit, .myorderList .remove {
+    display: inline-block;
+    padding: 0.3em 0.5em;
+    border: 1px solid;
+    border-radius: 2em;
+}
+
+.myorderList .edit {
+    margin-right: 1em;
+    padding: 0.3em 1.2em;
+}
+
+.myorderNote .note_text {
+    margin-top: 0.4em;
+}
+
+.myorderNote textarea {
     width: 100%;
-    height: 100%;
-    resize: none;
-    border: none;
-    border-radius: 0;
-    font-size: inherit;
-    font-family: inherit;
-    position: relative;
-    z-index: 1;
+    height: 6.5em;
+    margin: 0.5em 0;
 }
-
-#content .discountBlock .btns {
-    margin-top: 0.8em;
-    margin-left: 1.3em;
-}
-#content .discountBlock .btns span {
-    font-size: 2.4em;
-    cursor: pointer;
-    padding: 0.1em 0.5em 0.15em 0.5em;
-    border-radius: 1.2em;
-    border-width: 1px;
-    border-style: solid;
-    position: relative;
-    width: 6em;
-    text-align: center;
-}
-
-#content .discountBlock  .discount_code_text {
-    float: left;
-    font-size: 2.8em;
-    cursor: pointer;
-    padding-left: 0.2em;
-    padding-top: 0.2em;
-    text-decoration: underline;
-    width: 52%;
-}
-
-/* myorder mod item end */

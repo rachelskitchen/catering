@@ -471,6 +471,7 @@ define([], function() {
         TOTAL_TAX: "Imposta",
         TOTAL_TIP: "Mancia",
         TOTAL_GRAND_TOTAL: "Somma totale",
-        UPDATE: ""
+        UPDATE: "",
+        CHECKOUT: ""
     }
 });
