@@ -92,6 +92,10 @@
     color: #bce0f0;
 }
 
+.font-color-active7:active {
+    color: #bce0f0;
+}
+
 /* [grey] header buttons */
 .font-color8 {
     color: #93a6ad;
@@ -102,12 +106,16 @@
     background-color: #1a8dbc;
 }
 
+.font-color9 {
+    color: #1a8dbc;
+}
+
 /* color #10 - blue/grey */
 .bg-color10 {
     background-color: #d6e3e9;
 }
 
-.border-color10: {
+.border-color10 {
     border-color: #d6e3e9;
 }
 

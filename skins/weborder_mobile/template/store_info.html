@@ -1,79 +1,3 @@
-<script type="text/template" id="store_info_main-template">
-    <% if(logo) { %>
-    <div class="store_info_main_logo">
-        <div class="logo"><img src="<%= logo %>" id="logo"></div>
-        <div class="divider"></div>
-    </div>
-    <% } %>
-    <% if (phone || email || location || delivery_for_online_orders) { %>
-        <div class="store_info_main_data <% if(enable_delivery) { %>delivery_info<% } %>">
-            <h2> <%= _lp.STORE_INFO_TITLE %> </h2>
-            <dl class="<% if (delivery_for_online_orders) { %> with_delivery <% } else { %> without_delivery <% } %>">
-                <% if(phone) { %>
-                    <dt class="clip"> <%= _lp.STORE_INFO_PHONE %> </dt>
-                    <dd><a href="tel:<%= phone %>" class="phone"><%= phoneFormat(phone) %></a></dd>
-                <% } %>
-                <% if (email) { %>
-                    <dt class="clip"> <%= _lp.STORE_INFO_EMAIL %> </dt>
-                    <dd> <a class="email" href="mailto:<%= email %>"> <%= email %> </a> </dd>
-                <% } %>
-                <% if(location) { %>
-                    <dt class="clip"> <%= _lp.STORE_INFO_LOCATION %> </dt>
-                    <dd><%= location %></dd>
-                <% } %>
-                <dt class='current_establishment'> &nbsp; </dt>
-                <dd class="current_establishment">
-                    <a class="change_establishment" href="javascript: void(0);"> <%= _lp.STORE_INFO_CHANGE_STORE %> </a>
-                </dd>
-
-                <% delivery_for_online_orders = true; %>
-
-                <% if(delivery_for_online_orders) { %>
-                    <dt class="clip"> <%= _lp.STORE_INFO_DELIVERY %> </dt>
-                    <dd>
-                        <% if (parseFloat(delivery_charge) > 0) { %>
-                            <%= currency_symbol + delivery_charge %>
-                        <% } else { %>
-                            <%= _lp.STORE_INFO_FREE %>
-                        <% } %>
-                    </dd>
-                    <dt class="clip"> <%= _lp.STORE_INFO_MINIMUM %> </dt>
-                    <dd><%= currency_symbol + min_delivery_amount %></dd>
-                    <dt class="clip"> <%= _lp.STORE_INFO_DELIVERY_TIME %> </dt>
-                    <dd>
-                    <% if(est_delivery_time.hour > 0) { %>
-                        <%= est_delivery_time.hour %> <%= _lp.STORE_INFO_HR %>
-                    <% } %>
-                    <% if(est_delivery_time.minutes > 0) { %>
-                        <%= est_delivery_time.minutes %> <%= _lp.STORE_INFO_MIN %>
-                    <% } %>
-                    <% if(est_delivery_time.minutes == 0 && est_delivery_time.hour == 0) { %>
-                        <%= _lp.STORE_INFO_ASAP %>
-                    <% } %>
-                    </dd>
-
-                    <% delivery_geojson_enabled = false; %>
-
-                    <% if(delivery_post_code_lookup_enabled) { %>
-                        <dt class="clip"> <%= _lp.STORE_INFO_DELIVERY_AREA %> </dt>
-                        <dd><%= delivery_post_codes %></dd>
-                    <% } else if(!delivery_geojson_enabled) { %>
-                        <dt class="clip"> <%= _lp.STORE_INFO_DELIVERY_RADIUS %> </dt>
-                        <dd><%= delivery_radius %>
-                        <% if(distance_mearsure.toLowerCase() == 'km') { %>
-                            <%= _lp.STORE_INFO_KM %>
-                        <% } else { %>
-                            <%= _lp.STORE_INFO_MILE %><% if (delivery_radius > 1) { %><%= _lp.STORE_INFO_MILE_END %><% } %>
-                        <% } %>
-                        </dd>
-                    <% } %>
-                <% } %>
-            </dl>
-            <div class='clear_both'> </div>
-        </div>
-    <% } %>
-</script>
-
 <script type="text/template" id="store_info_details-template">
     <% if(logo) { %>
     <div class="store_info_main_logo">
@@ -150,18 +74,35 @@
     <div id="mapBox"></div>
 </script>
 
-<script type="text/template" id="store_info_about-template">
-    <% if(logo) { %>
-        <div class="store_info_main_logo">
-            <div class="logo"><img src="<%= logo %>" id="logo"></div>
-            <div class="divider"></div>
+<script type="text/template" id="store_info_main-template">
+    <div class="img-block border-color10">
+        <div class="img-wrapper bg-color10 text-center mask">
+            <img src="">
         </div>
-    <% } %>
-    <h2>
-        <a target="_blank" href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&amp;utm_medium=RevelOnlineOrderApp&amp;utm_campaign=<%= clientName %>"> </a>
-        <%= title %>
-    </h2>
-    <p><%= text.replace(/[\n\r]+/g, '</p><p>') %></p>
+    </div>
+    <div class="desc border-color10 font-color4 font-size3"></div>
+    <div class="address defs border-color10 text-center">
+        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_ADDRESS %></div>
+        <div class="info font-size3 font-color4 text-left">
+            <div class="business-name"></div>
+            <div class="address-line1"></div>
+            <div class="address-line2"></div>
+            <div class="change-store link font-color1 font-color-active7 animation"><%= _lp.REVEL_CHANGE_PASSWORD %></div>
+        </div>
+    </div>
+    <div class="timetables defs border-color10 text-center">
+        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_ADDRESS %></div>
+    </div>
+    <div class="phone defs border-color10 text-center">
+        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_PHONE %></div>
+        <div class="info font-size3 font-color4 text-left">
+            <a href="tel:" class="phone-number font-color1 font-color-active7 animation"></a>
+        </div>
+    </div>
+    <div class="access defs border-color10 text-center">
+        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_ACCESS %></div>
+        <div class="access-info info font-size3 font-color4 text-left"></div>
+    </div>
 </script>
 
 <script type="text/template" id="store_info_gallery-template">

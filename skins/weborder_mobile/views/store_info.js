@@ -20,75 +20,51 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator"], function(Backbone) {
+define(["factory"], function() {
     'use strict';
 
-    var StoreInfoMainView = App.Views.LogoView.extend({
+    var StoreInfoMainView = App.Views.FactoryView.extend({
         name: 'store_info',
         mod: 'main',
-        initialize: function() {
-            var settings = App.Data.settings,
-                settings_system = settings.get('settings_system');
-            this.model = new Backbone.Model({
-                logo: settings_system.logo_img ? settings.get('host') + settings_system.logo_img : null,
-                phone: settings_system.phone,
-                email: settings_system.email,
-                location: settings_system.address instanceof Object ? settings_system.address.line_1 : null,
-                phoneFormat: function(phone) {
-                    if(phone.length < 10)
-                        return phone;
-                    var matches = phone.match(/^(\+?\d{1,3})?(\d{3})(\d{3})(\d{4})$/);
-                    if(matches !== null)
-                        return matches.slice(1).join('.');
-                    else
-                        return phone;
-                },
-                enable_delivery: settings_system.delivery_for_online_orders,
-                currency_symbol: settings_system.currency_symbol,
-                delivery_charge: round_monetary_currency(settings_system.delivery_charge),
-                min_delivery_amount: round_monetary_currency(settings_system.min_delivery_amount),
-                delivery_post_code_lookup_enabled: settings_system.delivery_post_code_lookup[0],
-                delivery_post_codes: settings_system.delivery_post_code_lookup[1],
-                delivery_geojson_enabled: settings_system.delivery_geojson[0],
-                delivery_radius: settings_system.max_delivery_distance,
-                delivery_for_online_orders: settings_system.delivery_for_online_orders,
-                est_delivery_time: {
-                    hour: Math.floor(settings_system.estimated_delivery_time / 60),
-                    minutes: Math.ceil(settings_system.estimated_delivery_time % 60)
-                },
-                distance_mearsure: settings_system.distance_mearsure,
-                needShowStoreChoice: false
-            });
-            App.Views.LogoView.prototype.initialize.apply(this, arguments);
-            if (!App.Data.storeInfo) App.Data.storeInfo = this.model;
-            this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
-        },
-        render: function() {
-            App.Views.LogoView.prototype.render.apply(this, arguments);
-            if (App.Data.establishments.length > 1) this.model.set('needShowStoreChoice', true);
-            this.checkBlockStoreChoice(); // show the "Store Choice" block if a brand have several stores
+        bindings: {
+            '.img-block': 'toggle: _system_settings_logo_img',
+            'img': 'loadSpinner: setURL(_settings_host, _system_settings_logo_img)',
+            '.desc': 'toggle: _system_settings_about_description, html: format("<p>$1</p>", handleDescriptions(_system_settings_about_description))',
+            '.business-name': 'text: _system_settings_business_name',
+            '.address-line1': 'text: line1',
+            '.address-line2': 'text: line2',
+            '.timetables': 'toggle: length(timetables_timetables)',
+            '.phone': 'toggle: _system_settings_phone',
+            '.phone-number': 'text: _system_settings_phone, attr: {href: format("tel:$1", _system_settings_phone)}',
+            '.access': 'toggle: _system_settings_about_access_to_location',
+            '.access-info': 'text: _system_settings_about_access_to_location'
         },
         events: {
-            "click .phone": "stopPropagation",
-            'click .email': 'stopPropagation',
-            "click .store_info_main_data": "store_info",
-            'click .change_establishment': 'change_establishment'
+            'click .change-store': 'change_establishment'
         },
-        /**
-         * Prevents the event from bubbling up the DOM tree, preventing any parent handlers from being notified of the event.
-         */
-        stopPropagation: function(e) {
-            e.stopPropagation();
+        bindingFilters: {
+            handleDescriptions: function(desc) {
+                return desc.replace(/[\n\r]+/g, '</p><p>');
+            },
+            setURL: function(host, img) {
+                return host.replace(/\/$/, '') + '/' + img.replace(/^\//, '');
+            }
         },
-        store_info: function() {
-            App.Data.router.navigate('location', true);
-        },
-        /**
-         * Show the "Store Choice" block if a brand have several stores.
-         */
-        checkBlockStoreChoice: function() {
-            var block = this.$('.current_establishment');
-            this.model.get('needShowStoreChoice') ? block.show() : block.hide();
+        computeds: {
+            line1: {
+                deps: ['_system_settings_address'],
+                get: function(address) {
+                    var line1 = address.line_1,
+                        line2 = address.line_2;
+                    return line2 ? line1 + ', ' + line2 : line1;
+                }
+            },
+            line2: {
+                deps: ['_system_settings_address'],
+                get: function(address) {
+                    return address.city + ', ' + address.getRegion() + ' ' + address.postal_code;
+                }
+            }
         },
         /**
          * Show the "Change Establishment" modal window.
@@ -99,75 +75,13 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 storeDefined: true
             }); // get a model for the stores list view
             ests.trigger('loadStoresList');
-            App.Data.mainModel.set('isBlurContent', true);
+            // App.Data.mainModel.set('isBlurContent', true);
             e.stopPropagation();
-        }
-    });
-
-    var StoreInfoInDetailsView = App.Views.LogoView.extend({
-        name: 'store_info',
-        mod: 'details',
-        initialize: function() {
-            this.model = new Backbone.Model(this.infoDetailed());
-
-            App.Views.LogoView.prototype.initialize.apply(this, arguments);
-        },
-        events: {
-            "click .phone": "stopPropagation",
-            'click .email': 'stopPropagation'
-        },
-        /**
-         * Prevents the event from bubbling up the DOM tree, preventing any parent handlers from being notified of the event.
-         */
-        stopPropagation: function(e) {
-            e.stopPropagation();
-        }
-    });
-
-    var StoreInfoMapView = App.Views.CoreStoreInfoView.CoreStoreInfoMainView.extend({
-        name: 'store_info',
-        mod: 'map',
-        render: function() {
-            App.Views.FactoryView.prototype.render.apply(this, arguments);
-            this.map();
-        }
-    });
-
-    var StoreInfoAboutView = App.Views.LogoView.extend({
-        name: 'store_info',
-        mod: 'about'
-    });
-
-    var StoreInfoGalleryView = App.Views.FactoryView.extend({
-        name: 'store_info',
-        mod: 'gallery',
-        initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            $(window).on('resize', this.resize);
-        },
-        remove: function() {
-            $(window).off('resize', this.resize);
-            return App.Views.FactoryView.prototype.remove.apply(this, arguments);
-        },
-        render: function() {
-            App.Views.FactoryView.prototype.render.apply(this, arguments);
-
-            this.$el.gallery({
-                images: this.model.get('images'),
-                animate: true,
-                circle: true
-            });
-
-            return this;
         }
     });
 
     return new (require('factory'))(function() {
         App.Views.StoreInfoView = {};
         App.Views.StoreInfoView.StoreInfoMainView = StoreInfoMainView;
-        App.Views.StoreInfoView.StoreInfoInDetailsView = StoreInfoInDetailsView;
-        App.Views.StoreInfoView.StoreInfoMapView = StoreInfoMapView;
-        App.Views.StoreInfoView.StoreInfoAboutView = StoreInfoAboutView;
-        App.Views.StoreInfoView.StoreInfoGalleryView = StoreInfoGalleryView;
     });
 });
