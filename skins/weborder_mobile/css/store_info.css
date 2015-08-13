@@ -1,284 +1,68 @@
-/* main mod start */
-#content .logo {
-    height: 16.9em;
+.store-info .img-block {
+    height: 20em;
     width: 100%;
-    text-align: center;
-}
-
-#logo {
-    display: none;
-}
-
-#content .store_info_main_logo {
-    height: 20.2em;
-    position: relative;
-}
-
-#content .store_info_main_logo .divider {
-    width: 100%;
-    height: 3.3em;
-    border-top-width: 1px;
-    border-top-style: solid;
-    position: absolute;
-    bottom: 0;
-    left: 0;
-}
-
-#content .store_info_main_logo .divider:before, #content .store_info_main_logo .divider:after {
-    content: '';
-    display: block;
-    width: 100%;
-    position: absolute;
-    left: 0;
-}
-
-#content .store_info_main_logo .divider:before {
-    height: 1.3em;
-    top: -1.3em;
-}
-
-#content .store_info_main_logo .divider:after {
-    height: 2.4em;
-    bottom: -2.4em;
-}
-
-#content .store_info_main_data {
-    height: auto;
-    padding-bottom: 2.9em;
-    width: 100%;
+    padding: 2em 0;
     border-bottom-width: 1px;
     border-bottom-style: solid;
-    position: relative;
-    cursor: pointer;
 }
 
-#content .store_info_main_data:after {
-    content: '';
-    display: block;
-    width: 4.5em;
-    height: 4.5em;
-    margin-top: -2.25em;
-    position: absolute;
-    top: 50%;
-    right: 2em;
-}
-
-#content .store_info_main_data h2 {
-    font-size: 2.4em;
-    padding-top: 1.13em;
-    text-align: center;
-}
-
-#content .store_info_main_data dl {
-    margin: 2.5em 0 0;
-}
-
-#content .store_info_main_data dl.without_delivery dt {
-    width: 20%;
-}
-#content .store_info_main_data dl.without_delivery dd {
-    width: 60%;
-}
-#content .store_info_main_data dl.with_delivery dt {
-    width: 35%;
-}
-#content .store_info_main_data dl.with_delivery dd {
-    width: 45%;
-}
-#content .store_info_main_data dt {
-    font-size: 2.4em;
-    float: left;
-    padding-left: 8%;
-    margin-bottom: 0.2em;
-}
-#content .store_info_main_data dd {
-    font-size: 2.4em;
-    float: right;
-    margin-bottom: 0.2em;
-    padding-right: 10%;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-
-#content .store_info_main_data .current_establishment {
-    display: none;
-}
-#content .store_info_main_data .current_establishment a {
-    text-decoration: none;
-}
-
-#content a.phone, #content a.phone:link, #content a.phone:visited, #content a.phone:hover, #content a.phone:active,
-#content a.email, #content a.email:link, #content a.email:visited, #content a.email:hover, #content a.email:active {
-    text-decoration: none;
-}
-
-/* main mod end */
-/* location mod start */
-
-#content ul.location {
-    margin: 4em 1.5em 2em;
-    list-style: none;
-}
-
-#content ul.location > li {
-    position: relative;
-    margin-bottom: 1em;
-    font-size: 2.8em;
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    padding-bottom: 1em;
-}
-
-#content ul.location address {
-    font-style: normal;
-    width: 100%;
-}
-
-#content ul.location address span {
-    display: block;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    width: 100%;
-}
-
-#content ul.location .title {
-    font-weight: bold;
-    display: inline-block;
-    width: 100%;
-    text-align: center;
-    padding-bottom: 0.5em;
-}
-
-#content ul.location .desc {
-    display: inline-block;
-    text-align: justify;
-}
-
-#content ul.location ul.desc {
-    list-style: none;
-    display: inline-block;
-    width: 100%;
-}
-
-#content ul.location ul.desc li {
-    text-align: right;
-}
-
-#content ul.location .weekDay {
-    float: left;
-    width: 35%;
-    padding-right: 2%;
-}
-
-#content ul.location ul.desc li.info {
-    height: auto;
-    padding-bottom: 1em;
-    font-size: 0.7em;
-    text-align: left;
-}
-
-#content ul.location ul.desc li:not(.info) {
-    border-width: 1px 1px 0 1px;
-    border-style: solid;
-    padding: 0.5em;
-}
-
-#content ul.location ul.desc li.row.first {
-    border-top-right-radius: 0.5em;
-    border-top-left-radius: 0.5em;
-}
-
-#content ul.location ul.desc li.row.last {
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    border-bottom-right-radius: 0.5em;
-    border-bottom-left-radius: 0.5em;
-}
-
-/* location mod end */
-/* map mod start */
-
-#content .map {
-    position: absolute;
-    top: 2em;
-    left: 0;
-    right: 0;
-    bottom: 2em;
-}
-
-#content #mapBox {
+.store-info .img-wrapper {
     width: 100%;
     height: 100%;
+    -webkit-mask-size: 23em 20em;
+    -webkit-mask-position: 50% 100%;
+    -moz-mask-size: 23em 20em;
+    -moz-mask-position: 50% 100%;
+    -ms-mask-size: 23em 20em;
+    -ms-mask-position: 50% 100%;
+    mask-size: 23em 20em;
+    mask-position: 50% 100%;
+    position: relative
 }
 
-#googlemaps_popup {
-    font-size: 1.5em !important;
-    padding: 0.5em;
+.store-info .img-wrapper .img-spinner  {
+    position: absolute !important;
+    top: 53%;
+    left: 50%;
+    font-size: 2em;
 }
 
-/* iPhone 5 in portrait & landscape */
-@media only screen and (min-device-width : 320px) and (max-device-width : 568px) {
-    #googlemaps_popup {
-        font-size: 1em !important;
-        padding: 0;
-    }
+.store-info .img-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
 }
 
-/* iPhone 2G-4S in portrait & landscape */
-@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
-    #googlemaps_popup {
-        font-size: 1em !important;
-        padding: 0;
-    }
+.store-info .desc {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    padding: 0 0.5em;
 }
 
-#googlemaps_popup > div {
-    font-size: inherit !important;
+.store-info .desc p {
+    margin: 0.5em 0;
 }
 
-/* map mod end */
-/* about mod start */
-
-#content .about p {
-    font-size: 2.8em;
-    padding: 0 0.6em 1em;
-    text-align: justify;
+.store-info .defs {
+    padding: 1.4em 0;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
 }
 
-#content .about p:last-child {
-    padding-bottom: 1em;
+.store-info .defs > * {
+    display: inline-block;
+    vertical-align: top;
 }
 
-#content .about h2 {
-    font-size: 3em;
-    padding: 1.7em 0.5em 0.5em;
-    text-align: center;
-    position: relative;
-}
-
-#content .about h2 > a {
-    height: 1.7em;
+.store-info .title {
     width: 8em;
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
+    padding-right: 1em;
 }
 
-/* about mod end */
-/* gallery mod start */
-
-#content .gallery {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+.store-info .info {
+    max-width: 60%;
+    min-width: 50%;
 }
 
-#content .app-gallery {
-    height: 92%;
-    top: 4%;
+.store-info .change-store {
+    margin-top: 0.4em;
 }
-
-/* gallery mod end */

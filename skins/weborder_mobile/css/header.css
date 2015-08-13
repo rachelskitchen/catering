@@ -9,7 +9,7 @@
 
 #header h1 {
     text-align: center;
-    padding: 0 11em;
+    padding: 0 12em;
 }
 
 #header h1.sm {
@@ -38,7 +38,7 @@
 #header .btn-cart {
     width: 5em;
     height: 4em;
-    margin: 1.5em 0.25em;
+    margin: 1.5em 0.5em;
     border-radius: 1em;
     position: relative;
 }
@@ -60,14 +60,13 @@
 
 #header .btn-back {
     display: block;
-    width: 3em;
-    height: 5em;
-    margin-top: 1em;
-    margin-right: 8em;
+    width: 11em;
+    line-height: 7em;
+    margin-right: 1em;
 }
 
 #header .btn-back.lg {
-    margin-right: 12em;
+    margin-right: 4em;
 }
 
 #header .btn-back::before {
@@ -75,6 +74,14 @@
     font-family: FontAwesome;
     font-size: 4.5em;
     color: inherit;
+    vertical-align: middle;
+}
+
+#header .btn-back-title {
+    display: inline-block;
+    font-weight: 200;
+    vertical-align: middle;
+    padding-left: 0.4em;
 }
 
 #header .btn-search {
@@ -82,7 +89,7 @@
     width: 5em;
     height: 5em;
     margin-top: 1em;
-    margin-right: 0.5em;
+    margin-left: 1em;
     text-align: center;
 }
 
@@ -98,12 +105,8 @@
 
 #header .btn-link {
     line-height: 7em;
-    font-weight: 100;
+    font-weight: 200;
     width: 15em;
-}
-
-#header .btn-link:active {
-    text-decoration: underline;
 }
 
 .tabs {

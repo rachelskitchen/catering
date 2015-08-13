@@ -35,6 +35,12 @@
             "views": ["myorder", "total"],
             "templates": ["myorder", "total"],
             "core": []
+        },
+        "store_info": {
+            "css": ["store_info"],
+            "views": ["store_info"],
+            "templates": ["store_info"],
+            "core": []
         }
     }
 }

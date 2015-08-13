@@ -79,7 +79,7 @@
         'HEADER_MODIFIERS_BT': 'Отмена',
         'HEADER_MODIFIERS_ADD_FT': 'Добавить',
         'HEADER_MODIFIERS_EDIT_FT': 'Изменить',
-        'HEADER_MYORDER_PT': 'Корзина',
+        'HEADER_MYORDER_PT': 'Ваша Корзина',
         'HEADER_MYORDER_BT': 'Меню',
         'HEADER_MYORDER_FT': 'Оформить',
         'HEADER_CHECKOUT_PT': 'Параметры заказа',

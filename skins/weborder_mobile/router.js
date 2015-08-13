@@ -31,6 +31,7 @@ define(["main_router"], function(main_router) {
     function defaultRouterData() {
         headerModes.Main = {mod: 'Main', className: 'main'};
         headerModes.Modifiers = {mod: 'Modifiers', className: 'modifiers'};
+        headerModes.Cart = {mod: 'Cart'};
     }
 
     var Router = App.Routers.RevelOrderingRouter.extend({
@@ -51,7 +52,7 @@ define(["main_router"], function(main_router) {
             // "done": "done",
             // "location": "location",
             // "map": "map",
-            // "about": "about",
+            "about": "about",
             // "gallery": "gallery",
             // "maintenance": "maintenance",
             // "pay": "pay",
@@ -170,6 +171,22 @@ define(["main_router"], function(main_router) {
             App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
         },
         navigationControl: function() {
+            this.listenTo(App.Data.header, 'change:tab', function() {
+                switch(App.Data.header.get('tab')) {
+                    case 0:
+                        this.navigate('index', true);
+                        break;
+
+                    case 1:
+                        this.navigate('about', true);
+                        break;
+
+                    case 3:
+                        // this.navigate('index', true);
+                        break;
+                }
+            }, this);
+
             // onApplyRewardsCard event occurs when Rewards Card's 'Apply' button is clicked on #checkout page
             this.listenTo(App.Data.myorder.rewardsCard, 'onApplyRewardsCard', this.navigate.bind(this, 'rewards_card_submit', true));
 
@@ -254,7 +271,8 @@ define(["main_router"], function(main_router) {
 
                 App.Data.header.set({
                     page_title: App.Settings.business_name || '',
-                    back: App.Data.dirMode ? this.navigateDirectory.bind(this) : null
+                    back: App.Data.dirMode ? this.navigateDirectory.bind(this) : null,
+                    back_title: App.Data.dirMode ? _loc.BACK : ''
                 });
 
                 App.Data.mainModel.set({
@@ -341,7 +359,8 @@ define(["main_router"], function(main_router) {
             this.prepare('products', function() {
                 App.Data.header.set({
                     page_title: App.Settings.business_name || '',
-                    back: self.navigate.bind(self, 'index', true)
+                    back: self.navigate.bind(self, 'index', true),
+                    back_title: _loc.BACK
                 });
 
                 App.Data.mainModel.set({
@@ -400,6 +419,7 @@ define(["main_router"], function(main_router) {
 
                 header.set({
                     back: back,
+                    back_title: _loc.BACK,
                     cart: cart
                 });
 
@@ -458,22 +478,19 @@ define(["main_router"], function(main_router) {
         cart: function() {
             this.prepare('cart', function() {
                 App.Data.header.set({
-                    page_title: _loc['HEADER_MYORDER_PT'],
-                    forward_title: _loc['HEADER_MYORDER_FT'],
+                    page_title: _loc.HEADER_MYORDER_PT,
+                    back_title: _loc.MENU,
                     back: this.navigate.bind(this, 'index', true),
-                    forward: this.navigate.bind(this, 'checkout', true)
                 });
 
-                var isNote = App.Data.settings.get('settings_system').order_notes_allow;
-
                 App.Data.mainModel.set({
-                    header: headerModes.Main,
+                    header: headerModes.Cart,
                     content: [
                         {
                             modelName: 'MyOrder',
                             collection: App.Data.myorder,
                             mod: 'List',
-                            className: 'myorderList custom-scroll' + (isNote ? ' isNote' : '')
+                            className: 'myorderList'
                         },
                         {
                             modelName: 'MyOrder',
@@ -787,7 +804,6 @@ define(["main_router"], function(main_router) {
         },
         map: function() {
             this.prepare('store_info', function() {
-
                 App.Data.header.set({
                     page_title: _loc['HEADER_MAP_PT'],
                     back_title: _loc['HEADER_MAP_BT'],
@@ -817,29 +833,25 @@ define(["main_router"], function(main_router) {
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1]
                 });
 
+            App.Data.header.set({
+                page_title: App.Settings.business_name || '',
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history),
+                tab: 1
+            });
+
+            App.Data.mainModel.set({
+                header: headerModes.Main
+            });
+
             this.prepare('store_info', function() {
-                var images = App.Data.settings.get('settings_system').about_images,
-                    header = headerModes.About;
-
-                App.Data.header.set({
-                    page_title: _loc['HEADER_ABOUT_PT'] + ' ' + App.Data.settings.get('settings_system').business_name,
-                    back_title: _loc['HEADER_ABOUT_BT'],
-                    back: this.navigate.bind(this, 'index', true),
-                    forward_title: _loc['HEADER_ABOUT_FT'],
-                    forward: this.navigate.bind(this, 'gallery', true)
-                });
-
-                if(!Array.isArray(images) || !images.length)
-                    header = headerModes.BackToMenu;
-
                 App.Data.mainModel.set({
-                    header: header,
-                    footer: footerModes.About,
                     content: {
                         modelName: 'StoreInfo',
                         model: model,
-                        mod: 'About',
-                        className: 'about'
+                        timetables: App.Data.timetables,
+                        mod: 'Main',
+                        className: 'store-info'
                     }
                 });
 

@@ -309,3 +309,7 @@ h1, h2, h3 {
     -ms-mask-size: 100%;
     -ms-mask-repeat: no-repeat;
 }
+
+.link {
+    text-decoration: underline;
+}

@@ -501,6 +501,7 @@
         'CANCEL': 'Cancel',
         'OK': 'Ok',
         'UPDATE': 'Update',
-        'CHECKOUT': 'Checkout'
+        'CHECKOUT': 'Checkout',
+        'BACK': 'Back'
     } // end of locale
 }); // end of module

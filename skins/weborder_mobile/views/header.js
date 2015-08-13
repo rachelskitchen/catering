@@ -36,6 +36,7 @@ define(["factory"], function() {
         bindings: {
            '.title': 'text:page_title',
            '.btn-back': 'toggle: back',
+           '.btn-back-title': 'text: back_title',
            '.btn-cart': 'classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}'
         },
         events: {
@@ -85,12 +86,26 @@ define(["factory"], function() {
             '.title': 'text:page_title, classes: {"icon-check": not(link)}',
             '.btn-link-title': 'text:link_title',
             '.btn-link': 'toggle: link',
+            '.btn-back-title': 'text: back_title',
             '.btn-cart': 'toggle: not(link), attr: {"data-count": cartItemsQuantity}, classes: {"qty-visible": cartItemsQuantity}'
         },
         events: {
             'click .btn-link': setCallback('link'),
             'click .btn-back': setCallback('back'),
             'click .btn-cart': setCallback('cart')
+        }
+    });
+
+    var HeaderCartView = App.Views.FactoryView.extend({
+        name: 'header',
+        mod: 'cart',
+        bindings: {
+           '.title': 'text:page_title',
+           '.btn-back': 'toggle: back',
+           '.btn-back-title': 'text: back_title'
+        },
+        events: {
+            'click .btn-back': setCallback('back')
         }
     });
 
@@ -104,6 +119,7 @@ define(["factory"], function() {
         App.Views.HeaderView.HeaderMainView = HeaderMainView;
         App.Views.HeaderView.HeaderTabsView = HeaderTabsView;
         App.Views.HeaderView.HeaderModifiersView = HeaderModifiersView;
+        App.Views.HeaderView.HeaderCartView = HeaderCartView;
         App.Views.HeaderView.HeaderMaintenanceView = HeaderMaintenanceView;
     });
 });
