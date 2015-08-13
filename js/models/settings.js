@@ -265,7 +265,7 @@ define(["backbone", "async"], function(Backbone) {
                     accept_discount_code: true,
                     enable_quantity_modifiers: true,
                     enable_split_modifiers: true,
-                    other_dining_option_details: [],
+                    other_dining_option_details: null,
                     // for test (begin)
                     locales: {
                         en: 1427802271098,
@@ -423,6 +423,12 @@ define(["backbone", "async"], function(Backbone) {
                                     }
                                 }
                             })();
+
+                            //check stanford payment processor, set color_scheme to "Stanford"
+                            if (App.Data.is_stanford_mode || settings_system.payment_processor.stanford == true) {
+                                settings_system.color_scheme = "Stanford";
+                                App.Data.is_stanford_mode = true;
+                            }
 
                             self.set("settings_system", settings_system);
                             App.Settings = App.Data.settings.get("settings_system");

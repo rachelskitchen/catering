@@ -100,7 +100,7 @@ img[src=''] {
     font-size: 3.8em;
     font-weight: normal;
     text-align: center;
-    margin-top: 0.4em;
+    padding-top: 0.4em;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
