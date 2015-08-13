@@ -3,7 +3,7 @@
     "styles": [],
     "scripts" : [],
     "img_default": ["none.png", "none2.png"],
-    "color_schemes": ["default", "blue_&_white", "vintage"],
+    "color_schemes": ["default", "blue_&_white", "vintage", "stanford"],
     "routing": {
         "main": {
             "css": ["main", "myorder", "jquery.contentarrow", "products", "modifiers", "instructions", "quantity", "jquery.combobox"],

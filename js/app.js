@@ -127,6 +127,12 @@
             app.get['srv'] == 'ee-dev' && (app.REVEL_HOST = 'https://eegorov-dev-branch.revelup.com');
             app.get['srv'] == 'ap-dev' && (app.REVEL_HOST = 'https://apakhunov-dev-branch.revelup.com');
 
+            try {
+                App.Data.is_stanford_mode = !!JSON.parse(app.get['stanford']);
+            } catch (e) {
+                App.Data.is_stanford_mode = false;
+            }
+
             // invoke beforeStart onfig
             app.beforeInit();
 
@@ -296,6 +302,10 @@
         var loader = document.querySelector('#loader');
         addSpinner.call(loader);
         loader.style.cssText += "background-color: rgba(170, 170, 170, .8); position: fixed;";
+        
+        if (App.Data.is_stanford_mode) {
+            $(".ui-spinner").addClass("stanford");
+        }
 
         // jquery `spinner` plugin
         $.fn.spinner = function() {
