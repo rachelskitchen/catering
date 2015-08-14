@@ -282,7 +282,7 @@ define(["backbone", "async"], function(Backbone) {
                         "freedompay":false,
                         "mercury":false,
                         "paypal_direct_credit_card":false,
-                        "gift_card":false,                        
+                        "gift_card":false,
                         "cash":false,
                         "usaepay":false,
                         "credit_card_button":false,
@@ -403,7 +403,7 @@ define(["backbone", "async"], function(Backbone) {
 
                             //remove DINING_OPTION_OTHER from dinning_options when other_dining_option_details is undefined or empty array:
                             var other_index;
-                            if (!Array.isArray(settings_system.other_dining_option_details) || settings_system.other_dining_option_details.length == 0) {  
+                            if (!Array.isArray(settings_system.other_dining_option_details) || settings_system.other_dining_option_details.length == 0) {
                                 other_index = settings_system.dining_options.indexOf(DINING_OPTION['DINING_OPTION_OTHER']);
                                 if (other_index != -1) {
                                     settings_system.dining_options.splice(other_index, 1);
@@ -426,7 +426,7 @@ define(["backbone", "async"], function(Backbone) {
 
                             //check stanford payment processor, set color_scheme to "Stanford"
                             if (App.Data.is_stanford_mode || settings_system.payment_processor.stanford == true) {
-                                settings_system.color_scheme = "Stanford";
+                                settings_system.color_scheme = "stanford";
                                 App.Data.is_stanford_mode = true;
                             }
 
@@ -572,5 +572,5 @@ define(["backbone", "async"], function(Backbone) {
             });
             if (!withoutTrigger) this.trigger('changeSkinPath');
         }
-    });   
+    });
 });
