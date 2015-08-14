@@ -93,6 +93,20 @@
     text-align: center;
 }
 
+#header .btn-search.active::after {
+    content: '\f04b';
+    font-family: "FontAwesome";
+    font-size: 5em;
+    display: inline-block;
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    position: relative;
+    z-index: 102;
+    top: -0.1em;
+}
+
 #header .btn-search::before {
     content: '\f002';
     font-family: FontAwesome;
@@ -162,4 +176,28 @@
     font-size: 2.2em;
     text-transform: uppercase;
     pointer-events: none;
+}
+
+.main {
+    position: relative;
+}
+
+.main .search {
+    height: 7.5em;
+    line-height: 8.2em;
+    position: absolute;
+    right: -1.4em;
+    left: -1.4em;
+    top: 7em;
+    z-index: 100;
+    overflow: hidden;
+}
+
+.main .input-control {
+    width: 95%;
+    line-height: normal;
+}
+
+.main .search.invisible {
+    height: 0 !important;
 }

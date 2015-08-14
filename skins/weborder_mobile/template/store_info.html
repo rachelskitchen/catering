@@ -1,79 +1,3 @@
-<script type="text/template" id="store_info_details-template">
-    <% if(logo) { %>
-    <div class="store_info_main_logo">
-        <div class="logo"><img src="<%= logo %>" id="logo"></div>
-        <div class="divider"></div>
-    </div>
-    <% } %>
-
-    <% if (phone || email || address || access) { %>
-        <ul class="location">
-
-            <% if(address instanceof Object) { %>
-            <li>
-                <span class="title clip"> <%= _lp.STORE_INFO_ADDRESS %> </span>
-                <address class="desc">
-                    <span><%= address.line1 %></span>
-                    <span><%= address.line2 %></span>
-                </address>
-            </li>
-            <% } %>
-
-            <% if(timetable) { %>
-            <li class="hours">
-                <span class="title clip"> <%= _lp.STORE_INFO_HOURS %> </span>
-                <ul class="desc">
-                    <% _.each(timetable, function(day, i) { %>
-                    <li class="row <%= (timetable.length - 1 == i ? 'last' : i == 0 ? 'first' : '') %>">
-                        <% if(day.hours instanceof Array) { %>
-                            <span class="weekDay clip"> <%= day.weekDay %> </span>
-                            <span class="time clip">
-                                <% _.each(day.hours, function(day, i) { %>
-                                <%= day.from %>&nbsp;&ndash;&nbsp;<%= day.to %><br>
-                                <% }); %>
-                            </span>
-                        <% } else if(day.hours) { %>
-                            <span class="weekDay clip"> <%= day.weekDay %> </span>
-                            <span class="time clip"> <%= _lp.STORE_INFO_ROUND_THE_CLOCK %> </span>
-                        <% } else { %>
-                            <span class="weekDay clip"> <%= day.weekDay %> </span>
-                            <span class="time closed clip"> <%= _lp.STORE_INFO_CLOSED %> </span>
-                        <% } %>
-                    </li>
-                    <% }); %>
-                </ul>
-            </li>
-            <% } %>
-
-            <% if(phone) { %>
-            <li>
-                <span class="title clip"> <%= _lp.STORE_INFO_PHONE %> </span>
-                <a class="desc phone" href="tel:<%= phone %>"><%= phoneFormat(phone) %></a>
-            </li>
-            <% } %>
-
-            <% if (email) { %>
-                <li>
-                    <span class="title clip"> <%= _lp.STORE_INFO_EMAIL %> </span>
-                    <a class="desc email" href="mailto:<%= email %>"> <%= email %> </a>
-                </li>
-            <% } %>
-
-            <% if(access_to_location) { %>
-            <li>
-                <span class="title clip"> <%= _lp.STORE_INFO_ACCESS %> </span>
-                <span class="desc"><%= access_to_location %></span>
-            </li>
-            <% } %>
-
-        </ul>
-    <% } %>
-</script>
-
-<script type="text/template" id="store_info_map-template">
-    <div id="mapBox"></div>
-</script>
-
 <script type="text/template" id="store_info_main-template">
     <div class="img-block border-color10">
         <div class="img-wrapper bg-color10 text-center mask">
@@ -90,19 +14,51 @@
             <div class="change-store link font-color1 font-color-active7 animation"><%= _lp.REVEL_CHANGE_PASSWORD %></div>
         </div>
     </div>
+    <% if(Array.isArray(hours)) { %>
     <div class="timetables defs border-color10 text-center">
-        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_ADDRESS %></div>
+        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_HOURS%></div>
+        <ul class="info font-size3 font-color4 text-left">
+            <% _.each(hours, function(day, i) { %>
+            <li>
+                <% if(day.hours instanceof Array) { %>
+                    <span class="weekDay uppercase"><%= _lp['DAYS_OF_WEEK_SHORT'][day.weekDay] %></span>
+                    <span>
+                        <% _.each(day.hours, function(day, i) { %>
+                            <%= day.from %>&nbsp;&ndash;&nbsp;<%= day.to %><br>
+                        <% }); %>
+                    </span>
+                <% } else if(day.hours) { %>
+                    <span class="weekDay uppercase"><%= _lp['DAYS_OF_WEEK_SHORT'][day.weekDay] %></span>
+                    <span><%= _lp.STORE_INFO_ROUND_THE_CLOCK %></span>
+                <% } else { %>
+                    <span class="weekDay uppercase"><%= _lp['DAYS_OF_WEEK_SHORT'][day.weekDay] %></span>
+                    <span class="uppercase font-color11"><%= _lp.STORE_INFO_CLOSED %></span>
+                <% } %>
+            </li>
+            <% }); %>
+        </ul>
     </div>
+    <% } %>
     <div class="phone defs border-color10 text-center">
         <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_PHONE %></div>
         <div class="info font-size3 font-color4 text-left">
             <a href="tel:" class="phone-number font-color1 font-color-active7 animation"></a>
         </div>
     </div>
+    <div class="email-wrapper defs border-color10 text-center">
+        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_EMAIL %></div>
+        <div class="info font-size3 font-color4 text-left">
+            <a href="mail:" class="email font-color1 font-color-active7 animation"></a>
+        </div>
+    </div>
     <div class="access defs border-color10 text-center">
         <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_ACCESS %></div>
         <div class="access-info info font-size3 font-color4 text-left"></div>
     </div>
+</script>
+
+<script type="text/template" id="store_info_map-template">
+    <div id="mapBox"></div>
 </script>
 
 <script type="text/template" id="store_info_gallery-template">

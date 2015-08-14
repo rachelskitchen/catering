@@ -51,7 +51,7 @@ define(["main_router"], function(main_router) {
             // "confirm": "confirm",
             // "done": "done",
             // "location": "location",
-            // "map": "map",
+            "location": "location",
             "about": "about",
             // "gallery": "gallery",
             // "maintenance": "maintenance",
@@ -181,8 +181,8 @@ define(["main_router"], function(main_router) {
                         this.navigate('about', true);
                         break;
 
-                    case 3:
-                        // this.navigate('index', true);
+                    case 2:
+                        this.navigate('location', true);
                         break;
                 }
             }, this);
@@ -272,7 +272,8 @@ define(["main_router"], function(main_router) {
                 App.Data.header.set({
                     page_title: App.Settings.business_name || '',
                     back: App.Data.dirMode ? this.navigateDirectory.bind(this) : null,
-                    back_title: App.Data.dirMode ? _loc.BACK : ''
+                    back_title: App.Data.dirMode ? _loc.BACK : '',
+                    tab: 0
                 });
 
                 App.Data.mainModel.set({
@@ -777,42 +778,19 @@ define(["main_router"], function(main_router) {
             });
         },
         location: function() {
-            var settings = App.Data.settings.get('settings_system');
-
-            this.prepare('store_info', function() {
-
-                App.Data.header.set({
-                    page_title: (settings instanceof Object) ? settings.business_name : _loc['HEADER_LOCATION_PT'],
-                    back_title: _loc['HEADER_LOCATION_BT'],
-                    forward_title: _loc['HEADER_LOCATION_FT'],
-                    back: this.navigate.bind(this, 'index', true),
-                    forward: this.navigate.bind(this, 'map', true)
-                });
-
-                App.Data.mainModel.set({
-                    header: headerModes.Location,
-                    footer: footerModes.Location,
-                    content: {
-                        modelName: 'StoreInfo',
-                        model: App.Data.timetables,
-                        mod: 'InDetails'
-                    }
-                });
-
-                this.change_page();
+            App.Data.header.set({
+                page_title: App.Settings.business_name || '',
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history),
+                tab: 2
             });
-        },
-        map: function() {
-            this.prepare('store_info', function() {
-                App.Data.header.set({
-                    page_title: _loc['HEADER_MAP_PT'],
-                    back_title: _loc['HEADER_MAP_BT'],
-                    back: this.navigate.bind(this, 'location', true)
-                });
 
+            App.Data.mainModel.set({
+                header: headerModes.Main
+            });
+
+            this.prepare('store_info', function() {
                 App.Data.mainModel.set({
-                    header: headerModes.Map,
-                    footer: footerModes.Map,
                     content: {
                         modelName: 'StoreInfo',
                         mod: 'Map',
@@ -824,13 +802,8 @@ define(["main_router"], function(main_router) {
             });
         },
         about: function() {
-            var settings = App.Data.settings,
-                settings_system = settings.get('settings_system'),
-                model = new Backbone.Model({
-                    logo: settings_system.logo_img ? settings.get('host') + settings_system.logo_img : null,
-                    text: settings_system.about_description || 'No information',
-                    title: settings_system.about_title || '',
-                    clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1]
+            var model = new Backbone.Model({
+                    hours: App.Data.timetables.get('hours')
                 });
 
             App.Data.header.set({
@@ -849,7 +822,6 @@ define(["main_router"], function(main_router) {
                     content: {
                         modelName: 'StoreInfo',
                         model: model,
-                        timetables: App.Data.timetables,
                         mod: 'Main',
                         className: 'store-info'
                     }

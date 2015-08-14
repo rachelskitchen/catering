@@ -48,7 +48,7 @@
                             <% _.each(timetable, function(day, i) { %>
                             <li class="row <%= (timetable.length - 1 == i ? 'last' : i == 0 ? 'first' : '') %>">
                                 <% if(day.hours instanceof Array) { %>
-                                    <div class="weekDay"> <span class="clip"> <%= day.weekDay %> </span> </div>
+                                    <div class="weekDay"> <span class="clip"> <%= _lp['DAYS_OF_WEEK'][day.weekDay] %> </span> </div>
                                     <div class="time">
                                         <%
                                             var hours = '';
@@ -59,10 +59,10 @@
                                         <span class="clip" title="<%= hours %>"> <%= hours %> </span>
                                     </div>
                                 <% } else if(day.hours) { %>
-                                    <span class="weekDay"><%= day.weekDay %></span>
+                                    <span class="weekDay"><%= _lp['DAYS_OF_WEEK'][day.weekDay] %></span>
                                     <span class="time"> <%= _lp.STORE_INFO_ROUND_THE_CLOCK %> </span>
                                 <% } else { %>
-                                    <span class="weekDay"><%= day.weekDay %></span>
+                                    <span class="weekDay"><%= _lp['DAYS_OF_WEEK'][day.weekDay] %></span>
                                     <span class="time closed"> <%= _lp.STORE_INFO_CLOSED %> </span>
                                 <% } %>
                                 <div class='clear'></div>

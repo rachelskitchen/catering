@@ -25,8 +25,8 @@ define(["quantity_view"], function(quantity_view) {
 
     var QuantityMainView = App.Views.CoreQuantityView.CoreQuantityMainView.extend({
         events: {
-            'click .increase': 'increase',
-            'click .decrease': 'decrease',
+            'click .increase:not[disabled]': 'increase',
+            'click .decrease:not[disabled]': 'decrease',
             'input .quantity_edit_input': 'change_quantity',
             'blur .quantity_edit_input': 'blur_quantity',
             'keypress .quantity_edit_input': 'keypress_quantity'

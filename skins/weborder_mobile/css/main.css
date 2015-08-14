@@ -49,19 +49,35 @@ textarea, input {
     -ms-user-select: text;
     -o-user-select: text;
     border-radius: 0;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
 }
 
 textarea {
     border-width: 1px;
     border-style: solid;
     resize: none;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -ie-box-sizing: border-box;
-    box-sizing: border-box;
     padding: 0.5em;
-    font-family: inherit;
 }
+
+input[type="text"], input[type="search"] {
+    font-family: inherit;
+    padding: 0.6em;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2em;
+    font-weight: 200;
+    letter-spacing: 0.05em;
+    border: 1px solid transparent;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+    font-size: 2em;
 }
 
 ul {
@@ -207,7 +223,8 @@ h1, h2, h3 {
     text-decoration: underline;
 }
 
-.select-wrapper {
+/* body[style] is used to increase priority */
+body[style] .select-wrapper {
     width: 6em;
     border-width: 1px;
     border-style: solid;
@@ -221,7 +238,8 @@ h1, h2, h3 {
     position: relative;
 }
 
-.select-wrapper select {
+/* body[style] is used to increase priority */
+body[style] .select-wrapper select {
     width: 100%;
     height: 100%;
     border: none;
@@ -231,7 +249,8 @@ h1, h2, h3 {
     color: inherit;
 }
 
-.select-wrapper::after {
+/* body[style] is used to increase priority */
+body[style] .select-wrapper::after {
     content: '\f0dc';
     font-family: "FontAwesome";
     font-size: 1.5em;
@@ -312,4 +331,92 @@ h1, h2, h3 {
 
 .link {
     text-decoration: underline;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+
+.input-control {
+    display: inline-block;
+    position: relative;
+}
+
+.input-control input {
+    width: 100%;
+    padding-right: 2.5em;
+}
+
+.input-control .ctrl-wrapper {
+    width: 2.5em;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: none;
+}
+
+.input-control .ctrl-wrapper::after {
+    content: '\f057';
+    font-size: 1.5em;
+    font-family: "FontAwesome";
+    position: absolute;
+    top: 50%;
+    right: 0.6em;
+    margin-top: -0.45em;
+}
+
+.input-control .ctrl {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+}
+
+/*
+    Override establishments styles.
+    body[style] is used to increase priority.
+ */
+body[style] .establishments {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,.8);
+}
+
+body[style] .establishments > div div:nth-child(1) {
+    font-size: 4em;
+    font-weight: 200;
+}
+
+body[style] .establishments > div div:nth-child(2) {
+    margin-bottom: 17em;
+}
+
+body[style] .establishments .select-wrapper {
+    width: 95%;
+    height: auto;
+    font-size: 3em;
+}
+
+body[style] .establishments .select-wrapper:after {
+    background-image: none;
+}
+
+body[style] .establishments select {
+    float: none;
+}
+
+body[style] .establishments button {
+    font-size: 3em;
+    border: none;
+    border-radius: 2em;
+    font-weight: 100;
+    margin-bottom: 1em;
 }

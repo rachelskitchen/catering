@@ -136,6 +136,13 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
 
     Backbone.Epoxy.binding.addHandler('replaceRegExp');
 
+    // handler to reset value
+    Backbone.Epoxy.binding.addHandler('reset', {
+        get: function($el, value, event) {
+            return '';
+        }
+    });
+
     App.Views.FactoryView = Backbone.Epoxy.View.extend({
         constructor: function(options) {
             this.options = _.extend({}, options);

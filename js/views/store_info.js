@@ -27,7 +27,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
     App.Views.CoreStoreInfoView.CoreStoreInfoMainView = App.Views.FactoryView.extend({
         map: function(zoomControl, panControl, mapTypeControl) {
-            var settings = App.Data.settings.get("settings_system"),
+            var settings = App.Settings,
                 self = this;
 
             self.$(".view_larger_map").hide();
@@ -119,8 +119,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 address_line1 = [],
                 address_line2 = [],
                 region = address.getRegion(),
-                timetable_on_week = this.model.get_timetable_on_week(),
-                timetable;
+                timetable = this.model.getHoursOnWeek();
 
             if(address instanceof Object) {
                 address.line_1 && address_line1.push(address.line_1);
@@ -132,18 +131,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
             if(address_line2.length > 1)
                 address_line2[0] += ',';
-
-            if(timetable_on_week !== null && Object.keys(timetable_on_week).length > 1) {
-                timetable = [];
-                var today = App.Data.timetables.base().getDay();
-                for(var i = today; i < today + 7; i++) {
-                    var weekDay = this.model.get_day_of_week(i % 7);
-                    timetable.push({
-                        weekDay: _loc['DAYS_OF_WEEK'][weekDay],
-                        hours: timetable_on_week[weekDay]
-                    });
-                }
-            }
 
             return {
                 logo: settings_system.logo_img ? settings.get('host') + settings_system.logo_img : null,

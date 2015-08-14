@@ -51,6 +51,15 @@ define(["backbone"], function(Backbone) {
          *
          * @property {Function} default.cartItemsQuantity - cart items quantity.
          * @default 0.
+         *
+         * @property {Function} default.cartItemsQuantity - cart items quantity.
+         * @default 0.
+         *
+         * @property {string} default.search - search string.
+         * @default ''.
+         *
+         * @property {boolean} default.showSearch - show/hide search.
+         * @default false.
          */
         defaults: {
             page_title: '',
@@ -59,7 +68,9 @@ define(["backbone"], function(Backbone) {
             link: null,
             back: null,
             cart: null,
-            cartItemsQuantity: 0
+            cartItemsQuantity: 0,
+            search: '',
+            showSearch: false
         },
         addProduct: function(orderItem) {
             var self = this,

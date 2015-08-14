@@ -20,6 +20,10 @@
     text-align: center;
 }
 
+.quantity .btn-qty[disabled] {
+    opacity: .2;
+}
+
 .quantity .increase {
     margin-right: 1.6em;
 }

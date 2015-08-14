@@ -302,14 +302,17 @@ define(["backbone"], function(Backbone) {
         defaults: {
             timetables: null,        // whole timetable. Dates couldn't be intersected
             holidays: null,
-            server_time: 0      // timezone offset in minutes
+            server_time: 0,          // timezone offset in minutes
+            hours: null              // array of week days with working hours starting from current day
         },
         initialize: function() {
-            var times = App.Data.settings.get('settings_system');
+            var times = App.Data.settings.get('settings_system'),
+                hours;
             if (!this.get('timetables')) this.set('timetables', times.timetables);
             if (!this.get('holidays')) this.set('holidays', times.holidays);
             if (!this.get('server_time')) this.set('server_time', times.server_time);
             this.workingDay = new App.Models.WorkingDay();
+            (hours = this.getHoursOnWeek()) && this.set('hours', hours);
         },
         /**
          * Get ID of month in format JS.
@@ -480,6 +483,24 @@ define(["backbone"], function(Backbone) {
                 }
                 current_date.setTime(current_date.getTime() + MILLISECONDS_A_DAY);
             }
+            return timetable;
+        },
+        getHoursOnWeek: function() {
+            var timetable_on_week = this.get_timetable_on_week(),
+                timetable;
+
+            if(timetable_on_week !== null && Object.keys(timetable_on_week).length > 1) {
+                timetable = [];
+                var today = this.base().getDay();
+                for(var i = today; i < today + 7; i++) {
+                    var weekDay = this.get_day_of_week(i % 7);
+                    timetable.push({
+                        weekDay: weekDay,
+                        hours: timetable_on_week[weekDay]
+                    });
+                }
+            }
+
             return timetable;
         },
         /**

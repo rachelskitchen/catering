@@ -11,7 +11,7 @@
     color: #1a99cd;
 }
 
-.font-color-active1:active {
+.font-color-active1:not([disabled]):active {
     color: #1a99cd;
 }
 
@@ -19,15 +19,15 @@
     background-color: #1a99cd;
 }
 
-.bg-color-active1:active {
+.bg-color-active1:not([disabled]):active {
     background-color: #1a99cd;
 }
 
-.border-color1 {
+.border-color1, input[type="text"]:focus {
     border-color: #1a99cd;
 }
 
-.border-color-active1:active {
+.border-color-active1:not([disabled]):active {
     border-color: #1a99cd;
 }
 
@@ -36,12 +36,12 @@
     color: #fff;
 }
 
-.font-color-active2:active {
+.font-color-active2:not([disabled]):active {
     color: #fff;
 }
 
 .border-color2 {
-    color: #fff;
+    border-color: #fff;
 }
 
 /* [white] main background */
@@ -49,7 +49,7 @@
     background-color: #fff;
 }
 
-.bg-color-active2:active {
+.bg-color-active2:not([disabled]):active {
     background-color: #fff;
 }
 
@@ -63,7 +63,7 @@
     background-color: #373c40;
 }
 
-.bg-color-active3:active {
+.bg-color-active3:not([disabled]):active {
     background-color: #373c40;
 }
 
@@ -92,7 +92,7 @@
     color: #bce0f0;
 }
 
-.font-color-active7:active {
+.font-color-active7:not([disabled]):active {
     color: #bce0f0;
 }
 
@@ -111,12 +111,21 @@
 }
 
 /* color #10 - blue/grey */
+.font-color10 {
+    color: #d6e3e9;
+}
+
 .bg-color10 {
     background-color: #d6e3e9;
 }
 
 .border-color10 {
     border-color: #d6e3e9;
+}
+
+/* color #11 - red */
+.font-color11 {
+    color: #ff0000;
 }
 
 .text-shadow1 {
@@ -187,4 +196,8 @@
 
 .modifier .mdf_split::before {
     color: #1a99cd;
+}
+
+.establishments select, .establishments button {
+    color: #1a99cd !important;
 }
