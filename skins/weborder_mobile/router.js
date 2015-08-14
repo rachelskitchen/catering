@@ -122,7 +122,7 @@ define(["main_router"], function(main_router) {
             }
 
             // if it is Revel's WebView need change color_scheme on 'revel'
-            if(cssua.ua.revelsystemswebview) {
+            if(cssua.ua.revelsystemswebview && !App.Data.is_stanford_mode) {
                 App.Settings.color_scheme = 'revel';
             }
 
@@ -310,7 +310,7 @@ define(["main_router"], function(main_router) {
                     back_title: undefined,
                     forward_title: _loc['HEADER_INDEX_FT'],
                     forward: self.navigate.bind(self, 'search', true)
-                };               
+                };
 
                 if(App.Data.dirMode)
                     header = Backbone.$.extend(header, {
@@ -360,7 +360,7 @@ define(["main_router"], function(main_router) {
                     App.Data.search = new App.Collections.Search();
                 }
                 if (!App.Data.searchLine) {
-                    App.Data.searchLine = new App.Models.SearchLine({search: App.Data.search});                    
+                    App.Data.searchLine = new App.Models.SearchLine({search: App.Data.search});
                 }
                 var header = {
                     page_title: _loc['HEADER_SEARCH_PT'],
@@ -379,7 +379,7 @@ define(["main_router"], function(main_router) {
                             mod: 'Spinner',
                             className: 'content search_line',
                             cacheId: true
-                        }, 
+                        },
                         {
                             modelName: 'Product',
                             model: App.Data.searchLine,
@@ -391,7 +391,7 @@ define(["main_router"], function(main_router) {
                             content_elem: '#content .search_list'
                         }
                     ]
-                });                
+                });
 
                 if(App.Data.categories.loadData.state() == 'resolved')
                     this.change_page();
