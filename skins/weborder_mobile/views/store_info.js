@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["factory"], function() {
+define(["store_info_view"], function(store_info_view) {
     'use strict';
 
     var StoreInfoMainView = App.Views.FactoryView.extend({
@@ -33,9 +33,10 @@ define(["factory"], function() {
             '.business-name': 'text: _system_settings_business_name',
             '.address-line1': 'text: line1',
             '.address-line2': 'text: line2',
-            '.timetables': 'toggle: length(timetables_timetables)',
             '.phone': 'toggle: _system_settings_phone',
             '.phone-number': 'text: _system_settings_phone, attr: {href: format("tel:$1", _system_settings_phone)}',
+            '.email-wrapper': 'toggle: _system_settings_email',
+            '.email': 'text: _system_settings_email, attr: {href: format("mail:$1", _system_settings_email)}',
             '.access': 'toggle: _system_settings_about_access_to_location',
             '.access-info': 'text: _system_settings_about_access_to_location'
         },
@@ -80,8 +81,18 @@ define(["factory"], function() {
         }
     });
 
-    return new (require('factory'))(function() {
+    var StoreInfoMapView = App.Views.CoreStoreInfoView.CoreStoreInfoMainView.extend({
+        name: 'store_info',
+        mod: 'map',
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.map();
+        }
+    });
+
+    return new (require('factory'))(store_info_view.initViews.bind(store_info_view), function() {
         App.Views.StoreInfoView = {};
         App.Views.StoreInfoView.StoreInfoMainView = StoreInfoMainView;
+        App.Views.StoreInfoView.StoreInfoMapView = StoreInfoMapView;
     });
 });

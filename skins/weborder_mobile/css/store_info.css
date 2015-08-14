@@ -59,10 +59,28 @@
 }
 
 .store-info .info {
-    max-width: 60%;
-    min-width: 50%;
+    width: 60%;
 }
 
 .store-info .change-store {
     margin-top: 0.4em;
+}
+
+.store-info .weekDay {
+    display: inline-block;
+    width: 5em;
+}
+
+/*** ***/
+.map {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    padding: 0 !important;
+}
+
+#mapBox {
+    height: 100%;
 }

@@ -37,11 +37,16 @@ define(["factory"], function() {
            '.title': 'text:page_title',
            '.btn-back': 'toggle: back',
            '.btn-back-title': 'text: back_title',
-           '.btn-cart': 'classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}'
+           '.btn-cart': 'classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}',
+           '.btn-search': 'classes: {active: showSearch, "font-color2": showSearch, "font-color7": not(showSearch)}',
+           '.search': 'classes: {invisible: not(showSearch)}',
+           '.input-search': 'value: search, events: ["input"]',
+           '.ctrl': 'reset: search, events: ["click"]'
         },
         events: {
             'click .btn-back': setCallback('back'),
-            'click .btn-cart': setCallback('cart')
+            'click .btn-cart': setCallback('cart'),
+            'click .btn-search': 'search',
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -56,6 +61,9 @@ define(["factory"], function() {
             this.$el.append(tabs.el);
 
             return this;
+        },
+        search: function() {
+            this.model.set('showSearch', !this.model.get('showSearch'));
         }
     });
 
