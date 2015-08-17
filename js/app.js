@@ -103,7 +103,7 @@
     // start app
     function init() {
         var app = require('app');
-       
+
         if(app.skins.available.length == 0)
             return alert('No skin is available. Please add at least one skin (need add skins.set(\'WEBORDER\', \'weborder\') in main.js).');
 
@@ -120,11 +120,18 @@
 
             // it's for testing:
             app.get['srv'] == 'qa' && (app.REVEL_HOST = 'https://qa.revelup.com');
+            app.get['srv'] == 'qa2' && (app.REVEL_HOST = 'https://qa2.revelup.com');
             app.get['srv'] == 'mlb' && (app.REVEL_HOST = 'https://mlb-dev.revelup.com');
             app.get['srv'] == 'dev' && (app.REVEL_HOST = 'https://weborder-dev-branch.revelup.com');
             app.get['srv'] == 'qa-dev' && (app.REVEL_HOST = 'https://weborder-qa-dev-branch.revelup.com');
             app.get['srv'] == 'ee-dev' && (app.REVEL_HOST = 'https://eegorov-dev-branch.revelup.com');
             app.get['srv'] == 'ap-dev' && (app.REVEL_HOST = 'https://apakhunov-dev-branch.revelup.com');
+
+            try {
+                App.Data.is_stanford_mode = !!JSON.parse(app.get['stanford']);
+            } catch (e) {
+                App.Data.is_stanford_mode = false;
+            }
 
             // invoke beforeStart onfig
             app.beforeInit();
@@ -295,6 +302,10 @@
         var loader = document.querySelector('#loader');
         addSpinner.call(loader);
         loader.style.cssText += "background-color: rgba(170, 170, 170, .8); position: fixed;";
+        
+        if (App.Data.is_stanford_mode) {
+            $(".ui-spinner").addClass("stanford");
+        }
 
         // jquery `spinner` plugin
         $.fn.spinner = function() {

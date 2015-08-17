@@ -1,4 +1,4 @@
-﻿define(function() {
+﻿define([], function() {
     return {
         'SUBCATEGORIES_VIEW_ALL': 'View All',
         'STORES_MI': 'mi',
@@ -49,6 +49,16 @@
             'TIME_AT': 'at',
             'ASAP': 'ASAP',
             'MINUTES': 'min'
+        },
+        PIKADAY: {
+            FIRST_DAY: 0,
+            i18n: {
+                previousMonth: 'Previous Month',
+                nextMonth: 'Next Month',
+                months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+                weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+            }
         },
         'FILTERS': {
             'STORE_TYPE_RESTAURANT': 'Restaurant',
@@ -481,7 +491,6 @@
             'DINING_OPTION_DRIVETHROUGH': 'Drive Through',
             'DINING_OPTION_ONLINE': 'Online Ordering',
             'DINING_OPTION_OTHER': 'Other',
-            'DINING_OPTION_DELIVERY_SEAT': 'Deliver to Seat',
             'DINING_OPTION_SHIPPING': 'Shipping'
         },
 
@@ -502,6 +511,9 @@
         'OK': 'Ok',
         'UPDATE': 'Update',
         'CHECKOUT': 'Checkout',
-        'BACK': 'Back'
-    } // end of locale
+        'BACK': 'Back',
+        'DELIVERY_TIME': 'Delivery Time',
+        'PICKUP_TIME': 'Pickup Time',
+        'DELIVERY_INFO': 'Delivery Info'
+    }; // end of locale
 }); // end of module

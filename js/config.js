@@ -88,9 +88,10 @@ define({
         rewards_view: 'js/views/rewards',
         stanfordcard: 'js/models/stanfordcard',
         stanfordcard_view: 'js/views/stanfordcard',
-        captcha: 'js/models/captcha',        
+        captcha: 'js/models/captcha',
         search_line_view: 'js/views/search_line',
-        spinner_view: 'js/views/spinner'
+        spinner_view: 'js/views/spinner',
+        pikaday: 'js/libs/pikaday'
     },
     waitSeconds: 30,
     shim: {
@@ -240,6 +241,9 @@ define({
         },
         'stanfordcard_view': {
             deps: ['factory']
+        },
+        'pikaday' : {
+            deps: []
         }
     },
     map: {

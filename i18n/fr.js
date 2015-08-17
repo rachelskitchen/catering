@@ -37,6 +37,16 @@ define([], function() {
             ASAP: "Dès que possible",
             MINUTES: "min"
         },
+        PIKADAY: {
+            FIRST_DAY: 1,
+            i18n: {
+                previousMonth: 'Previous Month',
+                nextMonth: 'Next Month',
+                months: ["January", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"],
+                weekdays: ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
+                weekdaysShort: ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"]
+            }
+        },
         FILTERS: {
             STORE_TYPE_RESTAURANT: "Restaurant",
             STORE_TYPE_RETAIL: "Vente au détail",
@@ -458,7 +468,6 @@ define([], function() {
             DINING_OPTION_DRIVETHROUGH: "Drive",
             DINING_OPTION_ONLINE: "Commande en ligne",
             DINING_OPTION_OTHER: "Autre",
-            DINING_OPTION_DELIVERY_SEAT: "Livrer à table",
             DINING_OPTION_SHIPPING: "Envoi"
         },
         TOTAL_DISCOUNTS: "Réductions",

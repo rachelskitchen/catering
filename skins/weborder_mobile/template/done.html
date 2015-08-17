@@ -6,7 +6,7 @@
         <dd>
             <span><%= order_id %></span>
         </dd>
-        <% if (!isOnlyGift && !isOrderFromSeat) { %>
+        <% if (!isOnlyGift) { %>
             <dt> <span class="clip"> <%= pickup_type %>: </span> </dt>
             <dd>
                 <span>
@@ -15,13 +15,12 @@
                 </span>
             </dd>
         <% } %>
-        <% if(isDeliverToSeat) { %>
+        <% if(isDiningOptionOther) { %>
             <dt> <span class="clip"> <%= _lp.DONE_DELIVERY_INFO %>: </span> </dt>
             <dd>
-                <% if (level) { %> <%= _lp.DONE_LEVEL %> <span> <%= level %>, </span> <% } %>
-                <% if (section) { %> <%= _lp.DONE_SECTION %> <span> <%= section %>, </span> <% } %>
-                <% if (row) { %> <%= _lp.DONE_ROW %> <span> <%= row %>, </span> <% } %>
-                <% if (seat) { %> <%= _lp.DONE_SEAT %> <span> <%= seat %> </span> <% } %>
+                <% for (var i = 0; i < other_dining_options.length; i++) { %>
+                    <%= other_dining_options[i].name %> <span><%= other_dining_options[i].value %><% if(i < other_dining_options.length - 1) print(","); %></span>
+                <% } %>
             </dd>
         <% } %>
         <% if(reward_points) { %>

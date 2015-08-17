@@ -93,12 +93,14 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
         name: 'confirm',
         mod: 'stanford_card',
         initialize: function() {
-            this.listenTo(this.options.card, 'onStanfordCardError', this.showErrorMsg, this);
-            App.Views.CoreConfirmView.CoreConfirmPayCardView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.options.card, 'onStanfordCardError', this.showErrorMsg, this); 
+            this.listenTo(this.options.card.get('plans'), 'change:selected', this.update, this);
+            App.Views.CoreConfirmView.CoreConfirmPayCardView.prototype.initialize.apply(this, arguments); 
+            this.update();
         },
         bindings: {
-            '.submit-order': 'toggle: card_planId',
-            '.submit-card': 'toggle: not(card_planId), classes: {disabled: any(not(card_number), not(card_captchaKey), not(card_captchaValue))}',
+            '.submit-order': 'toggle: card_validated',
+            '.submit-card': 'toggle: not(card_validated), classes: {disabled: any(not(card_number), not(card_captchaKey), not(card_captchaValue))}',
         },
         events: {
             'click .btn-submit.submit-order': 'submit_payment',
@@ -116,7 +118,8 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
                 el: this.$('.stanford-plans'),
                 mod: 'Plans',
                 model: this.options.card,
-                collection: this.options.card.get('plans')
+                collection: this.options.card.get('plans'),
+                total: this.collection.total
             }));
 
             this.addCart();
@@ -138,6 +141,12 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
         submit_card: function() {
             this.collection.trigger('showSpinner');
             this.options.card.getPlans().then(this.collection.trigger.bind(this.collection, 'hideSpinner'));
+        },
+        update: function() {
+            if (this.options.card.getSelectedPlan())
+                this.$(".submit-order").removeClass("disabled");
+            else 
+                this.$(".submit-order").addClass("disabled");
         },
         showErrorMsg: function(msg) {
             App.Data.errors.alert(msg);

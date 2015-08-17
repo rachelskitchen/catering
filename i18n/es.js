@@ -37,6 +37,16 @@ define([], function() {
             ASAP: "URGE",
             MINUTES: "min."
         },
+        PIKADAY: {
+            FIRST_DAY: 1,
+            i18n: {
+                previousMonth: 'Previous Month',
+                nextMonth: 'Next Month',
+                months: ["January", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+                weekdays: ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+                weekdaysShort: ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"]
+            }
+        },
         FILTERS: {
             STORE_TYPE_RESTAURANT: "Restaurante",
             STORE_TYPE_RETAIL: "Minorista",
@@ -458,7 +468,6 @@ define([], function() {
             DINING_OPTION_DRIVETHROUGH: "Servicio en ventanilla",
             DINING_OPTION_ONLINE: "Pedidos en línea",
             DINING_OPTION_OTHER: "Otro",
-            DINING_OPTION_DELIVERY_SEAT: "Entregar en asiento",
             DINING_OPTION_SHIPPING: "Envío"
         },
         TOTAL_DISCOUNTS: "Descuentos",

@@ -5,11 +5,11 @@ define(['total', 'js/utest/data/Total'], function(total, data) {
         var total, tip, delivery, systemSettings;
 
         beforeEach(function() {
+            systemSettings = App.Settings;
+            _.extend(App.Settings, data.SYSTEM_SETTINGS);
             total = new App.Models.Total();
             tip = total.get('tip');
             delivery = total.get('delivery');
-            systemSettings = App.Settings;
-            _.extend(App.Settings, data.SYSTEM_SETTINGS);
 
             spyOn(window, 'round_monetary_currency');
         });

@@ -123,11 +123,13 @@
     top: 0;
 }
 
-.app-gallery-scroll-right:before {
-    content: '›' !important;
+.about_content .app-gallery-scroll-right:before {
+    content: '\f054' !important;
+    font-family: FontAwesome, serif !important;
 }
-.app-gallery-scroll-left:before {
-    content: '‹' !important;
+.about_content .app-gallery-scroll-left:before {
+   content: '\f053' !important;
+    font-family: FontAwesome, serif !important;
 }
 .app-gallery-scroll-right:before, .app-gallery-scroll-left:before {
     line-height: 26px !important;
