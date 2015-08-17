@@ -229,6 +229,8 @@
         'PRODUCT_ADDED': 'Добавлено',
         'PRODUCT_UPDATED': 'Обновлено',
         'ADD_TO_CART': 'Доб. в кор.',
-        'CUSTOMIZE': 'Детализация'
+        'CUSTOMIZE': 'Детализация',
+        'SEARCH_RESULTS': 'Рез. поиска',
+        'SEARCH_FIELD_PLACEHOLDER': 'Введите название продукта'
     } // end of locale
 }); // end of module

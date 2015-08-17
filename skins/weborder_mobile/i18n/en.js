@@ -228,6 +228,8 @@
         'PRODUCT_ADDED': 'Product Added',
         'PRODUCT_UPDATED': 'Product Updated',
         'ADD_TO_CART': 'Add to cart',
-        'CUSTOMIZE': 'Customize'
+        'CUSTOMIZE': 'Customize',
+        'SEARCH_RESULTS': 'Search Results',
+        'SEARCH_FIELD_PLACEHOLDER': 'Enter product name'
     } // end of locale
 }); // end of module

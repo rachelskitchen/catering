@@ -343,7 +343,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.$el.html(this.template(data));
         },
         change_note: function(e) {
-debugger
             this.model.set('notes', e.target.value);
         }
     });

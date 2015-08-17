@@ -38,7 +38,7 @@ define(["main_router"], function(main_router) {
         routes: {
             "": "index",
             "index": "index",
-            // "search": "search",
+            "search/:search": "search",
             "products/:ids": "products",
             "modifiers/:id_category(/:id_product)": "modifiers",
             "cart": "cart",
@@ -127,10 +127,6 @@ define(["main_router"], function(main_router) {
                     model: mainModel,
                     el: 'body'
                 });
-//common
-                this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
-//common
-                this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
 //common
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
 //common
@@ -234,14 +230,6 @@ define(["main_router"], function(main_router) {
                 replace: capturePhase
             });
         },
-        showPromoMessage: function() {
-            App.Data.footer.set('isShowPromoMessage', true);
-            App.Data.mainModel.trigger('showPromoMessage');
-        },
-        hidePromoMessage: function() {
-            App.Data.footer.set('isShowPromoMessage', false);
-            App.Data.mainModel.trigger('hidePromoMessage');
-        },
         /**
         * Get a stores list.
         */
@@ -276,14 +264,24 @@ define(["main_router"], function(main_router) {
                     tab: 0
                 });
 
+                var content = [{
+                    modelName: 'Categories',
+                    collection: App.Data.parentCategories,
+                    mod: 'Parents',
+                    cacheId: true
+                }];
+
+                App.Settings.promo_message && content.push({
+                    modelName: 'PromoMessage',
+                    mod: 'Main',
+                    model: new Backbone.Model(),
+                    className: 'fixed-bottom promo-message-container bg-color1',
+                    cacheId: true
+                });
+
                 App.Data.mainModel.set({
                     header: headerModes.Main,
-                    content: {
-                        modelName: 'Categories',
-                        collection: App.Data.parentCategories,
-                        mod: 'Parents',
-                        cacheId: true
-                    }
+                    content: content
                 });
 
                 if(App.Data.categories.loadData.state() == 'resolved')
@@ -292,58 +290,54 @@ define(["main_router"], function(main_router) {
                 App.Data.settings.load_geoloc();
             });
         },
-        search: function() {
+        search: function(search) {
             var self = this;
-            this.prepare('search', function() {
-                // load content block for categories
-                if (!App.Data.categories) {
-                    App.Data.categories = new App.Collections.Categories();
-                    App.Data.categories.loadData = App.Data.categories.get_categories();
-                    App.Data.categories.loadData.then(function() {
-                        App.Data.categories.trigger("load_complete");
-                        self.change_page();
-                    });
-                }
 
+            this.prepare('search', function() {
                 if (!App.Data.search) {
                     App.Data.search = new App.Collections.Search();
                 }
-                if (!App.Data.searchLine) {
-                    App.Data.searchLine = new App.Models.SearchLine({search: App.Data.search});
-                }
-                var header = {
-                    page_title: _loc['HEADER_SEARCH_PT'],
-                    back_title: _loc['HEADER_SEARCH_BT'],
-                    back: self.navigate.bind(self, 'index', true)
-                };
-                App.Data.header.set(header);
 
-                App.Data.mainModel.set({
-                    header: headerModes.Search,
-                    footer: footerModes.Main,
-                    content: [
-                        {
-                            modelName: 'SearchLine',
-                            model: App.Data.searchLine,
-                            mod: 'Spinner',
-                            className: 'content search_line',
-                            cacheId: true
-                        },
-                        {
-                            modelName: 'Product',
-                            model: App.Data.searchLine,
-                            collection: new App.Collections.Products(),
-                            search: App.Data.search,
-                            mod: 'SearchList',
-                            className: 'content search_list custom-scroll',
-                            cacheId: true,
-                            content_elem: '#content .search_list'
-                        }
-                    ]
+                App.Data.header.set({
+                    page_title: App.Settings.business_name || '',
+                    back: window.history.back.bind(window.history),
+                    back_title: _loc.BACK,
+                    search: decodeURIComponent(search),
+                    showSearch: true
                 });
 
-                if(App.Data.categories.loadData.state() == 'resolved')
-                    this.change_page();
+                App.Data.mainModel.set({
+                    header: headerModes.Main
+                });
+
+                // need to show serach result list when request is complete
+                this.listenToOnce(App.Data.search, 'onSearchComplete', showResults);
+
+                // need to stop listening search events when hash changes (it fixes case when user changes hash during request )
+                this.listenToOnce(this, 'route', this.stopListening.bind(this, App.Data.search, 'onSearchComplete', showResults));
+
+                // perform search
+                App.Data.search.search(decodeURIComponent(search));
+
+                function showResults(searchModel) {
+                    var category = new App.Models.Category({
+                        name: _loc.SEARCH_RESULTS + ': ' + searchModel.get('pattern'),
+                        products: searchModel.get('products') || (new App.Collections.Products())
+                    });
+
+                    App.Data.mainModel.set({
+                        content: {
+                            modelName: 'Categories',
+                            model: category,
+                            mod: 'Item',
+                            tagName: 'div',
+                            cacheId: true,
+                            cacheIdUniq: search
+                        }
+                    });
+
+                    self.change_page();
+                }
             });
         },
         products: function(ids) {
@@ -411,6 +405,7 @@ define(["main_router"], function(main_router) {
                     return this.navigate('index', true);
 
                 if(isEditMode) {
+                    this.listenTo(order, 'change', setHeaderToUpdate);
                     setHeaderToUpdate();
                     showProductDetails();
                 } else {
