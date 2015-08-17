@@ -118,6 +118,12 @@ define(["backbone"], function(Backbone) {
             } else {
                 App.Data.errors.alert(check.errorMsg); // user notification
             }
+        },
+        performSearch: function() {
+            var search = this.get('search');
+            if(search) {
+                App.Data.router.navigate('search/' + encodeURIComponent(search), true);
+            }
         }
     });
 });

@@ -201,6 +201,8 @@ define([], function() {
         PRODUCT_ADDED: "",
         PRODUCT_UPDATED: "",
         ADD_TO_CART: "",
-        CUSTOMIZE: ""
+        CUSTOMIZE: "",
+        SEARCH_RESULTS: "",
+        SEARCH_FIELD_PLACEHOLDER: ""
     }
 });

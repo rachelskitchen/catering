@@ -30,8 +30,6 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:header', this.header_change, this);
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
-            this.listenTo(this.model, 'showPromoMessage', this.showPromoMessage, this);
-            this.listenTo(this.model, 'hidePromoMessage', this.hidePromoMessage, this);
             this.listenTo(this.model, 'showRevelPopup', this.showRevelPopup, this);
             this.listenTo(this.model, 'hideRevelPopup', this.hideRevelPopup, this);
             this.listenToOnce(this.model, 'showSpinnerAndHideContent', this.showSpinnerAndHideContent, this); // show a spinner and hide a content
@@ -147,30 +145,6 @@ define(["done_view", "generator"], function(done_view) {
         hideSpinner: function() {
             this.unblurBg();
             this.$('#main-spinner').hide();
-        },
-        /**
-         * Styles for a visible promo message.
-         */
-        showPromoMessage: function() {
-            if (App.Settings.isRetailMode) {
-                this.$('section').addClass('section_promo_show_retail');
-                this.$('footer').addClass('footer_promo_show_retail');
-            } else {
-                this.$('section').addClass('section_promo_show');
-                this.$('footer').addClass('footer_promo_show');
-            }
-        },
-        /**
-         * Styles for a invisible promo message.
-         */
-        hidePromoMessage: function() {
-            if (App.Settings.isRetailMode) {
-                this.$('section').removeClass('section_promo_show_retail');
-                this.$('footer').removeClass('footer_promo_show_retail');
-            } else {
-                this.$('section').removeClass('section_promo_show');
-                this.$('footer').removeClass('footer_promo_show');
-            }
         },
         showRevelPopup: function(data) {
             var container = this.$('#revel-popup');

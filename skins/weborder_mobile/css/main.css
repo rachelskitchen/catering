@@ -208,7 +208,7 @@ h1, h2, h3 {
     height: 1.4em;
     position: absolute;
     left: 50%;
-    bottom: -1.3em;
+    bottom: -1.4em;
     margin-left: -1.25em;
 }
 
@@ -381,42 +381,89 @@ body[style] .select-wrapper::after {
 
 /*
     Override establishments styles.
-    body[style] is used to increase priority.
+    [class] is used to increase priority.
  */
-body[style] .establishments {
+.establishments[class] {
     position: fixed;
     top: 0;
     left: 0;
     background: rgba(0,0,0,.8);
 }
 
-body[style] .establishments > div div:nth-child(1) {
+.establishments[class] > div div:nth-child(1) {
     font-size: 4em;
     font-weight: 200;
 }
 
-body[style] .establishments > div div:nth-child(2) {
+.establishments[class] > div div:nth-child(2) {
     margin-bottom: 17em;
 }
 
-body[style] .establishments .select-wrapper {
+.establishments[class] .select-wrapper {
     width: 95%;
     height: auto;
     font-size: 3em;
 }
 
-body[style] .establishments .select-wrapper:after {
+.establishments[class] .select-wrapper:after {
     background-image: none;
 }
 
-body[style] .establishments select {
+.establishments[class] select {
     float: none;
 }
 
-body[style] .establishments button {
+.establishments[class] button {
     font-size: 3em;
     border: none;
     border-radius: 2em;
     font-weight: 100;
     margin-bottom: 1em;
+}
+
+/** popup alert styles **/
+#popup_content[id] {
+    padding: 1em 0.7em 0.7em;
+}
+
+#popup_container[id] {
+    border: none;
+    font-size: 2.5em;
+    font-family: inherit;
+    max-width: 80%;
+    min-width: 80%;
+}
+
+#popup_content[id].info, #popup_content[id].warning {
+    background: transparent;
+    position: relative
+}
+
+#popup_content[id].info::before, #popup_content[id].warning::before {
+    content: '\f05a';
+    font-family: "FontAwesome";
+    font-size: 3em;
+    position: absolute;
+    left: 0.3em;
+    top: 0.2em;
+}
+
+#popup_content[id].warning::before {
+    content: '\f071';
+}
+
+#popup_message[id] {
+    padding-left: 4em;
+}
+
+#popup_panel[id] {
+    direction: rtl;
+}
+
+#popup_panel[id] > input[type='button'] {
+    min-width: 6em;
+    border: none;
+    border-radius: 2em;
+    padding: 0.5em 2em;
+    margin: 1em 0.5em 0;
 }

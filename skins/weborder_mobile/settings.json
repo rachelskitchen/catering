@@ -13,9 +13,9 @@
             "core": ["geopoint", "stanfordcard"]
         },
         "index": {
-            "css": ["categories"],
-            "views": ["categories"],
-            "templates": ["categories"],
+            "css": ["categories", "promo_message"],
+            "views": ["categories", "promo_message"],
+            "templates": ["categories", "promo_message"],
             "core": ["categories", "products", "subcategories"]
         },
         "products": {
@@ -41,6 +41,12 @@
             "views": ["store_info"],
             "templates": ["store_info"],
             "core": []
+        },
+        "search": {
+            "css": ["categories", "products"],
+            "views": ["categories", "products"],
+            "templates": ["categories", "products"],
+            "core": ["categories", "search", "products"]
         }
     }
 }

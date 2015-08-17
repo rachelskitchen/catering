@@ -45,8 +45,9 @@ define(["factory"], function() {
         },
         events: {
             'click .btn-back': setCallback('back'),
-            'click .btn-cart': setCallback('cart'),
+            'click .btn-cart:not([data-count="0"])': setCallback('cart'),
             'click .btn-search': 'search',
+            'submit .form-search': 'performSearch'
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -64,6 +65,10 @@ define(["factory"], function() {
         },
         search: function() {
             this.model.set('showSearch', !this.model.get('showSearch'));
+        },
+        performSearch: function(e) {
+            e.preventDefault();
+            this.model.performSearch();
         }
     });
 

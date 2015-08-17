@@ -201,3 +201,19 @@
 .main .search.invisible {
     height: 0 !important;
 }
+
+.main  .input-search::-webkit-input-placeholder {
+   color: inherit;
+}
+
+.main  .input-search:-moz-placeholder { /* Firefox 18- */
+   color: inherit;
+}
+
+.main  .input-search::-moz-placeholder {  /* Firefox 19+ */
+   color: inherit;
+}
+
+.main  .input-search:-ms-input-placeholder {
+   color: inherit;
+}
