@@ -1,9 +1,9 @@
 <script type="text/template" id="stanfordcard_main-template">
-    <ul class="card <% if(isFirefox) { %>firefox<% } %>">
+    <ul class="stanfordcard card <% if(isFirefox) { %>firefox<% } %>">
         <li class="required border">
             <input type="text" placeholder="<%= _lp.GIFTCARD_NUMBER %>" class="number number-input ios-safari-caret" value="<%= cardNumber %>" min="0">
         </li>
-        <li class="required border">
+        <li class="captcha_input_line required border">
             <input type="hidden" value="<%=cardNumber%>" id="id_captcha_key" name="captcha_key" />
             <input type="text" placeholder="<%= _lp.GIFTCARD_CAPTCHA %>" class="captcha-input ios-safari-caret" min="0" id="id_captcha_value" name="captcha_value">
         </li>

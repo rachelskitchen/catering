@@ -34,7 +34,7 @@ define(["confirm_view"], function(confirm_view) {
                 deps: ['checkout_dining_option'],
                 get: function(dining_option) {
                     var _lp = this.getBinding('$_lp').toJSON();
-                    return dining_option === 'DINING_OPTION_DELIVERY' ? _lp.CONFIRM_DELIVERY_TIME : _lp.CONFIRM_ARRIVAL_TIME;
+                    return (dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_OTHER') ? _lp.CONFIRM_DELIVERY_TIME : _lp.CONFIRM_ARRIVAL_TIME;
                 }
             },
             pickupTime: {

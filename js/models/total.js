@@ -79,7 +79,8 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             prevailing_surcharge: 0,
             prevailing_tax: 0,
             shipping: 0,
-            shipping_discount: 0
+            shipping_discount: 0,
+            grandTotal: 0 //result price of the order
         },
         /**
          * @method
@@ -96,8 +97,13 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
                     tip: new App.Models.Tip(),
                     delivery: new App.Models.Delivery(delivery)
                 };
+            this.listenTo(this, "change:subtotal change:surcharge change:tax", this.update_grand, this);
+            this.listenTo(set.tip, "change:tipTotal", this.update_grand, this);
             this.unset('delivery_item');
             this.set(set);
+        },
+        update_grand: function() {
+            this.set('grandTotal', this.get_grand());
         },
         /**
          * @method

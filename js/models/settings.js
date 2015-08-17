@@ -265,12 +265,31 @@ define(["backbone", "async"], function(Backbone) {
                     accept_discount_code: true,
                     enable_quantity_modifiers: true,
                     enable_split_modifiers: true,
+                    other_dining_option_details: null,
                     // for test (begin)
                     locales: {
                         en: 1427802271098,
                         ru: 1427802447190
-                    }
+                    },
                     // for test (end)
+                    payment_processor: {
+                        "moneris":false,
+                        "paypal_mobile":false,
+                        "adyen":false,
+                        "paypal":false,
+                        "worldpay":false,
+                        "quickbooks":false,
+                        "freedompay":false,
+                        "mercury":false,
+                        "paypal_direct_credit_card":false,
+                        "gift_card":false,
+                        "cash":false,
+                        "usaepay":false,
+                        "credit_card_button":false,
+                        "credit_card_dialog":false,
+                        //add all new payment processors here for consistency of new frontend with old Backend
+                        "stanford":false
+                    }
                 },
                 load = $.Deferred();
 
@@ -374,9 +393,21 @@ define(["backbone", "async"], function(Backbone) {
                                 settings_system.dining_options = [];
                             }
 
-                            // add DELIVER_TO_SEAT if 'order_from_seat' is checked on
-                            if(settings_system.order_from_seat[0] && settings_system.dining_options.indexOf(DINING_OPTION.DINING_OPTION_DELIVERY_SEAT) == -1) {
-                                settings_system.dining_options.push(DINING_OPTION.DINING_OPTION_DELIVERY_SEAT);
+                           try {
+                                if (settings_system.other_dining_option_details) {
+                                    settings_system.other_dining_option_details = JSON.parse(settings_system.other_dining_option_details);
+                                }
+                            } catch(e) {
+                                console.error("Can't parse other_dining_option_details");
+                            }
+
+                            //remove DINING_OPTION_OTHER from dinning_options when other_dining_option_details is undefined or empty array:
+                            var other_index;
+                            if (!Array.isArray(settings_system.other_dining_option_details) || settings_system.other_dining_option_details.length == 0) {
+                                other_index = settings_system.dining_options.indexOf(DINING_OPTION['DINING_OPTION_OTHER']);
+                                if (other_index != -1) {
+                                    settings_system.dining_options.splice(other_index, 1);
+                                }
                             }
 
                             // Set default dining option.
@@ -385,14 +416,19 @@ define(["backbone", "async"], function(Backbone) {
                                 var dining_options = settings_system.dining_options;
                                 if(dining_options.length > 0) {
                                     for(var dining_option in DINING_OPTION) {
-                                        // if order_from_seat is checked on 'Delivery to seat' overrides 'Other' (rules in bug 14657)
-                                        if(dining_options[0] == DINING_OPTION[dining_option] && (!settings_system.order_from_seat[0] || dining_option != 'DINING_OPTION_OTHER')) {
+                                        if(dining_options[0] == DINING_OPTION[dining_option]) {
                                             settings_system.default_dining_option = dining_option;
                                             break;
                                         }
                                     }
                                 }
                             })();
+
+                            //check stanford payment processor, set color_scheme to "Stanford"
+                            if (App.Data.is_stanford_mode || settings_system.payment_processor.stanford == true) {
+                                settings_system.color_scheme = "stanford";
+                                App.Data.is_stanford_mode = true;
+                            }
 
                             self.set("settings_system", settings_system);
                             App.Settings = App.Data.settings.get("settings_system");

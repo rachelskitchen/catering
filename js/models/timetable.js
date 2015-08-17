@@ -57,7 +57,7 @@ define(["backbone"], function(Backbone) {
         },
         initialize: function() {
             var times = App.Data.settings.get('settings_system');
-            this.pickup_time_interval = times.online_order_time_slot || 1;
+            this.pickup_time_interval = Math.abs(times.online_order_time_slot) || 1;
             this.start_time = times.online_order_start_time_offset;
             this.end_time = times.online_order_end_time_offset;
             this.delivery_time = times.estimated_delivery_time;
@@ -100,7 +100,7 @@ define(["backbone"], function(Backbone) {
         _pickupTimesForPeriod: function(period, isDelivery) {
             var start_minutes, end_minutes,
                 start_interval = this.start_time + (isDelivery ? this.delivery_time : this.preparation_time),
-                end_interval = this.end_time + (isDelivery ? this.delivery_time : this.preparation_time),
+                end_interval = this.end_time - (isDelivery ? this.delivery_time : this.preparation_time),
                 options = [];
 
             if (period === "all-the-day") {

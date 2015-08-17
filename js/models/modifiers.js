@@ -84,7 +84,7 @@ define(["backbone"], function(Backbone) {
                 this.set('max_price_amount', max_price);//modifier price with feature max price 6137
             } else {
                 this.unset('max_price_amount');
-            }            
+            }
             return max_price > price ? max_price - price : 0;
         },
         isFree: function() {
@@ -153,8 +153,8 @@ define(["backbone"], function(Backbone) {
                 var free_amount = modifier.get('free_amount'),
                     max_price_amount = modifier.get('max_price_amount'),
                     price = modifier.getSum();
-                
-                sum += modifier.isMaxPriceFree() ? max_price_amount : 
+
+                sum += modifier.isMaxPriceFree() ? max_price_amount :
                                 (modifier.isFree() ? free_amount : price);
             });
             return sum;
@@ -299,13 +299,13 @@ define(["backbone"], function(Backbone) {
             if(this.isSpecial()) {
                 return [];
             }
-            
-            var self = this, 
+
+            var self = this,
                 modifiers = this.get('modifiers').modifiers_submit();
-            
+
             modifiers.forEach(function(model) {
                 model.admin_mod_key = self.get("admin_mod_key");
-            });            
+            });
             return modifiers;
         },
         isSpecial: function() {
@@ -381,7 +381,7 @@ define(["backbone"], function(Backbone) {
         update_free_quantity: function(model) {
             var free_qty_amount = this.get('amount_free'),
                 selected = this.get('amount_free_selected');
-            
+
             var qty, delta,
                 qty_total = 0;
             selected.forEach(function(model, index) {
@@ -396,7 +396,7 @@ define(["backbone"], function(Backbone) {
                     model.set('free_amount', round_monetary_currency(delta * model.get('price'))*1 );
                   else
                     model.unset('free_amount');
-                }               
+                }
             });
         },
         update_free_price: function(model) {
@@ -406,7 +406,7 @@ define(["backbone"], function(Backbone) {
             selected.forEach(function(model) {
                 var price = model.get('price'),
                     mdf_price_sum = model.getSum();
-                   
+
                 if(amount == 0)
                     return model.unset('free_amount');
 
@@ -498,7 +498,7 @@ define(["backbone"], function(Backbone) {
 
                 if (isSpecialSelection) {
                     this.trigger('modifiers_special');
-                } else if (isSizeSelection) {                    
+                } else if (isSizeSelection) {
                     this.trigger('modifiers_size', this.getSizeModel().get('price'));
                     this.trigger('modifiers_changed');
                 } else {
@@ -565,7 +565,8 @@ define(["backbone"], function(Backbone) {
                 dataType: "json",
                 successResp: function(modifierBlocks) {
                     modifierBlocks.forEach(function(modifierBlock) {
-                        self.add(new App.Models.ModifierBlock().addJSON(modifierBlock));
+                        // need to exclude DISCOUNT modifierBlock
+                        modifierBlock.admin_mod_key != "DISCOUNT" && self.add(new App.Models.ModifierBlock().addJSON(modifierBlock));
                     });
                     //add the new block 'Quick Modifiers' (will be contain all quick modifiers):
                     self.create_quick_modifiers_section(App.Data.quickModifiers);
@@ -639,7 +640,8 @@ define(["backbone"], function(Backbone) {
                 dataType: "json",
                 successResp: function(modifierBlocks) {
                     modifierBlocks.forEach(function(modifierBlock) {
-                        self.add(new App.Models.ModifierBlock().addJSON(modifierBlock));
+                        // need to exclude DISCOUNT modifierBlock
+                        modifierBlock.admin_mod_key != "DISCOUNT" && self.add(new App.Models.ModifierBlock().addJSON(modifierBlock));
                     });
 
                     fetching.resolve();
@@ -725,7 +727,7 @@ define(["backbone"], function(Backbone) {
                 if (maxAmount == null || maxAmount == undefined)
                     return false;
 
-                var qty = modifierBlock.get('modifiers').get_selected_qty();                
+                var qty = modifierBlock.get('modifiers').get_selected_qty();
                 return qty > maxAmount ? true : false;
             });
 

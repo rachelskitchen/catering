@@ -1,4 +1,4 @@
-﻿define(function() {
+﻿define([], function() {
     return {
         'SUBCATEGORIES_VIEW_ALL': 'Показать все',
         'STORES_MI': 'мили(ей)',
@@ -40,7 +40,16 @@
             'YESTERDAY': 'Вчера',
             'TOMORROW': 'Завтра'
         },
-        // ???
+        PIKADAY: {
+            FIRST_DAY: 1,
+            i18n: {
+                previousMonth: 'Предыдущий месяц',
+                nextMonth: 'Следующий месяц',
+                months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+                weekdays: ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'],
+                weekdaysShort: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
+            }
+        },
         'TIME_PREFIXES': {
             'FIRST_DAY_OF_MONTH': 'st',
             'SECOND_DAY_OF_MONTH': 'nd',
@@ -485,7 +494,6 @@
             'DINING_OPTION_DRIVETHROUGH': 'За рулем',
             'DINING_OPTION_ONLINE': 'Онлайн заказ',
             'DINING_OPTION_OTHER': 'Другой',
-            'DINING_OPTION_DELIVERY_SEAT': 'Доставка к месту',
             'DINING_OPTION_SHIPPING': 'Сторонняя служба доставки'
         },
 
@@ -500,12 +508,14 @@
         'TOTAL_TAX': 'Налог', // except: Directory, Directory Mobile
         'TOTAL_TIP': 'Чаевые', // except: Retail, Directory, Directory Mobile, MLB
         'TOTAL_GRAND_TOTAL': 'Итого', // except: Directory, Directory Mobile, MLB, PayPal
-
         'YES': 'Да',
         'NO': 'Нет',
         'CANCEL': 'Отменить',
         'OK': 'Ok',
         'UPDATE': 'Обновить',
-        'CHECKOUT': 'Checkout'
+        'CHECKOUT': 'Checkout',
+        'DELIVERY_TIME': 'Срок доставки',
+        'PICKUP_TIME': 'Время получения',
+        'DELIVERY_INFO': 'Информация о доставке'
     } // end of locale
 }); // end of module

@@ -18,7 +18,9 @@
     border-style: solid;
     position: relative;
 }
-
+.stanford-card-plans .stanford-plan.disabled {
+    opacity: 0.5;
+}
 .stanford-card-plans .stanford-plan:after {
     content: '';
     display: block;
@@ -47,4 +49,8 @@
     font-size: 3em;
     padding: 1em;
     text-align: center;
+}
+
+.stanfordcard .number-input[readonly=readonly] {
+    opacity: 0.5;
 }

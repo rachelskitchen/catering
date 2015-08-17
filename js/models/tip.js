@@ -52,6 +52,13 @@ define(["backbone"], function(Backbone) {
             percents: [10,15,20], // percent variant
             sum: 0, // sum if amount false
             percent: 0, // percent if amount true
+            tipTotal: 0, // the result tip amount
+        },
+        initialize: function() {
+            this.listenTo(this, "change", this.update_tip, this);
+        },
+        update_tip: function() {
+            this.set("tipTotal", this.get_tip());
         },
         /**
          * @method

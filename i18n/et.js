@@ -37,6 +37,16 @@ define([], function() {
             ASAP: "Esimesel võimalusel",
             MINUTES: "min"
         },
+        PIKADAY: {
+            FIRST_DAY: 1,
+            i18n: {
+                previousMonth: 'Previous Month',
+                nextMonth: 'Next Month',
+                months: ["January", "Veebruar", "Märts", "Aprill", "Mai", "Juuni", "Juuli", "August", "September", "Oktoober", "November", "Detsember"],
+                weekdays: ["Pühapäev", "Esmaspäev", "Teisipäev", "Kolmapäev", "Neljapäev", "Reede", "Laupäev"],
+                weekdaysShort: ["P", "E", "T", "K", "N", "R", "L"]
+            }
+        },
         FILTERS: {
             STORE_TYPE_RESTAURANT: "Restoran",
             STORE_TYPE_RETAIL: "Jaemüük",
@@ -458,7 +468,6 @@ define([], function() {
             DINING_OPTION_DRIVETHROUGH: "Autoteenindus",
             DINING_OPTION_ONLINE: "Veebitellimine",
             DINING_OPTION_OTHER: "Muu",
-            DINING_OPTION_DELIVERY_SEAT: "Kohaletoimetamise koht",
             DINING_OPTION_SHIPPING: "Tarne"
         },
         TOTAL_DISCOUNTS: "Allahindlused",

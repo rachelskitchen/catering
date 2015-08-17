@@ -69,7 +69,6 @@ var DINING_OPTION = {
         DINING_OPTION_DRIVETHROUGH : 4,
         DINING_OPTION_ONLINE : 5,
         DINING_OPTION_OTHER : 6,
-        DINING_OPTION_DELIVERY_SEAT: 6,
         DINING_OPTION_SHIPPING: 7
     };
 
@@ -316,6 +315,9 @@ function template_helper(name,mod) {
     else {
         id = "#" + name + "-template";
     }
+    if ($(id)[0] == undefined) {
+        console.error("Can't find the template: " + id);
+    }
     return _.template($(id).html());
 }
 /**
@@ -339,7 +341,8 @@ function round_monetary_currency(value, precision, up) {
     }
     return result.toFixed(2);
 }
-
+//alias for round_monetary_currency function:
+var round_money = round_monetary_currency;
 
 /**
  *  Sync load template
