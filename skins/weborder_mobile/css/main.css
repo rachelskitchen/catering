@@ -65,7 +65,7 @@ textarea {
     padding: 0.5em;
 }
 
-input[type="text"], input[type="search"] {
+input {
     font-family: inherit;
     padding: 0.6em;
     border-width: 1px;
@@ -76,8 +76,20 @@ input[type="text"], input[type="search"] {
     border: 1px solid transparent;
 }
 
-input[type="search"]::-webkit-search-cancel-button {
-    font-size: 2em;
+input::-webkit-input-placeholder {
+   color: inherit;
+}
+
+input:-moz-placeholder { /* Firefox 18- */
+   color: inherit;
+}
+
+input::-moz-placeholder {  /* Firefox 19+ */
+   color: inherit;
+}
+
+input:-ms-input-placeholder {
+   color: inherit;
 }
 
 ul {
@@ -138,8 +150,23 @@ h1, h2, h3 {
     width: 100%;
 }
 
-#section > * {
+#section {
+    position: absolute;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow: auto;
+}
+
+#section > div {
     padding: 0 1.4em;
+    min-height: 100%;
+}
+
+#section > div > * {
+    display: inline-block;
+    width: 100%;
 }
 
 .list > li {
@@ -223,12 +250,12 @@ h1, h2, h3 {
     text-decoration: underline;
 }
 
-/* body[style] is used to increase priority */
-body[style] .select-wrapper {
+.select-wrapper {
     width: 6em;
+    padding: 0.3em 0;
     border-width: 1px;
     border-style: solid;
-    border-radius: 1em;
+    border-radius: 2em;
     line-height: 2em;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -236,10 +263,14 @@ body[style] .select-wrapper {
     box-sizing: border-box;
     overflow: hidden;
     position: relative;
+    text-align: center;
 }
 
-/* body[style] is used to increase priority */
-body[style] .select-wrapper select {
+.select-wrapper.disabled, .select-wrapper[disabled] {
+    opacity: .7;
+}
+
+.select-wrapper select {
     width: 100%;
     height: 100%;
     border: none;
@@ -247,24 +278,35 @@ body[style] .select-wrapper select {
     font-size: inherit;
     font-family: inherit;
     color: inherit;
+    letter-spacing: 0.05em;
+    font-weight: 200;
 }
 
-/* body[style] is used to increase priority */
-body[style] .select-wrapper::after {
+.select-wrapper::after {
     content: '\f0dc';
     font-family: "FontAwesome";
     font-size: 1.5em;
     display: block;
-    width: 1em;
+    width: 1.5em;
     height: 100%;
     line-height: 1.5em;
     text-indent: 0.1em;
     position: absolute;
     top: 0;
     right: 0;
+    border-bottom-right-radius: 2em;
+    border-top-right-radius: 2em;
     background-color: inherit;
     pointer-events: none;
+    -webkit-transform: scaleX(.7);
+    -moz-transform: scaleX(.7);
+    -ms-transform: scaleX(.7);
     transform: scaleX(.7);
+    padding: inherit;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .icon-check::before {
@@ -327,6 +369,10 @@ body[style] .select-wrapper::after {
     -ms-mask-image: url('../img/img-mask.svg');
     -ms-mask-size: 100%;
     -ms-mask-repeat: no-repeat;
+}
+
+.hide {
+    display: none !important;
 }
 
 .link {
@@ -403,10 +449,28 @@ body[style] .select-wrapper::after {
     width: 95%;
     height: auto;
     font-size: 3em;
+    padding: 0;
 }
 
-.establishments[class] .select-wrapper:after {
+.establishments[class] .select-wrapper::after {
+    content: '\f0dc';
+    font-family: "FontAwesome";
+    font-size: 1.5em;
+    display: block;
+    width: 1em;
+    height: 100%;
+    line-height: 1.5em;
+    text-indent: 0.1em;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: inherit;
+    pointer-events: none;
     background-image: none;
+    -webkit-transform: scaleX(.7);
+    -moz-transform: scaleX(.7);
+    -ms-transform: scaleX(.7);
+    transform: scaleX(.7);
 }
 
 .establishments[class] select {

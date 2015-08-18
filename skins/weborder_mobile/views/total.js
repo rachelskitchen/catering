@@ -33,7 +33,7 @@ define(["total_view"], function(total_view) {
             'click .btn': 'onCheckout'
         },
         onCheckout: function() {
-            this.model.trigger('onCheckout');
+            App.Data.router.navigate('checkout', true);
         }
     });
 

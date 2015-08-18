@@ -211,10 +211,3 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     border-bottom: none;
     cursor: help;
 }
-
-.pikaday {
-    float: left;
-    color: #7d7d7d;
-    cursor: pointer;
-    border:none;
-}

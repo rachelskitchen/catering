@@ -47,6 +47,12 @@
             "views": ["categories", "products"],
             "templates": ["categories", "products"],
             "core": ["categories", "search", "products"]
+        },
+        "checkout": {
+            "css": ["checkout", "pikaday"],
+            "views": ["checkout"],
+            "templates": ["checkout"],
+            "core": ["card", "giftcard", "checkout", "products", "delivery_addresses", "customers", "pikaday", "jquery_numbermask"]
         }
     }
 }
