@@ -230,6 +230,9 @@
         'ADD_TO_CART': 'Add to cart',
         'CUSTOMIZE': 'Customize',
         'SEARCH_RESULTS': 'Search Results',
-        'SEARCH_FIELD_PLACEHOLDER': 'Enter product name'
+        'SEARCH_FIELD_PLACEHOLDER': 'Enter product name',
+        'CONFIRM_ARRIVAL_TIME': 'Arrival Time',
+        'CONFIRM_DELIVERY_TIME': 'Delivery Time',
+        'CONTINUE': 'Continue'
     } // end of locale
 }); // end of module

@@ -203,6 +203,9 @@ define([], function() {
         ADD_TO_CART: "",
         CUSTOMIZE: "",
         SEARCH_RESULTS: "",
-        SEARCH_FIELD_PLACEHOLDER: ""
+        SEARCH_FIELD_PLACEHOLDER: "",
+        CONFIRM_ARRIVAL_TIME: "",
+        CONFIRM_DELIVERY_TIME: "",
+        CONTINUE: ""
     }
 });

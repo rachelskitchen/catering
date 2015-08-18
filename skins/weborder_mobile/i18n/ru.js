@@ -231,6 +231,9 @@
         'ADD_TO_CART': 'Доб. в кор.',
         'CUSTOMIZE': 'Детализация',
         'SEARCH_RESULTS': 'Рез. поиска',
-        'SEARCH_FIELD_PLACEHOLDER': 'Введите название продукта'
+        'SEARCH_FIELD_PLACEHOLDER': 'Введите название продукта',
+        'CONFIRM_DELIVERY_TIME': 'Срок доставки',
+        'CONFIRM_ARRIVAL_TIME': 'Срок прибытия',
+        'CONTINUE': 'Далее'
     } // end of locale
 }); // end of module

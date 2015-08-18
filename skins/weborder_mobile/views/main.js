@@ -67,9 +67,14 @@ define(["done_view", "generator"], function(done_view) {
             return this;
         },
         content_change: function() {
-            var view, content = this.$('#section'),
+            var view,
+                content = Backbone.$('<div></div>'),
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
+
+            this.$('#section > div').remove();
+            content.addClass(this.model.get('contentClass'));
+            this.$('#section').append(content);
 
             while(this.subViews.length > 1) {
                 view = this.subViews.pop();
@@ -197,8 +202,8 @@ define(["done_view", "generator"], function(done_view) {
                 bottom = Array.prototype.reduce.call(this.$('.fixed-bottom'), iteration, 0);
 
             this.$('#section').css({
-                'padding-top': top + 'px',
-                'padding-bottom': bottom + 'px',
+                'top': top + 'px',
+                'bottom': bottom + 'px',
             });
 
             function iteration(iterRes, item) {

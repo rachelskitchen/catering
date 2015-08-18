@@ -23,7 +23,7 @@
     background-color: #1a99cd;
 }
 
-.border-color1, input[type="text"]:focus {
+.border-color1, input:focus, .select-wrapper:focus {
     border-color: #1a99cd;
 }
 
@@ -101,6 +101,10 @@
     color: #93a6ad;
 }
 
+.bg-color8 {
+    color: #93a6ad;
+}
+
 /* [dark blue] product info (modifiers view)*/
 .bg-color9 {
     background-color: #1a8dbc;
@@ -126,6 +130,11 @@
 /* color #11 - red */
 .font-color11 {
     color: #ff0000;
+}
+
+/* color #12 - grey */
+.bg-color12 {
+    background-color: #f0f2f4;
 }
 
 .text-shadow1 {
@@ -158,11 +167,11 @@
 }
 
 .list-title {
-    background: -moz-linear-gradient(left,  #fff 0%, #f4f7f8 35%, #f4f7f8 65%, #fff 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, right top, color-stop(0%, #fff), color-stop(35%, #f4f7f8), color-stop(65%, #f4f7f8), color-stop(100%, #fff)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(left,  #fff 0%, #f4f7f8 35%, #f4f7f8 65%, #fff 100%); /* Chrome10+,Safari5.1+ */
-    background: -ms-linear-gradient(left,  #fff 0%,#f4f7f8 35%, #f4f7f8 65%, #fff 100%); /* IE10+ */
-    background: linear-gradient(to right,  #fff 0%, #f4f7f8 35%, #f4f7f8 65%, #fff 100%); /* W3C */
+    background: -moz-linear-gradient(left,  transparent 0%, #f4f7f8 35%, #f4f7f8 65%, transparent 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%, transparent), color-stop(35%, #f4f7f8), color-stop(65%, #f4f7f8), color-stop(100%, transparent)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left,  transparent 0%, #f4f7f8 35%, #f4f7f8 65%, transparent 100%); /* Chrome10+,Safari5.1+ */
+    background: -ms-linear-gradient(left, transparent 0%, #f4f7f8 35%, #f4f7f8 65%, transparent 100%); /* IE10+ */
+    background: linear-gradient(to right, transparent 0%, #f4f7f8 35%, #f4f7f8 65%, transparent 100%); /* W3C */
     border-color: #d6e3e9;
 }
 
@@ -206,6 +215,11 @@
 .establishments[class] {
     background: rgba(0,0,0,.7);
 }
+
+.establishments[class] .select-wrapper::after {
+    color: #373c40;
+}
+
 
 /** popup alert styles **/
 #popup_alert[id] {

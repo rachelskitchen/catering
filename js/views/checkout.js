@@ -50,7 +50,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                  this.controlAddress(null, 'DINING_OPTION_SHIPPING');
 
             this.model.get('dining_option') === 'DINING_OPTION_OTHER' &&
-                 this.controlDeliveryOther(null, 'DINING_OPTION_OTHER');     
+                 this.controlDeliveryOther(null, 'DINING_OPTION_OTHER');
         },
         render: function() {
             var settings = App.Data.settings.get('settings_system'),
@@ -146,8 +146,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         },
         controlDeliveryOther: function(model, value) {
             if(value === 'DINING_OPTION_OTHER') {
-                if (!this.otherView) {                    
-                  
+                if (!this.otherView) {
+
                     this.otherView = new App.Views.CoreCheckoutView.CoreCheckoutOtherView({model: this.model, collection: this.model.get('other_dining_options')});
                     this.$('.delivery_other').append(this.otherView.el);
                 }
@@ -250,8 +250,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
-        itemView: App.Views.CoreCheckoutView.CoreCheckoutOtherItemView        
-    });    
+        itemView: App.Views.CoreCheckoutView.CoreCheckoutOtherItemView
+    });
 
     App.Views.CoreCheckoutView.CoreCheckoutPickupView = App.Views.FactoryView.extend({
         name: 'checkout',

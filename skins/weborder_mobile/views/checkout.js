@@ -25,7 +25,7 @@ define(["checkout_view"], function(checkout_view) {
 
     var CoreDeliveryAddressesView = App.Views.DeliveryAddressesView,
         CoreCheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView,
-        DeliveryAddressesView, CheckoutAddressView, CheckoutMainView;
+        DeliveryAddressesView, CheckoutAddressView, CheckoutMainView, BottomView;
 
 
     DeliveryAddressesView = CoreDeliveryAddressesView.extend({
@@ -51,8 +51,20 @@ define(["checkout_view"], function(checkout_view) {
         mod: 'address'
     });
 
+    BottomView = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'bottom',
+        events: {
+            'click .btn': 'action'
+        },
+        action: function() {
+            this.model.get('action')();
+        }
+    });
+
     return new (require('factory'))(checkout_view.initViews.bind(checkout_view), function() {
         App.Views.DeliveryAddressesView = DeliveryAddressesView;
         App.Views.CoreCheckoutView.CoreCheckoutAddressView = CheckoutAddressView;
+        App.Views.CheckoutView.CheckoutBottomView = BottomView;
     });
 });

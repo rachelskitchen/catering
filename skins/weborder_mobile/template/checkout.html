@@ -1,38 +1,40 @@
 <script type="text/template" id="checkout_main-template">
-    <dl class="checkout <% if(isFirefox) { %>firefox<% } %>">
-        <dt class="color-style1 clip"> <%= _lp.CHECKOUT_CONTACT_INFO %> </dt>
-        <dd class="contact_info">
-            <label class="input required border">
-                <input type="text" placeholder="<%= _lp.CHECKOUT_FIRST_NAME %>" class="firstName ios-safari-caret bg-style1" value="<%= firstName %>">
-            </label>
-            <label class="input required border">
-                <input type="text" placeholder="<%= _lp.CHECKOUT_LAST_NAME %>" class="lastName ios-safari-caret bg-style1" value="<%= lastName %>">
-            </label>
-            <label class="input required border">
-                <input type="text" placeholder="<%= _lp.CHECKOUT_EMAIL %>" class="email ios-safari-caret bg-style1" value="<%= email %>" autocapitalize="none">
-            </label>
-            <label class="input required border">
-                <input type="tel" placeholder="<%= _lp.CHECKOUT_PHONE %>" class="phone ios-safari-caret bg-style1" value="<%= phone %>" min="0">
-            </label>
-            <div class="delivery_address">
-            </div>
-            <div class="delivery_seat">
-            </div>
-            <div class="delivery_other">
-            </div>
-        </dd>
-        <% if(enableRewardCard) { %>
-        <dt class="color-style1 rewardCard clip"> <%= _lp.CHECKOUT_REWARD_CARD %> </dt>
-        <dd class="rewardCard">
-            <label class="input rewardCard border">
-                <span class="cancel-input hide"></span>
-                <input type="text" placeholder="<%= _lp.CHECKOUT_REWARD_CARD_NUMBER %>" class="rewardCard ios-safari-caret bg-style1" value="<%= rewardCard %>">
-                <span class="rewards-card-apply rewards-card-btn"> <%= _lp.CHECKOUT_APPLY %> </span>
-                <span class="see-rewards rewards-card-btn"> <%= _lp.CHECKOUT_SEE_REWARDS %> </span>
-            </label>
-        </dd>
-        <% } %>
-    </dl>
+    <div class="list-title font-color1 <% if(isFirefox) { %>firefox<% } %>">
+        <span class="font-size1"><%= _lp.CHECKOUT_CONTACT_INFO %></span>
+    </div>
+    <ul class="contact-info block font-size2 font-color8 text-center <% if(isFirefox) { %>firefox<% } %>">
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.CHECKOUT_FIRST_NAME %>" class="firstName ios-safari-caret" value="<%= firstName %>">
+        </li>
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.CHECKOUT_LAST_NAME %>" class="lastName ios-safari-caret" value="<%= lastName %>">
+        </li>
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.CHECKOUT_EMAIL %>" class="email ios-safari-caret" value="<%= email %>" autocapitalize="none">
+        </li>
+        <li class="required">
+            <input type="tel" placeholder="<%= _lp.CHECKOUT_PHONE %>" class="phone ios-safari-caret" value="<%= phone %>" min="0">
+        </li>
+        <li class="delivery_address">
+        </li>
+        <li class="delivery_seat">
+        </li>
+        <li class="delivery_other">
+        </li>
+    </ul>
+    <% if(enableRewardCard) { %>
+    <div class="list-title font-color1">
+        <span class="font-size1"><%= _lp.CHECKOUT_REWARD_CARD %></span>
+    </div>
+    <div class="rewardCard block text-right font-size2 font-color8">
+        <div class="input-control">
+            <input type="text" placeholder="<%= _lp.CHECKOUT_REWARD_CARD_NUMBER %>" class="rewardCard ios-safari-caret" value="<%= rewardCard %>">
+            <span class="ctrl-wrapper cancel-input"></span>
+        </div>
+        <span class="rewards-card-apply rewards-card-btn btn-inline font-color-active1"><%= _lp.CHECKOUT_APPLY %></span>
+        <span class="see-rewards rewards-card-btn btn-inline font-color-active1"><%= _lp.CHECKOUT_SEE_REWARDS %></span>
+    </div>
+    <% } %>
 </script>
 
 <script type="text/template" id="checkout_other-template">
@@ -41,95 +43,97 @@
 
 <script type="text/template" id="checkout_other_item-template">
     <% if (Array.isArray(choices) && choices.length) { %>
-        <div class="select-wrapper" isrequired>
+        <div class="select-wrapper bg-color2" isrequired>
             <label class="select">
-                <select class="section" name="<%= name %>">                    
+                <select class="section" name="<%= name %>">
                 </select>
             </label>
         </div>
     <% } else { %>
-        <label class="input label border" isrequired>
-            <input type="text" class="row ios-safari-caret bg-style1" placeholder="<%= name %>" name="<%= name %>" value="<%= value %>">
-        </label>
+        <div isrequired>
+            <input type="text" class="row ios-safari-caret " placeholder="<%= name %>" name="<%= name %>" value="<%= value %>">
+        </div>
     <% } %>
 </script>
 
 <script type="text/template" id="checkout_pickup-template">
-    <dl class="checkout <% if(isFirefox) { %>firefox<% } %>">
-        <dt class="pickup color-style1"><%= pickupTimeLabel %></dt>
-        <dd>
-            <div>
-                <label class="input label required border">
-                    <input type="text" id="datepicker" readonly="readonly" data-day="0" class='pikaday ios-safari-caret bg-style1' />
-                </label>
+    <div class="list-title font-color1 <% if(isFirefox) { %>firefox<% } %> ">
+        <span class="font-size1 pickup"><%= pickupTimeLabel %></span>
+    </div>
+    <ul class="block font-size2 font-color8 text-center">
+        <li class="required">
+            <input type="text" id="datepicker" readonly="readonly" data-day="0" class='pikaday ios-safari-caret'>
+        </li>
+        <li>
+            <div class="select-wrapper bg-color2">
+                <select class="time"></select>
             </div>
-            <div class="select-wrapper">
-                <label class="select">
-                    <select class="time"></select>
-                </label>
-            </div>
-        </dd>
-    </dl>
+        </li>
+    </ul>
 </script>
 
 <script type="text/template" id="checkout_order_type-template">
-    <dl class="checkout checkout-order-type <% if(isFirefox) { %>firefox<% } %>">
-        <dt class="order-type-head color-style1 clip"> <%= _lp.CHECKOUT_ORDER_TYPE %> </dt>
-        <dd>
-            <label class="select">
-                <select class="order-type-select">
-                </select>
-            </label>
-        </dd>
-    </dl>
+    <div class="list-title font-color1 <% if(isFirefox) { %>firefox<% } %> ">
+        <span class="font-size1"><%= _lp.CHECKOUT_ORDER_TYPE %></span>
+    </div>
+    <div class="block">
+        <div class="select-wrapper font-size2 font-color8 bg-color2">
+            <select class="order-type-select"></select>
+        </div>
+    </div>
 </script>
 
 <script type="text/template" id="checkout_address-template">
-    <% if(isShippingServices) { %>
-    <div class="label select-wrapper">
-        <label class="select" for="countries">
-            <select class="country" id="countries">
-            <% for (var i in countries) { %>
-                <option value="<%= i %>" <% if(i.toLowerCase() == country.toLowerCase()) { %>selected="selected"<% } %>><%= countries[i] %></option>
-            <% } %>
-            </select>
-        </label>
-    </div>
-    <% } %>
-    <label class="input label required border">
-        <input type="text" placeholder="<%= _lp.CHECKOUT_ADDRESS_LINE1 %>" name="street_1" value="<%= street_1 %>" class="ios-safari-caret bg-style1">
-    </label>
-    <label class="input label border">
-        <input type="text" placeholder="<%= _lp.CHECKOUT_ADDRESS_LINE2 %>" name="street_2" value="<%= street_2 %>" class="ios-safari-caret bg-style1">
-    </label>
-    <label class="input label required border">
-        <input type="text" placeholder="<%= _lp.CHECKOUT_CITY %>" name="city" value="<%= city %>" class="ios-safari-caret bg-style1">
-    </label>
-    <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
-    <div class="label select-wrapper shipping-state">
-        <label class="select">
-            <select class="states">
-            <% for(var i in states) { %>
-                <option value="<%= i %>" <% if(i.toLowerCase() == state.toLowerCase()) { %>selected="selected"<% } %>><%= states[i] %></option>
-            <% } %>
-            </select>
-        </label>
-    </div>
-    <% } %>
-    <% if(typeof province == 'string') { %>
-       <label class="input label required border province">
-           <input type="text" placeholder="<%= _lp.CHECKOUT_PROVINCE %>" name="province" value="<%= province %>" class="ios-safari-caret bg-style1">
-       </label>
-    <% } %>
-    <label class="input label required border">
-        <input type="text" placeholder="<%= _lp.CHECKOUT_ZIP_CODE %>" name="zipcode" value="<%= zipcode %>" class="ios-safari-caret bg-style1">
-    </label>
-    <% if(isShippingServices) { %>
-    <div class="label select-wrapper shipping-services">
-        <label class="select shipping">
-            <select class="shipping-select"></select>
-            <span class="shipping-status img-spinner"></span>
-        </label>
-    </div>
-    <% } %>
+    <ul class="text-center">
+        <% if(isShippingServices) { %>
+        <li>
+            <div class="select-wrapper bg-color2">
+                <select class="country" id="countries">
+                <% for (var i in countries) { %>
+                    <option value="<%= i %>" <% if(i.toLowerCase() == country.toLowerCase()) { %>selected="selected"<% } %>><%= countries[i] %></option>
+                <% } %>
+                </select>
+            </div>
+        </li>
+        <% } %>
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.CHECKOUT_ADDRESS_LINE1 %>" name="street_1" value="<%= street_1 %>" class="ios-safari-caret">
+        </li>
+        <li>
+            <input type="text" placeholder="<%= _lp.CHECKOUT_ADDRESS_LINE2 %>" name="street_2" value="<%= street_2 %>" class="ios-safari-caret">
+        </li>
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.CHECKOUT_CITY %>" name="city" value="<%= city %>" class="ios-safari-caret">
+        </li>
+        <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
+        <li>
+            <div class="select-wrapper shipping-state bg-color2">
+                <select class="states">
+                <% for(var i in states) { %>
+                    <option value="<%= i %>" <% if(i.toLowerCase() == state.toLowerCase()) { %>selected="selected"<% } %>><%= states[i] %></option>
+                <% } %>
+                </select>
+            </div>
+        </li>
+        <% } %>
+        <% if(typeof province == 'string') { %>
+        <li class="required province">
+           <input type="text" placeholder="<%= _lp.CHECKOUT_PROVINCE %>" name="province" value="<%= province %>" class="ios-safari-caret">
+       </li>
+        <% } %>
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.CHECKOUT_ZIP_CODE %>" name="zipcode" value="<%= zipcode %>" class="ios-safari-caret">
+        </li>
+        <% if(isShippingServices) { %>
+        <li>
+            <div class="select-wrapper shipping-services bg-color2">
+                <select class="shipping-select"></select>
+                <span class="shipping-status img-spinner"></span>
+            </div>
+        </li>
+        <% } %>
+</script>
+
+<script type="text/template" id="checkout_bottom-template">
+    <div class="btn text-center font-size4 font-color2 font-color-active1 bg-color1 bg-color-active2 border-color2  border-color-active1"><%= _lp.CONTINUE %></div>
 </script>

@@ -42,13 +42,13 @@ define(["main_router"], function(main_router) {
             "products/:ids": "products",
             "modifiers/:id_category(/:id_product)": "modifiers",
             "cart": "cart",
-            // "checkout" : "checkout",
+            "checkout" : "checkout",
             // "card" : "card",
             // "giftcard" : "gift_card",
             // "stanfordcard": "stanford_card",
             // "stanford_is_student": "stanford_is_student",
             // "stanford_student_verification": "stanford_student_verification",
-            // "confirm": "confirm",
+            "confirm": "confirm",
             // "done": "done",
             // "location": "location",
             "location": "location",
@@ -281,6 +281,7 @@ define(["main_router"], function(main_router) {
 
                 App.Data.mainModel.set({
                     header: headerModes.Main,
+                    contentClass: '',
                     content: content
                 });
 
@@ -326,6 +327,7 @@ define(["main_router"], function(main_router) {
                     });
 
                     App.Data.mainModel.set({
+                        contentClass: '',
                         content: {
                             modelName: 'Categories',
                             model: category,
@@ -381,6 +383,7 @@ define(["main_router"], function(main_router) {
                     fetched[ids] = true;
 
                     App.Data.mainModel.set({
+                        contentClass: '',
                         content: {
                             modelName: 'Categories',
                             model: parentCategory,
@@ -429,6 +432,7 @@ define(["main_router"], function(main_router) {
                     }
 
                     App.Data.mainModel.set({
+                        contentClass: '',
                         content: {
                             modelName: 'MyOrder',
                             model: order,
@@ -481,6 +485,7 @@ define(["main_router"], function(main_router) {
 
                 App.Data.mainModel.set({
                     header: headerModes.Cart,
+                    contentClass: '',
                     content: [
                         {
                             modelName: 'MyOrder',
@@ -507,7 +512,12 @@ define(["main_router"], function(main_router) {
             });
         },
         checkout: function() {
-            this.prepare('checkout', function() {
+            App.Data.header.set({
+                page_title: _loc.HEADER_CHECKOUT_PT,
+                back_title: _loc.BACK
+            });
+
+            this.prepare('checkout', function checkout1() {
                 var RevelAPI = App.Data.RevelAPI;
 
                 if(!App.Data.card)
@@ -522,14 +532,12 @@ define(["main_router"], function(main_router) {
                 }
 
                 App.Data.header.set({
-                    page_title: _loc['HEADER_CHECKOUT_PT'],
-                    back_title: _loc['HEADER_CHECKOUT_BT'],
-                    back: this.navigate.bind(this, 'myorder', true)
+                    back: this.navigate.bind(this, 'cart', true)
                 });
 
                 App.Data.mainModel.set({
-                    header: headerModes.Checkout,
-                    footer: footerModes.Checkout,
+                    header: headerModes.Cart,
+                    contentClass: 'bg-color12',
                     content: [
                         {
                             modelName: 'Checkout',
@@ -537,7 +545,8 @@ define(["main_router"], function(main_router) {
                             collection: App.Data.myorder,
                             mod: 'OrderType',
                             DINING_OPTION_NAME: _loc.DINING_OPTION_NAME,
-                            className: 'checkout'
+                            className: 'checkout',
+                            cacheId: true
                         },
                         {
                             modelName: 'Checkout',
@@ -545,20 +554,48 @@ define(["main_router"], function(main_router) {
                             customer: App.Data.customer,
                             rewardsCard: App.Data.myorder.rewardsCard,
                             mod: 'Main',
-                            className: 'checkout'
+                            className: 'checkout',
+                            cacheId: true
                         },
                         {
                             modelName: 'Checkout',
                             model: App.Data.myorder.checkout,
                             timetable: App.Data.timetables,
                             mod: 'Pickup',
-                            className: 'checkout'
+                            className: 'checkout',
+                            cacheId: true
+                        },
+                        {
+                            modelName: 'Checkout',
+                            mod: 'Bottom',
+                            model: new Backbone.Model({
+                                action: setAction(this.navigate.bind(this, 'confirm', true))
+                            }),
+                            className: 'fixed-bottom checkout-bottom bg-color10',
+                            cacheId: true
                         }
                     ]
                 });
 
                 this.change_page();
             });
+
+            function setAction(cb) {
+                return function () {
+                    App.Data.myorder.check_order({
+                        order: true,
+                        customer: true,
+                        checkout: true,
+                        validationOnly: true
+                    }, function() {
+                        if(App.Data.stanfordCard && App.Data.stanfordCard.get('needToAskStudentStatus')) {
+                            App.Data.router.navigate('stanford_is_student', true);
+                        } else {
+                            cb();
+                        }
+                    });
+                };
+            }
         },
         card: function() {
             this.prepare('card', function() {
