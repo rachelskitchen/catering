@@ -234,6 +234,7 @@
         'SEARCH_FIELD_PLACEHOLDER': 'Введите название продукта',
         'CONFIRM_DELIVERY_TIME': 'Срок доставки',
         'CONFIRM_ARRIVAL_TIME': 'Срок прибытия',
-        'CONTINUE': 'Далее'
+        'CONTINUE': 'Далее',
+        'PAY': 'Оплата'
     } // end of locale
 }); // end of module

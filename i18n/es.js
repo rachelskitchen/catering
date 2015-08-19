@@ -481,6 +481,7 @@ define([], function() {
         TOTAL_TIP: "Propina",
         TOTAL_GRAND_TOTAL: "Total general",
         UPDATE: "",
-        CHECKOUT: ""
+        CHECKOUT: "",
+        PAYPAL: "PayPal"
     }
 });

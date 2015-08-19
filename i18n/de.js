@@ -481,6 +481,7 @@ define([], function() {
         TOTAL_TIP: "Trinkgeld",
         TOTAL_GRAND_TOTAL: "Gesamtsumme",
         UPDATE: "",
-        CHECKOUT: ""
+        CHECKOUT: "",
+        PAYPAL: "PayPal"
     }
 });

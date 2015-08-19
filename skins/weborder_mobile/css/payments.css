@@ -1,0 +1,12 @@
+.payments li {
+    display: inline-block;
+    width: 49%;
+}
+
+.payments .payment {
+    height: 11em;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 1em;
+    margin: 1.5em;
+}

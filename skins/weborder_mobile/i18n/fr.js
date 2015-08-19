@@ -206,6 +206,7 @@ define([], function() {
         SEARCH_FIELD_PLACEHOLDER: "",
         CONFIRM_ARRIVAL_TIME: "",
         CONFIRM_DELIVERY_TIME: "",
-        CONTINUE: ""
+        CONTINUE: "",
+        PAY: ""
     }
 });

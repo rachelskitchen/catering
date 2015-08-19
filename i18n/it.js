@@ -481,6 +481,7 @@ define([], function() {
         TOTAL_TIP: "Mancia",
         TOTAL_GRAND_TOTAL: "Somma totale",
         UPDATE: "",
-        CHECKOUT: ""
+        CHECKOUT: "",
+        PAYPAL: "PayPal"
     }
 });

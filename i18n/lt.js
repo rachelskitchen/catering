@@ -481,6 +481,7 @@ define([], function() {
         TOTAL_TIP: "Arbatpinigiai",
         TOTAL_GRAND_TOTAL: "Iš viso",
         UPDATE: "",
-        CHECKOUT: ""
+        CHECKOUT: "",
+        PAYPAL: "PayPal"
     }
 });

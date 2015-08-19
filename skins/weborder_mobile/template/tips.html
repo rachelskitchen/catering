@@ -1,21 +1,25 @@
 <script type="text/template" id="tips_line-template">
-    <ul class="tips <% if(isFirefox) print('firefox') %> <% if (!tip_allow) print('hidden'); %>">
-        <li>
-            <div class="fl_left tip_label clip"> <%= _lp.TIPS_ADD %>: </div>
-            <div class="fl_right">
-                <div class="currency_sym"> <span> <%=currency_symbol%> </span> </div>
-                <div class="input border <% if (!type || amount) print('disabled')%>">
-                    <input type="text" <% if (!type || amount) print('disabled') %> class="amount tipAmount ios-safari-caret" value='<% print(sum.toFixed(2)) %>'>
-                </div>
+    <% if(_settings.accept_tips_online) { %>
+    <ul class="tip-selection bg-color2 font-size3 font-color3 text-center">
+        <li class="tip-amount-item fl-left">
+            <div class="tip_label"> <%= _lp.TIPS_ADD %>: </div>
+            <div class="input-control" data-currency="<%= _settings.currency_symbol %>">
+                <input type="number" class="amount tipAmount ios-safari-caret border-color10">
+                <label class="ctrl-wrapper font-color8"><input type="button" class="ctrl"></label>
             </div>
-            <div class="clear_both"></div>
         </li>
-        <li>
-            <span class="btn clip" data-amount="None"> <%= _lp.TIPS_NONE %> </span>
-            <span class="btn clip" data-amount="10"> 10% </span>
-            <span class="btn clip" data-amount="15"> 15% </span>
-            <span class="btn clip" data-amount="20"> 20% </span>
-            <span class="btn clip" data-amount="Other"> <%= _lp.TIPS_OTHER %> </span>
+        <li class="percent border-color10 font-color1 bg-color-active1 font-color-active2" data-amount="10">
+            <span class="percent-amount">10%</span>
+            <span class="percent-10"></span>
+        </li>
+        <li class="percent border-color10 font-color1 bg-color-active1 font-color-active2" data-amount="15">
+            <span class="percent-amount">15%</span>
+            <span class="percent-15"></span>
+        </li>
+        <li class="percent border-color10 font-color1 bg-color-active1 font-color-active2" data-amount="20">
+            <span class="percent-amount">20%</span>
+            <span class="percent-20"></span>
         </li>
     </ul>
+    <% } %>
 </script>

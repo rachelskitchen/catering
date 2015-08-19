@@ -481,6 +481,7 @@ define([], function() {
         TOTAL_TIP: "Pourboire",
         TOTAL_GRAND_TOTAL: "Total général",
         UPDATE: "",
-        CHECKOUT: ""
+        CHECKOUT: "",
+        PAYPAL: "PayPal"
     }
 });

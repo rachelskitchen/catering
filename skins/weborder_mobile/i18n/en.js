@@ -81,7 +81,7 @@
         'HEADER_MYORDER_PT': 'Your Cart',
         'HEADER_MYORDER_BT': 'Menu',
         'HEADER_MYORDER_FT': 'Check Out',
-        'HEADER_CHECKOUT_PT': 'Check Out',
+        'HEADER_CHECKOUT_PT': 'Checkout',
         'HEADER_CHECKOUT_BT': 'Order Cart',
         'HEADER_CARD_PT': 'Order Cart',
         'HEADER_GIFT_CARD_PT': 'Gift Card Information',
@@ -195,7 +195,7 @@
         'STANFORD_STUDENT_QUESTION': 'Are you a Stanford Student?',
         'STANFORD_STUDENT_INSTRUCTIONS': 'You must bring your Stanford ID when you pick up your order.',
         'STANFORD_VERIFICATION': 'Stanford Verification',
-        'TIPS_ADD': 'Add a Tip',
+        'TIPS_ADD': 'Tip',
         'TIPS_NONE': 'None',
         'TIPS_OTHER': 'Other',
         'REWARDS_INFORMATION': 'Rewards Information',
@@ -233,6 +233,7 @@
         'SEARCH_FIELD_PLACEHOLDER': 'Enter product name',
         'CONFIRM_ARRIVAL_TIME': 'Arrival Time',
         'CONFIRM_DELIVERY_TIME': 'Delivery Time',
-        'CONTINUE': 'Continue'
+        'CONTINUE': 'Continue',
+        'PAY': 'Pay'
     } // end of locale
 }); // end of module

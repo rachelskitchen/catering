@@ -7,3 +7,29 @@
     border-width: 1px;
     border-style: solid;
 }
+
+.totals-checkout {
+    margin: 0.6em 0;
+    border-radius: 0.4em;
+}
+
+.totals-checkout > li {
+    margin: 0 0.6em;
+    padding: 0.3em 0;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.totals-checkout > li:last-child {
+    border: none;
+}
+
+.mercury-accepted-credit-cards .card-logo {
+    display: inline-block;
+    height: 6em;
+}
+
+.mercury-accepted-credit-cards img {
+    max-width: 100%;
+    max-height: 100%;
+}

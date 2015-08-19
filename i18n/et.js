@@ -481,6 +481,7 @@ define([], function() {
         TOTAL_TIP: "Jootraha",
         TOTAL_GRAND_TOTAL: "Lõppsumma",
         UPDATE: "",
-        CHECKOUT: ""
+        CHECKOUT: "",
+        PAYPAL: "PayPal"
     }
 });

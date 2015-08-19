@@ -53,6 +53,18 @@
             "views": ["checkout"],
             "templates": ["checkout"],
             "core": ["card", "giftcard", "checkout", "products", "delivery_addresses", "customers", "pikaday", "jquery_numbermask"]
+        },
+        "confirm": {
+            "css": ["total", "checkout", "card", "tips"],
+            "views": ["checkout", "card", "giftcard", "tips"],
+            "templates": ["total", "checkout", "card", "giftcard", "tips"],
+            "core": ["tip", "checkout", "card", "giftcard", "jquery_numbermask", "total_view"]
+        },
+        "payments": {
+            "css": ["payments"],
+            "views": ["checkout", "payments"],
+            "templates": ["checkout", "payments"],
+            "core": []
         }
     }
 }
