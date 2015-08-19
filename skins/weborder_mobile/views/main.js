@@ -68,13 +68,14 @@ define(["done_view", "generator"], function(done_view) {
         },
         content_change: function() {
             var view,
-                content = Backbone.$('<div></div>'),
+                content = this.$('#section > div'),//Backbone.$('<div></div>'),
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
 
-            this.$('#section > div').remove();
-            content.addClass(this.model.get('contentClass'));
-            this.$('#section').append(content);
+            // this.$('#section > div').remove();
+            content.removeClass().addClass(this.model.get('contentClass'));
+
+            // this.$('#section').append(content);
 
             while(this.subViews.length > 1) {
                 view = this.subViews.pop();

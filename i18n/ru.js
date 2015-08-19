@@ -516,6 +516,7 @@
         'CHECKOUT': 'Checkout',
         'DELIVERY_TIME': 'Срок доставки',
         'PICKUP_TIME': 'Время получения',
-        'DELIVERY_INFO': 'Информация о доставке'
+        'DELIVERY_INFO': 'Информация о доставке',
+         'PAYPAL': 'PayPal'
     } // end of locale
 }); // end of module

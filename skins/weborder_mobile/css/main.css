@@ -70,10 +70,10 @@ input {
     padding: 0.6em;
     border-width: 1px;
     border-style: solid;
+    border-color: transparent;
     border-radius: 2em;
     font-weight: 200;
     letter-spacing: 0.05em;
-    border: 1px solid transparent;
 }
 
 input::-webkit-input-placeholder {
@@ -409,9 +409,11 @@ h1, h2, h3 {
     content: '\f057';
     font-size: 1.5em;
     font-family: "FontAwesome";
+    display: block;
+    width: 1em;
     position: absolute;
     top: 50%;
-    right: 0.6em;
+    right: 0.5em;
     margin-top: -0.45em;
 }
 

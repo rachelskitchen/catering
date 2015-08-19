@@ -43,12 +43,13 @@ define(["main_router"], function(main_router) {
             "modifiers/:id_category(/:id_product)": "modifiers",
             "cart": "cart",
             "checkout" : "checkout",
+            "confirm": "confirm",
+            "payments": "payments",
             // "card" : "card",
             // "giftcard" : "gift_card",
             // "stanfordcard": "stanford_card",
             // "stanford_is_student": "stanford_is_student",
             // "stanford_student_verification": "stanford_student_verification",
-            "confirm": "confirm",
             // "done": "done",
             // "location": "location",
             "location": "location",
@@ -572,7 +573,8 @@ define(["main_router"], function(main_router) {
                                 action: setAction(this.navigate.bind(this, 'confirm', true))
                             }),
                             className: 'fixed-bottom checkout-bottom bg-color10',
-                            cacheId: true
+                            cacheId: true,
+                            cacheIdUniq: 'checkout'
                         }
                     ]
                 });
@@ -595,6 +597,116 @@ define(["main_router"], function(main_router) {
                         }
                     });
                 };
+            }
+        },
+        confirm: function() {
+            var self = this,
+                load = $.Deferred();
+
+            if (App.Data.myorder.length === 0) {
+                load = this.loadData();
+            } else {
+                load.resolve();
+            }
+
+            App.Data.header.set({
+                page_title: _loc.HEADER_CHECKOUT_PT,
+                back_title: _loc.BACK,
+                back: this.navigate.bind(this, 'checkout', true)
+            });
+
+            App.Data.mainModel.set({
+                header: headerModes.Cart
+            });
+
+            this.prepare('confirm', function() {
+                if(!App.Data.card)
+                    App.Data.card = new App.Models.Card;
+
+                App.Data.mainModel.set({
+                    contentClass: 'bg-color12',
+                    content: [
+                        {
+                            modelName: 'Total',
+                            model: App.Data.myorder.total,
+                            mod: 'Checkout',
+                            collection: App.Data.myorder,
+                            cacheId: true
+                        },
+                        {
+                            modelName: 'Tips',
+                            model: App.Data.myorder.total.get('tip'),
+                            mod: 'Line',
+                            total: App.Data.myorder.total,
+                            cacheIt: true
+                        },
+                        {
+                            modelName: 'Checkout',
+                            mod: 'Bottom',
+                            model: new Backbone.Model({
+                                action: goToPayments
+                            }),
+                            className: 'fixed-bottom checkout-bottom bg-color10',
+                            cacheId: true,
+                            cacheIdUniq: 'confirm'
+                        }
+                    ]
+                });
+
+                this.change_page();
+            }, [load]);
+
+            function goToPayments() {
+                App.Data.myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true
+                }, function() {
+                   self.navigate('payments', true);
+                });
+            }
+        },
+        payments: function() {
+            App.Data.header.set({
+                page_title: _loc.PAY,
+                back_title: _loc.HEADER_CHECKOUT_PT,
+                back: this.navigate.bind(this, 'confirm', true)
+            });
+
+            App.Data.mainModel.set({
+                header: headerModes.Cart
+            });
+
+            this.prepare('payments', function() {
+                App.Data.mainModel.set({
+                    contentClass: '',
+                    content: [
+                        {
+                            modelName: 'Payments',
+                            model: new Backbone.Model(App.Data.settings.get_payment_process()),
+                            mod: 'Main',
+                            collection: App.Data.myorder,
+                            cacheId: true
+                        },
+                        {
+                            modelName: 'Checkout',
+                            mod: 'Bottom',
+                            model: new Backbone.Model({
+                                action: pay
+                            }),
+                            className: 'fixed-bottom checkout-bottom bg-color10',
+                            cacheId: true,
+                            cacheIdUniq: 'payments'
+                        }
+                    ]
+                });
+
+                this.change_page();
+            });
+
+            function pay() {
+
             }
         },
         card: function() {
@@ -722,55 +834,6 @@ define(["main_router"], function(main_router) {
 
                 this.change_page();
             });
-        },
-        confirm: function() {
-            var load = $.Deferred();
-            if (App.Data.myorder.length === 0) {
-                load = this.loadData();
-            } else {
-                load.resolve();
-            }
-
-            this.prepare('confirm', function() {
-                var payments = App.Data.settings.get_payment_process();
-
-                if(!App.Data.card)
-                    App.Data.card = new App.Models.Card;
-
-                App.Data.header.set({
-                    page_title: _loc['HEADER_CONFIRM_PT'],
-                    back_title: _loc['HEADER_CONFIRM_BT'],
-                    back: this.navigate.bind(this, 'checkout', true)
-                });
-
-                App.Data.footer.set('payments', payments);
-
-                App.Data.mainModel.set({
-                    header: headerModes.Confirm,
-                    footer: _.extend(footerModes.Confirm, {
-                        payments: new Backbone.Model(payments),
-                        checkout: App.Data.myorder.checkout,
-                        mainModel: App.Data.mainModel
-                    }),
-                    content: [
-                        {
-                            modelName: 'Total',
-                            model: App.Data.myorder.total,
-                            mod: 'Checkout',
-                            collection: App.Data.myorder
-                        },
-                        {
-                            modelName: 'Tips',
-                            model: App.Data.myorder.total.get('tip'),
-                            mod: 'Line',
-                            total: App.Data.myorder.total,
-                            cacheIt: true
-                        }
-                    ]
-                });
-
-                this.change_page();
-            }, [load]);
         },
         /**
          * Handler for #done.

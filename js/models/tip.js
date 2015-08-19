@@ -45,6 +45,15 @@ define(["backbone"], function(Backbone) {
          *
          * @prop {number} defaults.percent - percent value chosen by user.
          * @default 0.
+         *
+         * @prop {number} defaults.percent - percent value chosen by user.
+         * @default 0.
+         *
+         * @prop {number} defaults.tipTotal - tip amount after applying last subtotal.
+         * @default 0.
+         *
+         * @prop {number} defaults.subtotal - last subtotal amount applied.
+         * @default 0.
          */
         defaults: {
             type: false, // tip in cash (false) or credit card (true)
@@ -53,12 +62,13 @@ define(["backbone"], function(Backbone) {
             sum: 0, // sum if amount false
             percent: 0, // percent if amount true
             tipTotal: 0, // the result tip amount
+            subtotal: 0, // last applied subtotal
         },
         initialize: function() {
             this.listenTo(this, "change", this.update_tip, this);
         },
         update_tip: function() {
-            this.set("tipTotal", this.get_tip());
+            this.set("tipTotal", this.get_tip(this.get('subtotal')));
         },
         /**
          * @method
@@ -70,6 +80,8 @@ define(["backbone"], function(Backbone) {
                 amount = this.get('amount'),
                 percent = this.get('percent') * 1,
                 sum = this.get('sum') * 1;
+
+            this.set('subtotal', subtotal);
 
             if (!type) {
                 return 0;

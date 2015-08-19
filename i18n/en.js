@@ -514,6 +514,7 @@
         'BACK': 'Back',
         'DELIVERY_TIME': 'Delivery Time',
         'PICKUP_TIME': 'Pickup Time',
-        'DELIVERY_INFO': 'Delivery Info'
+        'DELIVERY_INFO': 'Delivery Info',
+        'PAYPAL': 'PayPal'
     }; // end of locale
 }); // end of module

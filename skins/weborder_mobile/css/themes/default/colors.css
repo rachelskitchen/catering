@@ -84,7 +84,7 @@
 
 /* [green] modifier price color */
 .font-color6 {
-    color: #3cb878;
+    color: #00a200;
 }
 
 /* [sky blue] header buttons */
@@ -129,7 +129,7 @@
 
 /* color #11 - red */
 .font-color11 {
-    color: #ff0000;
+    color: #cb2222;
 }
 
 /* color #12 - grey */
@@ -207,8 +207,8 @@
     color: #1a99cd;
 }
 
-.establishments select, .establishments button {
-    color: #1a99cd !important;
+.totals-checkout, .tip-selection {
+    box-shadow: 0 0 rgba(0,0,0,.3);
 }
 
 /** establishments styles **/
@@ -218,6 +218,10 @@
 
 .establishments[class] .select-wrapper::after {
     color: #373c40;
+}
+
+.establishments[class] select, .establishments[class] button {
+    color: #1a99cd !important;
 }
 
 
