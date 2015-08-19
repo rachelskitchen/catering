@@ -43,10 +43,12 @@ define(['backbone'], function() {
             Backbone.Model.prototype.initialize.apply(this, arguments);
         },
         saveData: function() {
-            setData('filter.' + this.get('uid'), this, true);
+            var prefix = App.Data.is_stanford_mode ? "stanford." : "";
+            setData('filter.' + prefix + this.get('uid'), this, true);
         },
         loadData: function() {
-            var data = getData('filter.' + this.get('uid'), true);
+            var prefix = App.Data.is_stanford_mode ? "stanford." : "";
+            var data = getData('filter.' + prefix + this.get('uid'), true);
             if(data instanceof Object) {
                 this.set(data);
             }
