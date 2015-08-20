@@ -58,7 +58,7 @@
 }
 
 .modifier .select-wrapper {
-    width: 3.5em;
+    width: 4em;
     margin: -0.3em 0 0 0.5em;
     padding: 0;
 }
@@ -79,6 +79,7 @@
     background-color: inherit;
     pointer-events: none;
     border-radius: 2em;
+    text-align: left;
 }
 
 .modifier .mdf_split.option_0::before {

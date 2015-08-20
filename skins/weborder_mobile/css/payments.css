@@ -1,3 +1,8 @@
+.pay-question {
+    padding: 1.5em 0 0.8em;
+    font-weight: 400;
+}
+
 .payments li {
     display: inline-block;
     width: 49%;
@@ -9,4 +14,37 @@
     border-style: solid;
     border-radius: 1em;
     margin: 1.5em;
+    letter-spacing: -3px;
+}
+
+.payments .payment * {
+    pointer-events: none;
+}
+
+.payments .payment::before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.payments .payment[data-payment="paypal"] span {
+    font-family: Verdana;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.payments .payment[data-payment="paypal"]::before {
+    content: '\f1ed';
+    font-family: "FontAwesome";
+    font-size: 5em;
+    line-height: 2.3em;
+    padding-right: 0.3em;
+}
+
+.payments .payment span {
+    display: inline-block;
+    font-size: 3.8em;
+    vertical-align: middle;
+    letter-spacing: normal;
 }

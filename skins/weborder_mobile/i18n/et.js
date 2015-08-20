@@ -207,6 +207,7 @@ define([], function() {
         CONFIRM_ARRIVAL_TIME: "",
         CONFIRM_DELIVERY_TIME: "",
         CONTINUE: "",
-        PAY: ""
+        PAY: "",
+        PAY_QUESTION: ""
     }
 });

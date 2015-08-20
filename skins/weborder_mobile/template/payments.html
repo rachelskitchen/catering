@@ -1,29 +1,41 @@
 <script type="text/template" id="payments_main-template">
+    <h2 class="pay-question font-color1 font-size1 text-center"><%= _lp.PAY_QUESTION %></h2>
+
     <ul class="payments text-center">
+        <% if(credit_card_button) { %>
         <li>
-            <div class="payment border-color1 font-color-1 font-color-active2 bg-color-active1">
+            <div class="payment border-color1 font-color1 font-color-active2 bg-color-active1" data-payment="credit_card_button">
                 <span><%= _lp.FOOTER_CREDIT_CARD %></span>
             </div>
         </li>
+        <% } %>
+        <% if(gift_card) { %>
         <li>
-            <div class="payment border-color1 font-color-1 font-color-active2 bg-color-active1">
+            <div class="payment border-color1 font-color1 font-color-active2 bg-color-active1" data-payment="gift_card">
                 <span><%= _lp.FOOTER_GIFT_CARD %></span>
             </div>
         </li>
+        <% } %>
+        <% if(cash) { %>
         <li>
-            <div class="payment border-color1 font-color-1 font-color-active2 bg-color-active1">
-                <span>fdddsf</span>
+            <div class="payment border-color1 font-color1 font-color-active2 bg-color-active1" data-payment="cash">
+                <span class="cash"></span>
             </div>
         </li>
+        <% } %>
+        <% if(paypal) { %>
         <li>
-            <div class="payment payment-paypal border-color1 font-color-1 font-color-active2 bg-color-active1">
+            <div class="payment border-color1 font-color1 font-color-active2 bg-color-active1" data-payment="paypal">
                 <span><%= _lp.PAYPAL %></span>
             </div>
         </li>
+        <% } %>
+        <% if(stanford) { %>
         <li>
-            <div class="payment border-color1 font-color-1 font-color-active2 bg-color-active1">
+            <div class="payment border-color1 font-color1 font-color-active2 bg-color-active1" data-payment="stanford">
                 <span><%= _lp.FOOTER_STANFORD_CARD %></span>
             </div>
         </li>
+        <% } %>
     </ul>
 </script>

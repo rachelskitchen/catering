@@ -83,7 +83,7 @@
         'HEADER_MYORDER_FT': 'Check Out',
         'HEADER_CHECKOUT_PT': 'Checkout',
         'HEADER_CHECKOUT_BT': 'Order Cart',
-        'HEADER_CARD_PT': 'Order Cart',
+        'HEADER_CARD_PT': 'Card',
         'HEADER_GIFT_CARD_PT': 'Gift Card Information',
         'HEADER_STANFORD_CARD_PT': 'Stanford Card Information',
         'HEADER_CONFIRM_PT': 'Confirm Order',
@@ -234,6 +234,9 @@
         'CONFIRM_ARRIVAL_TIME': 'Arrival Time',
         'CONFIRM_DELIVERY_TIME': 'Delivery Time',
         'CONTINUE': 'Continue',
-        'PAY': 'Pay'
+        'PAY': 'Pay',
+        'PAY_QUESTION': 'How would you like to pay?',
+        'BALANCE_DUE': 'Balance Due',
+        'SUBMIT_PAYMENT': 'Submit Payment'
     } // end of locale
 }); // end of module
