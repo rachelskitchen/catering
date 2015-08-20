@@ -84,7 +84,7 @@
         'HEADER_MYORDER_FT': 'Оформить',
         'HEADER_CHECKOUT_PT': 'Параметры заказа',
         'HEADER_CHECKOUT_BT': 'Корзина',
-        'HEADER_CARD_PT': 'Корзина',
+        'HEADER_CARD_PT': 'Карта',
         'HEADER_GIFT_CARD_PT': 'Данные подарочной карты',
         'HEADER_STANFORD_CARD_PT': 'Stanford карта',
         'HEADER_CONFIRM_PT': 'Подтвердить заказ',
@@ -235,6 +235,7 @@
         'CONFIRM_DELIVERY_TIME': 'Срок доставки',
         'CONFIRM_ARRIVAL_TIME': 'Срок прибытия',
         'CONTINUE': 'Далее',
-        'PAY': 'Оплата'
+        'PAY': 'Оплата',
+        'PAY_QUESTION': 'Выберите способ оплаты'
     } // end of locale
 }); // end of module

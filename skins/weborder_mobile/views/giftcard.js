@@ -34,16 +34,7 @@ define(["giftcard_view"], function(giftcard_view) {
         },
         onProceed: function() {
             this.setData();
-            App.Data.myorder.check_order({
-                order: true,
-                tip: true,
-                customer: true,
-                checkout: true,
-                giftcard: true
-            }, function() {
-                App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.GIFT);
-                App.Data.mainModel.trigger('loadStarted');
-            });
+            this.trigger('pay');
         }
     });
 

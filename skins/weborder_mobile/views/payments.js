@@ -25,7 +25,30 @@ define(["factory"], function(factory) {
 
     var PaymentsMain = App.Views.FactoryView.extend({
         name: 'payments',
-        mod: 'main'
+        mod: 'main',
+        events: {
+            'click .payment': 'selectPayment'
+        },
+        bindings: {
+            '.cash': 'text: cash',
+            '[data-payment="cash"]': 'classes: {"font-color2": equal(selected, "cash"), "bg-color1": equal(selected, "cash")}',
+            '[data-payment="credit_card_button"]': 'classes: {"font-color2": equal(selected, "credit_card_button"), "bg-color1": equal(selected, "credit_card_button")}',
+            '[data-payment="gift_card"]': 'classes: {"font-color2": equal(selected, "gift_card"), "bg-color1": equal(selected, "gift_card")}',
+            '[data-payment="paypal"]': 'classes: {"font-color2": equal(selected, "paypal"), "bg-color1": equal(selected, "paypal")}',
+            '[data-payment="stanford"]': 'classes: {"font-color2": equal(selected, "stanford"), "bg-color1": equal(selected, "stanford")}'
+        },
+        computeds: {
+            cash: {
+                deps: ['checkout_dining_option'],
+                get: function(dining_option) {
+                    var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING';
+                    return isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE;
+                }
+            }
+        },
+        selectPayment: function(e) {
+            this.model.set('selected', Backbone.$(e.target).data('payment'));
+        }
     });
 
     return new factory(function() {

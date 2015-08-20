@@ -6,11 +6,11 @@
     "img_default": "none.png",
     "routing": {
         "main": {
-            "css": [ "main", "header"],
-            "model": ["main", "header", "revel"],
-            "templates": ["main", "header"],
-            "views": ["main", "header", "products"],
-            "core": ["geopoint", "stanfordcard"]
+            "css": [ "main", "header", "footer"],
+            "model": ["main", "header", "revel", "payments", "footer"],
+            "templates": ["main", "header", "footer"],
+            "views": ["main", "header", "products", "footer"],
+            "core": ["geopoint", "stanfordcard", "giftcard"]
         },
         "index": {
             "css": ["categories", "promo_message"],
@@ -31,10 +31,9 @@
             "core": ["categories", "products", "modifiers", "modifiers_view"]
         },
         "cart": {
-            "css": ["myorder", "total"],
-            "views": ["myorder", "total"],
-            "templates": ["myorder", "total"],
-            "core": []
+            "css": ["myorder"],
+            "views": ["myorder"],
+            "templates": ["myorder"]
         },
         "store_info": {
             "css": ["store_info"],
@@ -52,19 +51,39 @@
             "css": ["checkout", "pikaday"],
             "views": ["checkout"],
             "templates": ["checkout"],
-            "core": ["card", "giftcard", "checkout", "products", "delivery_addresses", "customers", "pikaday", "jquery_numbermask"]
+            "core": ["card", "checkout", "products", "delivery_addresses", "customers", "pikaday", "jquery_numbermask"]
         },
         "confirm": {
             "css": ["total", "checkout", "card", "tips"],
-            "views": ["checkout", "card", "giftcard", "tips"],
-            "templates": ["total", "checkout", "card", "giftcard", "tips"],
-            "core": ["tip", "checkout", "card", "giftcard", "jquery_numbermask", "total_view"]
+            "views": ["checkout", "card", "tips"],
+            "templates": ["total", "checkout", "card", "tips"],
+            "core": ["tip", "checkout", "card", "jquery_numbermask", "total_view"]
         },
         "payments": {
             "css": ["payments"],
             "views": ["checkout", "payments"],
-            "templates": ["checkout", "payments"],
-            "core": []
+            "templates": ["checkout", "payments"]
+        },
+        "card": {
+            "css": ["card"],
+            "views": ["card"],
+            "templates": ["card"],
+            "core": ["card", "jquery_numbermask"]
+        },
+        "giftcard": {
+            "css": ["card"],
+            "views": ["giftcard"],
+            "templates": ["giftcard"],
+            "core": ["giftcard", "jquery_numbermask"]
+        },
+        "pay": {
+            "core": ["checkout", "products", "modifiers", "card", "giftcard", "tip", "customers"]
+        },
+        "done": {
+            "css": ["done"],
+            "views": [],
+            "templates": ["done"],
+            "core": ["products", "modifiers", "tip", "checkout", "card", "giftcard", "customers"]
         }
     }
 }

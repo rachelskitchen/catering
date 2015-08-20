@@ -1,20 +1,20 @@
 <script type="text/template" id="giftcard_main-template">
-    <ul class="card <% if(isFirefox) { %>firefox<% } %>">
-        <li class="required border">
-            <input type="text" placeholder="<%= _lp.GIFTCARD_NUMBER %>" class="number number-input ios-safari-caret" value="<%= cardNumber %>" min="0">
+    <ul class="card font-size2 font-color8 <% if(isFirefox) { %>firefox<% } %>">
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.GIFTCARD_NUMBER %>" class="number number-input ios-safari-caret border-color10" value="<%= cardNumber %>" min="0">
         </li>
-        <li class="required border">
+        <li class="required">
             <input type="hidden" value="<%=cardNumber%>" id="id_captcha_key" name="captcha_key" />
-            <input type="text" placeholder="<%= _lp.GIFTCARD_CAPTCHA %>" class="captcha-input ios-safari-caret" min="0" id="id_captcha_value" name="captcha_value">
-        </li>
-        <li class="captcha_container">
-            <div class="captcha_wrap">
-                <img alt="" class="captcha" width="100%" height="100%">
-                <div class="captcha-spinner"></div>
-            </div>
-            <span class="btn btn-reload">
-                <p class="clip"> <%= _lp.GIFTCARD_RELOAD %> </p>
-            </span>
+            <input type="text" placeholder="<%= _lp.GIFTCARD_CAPTCHA %>" class="captcha-input ios-safari-caret border-color10" min="0" id="id_captcha_value" name="captcha_value">
         </li>
     </ul>
+    <div class="captcha_container">
+        <div class="captcha_wrap">
+            <img alt="" class="captcha" width="100%" height="100%">
+            <div class="captcha-spinner"></div>
+        </div>
+        <span class="btn btn-reload link">
+            <p class="font-size2"> <%= _lp.GIFTCARD_RELOAD %> </p>
+        </span>
+    </div>
 </script>

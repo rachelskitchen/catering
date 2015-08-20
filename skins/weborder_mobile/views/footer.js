@@ -20,25 +20,39 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["total_view"], function(total_view) {
+define(["factory"], function(factory) {
     'use strict';
 
-    var TotalCartView = App.Views.FactoryView.extend({
-        name: 'total',
-        mod: 'cart',
+    var FooterMainView = App.Views.FactoryView.extend({
+        name: 'footer',
+        mod: 'main',
         bindings: {
-            '.btn': 'text: format("$1: $2 - $3", _lp_TOTAL_SUBTOTAL, currencyFormat(subtotal), _lp_CHECKOUT)'
+            '.btn': 'text: btn_title'
         },
         events: {
-            'click .btn': 'onCheckout'
+            'click .btn': 'action'
         },
-        onCheckout: function() {
-            App.Data.router.navigate('checkout', true);
+        action: function() {
+            this.model.get('action')();
         }
     });
 
-    return new (require('factory'))(total_view.initViews.bind(total_view), function() {
-        App.Views.TotalView.TotalCartView = TotalCartView;
+    var FooterCartView = FooterMainView.extend({
+        bindings: {
+            '.btn': 'text: format("$1: $2 - $3", _lp_TOTAL_SUBTOTAL, currencyFormat(total_subtotal), _lp_CHECKOUT)'
+        }
+    });
+
+    var FooterPaymentSelectionView = FooterMainView.extend({
+        bindings: {
+            '.btn': 'text: format("$1: $2 - $3", _lp_BALANCE_DUE, currencyFormat(total_grandTotal), _lp_SUBMIT_PAYMENT)'
+        }
+    });
+
+    return new factory(function() {
+        App.Views.FooterView = {};
+        App.Views.FooterView.FooterMainView = FooterMainView;
+        App.Views.FooterView.FooterCartView = FooterCartView;
+        App.Views.FooterView.FooterPaymentSelectionView = FooterPaymentSelectionView;
     });
 });
-

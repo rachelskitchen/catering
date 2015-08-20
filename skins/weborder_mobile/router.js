@@ -45,23 +45,23 @@ define(["main_router"], function(main_router) {
             "checkout" : "checkout",
             "confirm": "confirm",
             "payments": "payments",
-            // "card" : "card",
-            // "giftcard" : "gift_card",
+            "card" : "card",
+            "giftcard" : "gift_card",
             // "stanfordcard": "stanford_card",
             // "stanford_is_student": "stanford_is_student",
             // "stanford_student_verification": "stanford_student_verification",
-            // "done": "done",
+            "done": "done",
             // "location": "location",
             "location": "location",
             "about": "about",
             // "gallery": "gallery",
             // "maintenance": "maintenance",
-            // "pay": "pay",
+            "pay": "pay",
             // "profile(/:step)": "profile",
             // "loyalty": "loyalty",
             // "rewards_card_submit": "rewards_card_submit",
             // "rewards": "rewards",
-            // "*other": "index"
+            "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
         initialize: function() {
@@ -80,7 +80,7 @@ define(["main_router"], function(main_router) {
                 App.Data.header = new App.Models.HeaderModel({
                     cart: this.navigate.bind(this, 'cart')
                 });
-                App.Data.footer = new Backbone.Model();
+                App.Data.footer = new App.Models.FooterModel();
                 var mainModel = App.Data.mainModel = new App.Models.MainModel();
                 var ests = App.Data.establishments;
 
@@ -90,35 +90,8 @@ define(["main_router"], function(main_router) {
                 // only establishment with reward cards option enabled can show RevelAPI buttons
                 App.Settings.RevelAPI = App.Settings.RevelAPI && App.Settings.enable_reward_cards_collecting;
 
-                // listen to credit card payment
-                this.listenTo(App.Data.footer, 'payWithCreditCard', function() {
-                    if(App.Settings.RevelAPI) {
-                        App.Data.RevelAPI.checkCreditCard();
-                    } else {
-                        showDefaultCardView.call(this);
-                    }
-                }, this);
-
-                this.listenTo(App.Data.myorder, 'payWithCreditCard', function() {
-                    var paymentProcessor = App.Data.settings.get_payment_process();
-                    if(paymentProcessor.credit_card_dialog) {
-                        App.Data.myorder.check_order({
-                            order: true,
-                            tip: true,
-                            customer: true,
-                            checkout: true,
-                            card: true
-                        }, sendRequest);
-                    } else {
-                        sendRequest();
-                    }
-
-                    function sendRequest() {
-                        saveAllData();
-                        mainModel.trigger('loadStarted');
-                        App.Data.myorder.create_order_and_pay(PAYMENT_TYPE.CREDIT);
-                    }
-                });
+                // init payments handlers
+                this.paymentsHandlers();
 
                 this.listenTo(App.Data.myorder, 'add remove', function() {
                     App.Data.header.set('cartItemsQuantity', App.Data.myorder.get_only_product_quantity());
@@ -135,11 +108,6 @@ define(["main_router"], function(main_router) {
                 this.listenTo(ests, 'resetEstablishmentData', mainModel.trigger.bind(mainModel, 'showSpinnerAndHideContent'), this);
 //common
                 this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
-
-                // init Stanford Card model if it's turned on
-                if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
-                    App.Data.stanfordCard = new App.Models.StanfordCard();
-                }
 
                 var limitHashes = ["card", "giftcard", "stanfordcard", "confirm", "pay"];
                 if(App.Data.stanfordCard && App.Data.stanfordCard.get('needToAskStudentStatus')) {
@@ -166,6 +134,112 @@ define(["main_router"], function(main_router) {
             checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
             App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
+        },
+        paymentsHandlers: function() {
+            var mainModel = App.Data.mainModel,
+                myorder = App.Data.myorder,
+                paymentCanceled = false,
+                paymentFailed = false;
+
+            this.listenTo(myorder, 'cancelPayment', function() {
+                paymentCanceled = true;
+            });
+
+            this.listenTo(myorder, "paymentFailed", function(message) {
+                paymentFailed = true;
+                message && App.Data.errors.alert(message); // user notification
+            }, this);
+
+            /** [Credit Card] **/
+            App.Data.payments = new App.Models.Payments(App.Data.settings.get_payment_process());
+
+            // invokes when user chooses the 'Credit Card' payment processor on the #payments screen
+            this.listenTo(App.Data.payments, 'payWithCreditCard', function() {
+                if(App.Settings.RevelAPI) {
+                    App.Data.RevelAPI.checkCreditCard();
+                } else {
+                    showDefaultCardView.call(this);
+                }
+            }, this);
+
+            this.listenTo(myorder, 'payWithCreditCard', function() {
+                var paymentProcessor = App.Data.settings.get_payment_process();
+                myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                    card: true
+                }, sendRequest.bind(window, PAYMENT_TYPE.CREDIT));
+            });
+
+            /* Gift Card */
+            App.Data.giftcard = new App.Models.GiftCard;
+
+            // invokes when user chooses the 'Gift Card' payment processor on the #payments screen
+            this.listenTo(App.Data.payments, 'payWithGiftCard', function() {
+                this.navigate('giftcard', true);
+            }, this);
+
+            this.listenTo(App.Data.giftcard, 'pay', function() {
+                myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                    giftcard: true
+                }, sendRequest.bind(window, PAYMENT_TYPE.GIFT));
+            }, this);
+
+            /* Cash Card */
+            // invokes when user chooses the 'Cash' payment processor on the #payments screen
+            this.listenTo(App.Data.payments, 'payWithCash', function() {
+                myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                }, sendRequest.bind(window, PAYMENT_TYPE.NO_PAYMENT));
+            }, this);
+
+            /* PayPal */
+            // invokes when user chooses the 'PayPal' payment processor on the #payments screen
+            this.listenTo(App.Data.payments, 'payWithPayPal', function() {
+                App.Data.myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                }, sendRequest.bind(window, PAYMENT_TYPE.PAYPAL));
+            }, this);
+
+            /* Stanford Card */
+            if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
+                App.Data.stanfordCard = new App.Models.StanfordCard();
+
+                // invokes when user chooses the 'Stanford Card' payment processor on the #payments screen
+                this.listenTo(App.Data.payments, 'payWithPayPal', function() {
+                    this.navigate('stanfordcard', true);
+                }, this);
+
+                this.listenTo(App.Data.stanfordCard, 'pay', function() {
+                    myorder.check_order({
+                        order: true,
+                        tip: true,
+                        customer: true,
+                        checkout: true,
+                    }, sendRequest.bind(window, PAYMENT_TYPE.STANFORD));
+                });
+            }
+
+            function sendRequest(paymentType) {
+                saveAllData();
+                myorder.create_order_and_pay(paymentType);
+                !paymentCanceled && mainModel.trigger('loadStarted');
+                paymentFailed && mainModel.trigger('loadCompleted');
+                paymentCanceled = false;
+                paymentFailed = false;
+            }
         },
         navigationControl: function() {
             this.listenTo(App.Data.header, 'change:tab', function() {
@@ -477,11 +551,15 @@ define(["main_router"], function(main_router) {
             });
         },
         cart: function() {
+            App.Data.header.set({
+                page_title: _loc.HEADER_MYORDER_PT,
+                back_title: _loc.MENU,
+                back: this.navigate.bind(this, 'index', true),
+            });
+
             this.prepare('cart', function() {
-                App.Data.header.set({
-                    page_title: _loc.HEADER_MYORDER_PT,
-                    back_title: _loc.MENU,
-                    back: this.navigate.bind(this, 'index', true),
+                App.Data.footer.set({
+                    action: this.navigate.bind(this, 'checkout', true)
                 });
 
                 App.Data.mainModel.set({
@@ -501,10 +579,11 @@ define(["main_router"], function(main_router) {
                             className: 'myorderNote'
                         },
                         {
-                            modelName: 'Total',
-                            model: App.Data.myorder.total,
+                            modelName: 'Footer',
+                            model: App.Data.footer,
+                            total: App.Data.myorder.total,
                             mod: 'Cart',
-                            className: 'fixed-bottom total-cart bg-color10'
+                            className: 'fixed-bottom footer bg-color10'
                         }
                     ]
                 });
@@ -515,7 +594,12 @@ define(["main_router"], function(main_router) {
         checkout: function() {
             App.Data.header.set({
                 page_title: _loc.HEADER_CHECKOUT_PT,
-                back_title: _loc.BACK
+                back_title: _loc.BACK,
+                back: this.navigate.bind(this, 'cart', true)
+            });
+
+            App.Data.mainModel.set({
+                header: headerModes.Cart
             });
 
             this.prepare('checkout', function checkout1() {
@@ -524,20 +608,17 @@ define(["main_router"], function(main_router) {
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card({RevelAPI: RevelAPI});
 
-                if(!App.Data.giftcard)
-                    App.Data.giftcard = new App.Models.GiftCard;
-
                 if(!App.Data.customer) {
                     App.Data.customer =  new App.Models.Customer({RevelAPI: RevelAPI});
                     App.Data.customer.loadAddresses();
                 }
 
-                App.Data.header.set({
-                    back: this.navigate.bind(this, 'cart', true)
+                App.Data.footer.set({
+                    btn_title: _loc.CONTINUE,
+                    action: setAction(this.navigate.bind(this, 'confirm', true))
                 });
 
                 App.Data.mainModel.set({
-                    header: headerModes.Cart,
                     contentClass: 'bg-color12',
                     content: [
                         {
@@ -567,12 +648,10 @@ define(["main_router"], function(main_router) {
                             cacheId: true
                         },
                         {
-                            modelName: 'Checkout',
-                            mod: 'Bottom',
-                            model: new Backbone.Model({
-                                action: setAction(this.navigate.bind(this, 'confirm', true))
-                            }),
-                            className: 'fixed-bottom checkout-bottom bg-color10',
+                            modelName: 'Footer',
+                            mod: 'Main',
+                            model: App.Data.footer,
+                            className: 'fixed-bottom footer bg-color10',
                             cacheId: true,
                             cacheIdUniq: 'checkout'
                         }
@@ -623,6 +702,11 @@ define(["main_router"], function(main_router) {
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card;
 
+                App.Data.footer.set({
+                    btn_title: _loc.CONTINUE,
+                    action: goToPayments
+                });
+
                 App.Data.mainModel.set({
                     contentClass: 'bg-color12',
                     content: [
@@ -641,12 +725,10 @@ define(["main_router"], function(main_router) {
                             cacheIt: true
                         },
                         {
-                            modelName: 'Checkout',
-                            mod: 'Bottom',
-                            model: new Backbone.Model({
-                                action: goToPayments
-                            }),
-                            className: 'fixed-bottom checkout-bottom bg-color10',
+                            modelName: 'Footer',
+                            mod: 'Main',
+                            model: App.Data.footer,
+                            className: 'fixed-bottom footer bg-color10',
                             cacheId: true,
                             cacheIdUniq: 'confirm'
                         }
@@ -670,7 +752,7 @@ define(["main_router"], function(main_router) {
         payments: function() {
             App.Data.header.set({
                 page_title: _loc.PAY,
-                back_title: _loc.HEADER_CHECKOUT_PT,
+                back_title: _loc.BACK,
                 back: this.navigate.bind(this, 'confirm', true)
             });
 
@@ -679,75 +761,113 @@ define(["main_router"], function(main_router) {
             });
 
             this.prepare('payments', function() {
+                App.Data.footer.set({
+                    action: App.Data.payments.onPay.bind(App.Data.payments)
+                });
+
                 App.Data.mainModel.set({
                     contentClass: '',
                     content: [
                         {
                             modelName: 'Payments',
-                            model: new Backbone.Model(App.Data.settings.get_payment_process()),
+                            model: App.Data.payments,
+                            checkout: App.Data.myorder.checkout,
                             mod: 'Main',
                             collection: App.Data.myorder,
                             cacheId: true
                         },
                         {
-                            modelName: 'Checkout',
-                            mod: 'Bottom',
-                            model: new Backbone.Model({
-                                action: pay
-                            }),
-                            className: 'fixed-bottom checkout-bottom bg-color10',
-                            cacheId: true,
-                            cacheIdUniq: 'payments'
+                            modelName: 'Footer',
+                            mod: 'PaymentSelection',
+                            model: App.Data.footer,
+                            total: App.Data.myorder.total,
+                            className: 'fixed-bottom footer footer-payments bg-color10',
+                            cacheId: true
                         }
                     ]
                 });
 
                 this.change_page();
             });
-
-            function pay() {
-
-            }
         },
         card: function() {
+            App.Data.header.set({
+                page_title: _loc.HEADER_CARD_PT,
+                back_title: _loc.BACK,
+                back: this.navigate.bind(this, 'payments', true)
+            });
+
+            App.Data.mainModel.set({
+                header: headerModes.Cart
+            });
+
             this.prepare('card', function() {
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card;
 
-                App.Data.header.set({
-                    page_title: _loc['HEADER_CARD_PT']
+                App.Data.footer.set({
+                    btn_title: _loc.FOOTER_PROCEED,
+                    action: App.Data.myorder.trigger.bind(App.Data.myorder, 'payWithCreditCard')
                 });
 
                 App.Data.mainModel.set({
-                    header: headerModes.Card,
-                    footer: footerModes.Card,
-                    content: {
-                        modelName: 'Card',
-                        model: App.Data.card,
-                        mod: 'Main'
-                    }
+                    contentClass: '',
+                    content: [
+                        {
+                            modelName: 'Card',
+                            model: App.Data.card,
+                            mod: 'Main',
+                            cacheId: true
+                        },
+                        {
+                            modelName: 'Footer',
+                            mod: 'Main',
+                            model: App.Data.footer,
+                            className: 'fixed-bottom footer bg-color10',
+                            cacheId: true,
+                            cacheIdUniq: 'card'
+                        }
+                    ]
                 });
 
                 this.change_page();
             });
         },
         gift_card: function() {
-            this.prepare('giftcard', function() {
-                if(!App.Data.giftcard)
-                    App.Data.giftcard = new App.Models.GiftCard;
+            App.Data.header.set({
+                page_title: _loc.HEADER_GIFT_CARD_PT,
+                back_title: _loc.BACK,
+                back: this.navigate.bind(this, 'payments', true)
+            });
 
-                App.Data.header.set({
-                    page_title: _loc['HEADER_GIFT_CARD_PT']
+            App.Data.mainModel.set({
+                header: headerModes.Cart
+            });
+
+            this.prepare('giftcard', function() {
+                App.Data.footer.set({
+                    btn_title: _loc.FOOTER_PROCEED,
+                    action: App.Data.giftcard.trigger.bind(App.Data.giftcard, 'pay')
                 });
 
                 App.Data.mainModel.set({
-                    header: headerModes.GiftCard,
-                    footer: footerModes.GiftCard,
-                    content: {
-                        modelName: 'GiftCard',
-                        model: App.Data.giftcard,
-                        mod: 'Main'
-                    }
+                    contentClass: '',
+                    content: [
+                        {
+                            modelName: 'GiftCard',
+                            model: App.Data.giftcard,
+                            mod: 'Main',
+                            cacheId: true
+                        },
+                        {
+                            modelName: 'Footer',
+                            mod: 'Main',
+                            model: App.Data.footer,
+                            className: 'fixed-bottom footer bg-color10',
+                            cacheId: true,
+                            cacheIdUniq: 'giftcard'
+                        }
+                    ]
                 });
 
                 this.change_page();
@@ -855,12 +975,13 @@ define(["main_router"], function(main_router) {
                 var params = App.Data.myorder.paymentResponse;
                 var isSuccess = params.status === 'OK';
 
-                App.Data.header.set('page_title', isSuccess ? _loc['HEADER_DONE_SUCCESS_PT'] : _loc['HEADER_DONE_FAILURE_PT']);
-                App.Data.footer.set({success_payment: isSuccess});
+                App.Data.header.set({
+                    page_title: "asdas",
+                    back_title: ''
+                });
 
                 App.Data.mainModel.set({
-                    header: headerModes.Done,
-                    footer: footerModes.Done,
+                    header: headerModes.Cart,
                     content: {
                         modelName: 'Main',
                         model: App.Data.mainModel,
