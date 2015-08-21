@@ -612,7 +612,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             var self = this,
                 settings = App.Data.settings,
                 fetching = Backbone.$.Deferred(); // deferred for check if all product load;
-            
+
             if (id_category == undefined && (search == null || search == undefined)) {
                 fetching.resolve();//this is the search request with an undefined pattern
                 return fetching;
@@ -626,6 +626,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                     establishment: settings.get("establishment"),
                     search: search
                 },
+                traditional: true, // it removes "[]" from "category" get parameter name
                 dataType: "json",
                 successResp: function(data) {
                     for (var i = 0; i < data.length; i++) {
