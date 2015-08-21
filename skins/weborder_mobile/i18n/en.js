@@ -118,7 +118,8 @@
         'MYORDER_WEIGHT': 'w/',
         'MYORDER_ORDER_NOTES': 'Order Notes',
         'MYORDER_ORDER_NOTES_INPUT': 'Order notes',
-        'MYORDER_HAVE_DISCOUNT_CODE': 'Have a Discount Code?',
+        'MYORDER_HAVE_DISCOUNT_CODE': 'Have a %s?',
+        'MYORDER_HAVE_DISCOUNT_CODE_OR_REWARDS': 'Have a %s or %s?',
         'MYORDER_DISCOUNT_CODE': 'Discount Code',
         'MYORDER_APPLY': 'Apply',
         'MYORDER_REMOVE_DISCOUNT': 'Remove Discount Code',
@@ -237,6 +238,10 @@
         'PAY': 'Pay',
         'PAY_QUESTION': 'How would you like to pay?',
         'BALANCE_DUE': 'Balance Due',
-        'SUBMIT_PAYMENT': 'Submit Payment'
+        'SUBMIT_PAYMENT': 'Submit Payment',
+        'ORDER_RECEIVED': 'Your order has been received',
+        'EMAIL_SENT': 'An email with your receipt has been sent',
+        'RETURN_TO_ORDER_SUMMARY': 'Return to Order Summary',
+        'ENTER_DISCOUNT_CODE': 'Enter a Discount Code'
     } // end of locale
 }); // end of module

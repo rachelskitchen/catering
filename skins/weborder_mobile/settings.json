@@ -55,9 +55,9 @@
         },
         "confirm": {
             "css": ["total", "checkout", "card", "tips"],
-            "views": ["checkout", "card", "tips"],
+            "views": ["checkout", "card", "tips", "total"],
             "templates": ["total", "checkout", "card", "tips"],
-            "core": ["tip", "checkout", "card", "jquery_numbermask", "total_view"]
+            "core": ["tip", "checkout", "card", "jquery_numbermask"]
         },
         "payments": {
             "css": ["payments"],

@@ -529,12 +529,21 @@ h1, h2, h3 {
     content: '\f071';
 }
 
-#popup_message[id] {
+.info #popup_message[id], .warning #popup_message[id] {
     padding-left: 4em;
+}
+
+#popup_message[id] {
+    padding-left: 0;
+}
+
+#popup_message[id].custom-view {
+    font-size: 0.4em;
 }
 
 #popup_panel[id] {
     direction: rtl;
+    margin: 1em 0 0.5em;
 }
 
 #popup_panel[id] > input[type='button'] {

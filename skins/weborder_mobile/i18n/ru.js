@@ -119,7 +119,8 @@
         'MYORDER_WEIGHT': 'в/',
         'MYORDER_ORDER_NOTES': 'Доп. информация',
         'MYORDER_ORDER_NOTES_INPUT': 'Доп. информация',
-        'MYORDER_HAVE_DISCOUNT_CODE': 'Есть скидка?',
+        'MYORDER_HAVE_DISCOUNT_CODE': 'Есть %s?',
+        'MYORDER_HAVE_DISCOUNT_CODE_OR_REWARDS': "Есть %s или %s?",
         'MYORDER_DISCOUNT_CODE': 'Код скидки',
         'MYORDER_APPLY': 'Применить',
         'MYORDER_REMOVE_DISCOUNT': 'Удалить скидку',
@@ -236,6 +237,10 @@
         'CONFIRM_ARRIVAL_TIME': 'Срок прибытия',
         'CONTINUE': 'Далее',
         'PAY': 'Оплата',
-        'PAY_QUESTION': 'Выберите способ оплаты'
+        'PAY_QUESTION': 'Выберите способ оплаты',
+        'ORDER_RECEIVED': 'Ваш заказ принят.',
+        'EMAIL_SENT': 'Данные заказа отправлены на вашу эл. почту',
+        'RETURN_TO_ORDER_SUMMARY': 'Вернуться к заказу',
+        'ENTER_DISCOUNT_CODE': 'Введите дискаунт-код'
     } // end of locale
 }); // end of module

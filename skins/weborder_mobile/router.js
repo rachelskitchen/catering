@@ -680,9 +680,10 @@ define(["main_router"], function(main_router) {
         },
         confirm: function() {
             var self = this,
-                load = $.Deferred();
+                load = $.Deferred(),
+                myorder = App.Data.myorder;
 
-            if (App.Data.myorder.length === 0) {
+            if (myorder.length === 0) {
                 load = this.loadData();
             } else {
                 load.resolve();
@@ -712,16 +713,18 @@ define(["main_router"], function(main_router) {
                     content: [
                         {
                             modelName: 'Total',
-                            model: App.Data.myorder.total,
+                            model: myorder.total,
                             mod: 'Checkout',
-                            collection: App.Data.myorder,
+                            collection: myorder,
+                            checkout: myorder.checkout,
+                            showDiscountCode: showDiscountCode,
                             cacheId: true
                         },
                         {
                             modelName: 'Tips',
-                            model: App.Data.myorder.total.get('tip'),
+                            model: myorder.total.get('tip'),
                             mod: 'Line',
-                            total: App.Data.myorder.total,
+                            total: myorder.total,
                             cacheIt: true
                         },
                         {
@@ -746,6 +749,31 @@ define(["main_router"], function(main_router) {
                     checkout: true
                 }, function() {
                    self.navigate('payments', true);
+                });
+            }
+
+            function showDiscountCode() {
+                App.Data.errors.alert('', false, false, {
+                    isConfirm: true,
+                    typeIcon: '',
+                    confirm: {
+                        ok: _loc.MYORDER_APPLY
+                    },
+                    customView: new App.Views.CheckoutView.CheckoutDiscountCodeView({
+                        model: myorder.checkout,
+                        className: 'checkout-discount-code'
+                    }),
+                    callback: function(res) {
+                        if(!res) {
+                            return;
+                        }
+
+                        if (!/^[\d\w]{1,200}$/.test(myorder.checkout.get("discount_code")) ) {
+                            return App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
+                        }
+
+                        myorder.get_cart_totals({apply_discount: true});
+                    }
                 });
             }
         },
@@ -964,29 +992,33 @@ define(["main_router"], function(main_router) {
             if(!(App.Data.myorder.paymentResponse instanceof Object)) {
                 return this.navigate('index', true);
             }
-            this.prepare('done', function() {
 
+            var success = App.Data.myorder.paymentResponse.status === 'OK';
+
+            App.Data.header.set({
+                page_title: success ? _loc.DONE_THANK_YOU + '!' : '',
+                back_title: ''
+            });
+
+            App.Data.mainModel.set({
+                header: headerModes.Cart
+            });
+
+            this.prepare('done', function() {
                 // if App.Data.customer doesn't exist (success payment -> history.back() to #confirm -> history.forward() to #done)
                 // need to init it.
                 if(!App.Data.customer) {
                     this.loadCustomer();
                 }
 
-                var params = App.Data.myorder.paymentResponse;
-                var isSuccess = params.status === 'OK';
-
-                App.Data.header.set({
-                    page_title: "asdas",
-                    back_title: ''
-                });
-
                 App.Data.mainModel.set({
-                    header: headerModes.Cart,
+                    contentClass: 'bg-color12 done-container',
                     content: {
                         modelName: 'Main',
                         model: App.Data.mainModel,
+                        payment: new Backbone.Model({success: success}),
                         mod: "Done",
-                        className: 'done'
+                        className: 'done text-center'
                     }
                 });
 

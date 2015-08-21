@@ -84,6 +84,7 @@ define(["backbone", "factory"], function(Backbone) {
                     message: error
                 });
             }
+
             this.$el.html(this.template(model));
 
             this.listenToOnce(App.Data.mainModel, 'loadCompleted', function() {

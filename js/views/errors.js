@@ -65,9 +65,16 @@ define(['backbone', 'factory'], function(Backbone) {
          * User notification.
          */
         alertMessage: function() {
+            var options = this.model.toJSON();
+
             if (this.model.get('defaultView')) {
                 this.hideAlertMessage(2); // hide user notification
                 this.render();
+            } else if(options.customView instanceof Backbone.View) {
+                this.hideAlertMessage(2); // hide user notification
+                this.render();
+                this.$('#popup_message').addClass('custom-view').html(options.customView.el);
+                !options.typeIcon && this.$('#popup_content').removeClass('info warning');
             } else {
                 customAlertMessage.call(this); // custom alert message
             }
@@ -76,7 +83,6 @@ define(['backbone', 'factory'], function(Backbone) {
              * Custom alert message.
              */
             function customAlertMessage() {
-                var options = this.model.toJSON();
                 var alert = $('#alert'),
                     template = options.template ? options.template : 'alert';
 

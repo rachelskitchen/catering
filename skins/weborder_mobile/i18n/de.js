@@ -208,6 +208,12 @@ define([], function() {
         CONFIRM_DELIVERY_TIME: "",
         CONTINUE: "",
         PAY: "",
-        PAY_QUESTION: ""
+        PAY_QUESTION: "",
+        ORDER_RECEIVED: "",
+        EMAIL_SENT: "",
+        RETURN_TO_ORDER_SUMMARY: "",
+        ENTER_DISCOUNT_CODE: "",
+        MYORDER_HAVE_DISCOUNT_CODE: "",
+        MYORDER_HAVE_DISCOUNT_CODE_OR_REWARDS: ""
     }
 });
