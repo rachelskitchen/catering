@@ -25,7 +25,7 @@ define(["checkout_view"], function(checkout_view) {
 
     var CoreDeliveryAddressesView = App.Views.DeliveryAddressesView,
         CoreCheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView,
-        DeliveryAddressesView, CheckoutAddressView, CheckoutMainView, BottomView;
+        DeliveryAddressesView, CheckoutAddressView, CheckoutMainView, DiscountCodeView;
 
 
     DeliveryAddressesView = CoreDeliveryAddressesView.extend({
@@ -51,20 +51,22 @@ define(["checkout_view"], function(checkout_view) {
         mod: 'address'
     });
 
-    BottomView = App.Views.FactoryView.extend({
+    DiscountCodeView = App.Views.FactoryView.extend({
         name: 'checkout',
-        mod: 'bottom',
-        events: {
-            'click .btn': 'action'
+        mod: 'discount',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            inputTypeMask(this.$('input'), /^[\d\w]{0,200}$/, '', 'text');
         },
-        action: function() {
-            this.model.get('action')();
+        bindings: {
+            '.discount-code': 'value: discount_code, events: ["input"]',
+            '.ctrl': 'reset: discount_code, events: ["click"]'
         }
     });
 
     return new (require('factory'))(checkout_view.initViews.bind(checkout_view), function() {
         App.Views.DeliveryAddressesView = DeliveryAddressesView;
         App.Views.CoreCheckoutView.CoreCheckoutAddressView = CheckoutAddressView;
-        App.Views.CheckoutView.CheckoutBottomView = BottomView;
+        App.Views.CheckoutView.CheckoutDiscountCodeView = DiscountCodeView;
     });
 });

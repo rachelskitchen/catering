@@ -35,7 +35,8 @@ define(['backbone'], function(Backbone) {
                 cancel: 'Cancel',
                 btnsSwap: false,
                 cancelHide: false
-            }
+            },
+            customView: null
         },
         /**
          * Clear model (set default values).
@@ -52,7 +53,7 @@ define(['backbone'], function(Backbone) {
          *
          * @param {string} message Alert message.
          * @param {boolean} reloadPage If TRUE - reload page after pressing button.
-         * @param {boolean} defaultView Use jQuery alert message.
+         * @param {boolean} defaultView - 'true' value means to Use jQuery alert message.
          * @param {object} options Options of alert message:
          *      template: template ID (apply if uses custom alert message) (string);
          *      errorServer: server return HTTP status 200, but data.status is error (boolean);
@@ -64,6 +65,7 @@ define(['backbone'], function(Backbone) {
          *          btnsSwap: buttons swap (boolean);
          *          cancelHide: if TRUE - hide CANCEL button (boolean).
          *      callback: callback for confirm message (function).
+         *      customView: an instance of Backbone.View
          */
         alert: function(message, reloadPage, defaultView, options) {
             this.clearModel(); // clear model (set default values)

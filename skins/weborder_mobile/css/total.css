@@ -14,6 +14,10 @@
     border: none;
 }
 
+.totals-checkout .link:active {
+    opacity: .5;
+}
+
 .mercury-accepted-credit-cards .card-logo {
     display: inline-block;
     height: 6em;

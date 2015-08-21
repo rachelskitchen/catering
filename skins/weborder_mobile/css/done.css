@@ -1,3 +1,62 @@
+.done-container {
+    display: table !important;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.done {
+    display: table-cell !important;
+    vertical-align: middle;
+}
+
 .done .thanks {
-    padding: 10em 0 2em;
+    padding: 2em 0;
+}
+
+.done .order-received {
+    padding-bottom: 0.2em;
+}
+
+.done .orderCompleted {
+    margin: 2em 0;
+}
+
+.done .orderCompleted dt, .done .orderCompleted dd {
+    display: inline-block;
+    width: 45%;
+    vertical-align: top;
+    margin-bottom: 0.5em;
+}
+
+.done .orderCompleted dt {
+    padding-right: 0.5em;
+    position: relative;
+}
+
+.done .orderCompleted dt::after {
+    content: ':';
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.done .currency_symbol {
+    position: relative;
+    right: -0.2em;
+}
+
+.done .btn {
+    display: inline-block;
+    border-width: 1px;
+    border-style: solid;
+    font-weight: 500;
+    margin-bottom: 0.5em;
+}
+
+.done .failure-message {
+    display: block;
+    margin: 0.2em 0 3em;
 }

@@ -213,6 +213,20 @@ define(["done_view", "generator"], function(done_view) {
         }
     });
 
+    var MainDone = App.Views.CoreMainView.CoreMainDoneView.extend({
+        bindings: {
+            '.btnReturn': 'text: select(payment_success, _lp_FOOTER_RETURN_TO_MENU, _lp_RETURN_TO_ORDER_SUMMARY)'
+        },
+        return_menu: function() {
+            if (this.options.payment.get('success')) {
+                App.Data.myorder.empty_myorder();
+                App.Data.router.navigate('index', true);
+            } else {
+                App.Data.router.navigate('confirm', true);
+            }
+        }
+    });
+
     function initSizes() {
         var w = 640,
             h = 700,
@@ -257,5 +271,6 @@ define(["done_view", "generator"], function(done_view) {
 
     return new (require('factory'))(done_view.initViews.bind(done_view), function() {
         App.Views.MainView.MainMainView = MainView;
+        App.Views.MainView.MainDoneView = MainDone;
     });
 });
