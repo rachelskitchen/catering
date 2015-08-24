@@ -111,7 +111,7 @@ define([], function() {
         MYORDER_HAVE_DISCOUNT_CODE: "Kas teil on allahindluskood?",
         MYORDER_DISCOUNT_CODE: "Allahindluskood",
         MYORDER_APPLY: "Rakenda",
-        MYORDER_REMOVE_DISCOUNT: "Eemalda allahindluskood",
+        MYORDER_REMOVE_DISCOUNT: "Eemalda allahindluskood?",
         PRODUCTS_AVAILABLE: "Saadaval",
         PRODUCTS_GIFT_CARD_NUMBER: "Kinkekaardi number",
         QUANTITY_QUANTITY: "Kogus",

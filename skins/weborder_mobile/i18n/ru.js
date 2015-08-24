@@ -123,7 +123,7 @@
         'MYORDER_HAVE_DISCOUNT_CODE_OR_REWARDS': "Есть %s или %s?",
         'MYORDER_DISCOUNT_CODE': 'Код скидки',
         'MYORDER_APPLY': 'Применить',
-        'MYORDER_REMOVE_DISCOUNT': 'Удалить скидку',
+        'MYORDER_REMOVE_DISCOUNT': 'Удалить скидку?',
         'PRODUCTS_AVAILABLE': 'В наличие',
         'PRODUCTS_GIFT_CARD_NUMBER': '№ подарочной карты',
         'QUANTITY_QUANTITY': 'Количество',
