@@ -111,7 +111,7 @@ define([], function() {
         MYORDER_HAVE_DISCOUNT_CODE: "Turite nuolaidos kodą?",
         MYORDER_DISCOUNT_CODE: "Nuolaidos kodas",
         MYORDER_APPLY: "Vykdyti",
-        MYORDER_REMOVE_DISCOUNT: "Pašalinti nuolaidos kodą",
+        MYORDER_REMOVE_DISCOUNT: "Pašalinti nuolaidos kodą?",
         PRODUCTS_AVAILABLE: "Yra",
         PRODUCTS_GIFT_CARD_NUMBER: "Dovanų kortelės numeris",
         QUANTITY_QUANTITY: "Kiekis",

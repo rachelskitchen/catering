@@ -25,9 +25,10 @@ define(["total_view"], function(total_view) {
 
     var TotalCheckout = App.Views.CoreTotalView.CoreTotalCheckoutView.extend({
         bindings: extendProto('bindings', {
-            '.discount-links': 'toggle: any(_system_settings_accept_discount_code, _system_settings_enable_reward_cards_collecting)',
+            '.discount-links': 'toggle: showDiscountsLine',
             // '.have-discounts': 'html: haveDiscountCodeOrRewards, toggle: not(any(checkout_last_discount_code))',
-            '.have-discount-code': 'html: haveDiscountCode, toggle:',
+            '.have-discount-code': 'html: haveDiscountCode, toggle: not(checkout_last_discount_code)',
+            '.remove-discount-code': 'toggle: checkout_last_discount_code'
             // '.have-rewards': 'html: haveRewards'
         }),
         computeds: extendProto('computeds', {
@@ -47,6 +48,12 @@ define(["total_view"], function(total_view) {
                 deps: ['_lp_MYORDER_HAVE_DISCOUNT_CODE', '_lp_REWARDS_NUMBER'],
                 get: function(MYORDER_HAVE_DISCOUNT_CODE, REWARDS_NUMBER) {
                     return MYORDER_HAVE_DISCOUNT_CODE.replace('%s', wrap(REWARDS_NUMBER, 'rewards-link'));
+                }
+            },
+            showDiscountsLine: {
+                deps: ['_system_settings_accept_discount_code', '_system_settings_enable_reward_cards_collecting', 'checkout_last_discount_code'],
+                get: function(accept_discount_code, enable_reward_cards_collecting, last_discount_code) {
+                    return accept_discount_code && enable_reward_cards_collecting && !last_discount_code
                 }
             }
         }),

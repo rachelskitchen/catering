@@ -111,7 +111,7 @@ define([], function() {
         MYORDER_HAVE_DISCOUNT_CODE: "¿Tiene un código de descuento?",
         MYORDER_DISCOUNT_CODE: "Código de descuento",
         MYORDER_APPLY: "Aplicar",
-        MYORDER_REMOVE_DISCOUNT: "Eliminar código de descuento",
+        MYORDER_REMOVE_DISCOUNT: "Eliminar código de descuento?",
         PRODUCTS_AVAILABLE: "Disponible",
         PRODUCTS_GIFT_CARD_NUMBER: "Número de tarjeta de regalo",
         QUANTITY_QUANTITY: "Cantidad",

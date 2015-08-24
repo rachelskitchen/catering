@@ -122,7 +122,7 @@
         'MYORDER_HAVE_DISCOUNT_CODE_OR_REWARDS': 'Have a %s or %s?',
         'MYORDER_DISCOUNT_CODE': 'Discount Code',
         'MYORDER_APPLY': 'Apply',
-        'MYORDER_REMOVE_DISCOUNT': 'Remove Discount Code',
+        'MYORDER_REMOVE_DISCOUNT': 'Remove Discount Code?',
         'PRODUCTS_AVAILABLE': 'Available',
         'PRODUCTS_GIFT_CARD_NUMBER': 'Gift Card Number',
         'QUANTITY_QUANTITY': 'Quantity',
