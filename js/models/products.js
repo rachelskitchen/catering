@@ -631,6 +631,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                     establishment: settings.get("establishment"),
                     search: search
                 },
+                traditional: true, // it removes "[]" from "category" get parameter name
                 dataType: "json",
                 successResp: function(data) {
                     for (var i = 0; i < data.length; i++) {
