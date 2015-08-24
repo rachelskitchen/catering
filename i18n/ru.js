@@ -396,7 +396,7 @@
             'ERROR_INSUFFICIENT_STOCK': 'Недостаточное количество некоторых продуктов.',
             'ERROR_OCCURRED': 'Произошла ошибка:',
             'ERROR_HAS_OCCURRED': 'Произошла ошибка',
-            'ERROR_HAS_OCCURRED_WITH_CONTACT': 'Произошла ошибка, пожалуйста, обратитесь сюда: %email: %phone: %',
+            'ERROR_HAS_OCCURRED_WITH_CONTACT': 'Произошла ошибка, пожалуйста, обратитесь сюда: %email: %%phone: %',
             'ERROR_MIN_ITEMS_LIMIT': 'Выберите по крайней мере %s продуктов для создания заказа.',
             'ERROR_INCORRECT_AJAX_DATA': 'Неверные данные в серверном ответе.',
             'ERROR_SERVER_UNREACHED': 'Сервер не доступен в настоящий момент.',

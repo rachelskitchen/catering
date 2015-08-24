@@ -45,3 +45,7 @@
 .checkout-discount-code h3 {
     font-weight: 200;
 }
+
+.checkout .required::before {
+    top: 0.6em;
+}

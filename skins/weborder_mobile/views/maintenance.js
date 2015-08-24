@@ -32,6 +32,12 @@ define(["backbone", "factory"], function(Backbone) {
             });
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.listenToOnce(App.Data.mainModel, 'loadCompleted', App.Data.myorder.check_maintenance);
+        },
+        events: {
+            'click .btn': 'reload'
+        },
+        reload: function() {
+            window.location.reload();
         }
     });
 

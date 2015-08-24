@@ -374,7 +374,7 @@ define([], function() {
             ERROR_INSUFFICIENT_STOCK: "Algunos productos tienen existencias insuficientes.",
             ERROR_OCCURRED: "Hubo un error:",
             ERROR_HAS_OCCURRED: "Ocurrió el error",
-            ERROR_HAS_OCCURRED_WITH_CONTACT: "Ocurrió el error, comuníquese a %email: %phone:%",
+            ERROR_HAS_OCCURRED_WITH_CONTACT: "Ocurrió el error, comuníquese a %email: %%phone: %",
             ERROR_MIN_ITEMS_LIMIT: "Seleccione por lo menos %s artículos para hacer un pedido.",
             ERROR_INCORRECT_AJAX_DATA: "Respuesta de datos incorrectos en el servidor.",
             ERROR_SERVER_UNREACHED: "Imposible conectar con el servidor en este momento.",

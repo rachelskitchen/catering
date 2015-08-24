@@ -1,24 +1,11 @@
-/* main mod start */
-
-#content .maintenance {
-    height: 100%;
-    text-align: center;
-    width: 100%;
+.maintenance p {
+    margin-top: 7em;
 }
 
-#content .maintenance:before {
-    content: '';
+.maintenance .btn {
     display: inline-block;
-    height: 100%;
-    vertical-align: middle;
+    min-width: 10em;
+    margin-top: 2em;
+    border-width: 1px;
+    border-style: solid;
 }
-
-#content .maintenance p {
-    display: inline-block;
-    font-size: 4em;
-    font-weight: bold;
-    vertical-align: middle;
-    width: 99%;
-}
-
-/* main mod end */

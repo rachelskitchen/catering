@@ -393,7 +393,7 @@
             'ERROR_INSUFFICIENT_STOCK': 'Some products have insufficient stock.',
             'ERROR_OCCURRED': 'Error occurred:',
             'ERROR_HAS_OCCURRED': 'The error has occurred',
-            'ERROR_HAS_OCCURRED_WITH_CONTACT': 'The error has occurred, please contact: %email: %phone: %',
+            'ERROR_HAS_OCCURRED_WITH_CONTACT': 'The error has occurred, please contact: %email: %%phone: %',
             'ERROR_MIN_ITEMS_LIMIT': 'Please select at least %s items to place an order.',
             'ERROR_INCORRECT_AJAX_DATA': 'Incorrect data in server response.',
             'ERROR_SERVER_UNREACHED': 'The server cannot be reached at this time.',

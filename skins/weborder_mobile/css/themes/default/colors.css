@@ -150,6 +150,10 @@
     background: #f22828;
 }
 
+#header .btn-cart:not([data-count="0"]):active {
+    background-color: #8ed0ff;
+}
+
 .tabs::after {
     background-color: #1a99cd;
 }

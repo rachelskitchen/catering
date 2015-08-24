@@ -25,11 +25,13 @@ define(["total_view"], function(total_view) {
 
     var TotalCheckout = App.Views.CoreTotalView.CoreTotalCheckoutView.extend({
         bindings: extendProto('bindings', {
-            '.discount-links': 'toggle: showDiscountsLine',
-            // '.have-discounts': 'html: haveDiscountCodeOrRewards, toggle: not(any(checkout_last_discount_code))',
-            '.have-discount-code': 'html: haveDiscountCode, toggle: not(checkout_last_discount_code)',
-            '.remove-discount-code': 'toggle: checkout_last_discount_code'
-            // '.have-rewards': 'html: haveRewards'
+            '.discount-links': 'toggle: any(showDiscountCode, showRewards)',
+            '.have-discounts': 'html: haveDiscountCodeOrRewards, toggle: all(showDiscountCode, showRewards)',
+            '.have-discount-code': 'html: haveDiscountCode, toggle: all(showDiscountCode, not(showRewards))',
+            '.have-rewards': 'html: haveRewards, toggle: all(not(showDiscountCode), showRewards)',
+            '.remove-discount-code': 'toggle: checkout_last_discount_code',
+            '.remove-reward-redemption': 'toggle: rewardsCard_redemption_code'
+
         }),
         computeds: extendProto('computeds', {
             haveDiscountCodeOrRewards: {
@@ -50,31 +52,42 @@ define(["total_view"], function(total_view) {
                     return MYORDER_HAVE_DISCOUNT_CODE.replace('%s', wrap(REWARDS_NUMBER, 'rewards-link'));
                 }
             },
-            showDiscountsLine: {
-                deps: ['_system_settings_accept_discount_code', '_system_settings_enable_reward_cards_collecting', 'checkout_last_discount_code'],
-                get: function(accept_discount_code, enable_reward_cards_collecting, last_discount_code) {
-                    return accept_discount_code && enable_reward_cards_collecting && !last_discount_code
+            showDiscountCode: {
+                deps: ['_system_settings_accept_discount_code', 'checkout_last_discount_code'],
+                get: function(accept_discount_code, last_discount_code) {
+                    return accept_discount_code && !last_discount_code;
+                }
+            },
+            showRewards: {
+                deps: ['_system_settings_enable_reward_cards_collecting', 'rewardsCard_redemption_code'],
+                get: function(enable_reward_cards_collecting, redemption_code) {
+                    return enable_reward_cards_collecting && !redemption_code;
                 }
             }
         }),
         events: extendProto('events', {
             'click .discount-link': 'showDiscountCode',
             'click .rewards-link': 'showRewards',
-            'click .remove-discount-code': 'removeDiscountCode'
+            'click .remove-discount-code': 'removeDiscountCode',
+            'click .remove-reward-redemption': 'removeRewardRedemption'
         }),
         showDiscountCode: function() {
             var showDiscountCode = this.options.showDiscountCode;
             typeof showDiscountCode == 'function' && showDiscountCode();
         },
         showRewards: function() {
-
+            var showRewards = this.options.showRewards;
+            typeof showRewards == 'function' && showRewards();
         },
         removeDiscountCode: function() {
             this.options.checkout.set({
                 last_discount_code: '',
                 discount_code: ''
-            }, {silent: true});
+            });
             this.collection.get_cart_totals();
+        },
+        removeRewardRedemption: function() {
+            this.options.rewardsCard.resetData();
         }
     });
 

@@ -374,7 +374,7 @@ define([], function() {
             ERROR_INSUFFICIENT_STOCK: "Mõnd toodet pole piisavalt laos.",
             ERROR_OCCURRED: "Ilmnes tõrge:",
             ERROR_HAS_OCCURRED: "Ilmnes tõrge",
-            ERROR_HAS_OCCURRED_WITH_CONTACT: "Ilmnes tõrge, võtke ühendust järgmistel kontaktandmetel: %email: %phone: %",
+            ERROR_HAS_OCCURRED_WITH_CONTACT: "Ilmnes tõrge, võtke ühendust järgmistel kontaktandmetel: %email: %%phone: %",
             ERROR_MIN_ITEMS_LIMIT: "Valige tellimuse esitamiseks vähemalt %s üksust.",
             ERROR_INCORRECT_AJAX_DATA: "Serveri vastuses olid valed andmed.",
             ERROR_SERVER_UNREACHED: "Serveriga ei saa praegu ühendust.",
