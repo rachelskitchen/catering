@@ -59,7 +59,8 @@ define(["total_view"], function(total_view) {
         }),
         events: extendProto('events', {
             'click .discount-link': 'showDiscountCode',
-            'click .rewards-link': 'showRewards'
+            'click .rewards-link': 'showRewards',
+            'click .remove-discount-code': 'removeDiscountCode'
         }),
         showDiscountCode: function() {
             var showDiscountCode = this.options.showDiscountCode;
@@ -67,6 +68,13 @@ define(["total_view"], function(total_view) {
         },
         showRewards: function() {
 
+        },
+        removeDiscountCode: function() {
+            this.options.checkout.set({
+                last_discount_code: '',
+                discount_code: ''
+            }, {silent: true});
+            this.collection.get_cart_totals();
         }
     });
 

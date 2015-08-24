@@ -30,7 +30,7 @@ define(["factory"], function(factory) {
             '.btn': 'text: btn_title'
         },
         events: {
-            'click .btn': 'action'
+            'click .btn:not(.disabled)': 'action'
         },
         action: function() {
             this.model.get('action')();
@@ -49,10 +49,24 @@ define(["factory"], function(factory) {
         }
     });
 
+    var FooterRewardsView = FooterMainView.extend({
+        bindings: {
+            '.btn': 'text: btn_title, classes: {disabled: not(all(rewardsCard_captchaValue, rewardsCard_captchaKey, rewardsCard_number))}'
+        }
+    });
+
+    var FooterRewardRedemptionView = FooterMainView.extend({
+        bindings: {
+            '.btn': 'text: btn_title, classes: {disabled: not(rewardsCard_redemption_code)}'
+        }
+    });
+
     return new factory(function() {
         App.Views.FooterView = {};
         App.Views.FooterView.FooterMainView = FooterMainView;
         App.Views.FooterView.FooterCartView = FooterCartView;
         App.Views.FooterView.FooterPaymentSelectionView = FooterPaymentSelectionView;
+        App.Views.FooterView.FooterRewardRedemptionView = FooterRewardRedemptionView;
+        App.Views.FooterView.FooterRewardsView = FooterRewardsView;
     });
 });
