@@ -638,23 +638,29 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             var data = this.model.toJSON();
             data.iPad = iPad();
             this.$el.html(this.template(data));
-            inputTypeMask(this.$('input'), /^[\d\w]{1,200}$/, '', 'text');
+            inputTypeMask(this.$('input'), /^[\d\w]{0,200}$/, '', 'text');
 
             return this;
         },
         events: {
             'click .btnApply': 'onApplyCode',
-            'keyup input[name=discount_code]': 'onChangeDiscountCode'
+            'keyup input[name=discount_code]': 'onChangeDiscountCode',
+            'blur input[name=discount_code]': 'onBlurDiscountCode',
         },
         onChangeDiscountCode: function(e) {
             var newValue = e.target.value,
                 oldValue = this.model.get("discount_code");
 
-            if (newValue == oldValue)
+            if (newValue == oldValue || !newValue)
                 return;
 
             this.model.set({"discount_code":newValue}, {silent: true});
             this.enableApplyBtn();
+        },
+        onBlurDiscountCode: function(e) {
+            if (!e.target.value) {
+                e.target.value = this.model.get("discount_code");
+            }
         },
         onApplyCode: function() {
             var self = this,
@@ -693,23 +699,29 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             data.discount_allow = App.Settings.accept_discount_code === true;
             data.discount_code_applied = this.model.get("last_discount_code");
             this.$el.html(this.template(data));
-            inputTypeMask(this.$('input'), /^[\d\w]{1,200}$/, '', 'text');
+            inputTypeMask(this.$('input'), /^[\d\w]{0,200}$/, '', 'text');
             return this;
         },
         events: {
             'click .dcode_have': 'enterDiscountCode',
             'click .dcode_remove': 'removeDiscountCode',
             'click .btnApply': 'onApplyCode',
-            'change input[name=discount_code]': 'onChangeDiscountCode'
+            'change input[name=discount_code]': 'onChangeDiscountCode',
+            'blur input[name=discount_code]': 'onBlurDiscountCode',
         },
         onChangeDiscountCode: function(e) {
             var newValue = e.target.value,
                 oldValue = this.model.get("discount_code");
 
-            if (newValue == oldValue)
+            if (newValue == oldValue || !newValue)
                 return;
 
             this.model.set({"discount_code":newValue}, {silent: true});
+        },
+        onBlurDiscountCode: function(e) {
+            if (!e.target.value) {
+                e.target.value = this.model.get("discount_code");
+            }
         },
         enterDiscountCode: function() {
             this.$(".dcode_have").addClass('hidden');

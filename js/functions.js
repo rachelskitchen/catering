@@ -120,6 +120,21 @@ function parse_get_params() {
     }
     return $_GET;
 }
+
+/**
+ * Make the GET-params strings from address line.
+ */
+function make_get_params_string(params) {
+    if (!params)
+        return "";
+    var i=0, data = [];
+    for (var key in params) {
+        if (key && params[key]) {
+            data[i++] = key + "=" + params[key];
+        }
+    }
+    return data.join("&");
+}
 /**
  * Load styles and scripts.
  */
