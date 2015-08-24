@@ -84,6 +84,11 @@
             "views": [],
             "templates": ["done"],
             "core": ["products", "modifiers", "tip", "checkout", "card", "giftcard", "customers"]
+        },
+        "rewards": {
+            "css": ["rewards"],
+            "views": ["rewards"],
+            "templates": ["rewards"]
         }
     }
 }

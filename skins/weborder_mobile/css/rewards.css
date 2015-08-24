@@ -1,211 +1,97 @@
-.rewards-info {
-    padding: 0 5%;
-}
-.rewards-info h3 {
-    font-size: 2.8em;
-    font-weight: bold;
-    padding: 0.8em 0;
-    text-align: center;
+.rewards-info label {
+    display: block;
+    margin: 1.4em 0;
 }
 
-.rewards-info .input {
-    display: block;
-    height: 2em;
-    font-size: 3em;
-    font-family: inherit;
-    color: inherit;
+.rewards-info input {
     width: 100%;
-    position: relative;
-    margin: 0 auto;
-    left: 0;
-    right: 0;
-    top: 0;
-}
-
-.rewards-info .border:after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: -2px;
-    bottom: -2px;
-    left: -2px;
-    right: -2px;
-}
-
-.rewards-info .input:after {
-    content: '';
-    display: block;
-    position: absolute;
-    top: -2px;
-    bottom: -2px;
-    left: -2px;
-    right: -2px;
 }
 
 .rewards-info .captcha {
-    width: 12em;
-    height: 5em;
-    font-size: 2.4em;
-    margin-bottom: 1.5em;
     display: inline-block;
-    vertical-align: top;
+    width: 30em;
+    height: 12em;
+    vertical-align: middle;
     position: relative;
 }
 
-.captcha-spinner {
-    position: absolute !important;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    font-size: 0.6em;
+.rewards-info .captcha-image {
+    max-width: 100%;
+    max-height: 100%;
 }
 
-.update-captcha {
-    padding-left: 2em;
-    font-size: 3em;
-    vertical-align: middle;
+.rewards-info .captcha-spinner {
+    height: 100%;
+    position: absolute !important;
+    top: 0;
+    left: 50%;
 }
 
 .rewards-info .rewards-card-btn {
     display: inline-block;
-    height: 5em;
-    padding-left: 2em;
-    font-size: 2.4em;
-    line-height: 5em;
+    padding-left: 4em;
+    vertical-align: middle;
 }
 
-.rewards-number, .rewards-title {
-    font-size: 3em;
+.rewards-info .list-title {
+    margin-bottom: 2em;
 }
 
-.rewards-info .info {
-    display: block;
-    text-align: center;
-    font-size: 2em;
-}
-
-.rewards-info .no-bottom-padding {
-    padding-bottom: 0;
-}
-
-.rewards-info .span-wrapper {
-    text-align: center;
-}
-
-.rewards-unavailable {
-    font-size: 2.8em;
-    padding-top: 1em;
+.rewards-info .rewards-available {
+    margin-top: 2em;
 }
 
 .rewards-info .collected {
-    width: 100%;
-    text-align: center;
-    font-size: 3em;
-    margin: 1em 0
+    margin-top: 2em;
 }
 
 .rewards-info .collected > li {
     display: inline-block;
-    width: 32%;
-    vertical-align: top;
+    width: 30%;
 }
 
 .rewards-info dfn {
     display: block;
-    width: 4em;
-    margin: 0 auto 0.2em;
     font-style: normal;
+    width: 4.5em;
+    margin: 0 auto 0.2em;
 }
 
-.reward-selection > li {
-    height: 3em;
-    font-size: 3em;
+.rewards-info .info {
+    font-style: italic;
+}
+
+.rewards-info .reward-selection > li {
     border-width: 1px;
     border-style: solid;
-    margin-top: 0.5em;
-    padding-top: 1em;
-    text-align: center;
-}
-
-.reward-selection > li.active:after {
-    content: '';
-    display: block;
-    width: 1.5em;
-    height: 1.5em;
-    position: absolute;
-    top: 0.2em;
-    right: 0.2em;
-}
-
-.reward-selection .points-selection {
-    display: list-item;
-    padding-top: 0;
-    height: auto;
-    text-align: left;
-}
-
-.rewards-info .redemption {
-    text-align: center;
-}
-
-.rewards-info .redemption-points {
-    padding-bottom: 0.5em;
-}
-
-.total-points, .total-visits, .total-purchases {
-    font-size: 1.5em;
-    word-break: break-word;
-}
-
-.rewards-info .redemption {
-    display: block;
-    font-size: 0.7em;
-}
-
-.rewards-info .order-item {
-    display: block;
-    margin: 0 20px;
-    vertical-align: middle;
-    padding: 5px 0;
-}
-
-.rewards-info .order-item {
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-}
-
-.rewards-info .order-item:last-child {
-    border-bottom: none;
-}
-
-.rewards-info .order-item:before {
-    content: '';
-    display: inline-block;
-    height: 83px;
-    width: 0;
-    vertical-align: middle;
+    padding: 2em 0.2em;
+    margin: 2em 0;
     position: relative;
-    margin-left: -8px;
 }
 
-.rewards-info .order-item > div {
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.rewards-info h4.name {
-    font-size: 18px;
-    margin-right: 20px;
-}
-
-.rewards-info .modifier_place, .rewards-info .price-line, .rewards-info .attrs {
+.rewards-info .reward-selection > li.active::after {
+    content: '\f00c';
+    font-family: "FontAwesome";
     display: block;
-    font-size: 14px !important;
-    margin-top: 2px;
+    position: absolute;
+    top: .2em;
+    right: .4em;
+    font-size: 3.5em;
+}
+
+.rewards-info .redemption {
+    display: block;
+}
+
+.rewards-info .name {
+    font-weight: normal;
+}
+
+.rewards-info .price-line {
+    display: inline-block;
+    padding-bottom: 0.2em;
 }
 
 .rewards-info .quantity {
-    position: relative;
-    padding: 0;
+    border: none;
 }

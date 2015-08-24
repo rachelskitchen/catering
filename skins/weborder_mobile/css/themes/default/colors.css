@@ -32,7 +32,7 @@
 }
 
 /* [white] header background */
-.font-color2 {
+.font-color2, .reward-selection li.active::after, .stanford-plan.active::after {
     color: #fff;
 }
 
@@ -213,6 +213,10 @@
 
 .required::before {
     color: #ff0000;
+}
+
+.reward-selection li.active, .stanford-plan.active {
+    background-color: rgba(38, 153, 202, 0.2);
 }
 
 /** establishments styles **/

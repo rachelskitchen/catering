@@ -59,8 +59,8 @@ define(["main_router"], function(main_router) {
             "pay": "pay",
             // "profile(/:step)": "profile",
             // "loyalty": "loyalty",
-            // "rewards_card_submit": "rewards_card_submit",
-            // "rewards": "rewards",
+            "rewards_card_submit": "rewards_card_submit",
+            "rewards": "rewards",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -835,7 +835,10 @@ define(["main_router"], function(main_router) {
 
                 App.Data.footer.set({
                     btn_title: _loc.FOOTER_PROCEED,
-                    action: App.Data.myorder.trigger.bind(App.Data.myorder, 'payWithCreditCard')
+                    action: function() {
+                        App.Data.card.trigger('add_card');
+                        App.Data.myorder.trigger('payWithCreditCard');
+                    }
                 });
 
                 App.Data.mainModel.set({
@@ -1155,40 +1158,68 @@ define(["main_router"], function(main_router) {
             return App.Routers.RevelOrderingRouter.prototype.loyalty.call(this, headerModes.Main, footerModes.Loyalty);
         },
         rewards_card_submit: function() {
+            var rewardsCard = App.Data.myorder.rewardsCard;
+
+            App.Data.header.set({
+                page_title: _loc.HEADER_REWARDS_CARD_PT,
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history)
+            });
+
+            App.Data.footer.set({
+                btn_title: _loc.CONFIRM_SUBMIT,
+                action: rewardsCard.trigger.bind(rewardsCard, 'onGetRewards')
+            });
+
+            App.Data.mainModel.set({
+                header: headerModes.Cart
+            });
+
             this.prepare('rewards', function() {
-                App.Data.header.set({
-                    page_title: _loc['HEADER_REWARDS_CARD_PT'],
-                    back_title: _loc['HEADER_REWARDS_CARD_BT'],
-                    back: this.navigate.bind(this, 'checkout', true)
-                });
                 App.Data.mainModel.set({
-                    header: headerModes.OneButton,
-                    footer: footerModes.RewardsCard,
-                    content: {
+                    contentClass: '',
+                    content: [{
                         modelName: 'Rewards',
                         mod: 'Card',
-                        model: App.Data.myorder.rewardsCard,
+                        model: rewardsCard,
                         className: 'rewards-info'
-                    }
+                    }, {
+                        modelName: 'Footer',
+                        model: App.Data.footer,
+                        rewardsCard: rewardsCard,
+                        mod: 'Rewards',
+                        className: 'fixed-bottom footer bg-color10'
+                    }]
                 });
 
                 this.change_page();
             });
         },
         rewards: function() {
+            var rewardsCard = App.Data.myorder.rewardsCard;
+
+            App.Data.header.set({
+                page_title: _loc.HEADER_REWARDS_PT,
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history)
+            });
+
+            App.Data.mainModel.set({
+                header: headerModes.Cart
+            });
+
+            App.Data.footer.set({
+                btn_title: _loc.CHECKOUT_APPLY,
+                action: function() {
+                    rewardsCard.trigger('beforeRedemptionApplied');
+                    rewardsCard.trigger('onRedemptionApplied');
+                }
+            });
+
             this.prepare('rewards', function() {
-                var rewardsCard = App.Data.myorder.rewardsCard;
-
-                App.Data.header.set({
-                    page_title: _loc['HEADER_REWARDS_PT'],
-                    back_title: _loc['HEADER_REWARDS_PT'],
-                    back: this.navigate.bind(this, 'checkout', true)
-                });
-
                 App.Data.mainModel.set({
-                    header: headerModes.OneButton,
-                    footer: footerModes.Rewards,
-                    content: {
+                    contentClass: '',
+                    content: [{
                         modelName: 'Rewards',
                         mod: 'Info',
                         model: rewardsCard,
@@ -1197,7 +1228,13 @@ define(["main_router"], function(main_router) {
                         points: rewardsCard.get('points'),
                         visits: rewardsCard.get('visits'),
                         purchases: rewardsCard.get('purchases')
-                    }
+                    }, {
+                        modelName: 'Footer',
+                        model: App.Data.footer,
+                        rewardsCard: rewardsCard,
+                        mod: 'RewardRedemption',
+                        className: 'fixed-bottom footer bg-color10'
+                    }]
                 });
 
                 this.change_page();
