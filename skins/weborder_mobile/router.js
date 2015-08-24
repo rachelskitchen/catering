@@ -51,11 +51,10 @@ define(["main_router"], function(main_router) {
             // "stanford_is_student": "stanford_is_student",
             // "stanford_student_verification": "stanford_student_verification",
             "done": "done",
-            // "location": "location",
             "location": "location",
             "about": "about",
             // "gallery": "gallery",
-            // "maintenance": "maintenance",
+            "maintenance": "maintenance",
             "pay": "pay",
             // "profile(/:step)": "profile",
             // "loyalty": "loyalty",
@@ -91,7 +90,7 @@ define(["main_router"], function(main_router) {
                 App.Settings.RevelAPI = App.Settings.RevelAPI && App.Settings.enable_reward_cards_collecting;
 
                 // init payments handlers
-                this.paymentsHandlers();
+                !App.Data.settings.get('isMaintenance') && this.paymentsHandlers();
 
                 this.listenTo(App.Data.myorder, 'add remove', function() {
                     App.Data.header.set('cartItemsQuantity', App.Data.myorder.get_only_product_quantity());
@@ -295,6 +294,11 @@ define(["main_router"], function(main_router) {
 
                 App.Data.mainModel.trigger('loadCompleted');
             }, this);
+
+            // onResetData event occurs when user resets Rewards Card
+            this.listenTo(App.Data.myorder.rewardsCard, 'onResetData', function() {
+                App.Data.myorder.get_cart_totals();
+            });
         },
         /**
          * Navigate on #done when payment is completed.
@@ -670,12 +674,44 @@ define(["main_router"], function(main_router) {
                         validationOnly: true
                     }, function() {
                         if(App.Data.stanfordCard && App.Data.stanfordCard.get('needToAskStudentStatus')) {
-                            App.Data.router.navigate('stanford_is_student', true);
+                            // App.Data.router.navigate('stanford_is_student', true);
+                            showIsStudentQuestion();
                         } else {
                             cb();
                         }
                     });
                 };
+            }
+
+            function showIsStudentQuestion() {
+                App.Data.errors.alert('', false, false, {
+                    isConfirm: true,
+                    typeIcon: '',
+                    confirm: {
+                        ok: _loc.YES,
+                        cancel: _loc.NO
+                    },
+                    customView: new App.Views.StanfordCardView.StanfordCardStudentStatusView({
+                        model: App.Data.stanfordCard
+                    }),
+                    callback: function(res) {
+                        if(!res) {
+                            return;
+                        }
+
+                        if (!/^[\d\w]{1,200}$/.test(myorder.checkout.get("discount_code")) ) {
+                            return App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
+                        }
+
+                        myorder.get_cart_totals({apply_discount: true});
+                    }
+                });
+
+                // {
+                //         modelName: 'StanfordCard',
+                //         model: App.Data.stanfordCard,
+                //         mod: 'StudentStatus'
+                //     }
             }
         },
         confirm: function() {
@@ -717,7 +753,9 @@ define(["main_router"], function(main_router) {
                             mod: 'Checkout',
                             collection: myorder,
                             checkout: myorder.checkout,
+                            rewardsCard: myorder.rewardsCard,
                             showDiscountCode: showDiscountCode,
+                            showRewards: this.navigate.bind(this, 'rewards_card_submit', true),
                             cacheId: true
                         },
                         {
@@ -725,7 +763,7 @@ define(["main_router"], function(main_router) {
                             model: myorder.total.get('tip'),
                             mod: 'Line',
                             total: myorder.total,
-                            cacheIt: true
+                            cacheId: true
                         },
                         {
                             modelName: 'Footer',
@@ -1042,6 +1080,7 @@ define(["main_router"], function(main_router) {
 
             this.prepare('store_info', function() {
                 App.Data.mainModel.set({
+                    contentClass: '',
                     content: {
                         modelName: 'StoreInfo',
                         mod: 'Map',
@@ -1070,6 +1109,7 @@ define(["main_router"], function(main_router) {
 
             this.prepare('store_info', function() {
                 App.Data.mainModel.set({
+                    contentClass: '',
                     content: {
                         modelName: 'StoreInfo',
                         model: model,
@@ -1097,7 +1137,6 @@ define(["main_router"], function(main_router) {
 
                 App.Data.mainModel.set({
                     header: headerModes.Gallery,
-                    footer: footerModes.Gallery,
                     content: {
                         modelName: 'StoreInfo',
                         model: App.Data.AboutModel,
@@ -1112,34 +1151,27 @@ define(["main_router"], function(main_router) {
         maintenance : function() {
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
 
+            if(!App.Data.settings.get('isMaintenance')) {
+                return;
+            }
+
+            App.Data.header.set({
+                page_title: '',
+                back_title: App.Data.dirMode ? _loc.BACK : '',
+                back: App.Data.dirMode ? this.navigateDirectory.bind(this) : null
+            });
+
+            App.Data.mainModel.set({
+                header: headerModes.Cart
+            });
+
             this.prepare('maintenance', function() {
-                var back_title, back;
-                if (App.Data.dirMode) {
-                    back_title = _loc['HEADER_MAINTENANCE_DIR_BT'];
-                    back = this.navigateDirectory.bind(this);
-                } else {
-                    back_title = _loc['HEADER_MAINTENANCE_BT'];
-                    back = function() { window.history.back() };
-                }
-                var header = {
-                    back: back,
-                    back_title: back_title,
-                    page_title: '&nbsp;'
-                };
-
-                App.Data.header.set(header);
-
                 App.Data.mainModel.set({
-                    header: !App.Data.dirMode ?
-                        this.isNotFirstLaunch ?
-                            headerModes.Maintenance.WithButtons :
-                            headerModes.Maintenance.WithoutButtons :
-                        headerModes.Maintenance.WithButtons,
-                    footer: App.Data.dirMode ? footerModes.MaintenanceDirectory : footerModes.Maintenance,
+                    contentClass: '',
                     content: {
                         modelName: 'Maintenance',
                         mod: 'Main',
-                        className: 'maintenance'
+                        className: 'maintenance text-center'
                     }
                 });
 

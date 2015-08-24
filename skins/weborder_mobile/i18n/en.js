@@ -123,6 +123,7 @@
         'MYORDER_DISCOUNT_CODE': 'Discount Code',
         'MYORDER_APPLY': 'Apply',
         'MYORDER_REMOVE_DISCOUNT': 'Remove Discount Code?',
+        'MYORDER_REMOVE_REWARD_REDEMPTION': 'Remove Reward Redempion?',
         'PRODUCTS_AVAILABLE': 'Available',
         'PRODUCTS_GIFT_CARD_NUMBER': 'Gift Card Number',
         'QUANTITY_QUANTITY': 'Quantity',

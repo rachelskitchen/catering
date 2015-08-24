@@ -65,20 +65,20 @@ define(['backbone', 'factory'], function(Backbone) {
          * User notification.
          */
         alertMessage: function() {
-            var options = this.model.toJSON(),
-                $popup_message = this.$('#popup_message');
+            var options = this.model.toJSON();
 
             if (this.model.get('defaultView')) {
                 this.hideAlertMessage(2); // hide user notification
-                $popup_message.removeClass();
+                this.$('#popup_message').removeClass('custom-view');
                 this.render();
             } else if(options.customView instanceof Backbone.View) {
                 this.hideAlertMessage(2); // hide user notification
                 this.render();
-                $popup_message.addClass('custom-view').html(options.customView.el);
                 !options.typeIcon && this.$('#popup_content').removeClass('info warning');
+                this.$('#popup_message').addClass('custom-view').empty().append(options.customView.el);
+
             } else {
-                $popup_message.removeClass();
+                this.$('#popup_message').removeClass('custom-view');
                 customAlertMessage.call(this); // custom alert message
             }
 

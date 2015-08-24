@@ -593,6 +593,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 var errors = App.Data.errors;
                 if (mess.length) {
                     errors.alert(MSG.ERROR_HAS_OCCURRED_WITH_CONTACT.replace(/%([^%]*)%/g, function(match, group) {
+console.log('mess: ', mess);
+console.log('check maintenance: ', arguments);
                         var data = mess[index];
                         index ++;
                         return data ? '<br>' + group + data + ',' : '';
@@ -1530,7 +1532,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             if (customer.phone) {
                 call_name.push(customer.phone);
             }
-        
+
             if (customer.phone) {
                 payment_info.phone = customer.phone;
             }
@@ -1566,7 +1568,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
 
             this.total.empty(); //this is for reliability cause of raunding errors exist.
 
-            this.checkout.set('dining_option', 'DINING_OPTION_ONLINE');            
+            this.checkout.set('dining_option', 'DINING_OPTION_ONLINE');
             this.checkout.set('notes', '');
         },
         removeFreeModifiers: function() {
