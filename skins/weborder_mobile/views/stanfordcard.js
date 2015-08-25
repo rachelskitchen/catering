@@ -23,20 +23,16 @@
  define(["stanfordcard_view"], function(stanfordcard_view) {
     'use strict';
 
-    var CoreStanfordCardMainView = App.Views.CoreStanfordCardView.CoreStanfordCardMainView,
-        StanfordCardMainView;
+    var CoreStanfordCardPlansView = App.Views.CoreStanfordCardView.CoreStanfordCardPlansView,
+        StanfordCardPlansView;
 
-    StanfordCardMainView = CoreStanfordCardMainView.extend({
-        bindings: _.extend({}, CoreStanfordCardMainView.prototype.bindings, {
-            '.btn-reload': 'classes: {"btn-disabled": planId}'
-        }),
-        initialize: function() {
-            this.listenTo(this.model, 'resetNumber', this.reset, this);
-            CoreStanfordCardMainView.prototype.initialize.apply(this, arguments);
-        }
+    StanfordCardPlansView = CoreStanfordCardPlansView.extend({
+        bindings: _.extend({}, CoreStanfordCardPlansView.prototype.bindings, {
+            '.list-plans': 'collection: $collection'
+        })
     });
 
     return new (require('factory'))(stanfordcard_view.initViews.bind(stanfordcard_view), function() {
-        App.Views.StanfordCardView.StanfordCardMainView = StanfordCardMainView;
+        App.Views.StanfordCardView.StanfordCardPlansView = StanfordCardPlansView;
     });
 });

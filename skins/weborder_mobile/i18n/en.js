@@ -85,7 +85,7 @@
         'HEADER_CHECKOUT_BT': 'Order Cart',
         'HEADER_CARD_PT': 'Card',
         'HEADER_GIFT_CARD_PT': 'Gift Card Information',
-        'HEADER_STANFORD_CARD_PT': 'Stanford Card Information',
+        'HEADER_STANFORD_CARD_PT': 'Stanford Card',
         'HEADER_CONFIRM_PT': 'Confirm Order',
         'HEADER_CONFIRM_BT': 'Check Out',
         'HEADER_DONE_SUCCESS_PT': 'Order has been Submitted.',
@@ -243,6 +243,8 @@
         'ORDER_RECEIVED': 'Your order has been received',
         'EMAIL_SENT': 'An email with your receipt has been sent',
         'RETURN_TO_ORDER_SUMMARY': 'Return to Order Summary',
-        'ENTER_DISCOUNT_CODE': 'Enter a Discount Code'
+        'ENTER_DISCOUNT_CODE': 'Enter a Discount Code',
+        'SUBMIT_CARD': 'Submit Card',
+        'SUBMIT_ORDER': 'Submit Order'
     } // end of locale
 }); // end of module

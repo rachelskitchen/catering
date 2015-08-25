@@ -47,9 +47,8 @@ define(["main_router"], function(main_router) {
             "payments": "payments",
             "card" : "card",
             "giftcard" : "gift_card",
-            // "stanfordcard": "stanford_card",
-            // "stanford_is_student": "stanford_is_student",
-            // "stanford_student_verification": "stanford_student_verification",
+            "stanfordcard": "stanford_card",
+            "stanford_student_verification": "stanford_student_verification",
             "done": "done",
             "location": "location",
             "about": "about",
@@ -77,7 +76,7 @@ define(["main_router"], function(main_router) {
                 App.Views.Generator.enableCache = true;
                 // set header, footer, main models
                 App.Data.header = new App.Models.HeaderModel({
-                    cart: this.navigate.bind(this, 'cart')
+                    cart: this.navigate.bind(this, 'cart', true)
                 });
                 App.Data.footer = new App.Models.FooterModel();
                 var mainModel = App.Data.mainModel = new App.Models.MainModel();
@@ -137,15 +136,14 @@ define(["main_router"], function(main_router) {
         paymentsHandlers: function() {
             var mainModel = App.Data.mainModel,
                 myorder = App.Data.myorder,
-                paymentCanceled = false,
-                paymentFailed = false;
+                paymentCanceled = false
 
             this.listenTo(myorder, 'cancelPayment', function() {
                 paymentCanceled = true;
             });
 
             this.listenTo(myorder, "paymentFailed", function(message) {
-                paymentFailed = true;
+                mainModel.trigger('loadCompleted');
                 message && App.Data.errors.alert(message); // user notification
             }, this);
 
@@ -168,7 +166,7 @@ define(["main_router"], function(main_router) {
                     tip: true,
                     customer: true,
                     checkout: true,
-                    card: true
+                    card: paymentProcessor.credit_card_dialog
                 }, sendRequest.bind(window, PAYMENT_TYPE.CREDIT));
             });
 
@@ -217,7 +215,7 @@ define(["main_router"], function(main_router) {
                 App.Data.stanfordCard = new App.Models.StanfordCard();
 
                 // invokes when user chooses the 'Stanford Card' payment processor on the #payments screen
-                this.listenTo(App.Data.payments, 'payWithPayPal', function() {
+                this.listenTo(App.Data.payments, 'payWithStanfordCard', function() {
                     this.navigate('stanfordcard', true);
                 }, this);
 
@@ -233,11 +231,10 @@ define(["main_router"], function(main_router) {
 
             function sendRequest(paymentType) {
                 saveAllData();
+                mainModel.trigger('loadStarted');
                 myorder.create_order_and_pay(paymentType);
-                !paymentCanceled && mainModel.trigger('loadStarted');
-                paymentFailed && mainModel.trigger('loadCompleted');
+                paymentCanceled && mainModel.trigger('loadCompleted');
                 paymentCanceled = false;
-                paymentFailed = false;
             }
         },
         navigationControl: function() {
@@ -298,6 +295,11 @@ define(["main_router"], function(main_router) {
             // onResetData event occurs when user resets Rewards Card
             this.listenTo(App.Data.myorder.rewardsCard, 'onResetData', function() {
                 App.Data.myorder.get_cart_totals();
+            });
+
+            // onStanfordCardError event occurs when user submit invalid Stanford Card
+            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onStanfordCardError', function(msg) {
+                msg && App.Data.errors.alert(msg);
             });
         },
         /**
@@ -596,6 +598,8 @@ define(["main_router"], function(main_router) {
             });
         },
         checkout: function() {
+            var self = this;
+
             App.Data.header.set({
                 page_title: _loc.HEADER_CHECKOUT_PT,
                 back_title: _loc.BACK,
@@ -695,23 +699,14 @@ define(["main_router"], function(main_router) {
                         model: App.Data.stanfordCard
                     }),
                     callback: function(res) {
-                        if(!res) {
-                            return;
+                        if(res) {
+                            self.navigate('stanford_student_verification', true);
+                        } else {
+                            App.Data.stanfordCard.set('needToAskStudentStatus', false);
+                            self.navigate('confirm', true);
                         }
-
-                        if (!/^[\d\w]{1,200}$/.test(myorder.checkout.get("discount_code")) ) {
-                            return App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
-                        }
-
-                        myorder.get_cart_totals({apply_discount: true});
                     }
                 });
-
-                // {
-                //         modelName: 'StanfordCard',
-                //         model: App.Data.stanfordCard,
-                //         mod: 'StudentStatus'
-                //     }
             }
         },
         confirm: function() {
@@ -916,7 +911,10 @@ define(["main_router"], function(main_router) {
             this.prepare('giftcard', function() {
                 App.Data.footer.set({
                     btn_title: _loc.FOOTER_PROCEED,
-                    action: App.Data.giftcard.trigger.bind(App.Data.giftcard, 'pay')
+                    action: function() {
+                        App.Data.giftcard.trigger('add_card');
+                        App.Data.giftcard.trigger('pay');
+                    }
                 });
 
                 App.Data.mainModel.set({
@@ -943,86 +941,111 @@ define(["main_router"], function(main_router) {
             });
         },
         stanford_card: function() {
+            App.Data.header.set({
+                page_title: _loc.HEADER_STANFORD_CARD_PT,
+                back_title: _loc.BACK,
+                back: this.navigate.bind(this, 'payments', true)
+            });
+
+            App.Data.mainModel.set({
+                header: headerModes.Cart
+            });
+
             this.prepare('stanfordcard', function() {
-
-                App.Data.header.set({
-                    page_title: _loc['HEADER_STANFORD_CARD_PT']
-                });
-
                 App.Data.mainModel.set({
-                    header: headerModes.StanfordCard,
-                    footer: _.extend(footerModes.StanfordCard, {
-                        mainModel: App.Data.mainModel,
-                        card: App.Data.stanfordCard,
-                        myorder: App.Data.myorder
-                    }),
+                    contentClass: '',
                     content: [{
                         modelName: 'StanfordCard',
                         model: App.Data.stanfordCard,
                         mod: 'Main',
-                        myorder: App.Data.myorder
+                        myorder: App.Data.myorder,
+                        cacheId: true,
+                        cacheIdUniq: 'stanford_card'
                     }, {
                         modelName: 'StanfordCard',
                         model: App.Data.stanfordCard,
                         collection: App.Data.stanfordCard.get('plans'),
                         mod: 'Plans',
-                        className: 'stanford-card-plans'
+                        className: 'stanford-card-plans',
+                        cacheId: true,
+                        cacheIdUniq: 'stanford_card'
+                    }, {
+                        modelName: 'Footer',
+                        mod: 'StanfordCard',
+                        model: App.Data.footer,
+                        submitCard: submitCard,
+                        submitOrder: App.Data.stanfordCard.trigger.bind(App.Data.stanfordCard, 'pay'),
+                        card: App.Data.stanfordCard,
+                        className: 'fixed-bottom footer bg-color10',
+                        cacheId: true,
+                        cacheIdUniq: 'stanford_card'
                     }]
                 });
 
                 this.change_page();
             });
-        },
-        stanford_is_student: function() {
-            this.prepare('stanford_is_student', function() {
 
-                App.Data.header.set({
-                    page_title: _loc['STANFORD'],
-                    back_title: _loc['HEADER_CONFIRM_BT'],
-                    back: this.navigate.bind(this, 'checkout', true)
-                });
-
-                App.Data.mainModel.set({
-                    header: headerModes.StanfordIsStudent,
-                    footer: _.extend(footerModes.StanfordIsStudent, {
-                        mainModel: App.Data.mainModel,
-                        card: App.Data.stanfordCard
-                    }),
-                    content: [{
-                        modelName: 'StanfordCard',
-                        model: App.Data.stanfordCard,
-                        mod: 'StudentStatus'
-                    }]
-                });
-
-                this.change_page();
-            });
+            function submitCard() {
+                var mainModel = App.Data.mainModel;
+                mainModel.trigger('loadStarted');
+                App.Data.stanfordCard.getPlans().then(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+            }
         },
         stanford_student_verification: function() {
-            this.prepare('stanford_student_verification', function() {
+            var self = this;
 
-                App.Data.header.set({
-                    page_title: _loc['STANFORD_VERIFICATION'],
-                    back_title: _loc['HEADER_CONFIRM_BT'],
-                    back: this.navigate.bind(this, 'checkout', true)
+            App.Data.header.set({
+                page_title: _loc.STANFORD_VERIFICATION,
+                back_title: _loc.BACK,
+                back: this.navigate.bind(this, 'checkout', true)
+            });
+
+            App.Data.mainModel.set({
+                header: headerModes.Cart
+            });
+
+            this.prepare('stanford_student_verification', function() {
+                App.Data.footer.set({
+                    btn_title: _loc.CONFIRM_SUBMIT,
+                    action: verify
                 });
 
                 App.Data.mainModel.set({
-                    header: headerModes.StanfordIsStudent,
-                    footer: _.extend(footerModes.StanfordStudentVerification, {
-                        mainModel: App.Data.mainModel,
-                        card: App.Data.stanfordCard
-                    }),
+                    contentClass: '',
                     content: [{
                         modelName: 'StanfordCard',
                         model: App.Data.stanfordCard,
                         mod: 'Main',
-                        myorder: App.Data.myorder
+                        myorder: App.Data.myorder,
+                        cacheId: true,
+                        cacheIdUniq: 'stanford_student_verification'
+                    }, {
+                        modelName: 'Footer',
+                        mod: 'Card',
+                        model: App.Data.footer,
+                        card: App.Data.stanfordCard,
+                        className: 'fixed-bottom footer bg-color10',
+                        cacheId: true,
+                        cacheIdUniq: 'stanford_student_verification'
                     }]
                 });
 
                 this.change_page();
             });
+
+            function verify() {
+                var mainModel = App.Data.mainModel,
+                    card = App.Data.stanfordCard;
+
+                mainModel.trigger('loadStarted');
+                card.getPlans().then(function() {
+                    if(card.get('validated')) {
+                        self.navigate('confirm', true);
+                    } else {
+                        mainModel.trigger('loadCompleted');
+                    }
+                });
+            }
         },
         /**
          * Handler for #done.
@@ -1214,13 +1237,16 @@ define(["main_router"], function(main_router) {
                         modelName: 'Rewards',
                         mod: 'Card',
                         model: rewardsCard,
-                        className: 'rewards-info'
+                        className: 'rewards-info',
+                        cacheId: true
                     }, {
                         modelName: 'Footer',
                         model: App.Data.footer,
-                        rewardsCard: rewardsCard,
-                        mod: 'Rewards',
-                        className: 'fixed-bottom footer bg-color10'
+                        card: rewardsCard,
+                        mod: 'Card',
+                        className: 'fixed-bottom footer bg-color10',
+                        cacheId: true,
+                        cacheIdUniq: 'rewards_card'
                     }]
                 });
 

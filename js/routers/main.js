@@ -269,7 +269,9 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.loadFromLocalStorage = true;
                 App.Data.card = new App.Models.Card({RevelAPI: App.Data.RevelAPI});
                 App.Data.card.loadCard();
-                App.Data.giftcard = new App.Models.GiftCard();
+                if(!App.Data.giftcard) {
+                    App.Data.giftcard = new App.Models.GiftCard();
+                }
                 App.Data.giftcard.loadCard();
                 App.Data.stanfordCard && App.Data.stanfordCard.restoreCard();
                 this.loadCustomer();

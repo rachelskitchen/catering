@@ -68,7 +68,7 @@ define(["done_view", "generator"], function(done_view) {
         },
         content_change: function() {
             var view,
-                content = this.$('#section > div'),//Backbone.$('<div></div>'),
+                content = this.$('#section > div').eq(0),//Backbone.$('<div></div>'),
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
 

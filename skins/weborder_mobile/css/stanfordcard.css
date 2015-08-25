@@ -9,3 +9,38 @@
 .stanfordcard .number-input[readonly=readonly] {
     opacity: 0.5;
 }
+
+.stanfordcard[class] li {
+    display: block;
+    margin: 1.4em 0;
+}
+
+.stanfordcard .input-control {
+    width: 100%;
+}
+
+.stanford-card-plans .list-plans {
+    margin-top: 2em;
+}
+
+.stanford-card-plans .list-plans > li {
+    border-width: 1px;
+    border-style: solid;
+    padding: 2em;
+    margin: 2em 0;
+    position: relative;
+}
+
+.stanford-card-plans .list-plans > li.active::after {
+    content: '\f00c';
+    font-family: "FontAwesome";
+    display: block;
+    position: absolute;
+    top: .2em;
+    right: .4em;
+    font-size: 3.5em;
+}
+
+.stanford-card-plans .row {
+    display: block;
+}
