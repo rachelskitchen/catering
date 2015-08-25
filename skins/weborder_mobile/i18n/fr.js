@@ -214,6 +214,8 @@ define([], function() {
         RETURN_TO_ORDER_SUMMARY: "",
         ENTER_DISCOUNT_CODE: "",
         MYORDER_HAVE_DISCOUNT_CODE: "",
-        MYORDER_HAVE_DISCOUNT_CODE_OR_REWARDS: ""
+        MYORDER_HAVE_DISCOUNT_CODE_OR_REWARDS: "",
+        SUBMIT_CARD: "",
+        SUBMIT_ORDER: ""
     }
 });

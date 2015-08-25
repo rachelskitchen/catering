@@ -241,6 +241,8 @@
         'ORDER_RECEIVED': 'Ваш заказ принят.',
         'EMAIL_SENT': 'Данные заказа отправлены на вашу эл. почту',
         'RETURN_TO_ORDER_SUMMARY': 'Вернуться к заказу',
-        'ENTER_DISCOUNT_CODE': 'Введите дискаунт-код'
+        'ENTER_DISCOUNT_CODE': 'Введите дискаунт-код',
+        'SUBMIT_CARD': 'Отправить карту',
+        'SUBMIT_ORDER': 'Отправить заказ'
     } // end of locale
 }); // end of module

@@ -49,9 +49,9 @@ define(["factory"], function(factory) {
         }
     });
 
-    var FooterRewardsView = FooterMainView.extend({
+    var FooterCardView = FooterMainView.extend({
         bindings: {
-            '.btn': 'text: btn_title, classes: {disabled: not(all(rewardsCard_captchaValue, rewardsCard_captchaKey, rewardsCard_number))}'
+            '.btn': 'text: btn_title, classes: {disabled: not(all(card_captchaValue, card_captchaKey, card_number))}'
         }
     });
 
@@ -61,12 +61,34 @@ define(["factory"], function(factory) {
         }
     });
 
+    var FooterStanfordCardView = FooterMainView.extend({
+        name: 'footer',
+        mod: 'stanford_card',
+        bindings: {
+            '.submit-card': 'text: _lp_SUBMIT_CARD, toggle: not(card_validated), classes: {disabled: not(all(card_captchaValue, card_captchaKey, card_number))}',
+            '.submit-order': 'text: _lp_SUBMIT_ORDER, toggle: card_validated, classes: {disabled: not(card_planId)}'
+        },
+        events: {
+            'click .submit-card': 'submitCard',
+            'click .submit-order': 'submitOrder'
+        },
+        submitCard: function() {
+            var submitCard = this.options.submitCard;
+            typeof submitCard == 'function' && submitCard();
+        },
+        submitOrder: function() {
+            var submitOrder = this.options.submitOrder;
+            typeof submitOrder == 'function' && submitOrder();
+        }
+    });
+
     return new factory(function() {
         App.Views.FooterView = {};
         App.Views.FooterView.FooterMainView = FooterMainView;
         App.Views.FooterView.FooterCartView = FooterCartView;
         App.Views.FooterView.FooterPaymentSelectionView = FooterPaymentSelectionView;
         App.Views.FooterView.FooterRewardRedemptionView = FooterRewardRedemptionView;
-        App.Views.FooterView.FooterRewardsView = FooterRewardsView;
+        App.Views.FooterView.FooterCardView = FooterCardView;
+        App.Views.FooterView.FooterStanfordCardView = FooterStanfordCardView;
     });
 });

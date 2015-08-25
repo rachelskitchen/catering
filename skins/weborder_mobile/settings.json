@@ -94,6 +94,18 @@
             "css": ["maintenance"],
             "views": ["maintenance"],
             "templates": ["maintenance"]
+        },
+        "stanfordcard": {
+            "css": ["card", "stanfordcard"],
+            "templates": ["stanfordcard"],
+            "views": ["stanfordcard"],
+            "core": ["giftcard", "jquery_numbermask", "stanfordcard", "stanfordcard_view"]
+        },
+        "stanford_student_verification": {
+            "css": ["card", "stanfordcard"],
+            "templates": ["stanfordcard"],
+            "views": ["stanfordcard"],
+            "core": ["giftcard", "jquery_numbermask"]
         }
     }
 }
