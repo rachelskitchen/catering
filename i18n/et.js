@@ -52,7 +52,9 @@ define([], function() {
             STORE_TYPE_RETAIL: "Jaemüük",
             STORE_TYPE_OTHER: "Muu",
             DISTANCE_MILE: "Miil",
-            DISTANCE_MILES: "Miili"
+            DISTANCE_MILES: "Miili",
+            SORT_A_Z: "",
+            SORT_DISTANCE: ""
         },
         COUNTRIES: {
             AF: "Afganistan",

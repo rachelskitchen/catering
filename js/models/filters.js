@@ -99,6 +99,7 @@ define(['backbone'], function() {
             Array.isArray(filterItems) && filterItemsCollection.setItems(filterItems);
             this.set('filterItems', filterItemsCollection);
             this.listenTo(filterItemsCollection, 'change:selected', this.onChanged, this);
+            this.listenTo(filterItemsCollection, 'change:selected', this.uncheck, this);
 
             return Backbone.Model.prototype.initialize.apply(this, arguments);
         },
@@ -107,6 +108,16 @@ define(['backbone'], function() {
          */
         onChanged: function(model, value) {
             this.trigger('change:selected', this, value);
+        },
+        /**
+         * Gets selected items and uncheck them if `type` is 'radio'
+         */
+        uncheck: function(model, value) {
+            if(value && this.get('radio')) {
+                this.getSelected().forEach(function(item) {
+                    item !== model && item.set('selected', false);
+                });
+            }
         },
         /**
          * `items` should be array of models

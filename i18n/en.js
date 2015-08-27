@@ -65,7 +65,9 @@
             'STORE_TYPE_RETAIL': 'Retail',
             'STORE_TYPE_OTHER': 'Other',
             'DISTANCE_MILE': 'Mile',
-            'DISTANCE_MILES': 'Miles'
+            'DISTANCE_MILES': 'Miles',
+            'SORT_A_Z': 'A-Z',
+            'SORT_DISTANCE': 'Distance'
         },
         'COUNTRIES': {
             'AF': 'Afghanistan',

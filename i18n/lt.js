@@ -52,7 +52,9 @@ define([], function() {
             STORE_TYPE_RETAIL: "Prekyba mažmena",
             STORE_TYPE_OTHER: "Kita",
             DISTANCE_MILE: "myl.",
-            DISTANCE_MILES: "myl."
+            DISTANCE_MILES: "myl.",
+            SORT_A_Z: "",
+            SORT_DISTANCE: ""
         },
         COUNTRIES: {
             AF: "Afganistanas",
