@@ -66,7 +66,9 @@
             'STORE_TYPE_RETAIL': 'Розница',
             'STORE_TYPE_OTHER': 'Другое',
             'DISTANCE_MILE': 'Миля',
-            'DISTANCE_MILES': 'Мили(ей)'
+            'DISTANCE_MILES': 'Мили(ей)',
+            'SORT_A_Z': 'А-Я',
+            'SORT_DISTANCE': 'Расстояние'
         },
         // https://ru.wikipedia.org/wiki/Алфавитный_список_стран_и_территорий
         'COUNTRIES': {

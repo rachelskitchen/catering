@@ -52,7 +52,9 @@ define([], function() {
             STORE_TYPE_RETAIL: "Einzelhandel",
             STORE_TYPE_OTHER: "Andere",
             DISTANCE_MILE: "Meile",
-            DISTANCE_MILES: "Meilen"
+            DISTANCE_MILES: "Meilen",
+            SORT_A_Z: "",
+            SORT_DISTANCE: ""
         },
         COUNTRIES: {
             AF: "Afghanistan",

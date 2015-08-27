@@ -27,7 +27,6 @@ define(["factory"], function(factory) {
         name: 'promo_message',
         mod: 'main',
         render: function() {
-console.log('PromoMessageMainView render')
             this.calculatePromoMessageWidth(); // calculate a promo message width
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             return this;

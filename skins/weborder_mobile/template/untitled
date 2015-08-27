@@ -1,7 +1,0 @@
-{
-    modelName: 'Footer',
-    model: App.Data.footer,
-    total: App.Data.myorder.total,
-    mod: 'Cart',
-    className: 'fixed-bottom footer bg-color10'
-}
