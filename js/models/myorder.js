@@ -536,20 +536,20 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 customer = App.Data.customer;
 
             if(typeof opts !== 'object'  || !opts.avoid_delivery) {
-                if (value === 'DINING_OPTION_DELIVERY' && delivery_charge !== 0) {
-                    if (!this.deliveryItem) {
-                        this.deliveryItem = new App.Models.DeliveryChargeItem({total: this.total});
-                    }
-                    obj = this.find(function(model) {
-                        return model.get('product').id == null &&
-                               model.isDeliveryItem() === true;
-                    });
-                    if (obj == undefined)
-                       this.add(this.deliveryItem);
-
-                } else {
-                    this.remove(this.deliveryItem);
-                }
+//                if (value === 'DINING_OPTION_DELIVERY' && delivery_charge !== 0) {
+//                    if (!this.deliveryItem) {
+//                        this.deliveryItem = new App.Models.DeliveryChargeItem({total: this.total});
+//                    }
+//                    obj = this.find(function(model) {
+//                        return model.get('product').id == null &&
+//                               model.isDeliveryItem() === true;
+//                    });
+//                    if (obj == undefined)
+//                       this.add(this.deliveryItem);
+//
+//                } else {
+//                    this.remove(this.deliveryItem);
+//                }
 
                 // reset shipping
                 if(!isShipping) {
