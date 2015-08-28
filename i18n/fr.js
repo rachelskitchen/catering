@@ -50,7 +50,8 @@ define([], function() {
         FILTERS: {
             STORE_TYPE_RESTAURANT: "Restaurant",
             STORE_TYPE_RETAIL: "Vente au détail",
-            STORE_TYPE_OTHER: "Autre",
+            STORE_TYPE_GROCERY: "",
+            STORE_TYPE_ALL: "",
             DISTANCE_MILE: "Mile",
             DISTANCE_MILES: "Miles",
             SORT_A_Z: "",
@@ -472,6 +473,7 @@ define([], function() {
             DINING_OPTION_OTHER: "Autre",
             DINING_OPTION_SHIPPING: "Envoi"
         },
+        SERVICE_TYPE: [],
         TOTAL_DISCOUNTS: "Réductions",
         TOTAL_SUBTOTAL: "Sous-total",
         TOTAL_DELIVERY_CHARGE: "Frais de livraison",

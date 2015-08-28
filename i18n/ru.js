@@ -64,7 +64,8 @@
         'FILTERS': {
             'STORE_TYPE_RESTAURANT': 'Ресторан',
             'STORE_TYPE_RETAIL': 'Розница',
-            'STORE_TYPE_OTHER': 'Другое',
+            'STORE_TYPE_GROCERY': 'Гастроном',
+            'STORE_TYPE_ALL': 'Все',
             'DISTANCE_MILE': 'Миля',
             'DISTANCE_MILES': 'Мили(ей)',
             'SORT_A_Z': 'А-Я',
@@ -498,7 +499,7 @@
             'DINING_OPTION_OTHER': 'Другой',
             'DINING_OPTION_SHIPPING': 'Сторонняя служба доставки'
         },
-
+        'SERVICE_TYPE': [],
         // page "Total"
         'TOTAL_DISCOUNTS': 'Скидки', // except: Directory, Directory Mobile
         'TOTAL_SUBTOTAL': 'Подытог', // except: Directory, Directory Mobile

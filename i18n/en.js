@@ -63,7 +63,8 @@
         'FILTERS': {
             'STORE_TYPE_RESTAURANT': 'Restaurant',
             'STORE_TYPE_RETAIL': 'Retail',
-            'STORE_TYPE_OTHER': 'Other',
+            'STORE_TYPE_GROCERY': 'Grocery',
+            'STORE_TYPE_ALL': 'All',
             'DISTANCE_MILE': 'Mile',
             'DISTANCE_MILES': 'Miles',
             'SORT_A_Z': 'A-Z',
@@ -495,6 +496,15 @@
             'DINING_OPTION_OTHER': 'Other',
             'DINING_OPTION_SHIPPING': 'Shipping'
         },
+        'SERVICE_TYPE': [
+            'Restaurant',
+            'Restaurant',
+            'Retail',
+            'Grocery',
+            '',
+            '',
+            ''
+        ],
 
         // page "Total"
         'TOTAL_DISCOUNTS': 'Discounts', // except: Directory, Directory Mobile
