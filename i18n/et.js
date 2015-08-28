@@ -50,7 +50,8 @@ define([], function() {
         FILTERS: {
             STORE_TYPE_RESTAURANT: "Restoran",
             STORE_TYPE_RETAIL: "Jaemüük",
-            STORE_TYPE_OTHER: "Muu",
+            STORE_TYPE_GROCERY: "",
+            STORE_TYPE_ALL: "",
             DISTANCE_MILE: "Miil",
             DISTANCE_MILES: "Miili",
             SORT_A_Z: "",
@@ -472,6 +473,7 @@ define([], function() {
             DINING_OPTION_OTHER: "Muu",
             DINING_OPTION_SHIPPING: "Tarne"
         },
+        SERVICE_TYPE: [],
         TOTAL_DISCOUNTS: "Allahindlused",
         TOTAL_SUBTOTAL: "Vahesumma",
         TOTAL_DELIVERY_CHARGE: "Kohaletoimetamise tasu",

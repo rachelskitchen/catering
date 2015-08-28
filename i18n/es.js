@@ -50,7 +50,8 @@ define([], function() {
         FILTERS: {
             STORE_TYPE_RESTAURANT: "Restaurante",
             STORE_TYPE_RETAIL: "Minorista",
-            STORE_TYPE_OTHER: "Otro",
+            STORE_TYPE_GROCERY: "",
+            STORE_TYPE_ALL: "",
             DISTANCE_MILE: "Milla",
             DISTANCE_MILES: "Millas",
             SORT_A_Z: "",
@@ -472,6 +473,7 @@ define([], function() {
             DINING_OPTION_OTHER: "Otro",
             DINING_OPTION_SHIPPING: "Envío"
         },
+        SERVICE_TYPE: [],
         TOTAL_DISCOUNTS: "Descuentos",
         TOTAL_SUBTOTAL: "Subtotal",
         TOTAL_DELIVERY_CHARGE: "Cargo por entrega",

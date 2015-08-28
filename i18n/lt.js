@@ -50,7 +50,8 @@ define([], function() {
         FILTERS: {
             STORE_TYPE_RESTAURANT: "Restoranas",
             STORE_TYPE_RETAIL: "Prekyba mažmena",
-            STORE_TYPE_OTHER: "Kita",
+            STORE_TYPE_GROCERY: "",
+            STORE_TYPE_ALL: "",
             DISTANCE_MILE: "myl.",
             DISTANCE_MILES: "myl.",
             SORT_A_Z: "",
@@ -472,6 +473,7 @@ define([], function() {
             DINING_OPTION_OTHER: "Kita",
             DINING_OPTION_SHIPPING: "Užsakymo siuntimas"
         },
+        SERVICE_TYPE: [],
         TOTAL_DISCOUNTS: "Nuolaidos",
         TOTAL_SUBTOTAL: "Tarpinė suma",
         TOTAL_DELIVERY_CHARGE: "Pristatymo mokestis",
