@@ -193,7 +193,7 @@ define(["backbone"], function(Backbone) {
 
             var worked = false,
                 start_interval = this.start_time,
-                end_interval = this.end_time + (isDelivery ? this.delivery_time : this.preparation_time),
+                end_interval = this.end_time - (isDelivery ? this.delivery_time : this.preparation_time),
                 time = new TimeFrm(curtime.getHours(), curtime.getMinutes()).get_minutes();
 
             this._unionPeriods(timetable).forEach(function(value) {
