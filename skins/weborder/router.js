@@ -237,6 +237,7 @@ define(["main_router"], function(main_router) {
             // onRedemptionApplied event occurs when 'Apply Reward' btn is clicked
             this.listenTo(App.Data.myorder.rewardsCard, 'onRedemptionApplied', function() {
                 App.Data.mainModel.trigger('loadStarted');
+                App.Data.myorder.splitItemsWithPointValue();
                 App.Data.myorder.get_cart_totals().always(function() {
                     App.Data.mainModel.unset('popup');
                     App.Data.mainModel.trigger('loadCompleted');
@@ -332,7 +333,7 @@ define(["main_router"], function(main_router) {
                     App.Data.search = new App.Collections.Search();
                 }
                 if (!App.Data.searchLine) {
-                    App.Data.searchLine = new App.Models.SearchLine({search: App.Data.search});                    
+                    App.Data.searchLine = new App.Models.SearchLine({search: App.Data.search});
                 }
 
                 App.Data.header.set('tab_index', 0);
