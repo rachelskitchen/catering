@@ -1530,7 +1530,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             if (customer.phone) {
                 call_name.push(customer.phone);
             }
-        
+
             if (customer.phone) {
                 payment_info.phone = customer.phone;
             }
@@ -1566,7 +1566,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
 
             this.total.empty(); //this is for reliability cause of raunding errors exist.
 
-            this.checkout.set('dining_option', 'DINING_OPTION_ONLINE');            
+            this.checkout.set('dining_option', 'DINING_OPTION_ONLINE');
             this.checkout.set('notes', '');
         },
         removeFreeModifiers: function() {
@@ -1664,12 +1664,31 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 var oldSum = item.get_modelsum(),
                     newSum = oldSum - discount;
                 item.set('reward_discount', newSum <= 0 ? oldSum : discount);
-                itemsWithDiscount.push(item);
+                var virtual_item = item.clone();
+                virtual_item = item.clone();
+                virtual_item.set('quantity', 1);
+                itemsWithDiscount.push(virtual_item);
                 discount -= oldSum;
                 return discount <= 0;
             });
-
             return itemsWithDiscount;
+        },
+        splitItemsWithPointValue: function() {
+            this.each(function(item) {
+                var quantity = item.get('quantity');
+                if (item.hasPointValue() && quantity > 1) {
+                    var hasSameSingleQuantityItem = App.Data.myorder.findWhere({
+                        id_product: item.get("id_product"),
+                        quantity: 1
+                    });
+                    if (!hasSameSingleQuantityItem) {
+                        var singleItem = item.clone();
+                        singleItem.set('quantity', 1);
+                        App.Data.myorder.add(singleItem); // Add 1 item
+                        item.set('quantity', quantity - 1); // Update quantity with N-1
+                    }
+                }
+            });
         }
     });
 });
