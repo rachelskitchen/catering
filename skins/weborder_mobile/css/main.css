@@ -197,6 +197,8 @@ img[src=''] {
     overflow: hidden;
     text-align: left;
     padding-left: 2.5em !important;
+    word-wrap: break-word;
+    max-height: 12em;
 }
 #popup_panel input {
     -moz-appearance: none;

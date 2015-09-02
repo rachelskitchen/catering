@@ -176,7 +176,7 @@ define(["done_view", "generator"], function(done_view) {
          * Show the "Store Choice" block if a brand have several stores.
          */
         checkBlockStoreChoice: function() {
-            var block = this.$('.current_establishment');
+            var block = this.$('.ctl_current_establishment');
             this.model.get('needShowStoreChoice') ? block.show() : block.hide();
         },
         /**
