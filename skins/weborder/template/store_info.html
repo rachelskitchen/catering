@@ -55,12 +55,13 @@
                                     <div class="weekDay"> <span class="clip"> <%= _lp['DAYS_OF_WEEK'][day.weekDay] %> </span> </div>
                                     <div class="time">
                                         <%
-                                            var hours = '';
                                             _.each(day.hours, function(day, i) {
-                                                hours += day.from + '&nbsp; &ndash; &nbsp;' + day.to;
+                                                var hours = day.from + '&nbsp; &ndash; &nbsp;' + day.to;
+                                        %>
+                                                <span class="clip" title="<%= hours %>"> <%= hours %> </span>
+                                        <%
                                             });
                                         %>
-                                        <span class="clip" title="<%= hours %>"> <%= hours %> </span>
                                       </div>
                                 <% } else if(day.hours) { %>
                                     <div class="weekDay"> <span class="clip"> <%= _lp['DAYS_OF_WEEK'][day.weekDay] %> </span> </div>
