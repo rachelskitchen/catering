@@ -536,20 +536,20 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 customer = App.Data.customer;
 
             if(typeof opts !== 'object'  || !opts.avoid_delivery) {
-                if (value === 'DINING_OPTION_DELIVERY' && delivery_charge !== 0) {
-                    if (!this.deliveryItem) {
-                        this.deliveryItem = new App.Models.DeliveryChargeItem({total: this.total});
-                    }
-                    obj = this.find(function(model) {
-                        return model.get('product').id == null &&
-                               model.isDeliveryItem() === true;
-                    });
-                    if (obj == undefined)
-                       this.add(this.deliveryItem);
-
-                } else {
-                    this.remove(this.deliveryItem);
-                }
+//                if (value === 'DINING_OPTION_DELIVERY' && delivery_charge !== 0) {
+//                    if (!this.deliveryItem) {
+//                        this.deliveryItem = new App.Models.DeliveryChargeItem({total: this.total});
+//                    }
+//                    obj = this.find(function(model) {
+//                        return model.get('product').id == null &&
+//                               model.isDeliveryItem() === true;
+//                    });
+//                    if (obj == undefined)
+//                       this.add(this.deliveryItem);
+//
+//                } else {
+//                    this.remove(this.deliveryItem);
+//                }
 
                 // reset shipping
                 if(!isShipping) {
@@ -1666,12 +1666,31 @@ console.log('check maintenance: ', arguments);
                 var oldSum = item.get_modelsum(),
                     newSum = oldSum - discount;
                 item.set('reward_discount', newSum <= 0 ? oldSum : discount);
-                itemsWithDiscount.push(item);
+                var virtual_item = item.clone();
+                virtual_item = item.clone();
+                virtual_item.set('quantity', 1);
+                itemsWithDiscount.push(virtual_item);
                 discount -= oldSum;
                 return discount <= 0;
             });
-
             return itemsWithDiscount;
+        },
+        splitItemsWithPointValue: function() {
+            this.each(function(item) {
+                var quantity = item.get('quantity');
+                if (item.hasPointValue() && quantity > 1) {
+                    var hasSameSingleQuantityItem = App.Data.myorder.findWhere({
+                        id_product: item.get("id_product"),
+                        quantity: 1
+                    });
+                    if (!hasSameSingleQuantityItem) {
+                        var singleItem = item.clone();
+                        singleItem.set('quantity', 1);
+                        App.Data.myorder.add(singleItem); // Add 1 item
+                        item.set('quantity', quantity - 1); // Update quantity with N-1
+                    }
+                }
+            });
         }
     });
 });

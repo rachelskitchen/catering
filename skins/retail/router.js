@@ -92,7 +92,7 @@ define(["main_router"], function(main_router) {
                 App.Data.header = new App.Models.HeaderModel();
                 var mainModel = App.Data.mainModel = new App.Models.MainModel({
                     goToDirectory: App.Data.dirMode ? this.navigateDirectory.bind(this) : new Function,
-                    isDirMode: App.Data.dirMode
+                    isDirMode: App.Data.dirMode && !App.Data.isNewWnd
                 });
                 var ests = App.Data.establishments;
                 App.Data.categories = new App.Collections.Categories();
@@ -296,6 +296,7 @@ define(["main_router"], function(main_router) {
             // onRedemptionApplied event occurs when 'Apply Reward' btn is clicked
             this.listenTo(App.Data.myorder.rewardsCard, 'onRedemptionApplied', function() {
                 App.Data.mainModel.trigger('loadStarted');
+                App.Data.myorder.splitItemsWithPointValue();
                 App.Data.myorder.get_cart_totals().always(function() {
                     App.Data.mainModel.unset('popup');
                     App.Data.mainModel.trigger('loadCompleted');
