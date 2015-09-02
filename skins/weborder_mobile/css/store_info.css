@@ -69,6 +69,12 @@
 .store-info .weekDay {
     display: inline-block;
     width: 5em;
+    vertical-align: top;
+}
+
+.store-info .weekDay + span {
+    display: inline-block;
+    vertical-align: top;
 }
 
 /*** ***/
