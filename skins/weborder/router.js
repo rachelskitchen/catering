@@ -66,7 +66,7 @@ define(["main_router"], function(main_router) {
                 App.Data.header = new App.Models.HeaderModel();
                 var mainModel = App.Data.mainModel = new App.Models.MainModel({
                     goToDirectory: App.Data.dirMode ? this.navigateDirectory.bind(this) : new Function,
-                    isDirMode: App.Data.dirMode
+                    isDirMode: App.Data.dirMode && !App.Data.isNewWnd
                 });
                 var ests = App.Data.establishments;
 
@@ -237,6 +237,7 @@ define(["main_router"], function(main_router) {
             // onRedemptionApplied event occurs when 'Apply Reward' btn is clicked
             this.listenTo(App.Data.myorder.rewardsCard, 'onRedemptionApplied', function() {
                 App.Data.mainModel.trigger('loadStarted');
+                App.Data.myorder.splitItemsWithPointValue();
                 App.Data.myorder.get_cart_totals().always(function() {
                     App.Data.mainModel.unset('popup');
                     App.Data.mainModel.trigger('loadCompleted');
@@ -332,7 +333,7 @@ define(["main_router"], function(main_router) {
                     App.Data.search = new App.Collections.Search();
                 }
                 if (!App.Data.searchLine) {
-                    App.Data.searchLine = new App.Models.SearchLine({search: App.Data.search});                    
+                    App.Data.searchLine = new App.Models.SearchLine({search: App.Data.search});
                 }
 
                 App.Data.header.set('tab_index', 0);

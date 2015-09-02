@@ -5,12 +5,14 @@
     </section>
     <aside id='cart' class='main_el'> </aside>
     <footer class='main_el'>
-        <span class='current_establishment'>
-            <%= _lp.MAIN_CURRENT_STORE %>: <%= _settings.business_name %>
-            <a class="change_establishment link1" href="javascript: void(0);"> <%= _lp.MAIN_CHANGE %> </a>
-            <% if (isDirMode) { %> <%= _lp.MAIN_OR %> <% } %>
-        </span>
-        <% if(isDirMode) { %>
+        <div class="ctl_current_establishment">
+            <span class='current_establishment'>
+                <%= _lp.MAIN_CURRENT_STORE %>: <%= _settings.business_name %>
+                <a class="change_establishment link1" href="javascript: void(0);"> <%= _lp.MAIN_CHANGE %> </a>
+                <% if (isDirMode) { %> <%= _lp.MAIN_OR %> <% } %>
+            </span>
+        </div>
+        <% if (isDirMode) { %>
             <a class="go-to-directory link1" href="javascript: void(0);"> <%= _lp.MAIN_GOTO_DIRECTORY %> </a>
         <% } %>
         <a class="powered-by" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>

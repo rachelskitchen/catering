@@ -126,11 +126,11 @@
             app.get['srv'] == 'qa-dev' && (app.REVEL_HOST = 'https://weborder-qa-dev-branch.revelup.com');
             app.get['srv'] == 'ee-dev' && (app.REVEL_HOST = 'https://eegorov-dev-branch.revelup.com');
             app.get['srv'] == 'ap-dev' && (app.REVEL_HOST = 'https://apakhunov-dev-branch.revelup.com');
+            app.get['srv'] == 'rde-lab' && (app.REVEL_HOST = 'https://rde-lab.revelup.com');
 
-            try {
-                App.Data.is_stanford_mode = !!JSON.parse(app.get['stanford']);
-            } catch (e) {
-                App.Data.is_stanford_mode = false;
+            App.Data.is_stanford_mode = false;
+            if (app.get['stanford'] == 'true') {
+                App.Data.is_stanford_mode = true;
             }
 
             // invoke beforeStart onfig
@@ -199,6 +199,8 @@
             if (settings.get('storage_data') !== 1) {
                 return errors.alert(ERROR.WEBSTORAGES_ARE_DISABLED, true);
             }
+
+            App.Data.isNewWnd = !!getData("is_new_window");
 
             settings.on('change:skin', function() {
                 locale.dfd_load = locale.loadLanguagePack(); // load a language pack from backend

@@ -157,6 +157,12 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         }
     });
 
+    Backbone.Epoxy.binding.addHandler("toggleInline", {
+        set: function( $element, value) {
+            $element.css("display", value == true ? "block-inline" : "none");
+        }
+    });
+
     App.Views.FactoryView = Backbone.Epoxy.View.extend({
         constructor: function(options) {
             this.options = _.extend({}, options);

@@ -523,6 +523,16 @@ define(["backbone", "factory"], function(Backbone) {
         getUID: function() {
             var settings = App.Data.settings.toJSON();
             return [settings.hostname, settings.skin, settings.establishment].join('.');
+        },
+        loadGoogleMaps: function() {
+            var dfd = Backbone.$.Deferred();
+            require(['async!https://maps.google.com/maps/api/js?v=3&sensor=false&libraries=places!callback'], function() {
+                dfd.resolve();
+                new google.maps.InfoWindow({ content: "Test" }); //force this to load infowindow.js
+            }, function (err) {
+                App.Data.errors.alert(MSG.ERROR_CAN_NOT_LOAD_THE_GOOGLE_MAPS_SERVICE, true); // user notification
+            });
+            return dfd;
         }
     });
 

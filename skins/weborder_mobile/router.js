@@ -267,6 +267,7 @@ define(["main_router"], function(main_router) {
             this.listenTo(App.Data.myorder.rewardsCard, 'onRedemptionApplied', function() {
                 var self = this;
                 App.Data.mainModel.trigger('loadStarted');
+                App.Data.myorder.splitItemsWithPointValue();
                 App.Data.myorder.get_cart_totals().always(function() {
                     App.Data.mainModel.trigger('loadCompleted');
                     self.navigate('checkout', true);
