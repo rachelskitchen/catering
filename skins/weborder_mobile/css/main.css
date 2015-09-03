@@ -287,6 +287,12 @@ h1, h2, h3 {
     color: inherit;
     letter-spacing: 0.05em;
     font-weight: 200;
+    background: transparent;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -ms-appearance: none;
+    appearance: none;
+    text-indent: 0.6em;
 }
 
 .select-wrapper::after {
