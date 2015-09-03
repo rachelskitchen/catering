@@ -15,12 +15,13 @@
     color: #670000;
 }
 
-.bg-color1 {
-    background-color: #670000;
-}
-
+.bg-color1,
 .bg-color-active1:not([disabled]):active {
-    background-color: #670000;
+    background-image: linear-gradient(top, #980000,#670000);
+    background-image: -moz-linear-gradient(top ,#980000,#670000);
+    background-image: -webkit-linear-gradient(top,#980000,#670000);
+    background-image: -o-linear-gradient(top,#980000,#670000);
+    background-image: -ms-linear-gradient(top,#980000,#670000);
 }
 
 .border-color1, input:focus, .select-wrapper:focus {
