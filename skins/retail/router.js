@@ -346,6 +346,11 @@ define(["main_router"], function(main_router) {
                 App.Data.mainModel.trigger('loadStarted');
                 App.Data.myorder.rewardsCard.getRewards();
             });
+
+            // onResetData events occurs when user resets reward card
+            this.listenTo(App.Data.myorder.rewardsCard, 'onResetData', function() {
+                App.Data.myorder.get_cart_totals();
+            });
         },
         encodeState: function(data) {
             var enc = '';
