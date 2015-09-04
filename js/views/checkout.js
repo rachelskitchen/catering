@@ -630,9 +630,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
     App.Views.CoreCheckoutView.CoreCheckoutDiscountCodeView = App.Views.FactoryView.extend({
         name: 'checkout',
         mod: 'discount_code',
-        initialize: function() {
-            this.listenTo(this.model, 'change', this.render, this);
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        bindings: {
+            'input[name=discount_code]': 'value: discount_code, events: ["input"], attr: {readonly: select(last_discount_code, true, false)}',
+            '.btnApply': 'classes: {applied: last_discount_code}, text: select(last_discount_code, _lp_CHECKOUT_DISC_CODE_APPLIED, _lp_CHECKOUT_DISC_CODE_APPLY)',
+            '.cancel-input': 'classes: {hide: not(last_discount_code)}'
         },
         render: function() {
             var data = this.model.toJSON();
@@ -644,23 +645,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         },
         events: {
             'click .btnApply': 'onApplyCode',
-            'keyup input[name=discount_code]': 'onChangeDiscountCode',
-            'blur input[name=discount_code]': 'onBlurDiscountCode',
-        },
-        onChangeDiscountCode: function(e) {
-            var newValue = e.target.value,
-                oldValue = this.model.get("discount_code");
-
-            if (newValue == oldValue || !newValue)
-                return;
-
-            this.model.set({"discount_code":newValue}, {silent: true});
-            this.enableApplyBtn();
-        },
-        onBlurDiscountCode: function(e) {
-            if (!e.target.value) {
-                e.target.value = this.model.get("discount_code");
-            }
+            'click .cancel-input': 'removeDiscountCode'
         },
         onApplyCode: function() {
             var self = this,
@@ -670,18 +655,14 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
                 return;
             }
-            myorder.get_cart_totals({ apply_discount: true})
-                .done(function(data) {
-                    if (data.status == "OK") {
-                        self.disableApplyBtn();
-                    }
-                });
+            myorder.get_cart_totals({ apply_discount: true});
         },
-        enableApplyBtn: function() {
-            this.$('.btnApply').removeClass('applied').text(_loc.CHECKOUT_DISC_CODE_APPLY);
-        },
-        disableApplyBtn: function() {
-            this.$('.btnApply').addClass('applied').text(_loc.CHECKOUT_DISC_CODE_APPLIED);
+        removeDiscountCode: function() {
+            this.model.set({
+                last_discount_code: '',
+                discount_code: ''
+            });
+            this.options.myorder.get_cart_totals();
         }
     });
 
