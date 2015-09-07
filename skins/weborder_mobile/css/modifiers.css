@@ -63,7 +63,7 @@
 }
 
 .modifier select {
-    text-indent: .2em;
+    text-indent: .8em;
 }
 
 .modifier .mdf_split::before {
@@ -83,14 +83,16 @@
 
 .modifier .mdf_split.option_0::before {
     content: '\f111';
+    text-indent: 0.45em;
 }
 
 .modifier .mdf_split.option_1::before {
     content: '\f042';
     transform: scaleX(-1);
-    text-indent: 1.1em;
+    text-indent: 1.4em;
 }
 
 .modifier .mdf_split.option_2::before {
     content: '\f042';
+    text-indent: 0.45em;
 }

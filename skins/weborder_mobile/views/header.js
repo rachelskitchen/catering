@@ -40,13 +40,14 @@ define(["factory"], function() {
            '.btn-cart': 'classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}',
            '.btn-search': 'classes: {active: showSearch, "font-color2": showSearch, "font-color7": not(showSearch)}',
            '.search': 'classes: {invisible: not(showSearch)}',
-           '.input-search': 'value: search, events: ["input"]',
+           '.input-search': 'value: search, events: ["input"], classes: {"font-color3": search}',
            '.ctrl': 'reset: search, events: ["click"]'
         },
         events: {
             'click .btn-back': setCallback('back'),
             'click .btn-cart:not([data-count="0"])': setCallback('cart'),
             'click .btn-search': 'search',
+            'click .ctrl': 'search2',
             'submit .form-search': 'performSearch'
         },
         render: function() {
@@ -65,6 +66,9 @@ define(["factory"], function() {
         },
         search: function() {
             this.model.set('showSearch', !this.model.get('showSearch'));
+        },
+        search2: function() {
+            !this.model.previous('search') && this.search();
         },
         performSearch: function(e) {
             e.preventDefault();
