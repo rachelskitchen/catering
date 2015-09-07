@@ -388,7 +388,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 this.$('.pickup').text(_loc.CONFIRM_ARRIVAL_TIME);
             }
 
-            if (value === 'DINING_OPTION_ONLINE') {
+            if (value === 'DINING_OPTION_ONLINE' || value == 'DINING_OPTION_SHIPPING') {
                 this.$el.hide();
             } else {
                 this.$el.show();
