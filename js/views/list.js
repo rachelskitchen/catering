@@ -112,7 +112,7 @@ define(["backbone", "factory"], function(Backbone) {
                 this.onScroll();
                 this.trigger('itemsInserted'); // need trigger event to notify when items is inserted to DOM
                 $(this.content_elem).on('scroll', this.onScroll.bind(this));
-            }).bind(this), 0);
+            }).bind(this), 10);//culcImageSizes in the derived class should be called before addItem-s
             return this;
         },
         addItem: function(view) {
@@ -171,7 +171,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             this.onScroll();
         },
-        culcImageSize: function(model) {
+        setImagePath: function(model) {
             if (!this.preferWidth || !this.preferHeight) {
                 // this.preferWidth = Math.round($("#content .img").width());
                 // this.preferHeight = Math.round($("#content .img").height());
