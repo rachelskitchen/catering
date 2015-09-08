@@ -49,10 +49,7 @@ define(["backbone"], function(Backbone) {
          * @property {Function} default.cart - header cart button action.
          * @default null.
          *
-         * @property {Function} default.cartItemsQuantity - cart items quantity.
-         * @default 0.
-         *
-         * @property {Function} default.cartItemsQuantity - cart items quantity.
+         * @property {nummber} default.cartItemsQuantity - cart items quantity.
          * @default 0.
          *
          * @property {string} default.search - search string.
@@ -60,6 +57,9 @@ define(["backbone"], function(Backbone) {
          *
          * @property {boolean} default.showSearch - show/hide search.
          * @default false.
+         *
+         * @property {Function} default.addProductCb - callback that is called after a product is added to cart.
+         * @default null.
          */
         defaults: {
             page_title: '',
@@ -70,11 +70,13 @@ define(["backbone"], function(Backbone) {
             cart: null,
             cartItemsQuantity: 0,
             search: '',
-            showSearch: false
+            showSearch: false,
+            addProductCb: null
         },
         addProduct: function(orderItem) {
             var self = this,
-                check = orderItem.check_order();
+                check = orderItem.check_order(),
+                addProductCb = this.get('addProductCb');
 
             if (check.status === 'OK') {
                 orderItem.get_product().check_gift(function() {
@@ -85,6 +87,7 @@ define(["backbone"], function(Backbone) {
                         page_title: _loc.PRODUCT_ADDED
                     });
                     window.history.replaceState({}, '', '#modifiers/' + (App.Data.myorder.length - 1));
+                    typeof addProductCb == 'function' && addProductCb();
                 }, function(errorMsg) {
                     App.Data.errors.alert(errorMsg); // user notification
                 });

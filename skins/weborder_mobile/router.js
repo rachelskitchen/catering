@@ -76,7 +76,8 @@ define(["main_router"], function(main_router) {
                 App.Views.Generator.enableCache = true;
                 // set header, footer, main models
                 App.Data.header = new App.Models.HeaderModel({
-                    cart: this.navigate.bind(this, 'cart', true)
+                    cart: this.navigate.bind(this, 'cart', true),
+                    addProductCb: this.navigate.bind(this, 'index', true)
                 });
                 App.Data.footer = new App.Models.FooterModel();
                 var mainModel = App.Data.mainModel = new App.Models.MainModel();
@@ -732,44 +733,60 @@ define(["main_router"], function(main_router) {
             });
 
             this.prepare('confirm', function() {
+                var payments = App.Data.settings.get_payment_process(),
+                    payment_count = _.isObject(payments) ? payments.payment_count : 0,
+                    content = [];
+
+                content.push({
+                    modelName: 'Total',
+                    model: myorder.total,
+                    mod: 'Checkout',
+                    collection: myorder,
+                    checkout: myorder.checkout,
+                    rewardsCard: myorder.rewardsCard,
+                    showDiscountCode: showDiscountCode,
+                    showRewards: this.navigate.bind(this, 'rewards_card_submit', true),
+                    cacheId: true
+                },
+                {
+                    modelName: 'Tips',
+                    model: myorder.total.get('tip'),
+                    mod: 'Line',
+                    total: myorder.total,
+                    cacheId: true
+                });
+
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card;
 
                 App.Data.footer.set({
                     btn_title: _loc.CONTINUE,
-                    action: goToPayments
+                    action: payment_count > 1 ? goToPayments : App.Data.payments.onPay.bind(App.Data.payments)
                 });
+
+                if(payment_count > 1) {
+                    content.push({
+                        modelName: 'Footer',
+                        mod: 'Main',
+                        model: App.Data.footer,
+                        className: 'fixed-bottom footer bg-color10',
+                        cacheId: true,
+                        cacheIdUniq: 'confirm'
+                    });
+                } else {
+                    content.push({
+                        modelName: 'Footer',
+                        mod: 'PaymentSelection',
+                        model: App.Data.footer,
+                        total: myorder.total,
+                        className: 'fixed-bottom footer footer-payments bg-color10',
+                        cacheId: true
+                    });
+                }
 
                 App.Data.mainModel.set({
                     contentClass: 'bg-color12',
-                    content: [
-                        {
-                            modelName: 'Total',
-                            model: myorder.total,
-                            mod: 'Checkout',
-                            collection: myorder,
-                            checkout: myorder.checkout,
-                            rewardsCard: myorder.rewardsCard,
-                            showDiscountCode: showDiscountCode,
-                            showRewards: this.navigate.bind(this, 'rewards_card_submit', true),
-                            cacheId: true
-                        },
-                        {
-                            modelName: 'Tips',
-                            model: myorder.total.get('tip'),
-                            mod: 'Line',
-                            total: myorder.total,
-                            cacheId: true
-                        },
-                        {
-                            modelName: 'Footer',
-                            mod: 'Main',
-                            model: App.Data.footer,
-                            className: 'fixed-bottom footer bg-color10',
-                            cacheId: true,
-                            cacheIdUniq: 'confirm'
-                        }
-                    ]
+                    content: content
                 });
 
                 this.change_page();
@@ -856,7 +873,7 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.HEADER_CARD_PT,
                 back_title: _loc.BACK,
-                back: this.navigate.bind(this, 'payments', true)
+                back: window.history.back.bind(window.history)
             });
 
             App.Data.mainModel.set({
@@ -902,7 +919,7 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.HEADER_GIFT_CARD_PT,
                 back_title: _loc.BACK,
-                back: this.navigate.bind(this, 'payments', true)
+                back: window.history.back.bind(window.history)
             });
 
             App.Data.mainModel.set({
@@ -945,7 +962,7 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.HEADER_STANFORD_CARD_PT,
                 back_title: _loc.BACK,
-                back: this.navigate.bind(this, 'payments', true)
+                back: window.history.back.bind(window.history)
             });
 
             App.Data.mainModel.set({
