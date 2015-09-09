@@ -74,7 +74,7 @@ define([], function() {
         HEADER_MYORDER_FT: "Vormista",
         HEADER_CHECKOUT_PT: "Vormista",
         HEADER_CHECKOUT_BT: "Tellimuskorv",
-        HEADER_CARD_PT: "Tellimuskorv",
+        HEADER_CARD_PT: "",
         HEADER_GIFT_CARD_PT: "Kinkekaardi teave",
         HEADER_CONFIRM_PT: "Kinnita tellimus",
         HEADER_CONFIRM_BT: "Vormista",

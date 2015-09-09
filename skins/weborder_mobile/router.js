@@ -903,8 +903,9 @@ define(["main_router"], function(main_router) {
                         },
                         {
                             modelName: 'Footer',
-                            mod: 'Main',
+                            mod: 'PaymentInfo',
                             model: App.Data.footer,
+                            total: App.Data.myorder.total,
                             className: 'fixed-bottom footer bg-color10',
                             cacheId: true,
                             cacheIdUniq: 'card'

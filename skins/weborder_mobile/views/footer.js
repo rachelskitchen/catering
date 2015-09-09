@@ -82,6 +82,12 @@ define(["factory"], function(factory) {
         }
     });
 
+    var FooterPaymentInfoView = FooterMainView.extend({
+        bindings: {
+            '.btn': 'text: format("$1 - $2", _lp_SUBMIT_PAYMENT, currencyFormat(total_grandTotal))'
+        }
+    });
+
     return new factory(function() {
         App.Views.FooterView = {};
         App.Views.FooterView.FooterMainView = FooterMainView;
@@ -90,5 +96,6 @@ define(["factory"], function(factory) {
         App.Views.FooterView.FooterRewardRedemptionView = FooterRewardRedemptionView;
         App.Views.FooterView.FooterCardView = FooterCardView;
         App.Views.FooterView.FooterStanfordCardView = FooterStanfordCardView;
+        App.Views.FooterView.FooterPaymentInfoView = FooterPaymentInfoView;
     });
 });

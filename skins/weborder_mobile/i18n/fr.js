@@ -74,7 +74,7 @@ define([], function() {
         HEADER_MYORDER_FT: "Payer",
         HEADER_CHECKOUT_PT: "Payer",
         HEADER_CHECKOUT_BT: "Panier de la commande",
-        HEADER_CARD_PT: "Panier de la commande",
+        HEADER_CARD_PT: "",
         HEADER_GIFT_CARD_PT: "Informations sur la carte cadeau",
         HEADER_CONFIRM_PT: "Confirmer la commande",
         HEADER_CONFIRM_BT: "Payer",

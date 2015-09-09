@@ -74,7 +74,7 @@ define([], function() {
         HEADER_MYORDER_FT: "Atsiskaityti",
         HEADER_CHECKOUT_PT: "Atsiskaityti",
         HEADER_CHECKOUT_BT: "Užsakymų vežimėlis",
-        HEADER_CARD_PT: "Užsakymų vežimėlis",
+        HEADER_CARD_PT: "",
         HEADER_GIFT_CARD_PT: "Dovanų kortelės informacija",
         HEADER_CONFIRM_PT: "Patvirtinti užsakymą",
         HEADER_CONFIRM_BT: "Atsiskaityti",
