@@ -74,7 +74,7 @@ define([], function() {
         HEADER_MYORDER_FT: "Bezahlen",
         HEADER_CHECKOUT_PT: "Bezahlen",
         HEADER_CHECKOUT_BT: "Bestellwagen",
-        HEADER_CARD_PT: "Bestellwagen",
+        HEADER_CARD_PT: "",
         HEADER_GIFT_CARD_PT: "Geschenkkarteninfo",
         HEADER_CONFIRM_PT: "Bestellung bestätigen",
         HEADER_CONFIRM_BT: "Bezahlen",

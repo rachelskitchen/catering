@@ -83,7 +83,7 @@
         'HEADER_MYORDER_FT': 'Check Out',
         'HEADER_CHECKOUT_PT': 'Checkout',
         'HEADER_CHECKOUT_BT': 'Order Cart',
-        'HEADER_CARD_PT': 'Card',
+        'HEADER_CARD_PT': 'Payment Info',
         'HEADER_GIFT_CARD_PT': 'Gift Card Information',
         'HEADER_STANFORD_CARD_PT': 'Stanford Card',
         'HEADER_CONFIRM_PT': 'Confirm Order',

@@ -74,7 +74,7 @@ define([], function() {
         HEADER_MYORDER_FT: "Finalizar compra",
         HEADER_CHECKOUT_PT: "Finalizar compra",
         HEADER_CHECKOUT_BT: "Carrito del pedido",
-        HEADER_CARD_PT: "Carrito del pedido",
+        HEADER_CARD_PT: "",
         HEADER_GIFT_CARD_PT: "Información de la tarjeta de regalo",
         HEADER_CONFIRM_PT: "Confirmar pedido",
         HEADER_CONFIRM_BT: "Finalizar compra",
