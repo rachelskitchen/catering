@@ -503,6 +503,12 @@ define(["backbone"], function(Backbone) {
 
             return timetable;
         },
+        /* 
+        *   returns working hours for current date
+        */
+        getCurDayHours: function() {
+            return Array.isArray(this.get('hours')) ? this.get('hours')[0] : {};
+        },
         /**
          * Checking work shop at a specified time.
          */
