@@ -1581,6 +1581,7 @@ var QuickBooksPaymentProcessor = {
     },
     handlePaymentDataRequest: function(myorder, data) {
         if(data.data && data.data.app_token && data.data.token_url) {
+            var card = App.Data.card.toJSON();
             $.ajax({
                 type: "POST",
                 beforeSend: function(xhr){xhr.setRequestHeader('Authorization', "Intuit_APIKey intuit_apikey=ipp-" + data.data.app_token);},
@@ -1594,7 +1595,7 @@ var QuickBooksPaymentProcessor = {
                 contentType: "application/json; charset=utf-8",
                 success: function (data) {
                     myorder.checkout.set('token', data.value);
-                    myorder.submit_order_and_pay(payment_type, validationOnly, capturePhase);
+                    myorder.submit_order_and_pay(PAYMENT_TYPE.CREDIT, false, myorder.paymentResponse.capturePhase);
                 },
                 error: function (data) {
                     data.errorMsg = MSG.ERROR_OCCURRED + ' ' + MSG.ERROR_DURING_TOKENIZATION;
