@@ -41,7 +41,8 @@ define(["store_info_view"], function(store_info_view) {
             '.access-info': 'text: _system_settings_about_access_to_location'
         },
         events: {
-            'click .change-store': 'change_establishment'
+            'click .change-store': 'change_establishment',
+            'click img': 'onLogoClick'
         },
         bindingFilters: {
             handleDescriptions: function(desc) {
@@ -78,6 +79,9 @@ define(["store_info_view"], function(store_info_view) {
             ests.trigger('loadStoresList');
             // App.Data.mainModel.set('isBlurContent', true);
             e.stopPropagation();
+        },
+        onLogoClick: function() {
+            App.Data.router.navigate('gallery', true);
         }
     });
 
@@ -90,9 +94,46 @@ define(["store_info_view"], function(store_info_view) {
         }
     });
 
+    var StoreInfoGalleryView = App.Views.FactoryView.extend({
+        name: 'store_info',
+        mod: 'gallery',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            $(window).on('resize', this.resize);
+        },
+        remove: function() {
+            $(window).off('resize', this.resize);
+            return App.Views.FactoryView.prototype.remove.apply(this, arguments);
+        },
+        events: {
+            'click' : 'goBack',
+            'click img': 'imgClick'
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+
+            setTimeout( (function() { 
+                    this.$el.gallery({
+                    images: this.model.get('images'),
+                    animate: true,
+                    circle: true
+                });
+            }).bind(this), 0);
+
+            return this;
+        },
+        goBack: function() {
+            App.Data.router.navigate('about', true);
+        },
+        imgClick: function(event) {
+            event.stopPropagation();
+        }
+    });
+
     return new (require('factory'))(store_info_view.initViews.bind(store_info_view), function() {
         App.Views.StoreInfoView = {};
         App.Views.StoreInfoView.StoreInfoMainView = StoreInfoMainView;
         App.Views.StoreInfoView.StoreInfoMapView = StoreInfoMapView;
+        App.Views.StoreInfoView.StoreInfoGalleryView = StoreInfoGalleryView;
     });
 });

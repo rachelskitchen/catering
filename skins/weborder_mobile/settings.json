@@ -39,7 +39,8 @@
             "css": ["store_info"],
             "views": ["store_info"],
             "templates": ["store_info"],
-            "core": []
+            "core": ["jquery_gallery", "about"],
+            "cssCore": ["libs/jquery/jquery.gallery/jquery.gallery"]
         },
         "search": {
             "css": ["categories", "products"],

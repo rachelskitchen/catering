@@ -32,6 +32,7 @@ define(["main_router"], function(main_router) {
         headerModes.Main = {mod: 'Main', className: 'main'};
         headerModes.Modifiers = {mod: 'Modifiers', className: 'modifiers'};
         headerModes.Cart = {mod: 'Cart'};
+        headerModes.Gallery = {mod: 'Empty'};
     }
 
     var Router = App.Routers.RevelOrderingRouter.extend({
@@ -52,7 +53,7 @@ define(["main_router"], function(main_router) {
             "done": "done",
             "location": "location",
             "about": "about",
-            // "gallery": "gallery",
+            "gallery": "gallery",
             "maintenance": "maintenance",
             "pay": "pay",
             // "profile(/:step)": "profile",
@@ -1156,7 +1157,8 @@ define(["main_router"], function(main_router) {
                         modelName: 'StoreInfo',
                         model: model,
                         mod: 'Main',
-                        className: 'store-info'
+                        className: 'store-info',
+                        cacheId: true
                     }
                 });
 
@@ -1171,19 +1173,14 @@ define(["main_router"], function(main_router) {
                     App.Data.AboutModel = new App.Models.AboutModel();
                 }
 
-                App.Data.header.set({
-                    page_title: App.Data.settings.get('settings_system').business_name + ' ' + _loc['HEADER_GALLERY_PT'],
-                    back_title: _loc['HEADER_GALLERY_BT'],
-                    back: this.navigate.bind(this, 'about', true)
-                });
-
                 App.Data.mainModel.set({
                     header: headerModes.Gallery,
                     content: {
                         modelName: 'StoreInfo',
                         model: App.Data.AboutModel,
                         mod: 'Gallery',
-                        className: 'gallery'
+                        className: 'gallery',
+                        cacheId: true
                     }
                 });
 

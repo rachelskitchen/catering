@@ -23,7 +23,7 @@
             parent.show();
             parent.append(ul);
 
-            if(parent.css('position') != 'absolute' && parent.css('position') != 'relative')
+            if(parent.css('position') != 'fixed' && parent.css('position') != 'absolute' && parent.css('position') != 'relative')
                 parent.css('position', 'relative');
 
             parent.append(left, right);
