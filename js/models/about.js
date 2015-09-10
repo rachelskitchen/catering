@@ -25,9 +25,12 @@ define(['backbone'], function(Backbone) {
 
     App.Models.AboutModel = Backbone.Model.extend({
         initialize: function() {
-            var images = App.Data.settings.get('settings_system').about_images,
+            var images = App.Settings.about_images,
                 host = App.Data.settings.get('host');
 
+            if (App.Settings.logo_img) {
+                images.unshift(App.Settings.logo_img);
+            }
             images = images.map(function(src) {
                 var img = $('<img src="' + host + src +'">');
                 return loadSpinner(img, true);

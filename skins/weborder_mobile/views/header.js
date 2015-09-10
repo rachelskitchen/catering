@@ -131,6 +131,11 @@ define(["factory"], function() {
         mod: 'maintenance'
     });
 
+    var HeaderEmptyView = App.Views.FactoryView.extend({
+        name: 'header',
+        mod: 'empty'
+    });
+
     return new (require('factory'))(function() {
         App.Views.HeaderView = {};
         App.Views.HeaderView.HeaderMainView = HeaderMainView;
@@ -138,5 +143,6 @@ define(["factory"], function() {
         App.Views.HeaderView.HeaderModifiersView = HeaderModifiersView;
         App.Views.HeaderView.HeaderCartView = HeaderCartView;
         App.Views.HeaderView.HeaderMaintenanceView = HeaderMaintenanceView;
+        App.Views.HeaderView.HeaderEmptyView = HeaderEmptyView;
     });
 });
