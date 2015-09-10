@@ -507,7 +507,7 @@ define(["backbone"], function(Backbone) {
         *   returns working hours for current date
         */
         getCurDayHours: function() {
-            return Array.isArray(this.get('hours')) ? this.get('hours')[0] : {};
+            return Array.isArray(this.get('hours')) ? this.get('hours')[0] : null; //{hours: true};
         },
         /**
          * Checking work shop at a specified time.
