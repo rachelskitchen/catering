@@ -337,10 +337,27 @@ footer {
 #header .checkout .search {
     display: none;
 }
-.current_establishment {
-    display: none;
+.footer__current-establishment {
     float: left;
-    padding-left: 0.65em;
+    max-width: 65%;
+    height: 40px;
+    margin-top: -10px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.footer__current-establishment-inner {
+    display: inline-block;
+}
+.footer__line {
+    display: inline-block;
+}
+.store_choice {
+    display: none;
+}
+.current_establishment {
+    overflow: visible;
+    margin-left: 20px;
 }
 .link1 {
     margin: 0 20px;
@@ -780,6 +797,9 @@ section.maintenance .back {
 @media only screen and (max-device-width: 949px) {
     body {
         min-width: 748px;
+    }
+    .footer__current-establishment {
+        max-width: 50%;
     }
 }
 @media only screen and (max-device-width: 949px) and (orientation : portrait) {
