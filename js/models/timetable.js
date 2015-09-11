@@ -176,7 +176,7 @@ define(["backbone"], function(Backbone) {
             return this.times;
         },
         /**
-         * check if shop work in curTime
+         * check if shop works at curTime
          */
         checking_work_shop: function(isDelivery) {
             var timetable = this.get('timetable'),
@@ -503,7 +503,7 @@ define(["backbone"], function(Backbone) {
 
             return timetable;
         },
-        /* 
+        /*
         *   returns working hours for current date
         */
         getCurDayHours: function() {
@@ -583,6 +583,17 @@ define(["backbone"], function(Backbone) {
             } else {
                 return true;
             }
+        },
+        openNow: function() {
+            if(this.isHoliday()) {
+                return false;
+            }
+
+            // for Directory there is no need to consider estimated_order_preparation_time, online_order_start_time_offset, online_order_end_time_offset.
+            this.workingDay.preparation_time = 0;
+            this.workingDay.start_time = 0;
+            this.workingDay.end_time = 0;
+            return this.checking_work_shop(this.base());
         }
     });
 });

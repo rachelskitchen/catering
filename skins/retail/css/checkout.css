@@ -61,11 +61,10 @@
 }
 #content > .checkout div.select.shipping {
     display: inline-block;
-    width: 320px;
+    width: 100%;
 }
-#content > .checkout .select-wrap {
+#content > .checkout .shipping-select-wrap {
    display: inline-block;
-   height: 37px;
 }
 #content > .checkout .shipping-status {
     display: inline-block;
@@ -74,6 +73,9 @@
     vertical-align: middle;
     margin-top: 4px;
     font-size: 8px;
+    position: absolute !important;
+    top: 0;
+    right: -40px;
 }
 #content > .checkout div.select_day:last-child {
     margin-bottom: 10px;
@@ -278,10 +280,8 @@
     #content > .checkout label.shipping {
         width: 100% !important;
     }
-    #content > .checkout .select-wrap {
-        display: block !important;
-        margin-right: 68px;
-        left: 68px;
+    #content > .checkout .shipping-select-wrap {
+        left: 51px;
     }
     #content > .checkout h2 {
         padding-left: 50px !important;
@@ -298,5 +298,13 @@
     }
     #content > .checkout div.select {
         left: -15px !important;
+    }
+    #content > .checkout .rewards-card-input.input_beauty,
+    #content > .checkout .discount-code-input.input_beauty {
+        right: 180px !important;
+    }
+    #content > .checkout .rewards-card-btn,
+    #content > .checkout .discount-code-btn {
+        margin-right: 60px;
     }
 }
