@@ -299,4 +299,12 @@
     #content > .checkout div.select {
         left: -15px !important;
     }
+    #content > .checkout .rewards-card-input.input_beauty,
+    #content > .checkout .discount-code-input.input_beauty {
+        right: 180px !important;
+    }
+    #content > .checkout .rewards-card-btn,
+    #content > .checkout .discount-code-btn {
+        margin-right: 60px;
+    }
 }

@@ -69,7 +69,7 @@
     height: 50px;
     top: 5px;
     left: 2px;
-    width: 76px;
+    width: 100px;
     text-indent: 0 !important;
 }
 #content > .checkout div.tips .currency_sym {
@@ -331,8 +331,17 @@
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
     #content > .checkout label {
-        width: 220px !important;
+        width: 202px !important;
         text-indent: 50px !important;
+    }
+    #content > .checkout label.shipping {
+        width: 100% !important;
+    }
+    #content > .checkout div.select {
+        left: 0;
+    }
+    #content > .checkout div.select.shipping {
+        left: 51px;
     }
     #content > .checkout h2 {
         padding-left: 50px !important;
@@ -360,6 +369,7 @@
     }
     #content > .checkout div.tips .input_beauty {
         left: 0 !important;
+        width: 100%;
     }
     #content > .checkout .rewards-card-input.input_beauty,
     #content > .checkout .discount-code-input.input_beauty {
