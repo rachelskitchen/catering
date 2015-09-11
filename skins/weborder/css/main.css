@@ -328,13 +328,28 @@ footer {
     text-indent: 0;
     margin-top: -7px;
 }
-.current_establishment {
+.footer__current-establishment {
+    float: left;
+    max-width: 65%;
+    height: 40px;
+    margin-top: -10px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.footer__current-establishment-inner {
+    display: inline-block;
+}
+.footer__line {
+    display: inline-block;
+}
+.store_choice {
     display: none;
-    position: absolute;
-    width: 70%;
+}
+.current_establishment {
     height: 100%;
-    top: 0;
-    left: 0;
+    overflow: visible;
+    margin-left: 20px;
 }
 .current_establishment > span {
     padding-left: 0.65em;
@@ -725,6 +740,9 @@ section.maintenance #header .btn {
 @media only screen and (max-device-width: 949px) {
     body {
         min-width: 748px;
+    }
+    .footer__current-establishment {
+        max-width: 50%;
     }
 }
 @media only screen and (max-device-width: 949px) and (orientation : portrait) {
