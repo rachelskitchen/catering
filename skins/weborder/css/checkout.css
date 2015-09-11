@@ -222,13 +222,13 @@
     text-decoration: none;
 }
 
-.select-wrap {
+#content > .checkout .shipping-select-wrap {
     display: inline-block;
 }
 
 #content > .checkout div.select.shipping {
     display: inline-block;
-    width: 320px;
+    width: 100%;
 }
 
 #content > .checkout .shipping-status {
@@ -238,6 +238,9 @@
     vertical-align: middle;
     margin-top: 4px;
     font-size: 8px;
+    position: absolute !important;
+    top: 0;
+    right: -40px;
 }
 
 #content > .checkout .rewards-card-input.input_beauty,
@@ -340,7 +343,7 @@
     #content > .checkout div.select {
         left: 0;
     }
-    #content > .checkout div.select.shipping {
+    #content > .checkout .shipping-select-wrap {
         left: 51px;
     }
     #content > .checkout h2 {
