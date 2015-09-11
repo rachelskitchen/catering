@@ -69,7 +69,7 @@
     height: 50px;
     top: 5px;
     left: 2px;
-    width: 76px;
+    width: 100px;
     text-indent: 0 !important;
 }
 #content > .checkout div.tips .currency_sym {
@@ -222,13 +222,13 @@
     text-decoration: none;
 }
 
-.select-wrap {
+#content > .checkout .shipping-select-wrap {
     display: inline-block;
 }
 
 #content > .checkout div.select.shipping {
     display: inline-block;
-    width: 320px;
+    width: 100%;
 }
 
 #content > .checkout .shipping-status {
@@ -238,6 +238,9 @@
     vertical-align: middle;
     margin-top: 4px;
     font-size: 8px;
+    position: absolute !important;
+    top: 0;
+    right: -40px;
 }
 
 #content > .checkout .rewards-card-input.input_beauty,
@@ -331,8 +334,17 @@
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
     #content > .checkout label {
-        width: 220px !important;
+        width: 202px !important;
         text-indent: 50px !important;
+    }
+    #content > .checkout label.shipping {
+        width: 100% !important;
+    }
+    #content > .checkout div.select {
+        left: 0;
+    }
+    #content > .checkout .shipping-select-wrap {
+        left: 51px;
     }
     #content > .checkout h2 {
         padding-left: 50px !important;
@@ -360,6 +372,7 @@
     }
     #content > .checkout div.tips .input_beauty {
         left: 0 !important;
+        width: 100%;
     }
     #content > .checkout .rewards-card-input.input_beauty,
     #content > .checkout .discount-code-input.input_beauty {
