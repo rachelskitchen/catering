@@ -13,6 +13,7 @@
 .quantity .btn-qty {
     width: 5.5em;
     height: 5.5em;
+    line-height: 5.5em;
     border-width: 2px;
     border-style: solid;
     border-radius: 3em;
