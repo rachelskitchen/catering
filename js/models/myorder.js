@@ -1053,6 +1053,10 @@ console.log('check maintenance: ', arguments);
                     //for lastPT = "all-the-day" we should not pass any pickupTime to server. i.e. lastPickupTime is undefined
                 }
 
+                if (isASAP && App.Data.myorder.paymentResponse && App.Data.myorder.paymentResponse.data) {
+                    pickup = new Date(App.Data.myorder.paymentResponse.data.asap_pickup_time);
+                }
+
                 this.checkout.set({
                     'pickupTime': isASAP ? 'ASAP (' + pickupToString(pickup) + ')' : pickupToString(pickup),
                     'createDate': format_date_1(Date.now()),
