@@ -8,14 +8,14 @@
         <div id="content"></div>
     </section>
     <aside id='cart' class='main_el'> </aside>
-    <footer class='main_el'>
-        <div class="footer__current-establishment">
-            <div class="footer__current-establishment-inner">
-                <span class="footer__line clip current_establishment store_choice">
+    <footer class='main_el<% if(_settings.payment_processor.mercury) { %> footer_mercury<% } %>'>
+        <div class="footer__left">
+            <div class="footer__left-inner">
+                <span class="footer__line current_establishment store_choice">
                     <%= _lp.MAIN_CURRENT_STORE %>: <%= _settings.business_name %>
                 </span>
                 <% if(isDirMode) { %>
-                    <span class="footer__line">
+                    <span class="footer__line footer__directory">
                         <span class="store_choice">
                             <a class="change_establishment link1" href="javascript: void(0);"><%= _lp.MAIN_CHANGE %></a>
                             <%= _lp.MAIN_OR %>
@@ -25,7 +25,31 @@
                 <% } %>
             </div>
         </div>
-        <a class="powered-by" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
+        <div class="footer__right">
+            <% if(_settings.payment_processor.mercury) { %>
+            <ul class="mercury-accepted-credit-cards">
+                <li class="card-logo">
+                    <img class="imgCardLogo" src="img/visa.png">
+                </li>
+                <li class="card-logo">
+                    <img class="imgCardLogo" src="img/mastercard.png">
+                </li>
+                <li class="card-logo">
+                    <img class="imgCardLogo" src="img/amex.png">
+                </li>
+                <li class="card-logo">
+                    <img class="imgCardLogo" src="img/discover.png">
+                </li>
+                <li class="card-logo">
+                    <img class="imgCardLogo" src="img/dinersclub.png">
+                </li>
+                <li class="card-logo">
+                    <img class="imgCardLogo" src="img/jcb.png">
+                </li>
+            </ul>
+            <% } %>
+            <a class="powered-by" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
+        </div>
     </footer>
     <div class="popup">
         <div class='popoup_align'>
@@ -37,28 +61,6 @@
         </div>
     </div>
     <div id="main-spinner"></div>
-    <% if(_settings.payment_processor.mercury) { %>
-    <ul class="mercury-accepted-credit-cards">
-        <li class="card-logo">
-            <img class="imgCardLogo" src="img/visa.png">
-        </li>
-        <li class="card-logo">
-            <img class="imgCardLogo" src="img/mastercard.png">
-        </li>
-        <li class="card-logo">
-            <img class="imgCardLogo" src="img/amex.png">
-        </li>
-        <li class="card-logo">
-            <img class="imgCardLogo" src="img/discover.png">
-        </li>
-        <li class="card-logo">
-            <img class="imgCardLogo" src="img/dinersclub.png">
-        </li>
-        <li class="card-logo">
-            <img class="imgCardLogo" src="img/jcb.png">
-        </li>
-    </ul>
-    <% } %>
 </script>
 
 <script type="text/template" id="main_maintenance-template">
