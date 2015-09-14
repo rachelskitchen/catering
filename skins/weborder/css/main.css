@@ -328,37 +328,55 @@ footer {
     text-indent: 0;
     margin-top: -7px;
 }
-.footer__current-establishment {
+.footer__left {
     float: left;
-    max-width: 65%;
-    height: 40px;
+    max-width: 70%;
+    min-height: 100%;
+    margin-left: 20px;
     margin-top: -10px;
     display: flex;
     justify-content: center;
     flex-direction: column;
 }
-.footer__current-establishment-inner {
-    display: inline-block;
+.footer__right {
+    float: right;
 }
 .footer__line {
     display: inline-block;
+}
+.footer__directory {
+    margin-left: -20px;
+}
+.footer_mercury .footer__left {
+    max-width: 65%;
+}
+.footer_mercury .footer__directory {
+    /* if Mercury credit cards are displayed, break directory links into 2 lines on iPad in Portrait mode */
+    white-space: nowrap;
 }
 .store_choice {
     display: none;
 }
 .current_establishment {
-    height: 100%;
-    overflow: visible;
-    margin-left: 20px;
-}
-.current_establishment > span {
-    padding-left: 0.65em;
-    padding-right: 0.65em;
+    margin-right: 20px;
 }
 .link1 {
     margin: 0 20px;
     text-decoration: none;
 }
+
+/* Mercury accepted credit card */
+.mercury-accepted-credit-cards {
+    float: left;
+}
+.card-logo {
+    display: inline-block;
+    margin-left: 0px;
+}
+.imgCardLogo {
+    height: 20px;
+}
+
 .powered-by {
     display: block;
     width: 141px;
@@ -741,7 +759,7 @@ section.maintenance #header .btn {
     body {
         min-width: 748px;
     }
-    .footer__current-establishment {
+    .footer_mercury .footer__left {
         max-width: 50%;
     }
 }
@@ -1047,20 +1065,6 @@ section.maintenance #header .btn {
     -ms-filter: blur(5px);
     -webkit-filter: blur(5px);
     filter: blur(5px);
-}
-
-/* Mercury accepted credit card */
-.mercury-accepted-credit-cards {
-    position: absolute;
-    bottom: 5px;
-    right: 150px;
-}
-.card-logo {
-    display: inline-block;
-    margin-left: 0px;
-}
-.imgCardLogo {
-    height: 20px;
 }
 
 /* cancel-input */
