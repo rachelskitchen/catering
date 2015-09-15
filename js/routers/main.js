@@ -27,6 +27,7 @@ define(["backbone", "factory"], function(Backbone) {
     var isMaintenance;
 
     App.Routers.MainRouter = Backbone.Router.extend({
+        LOC_DINING_OPTION_NAME: '',
         initialize: function() {
             var self = this;
 
@@ -35,24 +36,7 @@ define(["backbone", "factory"], function(Backbone) {
                 this.lockedRoutes = [];
             }
 
-             // remove Delivery option if it is necessary
-            if (!App.Data.myorder.total.get('delivery').get('enable'))
-                delete _loc.DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
-
-            if(App.Settings.editable_dining_options && App.Settings.editable_dining_options[0]) {
-                if (_loc.DINING_OPTION_NAME['DINING_OPTION_DRIVETHROUGH']) {
-                    _loc.DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH = _.escape(App.Settings.editable_dining_options[1]);
-                }
-                if (_loc.DINING_OPTION_NAME['DINING_OPTION_OTHER']) {
-                    _loc.DINING_OPTION_NAME.DINING_OPTION_OTHER = _.escape(App.Settings.editable_dining_options[2]);
-                }
-            }
-
-            for (var dining_option in DINING_OPTION) {
-                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_option]) == -1) {
-                    delete _loc.DINING_OPTION_NAME[dining_option];
-                }
-            }
+            this.initLocDiningOptionName();
 
             // set page title
             pageTitle(App.Data.settings.get("settings_skin").name_app);
@@ -153,6 +137,28 @@ define(["backbone", "factory"], function(Backbone) {
                 return;
             } else {
                 isMaintenance = true;
+            }
+        },
+        initLocDiningOptionName: function() {
+            this.LOC_DINING_OPTION_NAME = _.clone(_loc.DINING_OPTION_NAME);
+
+            // remove Delivery option if it is necessary
+            if (!App.Data.myorder.total.get('delivery').get('enable'))
+                delete this.LOC_DINING_OPTION_NAME.DINING_OPTION_DELIVERY;
+
+            if(App.Settings.editable_dining_options && App.Settings.editable_dining_options[0]) {
+                if (this.LOC_DINING_OPTION_NAME['DINING_OPTION_DRIVETHROUGH']) {
+                    this.LOC_DINING_OPTION_NAME.DINING_OPTION_DRIVETHROUGH = _.escape(App.Settings.editable_dining_options[1]);
+                }
+                if (this.LOC_DINING_OPTION_NAME['DINING_OPTION_OTHER']) {
+                    this.LOC_DINING_OPTION_NAME.DINING_OPTION_OTHER = _.escape(App.Settings.editable_dining_options[2]);
+                }
+            }
+
+            for (var dining_option in DINING_OPTION) {
+                if (!App.Settings.dining_options || App.Settings.dining_options.indexOf(DINING_OPTION[dining_option]) == -1) {
+                    delete this.LOC_DINING_OPTION_NAME[dining_option];
+                }
             }
         },
         prepare: function(page, callback, dependencies) {
