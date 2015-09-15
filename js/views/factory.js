@@ -209,15 +209,17 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             return Backbone.View.prototype.constructor.apply(this, arguments);
         },
         initialize: function() {
-            this.template = function(params) {
-                var template = template_helper(this.name, this.mod),
-                    baseParams = {
-                        _settings: App.Settings,
-                        _lp: _loc
-                    };
-                params = params instanceof Object ? _.extend(baseParams, params) : baseParams;
-                return template(params);
-            };
+            if (!this.template) {
+                this.template = function(params) {
+                    var template = template_helper(this.name, this.mod),
+                        baseParams = {
+                            _settings: App.Settings,
+                            _lp: _loc
+                        };
+                    params = params instanceof Object ? _.extend(baseParams, params) : baseParams;
+                    return template(params);
+                };
+            }
             this.render();
             this.applyBindings();
             App.Data.devMode && this.$el.attr("data-tmpl", this.name + "_" + this.mod + "-template");
