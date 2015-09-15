@@ -66,6 +66,7 @@
             this.removeCaptchaSpinner();
             this.createCaptchaSpinner();
             this.model.set('captchaImage', '');
+            this.model.set('captchaValue', '');
             this.model.loadCaptcha();
         },
         createCaptchaSpinner: function() {
