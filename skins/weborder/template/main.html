@@ -14,15 +14,15 @@
                 <span class="footer__line current_establishment store_choice">
                     <%= _lp.MAIN_CURRENT_STORE %>: <%= _settings.business_name %>
                 </span>
-                <% if(isDirMode) { %>
-                    <span class="footer__line footer__directory">
-                        <span class="store_choice">
-                            <a class="change_establishment link1" href="javascript: void(0);"><%= _lp.MAIN_CHANGE %></a>
-                            <%= _lp.MAIN_OR %>
-                        </span>
-                        <a class="go-to-directory link1" href="javascript: void(0);"> <%= _lp.MAIN_GOTO_DIRECTORY %> </a>
+                <span class="footer__line footer__directory">
+                    <span class="store_choice">
+                        <a class="change_establishment link1" href="javascript: void(0);"><%= _lp.MAIN_CHANGE %></a>
+                        <% if(isDirMode) { %> <%= _lp.MAIN_OR %> <% } %>
                     </span>
-                <% } %>
+                    <% if(isDirMode) { %>
+                        <a class="go-to-directory link1" href="javascript: void(0);"> <%= _lp.MAIN_GOTO_DIRECTORY %> </a>
+                    <% } %>
+                </span>
             </div>
         </div>
         <div class="footer__right">
