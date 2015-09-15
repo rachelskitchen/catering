@@ -26,14 +26,15 @@ define(["backbone", "factory", "generator"], function() {
     var SpinnerMainView = App.Views.FactoryView.extend({
         name: 'spinner',
         mod: 'main',
+        template:  _.template('<i class="fa fa-spinner fa-pulse fa-fw"></i>'),
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             var opt = this.options;
             if (opt.model) {
                 opt.model.listenTo(opt.model, opt.show_event, this.show_spinner.bind(this), this);
                 opt.model.listenTo(opt.model, opt.hide_event, this.hide_spinner.bind(this), this);
-            }
-            this.hide_spinner();
+                this.hide_spinner();
+            }            
         },       
         show_spinner: function() {
             this.$el.show();
@@ -46,17 +47,20 @@ define(["backbone", "factory", "generator"], function() {
     // generator for SpinnerMainView
     $.fn.view_spinner = function(options) {
         return this.each(function(index){
-            var defaults = {
+            var cache_id, 
+                defaults = {
                 className: "view_spinner",
                 show_event: "startLoading",
                 hide_event: "completeLoading"
             }; 
             var settings = $.extend( {}, defaults, options );
-            var cache_id = options.cache_id ? (options.cache_id + index.toString()) : undefined;
+            if (options) {
+                cache_id = options.cache_id ? (options.cache_id + index.toString()) : undefined;
+            }
             var view = App.Views.GeneratorView.create('Spinner', _.extend({
                 el: $(this),
                 mod: "Main"
-            }, settings), cache_id);    
+            }, settings), cache_id);
        });
     };
 
