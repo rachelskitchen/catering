@@ -231,7 +231,7 @@
         'PRODUCT_UPDATED': 'Product Updated',
         'ADD_TO_CART': 'Add to cart',
         'CUSTOMIZE': 'Customize',
-        'SEARCH_RESULTS': 'Search Results',
+        'SEARCH_RESULTS': 'Search results for',
         'SEARCH_FIELD_PLACEHOLDER': 'Enter product name',
         'CONFIRM_ARRIVAL_TIME': 'Arrival Time',
         'CONFIRM_DELIVERY_TIME': 'Delivery Time',
