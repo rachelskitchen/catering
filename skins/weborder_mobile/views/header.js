@@ -39,7 +39,7 @@ define(["factory"], function() {
            '.btn-back-title': 'text: back_title',
            '.btn-cart': 'classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}',
            '.btn-search': 'classes: {active: showSearch, "font-color2": showSearch, "font-color7": not(showSearch)}',
-           '.search': 'classes: {invisible: not(showSearch)}',
+           '.search': 'outsideClick: showSearch, events:["onOutsideClick"], classes: {invisible: not(showSearch)}, attr: {contenteditable: false}',
            '.input-search': 'value: search, events: ["input"], classes: {"font-color3": search}',
            '.ctrl': 'reset: search, events: ["click"]'
         },
@@ -64,10 +64,12 @@ define(["factory"], function() {
 
             return this;
         },
-        search: function() {
+        search: function(e) {
+            e && e.stopPropagation();
             this.model.set('showSearch', !this.model.get('showSearch'));
         },
-        search2: function() {
+        search2: function(e) {
+            e && e.stopPropagation();
             !this.model.previous('search') && this.search();
         },
         performSearch: function(e) {

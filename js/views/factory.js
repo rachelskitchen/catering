@@ -163,6 +163,43 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         }
     });
 
+    // 'outsideClick' handler: changes on false value bound when user clicks outside of current element.
+    // 'outsideClick' events should be passed to 'events' handler.
+    Backbone.Epoxy.binding.addHandler('outsideClick', {
+        init: function($el, value, bindings) {
+            // listen to click on any UI element outside $el
+            var documentListener = function(event) {
+                if(event.target !== $el.get(0) && !$el.find(event.target).length) {
+                    $el.trigger('onOutsideClick');
+                }
+            };
+
+            // bind listeners
+            this.listenToClick = function() {
+                Backbone.$(document).on('click', documentListener);
+            }
+
+            // unbind listeners
+            this.stopListeningToClick = function() {
+                Backbone.$(document).off('click', documentListener);
+            }
+        },
+        set: function($el, value) {
+            value && this.listenToClick();
+        },
+        get: function($el, value, event) {
+            if(event.type == 'onOutsideClick') {
+                this.stopListeningToClick();
+                return false;
+            } else {
+                return value;
+            }
+        },
+        clean: function() {
+            this.stopListeningToClick();
+        }
+    });
+
     App.Views.FactoryView = Backbone.Epoxy.View.extend({
         constructor: function(options) {
             this.options = _.extend({}, options);
