@@ -164,6 +164,11 @@ h1, h2, h3 {
     -ms-box-sizing: border-box;
     box-sizing: border-box;
     overflow: auto;
+    -webkit-overflow-scrolling: touch; /* set native iOS scrolling */
+}
+
+#section li {
+    -webkit-transform: translate3d(0,0,0); /*it's for scrolling, fixes the issue when blank space can appear on first time quick scroll */
 }
 
 #section > div {

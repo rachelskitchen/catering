@@ -638,7 +638,7 @@ define(["main_router"], function(main_router) {
                             model: App.Data.myorder.checkout,
                             collection: App.Data.myorder,
                             mod: 'OrderType',
-                            DINING_OPTION_NAME: _loc.DINING_OPTION_NAME,
+                            DINING_OPTION_NAME: self.LOC_DINING_OPTION_NAME,
                             className: 'checkout',
                             cacheId: true
                         },

@@ -39,7 +39,7 @@ define(["factory"], function() {
            '.btn-back-title': 'text: back_title',
            '.btn-cart': 'classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}',
            '.btn-search': 'classes: {active: showSearch, "font-color2": showSearch, "font-color7": not(showSearch)}',
-           '.search': 'outsideClick: showSearch, events:["onOutsideClick"], classes: {invisible: not(showSearch)}, attr: {contenteditable: false}',
+           '.search': 'outsideTouch: showSearch, events:["onOutsideTouch"], classes: {invisible: not(showSearch)}, attr: {contenteditable: false}',
            '.input-search': 'value: search, events: ["input"], classes: {"font-color3": search}',
            '.ctrl': 'reset: search, events: ["click"]'
         },
