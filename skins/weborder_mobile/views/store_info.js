@@ -116,7 +116,8 @@ define(["store_info_view"], function(store_info_view) {
                     this.$el.gallery({
                     images: this.model.get('images'),
                     animate: true,
-                    circle: true
+                    circle: true,
+                    swipe: true
                 });
             }).bind(this), 0);
 

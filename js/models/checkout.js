@@ -151,14 +151,14 @@ define(["backbone"], function(Backbone) {
             return dining_option != 'DINING_OPTION_EATIN' && dining_option != 'DINING_OPTION_ONLINE';
         }
     });
-    
-    App.Data.DiningOtherOptions = Backbone.Collection.extend({ 
+
+    App.Data.DiningOtherOptions = Backbone.Collection.extend({
         model: Backbone.Model.extend({
             defaults: {
                 name: '',
                 choices: null,
                 required: true,
-                value: '' //it can be an option for choices OR '' or 'some string' for inputs (when choices is null) 
+                value: '' //it can be an option for choices OR '' or 'some string' for inputs (when choices is null)
             },
             initialize: function() {
                 if (typeof this.get('choices') == 'string') {
@@ -169,5 +169,5 @@ define(["backbone"], function(Backbone) {
                 this.set('value', '');
             }
         })
-    });   
+    });
 });

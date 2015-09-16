@@ -18,7 +18,9 @@
                 isAnimate = opts.animate === true,
                 autoSliding = opts.autoSliding === true,
                 loadEvent = typeof opts.loadEvent == 'string' ? opts.loadEvent : false,
-                time_delta = opts.time_delta ? opts.time_delta : 1;
+                time_delta = opts.time_delta ? opts.time_delta : 1,
+                is_swiping = opts.swipe != undefined ? opts.swipe : false, //no swiping by default
+                no_buttons = autoSliding || images.length <= 1 || (is_swiping && cssua.userAgent.mobile);
 
             parent.show();
             parent.append(ul);
@@ -28,8 +30,7 @@
 
             parent.append(left, right);
 
-
-            if (autoSliding || images.length <= 1) {
+            if (no_buttons) {
                 left.hide();
                 right.hide();
             }
@@ -50,7 +51,7 @@
 
                 numOfImages ++;
 
-                if (!autoSliding && numOfImages > 1) {
+                if (!no_buttons) {
                     left.show();
                     right.show();
                 }
@@ -118,6 +119,15 @@
             });
 
             right.on('click', onRightClick);
+
+            swipe_detect(parent.get(0),  function(swipedir){
+                    //swipedir contains either "none", "left", "right", "up", or "down"
+                    if (swipedir =='right') {
+                        scroll.call(this, 1);
+                    } else if (swipedir =='left') {
+                        scroll.call(this, -1);
+                    }
+                });
 
             function onRightClick(event) {
                 if (event) {
