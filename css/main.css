@@ -7,6 +7,7 @@
 .ui-spinner.stanford .point {
     background-color: #A50505;
 }
+
 /* Awesome Spinner */
 .fa {
   display: inline-block;
@@ -46,7 +47,11 @@
   }
 }
 .fa-spinner {
-    text-shadow: 0 0 0.03em white;
+    color: #249ad4;
+}
+.fa-fw {
+  width: 1.28571429em;
+  text-align: center;
 }
 /* end of Awesome Spinner*/
 
