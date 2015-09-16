@@ -135,7 +135,10 @@ define(["factory"], function() {
 
     var HeaderEmptyView = App.Views.FactoryView.extend({
         name: 'header',
-        mod: 'empty'
+        mod: 'empty',
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+        }
     });
 
     return new (require('factory'))(function() {

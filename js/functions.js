@@ -779,10 +779,12 @@ function loadSpinner(logo, anim_params, cb) {
         img.css('display','none');
         $('body').append(img);
         img.on('load', function() { //load method - deprecated
-            spinner.replaceWith(img);
-            anim ? img.fadeIn() : img.show();
-            App.Data.images[makeImageName(logo)] = img.clone().css('opacity', '1');
-            typeof cb == 'function' && cb(img);
+            setTimeout(function() {
+                spinner.replaceWith(img);
+                anim ? img.fadeIn() : img.show();
+                App.Data.images[makeImageName(logo)] = img.clone().css('opacity', '1');
+                typeof cb == 'function' && cb(img);
+            }, 100);
         }).error(function(e) {
             logo.prop('src', defImage);
             spinner.replaceWith(logo);
