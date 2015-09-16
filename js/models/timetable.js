@@ -310,7 +310,7 @@ define(["backbone"], function(Backbone) {
                 hours;
             if (!this.get('timetables')) this.set('timetables', times.timetables);
             if (!this.get('holidays')) this.set('holidays', times.holidays);
-            if (!this.get('server_time')) this.set('server_time', times.server_time);
+            if (this.get('server_time') == undefined) this.set('server_time', times.server_time);
             this.workingDay = new App.Models.WorkingDay();
             (hours = this.getHoursOnWeek()) && this.set('hours', hours);
         },
