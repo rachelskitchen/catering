@@ -831,15 +831,19 @@ section.maintenance #header .btn {
 }
 .confirm .order-confirmed-detail {
     margin: 15px auto;
+    width: 100%;
 }
 .confirm .order-confirmed-detail td {
     text-align: right;
     padding: 3px;
     width: 50%;
     white-space: nowrap;
+    vertical-align: top;
 }
 .confirm .order-confirmed-detail td+td {
     text-align: left;
+    white-space: normal;
+    word-break: break-all;
 }
 .confirm .order-confirmed-detail td.email{
     text-align: center;
