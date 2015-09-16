@@ -38,6 +38,19 @@ define(['backbone'], function(Backbone) {
             }
             if (App.Data.get_parameters.locale) {
                 App.Data.curLocale = App.Data.get_parameters.locale;
+            } else {
+                var languages = [];
+                if (navigator['languages']) { //not supported by some browsers
+                    languages = languages.concat(navigator.languages);
+                }
+                languages.push(navigator.language);
+                $.each(languages, function (i, language) {
+                    language = language.split('-')[0]; // get rid of the country code
+                    if (App.Models.Locale.SUPPORTED_LOCALES.indexOf(language) > -1) {
+                        App.Data.curLocale = language;
+                        return false;
+                    }
+                });
             }
 
             this.corePlaceholders = {};
@@ -112,5 +125,8 @@ define(['backbone'], function(Backbone) {
             });
             return loadCompleted;
         } //end of loadLanguagePack
+    },
+    {
+        SUPPORTED_LOCALES: ['de', 'en', 'es', 'et', 'fr', 'it', 'lt', 'ru']
     });
 });
