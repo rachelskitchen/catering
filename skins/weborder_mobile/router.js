@@ -919,6 +919,9 @@ define(["main_router"], function(main_router) {
             });
         },
         gift_card: function() {
+            // Reload captcha every time when navigated to giftcard page (Bug 29739)
+            App.Data.giftcard.trigger('updateCaptcha');
+
             App.Data.header.set({
                 page_title: _loc.HEADER_GIFT_CARD_PT,
                 back_title: _loc.BACK,
