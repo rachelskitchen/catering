@@ -176,12 +176,12 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
 
             // bind listeners
             this.listenToClick = function() {
-                Backbone.$(document).on('click', documentListener);
+                Backbone.$(document).on('mousedown touchstart', documentListener);
             }
 
             // unbind listeners
             this.stopListeningToClick = function() {
-                Backbone.$(document).off('click', documentListener);
+                Backbone.$(document).off('mousedown touchstart', documentListener);
             }
         },
         set: function($el, value) {
