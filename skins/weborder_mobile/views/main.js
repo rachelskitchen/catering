@@ -96,9 +96,15 @@ define(["done_view", "generator"], function(done_view) {
             var data = _.defaults(this.model.get('header'), this.header_defaults()),
                 $header = this.$('#header');
             this.subViews[0] && this.subViews[0].removeFromDOMTree();
-            this.subViews[0] = App.Views.GeneratorView.create(data.modelName, data);
-            $header.append(this.subViews[0].el);
-            this.setContentPadding();
+            if (data.mod.toLowerCase() != 'empty') {
+                this.subViews[0] = App.Views.GeneratorView.create(data.modelName, data);
+                $header.append(this.subViews[0].el);
+                $header.removeClass('hidden');
+                this.setContentPadding();
+            } else {
+                $header.addClass('hidden');
+                this.$('#section').css({'top':'0px', 'bottom':'0px'});
+            }
         },
         header_defaults: function() {
             return {

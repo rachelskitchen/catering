@@ -3,6 +3,10 @@
     z-index: 100;
 }
 
+#header.hidden {
+    z-index: -1;
+}
+
 #header > * {
     margin: 0 1.4em;
 }
