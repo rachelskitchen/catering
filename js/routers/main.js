@@ -632,6 +632,9 @@ define(["backbone", "factory"], function(Backbone) {
         initRevelAPI: function() {
             App.Data.RevelAPI = new App.Models.RevelAPI();
 
+            // temporary App.Data.RevelAPI functionality is disabled
+            return;
+
             var RevelAPI = App.Data.RevelAPI,
                 mainModel = App.Data.mainModel,
                 checkout = App.Data.myorder.checkout,
