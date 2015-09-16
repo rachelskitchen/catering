@@ -38,7 +38,7 @@ define(["factory", "giftcard_view"], function(factory) {
             '.card_title': 'text:select(validated, _lp_STANFORDCARD_TITLE_INFO, _lp_STANFORDCARD_TITLE)'
         }),
         events: {
-            'click .btn-reload': 'reload_captcha',
+            'click .btn-reload': 'updateCaptcha',
             'click .cancel-input': 'reset'
         },
         initialize: function() {
@@ -48,7 +48,7 @@ define(["factory", "giftcard_view"], function(factory) {
         },
         reset: function() {
             this.model.reset();
-            this.reload_captcha();
+            this.updateCaptcha();
         },
         removeFromDOMTree: function() {
             this.updateCartTotals();
