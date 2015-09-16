@@ -35,7 +35,8 @@ define(["backbone", "factory"], function(Backbone) {
         },
         bindings: {
             'img.captcha': 'updateCaptcha: url',
-            '#id_captcha_key': 'value: captchaKey'
+            '#id_captcha_key': 'value: captchaKey',
+            '#id_captcha_value': 'value: captchaValue, events: ["input"]'
         },
         events: {
             'click .btn-reload': 'reload_captcha'
@@ -56,6 +57,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.removeCaptchaSpinner();
             this.createCaptchaSpinner();
             this.model.set('captchaImage', '');
+            this.model.set('captchaValue', '');
             this.model.loadCaptcha();
         },
         render: function() {
@@ -97,7 +99,6 @@ define(["backbone", "factory"], function(Backbone) {
                     }
                 }
             }
-
             this.model.loadCaptcha();
         },
         setData: function() {
