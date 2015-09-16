@@ -27,6 +27,8 @@ define(["giftcard_view"], function(giftcard_view) {
         initialize: function() {
             App.Views.CoreGiftCardView.CoreGiftCardMainView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'add_card', this.onProceed, this);
+            // Reload captcha every time when navigated to giftcard page (Bug 29739)
+            this.listenTo(this.model, 'updateCaptcha', this.updateCaptcha, this);
         },
         onProceed: function() {
             this.setData();

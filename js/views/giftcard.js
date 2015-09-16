@@ -31,7 +31,7 @@ define(["backbone", "factory"], function(Backbone) {
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'add_card', this.setData, this);
-            this.reload_captcha();
+            this.updateCaptcha();
         },
         bindings: {
             'img.captcha': 'updateCaptcha: url',
@@ -39,7 +39,7 @@ define(["backbone", "factory"], function(Backbone) {
             '#id_captcha_value': 'value: captchaValue, events: ["input"]'
         },
         events: {
-            'click .btn-reload': 'reload_captcha'
+            'click .btn-reload': 'updateCaptcha'
         },
         computeds: {
             url: {
@@ -53,7 +53,7 @@ define(["backbone", "factory"], function(Backbone) {
                 }
             }
         },
-        reload_captcha: function() {
+        updateCaptcha: function() {
             this.removeCaptchaSpinner();
             this.createCaptchaSpinner();
             this.model.set('captchaImage', '');
