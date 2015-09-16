@@ -76,7 +76,8 @@ define(["backbone"], function(Backbone) {
         addProduct: function(orderItem) {
             var self = this,
                 check = orderItem.check_order(),
-                addProductCb = this.get('addProductCb');
+                addProductCb = this.get('addProductCb'),
+                def = Backbone.$.Deferred();
 
             if (check.status === 'OK') {
                 orderItem.get_product().check_gift(function() {
@@ -88,12 +89,16 @@ define(["backbone"], function(Backbone) {
                     });
                     window.history.replaceState({}, '', '#modifiers/' + (App.Data.myorder.length - 1));
                     typeof addProductCb == 'function' && addProductCb();
+                    def.resolve();
                 }, function(errorMsg) {
+                    def.reject();
                     App.Data.errors.alert(errorMsg); // user notification
                 });
             } else {
+                def.reject();
                 App.Data.errors.alert(check.errorMsg); // user notification
             }
+            return def;
         },
         updateProduct: function(orderItem, originOrderItem) {
             var self = this,
