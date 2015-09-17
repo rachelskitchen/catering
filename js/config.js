@@ -30,6 +30,8 @@ define({
         jquery_numbermask: "js/libs/jquery/jquery.number_mask",
         backbone: "js/libs/backbone",
         backbone_epoxy: "js/libs/backbone.epoxy",
+        backbone_epoxy_handlers: "js/libs/backbone.epoxy.handlers",
+        backbone_epoxy_filters: "js/libs/backbone.epoxy.filters",
         cssua: "js/libs/cssua",
         underscore: "js/libs/underscore",
         functions : "js/functions",
@@ -110,6 +112,14 @@ define({
             deps: ["backbone"],
             exports: "Backbone"
         },
+        "backbone_epoxy_handlers": {
+            deps: ["backbone_epoxy"],
+            exports: "Backbone"
+        },
+        "backbone_epoxy_filters": {
+            deps: ["backbone_epoxy"],
+            exports: "Backbone"
+        },
         "cssua": {
             exports: "cssua"
         },
@@ -138,7 +148,7 @@ define({
             deps: ["settings"]
         },
         "factory": {
-            deps: ["backbone"]
+            deps: ["backbone", "backbone_epoxy_handlers", "backbone_epoxy_filters"]
         },
         "generator": {
             deps: ["backbone"]
