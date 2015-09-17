@@ -120,12 +120,13 @@
 
             right.on('click', onRightClick);
 
-            swipe_detect(parent.get(0),  function(swipedir){
+
+            get_swipe_detect_fn()(parent.get(0),  function(swipedir){
                     //swipedir contains either "none", "left", "right", "up", or "down"
                     if (swipedir =='right') {
-                        scroll.call(this, 1);
-                    } else if (swipedir =='left') {
                         scroll.call(this, -1);
+                    } else if (swipedir =='left') {
+                        scroll.call(this, 1);
                     }
                 });
 
