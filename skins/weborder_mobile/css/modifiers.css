@@ -16,10 +16,13 @@
     overflow: hidden;
 }
 
-.modifier > label {
+.modifier__inner {
     display: block !important;
     padding: .7em 0;
     position: relative;
+}
+.modifier__label {
+    padding-right: 25px;
 }
 
 .modifier input {
