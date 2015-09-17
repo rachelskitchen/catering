@@ -956,6 +956,17 @@ function inputTypeMask(el, pattern, initial, type) {
         el.trigger('change');
     }
 }
+
+
+function isDigitOrControlKey(key) {
+    if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27)) {
+        return true; // control key
+    } else if ((("0123456789").indexOf(String.fromCharCode(key)) > -1)) {
+        return true; // digit
+    }
+    return false;
+}
+
 /**
  * save all data
  */

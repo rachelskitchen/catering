@@ -34,6 +34,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.updateCaptcha();
         },
         bindings: {
+            'input.number-input': 'acceptDigits: cardNumber, pattern: /^\\d{0,19}$/',
             'img.captcha': 'updateCaptcha: url',
             '#id_captcha_key': 'value: captchaKey',
             '#id_captcha_value': 'value: captchaValue, events: ["input"]'
@@ -68,7 +69,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             var captcha = this.$('#id_captcha_value');
             inputTypeMask(captcha, /^\w{0,4}$/, ''); //#14495 bug
-
+            /***********************************
             cardNumber = this.$('.number');
             inputTypeMask(cardNumber, /^\d{0,19}$/, '', 'numeric');
             if (cssua.userAgent.mobile) {
@@ -78,10 +79,10 @@ define(["backbone", "factory"], function(Backbone) {
                 }
                 var hack = false;
                 if (cssua.userAgent.android) {
-                    /*
+                    *
                      Hack for bug: https://code.google.com/p/android/issues/detail?id=24626.
                      Bug of Revel Systems: http://bugzilla.revelup.com/bugzilla/show_bug.cgi?id=5368.
-                     */
+                     *
                     if (check_android_old_version(cssua.userAgent.android)) { // checking version OS Android (old version is Android <= 4.2.1)
                         hack = true;
                         cardNumber.attr("type", "text");
@@ -99,6 +100,7 @@ define(["backbone", "factory"], function(Backbone) {
                     }
                 }
             }
+            *************************************/
             this.model.loadCaptcha();
         },
         setData: function() {
