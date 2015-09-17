@@ -44,11 +44,11 @@ define(['backbone'], function(Backbone) {
                     languages = languages.concat(navigator.languages);
                 }
                 languages.push(navigator.language);
-                $.each(languages, function (i, language) {
-                    language = language.split('-')[0]; // get rid of the country code
-                    if (App.Models.Locale.SUPPORTED_LOCALES.indexOf(language) > -1) {
+                languages.some(function(language) {
+                    language = typeof language == 'string' ? language.split('-')[0] : null; // get rid of the country code
+                    if (language && App.Models.Locale.SUPPORTED_LOCALES.indexOf(language) > -1) {
                         App.Data.curLocale = language;
-                        return false;
+                        return true;
                     }
                 });
             }
