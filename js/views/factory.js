@@ -411,6 +411,15 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
     return ViewModule;
 });
 
+
+
+function get_swipe_detect_fn(){
+    if (cssua.userAgent.android) {
+        return swipe_detect_Android;
+    } else {
+        return swipe_detect;
+    }
+}
 /*
 * the function detects swiping in either of the 4 directions (left, right, up, or down) for mobile devices
 */
@@ -435,6 +444,7 @@ function swipe_detect(el, callback){
         startX = touchobj.pageX
         startY = touchobj.pageY
         startTime = new Date().getTime() // record time when finger first makes contact with surface
+        //trace("touch start... ", touchobj.pageX, touchobj.pageY);
         //e.preventDefault()
     }, false)
 
@@ -442,6 +452,7 @@ function swipe_detect(el, callback){
         var touchobj = e.changedTouches[0]
         distX = touchobj.pageX - startX // get horizontal dist traveled by finger while in contact with surface
         distY = touchobj.pageY - startY // get vertical dist traveled by finger while in contact with surface
+        //trace("touch touchmove... ", touchobj.pageX, touchobj.pageY, elapsedTime);
         elapsedTime = new Date().getTime() - startTime // get time elapsed
         if (elapsedTime <= allowedTime){ // first condition for awipe met
             if (Math.abs(distX) >= threshold && Math.abs(distY) <= restraint){ // 2nd condition for horizontal swipe met
@@ -453,5 +464,52 @@ function swipe_detect(el, callback){
         }
         handleswipe(swipedir)
         //e.preventDefault()
+    }, false)
+}
+
+
+/*
+* the function detects swiping in either of the 4 directions (left, right, up, or down) for mobile devices
+*/
+function swipe_detect_Android(el, callback){
+    var touchsurface = el,
+    swipedir,
+    startX,
+    startY,
+    distX,
+    distY,
+    thresholdSpeed = 0.1, //required moving speed traveled to be considered swipe
+    restraintSpeed = 0.2, // maximum moving speed allowed at the same time in perpendicular direction
+    elapsedTime,
+    startTime,
+    handleswipe = callback || function(swipedir){}
+
+    touchsurface.addEventListener('touchstart', function(e){
+        var touchobj = e.changedTouches[0]
+        swipedir = 'none'
+        dist = 0
+        startX = touchobj.pageX
+        startY = touchobj.pageY
+        startTime = new Date().getTime() // record time when finger first makes contact with surface
+        //trace("touch start... ", touchobj.pageX, touchobj.pageY);
+       
+    }, false)
+
+    touchsurface.addEventListener('touchmove', function(e){
+        var touchobj = e.changedTouches[0]
+        distX = touchobj.pageX - startX // get horizontal dist traveled by finger while in contact with surface
+        distY = touchobj.pageY - startY // get vertical dist traveled by finger while in contact with surface
+        
+        elapsedTime = new Date().getTime() - startTime; // get time elapsed
+        elapsedSpeed = Math.abs(distX / elapsedTime);
+        perpendicularSpeed = Math.abs(distY / elapsedTime);
+        //trace("touch touchmove... ", touchobj.pageX, touchobj.pageY, elapsedTime, elapsedSpeed, perpendicularSpeed);
+            if (elapsedSpeed >= thresholdSpeed && perpendicularSpeed <= restraintSpeed){ // 2nd condition for horizontal swipe met
+                swipedir = (distX < 0)? 'left' : 'right' // if dist traveled is negative, it indicates left swipe
+            }
+            else if (perpendicularSpeed >= thresholdSpeed && elapsedSpeed <= restraintSpeed){ // 2nd condition for vertical swipe met
+                swipedir = (distY < 0)? 'up' : 'down' // if dist traveled is negative, it indicates up swipe
+            }
+        handleswipe(swipedir)
     }, false)
 }
