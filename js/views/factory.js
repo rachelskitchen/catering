@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(['backbone', 'backbone_epoxy'], function(Backbone) {
+define(['backbone', 'backbone_epoxy', 'backbone_epoxy_handlers', 'backbone_epoxy_filters'], function(Backbone) {
     'use strict';
 
     Backbone.Epoxy.binding.allowedParams.params = true; //allows to write in a custom binding additional params like "valueTimeout:valName,params:{timeout:1000}, ..."
@@ -315,14 +315,14 @@ function swipe_detect_Android(el, callback){
         startY = touchobj.pageY
         startTime = new Date().getTime() // record time when finger first makes contact with surface
         //trace("touch start... ", touchobj.pageX, touchobj.pageY);
-       
+
     }, false)
 
     touchsurface.addEventListener('touchmove', function(e){
         var touchobj = e.changedTouches[0]
         distX = touchobj.pageX - startX // get horizontal dist traveled by finger while in contact with surface
         distY = touchobj.pageY - startY // get vertical dist traveled by finger while in contact with surface
-        
+
         elapsedTime = new Date().getTime() - startTime; // get time elapsed
         elapsedSpeed = Math.abs(distX / elapsedTime);
         perpendicularSpeed = Math.abs(distY / elapsedTime);
