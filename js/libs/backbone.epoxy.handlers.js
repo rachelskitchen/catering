@@ -164,7 +164,7 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         // Usage example:  "#my_input": "acceptDigits:cardNumber"
         init: function($el, value, bindings, context) {
             $el.keypress(function(event) {
-                return isDigitOrControlKey(event.which);
+                return isDigitMinusOrControlKey(event.which);
             });
         }
     });
