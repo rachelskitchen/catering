@@ -498,6 +498,12 @@ define(["main_router"], function(main_router) {
                 if(!order)
                     return this.navigate('index', true);
 
+                header.set({
+                    back: back,
+                    back_title: _loc.BACK,
+                    cart: cart
+                });
+
                 App.Data.mainModel.set({
                     header: headerModes.Modifiers,
                     footer: footerModes.None
@@ -511,12 +517,6 @@ define(["main_router"], function(main_router) {
                     setHeaderToAdd();
                     order.add_empty(id_product * 1, id_category * 1).then(showProductDetails);
                 }
-
-                header.set({
-                    back: back,
-                    back_title: _loc.BACK,
-                    cart: cart
-                });
 
                 function showProductDetails() {
                     if(!isEditMode) {
