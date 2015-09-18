@@ -16,10 +16,13 @@
     overflow: hidden;
 }
 
-.modifier > label {
+.modifier__inner {
     display: block !important;
     padding: .7em 0;
     position: relative;
+}
+.modifier__label {
+    padding-right: 25px;
 }
 
 .modifier input {
@@ -88,8 +91,12 @@
 
 .modifier .mdf_split.option_1::before {
     content: '\f042';
-    transform: scaleX(-1);
     text-indent: 1.4em;
+    -webkit-transform: scaleX(-1);
+    -moz-transform:    scaleX(-1);
+    -ms-transform:     scaleX(-1);
+    -o-transform:      scaleX(-1);
+    transform:         scaleX(-1);
 }
 
 .modifier .mdf_split.option_2::before {
