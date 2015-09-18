@@ -498,6 +498,11 @@ define(["main_router"], function(main_router) {
                 if(!order)
                     return this.navigate('index', true);
 
+                App.Data.mainModel.set({
+                    header: headerModes.Modifiers,
+                    footer: footerModes.None
+                });
+
                 if(isEditMode) {
                     this.listenTo(order, 'change', setHeaderToUpdate);
                     setHeaderToUpdate();
@@ -511,11 +516,6 @@ define(["main_router"], function(main_router) {
                     back: back,
                     back_title: _loc.BACK,
                     cart: cart
-                });
-
-                App.Data.mainModel.set({
-                    header: headerModes.Modifiers,
-                    footer: footerModes.None
                 });
 
                 function showProductDetails() {
