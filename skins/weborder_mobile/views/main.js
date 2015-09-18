@@ -28,6 +28,7 @@ define(["done_view", "generator"], function(done_view) {
         initialize: function() {
             this.listenTo(this.model, 'change:content', this.content_change, this);
             this.listenTo(this.model, 'change:header', this.header_change, this);
+            this.listenTo(this.model, 'change:footer', this.footer_change, this);
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
             this.listenTo(this.model, 'showRevelPopup', this.showRevelPopup, this);
@@ -77,7 +78,7 @@ define(["done_view", "generator"], function(done_view) {
 
             // this.$('#section').append(content);
 
-            while(this.subViews.length > 1) {
+            while(this.subViews.length > 2) {
                 view = this.subViews.pop();
                 view.removeFromDOMTree();
             }
@@ -96,7 +97,7 @@ define(["done_view", "generator"], function(done_view) {
             var data = _.defaults(this.model.get('header'), this.header_defaults()),
                 $header = this.$('#header');
             this.subViews[0] && this.subViews[0].removeFromDOMTree();
-            if (data.mod.toLowerCase() != 'empty') {
+            if (this.model.get('header')) {
                 this.subViews[0] = App.Views.GeneratorView.create(data.modelName, data);
                 $header.append(this.subViews[0].el);
                 $header.removeClass('hidden');
@@ -106,11 +107,27 @@ define(["done_view", "generator"], function(done_view) {
                 this.$('#section').css({'top':'0px', 'bottom':'0px'});
             }
         },
+        footer_change : function() {
+            var data = _.defaults(this.model.get('footer'), this.footer_defaults());
+            this.subViews[1] && this.subViews[1].remove();
+            if (this.model.get('footer')) {
+                this.subViews[1] = App.Views.GeneratorView.create(data.modelName, data);
+                this.$('#footer').append(this.subViews[1].el);
+                this.setContentPadding();
+            }
+        },
         header_defaults: function() {
             return {
                 model: App.Data.header,
                 modelName: 'Header'
             }
+        },
+        footer_defaults : function() {
+            return {
+                model : App.Data.footer,
+                className : 'footer',
+                modelName : 'Footer'
+            };
         },
         content_defaults : function() {
             return {
@@ -129,10 +146,10 @@ define(["done_view", "generator"], function(done_view) {
                 delete data.className;
 
             var subView = App.Views.GeneratorView.create(data.modelName, data, data.cacheId ? id : undefined);
-            if(this.subViews.length > 1)
+            if(this.subViews.length > 2)
                 this.subViews.push(subView);
             else
-                this.subViews[1] = subView;
+                this.subViews[2] = subView;
 
             return subView.el;
         },
@@ -214,7 +231,7 @@ define(["done_view", "generator"], function(done_view) {
             });
 
             function iteration(iterRes, item) {
-                return iterRes + (Backbone.$(item).height() || 0);
+                return iterRes + (Backbone.$(item).outerHeight() || 0);
             }
         }
     });

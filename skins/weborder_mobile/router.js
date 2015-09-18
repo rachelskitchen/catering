@@ -24,6 +24,7 @@ define(["main_router"], function(main_router) {
     'use strict';
 
     var headerModes = {};
+    var footerModes = {};
 
     /**
     * Default router data.
@@ -32,7 +33,10 @@ define(["main_router"], function(main_router) {
         headerModes.Main = {mod: 'Main', className: 'main'};
         headerModes.Modifiers = {mod: 'Modifiers', className: 'modifiers'};
         headerModes.Cart = {mod: 'Cart'};
-        headerModes.Gallery = {mod: 'Empty'};
+        headerModes.None = null;
+        footerModes.Main = {mod: 'Main'};
+        footerModes.Promo = {modelName: 'PromoMessage', mod: 'Main', className: 'promo-message-container bg-color1'};
+        footerModes.None = null;
     }
 
     var Router = App.Routers.RevelOrderingRouter.extend({
@@ -352,19 +356,20 @@ define(["main_router"], function(main_router) {
                     modelName: 'Categories',
                     collection: App.Data.parentCategories,
                     mod: 'Parents',
-                    cacheId: true
+                    cacheId: true,
+                    className: 'content_scrollable'
                 }];
-
-                App.Settings.promo_message && content.push({
-                    modelName: 'PromoMessage',
-                    mod: 'Main',
-                    model: new Backbone.Model(),
-                    className: 'fixed-bottom promo-message-container bg-color1',
-                    cacheId: true
-                });
+                
+                var footerMode;
+                if (App.Settings.promo_message) {
+                    footerMode = footerModes.Promo;
+                } else {
+                    footerMode = footerModes.None;
+                }
 
                 App.Data.mainModel.set({
                     header: headerModes.Main,
+                    footer: footerMode,
                     contentClass: '',
                     content: content
                 });
@@ -392,7 +397,8 @@ define(["main_router"], function(main_router) {
                 });
 
                 App.Data.mainModel.set({
-                    header: headerModes.Main
+                    header: headerModes.Main,
+                    footer: footerModes.None
                 });
 
                 // need to show serach result list when request is complete
@@ -445,7 +451,8 @@ define(["main_router"], function(main_router) {
                 });
 
                 App.Data.mainModel.set({
-                    header: headerModes.Main
+                    header: headerModes.Main,
+                    footer: footerModes.None
                 });
 
                 // load categories and products
@@ -507,7 +514,8 @@ define(["main_router"], function(main_router) {
                 });
 
                 App.Data.mainModel.set({
-                    header: headerModes.Modifiers
+                    header: headerModes.Modifiers,
+                    footer: footerModes.None
                 });
 
                 function showProductDetails() {
@@ -574,6 +582,11 @@ define(["main_router"], function(main_router) {
 
                 App.Data.mainModel.set({
                     header: headerModes.Cart,
+                    footer:  {
+                            total: App.Data.myorder.total,
+                            mod: 'Cart',
+                            className: 'footer bg-color10'
+                        },
                     contentClass: '',
                     content: [
                         {
@@ -587,14 +600,7 @@ define(["main_router"], function(main_router) {
                             model: App.Data.myorder.checkout,
                             mod: 'Note',
                             className: 'myorderNote'
-                        },
-                        {
-                            modelName: 'Footer',
-                            model: App.Data.footer,
-                            total: App.Data.myorder.total,
-                            mod: 'Cart',
-                            className: 'fixed-bottom footer bg-color10'
-                        }
+                        }                       
                     ]
                 });
 
@@ -611,7 +617,10 @@ define(["main_router"], function(main_router) {
             });
 
             App.Data.mainModel.set({
-                header: headerModes.Cart
+                header: headerModes.Cart,
+                footer: {   className: 'footer bg-color10',
+                            cacheId: true,
+                            cacheIdUniq: 'checkout' }
             });
 
             this.prepare('checkout', function checkout1() {
@@ -658,14 +667,6 @@ define(["main_router"], function(main_router) {
                             mod: 'Pickup',
                             className: 'checkout',
                             cacheId: true
-                        },
-                        {
-                            modelName: 'Footer',
-                            mod: 'Main',
-                            model: App.Data.footer,
-                            className: 'fixed-bottom footer bg-color10',
-                            cacheId: true,
-                            cacheIdUniq: 'checkout'
                         }
                     ]
                 });
@@ -767,24 +768,24 @@ define(["main_router"], function(main_router) {
                 });
 
                 if(payment_count > 1) {
-                    content.push({
-                        modelName: 'Footer',
-                        mod: 'Main',
-                        model: App.Data.footer,
-                        className: 'fixed-bottom footer bg-color10',
-                        cacheId: true,
-                        cacheIdUniq: 'confirm'
+                    App.Data.mainModel.set({
+                        footer: {
+                            mod: 'Main',                        
+                            className: 'footer bg-color10',
+                            cacheId: true,
+                            cacheIdUniq: 'confirm'
+                        }
                     });
                 } else {
-                    content.push({
-                        modelName: 'Footer',
-                        mod: 'PaymentSelection',
-                        model: App.Data.footer,
-                        total: myorder.total,
-                        className: 'fixed-bottom footer footer-payments bg-color10',
-                        cacheId: true
+                    App.Data.mainModel.set({
+                        footer: {
+                            mod: 'PaymentSelection',
+                            total: myorder.total,
+                            className: 'footer footer-payments bg-color10',
+                            cacheId: true
+                        }
                     });
-                }
+                }            
 
                 App.Data.mainModel.set({
                     contentClass: 'bg-color12',
@@ -838,7 +839,13 @@ define(["main_router"], function(main_router) {
             });
 
             App.Data.mainModel.set({
-                header: headerModes.Cart
+                header: headerModes.Cart,
+                footer: {
+                    mod: 'PaymentSelection',
+                    total: App.Data.myorder.total,
+                    className: 'footer footer-payments bg-color10',
+                    cacheId: true
+                }
             });
 
             this.prepare('payments', function() {
@@ -856,15 +863,7 @@ define(["main_router"], function(main_router) {
                             mod: 'Main',
                             collection: App.Data.myorder,
                             cacheId: true
-                        },
-                        {
-                            modelName: 'Footer',
-                            mod: 'PaymentSelection',
-                            model: App.Data.footer,
-                            total: App.Data.myorder.total,
-                            className: 'fixed-bottom footer footer-payments bg-color10',
-                            cacheId: true
-                        }
+                        }                       
                     ]
                 });
 
@@ -879,7 +878,12 @@ define(["main_router"], function(main_router) {
             });
 
             App.Data.mainModel.set({
-                header: headerModes.Cart
+                header: headerModes.Cart,
+                footer: {   mod: 'PaymentInfo',
+                            total: App.Data.myorder.total,
+                            className: 'footer bg-color10',
+                            cacheId: true,
+                            cacheIdUniq: 'card' }
             });
 
             this.prepare('card', function() {
@@ -902,15 +906,6 @@ define(["main_router"], function(main_router) {
                             model: App.Data.card,
                             mod: 'Main',
                             cacheId: true
-                        },
-                        {
-                            modelName: 'Footer',
-                            mod: 'PaymentInfo',
-                            model: App.Data.footer,
-                            total: App.Data.myorder.total,
-                            className: 'fixed-bottom footer bg-color10',
-                            cacheId: true,
-                            cacheIdUniq: 'card'
                         }
                     ]
                 });
@@ -929,7 +924,11 @@ define(["main_router"], function(main_router) {
             });
 
             App.Data.mainModel.set({
-                header: headerModes.Cart
+                header: headerModes.Cart,
+                footer: {   mod: 'Main',
+                            className: 'footer bg-color10',
+                            cacheId: true,
+                            cacheIdUniq: 'giftcard' }
             });
 
             this.prepare('giftcard', function() {
@@ -949,14 +948,6 @@ define(["main_router"], function(main_router) {
                             model: App.Data.giftcard,
                             mod: 'Main',
                             cacheId: true
-                        },
-                        {
-                            modelName: 'Footer',
-                            mod: 'Main',
-                            model: App.Data.footer,
-                            className: 'fixed-bottom footer bg-color10',
-                            cacheId: true,
-                            cacheIdUniq: 'giftcard'
                         }
                     ]
                 });
@@ -972,7 +963,16 @@ define(["main_router"], function(main_router) {
             });
 
             App.Data.mainModel.set({
-                header: headerModes.Cart
+                header: headerModes.Cart,
+                footer: {
+                        mod: 'StanfordCard',
+                        submitCard: submitCard,
+                        submitOrder: App.Data.stanfordCard.trigger.bind(App.Data.stanfordCard, 'pay'),
+                        card: App.Data.stanfordCard,
+                        className: 'footer bg-color10',
+                        cacheId: true,
+                        cacheIdUniq: 'stanford_card'
+                }
             });
 
             this.prepare('stanfordcard', function() {
@@ -991,16 +991,6 @@ define(["main_router"], function(main_router) {
                         collection: App.Data.stanfordCard.get('plans'),
                         mod: 'Plans',
                         className: 'stanford-card-plans',
-                        cacheId: true,
-                        cacheIdUniq: 'stanford_card'
-                    }, {
-                        modelName: 'Footer',
-                        mod: 'StanfordCard',
-                        model: App.Data.footer,
-                        submitCard: submitCard,
-                        submitOrder: App.Data.stanfordCard.trigger.bind(App.Data.stanfordCard, 'pay'),
-                        card: App.Data.stanfordCard,
-                        className: 'fixed-bottom footer bg-color10',
                         cacheId: true,
                         cacheIdUniq: 'stanford_card'
                     }]
@@ -1025,7 +1015,14 @@ define(["main_router"], function(main_router) {
             });
 
             App.Data.mainModel.set({
-                header: headerModes.Cart
+                header: headerModes.Cart,
+                footer: {
+                        mod: 'Card',
+                        card: App.Data.stanfordCard,
+                        className: 'footer bg-color10',
+                        cacheId: true,
+                        cacheIdUniq: 'stanford_student_verification'
+                }
             });
 
             this.prepare('stanford_student_verification', function() {
@@ -1041,14 +1038,6 @@ define(["main_router"], function(main_router) {
                         model: App.Data.stanfordCard,
                         mod: 'Main',
                         myorder: App.Data.myorder,
-                        cacheId: true,
-                        cacheIdUniq: 'stanford_student_verification'
-                    }, {
-                        modelName: 'Footer',
-                        mod: 'Card',
-                        model: App.Data.footer,
-                        card: App.Data.stanfordCard,
-                        className: 'fixed-bottom footer bg-color10',
                         cacheId: true,
                         cacheIdUniq: 'stanford_student_verification'
                     }]
@@ -1089,7 +1078,8 @@ define(["main_router"], function(main_router) {
             });
 
             App.Data.mainModel.set({
-                header: headerModes.Cart
+                header: headerModes.Cart,
+                footer: footerModes.None
             });
 
             this.prepare('done', function() {
@@ -1122,7 +1112,8 @@ define(["main_router"], function(main_router) {
             });
 
             App.Data.mainModel.set({
-                header: headerModes.Main
+                header: headerModes.Main,
+                footer: footerModes.None
             });
 
             this.prepare('store_info', function() {
@@ -1151,7 +1142,8 @@ define(["main_router"], function(main_router) {
             });
 
             App.Data.mainModel.set({
-                header: headerModes.Main
+                header: headerModes.Main,
+                footer: footerModes.None
             });
 
             this.prepare('store_info', function() {
@@ -1170,15 +1162,16 @@ define(["main_router"], function(main_router) {
             });
         },
         gallery: function() {
+            App.Data.mainModel.set({
+                header: headerModes.None,
+                footer: footerModes.None,
+            });
 
             this.prepare('store_info', function() {
-
                 if (!App.Data.AboutModel) {
                     App.Data.AboutModel = new App.Models.AboutModel();
                 }
-
-                App.Data.mainModel.set({
-                    header: headerModes.Gallery,
+                App.Data.mainModel.set({                   
                     content: {
                         modelName: 'StoreInfo',
                         model: App.Data.AboutModel,
@@ -1205,7 +1198,8 @@ define(["main_router"], function(main_router) {
             });
 
             App.Data.mainModel.set({
-                header: headerModes.Cart
+                header: headerModes.Cart,
+                footer: footerModes.None,
             });
 
             this.prepare('maintenance', function() {
@@ -1247,7 +1241,14 @@ define(["main_router"], function(main_router) {
             });
 
             App.Data.mainModel.set({
-                header: headerModes.Cart
+                header: headerModes.Cart,
+                footer: {
+                        card: rewardsCard,
+                        mod: 'Card',
+                        className: 'footer bg-color10',
+                        cacheId: true,
+                        cacheIdUniq: 'rewards_card'
+                    }
             });
 
             this.prepare('rewards', function() {
@@ -1259,14 +1260,6 @@ define(["main_router"], function(main_router) {
                         model: rewardsCard,
                         className: 'rewards-info',
                         cacheId: true
-                    }, {
-                        modelName: 'Footer',
-                        model: App.Data.footer,
-                        card: rewardsCard,
-                        mod: 'Card',
-                        className: 'fixed-bottom footer bg-color10',
-                        cacheId: true,
-                        cacheIdUniq: 'rewards_card'
                     }]
                 });
 
@@ -1283,7 +1276,12 @@ define(["main_router"], function(main_router) {
             });
 
             App.Data.mainModel.set({
-                header: headerModes.Cart
+                header: headerModes.Cart,
+                footer: {
+                        rewardsCard: rewardsCard,
+                        mod: 'RewardRedemption',
+                        className: 'footer bg-color10'
+                    }
             });
 
             App.Data.footer.set({
@@ -1306,12 +1304,6 @@ define(["main_router"], function(main_router) {
                         points: rewardsCard.get('points'),
                         visits: rewardsCard.get('visits'),
                         purchases: rewardsCard.get('purchases')
-                    }, {
-                        modelName: 'Footer',
-                        model: App.Data.footer,
-                        rewardsCard: rewardsCard,
-                        mod: 'RewardRedemption',
-                        className: 'fixed-bottom footer bg-color10'
                     }]
                 });
 

@@ -108,6 +108,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 });
                 this.listenTo(modifiers, 'modifiers_changed', function() {
                     this.update_prices();
+                    this.trigger('change', this); // need to notify a collection about modifier change to ensure cart totals update
                 });
             }
         },
@@ -593,8 +594,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                 var errors = App.Data.errors;
                 if (mess.length) {
                     errors.alert(MSG.ERROR_HAS_OCCURRED_WITH_CONTACT.replace(/%([^%]*)%/g, function(match, group) {
-console.log('mess: ', mess);
-console.log('check maintenance: ', arguments);
                         var data = mess[index];
                         index ++;
                         return data ? '<br>' + group + data + ',' : '';
