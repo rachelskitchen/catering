@@ -38,6 +38,14 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'resizeSection', this.resizeSection, this);
             this.listenTo(this.model, 'restoreSection', this.restoreSection, this);
 
+            // Bug 29756: recalculate content position on orientation change
+            var thisView = this;
+            Backbone.$(window).on('orientationchange', function() {
+                Backbone.$(document).one('transitionend', '.animation', function(e) {
+                    thisView.setContentPadding();
+                });
+            });
+
             this.iOSFeatures();
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
