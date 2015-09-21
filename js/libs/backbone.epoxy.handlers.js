@@ -160,40 +160,82 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         }
     });
 
-    Backbone.Epoxy.binding.addHandler("acceptDigits", {
-        // Usage example:  "#my_input": "acceptDigits:cardNumber"
+    Backbone.Epoxy.binding.addHandler("restrictInput", {
+        // Usage:  "#my_input": "restrictInput:cardNumber, allowedChars:'0123456789-'"
         init: function($el, value, bindings, context) {
-            $el.keypress(function(event) {
-                return isDigitMinusOrControlKey(event.which);
-            });
+            var DEFAULT_ALLOWED_CHARS = "0123456789-";
+            var allowedChars = typeof context.allowedChars == 'string' ? context.allowedChars : DEFAULT_ALLOWED_CHARS;
+
+            this.unbind = function() {
+                $el.off('keypress', keypress);
+            }
+
+            $el.on('keypress', keypress);
+            function keypress(event) {
+                var key = event.which;
+                if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27)) {
+                    return true; // pass control key
+                } else if ((allowedChars.indexOf(String.fromCharCode(key)) > -1)) {
+                    return true; // pass valid char
+                }
+                return false; // skip NOT valid char
+            }
+        },
+        clean:  function() {
+            this.unbind();
+        }
+    });
+
+    Backbone.Epoxy.binding.addHandler('allowedChars', {
+        // Usage: as parameter of 'restrictInput'
+        get: function($el, value, event) {
+            return value;
+        }
+    });
+
+    Backbone.Epoxy.binding.addHandler('kbdSwitcher', {
+        // Usage:  "#my_input": "kbdSwitcher:'cardNumber'"
+        init: function($el, value, bindings, context) {
+            inputTypeSwitcher($el, value);
         }
     });
 
     Backbone.Epoxy.binding.addHandler('pattern', {
-        // Usage example:  "#my_input": "pattern: /^\\d{0,19}$/'"
+        // Usage:  "#my_input": "pattern: /^\\d{0,19}$/'"
         init: function($el, value, bindings, context) {
+            var prev = ''; //initial && initial.toString() || '';
+            this.unbind = function() {
+                $el.off('input', validate);
+                $el.off('change', change);
+                $el.off('blur', triggerChange);
+            }
+
             var regex = context.pattern;
             if (regex instanceof RegExp) {
-                var prev = ''; //initial && initial.toString() || '';
-                $el.on('input', function(a) {
-                    if (!regex.test(a.target.value) || !a.target.value && !this.validity.valid) {
-                        a.target.value = prev;
-                        $el.off('blur', change); // `change` event is not emitted after this case
-                        $el.one('blur', change); // need reproduce it
-                    } else {
-                        prev = a.target.value;
-                    }
-                });
-
-                $el.on('change', function(a) {
-                    prev = a.target.value;
-                });
+                $el.on('input', validate);
+                $el.on('change', change);
             }
 
-            function change() {
+            function change(event) {
+                prev = event.target.value;
+            }
+
+            function triggerChange() {
                 $el.trigger('change');
             }
+
+            function validate(event) {
+                if (!regex.test(event.target.value) || !event.target.value && !this.validity.valid) {
+                    event.target.value = prev;
+                    $el.off('blur', triggerChange); // `change` event is not emitted after this case
+                    $el.on('blur', triggerChange); // need reproduce it
+                } else {
+                    prev = event.target.value;
+                }
+            }
+        },
+        clean: function() {
+            this.unbind();
         }
     });
-
 });
