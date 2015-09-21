@@ -33,9 +33,18 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         mod: 'item',
         events: {
             'change input': 'change',
-            'click .special_label': 'add_special',
-            'change .mdf_quantity select': 'change_quantity',
-            'change .mdf_split select': 'change_split_modifier'
+            'click .special_label': 'add_special'
+        },
+        bindings: {
+            '.mdf_quantity select': 'value: quantity',
+            '.mdf_split select': 'value: qty_type, change_split_modifier: qty_type'
+        },
+        bindingHandlers: {
+            change_split_modifier: function($element, qty_type) {
+                var splitLabel = $element.closest(".mdf_split");
+                removeClassRegexp(splitLabel, "option_\\d+");
+                splitLabel.addClass("option_" + qty_type);
+            }
         },
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
@@ -202,21 +211,6 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
 
             function hide() {
                 $(this).removeClass('visible').addClass('hidden');
-            }
-        },
-        change_quantity: function() {
-            var quantity = this.$(".mdf_quantity select").val();
-            if (quantity) {
-                this.model.set('quantity', quantity*1);
-            }
-        },
-        change_split_modifier: function() {
-            var qty_type = this.$(".mdf_split select").val();
-            if (qty_type != undefined) {
-                this.model.set('qty_type', qty_type*1);
-                var selopt = this.$(".mdf_split .selected_option, .mdf_split.selected_option");
-                removeClassRegexp(selopt, "option_\\d+");
-                selopt.addClass("option_" + qty_type);
             }
         }
     });
