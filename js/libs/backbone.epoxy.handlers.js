@@ -188,12 +188,11 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
                 $el.on('change', function(a) {
                     prev = a.target.value;
                 });
-
-                function change() {
-                    $el.trigger('change');
-                }
             }
 
+            function change() {
+                $el.trigger('change');
+            }
         }
     });
 
