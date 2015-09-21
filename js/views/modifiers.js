@@ -36,8 +36,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             'click .special_label': 'add_special'
         },
         bindings: {
-            '.mdf_quantity select': 'value: quantity',
-            '.mdf_split select': 'value: qty_type, change_split_modifier: qty_type'
+            '.mdf_quantity select': 'value: decimal(quantity)',
+            '.mdf_split select': 'value: decimal(qty_type), change_split_modifier: qty_type'
         },
         bindingHandlers: {
             change_split_modifier: function($element, qty_type) {
