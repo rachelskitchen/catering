@@ -231,6 +231,7 @@ h1, h2, h3 {
     border-bottom-style: solid;
     position: relative;
     padding: 1em 0;
+    margin-bottom: 1em;
 }
 
 .list-title::before {
