@@ -21,9 +21,6 @@
     padding: .7em 0;
     position: relative;
 }
-.modifier__label {
-    padding-right: 25px;
-}
 
 .modifier input {
     position: absolute;
