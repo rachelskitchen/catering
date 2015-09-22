@@ -38,6 +38,17 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'resizeSection', this.resizeSection, this);
             this.listenTo(this.model, 'restoreSection', this.restoreSection, this);
 
+            // Bug 29756: recalculate content position on orientation change
+            var thisView = this;
+            Backbone.$(window).on('windowResize', function() {
+                // use delay to let browser compute new heights first
+                setTimeout(thisView.setContentPadding, 50);
+                // if we have elements with transition, recalculate after transition end
+                Backbone.$(document).one('transitionend', '.animation', function(e) {
+                    thisView.setContentPadding();
+                });
+            });
+
             this.iOSFeatures();
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
@@ -98,7 +109,7 @@ define(["done_view", "generator"], function(done_view) {
                 $header = this.$('#header');
             this.subViews[0] && this.subViews[0].removeFromDOMTree();
             if (this.model.get('header')) {
-                this.subViews[0] = App.Views.GeneratorView.create(data.modelName, data);
+                this.subViews[0] = App.Views.GeneratorView.create(data.modelName, data, data.modelName + data.mod);
                 $header.append(this.subViews[0].el);
                 $header.removeClass('hidden');
                 this.setContentPadding();
@@ -282,7 +293,10 @@ define(["done_view", "generator"], function(done_view) {
         };
 
         $(window).resize(function() {
-            !resizing && resize();
+            if (!resizing) {
+                resize();
+                Backbone.$(window).trigger('windowResize');
+            }
 
             if (document.activeElement.tagName.toLowerCase() == "input") {
                 document.activeElement.scrollIntoView(); // #18707

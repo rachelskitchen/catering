@@ -11,14 +11,13 @@
 }
 
 .quantity .btn-qty {
-    width: 5.5em;
-    height: 5.5em;
-    line-height: 5.5em;
+    width: 6em;
+    height: 6em;
     border-width: 2px;
     border-style: solid;
-    border-radius: 3em;
-    line-height: 4.5em;
+    border-radius: 6em;
     text-align: center;
+    position: relative;
 }
 
 .quantity .btn-qty.disabled {
@@ -33,9 +32,25 @@
     margin-left: 1.6em;
 }
 
-.quantity .btn-qty span {
-    font-size: 5em;
-    pointer-events: none;
+.quantity .btn-qty::before, .quantity .btn-qty::after {
+    content: '';
+    display: block;
+    height: 0;
+    width: 50%;
+    border-width: 1px;
+    border-color: inherit;
+    border-style: solid;
+    position: absolute;
+    top: 50%;
+    left: 25%;
+    margin: -1px 0 0 -1px;
+}
+
+.quantity .increase::after {
+    height: 50%;
+    width: 0;
+    top: 25%;
+    left: 50%;
 }
 
 .quantity input {

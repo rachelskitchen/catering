@@ -3,20 +3,21 @@
 }
 
 .product_table .product {
-    width: 44%;
+    display: inline-block;
+    vertical-align: top;
+    width: 47%;
     padding: 7px 7px 7px 10px;
     cursor: pointer;
     margin-top: 2px;
+    margin-right: 3%;
     border-radius: 8px;
     border-width: 1px;
     border-style: dotted;
     border: 0px;
-}
-.product_table .product:not(.hide):nth-child(2n) {
-    float: right;
-}
-.product_table .product:not(.hide):nth-child(2n-1) {
-    float: left;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
 }
 .product_table .product dl {
     position: relative;
