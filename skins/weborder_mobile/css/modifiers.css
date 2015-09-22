@@ -21,9 +21,6 @@
     padding: .7em 0;
     position: relative;
 }
-.modifier__label {
-    padding-right: 25px;
-}
 
 .modifier input {
     position: absolute;
@@ -68,7 +65,13 @@
 }
 
 .modifier select {
-    text-indent: .8em;
+    text-indent: .5em;
+}
+
+@-moz-document url-prefix() {
+    .modifier select {
+        text-indent: .2em !important;
+    }
 }
 
 .modifier .mdf_split::before {

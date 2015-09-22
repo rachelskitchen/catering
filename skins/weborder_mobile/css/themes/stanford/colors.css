@@ -41,7 +41,9 @@
     color: #fff;
 }
 
-.border-color2 {
+.border-color2,
+.quantity .btn-qty:active::before,
+.quantity .btn-qty:active::after {
     border-color: #fff;
 }
 
@@ -68,7 +70,6 @@
     background-color: #464646;
 }
 
-
 /* [grey] menu font color */
 .font-color4 {
     color: #81888e;
@@ -81,6 +82,11 @@
 
 .border-color5 {
     border-color: #717d8b;
+}
+
+select:-moz-focusring {
+    color: transparent !important;
+    text-shadow: 0 0 0 #717d8b !important;
 }
 
 /* [green] modifier price color */

@@ -47,8 +47,11 @@ define(["factory"], function() {
             'click .btn-back': setCallback('back'),
             'click .btn-cart:not([data-count="0"])': setCallback('cart'),
             'click .btn-search': 'search',
+            'mousedown .btn-search': 'stopPropagation',
+            'touchstart .btn-search': 'stopPropagation',
             'click .ctrl': 'search2',
-            'submit .form-search': 'performSearch'
+            'submit .form-search': 'performSearch',
+            'onOutsideTouch .search': 'onOutsideTouch' // to hide keyboard and caret
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -75,6 +78,12 @@ define(["factory"], function() {
         performSearch: function(e) {
             e.preventDefault();
             this.model.performSearch();
+        },
+        stopPropagation: function(e) {
+            e.stopPropagation();
+        },
+        onOutsideTouch: function() {
+            this.$('.input-search').blur();
         }
     });
 
