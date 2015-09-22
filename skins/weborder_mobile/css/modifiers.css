@@ -71,6 +71,12 @@
     text-indent: .5em;
 }
 
+@-moz-document url-prefix() {
+    .modifier select {
+        text-indent: .2em !important;
+    }
+}
+
 .modifier .mdf_split::before {
     font-family: "FontAwesome";
     font-size: 1.4em;
