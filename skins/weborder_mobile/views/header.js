@@ -47,6 +47,8 @@ define(["factory"], function() {
             'click .btn-back': setCallback('back'),
             'click .btn-cart:not([data-count="0"])': setCallback('cart'),
             'click .btn-search': 'search',
+            'mousedown .btn-search': 'stopPropagation',
+            'touchstart .btn-search': 'stopPropagation',
             'click .ctrl': 'search2',
             'submit .form-search': 'performSearch'
         },
@@ -75,6 +77,9 @@ define(["factory"], function() {
         performSearch: function(e) {
             e.preventDefault();
             this.model.performSearch();
+        },
+        stopPropagation: function(e) {
+            e.stopPropagation();
         }
     });
 

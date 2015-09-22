@@ -106,7 +106,7 @@ define(["done_view", "generator"], function(done_view) {
                 $header = this.$('#header');
             this.subViews[0] && this.subViews[0].removeFromDOMTree();
             if (this.model.get('header')) {
-                this.subViews[0] = App.Views.GeneratorView.create(data.modelName, data);
+                this.subViews[0] = App.Views.GeneratorView.create(data.modelName, data, data.modelName + data.mod);
                 $header.append(this.subViews[0].el);
                 $header.removeClass('hidden');
                 this.setContentPadding();
