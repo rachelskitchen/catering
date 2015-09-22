@@ -33,6 +33,10 @@
     bottom:5px;
 }
 
+.ui-invisible {
+    opacity: 0 !important;
+}
+
 @media only screen and (max-device-width: 949px) {
     #modifiers_popup {
         min-width: 670px !important;
