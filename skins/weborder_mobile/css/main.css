@@ -263,6 +263,10 @@ h1, h2, h3 {
     text-decoration: underline;
 }
 
+select::-ms-expand { /*Removes default IE style*/
+    display: none;
+}
+
 .select-wrapper {
     width: 6em;
     padding: 0.3em 0;

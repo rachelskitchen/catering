@@ -76,6 +76,11 @@
     border-color: #717d8b;
 }
 
+select:-moz-focusring {
+    color: transparent !important;
+    text-shadow: 0 0 0 #717d8b !important;
+}
+
 /* [green] modifier price color */
 .font-color6 {
     color: #00a200;
