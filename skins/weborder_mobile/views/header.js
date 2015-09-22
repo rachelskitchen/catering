@@ -50,7 +50,8 @@ define(["factory"], function() {
             'mousedown .btn-search': 'stopPropagation',
             'touchstart .btn-search': 'stopPropagation',
             'click .ctrl': 'search2',
-            'submit .form-search': 'performSearch'
+            'submit .form-search': 'performSearch',
+            'onOutsideTouch .search': 'onOutsideTouch' // to hide keyboard and caret
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -80,6 +81,9 @@ define(["factory"], function() {
         },
         stopPropagation: function(e) {
             e.stopPropagation();
+        },
+        onOutsideTouch: function() {
+            this.$('.input-search').blur();
         }
     });
 
