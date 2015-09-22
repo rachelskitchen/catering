@@ -126,6 +126,7 @@ define(["myorder_view"], function(myorder_view) {
                 inner_height = $('#popup').outerHeight();
                 this.prev_height = inner_height;
                 this.prev_window = window_heigth;
+                el.closest('.popup').removeClass('ui-invisible');
             }
         },
         remove: function() {
