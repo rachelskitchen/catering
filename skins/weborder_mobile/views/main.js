@@ -40,9 +40,9 @@ define(["done_view", "generator"], function(done_view) {
 
             // Bug 29756: recalculate content position on orientation change
             var thisView = this;
-            Backbone.$(window).on('orientationchange', function() {
+            Backbone.$(window).on('windowResize', function() {
                 // use delay to let browser compute new heights first
-                setTimeout(thisView.setContentPadding, 0);
+                setTimeout(thisView.setContentPadding, 50);
                 // if we have elements with transition, recalculate after transition end
                 Backbone.$(document).one('transitionend', '.animation', function(e) {
                     thisView.setContentPadding();
@@ -293,7 +293,10 @@ define(["done_view", "generator"], function(done_view) {
         };
 
         $(window).resize(function() {
-            !resizing && resize();
+            if (!resizing) {
+                resize();
+                Backbone.$(window).trigger('windowResize');
+            }
 
             if (document.activeElement.tagName.toLowerCase() == "input") {
                 document.activeElement.scrollIntoView(); // #18707
