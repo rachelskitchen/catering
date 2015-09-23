@@ -142,10 +142,10 @@
     height: 1em;
     position: absolute;
     bottom: 0;
-    -webkit-transition: all linear 0.2s;
-    -moz-transition: all linear 0.2s;
-    -ms-transition: all linear 0.2s;
-    transition: all linear 0.2s;
+    -webkit-transition: left linear 0.2s, right linear 0.2s;
+    -moz-transition: left linear 0.2s, right linear 0.2s;
+    -ms-transition: left linear 0.2s, right linear 0.2s;
+    transition: left linear 0.2s, right linear 0.2s;
 }
 
 .tabs[data-active-tab="0"]::after {
