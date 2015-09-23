@@ -27,7 +27,7 @@ define(["products_view"], function(products_view) {
         name: 'product',
         mod: 'modifiers',
         bindings: {
-            '.price': 'value: monetaryFormat(price), events: ["input"], attr: {size: length(monetaryFormat(price)), readonly: not(giftMode)} ',
+            '.price': 'value: monetaryFormat(price), events: ["input"], attr: {size: length(monetaryFormat(price)), readonly: not(giftMode)}, restrictInput: price, allowedChars: "0123456789.", kbdSwitcher: "float"',
             '.currency': 'text: _system_settings_currency_symbol, toggle: not(uom)',
             '.uom': 'text: uom, toggle: uom',
             '.title': 'text: _product_name',
@@ -35,7 +35,7 @@ define(["products_view"], function(products_view) {
             '.timetable': 'toggle: _product_timetables',
             '.timetable span': 'text: _product_timetables',
             '.gift-card': 'classes: {hidden: not(all(_product_is_gift, _system_settings_online_orders))}',
-            '.gift-card-number': 'value: _product_gift_card_number, events: ["input"]'
+            '.gift-card-number': 'value: _product_gift_card_number, events: ["input"], restrictInput: _product_gift_card_number, allowedChars: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/'
         },
         computeds: {
             giftMode: {
