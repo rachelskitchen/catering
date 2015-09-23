@@ -33,6 +33,11 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(this.model, 'add_card', this.setData, this);
             this.listenTo(this.model, 'change:firstName change:secondName', this.updateData, this); // update first name & last name of view
         },
+        bindings: {
+            '.number': 'restrictInput: cardNumber, allowedChars: "0123456789", kbdSwitcher: "numeric", pattern: /^[\\d|-]{0,19}$/',
+            '.secure': 'restrictInput: securityCode, allowedChars: "0123456789", kbdSwitcher: "numeric", pattern: /^[\\d|-]{0,4}$/',
+            '.zip': 'restrictInput: zip, allowedChars: "0123456789", kbdSwitcher: "numeric", pattern: /^(\\d{0,9})$/'
+        },
         render: function() {
             var self = this,
                 model = {},
@@ -68,9 +73,6 @@ define(["backbone", "factory"], function(Backbone) {
             expYear.val(this.model.escape('expDate'));
             $('option:selected', expYear).length === 0 && $('option:first', expYear).prop('selected',true);
 
-            inputTypeMask(cardNumber, /^\d{0,19}$/, '', 'numeric');
-            inputTypeMask(securityCode, /^(\d{0,4})$/, '', 'numeric');
-            inputTypeMask(this.$('.zip'), /^(\d{0,9})$/, '', 'numeric');
             if (cssua.userAgent.mobile) {
                 if (cssua.userAgent.android) {
                     /*
@@ -93,7 +95,7 @@ define(["backbone", "factory"], function(Backbone) {
                             $(this).attr("type", "text");
                         });
                     }
-                }               
+                }
             }
 
             this.$('.first_name, .last_name').numberMask({pattern: /^.*$/ }).on("keypressNumber", function(event) {
