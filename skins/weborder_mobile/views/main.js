@@ -43,10 +43,6 @@ define(["done_view", "generator"], function(done_view) {
             Backbone.$(window).on('windowResize', function() {
                 // use delay to let browser compute new heights first
                 setTimeout(thisView.setContentPadding, 50);
-                // if we have elements with transition, recalculate after transition end
-                Backbone.$(document).one('transitionend', '.animation', function(e) {
-                    thisView.setContentPadding();
-                });
             });
 
             this.iOSFeatures();
