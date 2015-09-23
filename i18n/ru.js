@@ -1,7 +1,7 @@
 ﻿define([], function() {
     return {
         'SUBCATEGORIES_VIEW_ALL': 'Показать все',
-        'STORES_MI': 'мили(ей)',
+        'STORES_MI': 'мили(ь)',
         'ARRAY_MONTH': [
             'Январь',
             'Февраль',
@@ -67,7 +67,7 @@
             'STORE_TYPE_GROCERY': 'Гастроном',
             'STORE_TYPE_ALL': 'Все',
             'DISTANCE_MILE': 'Миля',
-            'DISTANCE_MILES': 'Мили(ей)',
+            'DISTANCE_MILES': 'Мили(ь)',
             'SORT_A_Z': 'А-Я',
             'SORT_DISTANCE': 'Расстояние'
         },
@@ -435,7 +435,7 @@
             'FREE_MODIFIERS_PRICE': 'Модификаторы до %s бесплатно',
             'FREE_MODIFIERS_QUANTITY': 'Первые %s модификатора - бесплатно',
             'FREE_MODIFIERS_QUANTITY1': 'Первый модификатор - бесплатно',
-            'PRODUCTS_VALID_TIME': 'Достапный: ',
+            'PRODUCTS_VALID_TIME': 'Доступен: ',
             'ERROR_REVEL_EMPTY_NEW_PASSWORD': 'Введите новый пароль.',
             'ERROR_REVEL_EMPTY_OLD_PASSWORD': 'Введите старый пароль.',
             'ERROR_REVEL_NOT_MATCH_PASSWORDS': 'Новый пароль и повторный пароль не совпадают',
