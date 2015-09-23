@@ -49,7 +49,6 @@ define(['backbone', 'factory'], function(Backbone) {
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.updateAddress();
-            inputTypeMask(this.$('input[name=zipcode]'), /^(\d{0,9})$/, '', 'numeric');
         },
         getAddress: function() {
             var customer = this.options.customer.toJSON(),
@@ -64,14 +63,14 @@ define(['backbone', 'factory'], function(Backbone) {
                 var reverse_addr = customer.addresses[reverse_addr_index];
                 addr == undefined && (addr = {});
                 if (reverse_addr) {
-                    if ((addr.country && reverse_addr.country && addr.country == reverse_addr.country) || 
+                    if ((addr.country && reverse_addr.country && addr.country == reverse_addr.country) ||
                         (!addr.country && reverse_addr.country == App.Settings.address.country)) { //if country was changed that we can't copy address
                         if (!addr.province && !addr.street_1 && !addr.street_2 && !addr.city && !addr.zipcode) { //and we will copy address if all target fields are empty only
-                            return _.extend(addr, { state: reverse_addr.state, 
-                                                    province: reverse_addr.province,                                                
-                                                    street_1: reverse_addr.street_1, 
+                            return _.extend(addr, { state: reverse_addr.state,
+                                                    province: reverse_addr.province,
+                                                    street_1: reverse_addr.street_1,
                                                     street_2: reverse_addr.street_2,
-                                                    city: reverse_addr.city, 
+                                                    city: reverse_addr.city,
                                                     zipcode: reverse_addr.zipcode });
                         }
                     }
@@ -80,6 +79,34 @@ define(['backbone', 'factory'], function(Backbone) {
 
             // return last address
             return customer.addresses[shipping_address] && typeof customer.addresses[shipping_address].street_1 === 'string' ? customer.addresses[shipping_address] : undefined;
+        },
+        bindings: {
+            'input[name=zipcode]': 'restrictInput: zipcodeValue, allowedChars: "0123456789", kbdSwitcher: "numeric", pattern: /^(\\d{0,9})$/'
+        },
+        computeds: {
+            zipcodeValue: {
+                deps: ['customer_shippingAddressIndex', 'customer_deliveryAddressIndex', 'customer_addresses'],
+                set: function(value) {
+                    var customer_addresses = App.Data.customer.get('addresses');
+                    if (customer_addresses.length > 0) {
+                        var addr_index = App.Data.customer.get('deliveryAddressIndex');
+                        if (App.Data.myorder.checkout.get('dining_option')  === 'DINING_OPTION_SHIPPING') {
+                            addr_index = App.Data.customer.get('shippingAddressIndex')
+                        }
+                        customer_addresses[addr_index].zipcode = value;
+                    }
+                },
+                get: function(customer_shippingAddressIndex, customer_deliveryAddressIndex, customer_addresses) {
+                    if (customer_addresses.length > 0) {
+                        var addr_index = App.Data.customer.get('deliveryAddressIndex');
+                        if (App.Data.myorder.checkout.get('dining_option')  === 'DINING_OPTION_SHIPPING') {
+                            addr_index = App.Data.customer.get('shippingAddressIndex')
+                        }
+                        return _.isUndefined(customer_addresses[addr_index]) ? "" : customer_addresses[addr_index].zipcode;
+                    }
+                    return "";
+                }
+            }
         },
         events: {
             'change select.country': 'countryChange',
