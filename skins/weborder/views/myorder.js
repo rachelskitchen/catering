@@ -59,6 +59,7 @@ define(["myorder_view"], function(myorder_view) {
                 view.$el.hide(); // hide special request if not allowed
             }
 
+            $('#popup').addClass('ui-invisible');
             setTimeout(this.change_height.bind(this, 1), 20);
             this.interval = this.interval || setInterval(this.change_height.bind(this), 500); // check size every 0.5 sec
             this.$('.modifiers_table_scroll').contentarrow();
@@ -126,7 +127,7 @@ define(["myorder_view"], function(myorder_view) {
                 inner_height = $('#popup').outerHeight();
                 this.prev_height = inner_height;
                 this.prev_window = window_heigth;
-                el.closest('.popup').removeClass('ui-invisible');
+                $('#popup').removeClass('ui-invisible');
             }
         },
         remove: function() {
