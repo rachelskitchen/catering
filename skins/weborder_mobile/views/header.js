@@ -59,7 +59,7 @@ define(["factory"], function() {
             var tabs = App.Views.GeneratorView.create('Header', {
                 model: this.model,
                 mod: 'Tabs',
-                className: 'tabs bg-color3 font-color8 animation'
+                className: 'tabs bg-color3 font-color8'
             }, 'header_tabs');
 
             this.subViews.push(tabs);
