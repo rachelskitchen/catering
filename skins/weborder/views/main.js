@@ -112,9 +112,8 @@ define(["done_view", "generator"], function(done_view) {
 
             popup.addClass('ui-visible');
         },
-        hide_popup: function(e) {
+        hide_popup: function() {
             this.model.unset('popup');
-            Backbone.$(e.target).closest('.popup').addClass('ui-invisible');
         },
         header_defaults: function() {
             return {
