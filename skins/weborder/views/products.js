@@ -26,6 +26,7 @@ define(['products_view'], function(products_view) {
     var ProductListItemView = App.Views.CoreProductView.CoreProductListItemView.extend({
         showModifiers: function() {
             var myorder = new App.Models.Myorder(),
+                isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
                 def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
 
             $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
@@ -33,7 +34,7 @@ define(['products_view'], function(products_view) {
                 $('#main-spinner').removeClass('ui-visible');
                 App.Data.mainModel.set('popup', {
                     modelName: 'MyOrder',
-                    mod: 'Matrix',
+                    mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
                     model: myorder.clone(),
                     action: 'add'
                 });

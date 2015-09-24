@@ -347,6 +347,11 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
+    App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'stanford_item'
+    });
+
     return new (require('factory'))(function() {
         App.Views.MyOrderView = {};
         App.Views.MyOrderView.MyOrderModifierView = App.Views.CoreMyOrderView.CoreMyOrderModifierView;
@@ -356,5 +361,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         App.Views.MyOrderView.MyOrderListView = App.Views.CoreMyOrderView.CoreMyOrderListView;
         App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView;
         App.Views.MyOrderView.MyOrderNoteView = App.Views.CoreMyOrderView.CoreMyOrderNoteView;
+        App.Views.MyOrderView.MyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView;
     });
 });
