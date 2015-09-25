@@ -527,6 +527,9 @@
         'DELIVERY_TIME': 'Delivery Time',
         'PICKUP_TIME': 'Pickup Time',
         'DELIVERY_INFO': 'Delivery Info',
-        'PAYPAL': 'PayPal'
+        'PAYPAL': 'PayPal',
+        'AMOUNT': 'Amount',
+        'ENTER_CAPTCHA': 'Enter Captcha',
+        'NEXT': 'Next'
     }; // end of locale
 }); // end of module

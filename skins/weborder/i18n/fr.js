@@ -138,6 +138,10 @@ define([], function() {
         REWARDS_OFF: "De réduction",
         REWARDS_POINTS_REDEMPTION_AMOUNT: ["Point will be redeemed", "Les points seront échangés."],
         REWARDS_VISITS_REDEMPTION_AMOUNT: ["Visit will be redeemed", "Les visites seront échangées."],
-        REWARDS_PURCHASES_REDEMPTION_AMOUNT: ["Purchase will be redeemed", "Les achats seront échangés."]
+        REWARDS_PURCHASES_REDEMPTION_AMOUNT: ["Purchase will be redeemed", "Les achats seront échangés."],
+        STANFORD_RELOAD_INFO1: "",
+        STANFORD_RELOAD_INFO2: "",
+        STANFORD_CARD_NUMBER: "",
+        STANFORD_CARD_CHOOSE_PLAN: ""
     }
 });

@@ -138,6 +138,10 @@ define([], function() {
         REWARDS_OFF: "Loobu",
         REWARDS_POINTS_REDEMPTION_AMOUNT: ["Point will be redeemed", "Punktid lunastatakse"],
         REWARDS_VISITS_REDEMPTION_AMOUNT: ["Visit will be redeemed", "Külastused lunastatakse"],
-        REWARDS_PURCHASES_REDEMPTION_AMOUNT: ["Purchase will be redeemed", "Ostud lunastatakse"]
+        REWARDS_PURCHASES_REDEMPTION_AMOUNT: ["Purchase will be redeemed", "Ostud lunastatakse"],
+        STANFORD_RELOAD_INFO1: "",
+        STANFORD_RELOAD_INFO2: "",
+        STANFORD_CARD_NUMBER: "",
+        STANFORD_CARD_CHOOSE_PLAN: ""
     }
 });

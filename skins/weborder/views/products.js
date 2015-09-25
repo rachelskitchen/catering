@@ -35,6 +35,7 @@ define(['products_view'], function(products_view) {
                 App.Data.mainModel.set('popup', {
                     modelName: 'MyOrder',
                     mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
+                    className: isStanfordItem ? 'stanford-reload-item' : '',
                     model: myorder.clone(),
                     action: 'add'
                 });
