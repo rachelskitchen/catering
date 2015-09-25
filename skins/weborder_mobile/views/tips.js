@@ -28,7 +28,7 @@ define(["tips_view"], function(tips_view) {
         mod: 'line',
         bindings: {
             '.ctrl': 'reset: tipValue, events: ["click"]',
-            '.tipAmount': 'value: monetaryFormat(tipValue), events:["blur"]',
+            '.tipAmount': 'value: monetaryFormat(tipValue), events:["blur"], restrictInput: tipValue, allowedChars: "0123456789.", kbdSwitcher: "float"',
             '.percent-10': 'text: currencyFormat(percents_10)',
             '.percent-15': 'text: currencyFormat(percents_15)',
             '.percent-20': 'text: currencyFormat(percents_20)',

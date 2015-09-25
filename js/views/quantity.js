@@ -65,6 +65,16 @@ define(["backbone", "factory"], function(Backbone) {
     App.Views.CoreQuantityView.CoreQuantityWeightView = App.Views.FactoryView.extend({
         name: 'quantity',
         mod: 'weight',
+        bindings: {
+            '.weight_edit_input': 'restrictInput: weight, allowedChars: "0123456789.", kbdSwitcher: "float", pattern: weight_regex'
+        },
+        computeds: {
+            weight_regex: {
+                get: function() {
+                    return RegExp(this.reg_str);
+                }
+            },
+        },
         initialize: function() {
             var product = this.model.get_product();
             if (product && product.get('sold_by_weight')) {
@@ -87,14 +97,6 @@ define(["backbone", "factory"], function(Backbone) {
             model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
 
             this.$el.html(this.template(model));
-
-            if (model.sold_by_weight) {
-                var elem = self.$('.weight_edit_input');
-
-                // because some Android devices have problem with numeric keypad - don't have '.', ',' symbols (bug 11032) 
-                // -> so we should point 'float' as type of below:
-                inputTypeMask(elem, new RegExp(this.reg_str), null, 'float');
-            }
         },
         events: {
             'change .weight_edit_input': 'change_weight'
