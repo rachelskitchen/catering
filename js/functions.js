@@ -1259,6 +1259,8 @@ var PaymentProcessor = {
             payment_processor = WorldPayPaymentProcessor;
         } else if (payment.freedompay) {
             payment_processor = FreedomPayPaymentProcessor;
+        } else if (payment.cresecure) {
+            payment_processor = CRESecurePaymentProcessor;
         }
         return payment_processor;
     },
@@ -1751,6 +1753,35 @@ var FreedomPayPaymentProcessor = {
             } else {
                 //TODO: better message
                 payment_info.errorMsg = 'Payment failed.';
+            }
+        }
+        return payment_info;
+    }
+};
+
+var CRESecurePaymentProcessor = {
+    clearQueryString: function(queryString) {
+        qStr = queryString.replace(/&?code=[^&]*/, '');
+        qStr = qStr.replace(/&?message=[^&]*/, '');
+        qStr = qStr.replace(/&?uID=[^&]*/, '');
+
+        return qStr;
+    },
+    showCreditCardDialog: function() {
+        return false;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        if (pay_get_parameter) {
+            var get_parameters = App.Data.get_parameters;
+            get_parameters.code
+            if (pay_get_parameter === 'true') {
+                if (get_parameters.code === '000') {
+                    payment_info.transaction_id = get_parameters.uID;
+                } else {
+                    payment_info.errorMsg += 'Payment failed. ' + get_parameters.message;
+                }
+            } else {
+                payment_info.errorMsg = 'Payment canceled.'
             }
         }
         return payment_info;
