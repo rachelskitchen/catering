@@ -138,6 +138,11 @@ define([], function() {
         REWARDS_OFF: "Desactivado",
         REWARDS_POINTS_REDEMPTION_AMOUNT: ["Point will be redeemed", "Se canjearán los puntos"],
         REWARDS_VISITS_REDEMPTION_AMOUNT: ["Visit will be redeemed", "Se canjearán las visitas"],
-        REWARDS_PURCHASES_REDEMPTION_AMOUNT: ["Purchase will be redeemed", "Se canjearán las compras"]
+        REWARDS_PURCHASES_REDEMPTION_AMOUNT: ["Purchase will be redeemed", "Se canjearán las compras"],
+        STANFORD_RELOAD_INFO: "",
+        STANFORD_RELOAD_INFO1: "",
+        STANFORD_RELOAD_INFO2: "",
+        STANFORD_CARD_NUMBER: "",
+        STANFORD_CARD_CHOOSE_PLAN: ""
     }
 });

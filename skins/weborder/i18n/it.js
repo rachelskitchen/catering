@@ -138,6 +138,10 @@ define([], function() {
         REWARDS_OFF: "Disattivo",
         REWARDS_POINTS_REDEMPTION_AMOUNT: ["Point will be redeemed", "I punti verranno utilizzati"],
         REWARDS_VISITS_REDEMPTION_AMOUNT: ["Visit will be redeemed", "Le visite verranno convertite"],
-        REWARDS_PURCHASES_REDEMPTION_AMOUNT: ["Purchase will be redeemed", "Gli acquisiti verranno rimborsati"]
+        REWARDS_PURCHASES_REDEMPTION_AMOUNT: ["Purchase will be redeemed", "Gli acquisiti verranno rimborsati"],
+        STANFORD_RELOAD_INFO1: "",
+        STANFORD_RELOAD_INFO2: "",
+        STANFORD_CARD_NUMBER: "",
+        STANFORD_CARD_CHOOSE_PLAN: ""
     }
 });

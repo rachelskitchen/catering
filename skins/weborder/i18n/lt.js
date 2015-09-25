@@ -138,6 +138,10 @@ define([], function() {
         REWARDS_OFF: "Išjungti",
         REWARDS_POINTS_REDEMPTION_AMOUNT: ["Point will be redeemed", "Taškai bus panaudoti"],
         REWARDS_VISITS_REDEMPTION_AMOUNT: ["Visit will be redeemed", "Apsilankymai bus panaudoti"],
-        REWARDS_PURCHASES_REDEMPTION_AMOUNT: ["Purchase will be redeemed", "Pirkiniai bus panaudoti"]
+        REWARDS_PURCHASES_REDEMPTION_AMOUNT: ["Purchase will be redeemed", "Pirkiniai bus panaudoti"],
+        STANFORD_RELOAD_INFO1: "",
+        STANFORD_RELOAD_INFO2: "",
+        STANFORD_CARD_NUMBER: "",
+        STANFORD_CARD_CHOOSE_PLAN: ""
     }
 });

@@ -347,7 +347,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView = App.Views.FactoryView.extend({
+    App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
         name: 'myorder',
         mod: 'stanford_item'
     });
