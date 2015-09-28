@@ -361,4 +361,10 @@
     display: inline-block;
     width: 175px;
 }
+
+.stanford-reload-item .captcha-wrapper {
+    display: inline-block;
+    width: 120px;
+    height: 48px;
+}
 /* stanford reload item block end */

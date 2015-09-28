@@ -349,7 +349,20 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
     App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
         name: 'myorder',
-        mod: 'stanford_item'
+        mod: 'stanford_item',
+        initialize: function() {
+            this.bindingSources = _.extend({}, this.options.bindingSources, {
+                stanford: this.model.get('stanfordCard')
+            });
+            App.Views.CoreMyOrderView.CoreMyOrderItemView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            '.number-input': 'value: stanford_card_number, events: ["keyup"]',
+            '.captcha-input': 'value: stanford_captchaValue, events:["input"], attr: {readonly: stanford_validated}',
+            '.captcha-reload': 'classes: {disabled: stanford_validated}',
+            '.cancel-input': 'toggle: stanford_validated',
+            '.initial-price': 'value: currencyFormat(initial_price), events: ["input"]',
+        }
     });
 
     return new (require('factory'))(function() {

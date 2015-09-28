@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbone) {
+define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'], function(Backbone) {
     'use strict';
 
     App.Models.Myorder = Backbone.Model.extend({
@@ -34,7 +34,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             quantity_prev : 1,
             special : '',
             initial_price: null, // product price including modifier "size",
-            discount: null
+            discount: null,
+            stanfordCard: null,         // App.Models.StanfordCard instance if product is gift
+            stanford_card_number: '',   // stanford card number
+            planId: null                // stanford plan to add some amount to
         },
         product_listener: false, // check if listeners for product is present
         modifier_listener: false, // check if listeners for modifiers is preset
@@ -154,6 +157,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                     initial_price: self.get_initial_price()
                 });
                 self.update_prices();
+                self.initStanfordReloadItem();
                 loadOrder.resolve();
             });
 
@@ -417,6 +421,44 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
         hasPointValue: function() {
             var point_value = this.isRealProduct() && this.get_product().get('point_value');
             return typeof point_value == 'number' && !isNaN(point_value);
+        },
+        /**
+         * @method
+         * Inits stanford reload item. If product is gift and App.Data.is_stanford_mode is true then item is stanford reload.
+         */
+        initStanfordReloadItem: function() {
+            if(!this.get_product().get('is_gift') && !App.Data.is_stanford_mode) {
+                return;
+            }
+
+            var stanfordCard = new App.Models.StanfordCard({
+                number: this.get('stanford_card_number'),
+                planId: this.get('planId'),
+            });
+
+            this.set({
+                stanfordCard: stanfordCard,
+                stanford_card_number: stanfordCard.get('number'),
+                planId: stanfordCard.get('planId')
+            });
+
+            // this.listenTo(stanfordCard, 'change:number', function(model, value) {
+            //     this.set('stanford_card_number', value);
+            // }, this);
+
+            // stanfordCard.listenTo(this, 'change:stanford_card_number', function(model, value) {
+            //     stanfordCard.set('number', this.get('stanford_card_number'));
+            // }, this);
+
+            // this.listenTo(stanfordCard, 'change:planId', function(model, value) {
+            //     this.set('planId', value);
+            // }, this);
+
+            // stanfordCard.listenTo(this, 'change:planId', function(model, value) {
+            //     stanfordCard.set('planId', this.get('planId'));
+            // }, this);
+
+window.stanfordCardReload = this
         }
     });
 
