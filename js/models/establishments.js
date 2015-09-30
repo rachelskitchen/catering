@@ -110,12 +110,11 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                     brand: this.meta('brand')
                 },
                 dataType: 'json',
-                successResp: function(data) {
+                success: function(data) {
                     self.meta('brandName', data.brand_name); // get or set meta data of collection
-                    self.add(data.establishments);
-                    dfd.resolve();
+                    self.add(data.estabs);
                 },
-                errorResp: function() {
+                complete: function() {
                     dfd.resolve();
                 }
             });
