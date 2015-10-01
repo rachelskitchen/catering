@@ -237,7 +237,7 @@ define(["main_router"], function(main_router) {
             // onRedemptionApplied event occurs when 'Apply Reward' btn is clicked
             this.listenTo(App.Data.myorder.rewardsCard, 'onRedemptionApplied', function() {
                 App.Data.mainModel.trigger('loadStarted');
-                App.Data.myorder.splitItemsWithPointValue();
+                App.Data.myorder.splitAllItemsWithPointValue();
                 App.Data.myorder.get_cart_totals().always(function() {
                     App.Data.mainModel.unset('popup');
                     App.Data.mainModel.trigger('loadCompleted');
