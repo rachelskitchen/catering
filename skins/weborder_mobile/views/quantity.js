@@ -24,15 +24,18 @@ define(["quantity_view"], function(quantity_view) {
     'use strict';
 
     var QuantityMainView = App.Views.CoreQuantityView.CoreQuantityMainView.extend({
+        bindings: {
+            '.input.quantity_edit_input': 'restrictInput: quantity, allowedChars: "0123456789", kbdSwitcher: "numeric"'
+        },
         events: {
             'click .increase:not(.disabled)': 'increase',
             'click .decrease:not(.disabled)': 'decrease',
             'input .quantity_edit_input': 'change_quantity',
-            'blur .quantity_edit_input': 'blur_quantity',
-            'keypress .quantity_edit_input': 'keypress_quantity'
+            'blur .quantity_edit_input': 'blur_quantity'
         },
         hide_show: function() {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.hide_show.apply(this, arguments);
+            this.oldQuantity = this.model.get('quantity');
             var product = this.model.get_product(),
                 disallowNegativeInventory = App.Data.settings.get('settings_system').cannot_order_with_empty_inventory;
             if (product.get('stock_amount') === 1 || product.isParent()) {
@@ -76,25 +79,13 @@ define(["quantity_view"], function(quantity_view) {
                 this.model.set('quantity', e.target.value * 1);
             }
         },
-        blur_quantity:  function(e) {
+        blur_quantity: function(e) {
             if (!e.target.value) {
-               e.target.value = 1;
-               this.model.set('quantity', e.target.value * 1);
+                e.target.value = 1;
+                this.model.set('quantity', e.target.value * 1);
             }
-        },
-
-        keypress_quantity:  function(e) {
-            return this.isDigitOrControlKey(e.which);
-        },
-
-        isDigitOrControlKey: function(key) {
-            if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27)) {
-                return true; // control key
-            } else if ((("0123456789").indexOf(String.fromCharCode(key)) > -1)) {
-                return true; // digit
-            }
-            return false;
         }
+
     });
 
     return new (require('factory'))(quantity_view.initViews.bind(quantity_view), function() {

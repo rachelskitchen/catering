@@ -1732,7 +1732,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     newSum = oldSum - discount;
                 item.set('reward_discount', newSum <= 0 ? oldSum : discount);
                 var virtual_item = item.clone();
-                virtual_item = item.clone();
                 virtual_item.set('quantity', 1);
                 itemsWithDiscount.push(virtual_item);
                 discount -= oldSum;
@@ -1740,22 +1739,30 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             });
             return itemsWithDiscount;
         },
-        splitItemsWithPointValue: function() {
-            this.each(function(item) {
-                var quantity = item.get('quantity');
-                if (item.hasPointValue() && quantity > 1) {
-                    var hasSameSingleQuantityItem = App.Data.myorder.findWhere({
-                        id_product: item.get("id_product"),
-                        quantity: 1
-                    });
-                    if (!hasSameSingleQuantityItem) {
-                        var singleItem = item.clone();
-                        singleItem.set('quantity', 1);
-                        App.Data.myorder.add(singleItem); // Add 1 item
-                        item.set('quantity', quantity - 1); // Update quantity with N-1
-                    }
+        splitAllItemsWithPointValue: function() {
+            this.each(this.splitItemWithPointValue);
+        },
+        splitItemWithPointValue: function(item, silentFlag) {
+            silentFlag = !!silentFlag;
+            var quantity = item.get('quantity');
+            if (item.hasPointValue() && quantity > 1) {
+                var hasSameSingleQuantityItem = App.Data.myorder.findWhere({
+                    id_product: item.get("id_product"),
+                    quantity: 1
+                });
+                if (!hasSameSingleQuantityItem) {
+                    var singleItem = item.clone();
+                    singleItem.set('quantity', 1, {silent: silentFlag});
+                    App.Data.myorder.add(singleItem); // Add 1 item
+                    item.set('quantity', quantity - 1, {silent: silentFlag}); // Update quantity with N-1
                 }
-            });
+            }
+        },
+        splitItemAfterQuantityUpdate : function(item, oldQuantity, newQuantity, silentFlag) {
+            silentFlag = !!silentFlag;
+            if (item.get('discount').get('name') === 'Reward' && oldQuantity == 1 && newQuantity != 1) {
+                this.splitItemWithPointValue(item, silentFlag);
+            }
         }
     });
 });

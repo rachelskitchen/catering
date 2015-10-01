@@ -273,7 +273,7 @@ define(["main_router"], function(main_router) {
             this.listenTo(App.Data.myorder.rewardsCard, 'onRedemptionApplied', function() {
                 var self = this;
                 App.Data.mainModel.trigger('loadStarted');
-                App.Data.myorder.splitItemsWithPointValue();
+                App.Data.myorder.splitAllItemsWithPointValue();
                 App.Data.myorder.get_cart_totals().always(function() {
                     App.Data.mainModel.trigger('loadCompleted');
                     self.navigate('checkout', true);
@@ -493,7 +493,9 @@ define(["main_router"], function(main_router) {
                 var self = this,
                     header = App.Data.header,
                     isEditMode = !id_product,
-                    order = isEditMode ? App.Data.myorder.at(id_category) : new App.Models.Myorder();
+                    order = isEditMode ? App.Data.myorder.at(id_category) : new App.Models.Myorder(),
+                    originOrder = null;
+
 
                 if(!order)
                     return this.navigate('index', true);
@@ -510,6 +512,7 @@ define(["main_router"], function(main_router) {
                 });
 
                 if(isEditMode) {
+                    originOrder = order.clone();
                     this.listenTo(order, 'change', setHeaderToUpdate);
                     setHeaderToUpdate();
                     showProductDetails();
@@ -540,6 +543,9 @@ define(["main_router"], function(main_router) {
 
                 function back() {
                     self.stopListening(order, 'change', setHeaderToUpdate);
+                    if (originOrder) {
+                        order.update(originOrder);
+                    }
                     window.history.back();
                 }
 
@@ -553,7 +559,7 @@ define(["main_router"], function(main_router) {
                     header.set({
                         page_title: _loc.CUSTOMIZE,
                         link_title: _loc.UPDATE,
-                        link: App.Settings.online_orders ? header.updateProduct.bind(header, order, order.clone()) : header.defaults.link
+                        link: App.Settings.online_orders ? header.updateProduct.bind(header, order, originOrder) : header.defaults.link
                     });
                 }
 
