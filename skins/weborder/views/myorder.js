@@ -91,6 +91,7 @@ define(["myorder_view"], function(myorder_view) {
                         var index = App.Data.myorder.indexOf(self.model) - 1;
                         App.Data.myorder.remove(self.options.real);
                         App.Data.myorder.add(self.model, {at: index});
+                        App.Data.myorder.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
                     }
 
                     $('#popup .cancel').trigger('click');
@@ -100,7 +101,7 @@ define(["myorder_view"], function(myorder_view) {
             } else {
                 App.Data.errors.alert(check.errorMsg); // user notification
             }
-        },       
+        },
         change_height: function(e) {
             var prev_height = this.prev_height || 0,
                 inner_height = $('#popup').outerHeight(),

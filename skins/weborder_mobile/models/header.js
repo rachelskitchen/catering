@@ -118,8 +118,9 @@ define(["backbone"], function(Backbone) {
                         page_title: _loc.PRODUCT_UPDATED,
                         cartItemsQuantity: App.Data.myorder.get_only_product_quantity()
                     });
-                    // App.Data.myorder.remove(orderItem);
-                    // App.Data.myorder.add(updatedOrderItem, {at: index});
+                    orderItem.set('discount', originOrderItem.get('discount').clone(), {silent: true});
+                    App.Data.myorder.splitItemAfterQuantityUpdate(orderItem, originOrderItem.get('quantity'), orderItem.get('quantity'), true);
+                    originOrderItem.update(orderItem);
                 }, function(errorMsg) {
                     App.Data.errors.alert(errorMsg); // user notification
                 });

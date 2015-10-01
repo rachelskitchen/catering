@@ -74,6 +74,7 @@ define(["myorder_view"], function(myorder_view) {
                         var index = App.Data.myorder.indexOf(self.options.real) - 1;
                         App.Data.myorder.add(self.model, {at: index});
                         App.Data.myorder.remove(self.options.real);
+                        App.Data.myorder.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
                     }
 
                     $('#popup .cancel').trigger('click');
