@@ -174,6 +174,11 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
 
             if (!this.get('image'))
                 this.set('image', App.Data.settings.get_img_default());
+            else {
+                this.image();
+            }
+
+            this.listenTo(this, 'change:image', this.image, this);
 
             if (App.skin == App.Skins.RETAIL)
                 this.listenTo(this, 'change:images change:image', this.images, this);
@@ -502,7 +507,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             if(Array.isArray(imgs)) {
                 images = imgs.map(function(image) {
                     if (Array.isArray(defImg) ? defImg.indexOf(image) == -1 : defImg != image)
-                        return /^https?:\/\//.test(image) ? image : host + image.replace(/^([^\/])/, '/$1');
+                        return addHost(image, host);
                     else
                         return image;
                 });
@@ -514,6 +519,13 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
 
             this.set('images', images, {silent: true});
             this.set('image', img, {silent: true});
+        },
+        /**
+         * @method
+         * Adds host to image link.
+         */
+        image: function() {
+            this.set('image', addHost(this.get('image'), App.Data.settings.get('host')));
         },
         /**
          * @method
@@ -757,4 +769,8 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
 
         return product_load;
     };
+
+    function addHost(image, host) {
+        return /^https?:\/\//.test(image) ? image : host + image.replace(/^([^\/])/, '/$1');
+    }
 });
