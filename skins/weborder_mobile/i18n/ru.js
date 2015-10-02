@@ -243,6 +243,10 @@
         'RETURN_TO_ORDER_SUMMARY': 'Вернуться к заказу',
         'ENTER_DISCOUNT_CODE': 'Введите дискаунт-код',
         'SUBMIT_CARD': 'Отправить карту',
-        'SUBMIT_ORDER': 'Отправить заказ'
+        'SUBMIT_ORDER': 'Отправить заказ',
+        'STANFORD_RELOAD_INFO1': "Укажите номер карточки и сумму, на которую хотите пополнить план",
+        'STANFORD_RELOAD_INFO2': "Выберите план, на который будет выполнено зачисление средств",
+        'STANFORD_CARD_NUMBER': "Stanford Card #",
+        'STANFORD_CARD_CHOOSE_PLAN': "Stanford Card: Выбор Плана"
     } // end of locale
 }); // end of module

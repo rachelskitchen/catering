@@ -359,7 +359,7 @@ define(["main_router"], function(main_router) {
                     cacheId: true,
                     className: 'content_scrollable'
                 }];
-                
+
                 var footerMode;
                 if (App.Settings.promo_message) {
                     footerMode = footerModes.Promo;
@@ -523,14 +523,28 @@ define(["main_router"], function(main_router) {
                         order = order.clone();
                     }
 
-                    App.Data.mainModel.set({
-                        contentClass: '',
-                        content: {
+                    var content = {
+                        modelName: 'MyOrder',
+                        model: order,
+                        mod: 'Matrix',
+                        cacheId: false
+                    };
+
+                    // content for stanford reload item
+                    var product = order.get_product();
+                    if(App.Data.is_stanford_mode && product && product.get('is_gift')) {
+                        content = {
                             modelName: 'MyOrder',
                             model: order,
-                            mod: 'Matrix',
+                            mod: 'StanfordItem',
+                            className: '',
                             cacheId: false
                         }
+                    }
+
+                    App.Data.mainModel.set({
+                        contentClass: '',
+                        content: content
                     });
 
                     self.change_page();
@@ -600,7 +614,7 @@ define(["main_router"], function(main_router) {
                             model: App.Data.myorder.checkout,
                             mod: 'Note',
                             className: 'myorderNote'
-                        }                       
+                        }
                     ]
                 });
 
@@ -770,7 +784,7 @@ define(["main_router"], function(main_router) {
                 if(payment_count > 1) {
                     App.Data.mainModel.set({
                         footer: {
-                            mod: 'Main',                        
+                            mod: 'Main',
                             className: 'footer bg-color10',
                             cacheId: true,
                             cacheIdUniq: 'confirm'
@@ -785,7 +799,7 @@ define(["main_router"], function(main_router) {
                             cacheId: true
                         }
                     });
-                }            
+                }
 
                 App.Data.mainModel.set({
                     contentClass: 'bg-color12',
@@ -863,7 +877,7 @@ define(["main_router"], function(main_router) {
                             mod: 'Main',
                             collection: App.Data.myorder,
                             cacheId: true
-                        }                       
+                        }
                     ]
                 });
 
@@ -1171,7 +1185,7 @@ define(["main_router"], function(main_router) {
                 if (!App.Data.AboutModel) {
                     App.Data.AboutModel = new App.Models.AboutModel();
                 }
-                App.Data.mainModel.set({                   
+                App.Data.mainModel.set({
                     content: {
                         modelName: 'StoreInfo',
                         model: App.Data.AboutModel,

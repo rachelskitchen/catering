@@ -99,3 +99,31 @@
     </span>
     <span class="name product-name font-size1 font-color3"><%= discount_name %></span>
 </script>
+
+<script type="text/template" id="myorder_stanford_item-template">
+    <div class="product-modifiers font-color2 bg-color9">
+        <div class="font-size1 fl-right">
+            <span class="currency"></span>
+            <input type="text" class="initial-price ios-safari-caret">
+        </div>
+        <h3 class="name text-left font-size1"><%= name %></h3>
+        <span class="info font-size2"><%= _lp.STANFORD_RELOAD_INFO1 %></span>
+    </div>
+    <div class="card-wrapper"></div>
+    <div class="btn next btn-popup fl-right"><%= _lp.NEXT %></div>
+    <div class="view view-2">
+        <h3 class="name text-left"><%= _lp.STANFORD_CARD_CHOOSE_PLAN %></h3>
+        <span class="info"><%= _lp.STANFORD_RELOAD_INFO2 %></span>
+        <div class="plans-row">
+            <span class="label"><%= _lp.STANFORD_CARD_NUMBER %>:</span>
+            <span class="stanford-number"></span>
+        </div>
+        <div class="plans-row">
+            <span class="label"><%= _lp.AMOUNT %>:</span>
+            <span class="amount"></span>
+        </div>
+        <div class="plans"></div>
+        <div class="btn add-item btn-popup fl-right"><%= _lp.MYORDER_ADD_ITEM %></div>
+        <div class="btn back btn-popup fl-left"><%= _lp.BACK %></div>
+    </div>
+</script>
