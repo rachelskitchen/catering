@@ -100,7 +100,7 @@ define(["myorder_view"], function(myorder_view) {
             } else {
                 App.Data.errors.alert(check.errorMsg); // user notification
             }
-        },       
+        },
         change_height: function(e) {
             var prev_height = this.prev_height || 0,
                 inner_height = $('#popup').outerHeight(),
@@ -140,14 +140,17 @@ define(["myorder_view"], function(myorder_view) {
     var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
         editItem: function(e) {
             e.preventDefault();
-            var model = this.model;
+            var model = this.model,
+                isStanfordItem = App.Data.is_stanford_mode && this.model.get_product().get('is_gift');
+
             App.Data.mainModel.set('popup', {
-                    modelName: 'MyOrder',
-                    mod: 'Matrix',
-                    model: model.clone(),
-                    real: model,
-                    action: 'update'
-                });
+                modelName: 'MyOrder',
+                mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
+                className: isStanfordItem ? 'stanford-reload-item' : '',
+                model: model.clone(),
+                real: model,
+                action: 'update'
+            });
         }
     });
 

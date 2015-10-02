@@ -1,4 +1,4 @@
-.product_table {
+ .product_table {
     margin-bottom: 8px;
 }
 
@@ -300,71 +300,3 @@
     font-style: italic;
 }
 /* list item mod block end */
-
-/* stanford reload item block start */
-.stanford-reload-item {
-    padding: 20px;
-    text-align: left;
-}
-
-.stanford-reload-item .name {
-    font-weight: bold;
-    font-size: 24px;
-    padding: 0 !important;
-}
-
-.stanford-reload-item .row {
-    height: 27px;
-    padding: 6px 0;
-}
-
-.stanford-reload-item .btn-popup {
-    max-width: 40%;
-    margin-top: 20px;
-}
-
-.stanford-reload-item .btn-popup.disbled {
-    margin-top: 23px;
-}
-
-.stanford-reload-item .view {
-    padding-bottom: 64px;
-}
-
-.stanford-reload-item .btn.fl-right {
-    margin-right: 40px;
-}
-
-.stanford-reload-item label {
-    display: inline-block;
-    width: 170px;
-    text-align: right;
-    padding-right: 5px;
-}
-
-.stanford-reload-item .input_beauty {
-    display: inline-block;
-    width: 255px;
-    height: 27px;
-    position: relative;
-    top: 0;
-    bottom: 0;
-}
-
-.stanford-reload-item .info {
-    display: inline-block;
-    padding-bottom: 20px;
-}
-
-.stanford-reload-item .captcha::before {
-    content: '';
-    display: inline-block;
-    width: 175px;
-}
-
-.stanford-reload-item .captcha-wrapper {
-    display: inline-block;
-    width: 120px;
-    height: 48px;
-}
-/* stanford reload item block end */

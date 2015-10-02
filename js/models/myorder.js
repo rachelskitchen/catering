@@ -183,6 +183,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 this.set('id_product', data.product.id);
             }
 
+            data.stanfordCard && this.initStanfordReloadItem(data.stanfordCard);
+
             return this;
         },
         get_modelsum: function() {
@@ -220,12 +222,14 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             else return "";
         },
         clone: function() {
-            var order = new App.Models.Myorder();
+            var order = new App.Models.Myorder(),
+                stanfordCard = this.get('stanfordCard');
             for (var key in this.attributes) {
                 var value = this.get(key);
                 if (value && value.clone) { value = value.clone(); }
                 order.set(key, value, {silent: true });
             }
+            stanfordCard && order.initStanfordReloadItem(stanfordCard.getJSON());
             order.trigger('change', order, {clone: true});
             return order;
         },
@@ -426,15 +430,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * @method
          * Inits stanford reload item. If product is gift and App.Data.is_stanford_mode is true then item is stanford reload.
          */
-        initStanfordReloadItem: function() {
+        initStanfordReloadItem: function(data) {
             if(!this.get_product().get('is_gift') && !App.Data.is_stanford_mode) {
                 return;
             }
 
-            var stanfordCard = new App.Models.StanfordCard({
+            var stanfordCard = new App.Models.StanfordCard(_.isObject(data) ? data : {
                 number: this.get('stanford_card_number'),
                 planId: this.get('planId'),
-            });
+            }), self = this;
 
             this.set({
                 stanfordCard: stanfordCard,
@@ -442,23 +446,25 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 planId: stanfordCard.get('planId')
             });
 
-            // this.listenTo(stanfordCard, 'change:number', function(model, value) {
-            //     this.set('stanford_card_number', value);
-            // }, this);
+            this.listenTo(stanfordCard, 'onStanfordCardError', function(msg) {
+                msg && App.Data.errors.alert(msg);
+            }, this);
 
-            // stanfordCard.listenTo(this, 'change:stanford_card_number', function(model, value) {
-            //     stanfordCard.set('number', this.get('stanford_card_number'));
-            // }, this);
+            this.listenTo(stanfordCard, 'change:number', function(model, value) {
+                self.set('stanford_card_number', value);
+            }, this);
 
-            // this.listenTo(stanfordCard, 'change:planId', function(model, value) {
-            //     this.set('planId', value);
-            // }, this);
+            stanfordCard.listenTo(this, 'change:stanford_card_number', function(model, value) {
+                stanfordCard.set('number', self.get('stanford_card_number'));
+            });
 
-            // stanfordCard.listenTo(this, 'change:planId', function(model, value) {
-            //     stanfordCard.set('planId', this.get('planId'));
-            // }, this);
+            this.listenTo(stanfordCard, 'change:planId', function(model, value) {
+                self.set('planId', value);
+            }, this);
 
-window.stanfordCardReload = this
+            stanfordCard.listenTo(this, 'change:planId', function(model, value) {
+                stanfordCard.set('planId', self.get('planId'));
+            }, this);
         }
     });
 

@@ -109,6 +109,12 @@ select {
 select::-ms-expand { /*Removes default IE style*/
     display: none;
 }
+.fl-left {
+    float: left;
+}
+.fl-right {
+    float: right;
+}
 article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary {
     display: block;
 }
