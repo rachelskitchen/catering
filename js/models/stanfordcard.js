@@ -298,6 +298,15 @@ define(["backbone", "captcha"], function(Backbone) {
                 this.set(data);
                 Array.isArray(plans) && this.get('plans').reset(plans);
             }
+        },
+        /**
+         * @method
+         * Returns attributes in JSON format
+         */
+        getJSON: function() {
+            return _.extend({}, this.toJSON(), {
+                plans: this.get('plans').toJSON()
+            });
         }
     });
 });

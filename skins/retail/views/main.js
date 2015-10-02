@@ -117,7 +117,7 @@ define(["done_view", "generator"], function(done_view) {
             this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data);
             this.$('#popup').append(this.subViews[2].el);
 
-            popup.addClass('ui-visible');
+            value ? popup.addClass('ui-visible') : popup.removeClass('ui-visible');
         },
         hide_popup: function() {
             this.model.unset('popup');
