@@ -362,14 +362,15 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         },
         bindings: {
             '.initial-price': 'value: decimal(price), events: ["input"], restrictInput: "", allowedChars: "0123456789.,", kbdSwitcher: "numeric", pattern: /^\\d*(\\.\\d{0,2})?$/',
-            '.next': 'classes: {disabled: not(all(decimal(price), select(stanford_validated, stanford_planId, true), stanford_number, stanford_captchaValue, stanford_captchaKey))}',
+            '.next': 'classes: {disabled: not(all(decimal(initial_price), select(stanford_validated, stanford_planId, true), stanford_number, stanford_captchaValue, stanford_captchaKey))}',
             '.view-1': 'toggle: not(state_showPlans)',
             '.view-2': 'toggle: state_showPlans',
             '.stanford-number': 'text: stanford_card_number',
-            '.amount': 'text: currencyFormat(price)',
+            '.amount': 'text: currencyFormat(initial_price)',
             '.add-item': 'classes: {disabled: not(planId)}, text: select(state_addMode, _lp_MYORDER_ADD_ITEM, _lp_MYORDER_UPDATE_ITEM)'
         },
         computeds: {
+            // used in an input element because we need to change price in product to keep a correct item restoring from a storage during payment process
             price: {
                 deps: ['product'],
                 get: function() {
