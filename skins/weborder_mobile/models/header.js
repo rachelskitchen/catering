@@ -80,7 +80,21 @@ define(["backbone"], function(Backbone) {
                 def = Backbone.$.Deferred();
 
             if (check.status === 'OK') {
-                orderItem.get_product().check_gift(function() {
+                // no need to check a 'is_gift' for stanford reload item
+                if(App.Data.is_stanford_mode && orderItem.get('stanford_card_number') && orderItem.get('planId')) {
+                    return addProduct();
+                }
+                orderItem.get_product().check_gift(addProduct, function(errorMsg) {
+                    def.reject();
+                    App.Data.errors.alert(errorMsg); // user notification
+                });
+            } else {
+                def.reject();
+                App.Data.errors.alert(check.errorMsg); // user notification
+            }
+            return def;
+
+            function addProduct() {
                     App.Data.myorder.add(orderItem);
                     self.set({
                         link: self.defaults.link,
@@ -90,15 +104,7 @@ define(["backbone"], function(Backbone) {
                     window.history.replaceState({}, '', '#modifiers/' + (App.Data.myorder.length - 1));
                     typeof addProductCb == 'function' && addProductCb();
                     def.resolve();
-                }, function(errorMsg) {
-                    def.reject();
-                    App.Data.errors.alert(errorMsg); // user notification
-                });
-            } else {
-                def.reject();
-                App.Data.errors.alert(check.errorMsg); // user notification
-            }
-            return def;
+                }
         },
         updateProduct: function(orderItem, originOrderItem) {
             var self = this,

@@ -523,24 +523,12 @@ define(["main_router"], function(main_router) {
                         order = order.clone();
                     }
 
-                    var content = {
+                    var content = self.getStanfordReloadItem(order) || {
                         modelName: 'MyOrder',
                         model: order,
                         mod: 'Matrix',
                         cacheId: false
                     };
-
-                    // content for stanford reload item
-                    var product = order.get_product();
-                    if(App.Data.is_stanford_mode && product && product.get('is_gift')) {
-                        content = {
-                            modelName: 'MyOrder',
-                            model: order,
-                            mod: 'StanfordItem',
-                            className: '',
-                            cacheId: false
-                        }
-                    }
 
                     App.Data.mainModel.set({
                         contentClass: '',
@@ -1323,6 +1311,65 @@ define(["main_router"], function(main_router) {
 
                 this.change_page();
             });
+        },
+        getStanfordReloadItem: function(order) {
+            var product = order.get_product(),
+                footerStanfordReload,
+                stanfordCard,
+                stanfordState;
+
+            if(App.Data.is_stanford_mode && product && product.get('is_gift')) {
+                stanfordCard = order.get('stanfordCard');
+
+                stanfordState = new Backbone.Model({
+                    showPlans: hasPlans()
+                });
+
+                footerStanfordReload = {
+                    mod: 'StanfordReload',
+                    card: stanfordCard,
+                    orderItem: order,
+                    className: 'footer bg-color10'
+                };
+
+                App.Data.footer.set({
+                    btn_title: _loc.NEXT,
+                    action: getPlans
+                });
+
+                // define footer behavior
+                this.listenTo(stanfordCard, 'change:validated', setFooter);
+                this.listenToOnce(this, 'route', this.stopListening.bind(this, stanfordCard, 'change:validated', setFooter));
+                setFooter();
+
+                return {
+                    modelName: 'MyOrder',
+                    model: order,
+                    mod: 'StanfordItem',
+                    stanfordState: stanfordState,
+                    cacheId: false
+                };
+            }
+
+            function setFooter() {
+                if (hasPlans()) {
+                    stanfordState.set('showPlans', true);
+                    App.Data.mainModel.set({footer: footerModes.None});
+                } else {
+                    stanfordState.set('showPlans', false);
+                    App.Data.mainModel.set({footer: footerStanfordReload});
+                }
+            }
+
+            function hasPlans() {
+                return stanfordCard.get('validated') && stanfordCard.get('plans').length;
+            }
+
+            function getPlans() {
+                var mainModel = App.Data.mainModel;
+                mainModel.trigger('loadStarted');
+                stanfordCard.getPlans().then(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+            }
         },
         initRevelAPI: function() {
             App.Routers.RevelOrderingRouter.prototype.initRevelAPI.apply(this, arguments);
