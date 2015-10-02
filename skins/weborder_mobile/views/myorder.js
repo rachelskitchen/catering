@@ -72,9 +72,29 @@ define(["myorder_view"], function(myorder_view) {
         }
     });
 
+    var MyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView.extend({
+        name: 'myorder',
+        mod: 'stanford_item',
+        bindings: {
+            '.initial-price': App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView.prototype.bindings['.initial-price'],
+            '.next': App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView.prototype.bindings['.next'],
+            '.view-2': App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView.prototype.bindings['.view-2']
+        },
+        events: {
+            'click .next': 'next'
+        },
+        hasPlans: function() {
+            var stanfordCard = this.model.get('stanfordCard');
+            return stanfordCard.get('validated') && stanfordCard.get('plans').length;
+        },
+        // override parent's update method to avoid re-rendering
+        update: new Function()
+    });
+
     return new (require('factory'))(myorder_view.initViews.bind(myorder_view), function() {
         App.Views.MyOrderView.MyOrderListView = MyOrderListView;
         App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
         App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
+        App.Views.MyOrderView.MyOrderStanfordItemView = MyOrderStanfordItemView;
     });
 });
