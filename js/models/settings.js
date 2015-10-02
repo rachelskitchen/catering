@@ -119,6 +119,7 @@ define(["backbone", "async"], function(Backbone) {
                         toString: function() { return ''; }
                     });
                     xhr.setRequestHeader('X-Revel-Revision', self.get('x_revel_revision'));
+                    xhr.setRequestHeader("X-Revel-Client", App.Data.dirMode ? "RevelDirectory" : "RevelOnlineOrdering");
                 }
             });
         },
