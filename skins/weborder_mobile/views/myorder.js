@@ -76,16 +76,18 @@ define(["myorder_view"], function(myorder_view) {
         name: 'myorder',
         mod: 'stanford_item',
         bindings: {
-            '.initial-price': App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView.prototype.bindings['.initial-price'],
+            '.price': App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView.prototype.bindings['.initial-price'],
+            '.currency': 'text: _system_settings_currency_symbol',
             '.next': App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView.prototype.bindings['.next'],
-            '.view-2': App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView.prototype.bindings['.view-2']
+            '.plans-view': 'toggle: stanfordState_showPlans',
+            '.plans-title': 'toggle: false'
         },
         events: {
             'click .next': 'next'
         },
-        hasPlans: function() {
-            var stanfordCard = this.model.get('stanfordCard');
-            return stanfordCard.get('validated') && stanfordCard.get('plans').length;
+        next: function() {
+            var func = this.options.action;
+            typeof func == 'function' && func();
         },
         // override parent's update method to avoid re-rendering
         update: new Function()
