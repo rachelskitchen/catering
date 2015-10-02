@@ -383,6 +383,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 item_obj.gift_card_number = product.gift_card_number;
             }
 
+            // add stanford info if this is stanford reload item
+            var planId = this.get('planId'),
+                stanford_card_number = this.get('stanford_card_number');
+
+            if (planId && stanford_card_number) {
+                item_obj.planId = planId;
+                item_obj.stanford_card_number = stanford_card_number;
+            }
+
             return item_obj;
         },
         overrideProductName: function(product) {
