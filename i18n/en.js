@@ -410,6 +410,7 @@
             'ERROR_STORES_LOAD': 'Unable to get the list of stores.',
             'DELIVERY_ITEM': 'Delivery Charge',
             'BAG_CHARGE_ITEM': 'Bag Charge',
+            'AUTOAPPLY_FEE_ITEM': 'AutoApply Fee',
             'REPEAT_ORDER_NOTIFICATION': 'Some items have changed or no longer available. Please review items before placing your order.',
             'REWARD_CARD_UNDEFINED': 'Invalid Reward Card Number.',
             'ADD_MORE_FOR_DELIVERY': 'Please add %s more for delivery',
