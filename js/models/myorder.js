@@ -392,6 +392,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                         return 'Bag Charge';
                     case MSG.DELIVERY_ITEM:
                         return 'Delivery Charge';
+                    case MSG.AUTOAPPLY_FEE_ITEM:
+                        return 'AutoApply Fee';
                     default:
                         trace("Product name '" + product.name + "' should be overridden");
                 }

@@ -211,6 +211,9 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             }
 
             var regex = context.pattern;
+            if (typeof regex === 'function') {
+                regex = regex(); // regex comes from computeds getter
+            }
             if (regex instanceof RegExp) {
                 $el.on('input', validate);
                 $el.on('change', change);
