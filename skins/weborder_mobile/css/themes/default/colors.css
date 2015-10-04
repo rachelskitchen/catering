@@ -15,11 +15,7 @@
     color: #1a99cd;
 }
 
-.bg-color1 {
-    background-color: #1a99cd;
-}
-
-.bg-color-active1:not([disabled]):active {
+.bg-color1, .bg-color-active1:not([disabled]):active {
     background-color: #1a99cd;
 }
 
@@ -40,16 +36,14 @@
     color: #fff;
 }
 
-.border-color2 {
+.border-color2,
+.quantity .btn-qty:active::before,
+.quantity .btn-qty:active::after {
     border-color: #fff;
 }
 
 /* [white] main background */
-.bg-color2 {
-    background-color: #fff;
-}
-
-.bg-color-active2:not([disabled]):active {
+.bg-color2, .bg-color-active2:not([disabled]):active {
     background-color: #fff;
 }
 
