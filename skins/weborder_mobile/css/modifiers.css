@@ -68,7 +68,7 @@
 }
 
 .modifier select {
-    text-indent: .8em;
+    text-indent: .5em;
 }
 
 .modifier .mdf_split::before {
