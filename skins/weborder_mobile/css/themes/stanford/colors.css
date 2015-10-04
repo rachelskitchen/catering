@@ -41,7 +41,9 @@
     color: #fff;
 }
 
-.border-color2 {
+.border-color2,
+.quantity .btn-qty:active::before,
+.quantity .btn-qty:active::after {
     border-color: #fff;
 }
 
