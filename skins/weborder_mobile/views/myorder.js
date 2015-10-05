@@ -72,9 +72,31 @@ define(["myorder_view"], function(myorder_view) {
         }
     });
 
+    var MyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView.extend({
+        name: 'myorder',
+        mod: 'stanford_item',
+        bindings: {
+            '.price': App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView.prototype.bindings['.initial-price'],
+            '.currency': 'text: _system_settings_currency_symbol',
+            '.next': App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView.prototype.bindings['.next'],
+            '.plans-view': 'toggle: stanfordState_showPlans',
+            '.plans-title': 'toggle: false'
+        },
+        events: {
+            'click .next': 'next'
+        },
+        next: function() {
+            var func = this.options.action;
+            typeof func == 'function' && func();
+        },
+        // override parent's update method to avoid re-rendering
+        update: new Function()
+    });
+
     return new (require('factory'))(myorder_view.initViews.bind(myorder_view), function() {
         App.Views.MyOrderView.MyOrderListView = MyOrderListView;
         App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
         App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
+        App.Views.MyOrderView.MyOrderStanfordItemView = MyOrderStanfordItemView;
     });
 });

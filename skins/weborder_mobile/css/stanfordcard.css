@@ -6,7 +6,8 @@
     margin-top: 1em;
 }
 
-.stanfordcard .number-input[readonly=readonly] {
+.stanfordcard .number-input[readonly=readonly],
+.stanfordcard .captcha-input[readonly=readonly] {
     opacity: 0.5;
 }
 

@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory", "generator"], function(Backbone) {
+define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backbone, stanfordcard_view) {
     'use strict';
 
     App.Views.CoreMyOrderView = {};
@@ -347,7 +347,111 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
-    return new (require('factory'))(function() {
+    App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
+        name: 'myorder',
+        mod: 'stanford_item',
+        initialize: function() {
+            _.extend(this.bindingSources, {
+                stanford: this.model.get('stanfordCard'),
+                state: new Backbone.Model({
+                    showPlans: false,
+                    addMode: this.options.action === 'add'
+                })
+            });
+            App.Views.CoreMyOrderView.CoreMyOrderItemView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            '.initial-price': 'value: monetaryFormat(price), events: ["input"], restrictInput: "", allowedChars: "0123456789.,", kbdSwitcher: "numeric", pattern: /^\\d*(\\.\\d{0,2})?$/',
+            '.next': 'classes: {disabled: not(all(decimal(initial_price), select(stanford_validated, stanford_planId, true), stanford_number, stanford_captchaValue, stanford_captchaKey))}',
+            '.view-1': 'toggle: not(state_showPlans)',
+            '.view-2': 'toggle: state_showPlans',
+            '.stanford-number': 'text: stanford_card_number',
+            '.amount': 'text: currencyFormat(initial_price)',
+            '.add-item': 'classes: {disabled: not(planId)}, text: select(state_addMode, _lp_MYORDER_ADD_ITEM, _lp_MYORDER_UPDATE_ITEM)'
+        },
+        computeds: {
+            // used in an input element because we need to change price in product to keep a correct item restoring from a storage during payment process
+            price: {
+                deps: ['product'],
+                get: function() {
+                    return this.model.get_product().get('price');
+                },
+                set: function(value) {
+                    this.model.get_product().set('price', Number(value));
+                }
+            }
+        },
+        events: {
+            'click .next': 'next',
+            'click .back': 'back',
+            'click .add-item': 'action'
+        },
+        render: function() {
+            App.Views.CoreMyOrderView.CoreMyOrderItemView.prototype.render.apply(this, arguments);
+
+            var stanford = this.model.get('stanfordCard'),
+                stanfordCard, stanfordPlans;
+
+            stanfordCard = App.Views.GeneratorView.create('StanfordCard', {
+                el: this.$('.card-wrapper'),
+                mod: 'Reload',
+                model: this.model.get('stanfordCard')
+            });
+
+            stanfordPlans = App.Views.GeneratorView.create('StanfordCard', {
+                el: this.$('.plans'),
+                mod: 'Plans',
+                collection: stanford.get('plans')
+            });
+
+            this.subViews.push(stanfordCard);
+            this.subViews.push(stanfordPlans);
+
+            return this;
+        },
+        next: function() {
+            var self = this,
+                mainModel = App.Data.mainModel;
+
+            if(this.hasPlans()) {
+                self.setBinding('state_showPlans', true);
+            } else {
+                mainModel && mainModel.trigger('loadStarted');
+                this.getBinding('$stanford').getPlans().then(function() {
+                    self.setBinding('state_showPlans', self.hasPlans());
+                    mainModel && mainModel.trigger('loadCompleted');
+                });
+            }
+        },
+        back: function() {
+            this.setBinding('state_showPlans', false);
+        },
+        hasPlans: function() {
+            var stanfordCard = this.model.get('stanfordCard');
+            return stanfordCard.get('validated') && stanfordCard.get('plans').length;
+        },
+        action: function (event) {
+            var check = this.model.check_order();
+
+            if (check.status === 'OK') {
+                if (this.getBinding('state_addMode')) {
+                    App.Data.myorder.add(this.model);
+                } else {
+                    var index = App.Data.myorder.indexOf(this.model) - 1;
+                    App.Data.myorder.remove(this.options.real);
+                    App.Data.myorder.add(this.model, {at: index});
+                }
+
+                $('#popup .cancel').trigger('click');
+            } else {
+                App.Data.errors.alert(check.errorMsg); // user notification
+            }
+        },
+        // override parent's update method to avoid re-rendering
+        update: new Function()
+    });
+
+    return new (require('factory'))(stanfordcard_view.initViews.bind(stanfordcard_view), function() {
         App.Views.MyOrderView = {};
         App.Views.MyOrderView.MyOrderModifierView = App.Views.CoreMyOrderView.CoreMyOrderModifierView;
         App.Views.MyOrderView.MyOrderProductDiscountView = App.Views.CoreMyOrderView.CoreMyOrderProductDiscountView;
@@ -356,5 +460,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         App.Views.MyOrderView.MyOrderListView = App.Views.CoreMyOrderView.CoreMyOrderListView;
         App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView;
         App.Views.MyOrderView.MyOrderNoteView = App.Views.CoreMyOrderView.CoreMyOrderNoteView;
+        App.Views.MyOrderView.MyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView;
     });
 });

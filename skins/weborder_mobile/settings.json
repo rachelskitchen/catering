@@ -25,9 +25,9 @@
             "core": ["categories", "products", "subcategories"]
         },
         "modifiers": {
-            "css": ["modifiers", "products", "quantity", "instructions", "myorder"],
-            "views": ["products", "quantity", "instructions", "myorder"],
-            "templates": ["modifiers", "products", "quantity", "instructions", "myorder"],
+            "css": ["modifiers", "products", "quantity", "instructions", "myorder", "stanfordcard", "card"],
+            "views": ["products", "quantity", "instructions", "myorder", "stanfordcard"],
+            "templates": ["modifiers", "products", "quantity", "instructions", "myorder", "stanfordcard"],
             "core": ["categories", "products", "modifiers", "modifiers_view"]
         },
         "cart": {
@@ -100,7 +100,7 @@
             "css": ["card", "stanfordcard"],
             "templates": ["stanfordcard"],
             "views": ["stanfordcard"],
-            "core": ["giftcard", "jquery_numbermask", "stanfordcard", "stanfordcard_view"]
+            "core": ["giftcard", "jquery_numbermask"]
         },
         "stanford_student_verification": {
             "css": ["card", "stanfordcard"],

@@ -28,7 +28,12 @@
         <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
         <% } %>
         <% if(is_gift) { %>
-            <li class="special"> *** <%= _lp.MYORDER_ADD_AMOUNT_TO %> <%= gift_card_number %> </li>
+
+            <% if(planId && stanford_card_number) { %>
+                <li class="special"> *** <%= _lp.STANFORD_CARD_NUMBER %>: <%= stanford_card_number %> </li>
+            <% } else { %>
+                <li class="special"> *** <%= _lp.MYORDER_ADD_AMOUNT_TO %> <%= gift_card_number %> </li>
+            <% } %>
         <% } %>
         <% if(special) { %>
         <li class="special">*** <%= special %></li>
@@ -98,4 +103,23 @@
         <span class="price"><%= discount_sum %></span>
     </span>
     <span class="name product-name font-size1 font-color3"><%= discount_name %></span>
+</script>
+
+<script type="text/template" id="myorder_stanford_item-template">
+    <div class="product-modifiers font-color2 bg-color9">
+        <div class="font-size1 fl-right">
+            <span class="currency"></span>
+            <input type="text" class="price ios-safari-caret">
+        </div>
+        <h3 class="name stanford-reload-name text-left font-size1"><%= name %></h3>
+        <span class="info font-size2"><%= _lp.STANFORD_RELOAD_INFO1 %></span>
+    </div>
+    <div class="card-wrapper"></div>
+    <div class="plans-view stanford-card-plans">
+        <div class="list-title text-center">
+            <div class="font-size1 font-color1"><%= _lp.STANFORD_PLANS %></div>
+            <em class="font-size2 font-color5"><%= _lp.STANFORD_RELOAD_INFO2 %></em>
+        </div>
+        <div class="plans"></div>
+    </div>
 </script>

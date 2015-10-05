@@ -22,7 +22,11 @@
         <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
         <% } %>
         <% if(is_gift) { %>
-        <li class="special"> *** <%= _lp.MYORDER_ADD_AMOUNT %> <%= gift_card_number %> </li>
+            <% if(planId && stanford_card_number) { %>
+                <li class="special"> *** <%= _lp.STANFORD_CARD_NUMBER %>: <%= stanford_card_number %> </li>
+            <% } else { %>
+                <li class="special"> *** <%= _lp.MYORDER_ADD_AMOUNT %> <%= gift_card_number %> </li>
+            <% } %>
         <% } %>
         <% if(special) { %>
         <li class="special">*** <%= special %></li>
@@ -93,4 +97,34 @@
 
 <script type="text/template" id="myorder_itemSpecial-template">
     <strong><%= name %>:</strong> <%= special %>
+</script>
+
+<script type="text/template" id="myorder_stanford_item-template">
+    <div class="view view-1">
+        <h3 class="name text-left"><%= name %></h3>
+        <span class="info"><%= _lp.STANFORD_RELOAD_INFO1 %></span>
+        <div class="row">
+            <label for="stanford-card-amount"><%= _lp.AMOUNT %>:</label>
+            <div class="input_beauty">
+                <input id="stanford-card-amount" class="initial-price ios-safari-caret">
+            </div>
+        </div>
+        <div class="card-wrapper"></div>
+        <div class="btn next btn-popup fl-right"><%= _lp.NEXT %></div>
+    </div>
+    <div class="view view-2">
+        <h3 class="name text-left"><%= _lp.STANFORD_CARD_CHOOSE_PLAN %></h3>
+        <span class="info"><%= _lp.STANFORD_RELOAD_INFO2 %></span>
+        <div class="plans-row">
+            <span class="label"><%= _lp.STANFORD_CARD_NUMBER %>:</span>
+            <span class="stanford-number"></span>
+        </div>
+        <div class="plans-row">
+            <span class="label"><%= _lp.AMOUNT %>:</span>
+            <span class="amount"></span>
+        </div>
+        <div class="plans"></div>
+        <div class="btn add-item btn-popup fl-right"><%= _lp.MYORDER_ADD_ITEM %></div>
+        <div class="btn back btn-popup fl-left"><%= _lp.BACK %></div>
+    </div>
 </script>
