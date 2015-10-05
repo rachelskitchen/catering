@@ -40,3 +40,25 @@
     <h3 class="stanford-student-question font-size1 text-center"><%= _lp.STANFORD_STUDENT_QUESTION %></h3>
     <p class="stanford-student-instructions font-size2 text-center"><%= _lp.STANFORD_STUDENT_INSTRUCTIONS %></p>
 </script>
+
+<script type="text/template" id="stanfordcard_reload-template">
+    <ul class="stanfordcard card font-size2 font-color8 <% if(isFirefox) { %>firefox<% } %>">
+        <li class="required input-control">
+            <input type="text" placeholder="<%= _lp.STANFORD_CARD_NUMBER %>" class="number number-input ios-safari-caret border-color10" value="<%= cardNumber %>" min="0">
+            <label class="ctrl-wrapper cancel-input"><input type="button" class="ctrl"></label>
+        </li>
+        <li class="required">
+            <input type="hidden" value="<%= cardNumber %>" id="id_captcha_key" name="captcha_key" />
+            <input type="text" placeholder="<%= _lp.ENTER_CAPTCHA %>" class="captcha-input ios-safari-caret border-color10" min="0" id="id_captcha_value" name="captcha_value">
+        </li>
+    </ul>
+    <div class="captcha_container">
+        <div class="captcha_wrap">
+            <img alt="" class="captcha" width="100%" height="100%">
+            <div class="captcha-spinner"></div>
+        </div>
+        <span class="btn btn-reload link">
+            <span class="font-size2"> <%= _lp.GIFTCARD_RELOAD %> </span>
+        </span>
+    </div>
+</script>

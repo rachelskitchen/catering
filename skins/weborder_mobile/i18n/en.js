@@ -245,6 +245,9 @@
         'RETURN_TO_ORDER_SUMMARY': 'Return to Order Summary',
         'ENTER_DISCOUNT_CODE': 'Enter a Discount Code',
         'SUBMIT_CARD': 'Submit Card',
-        'SUBMIT_ORDER': 'Submit Order'
+        'SUBMIT_ORDER': 'Submit Order',
+        'STANFORD_RELOAD_INFO1': "Please specify the Card # and the amount you'd like to add",
+        'STANFORD_RELOAD_INFO2': "Please specify the plan you'd like to add value to",
+        'STANFORD_CARD_NUMBER': "Stanford Card #"
     } // end of locale
 }); // end of module

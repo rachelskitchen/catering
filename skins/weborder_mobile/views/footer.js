@@ -88,6 +88,13 @@ define(["factory"], function(factory) {
         }
     });
 
+    var FooterStanfordReloadView = FooterMainView.extend({
+        bindings: {
+            '.btn': 'text: btn_title, classes: {disabled: not(all(card_captchaValue, card_captchaKey, card_number, decimal(orderItem_initial_price)))}'
+        }
+    });
+
+
     return new factory(function() {
         App.Views.FooterView = {};
         App.Views.FooterView.FooterMainView = FooterMainView;
@@ -97,5 +104,6 @@ define(["factory"], function(factory) {
         App.Views.FooterView.FooterCardView = FooterCardView;
         App.Views.FooterView.FooterStanfordCardView = FooterStanfordCardView;
         App.Views.FooterView.FooterPaymentInfoView = FooterPaymentInfoView;
+        App.Views.FooterView.FooterStanfordReloadView = FooterStanfordReloadView;
     });
 });

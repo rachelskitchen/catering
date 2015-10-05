@@ -108,3 +108,7 @@
     content: '\f042';
     text-indent: 0.45em;
 }
+
+.stanford-reload-name {
+    font-weight: normal;
+}

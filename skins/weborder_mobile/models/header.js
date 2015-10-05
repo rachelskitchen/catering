@@ -60,6 +60,9 @@ define(["backbone"], function(Backbone) {
          *
          * @property {Function} default.addProductCb - callback that is called after a product is added to cart.
          * @default null.
+         *
+         * @property {boolean} default.enableLink - enable link.
+         * @default true.
          */
         defaults: {
             page_title: '',
@@ -71,7 +74,8 @@ define(["backbone"], function(Backbone) {
             cartItemsQuantity: 0,
             search: '',
             showSearch: false,
-            addProductCb: null
+            addProductCb: null,
+            enableLink: true
         },
         addProduct: function(orderItem) {
             var self = this,
@@ -80,25 +84,32 @@ define(["backbone"], function(Backbone) {
                 def = Backbone.$.Deferred();
 
             if (check.status === 'OK') {
-                orderItem.get_product().check_gift(function() {
-                    App.Data.myorder.add(orderItem);
-                    self.set({
-                        link: self.defaults.link,
-                        link_title: self.defaults.link_title,
-                        page_title: _loc.PRODUCT_ADDED
+                // no need to check a 'is_gift' for stanford reload item
+                if(App.Data.is_stanford_mode && orderItem.get('stanford_card_number') && orderItem.get('planId')) {
+                    addProduct();
+                } else {
+                    orderItem.get_product().check_gift(addProduct, function(errorMsg) {
+                        def.reject();
+                        App.Data.errors.alert(errorMsg); // user notification
                     });
-                    window.history.replaceState({}, '', '#modifiers/' + (App.Data.myorder.length - 1));
-                    typeof addProductCb == 'function' && addProductCb();
-                    def.resolve();
-                }, function(errorMsg) {
-                    def.reject();
-                    App.Data.errors.alert(errorMsg); // user notification
-                });
+                }
             } else {
                 def.reject();
                 App.Data.errors.alert(check.errorMsg); // user notification
             }
             return def;
+
+            function addProduct() {
+                App.Data.myorder.add(orderItem);
+                self.set({
+                    link: self.defaults.link,
+                    link_title: self.defaults.link_title,
+                    page_title: _loc.PRODUCT_ADDED
+                });
+                window.history.replaceState({}, '', '#modifiers/' + (App.Data.myorder.length - 1));
+                typeof addProductCb == 'function' && addProductCb();
+                def.resolve();
+            }
         },
         updateProduct: function(orderItem, originOrderItem) {
             var self = this,
@@ -111,20 +122,25 @@ define(["backbone"], function(Backbone) {
             });
 
             if (check.status === 'OK') {
-                orderItem.get_product().check_gift(function() {
-                    self.set({
-                        link: self.defaults.link,
-                        link_title: self.defaults.link_title,
-                        page_title: _loc.PRODUCT_UPDATED,
-                        cartItemsQuantity: App.Data.myorder.get_only_product_quantity()
+                // no need to check a 'is_gift' for stanford reload item
+                if(App.Data.is_stanford_mode && orderItem.get('stanford_card_number') && orderItem.get('planId')) {
+                    complete();
+                } else {
+                    orderItem.get_product().check_gift(complete, function(errorMsg) {
+                        App.Data.errors.alert(errorMsg); // user notification
                     });
-                    // App.Data.myorder.remove(orderItem);
-                    // App.Data.myorder.add(updatedOrderItem, {at: index});
-                }, function(errorMsg) {
-                    App.Data.errors.alert(errorMsg); // user notification
-                });
+                }
             } else {
                 App.Data.errors.alert(check.errorMsg); // user notification
+            }
+
+            function complete() {
+                self.set({
+                    link: self.defaults.link,
+                    link_title: self.defaults.link_title,
+                    page_title: _loc.PRODUCT_UPDATED,
+                    cartItemsQuantity: App.Data.myorder.get_only_product_quantity()
+                });
             }
         },
         performSearch: function() {

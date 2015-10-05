@@ -247,6 +247,7 @@
     position: relative;
     font-size: inherit;
     height: 20px;
+    padding: 0;
 }
 #popup .order-items h3 .name {
     font-weight: bold;

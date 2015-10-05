@@ -27,7 +27,7 @@ define(["products_view"], function(products_view) {
         name: 'product',
         mod: 'modifiers',
         bindings: {
-            '.price': 'value: monetaryFormat(price), events: ["input"], attr: {size: length(monetaryFormat(price)), readonly: not(giftMode)}, restrictInput: price, allowedChars: "0123456789.", kbdSwitcher: "float"',
+            '.price': 'value: monetaryFormat(price), events: ["input"], attr: {size: length(monetaryFormat(price)), readonly: not(giftMode)}, restrictInput: price, allowedChars: "0123456789.", kbdSwitcher: select(_product_is_gift, "float", "text")',
             '.currency': 'text: _system_settings_currency_symbol, toggle: not(uom)',
             '.uom': 'text: uom, toggle: uom',
             '.title': 'text: _product_name',
@@ -71,7 +71,7 @@ define(["products_view"], function(products_view) {
                 }
             }
         },
-        initialize: function() {
+        initialize: function() {window.product = this.model.get_product();
             this.extendBindingSources({_product: this.model.get_product()});
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         }

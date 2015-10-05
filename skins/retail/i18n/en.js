@@ -94,6 +94,7 @@
         'MYORDER_REMOVE': 'Remove',
         'MYORDER_WEIGHT': 'w/',
         'MYORDER_ADD_TO_BAG': 'Add to Bag',
+        'MYORDER_ADD_ITEM': 'Add to Bag',
         'MYORDER_UPDATE_ITEM': 'Update Item',
         'PRODUCTS_ENTER_GIFT_CARD': 'Enter gift card number you want to load money to',
         'PRODUCTS_GIFT_CARD_NUMBER': 'Gift Card Number',
@@ -136,6 +137,10 @@
         'REWARDS_PURCHASES_REDEMPTION_AMOUNT': [
             'Purchase will be redeemed',
             'Purchases will be redeemed'
-        ]
+        ],
+        'STANFORD_RELOAD_INFO1': "Please specify the Card # and the amount you'd like to add",
+        'STANFORD_RELOAD_INFO2': "Please specify the plan you'd like to add value to",
+        'STANFORD_CARD_NUMBER': 'Stanford Card #',
+        'STANFORD_CARD_CHOOSE_PLAN': 'Stanford Card: Choose Plan'
     } // end of locale
 }); // end of module

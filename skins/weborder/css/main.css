@@ -1096,3 +1096,15 @@ span.cancel-input:before {
 .cancel-input:not(.hide) + input {
     padding-right: 30px;
 }
+
+.text-left {
+    text-align: left;
+}
+
+.fl-right {
+    float: right;
+}
+
+.fl-left {
+    float: left;
+}
