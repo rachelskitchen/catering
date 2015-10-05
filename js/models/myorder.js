@@ -375,7 +375,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
                 //constuct product_name_override as it's done by POS:
                 item_obj.product_name_override = product.name + "\n " + item_obj.weight.toFixed(num_digits) + str_label_for_manual_weights + " @ "
-                    + currency_symbol + round_monetary_currency(item_obj.initial_price) + str_uom;
+                    + currency_symbol + round_monetary_currency(item_obj.price) + str_uom;
             }
 
 
