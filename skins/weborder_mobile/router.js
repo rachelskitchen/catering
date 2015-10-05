@@ -1337,10 +1337,19 @@ define(["main_router"], function(main_router) {
                     action: getPlans
                 });
 
+                // listen to initial price change
+                this.listenTo(order, 'change:initial_price', linkBehavior);
+
                 // define footer behavior
                 this.listenTo(stanfordCard, 'change:validated', setFooter);
-                this.listenToOnce(this, 'route', this.stopListening.bind(this, stanfordCard, 'change:validated', setFooter));
                 setFooter();
+
+                // unbind stanford reload item listeners
+                this.listenToOnce(this, 'route', function() {
+                    this.stopListening(order, 'change:initial_price', linkBehavior);
+                    this.stopListening(stanfordCard, 'change:validated', setFooter);
+                    App.Data.header.set('enableLink', true); // restore default value
+                });
 
                 return {
                     modelName: 'MyOrder',
@@ -1359,6 +1368,14 @@ define(["main_router"], function(main_router) {
                     stanfordState.set('showPlans', false);
                     App.Data.mainModel.set({footer: footerStanfordReload});
                 }
+                linkBehavior();
+            }
+
+            function linkBehavior() {
+                var price = Number(order.get('initial_price')),
+                    number = order.get('stanford_card_number'),
+                    plan = order.get('planId');
+                App.Data.header.set('enableLink', Boolean(price && number && plan));
             }
 
             function hasPlans() {
