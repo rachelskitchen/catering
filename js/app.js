@@ -304,7 +304,7 @@
         var loader = document.querySelector('#loader');
         addSpinner.call(loader);
         loader.style.cssText += "background-color: rgba(170, 170, 170, .8); position: fixed;";
-        
+
         if (App.Data.is_stanford_mode) {
             $(".ui-spinner").addClass("stanford");
         }
