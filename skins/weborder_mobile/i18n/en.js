@@ -163,7 +163,7 @@
         'REVEL_OLD_PASSWORD': 'Old Password',
         'REVEL_NEW_PASSWORD': 'New Password',
         'REVEL_REPEAT_PASSWORD': 'Repeat Password',
-        'REVEL_CHANGE_PASSWORD': 'Change to a different store?',
+        'REVEL_CHANGE_PASSWORD': 'Change a password?',
         'REVEL_LOYALTY_REWARDS_LINE1': 'Your Loyalty Rewards Points can be used as currency for all your orders through',
         'REVEL_LOYALTY_REWARDS_LINE2': 'app!',
         'REVEL_QR_CODE': 'QR code',
@@ -173,11 +173,12 @@
         'STORE_INFO_PHONE': 'Phone',
         'STORE_INFO_EMAIL': 'Email',
         'STORE_INFO_LOCATION': 'Location',
-        'STORE_INFO_CHANGE_STORE': 'Change to astore location?',
-        'STORE_INFO_DELIVERY': 'Delivery',
+        'STORE_INFO_CHANGE_STORE': 'Change to a store location?',
+        'STORE_INFO_DELIVERY': 'Delivery Info',
         'STORE_INFO_FREE': 'Free',
+        'STORE_INFO_DELIVERY_CHARGE': 'Fee',
         'STORE_INFO_MINIMUM': 'Minimum',
-        'STORE_INFO_DELIVERY_TIME': 'Est. Delivery Time',
+        'STORE_INFO_DELIVERY_TIME': 'Est. Wait',
         'STORE_INFO_HR': 'hr',
         'STORE_INFO_MIN': 'min',
         'STORE_INFO_ASAP': 'ASAP',
@@ -248,6 +249,7 @@
         'SUBMIT_ORDER': 'Submit Order',
         'STANFORD_RELOAD_INFO1': "Please specify the Card # and the amount you'd like to add",
         'STANFORD_RELOAD_INFO2': "Please specify the plan you'd like to add value to",
-        'STANFORD_CARD_NUMBER': "Stanford Card #"
+        'STANFORD_CARD_NUMBER': "Stanford Card #",
+        'CHANGE_ESTABLISHMENT': 'Change to a different store?'
     } // end of locale
 }); // end of module

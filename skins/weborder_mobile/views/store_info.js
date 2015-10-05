@@ -38,7 +38,11 @@ define(["store_info_view"], function(store_info_view) {
             '.email-wrapper': 'toggle: _system_settings_email',
             '.email': 'text: _system_settings_email, attr: {href: format("mail:$1", _system_settings_email)}',
             '.access': 'toggle: _system_settings_about_access_to_location',
-            '.access-info': 'text: _system_settings_about_access_to_location'
+            '.access-info': 'text: _system_settings_about_access_to_location',
+            '.delivery-info-wrapper': 'toggle: _system_settings_delivery_for_online_orders',
+            '.delivery-charge': 'text: select(decimal(_system_settings_delivery_charge), currencyFormat(_system_settings_delivery_charge), _lp_STORE_INFO_FREE)',
+            '.delivery-minimum': 'text: currencyFormat(_system_settings_min_delivery_amount)',
+            '.delivery-time': 'text: delivery_time'
         },
         events: {
             'click .change-store': 'change_establishment',
@@ -65,6 +69,22 @@ define(["store_info_view"], function(store_info_view) {
                 deps: ['_system_settings_address'],
                 get: function(address) {
                     return address.city + ', ' + address.getRegion() + ' ' + address.postal_code;
+                }
+            },
+            delivery_time: {
+                deps: ['_system_settings_estimated_delivery_time'],
+                get: function(delivery_time) {
+                    var _lp = this.getBinding('$_lp').toJSON(),
+                        hour = Math.floor(delivery_time / 60),
+                        minutes = Math.ceil(delivery_time % 60),
+                        res = '';
+
+                    if (hour > 0) res += hour + ' ' + _lp.STORE_INFO_HR;
+                    if (hour > 0 && minutes > 0) res += ' ';
+                    if (minutes > 0) res += minutes + ' ' + _lp.STORE_INFO_MIN;
+                    if (minutes == 0 && hour == 0) res += _lp.STORE_INFO_ASAP;
+
+                    return  res;
                 }
             }
         },
@@ -112,7 +132,7 @@ define(["store_info_view"], function(store_info_view) {
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
 
-            setTimeout( (function() { 
+            setTimeout( (function() {
                     this.$el.gallery({
                     images: this.model.get('images'),
                     animate: true,
