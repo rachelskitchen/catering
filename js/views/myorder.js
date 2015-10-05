@@ -417,7 +417,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 self.setBinding('state_showPlans', true);
             } else {
                 mainModel && mainModel.trigger('loadStarted');
-                this.getBinding('$stanford').getPlans().then(function() {
+                this.getBinding('$stanford').getPlans(true).then(function() {
                     self.setBinding('state_showPlans', self.hasPlans());
                     mainModel && mainModel.trigger('loadCompleted');
                 });

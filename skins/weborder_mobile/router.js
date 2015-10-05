@@ -1385,7 +1385,7 @@ define(["main_router"], function(main_router) {
             function getPlans() {
                 var mainModel = App.Data.mainModel;
                 mainModel.trigger('loadStarted');
-                stanfordCard.getPlans().then(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                stanfordCard.getPlans(true).then(mainModel.trigger.bind(mainModel, 'loadCompleted'));
             }
         },
         initRevelAPI: function() {
