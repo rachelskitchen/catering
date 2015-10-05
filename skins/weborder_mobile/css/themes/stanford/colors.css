@@ -272,3 +272,7 @@ select:-moz-focusring {
     background-color: #fff;
     color: #670000;
 }
+
+.ui-spinner .point {
+    background-color: #A50505;
+}
