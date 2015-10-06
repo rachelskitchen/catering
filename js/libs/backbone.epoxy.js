@@ -928,12 +928,14 @@
     // ('$1 $2 did $3', firstName, lastName, action)
     format: makeFilter(function(str) {
       var params = arguments;
-
-      for (var i=1, len=params.length; i < len; i++) {
-        // TODO: need to make something like this work: (?<!\\)\$1
-        str = str.replace(new RegExp('\\$'+i, 'g'), params[i]);
-      }
-      return str;
+      return str.replace(/\$\d+/g, function(tag, offset) {
+        var i = tag.substring(1);
+        if (!isUndefined(params[i]) && i > 0) {
+            return params[i];
+        } else {
+            return tag;
+        }
+      });
     }),
 
     // Provides one of two values based on a ternary condition:
