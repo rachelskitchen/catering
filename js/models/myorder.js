@@ -1125,7 +1125,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         },
         update_cart_totals: function(params) {
             if (!this.getDiscountsTimeout) //it's to reduce the number of requests to the server
-                this.getDiscountsTimeout = setTimeout(this.get_cart_totals.bind(this, params), 100);
+                this.getDiscountsTimeout = setTimeout(this.get_cart_totals.bind(this, params), 500);
         },
         get_cart_totals: function(params) {
             var self = this;

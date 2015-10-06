@@ -516,10 +516,10 @@
         'CANCEL': 'Отменить',
         'OK': 'Ok',
         'UPDATE': 'Обновить',
-        'CHECKOUT': 'Checkout',
+        'CHECKOUT': 'Оформить',
         'DELIVERY_TIME': 'Срок доставки',
         'PICKUP_TIME': 'Время получения',
         'DELIVERY_INFO': 'Информация о доставке',
-         'PAYPAL': 'PayPal'
+        'PAYPAL': 'PayPal'
     } // end of locale
 }); // end of module
