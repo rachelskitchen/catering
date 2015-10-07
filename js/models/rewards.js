@@ -238,6 +238,18 @@ define(['backbone', 'captcha'], function(Backbone) {
         },
         /**
          * @method
+         * Resets all attributes to default values except of 'number' field.
+         *
+         * @fires App.Models.RewardsCard #onResetData
+         */
+        resetDataAfterPayment: function() {
+            var defaults = $.extend({}, this.defaults);
+            delete defaults.number;
+            this.set(defaults);
+            this.trigger('onResetData');
+        },
+        /**
+         * @method
          * Updates `selected` attribute of reward type.
          *
          * @param key - one of 'points', 'visits', 'purchases' reward types.
