@@ -32,8 +32,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             '.rewards-card-apply': 'classes: {hide: select(rewardsCard_redemption_code, true, false)}',
             '.see-rewards': 'classes: {hide: select(rewardsCard_redemption_code, false, true)}',
             '.cancel-input': 'classes: {hide: select(rewardsCard_redemption_code, false, true)}',
-            '.rewardCard': 'attr: {readonly: rewardsCard_redemption_code}, restrictInput: rewardCard, allowedChars: "0123456789", kbdSwitcher: "numeric", pattern: /^\\d*$/',
-            '.phone': 'restrictInput: customer_phone, allowedChars: "0123456789+", kbdSwitcher: "tel", pattern: /^\\+?\\d{0,15}$/'
+            '.rewardCard': 'attr: {readonly: rewardsCard_redemption_code}, restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^\\d*$/',
+            '.phone': 'restrictInput: "0123456789+", kbdSwitcher: "tel", pattern: /^\\+?\\d{0,15}$/'
         },
         initialize: function() {
             this.listenTo(this.model, 'change:dining_option', this.controlAddress, this);
