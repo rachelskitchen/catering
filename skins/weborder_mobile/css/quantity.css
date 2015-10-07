@@ -63,3 +63,43 @@
     text-align: center;
     border-radius: 0;
 }
+
+.quantity .weight_edit_input[data-size="1"] {
+    width: 1.4em;
+}
+
+.quantity .weight_edit_input[data-size="2"] {
+    width: 2.2em;
+}
+
+.quantity .weight_edit_input[data-size="3"] {
+    width: 3em;
+}
+
+.quantity .weight_edit_input[data-size="4"] {
+    width: 3.8em;
+}
+
+.quantity .weight_edit_input[data-size="5"] {
+    width: 4.6em;
+}
+
+.quantity .weight_edit_input[data-size="6"] {
+    width: 5.4em;
+}
+
+.quantity .weight_edit_input[data-size="7"] {
+    width: 6.2em;
+}
+
+.quantity .weight_edit_input[data-size="8"] {
+    width: 7em;
+}
+
+.quantity .weight_edit_input[data-size="9"] {
+    width: 7.8em;
+}
+
+.quantity .weight_edit_input[data-size="10"] {
+    width: 8.4em;
+}

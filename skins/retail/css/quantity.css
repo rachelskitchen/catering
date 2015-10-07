@@ -85,7 +85,7 @@
 }
 
 .weight_edit_inner {
-    width: 60px !important;
+    width: auto !important;
     height: 27px !important;
     top: 1px;
 }
@@ -109,5 +109,33 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+
+.quantity .weight_edit_input {
+    min-width: 60px;
+}
+
+.quantity .weight_edit_input[data-size="5"] {
+    width: 64px;
+}
+
+.quantity .weight_edit_input[data-size="6"] {
+    width: 73px;
+}
+
+.quantity .weight_edit_input[data-size="7"] {
+    width: 83px;
+}
+
+.quantity .weight_edit_input[data-size="8"] {
+    width: 93px;
+}
+
+.quantity .weight_edit_input[data-size="9"] {
+    width: 103px;
+}
+
+.quantity .weight_edit_input[data-size="10"] {
+    width: 113px;
 }
 /* end of sold_by_weight case */

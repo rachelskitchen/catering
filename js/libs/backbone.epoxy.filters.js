@@ -61,4 +61,17 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         return round_monetary_currency(price);
     });
 
+    Backbone.Epoxy.binding.addFilter('stringLength', function(value) {
+        try {
+            return value.toString().length;
+        } catch(e) {
+            return 0;
+        }
+    });
+
+    Backbone.Epoxy.binding.addFilter('scalesFormat', function(value) {
+        var decimal = Number(_.isObject(App.Settings.scales) && App.Settings.scales.number_of_digits_to_right_of_decimal);
+        typeof value != 'number' && (value = Number(value));
+        return value.toFixed(decimal);
+    });
 });
