@@ -161,11 +161,8 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
     });
 
     Backbone.Epoxy.binding.addHandler("restrictInput", {
-        // Usage:  "#my_input": "restrictInput:cardNumber, allowedChars:'0123456789-'"
+        // Usage:  "#my_input": "restrictInput: '0123456789-'"
         init: function($el, value, bindings, context) {
-            var DEFAULT_ALLOWED_CHARS = "0123456789-";
-            var allowedChars = typeof context.allowedChars == 'string' ? context.allowedChars : DEFAULT_ALLOWED_CHARS;
-
             this.unbind = function() {
                 $el.off('keypress', keypress);
             }
@@ -175,7 +172,7 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
                 var key = event.which;
                 if ((key == null) || (key == 0) || (key == 8) || (key == 9) || (key == 13) || (key == 27)) {
                     return true; // pass control key
-                } else if ((allowedChars.indexOf(String.fromCharCode(key)) > -1)) {
+                } else if ((value.indexOf(String.fromCharCode(key)) > -1)) {
                     return true; // pass valid char
                 }
                 return false; // skip NOT valid char
@@ -183,13 +180,6 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         },
         clean:  function() {
             this.unbind();
-        }
-    });
-
-    Backbone.Epoxy.binding.addHandler('allowedChars', {
-        // Usage: as parameter of 'restrictInput'
-        get: function($el, value, event) {
-            return value;
         }
     });
 

@@ -203,6 +203,9 @@
     overflow-x: hidden;
     overflow-y: auto;
 }
+#popup .order-items h3 {
+    padding: 0;
+}
 #popup .total_block li {
     text-align: right;
 }

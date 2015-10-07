@@ -11,7 +11,35 @@
             <div class="business-name"></div>
             <div class="address-line1"></div>
             <div class="address-line2"></div>
-            <div class="change-store link font-color1 font-color-active7 animation"><%= _lp.REVEL_CHANGE_PASSWORD %></div>
+            <div class="change-store link font-color1 font-color-active7 animation"><%= _lp.CHANGE_ESTABLISHMENT %></div>
+        </div>
+    </div>
+    <div class="phone defs border-color10 text-center">
+        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_PHONE %></div>
+        <div class="info font-size3 font-color4 text-left">
+            <a href="tel:" class="phone-number font-color1 font-color-active7 animation"></a>
+        </div>
+    </div>
+    <div class="email-wrapper defs border-color10 text-center">
+        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_EMAIL %></div>
+        <div class="info font-size3 font-color4 text-left">
+            <a href="mail:" class="email font-color1 font-color-active7 animation"></a>
+        </div>
+    </div>
+    <div class="delivery-info-wrapper defs border-color10 text-center">
+        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_DELIVERY %></div>
+        <div class="info font-size3 font-color4 text-left">
+            <ul>
+                <li>
+                    <span><%= _lp.STORE_INFO_DELIVERY_CHARGE %></span>: <span class="delivery-charge"></span>
+                </li>
+                <li>
+                    <span><%= _lp.STORE_INFO_MINIMUM %></span>: <span class="delivery-minimum"></span>
+                </li>
+                <li>
+                    <span><%= _lp.STORE_INFO_DELIVERY_TIME %></span>: <span class="delivery-time"></span>
+                </li>
+            </ul>
         </div>
     </div>
     <% if(Array.isArray(hours)) { %>
@@ -39,18 +67,6 @@
         </ul>
     </div>
     <% } %>
-    <div class="phone defs border-color10 text-center">
-        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_PHONE %></div>
-        <div class="info font-size3 font-color4 text-left">
-            <a href="tel:" class="phone-number font-color1 font-color-active7 animation"></a>
-        </div>
-    </div>
-    <div class="email-wrapper defs border-color10 text-center">
-        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_EMAIL %></div>
-        <div class="info font-size3 font-color4 text-left">
-            <a href="mail:" class="email font-color1 font-color-active7 animation"></a>
-        </div>
-    </div>
     <div class="access defs border-color10 text-center">
         <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_ACCESS %></div>
         <div class="access-info info font-size3 font-color4 text-left"></div>

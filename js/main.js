@@ -43,6 +43,22 @@ require(['app'], function() {
     // use srv=dev, srv=qa, etc. in the url path instead of changing app.REVEL_HOST here
     app.REVEL_HOST = window.location.origin;
 
+    /**
+     * Set a predefined GET-parameters for custom instances.
+     *
+     * For instance, following config:
+     *     app.instances = {
+     *         'https://revel.revelup.com': {
+     *             skin: skins['RETAIL'],
+     *             establishment: 9,
+     *             dev: true
+     *         }
+     *     }
+     * Will allow use brief url "https://revel.revelup.com/weborder/"
+     * instead of "https://revel.revelsystems.com/weborder/?skin=retail&establishment=9&dev=true"
+     */
+    app.instances = {};
+
     // run app
     app.init();
 });

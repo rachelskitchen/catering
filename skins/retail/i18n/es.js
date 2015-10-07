@@ -83,6 +83,7 @@ define([], function() {
         MYORDER_REMOVE: "Eliminar",
         MYORDER_WEIGHT: "c/",
         MYORDER_ADD_TO_BAG: "Agregar a la bolsa",
+        MYORDER_ADD_ITEM: "Agregar a la bolsa",
         MYORDER_UPDATE_ITEM: "Actualizar artículo",
         PRODUCTS_ENTER_GIFT_CARD: "Ingrese un número de tarjeta de regalo para cargarle fondos",
         PRODUCTS_GIFT_CARD_NUMBER: "Número de tarjeta de regalo",
@@ -111,6 +112,10 @@ define([], function() {
         REWARDS_OFF: "Desactivado",
         REWARDS_POINTS_REDEMPTION_AMOUNT: ["Point will be redeemed", "Se canjearán los puntos"],
         REWARDS_VISITS_REDEMPTION_AMOUNT: ["Visit will be redeemed", "Se canjearán las visitas"],
-        REWARDS_PURCHASES_REDEMPTION_AMOUNT: ["Purchase will be redeemed", "Se canjearán las compras"]
+        REWARDS_PURCHASES_REDEMPTION_AMOUNT: ["Purchase will be redeemed", "Se canjearán las compras"],
+        STANFORD_RELOAD_INFO1: "Please specify the Card # and the amount you'd like to add",
+        STANFORD_RELOAD_INFO2: "Please specify the plan you'd like to add value to",
+        STANFORD_CARD_NUMBER: "Stanford Card #",
+        STANFORD_CARD_CHOOSE_PLAN: "Stanford Card: Choose Plan"
     }
 });

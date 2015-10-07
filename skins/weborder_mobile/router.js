@@ -526,14 +526,16 @@ define(["main_router"], function(main_router) {
                         order = order.clone();
                     }
 
+                    var content = self.getStanfordReloadItem(order) || {
+                        modelName: 'MyOrder',
+                        model: order,
+                        mod: 'Matrix',
+                        cacheId: false
+                    };
+
                     App.Data.mainModel.set({
                         contentClass: '',
-                        content: {
-                            modelName: 'MyOrder',
-                            model: order,
-                            mod: 'Matrix',
-                            cacheId: false
-                        }
+                        content: content
                     });
 
                     self.change_page();
@@ -1315,6 +1317,82 @@ define(["main_router"], function(main_router) {
 
                 this.change_page();
             });
+        },
+        getStanfordReloadItem: function(order) {
+            var product = order.get_product(),
+                footerStanfordReload,
+                stanfordCard,
+                stanfordState;
+
+            if(App.Data.is_stanford_mode && product && product.get('is_gift')) {
+                stanfordCard = order.get('stanfordCard');
+
+                stanfordState = new Backbone.Model({
+                    showPlans: hasPlans()
+                });
+
+                footerStanfordReload = {
+                    mod: 'StanfordReload',
+                    card: stanfordCard,
+                    orderItem: order,
+                    className: 'footer bg-color10'
+                };
+
+                App.Data.footer.set({
+                    btn_title: _loc.NEXT,
+                    action: getPlans
+                });
+
+                // listen to initial price change
+                this.listenTo(order, 'change:initial_price', linkBehavior);
+
+                // define footer behavior
+                this.listenTo(stanfordCard, 'change:validated', setFooter);
+                setFooter();
+
+                // unbind stanford reload item listeners
+                this.listenToOnce(this, 'route', function() {
+                    this.stopListening(order, 'change:initial_price', linkBehavior);
+                    this.stopListening(stanfordCard, 'change:validated', setFooter);
+                    App.Data.header.set('enableLink', true); // restore default value
+                });
+
+                return {
+                    modelName: 'MyOrder',
+                    model: order,
+                    mod: 'StanfordItem',
+                    stanfordState: stanfordState,
+                    cacheId: false
+                };
+            }
+
+            function setFooter() {
+                if (hasPlans()) {
+                    stanfordState.set('showPlans', true);
+                    App.Data.mainModel.set({footer: footerModes.None});
+                } else {
+                    stanfordState.set('showPlans', false);
+                    App.Data.mainModel.set({footer: footerStanfordReload});
+                }
+                linkBehavior();
+            }
+
+            function linkBehavior() {
+                var price = Number(order.get('initial_price')),
+                    number = order.get('stanford_card_number'),
+                    plan = order.get('planId');
+                App.Data.header.set('enableLink', Boolean(price && number && plan));
+            }
+
+            function hasPlans() {
+                return stanfordCard.get('validated') && stanfordCard.get('plans').length;
+            }
+
+            function getPlans() {
+                var mainModel = App.Data.mainModel;
+                mainModel.trigger('loadStarted');
+                stanfordCard.getPlans(true).then(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+            }
         },
         initRevelAPI: function() {
             App.Routers.RevelOrderingRouter.prototype.initRevelAPI.apply(this, arguments);

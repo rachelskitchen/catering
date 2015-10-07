@@ -109,6 +109,12 @@ select {
 select::-ms-expand { /*Removes default IE style*/
     display: none;
 }
+.fl-left {
+    float: left;
+}
+.fl-right {
+    float: right;
+}
 article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary {
     display: block;
 }
@@ -407,7 +413,7 @@ footer {
 #cart .main.visible {
     opacity: 100;
     filter: alpha(opacity=100);
-    z-index: 10001;
+    z-index: 800;
 }
 #cart .main .subtotal {
     border-top-width: 1px;

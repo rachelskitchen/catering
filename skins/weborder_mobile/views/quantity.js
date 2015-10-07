@@ -25,7 +25,7 @@ define(["quantity_view"], function(quantity_view) {
 
     var QuantityMainView = App.Views.CoreQuantityView.CoreQuantityMainView.extend({
         bindings: {
-            '.input .quantity_edit_input': 'restrictInput: quantity, allowedChars: "0123456789", kbdSwitcher: "numeric"'
+            'input.quantity_edit_input': 'restrictInput: "0123456789", kbdSwitcher: "numeric"'
         },
         events: {
             'click .increase:not(.disabled)': 'increase',
@@ -35,7 +35,6 @@ define(["quantity_view"], function(quantity_view) {
         },
         hide_show: function() {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.hide_show.apply(this, arguments);
-            this.oldQuantity = this.model.get('quantity');
             var product = this.model.get_product(),
                 disallowNegativeInventory = App.Data.settings.get('settings_system').cannot_order_with_empty_inventory;
             if (product.get('stock_amount') === 1 || product.isParent()) {

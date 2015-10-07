@@ -185,8 +185,10 @@ define(["backbone", "captcha"], function(Backbone) {
          *    "captchaKey": <string>,
          *    "captchaValue": <string>
          * }
+         *
+         * @param {boolean} reload - optional, additional parameter in POST request.
          */
-        getPlans: function() {
+        getPlans: function(reload) {
             var est = App.Data.settings.get('establishment'),
                 req = Backbone.$.Deferred(),
                 plans = this.get('plans'),
@@ -207,7 +209,8 @@ define(["backbone", "captcha"], function(Backbone) {
                     establishment: est,
                     number: data.number,
                     captchaKey: data.captchaKey,
-                    captchaValue: data.captchaValue
+                    captchaValue: data.captchaValue,
+                    reload: reload ? true : undefined
                 }),
                 dataType: 'json',
                 success: function(data) {
@@ -298,6 +301,15 @@ define(["backbone", "captcha"], function(Backbone) {
                 this.set(data);
                 Array.isArray(plans) && this.get('plans').reset(plans);
             }
+        },
+        /**
+         * @method
+         * Returns attributes in JSON format
+         */
+        getJSON: function() {
+            return _.extend({}, this.toJSON(), {
+                plans: this.get('plans').toJSON()
+            });
         }
     });
 });
