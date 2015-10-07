@@ -97,14 +97,7 @@ define(["quantity_view"], function(quantity_view) {
         }
     });
 
-    var QuantityWeightView = App.Views.CoreQuantityView.CoreQuantityWeightView.extend({
-        update: function() {
-            this.$('.weight_edit_input').val(this.model.get('weight').toFixed(this.number_decimal_digits));
-        }
-    });
-
     return new (require('factory'))(quantity_view.initViews.bind(quantity_view), function() {
         App.Views.QuantityView.QuantityMainView = QuantityMainView;
-        App.Views.QuantityView.QuantityWeightView = QuantityWeightView;
     });
 });
