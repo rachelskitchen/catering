@@ -29,7 +29,7 @@ define(["factory", "giftcard_view"], function(factory) {
         name: 'stanfordcard',
         mod: 'main',
         bindings: _.extend({}, App.Views.CoreGiftCardView.CoreGiftCardMainView.prototype.bindings, {
-            '.number-input': 'value: number, events:["keyup", "blur", "touchend"], attr: {readonly: validated}',
+            '.number-input': 'value: number, events:["keyup", "blur", "touchend"], attr: {readonly: validated}, restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^(\\d{0,15})$/',
             '.captcha-input': 'value: captchaValue, events:["keyup", "blur", "touchend"], attr: {readonly: validated}, pattern: /^\\w{0,4}$/',
             '.btn-reload': 'classes: {disabled: validated}',
             '.cancel-input': 'toggle: validated',

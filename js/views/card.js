@@ -34,9 +34,9 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(this.model, 'change:firstName change:secondName', this.updateData, this); // update first name & last name of view
         },
         bindings: {
-            '.number': 'restrictInput: cardNumber, allowedChars: "0123456789", kbdSwitcher: "numeric", pattern: /^[\\d|-]{0,19}$/',
-            '.secure': 'restrictInput: securityCode, allowedChars: "0123456789", kbdSwitcher: "numeric", pattern: /^[\\d|-]{0,4}$/',
-            '.zip': 'restrictInput: zip, allowedChars: "0123456789", kbdSwitcher: "numeric", pattern: /^(\\d{0,9})$/'
+            '.number': 'restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^[\\d|-]{0,19}$/',
+            '.secure': 'restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^[\\d|-]{0,4}$/',
+            '.zip': 'restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^(\\d{0,9})$/'
         },
         render: function() {
             var self = this,
