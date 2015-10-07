@@ -29,8 +29,8 @@ define(["factory", "giftcard_view"], function(factory) {
         name: 'stanfordcard',
         mod: 'main',
         bindings: _.extend({}, App.Views.CoreGiftCardView.CoreGiftCardMainView.prototype.bindings, {
-            '.number-input': 'value: number, events:["keyup", "blur", "touchend"], attr: {readonly: validated}',
-            '.captcha-input': 'value: captchaValue, events:["keyup", "blur", "touchend"], attr: {readonly: validated}',
+            '.number-input': 'value: number, events:["keyup", "blur", "touchend"], attr: {readonly: validated}, restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^(\\d{0,15})$/',
+            '.captcha-input': 'value: captchaValue, events:["keyup", "blur", "touchend"], attr: {readonly: validated}, pattern: /^\\w{0,4}$/',
             '.btn-reload': 'classes: {disabled: validated}',
             '.cancel-input': 'toggle: validated',
             '.captcha_input_line': 'toggle: not(validated)',
@@ -125,12 +125,28 @@ define(["factory", "giftcard_view"], function(factory) {
         }
     });
 
+    App.Views.CoreStanfordCardView.CoreStanfordCardReloadView = App.Views.CoreStanfordCardView.CoreStanfordCardMainView.extend({
+        name: 'stanfordcard',
+        mod: 'reload',
+        initialize: function() {
+            var model = this.model.toJSON();
+            this.ignoreUpdateCaptcha = model.captchaImage && model.captchaKey && model.captchaValue;
+            App.Views.CoreStanfordCardView.CoreStanfordCardMainView.prototype.initialize.apply(this, arguments);
+            delete this.ignoreUpdateCaptcha;
+        },
+        updateCaptcha: function() {
+            !this.ignoreUpdateCaptcha && App.Views.CoreStanfordCardView.CoreStanfordCardMainView.prototype.updateCaptcha.apply(this, arguments);
+        },
+        updateCartTotals: new Function() // override parent's method to avoid myorder.update_cart_total() calling
+    });
+
     return new (require('factory'))(function() {
         App.Views.StanfordCardView = {};
         App.Views.StanfordCardView.StanfordCardMainView = App.Views.CoreStanfordCardView.CoreStanfordCardMainView;
         App.Views.StanfordCardView.StanfordCardPlansView = App.Views.CoreStanfordCardView.CoreStanfordCardPlansView;
         App.Views.StanfordCardView.StanfordCardPlanView = App.Views.CoreStanfordCardView.CoreStanfordCardPlanView;
         App.Views.StanfordCardView.StanfordCardStudentStatusView = App.Views.CoreStanfordCardView.CoreStanfordStudentStatusView;
+        App.Views.StanfordCardView.StanfordCardReloadView = App.Views.CoreStanfordCardView.CoreStanfordCardReloadView;
     });
 
 });

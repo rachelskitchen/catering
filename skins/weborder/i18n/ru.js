@@ -167,6 +167,10 @@
             'покупок будет потрачено'
         ],
         'SEARCH_ENTER_STRING':             'Поиск',
-        'PRODUCTS_NOT_FOUND':              'Товары не найдены'
+        'PRODUCTS_NOT_FOUND':              'Товары не найдены',
+        'STANFORD_RELOAD_INFO1': "Укажите номер карточки и сумму, на которую хотите пополнить план",
+        'STANFORD_RELOAD_INFO2': "Выберите план, на который будет выполнено зачисление средств",
+        'STANFORD_CARD_NUMBER': "Stanford Card #",
+        'STANFORD_CARD_CHOOSE_PLAN': "Stanford Card: Выбор Плана"
     } // end of locale
 }); // end of module

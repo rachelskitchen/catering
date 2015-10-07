@@ -113,7 +113,7 @@ define(["factory"], function() {
         bindings: {
             '.title': 'text:page_title, classes: {"icon-check": not(link)}',
             '.btn-link-title': 'text:link_title',
-            '.btn-link': 'toggle: link',
+            '.btn-link': 'toggle: link, classes: {disabled: not(enableLink)}',
             '.btn-back-title': 'text: back_title',
             '.btn-cart': 'toggle: not(link), attr: {"data-count": cartItemsQuantity}, classes: {"qty-visible": cartItemsQuantity}'
         },

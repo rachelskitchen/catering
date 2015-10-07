@@ -112,14 +112,17 @@ define(["myorder_view"], function(myorder_view) {
         },
         editItem: function(e) {
             e.preventDefault();
-            var model = this.model;
+            var model = this.model,
+                isStanfordItem = App.Data.is_stanford_mode && this.model.get_product().get('is_gift');
+
             App.Data.mainModel.set('popup', {
-                    modelName: 'MyOrder',
-                    mod: 'Matrix',
-                    model: model.clone(),
-                    real: model,
-                    action: 'update'
-                });
+                modelName: 'MyOrder',
+                mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
+                className: isStanfordItem ? 'stanford-reload-item' : '',
+                model: model.clone(),
+                real: model,
+                action: 'update'
+            });
         }/*,
         getData: function() {
             var data = App.Views.CoreMyOrderView.CoreMyOrderItemView.prototype.getData.apply(this, arguments),

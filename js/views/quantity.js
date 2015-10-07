@@ -66,7 +66,7 @@ define(["backbone", "factory"], function(Backbone) {
         name: 'quantity',
         mod: 'weight',
         bindings: {
-            '.weight_edit_input': 'restrictInput: weight, allowedChars: "0123456789.", kbdSwitcher: "float", pattern: weight_regex'
+            '.weight_edit_input': 'restrictInput: "0123456789.", kbdSwitcher: "float", pattern: weight_regex'
         },
         computeds: {
             weight_regex: {

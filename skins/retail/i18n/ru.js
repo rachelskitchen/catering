@@ -94,6 +94,7 @@
         'MYORDER_REMOVE': 'Удалить',
         'MYORDER_WEIGHT': 'в/',
         'MYORDER_ADD_TO_BAG': 'Добавить',
+        'MYORDER_ADD_ITEM': "Добавить",
         'MYORDER_UPDATE_ITEM': 'Изменить',
         'PRODUCTS_ENTER_GIFT_CARD': 'Введите номер подарочной карты, на которую вы хотите положить деньги',
         'PRODUCTS_GIFT_CARD_NUMBER': '№ карты',
@@ -136,6 +137,10 @@
         'REWARDS_PURCHASES_REDEMPTION_AMOUNT': [
             'покупка будет потрачена',
             'покупок будет потрачено'
-        ]
+        ],
+        'STANFORD_RELOAD_INFO1': "Укажите номер карточки и сумму, на которую хотите пополнить план",
+        'STANFORD_RELOAD_INFO2': "Выберите план, на который будет выполнено зачисление средств",
+        'STANFORD_CARD_NUMBER': "Stanford Card #",
+        'STANFORD_CARD_CHOOSE_PLAN': "Stanford Card: Выбор Плана"
     } // end of locale
 }); // end of module

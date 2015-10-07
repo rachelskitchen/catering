@@ -107,9 +107,26 @@ function msgFrm(msg_format) {
  * Get GET-parameters from address line.
  */
 function parse_get_params() {
+    // need to include app.instances config as origin parameters
+    if (!parse_get_params.instance_config_applied) {
+        try {
+            var app = require('app');
+            if(app.REVEL_HOST in app.instances) {
+                var instance_params = app.instances[app.REVEL_HOST];
+            }
+            if(window.$_GET) {
+                window.$_GET = _.extend({}, instance_params, window.$_GET);
+            }
+            parse_get_params.instance_config_applied = true;
+        } catch(e) {
+            console.log(e)
+        }
+    }
+    // return if string was already parsed
     if (window.$_GET) {
         return window.$_GET;
     }
+
     $_GET = {};
     // Mercury return url is not xml-decoded
     var search = window.location.search.replace(/&amp;/g, '&');
@@ -117,6 +134,9 @@ function parse_get_params() {
     for (var i = 0; i < __GET.length; i++) {
         var get_var = __GET[i].split("=");
         $_GET[get_var[0]] = typeof(get_var[1]) == "undefined" ? "" : get_var[1];
+    }
+    if (_.isObject(instance_params)) {
+        $_GET = _.extend({}, instance_params, $_GET);
     }
     return $_GET;
 }

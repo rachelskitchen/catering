@@ -166,6 +166,10 @@
             'Purchases will be redeemed'
         ],
         'SEARCH_ENTER_STRING': 'Search',
-        'PRODUCTS_NOT_FOUND': 'No products found'
+        'PRODUCTS_NOT_FOUND': 'No products found',
+        'STANFORD_RELOAD_INFO1': "Please specify the Card # and the amount you'd like to add",
+        'STANFORD_RELOAD_INFO2': "Please specify the plan you'd like to add value to",
+        'STANFORD_CARD_NUMBER': 'Stanford Card #',
+        'STANFORD_CARD_CHOOSE_PLAN': 'Stanford Card: Choose Plan'
     } // end of locale
 }); // end of module

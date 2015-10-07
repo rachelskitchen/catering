@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbone) {
+define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'], function(Backbone) {
     'use strict';
 
     App.Models.Myorder = Backbone.Model.extend({
@@ -34,7 +34,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             quantity_prev : 1,
             special : '',
             initial_price: null, // product price including modifier "size",
-            discount: null
+            discount: null,
+            stanfordCard: null,         // App.Models.StanfordCard instance if product is gift
+            stanford_card_number: '',   // stanford card number
+            planId: null                // stanford plan to add some amount to
         },
         product_listener: false, // check if listeners for product is present
         modifier_listener: false, // check if listeners for modifiers is preset
@@ -154,6 +157,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
                     initial_price: self.get_initial_price()
                 });
                 self.update_prices();
+                self.initStanfordReloadItem();
                 loadOrder.resolve();
             });
 
@@ -178,6 +182,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             if (!data.id_product) {
                 this.set('id_product', data.product.id);
             }
+
+            data.stanfordCard && this.initStanfordReloadItem(data.stanfordCard);
 
             return this;
         },
@@ -216,12 +222,14 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
             else return "";
         },
         clone: function() {
-            var order = new App.Models.Myorder();
+            var order = new App.Models.Myorder(),
+                stanfordCard = this.get('stanfordCard');
             for (var key in this.attributes) {
                 var value = this.get(key);
                 if (value && value.clone) { value = value.clone(); }
                 order.set(key, value, {silent: true });
             }
+            stanfordCard && order.initStanfordReloadItem(stanfordCard.getJSON());
             order.trigger('change', order, {clone: true});
             return order;
         },
@@ -367,12 +375,21 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
 
                 //constuct product_name_override as it's done by POS:
                 item_obj.product_name_override = product.name + "\n " + item_obj.weight.toFixed(num_digits) + str_label_for_manual_weights + " @ "
-                    + currency_symbol + round_monetary_currency(item_obj.initial_price) + str_uom;
+                    + currency_symbol + round_monetary_currency(item_obj.price) + str_uom;
             }
 
 
             if (product.gift_card_number) {
                 item_obj.gift_card_number = product.gift_card_number;
+            }
+
+            // add stanford info if this is stanford reload item
+            var planId = this.get('planId'),
+                stanford_card_number = this.get('stanford_card_number');
+
+            if (planId && stanford_card_number) {
+                item_obj.planId = planId;
+                item_obj.stanford_card_number = stanford_card_number;
             }
 
             return item_obj;
@@ -419,6 +436,46 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
         hasPointValue: function() {
             var point_value = this.isRealProduct() && this.get_product().get('point_value');
             return typeof point_value == 'number' && !isNaN(point_value);
+        },
+        /**
+         * @method
+         * Inits stanford reload item. If product is gift and App.Data.is_stanford_mode is true then item is stanford reload.
+         */
+        initStanfordReloadItem: function(data) {
+            if(!this.get_product().get('is_gift') && !App.Data.is_stanford_mode) {
+                return;
+            }
+
+            var stanfordCard = new App.Models.StanfordCard(_.isObject(data) ? data : {
+                number: this.get('stanford_card_number'),
+                planId: this.get('planId'),
+            }), self = this;
+
+            this.set({
+                stanfordCard: stanfordCard,
+                stanford_card_number: stanfordCard.get('number'),
+                planId: stanfordCard.get('planId')
+            });
+
+            this.listenTo(stanfordCard, 'onStanfordCardError', function(msg) {
+                msg && App.Data.errors.alert(msg);
+            }, this);
+
+            this.listenTo(stanfordCard, 'change:number', function(model, value) {
+                self.set('stanford_card_number', value);
+            }, this);
+
+            stanfordCard.listenTo(this, 'change:stanford_card_number', function(model, value) {
+                stanfordCard.set('number', self.get('stanford_card_number'));
+            });
+
+            this.listenTo(stanfordCard, 'change:planId', function(model, value) {
+                self.set('planId', value);
+            }, this);
+
+            stanfordCard.listenTo(this, 'change:planId', function(model, value) {
+                stanfordCard.set('planId', self.get('planId'));
+            }, this);
         }
     });
 
@@ -1068,7 +1125,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards'], function(Backbo
         },
         update_cart_totals: function(params) {
             if (!this.getDiscountsTimeout) //it's to reduce the number of requests to the server
-                this.getDiscountsTimeout = setTimeout(this.get_cart_totals.bind(this, params), 100);
+                this.getDiscountsTimeout = setTimeout(this.get_cart_totals.bind(this, params), 500);
         },
         get_cart_totals: function(params) {
             var self = this;

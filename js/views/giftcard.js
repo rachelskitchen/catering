@@ -34,7 +34,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.updateCaptcha();
         },
         bindings: {
-            '.number-input': 'restrictInput: cardNumber, allowedChars: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/',
+            '.number-input': 'restrictInput: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/',
             'img.captcha': 'updateCaptcha: url',
             '#id_captcha_key': 'value: captchaKey',
             '#id_captcha_value': 'value: captchaValue, events: ["input"]'
