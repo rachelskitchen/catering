@@ -66,21 +66,21 @@ define(["backbone", "factory"], function(Backbone) {
         name: 'quantity',
         mod: 'weight',
         bindings: {
-            '.weight_edit_input': 'restrictInput: "0123456789.", kbdSwitcher: "float", pattern: weight_regex'
+            '.weight_edit_input': 'restrictInput: "0123456789.", kbdSwitcher: "float", pattern: weight_regex, attr: {"data-size": stringLength(scalesFormat(weight))}'
         },
         computeds: {
             weight_regex: {
                 get: function() {
                     return RegExp(this.reg_str);
                 }
-            },
+            }
         },
         initialize: function() {
             var product = this.model.get_product();
             if (product && product.get('sold_by_weight')) {
                 this.number_decimal_digits = App.Settings.scales.number_of_digits_to_right_of_decimal;
                 if (this.number_decimal_digits)
-                   this.reg_str = "^\\d{0,4}\\.{0,1}\\d{0," + this.number_decimal_digits + "}$";
+                   this.reg_str = "^\\d{0,4}(\\.\\d{0," + this.number_decimal_digits + "})?$";
                 else
                    this.reg_str = "^\\d{0,4}$";
             }
@@ -117,7 +117,7 @@ define(["backbone", "factory"], function(Backbone) {
             }
         },
         update: function() {
-
+            this.$('.weight_edit_input').val(this.model.get('weight').toFixed(this.number_decimal_digits));
         }
     });
 
