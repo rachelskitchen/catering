@@ -1457,6 +1457,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                                 if (data.balances && data.balances.stanford) {
                                     App.Data.stanfordCard && payment_type === PAYMENT_TYPE.STANFORD && App.Data.stanfordCard.updatePlans(data.balances.stanford);
                                 }
+                                if (data.balances && data.balances.rewards) {
+                                    App.Data.myorder.rewardsCard && App.Data.myorder.rewardsCard.resetDataAfterPayment();
+                                }
                                 myorder.trigger('paymentResponse');
                             }
 
