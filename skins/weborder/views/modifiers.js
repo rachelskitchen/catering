@@ -23,10 +23,11 @@
 define(["modifiers_view"], function(modifiers_view) {
     'use strict';
 
-    var ModifiersItemView = App.Views.CoreModifiersView.CoreModifiersItemView.extend({
-        bindings: {
+    var CoreModifiersItemView = App.Views.CoreModifiersView.CoreModifiersItemView,
+        ModifiersItemView = CoreModifiersItemView.extend({
+        bindings: _.extend(CoreModifiersItemView.prototype.bindings, {
             '.mdf_spacer': 'css:{width:mdf_width}'
-        },
+        }),
         computeds: {
             mdf_width: {
                 deps: ["_system_settings_enable_split_modifiers", "_system_settings_enable_quantity_modifiers"],
