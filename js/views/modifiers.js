@@ -41,7 +41,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         },
         bindingHandlers: {
             change_split_modifier: function($element, qty_type) {
-                var splitLabel = $element.closest(".mdf_split");
+                var splitLabel = $(".selected_option", $element.closest(".mdf_split").parent());
                 removeClassRegexp(splitLabel, "option_\\d+");
                 splitLabel.addClass("option_" + qty_type);
             }
