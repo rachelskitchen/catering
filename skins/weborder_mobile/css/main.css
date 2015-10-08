@@ -167,10 +167,6 @@ h1, h2, h3 {
     -webkit-overflow-scrolling: touch; /* set native iOS scrolling */
 }
 
-#section li {
-    -webkit-transform: translate3d(0,0,0); /*it's for scrolling, fixes the issue when blank space can appear on first time quick scroll */
-}
-
 #section > div {
     padding: 0 1.8em;
     min-height: 100%;
