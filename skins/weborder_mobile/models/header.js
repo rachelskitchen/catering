@@ -115,12 +115,6 @@ define(["backbone"], function(Backbone) {
             var self = this,
                 check = orderItem.check_order();
 
-            this.set('back', function() {
-                orderItem.update(originOrderItem);
-                self.set('back', window.history.back.bind(window.history), {silent: true});
-                window.history.back();
-            });
-
             if (check.status === 'OK') {
                 // no need to check a 'is_gift' for stanford reload item
                 if(App.Data.is_stanford_mode && orderItem.get('stanford_card_number') && orderItem.get('planId')) {
@@ -141,9 +135,6 @@ define(["backbone"], function(Backbone) {
                     page_title: _loc.PRODUCT_UPDATED,
                     cartItemsQuantity: App.Data.myorder.get_only_product_quantity()
                 });
-                orderItem.set('discount', originOrderItem.get('discount').clone(), {silent: true});
-                App.Data.myorder.splitItemAfterQuantityUpdate(orderItem, originOrderItem.get('quantity'), orderItem.get('quantity'), true);
-                originOrderItem.update(orderItem);
             }
         },
         performSearch: function() {
