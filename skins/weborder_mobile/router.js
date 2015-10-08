@@ -494,14 +494,14 @@ define(["main_router"], function(main_router) {
                     header = App.Data.header,
                     isEditMode = !id_product,
                     order = isEditMode ? App.Data.myorder.at(id_category) : new App.Models.Myorder(),
-                    originOrder = null;
-
+                    originOrder = null,
+                    isOrderChanged;
 
                 if(!order)
                     return this.navigate('index', true);
 
                 header.set({
-                    back: back,
+                    back: window.history.back.bind(window.history),
                     back_title: _loc.BACK,
                     cart: cart
                 });
@@ -516,6 +516,7 @@ define(["main_router"], function(main_router) {
                     this.listenTo(order, 'change', setHeaderToUpdate);
                     setHeaderToUpdate();
                     showProductDetails();
+                    isOrderChanged = false;
                 } else {
                     setHeaderToAdd();
                     order.add_empty(id_product * 1, id_category * 1).then(showProductDetails);
@@ -541,13 +542,12 @@ define(["main_router"], function(main_router) {
                     self.change_page();
                 }
 
-                function back() {
+                this.listenToOnce(this, 'route', function back() {
                     self.stopListening(order, 'change', setHeaderToUpdate);
-                    if (originOrder) {
+                    if (isOrderChanged) {
                         order.update(originOrder);
                     }
-                    window.history.back();
-                }
+                });
 
                 function cart() {
                     self.stopListening(order, 'change', setHeaderToUpdate);
@@ -556,10 +556,18 @@ define(["main_router"], function(main_router) {
                 }
 
                 function setHeaderToUpdate() {
+                    isOrderChanged = true;
                     header.set({
                         page_title: _loc.CUSTOMIZE,
                         link_title: _loc.UPDATE,
-                        link: App.Settings.online_orders ? header.updateProduct.bind(header, order, originOrder) : header.defaults.link
+                        link: !App.Settings.online_orders ? header.defaults.link : function() {
+                            header.updateProduct(order);
+                            order.set('discount', originOrder.get('discount').clone(), {silent: true});
+                            App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
+                            // originOrderItem.update(orderItem);
+                            originOrder = order.clone();
+                            isOrderChanged = false;
+                        }
                     });
                 }
 
@@ -1378,9 +1386,10 @@ define(["main_router"], function(main_router) {
             }
 
             function linkBehavior() {
-                var price = Number(order.get('initial_price')),
-                    number = order.get('stanford_card_number'),
-                    plan = order.get('planId');
+                var stanfordCard = order.get('stanfordCard'),
+                    price = Number(order.get('initial_price')),
+                    number = stanfordCard.get('number'),
+                    plan = stanfordCard.get('planId');
                 App.Data.header.set('enableLink', Boolean(price && number && plan));
             }
 
