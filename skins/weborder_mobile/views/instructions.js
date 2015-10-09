@@ -24,6 +24,9 @@ define(["instructions_view"], function(instructions_view) {
     'use strict';
 
     var InstructionsModifiersView = App.Views.CoreInstructionsView.CoreInstructionsModifiersView.extend({
+        bindings: {
+            '.instructions': 'value: special, events: ["input"]'
+        },
         render: function() {
             var self = this;
             App.Views.CoreInstructionsView.CoreInstructionsModifiersView.prototype.render.apply(this, arguments);

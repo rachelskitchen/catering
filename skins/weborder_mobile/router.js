@@ -545,7 +545,17 @@ define(["main_router"], function(main_router) {
                 this.listenToOnce(this, 'route', function back() {
                     self.stopListening(order, 'change', setHeaderToUpdate);
                     if (isOrderChanged) {
+                        var product = order.get_product();
                         order.update(originOrder);
+                        // need to update input values otherwise current input.value overrides restored values
+                        order.trigger('change:special', order, order.get('special'));
+                        order.trigger('change:quantity', order, order.get('quantity'));
+                        if(product.get('is_gift')) {
+                            order.trigger('change:initial_price', order, order.get('initial_price'));
+                            order.trigger('change:product', order, product); // for Stanford Reload Item
+                            product.trigger('change:price', product, product.get('price'));
+                            product.trigger('change:gift_card_number', product, product.get('gift_card_number'));
+                        }
                     }
                 });
 
