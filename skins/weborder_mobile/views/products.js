@@ -27,7 +27,7 @@ define(["products_view"], function(products_view) {
         name: 'product',
         mod: 'modifiers',
         bindings: {
-            '.price': 'value: monetaryFormat(price), events: ["input"], attr: {size: length(monetaryFormat(price)), readonly: not(giftMode)}, restrictInput: "0123456789.", kbdSwitcher: select(_product_is_gift, "float", "text")',
+            '.price': 'value: monetaryFormat(price), events: ["input"], attr: {size: length(monetaryFormat(price)), readonly: not(giftMode)}, restrictInput: "0123456789.,", kbdSwitcher: select(_product_is_gift, "float", "text"), pattern: /^\\d*(\\.\\d{0,2})?$/',
             '.currency': 'text: _system_settings_currency_symbol, toggle: not(uom)',
             '.uom': 'text: uom, toggle: uom',
             '.title': 'text: _product_name',
@@ -61,10 +61,9 @@ define(["products_view"], function(products_view) {
                     var product = this.model.get_product();
 
                     value = parseFloat(value);
-
                     if(!isNaN(value)) {
-                        this.model.set('initial_price', value);
-                        product.set('price', value);
+                        this.model.set('initial_price', value, {silent: true});
+                        product.set('price', value, {silent: true});
                     } else {
                         this.model.trigger('change:initial_price');
                     }

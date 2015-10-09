@@ -234,11 +234,13 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return order;
         },
         update: function(newModel) {
+            var stanfordCard = newModel.get('stanfordCard');
             for (var key in newModel.attributes) {
                 var value = newModel.get(key);
                 if (value && value.update) { this.get(key).update(value); }
                 else { this.set(key, value, {silent: true}); }
             }
+            stanfordCard && this.initStanfordReloadItem(stanfordCard.getJSON());
             this.trigger('change',this);
             return this;
         },
@@ -442,7 +444,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * Inits stanford reload item. If product is gift and App.Data.is_stanford_mode is true then item is stanford reload.
          */
         initStanfordReloadItem: function(data) {
-            if(!this.get_product().get('is_gift') && !App.Data.is_stanford_mode) {
+            if(!App.Data.is_stanford_mode || !this.get_product().get('is_gift')) {
                 return;
             }
 
