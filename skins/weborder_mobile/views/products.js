@@ -27,7 +27,9 @@ define(["products_view"], function(products_view) {
         name: 'product',
         mod: 'modifiers',
         bindings: {
-            '.price': 'value: monetaryFormat(price), events: ["input"], attr: {size: length(monetaryFormat(price)), readonly: not(giftMode)}, restrictInput: "0123456789.,", kbdSwitcher: select(_product_is_gift, "float", "text"), pattern: /^\\d*(\\.\\d{0,2})?$/',
+            '.price': 'classes: {"gift-amount": giftMode, "product-price": not(giftMode)}, attr: {size: length(monetaryFormat(initial_price)), readonly: not(giftMode)}, restrictInput: "0123456789.,", kbdSwitcher: select(_product_is_gift, "float", "text"), pattern: /^\\d*(\\.\\d{0,2})?$/',
+            '.product-price': 'value: monetaryFormat(initial_price)',
+            '.gift-amount': 'value: monetaryFormat(price), events: ["input"]',
             '.currency': 'text: _system_settings_currency_symbol, toggle: not(uom)',
             '.uom': 'text: uom, toggle: uom',
             '.title': 'text: _product_name',
@@ -53,17 +55,17 @@ define(["products_view"], function(products_view) {
                 }
             },
             price: {
-                deps: ['initial_price'],
-                get: function(initial_price) {
-                    return initial_price;
+                deps: ['product'],
+                get: function() {
+                    return this.model.get_product().get('price');
                 },
                 set: function(value) {
                     var product = this.model.get_product();
 
                     value = parseFloat(value);
                     if(!isNaN(value)) {
-                        this.model.set('initial_price', value, {silent: true});
-                        product.set('price', value, {silent: true});
+                        product.set('price', value);
+                        //this.model.set('initial_price', value);
                     } else {
                         this.model.trigger('change:initial_price');
                     }
