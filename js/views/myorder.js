@@ -378,7 +378,8 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     return this.model.get_product().get('price');
                 },
                 set: function(value) {
-                    this.model.get_product().set('price', Number(value));
+                    value = parseInt(value) || 0;
+                    this.model.get_product().set('price', value);
                 }
             }
         },
