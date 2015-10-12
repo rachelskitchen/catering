@@ -56,8 +56,8 @@
     height: auto;
 }
 
-.stanford-reload-item .btn-popup.disbled {
-    margin-top: 23px;
+.stanford-reload-item .btn-popup.validated {
+    margin-top: 107px;
 }
 
 .stanford-reload-item .view {

@@ -363,7 +363,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         bindings: {
             // initial_price can be only integer according Stanford card reload service limitation (Bug 30983)
             '.initial-price': 'value: integer(price), events: ["input"], restrictInput: "0123456789.,", kbdSwitcher: "numeric", pattern: /^\\d*$/',
-            '.next': 'classes: {disabled: not(all(decimal(initial_price), select(stanford_validated, stanford_planId, true), stanford_number, stanford_captchaValue, stanford_captchaKey))}',
+            '.next': 'classes: {validated: stanford_validated, disabled: not(all(decimal(initial_price), select(stanford_validated, stanford_planId, true), stanford_number, stanford_captchaValue, stanford_captchaKey))}',
             '.view-1': 'toggle: not(state_showPlans)',
             '.view-2': 'toggle: state_showPlans',
             '.stanford-number': 'text: stanford_card_number',
