@@ -323,7 +323,7 @@ define(["backbone", "factory"], function(Backbone) {
                     case 'ok':
                         PaymentProcessor.completeTransaction();        // complete payment transaction
                         is_gift = myorder.change_only_gift_dining_option();
-                        myorder.clearData();                           // cleaning of the cart, reset dining_option to 'DININ_OPTION_ONLINE'
+                        myorder.clearData();
                         card && card.clearData();                      // removal of information about credit card
                         if (!is_gift) {
                             myorder.checkout.revert_dining_option();   //restore dinin_option from selected_dining_option
