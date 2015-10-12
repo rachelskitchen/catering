@@ -520,19 +520,23 @@ define(["backbone"], function(Backbone) {
          * Get lists "Pickup Date and Pickup Time".
          */
         getPickupList: function(isDelivery) {
-            var self = this,
+            var self = this, wh, check_day,
                 now = this.base(),
                 day = now.getDay();
 
             var days = [];
             var date_range = App.Settings.online_order_date_range;
             for (var i = 0; i < date_range; i++) {
-                days.push(weekDays[(day + i) % 7]);
+                check_day = new Date(now.getTime() + i * MILLISECONDS_A_DAY);
+                wh = this.get_working_hours(check_day);
+                if (wh != null && wh != false) {
+                    days.push({day: weekDays[(day + i) % 7], index: i});
+                }
             }
 
-            return days.map(function(day, i) {
-                var date = new Date(now.getTime() + i * MILLISECONDS_A_DAY),
-                    weekDay = (i >= 2) ? day : i ? _loc['DAYS']['TOMORROW'] : _loc['DAYS']['TODAY'],
+            return days.map(function(ob_day) {
+                var date = new Date(now.getTime() + ob_day.index * MILLISECONDS_A_DAY),              
+                    weekDay = (ob_day.index >= 2) ? ob_day.day : ob_day.index ? _loc['DAYS']['TOMORROW'] : _loc['DAYS']['TODAY'],
                     month = _loc.ARRAY_MONTH[date.getMonth()],
                     _date = date.getDate();
                 switch (_date.toString().match(/1?\d$/)[0]) {
