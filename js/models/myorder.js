@@ -444,9 +444,14 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * Inits stanford reload item. If product is gift and App.Data.is_stanford_mode is true then item is stanford reload.
          */
         initStanfordReloadItem: function(data) {
-            if(!App.Data.is_stanford_mode || !this.get_product().get('is_gift')) {
+            var product = this.get_product();
+
+            if(!App.Data.is_stanford_mode || !product.get('is_gift')) {
                 return;
             }
+
+            // need to convert initial product price to integer according Bug 30983
+            product.set('price', parseInt(product.get('price')) || 0);
 
             var stanfordCard = new App.Models.StanfordCard(_.isObject(data) ? data : {
                 number: this.get('stanford_card_number'),
