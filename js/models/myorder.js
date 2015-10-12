@@ -1080,7 +1080,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if(this.paymentInProgress)
                 return;
             this.paymentInProgress = true;
-            if(this.preparePickupTime() === 0) {
+            if(this.preparePickupTime(true) === 0) {
                 this.trigger('cancelPayment');
                 delete this.paymentInProgress;
                 App.Data.errors.alert(MSG.ERROR_STORE_IS_CLOSED); // user notification
@@ -1089,7 +1089,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             this.trigger('paymentInProcess');
             this.submit_order_and_pay(payment_type, validationOnly);
         },
-        preparePickupTime: function() {
+        preparePickupTime: function(createflag) {
             var only_gift = this.checkout.get('dining_option') === 'DINING_OPTION_ONLINE';
 
             if(!only_gift) {
@@ -1118,16 +1118,23 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     //for lastPT = "all-the-day" we should not pass any pickupTime to server. i.e. lastPickupTime is undefined
                 }
 
-                if (isASAP && App.Data.myorder.paymentResponse && App.Data.myorder.paymentResponse.data) {
+                var isResponseWithAsapPickupTime = isASAP && App.Data.myorder.paymentResponse && App.Data.myorder.paymentResponse.data;
+                if (isResponseWithAsapPickupTime) {
                     pickup = new Date(App.Data.myorder.paymentResponse.data.asap_pickup_time);
                 }
 
-                this.checkout.set({
-                    'pickupTime': isASAP ? 'ASAP (' + pickupToString(pickup) + ')' : pickupToString(pickup),
-                    'createDate': format_date_1(Date.now()),
-                    'pickupTimeToServer': pickup ? format_date_1(pickup.getTime() - App.Settings.server_time) : undefined,
-                    'lastPickupTime': lastPickupTime
-                });
+                if (createflag) {
+                    this.checkout.set({
+                        'pickupTime': isASAP ? 'ASAP (' + pickupToString(pickup) + ')' : pickupToString(pickup),
+                        'createDate': format_date_1(Date.now()),
+                        'pickupTimeToServer': pickup ? format_date_1(pickup.getTime() - App.Settings.server_time) : undefined,
+                        'lastPickupTime': lastPickupTime
+                    });
+                }
+
+                if (isResponseWithAsapPickupTime) {
+                    this.checkout.saveCheckout();
+                }
             }
         },
         update_cart_totals: function(params) {
