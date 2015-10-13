@@ -303,7 +303,7 @@
         document.querySelector('body').innerHTML = '<div class="ui-loader-default" style="width: 100%; height: 100%; font-size:' + getFontSize() + 'px !important" id="loader"></div>';
         var loader = document.querySelector('#loader');
         addSpinner.call(loader);
-        loader.style.cssText += "background-color: rgba(170, 170, 170, .8); position: fixed;";
+        loader.style.cssText += "background-color: rgba(170, 170, 170, .8); position: absolute;";
 
         if (App.Data.is_stanford_mode) {
             $(".ui-spinner").addClass("stanford");
