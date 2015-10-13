@@ -351,7 +351,7 @@ select::-ms-expand { /*Removes default IE style*/
 #main-spinner {
     background-color: rgba(0,0,0,.6);
     z-index: 101;
-    position: fixed !important;
+    position: absolute !important;
     top: 0;
 }
 
