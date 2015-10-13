@@ -171,7 +171,8 @@ define(["backbone", "captcha"], function(Backbone) {
                 captchaValue: this.defaults.captchaValue,
                 captchaImage: this.defaults.captchaImage,
                 planId: this.defaults.planId,
-                validated: this.defaults.validated
+                validated: this.defaults.validated,
+                needToAskStudentStatus: this.defaults.needToAskStudentStatus
             });
             this.get('plans').reset();
         },
@@ -301,6 +302,14 @@ define(["backbone", "captcha"], function(Backbone) {
                 this.set(data);
                 Array.isArray(plans) && this.get('plans').reset(plans);
             }
+        },
+        /**
+         * @method
+         * Clears data from a storage and reset current attributes.
+         */
+        clearData: function() {
+            this.reset();
+            removeData('stanfordcard');
         },
         /**
          * @method
