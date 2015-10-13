@@ -313,7 +313,8 @@ define(["backbone", "factory"], function(Backbone) {
 
             this.listenTo(myorder, 'paymentResponse', function() {
                 var is_gift, card = App.Data.card,
-                    customer = App.Data.customer;
+                    customer = App.Data.customer,
+                    stanfordCard = App.Data.stanfordCard;
 
                 App.Data.settings.usaepayBack = true;
 
@@ -328,6 +329,7 @@ define(["backbone", "factory"], function(Backbone) {
                             myorder.checkout.revert_dining_option();   //restore dinin_option from selected_dining_option
                         }
                         customer && customer.resetShippingServices();  // clear shipping service selected
+                        stanfordCard && stanfordCard.clearData();      // clear Stanford card data
                         break;
                     case 'error':
                         card && card.clearData(); // removal of information about credit card
