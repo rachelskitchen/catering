@@ -39,8 +39,45 @@
 <script type="text/template" id="modifiers_classes_item-template">
     <div class="modifier_class list-title">
         <span class="font-color1 font-size3"><%= name %></span>
-        <% if(free_modifiers && _settings.online_orders) { %>
-        <span class="free font-color6 font-size2">(<%= free_modifiers %>)</span>
+        <% if (_settings.online_orders) { %>
+            <div class="font-color5 font-size2">
+            <% if (type === 0 && (typeof maximum_amount != 'number' || maximum_amount === 0) && (typeof minimum_amount != 'number' || minimum_amount === 0)) { %>
+                <%= _lp.MODIFIERS_OPTIONAL %>
+                <% if (free_modifiers) { %>
+                    <span class="free font-color6">(<%= free_modifiers %>)</span>
+                <% } %>
+            <% } else if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) { %>
+                <%= _lp.MODIFIERS_CHOOSE %> <%= minimum_amount %>
+                <% if (free_modifiers) { %>
+                    <span class="free font-color6">(<%= free_modifiers %>)</span>
+                <% } %>
+            <% } else if (type === 0 && typeof maximum_amount == 'number' && maximum_amount != 0 && typeof minimum_amount == 'number' && minimum_amount != 0) { %>
+                <%= _lp.MODIFIERS_CHOOSE %> <%= minimum_amount %> <%= _lp.MODIFIERS_CHOOSE_TO %> <%= maximum_amount %>
+                <% if (free_modifiers) { %>
+                    <span class="free font-color6">(<%= free_modifiers %>)</span>
+                <% } %>
+            <% } else if (type === 0 && typeof maximum_amount == 'number' && (typeof minimum_amount != 'number' || minimum_amount === 0)) { %>
+                <%= _lp.MODIFIERS_OPTIONAL %> (<%= _lp.MODIFIERS_OPTIONAL_UP %> <%= maximum_amount %>)
+                <% if (free_modifiers) { %>
+                    <span class="free font-color6">(<%= free_modifiers %>)</span>
+                <% } %>
+            <% } else if (type === 0 && typeof maximum_amount != 'number' && typeof minimum_amount == 'number') { %>
+                <%= _lp.MODIFIERS_CHOOSE %> <%= _lp.MODIFIERS_CHOOSE_LEAST %> <%= minimum_amount %>
+                <% if (free_modifiers) { %>
+                    <span class="free font-color6">(<%= free_modifiers %>)</span>
+                <% } %>
+            <% } else if (type === 1) { %>
+                <%= _lp.MODIFIERS_CHOOSE %> <%= _lp.MODIFIERS_CHOOSE_ONE %>
+                <% if (free_modifiers) { %>
+                    <span class="free font-color6">(<%= free_modifiers %>)</span>
+                <% } %>
+            <% } else if (type === 2) { %>
+                <%= _lp.MODIFIERS_OPTIONAL %>
+                <% if (free_modifiers) { %>
+                    <span class="free font-color6">(<%= free_modifiers %>)</span>
+                <% } %>
+            <% } %>
+            </div>
         <% } %>
     </div>
     <div class="modifier_class_list modifiers-bottom-line"></div>
