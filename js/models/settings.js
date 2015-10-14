@@ -402,15 +402,6 @@ define(["backbone", "async"], function(Backbone) {
                                 console.error("Can't parse other_dining_option_details");
                             }
 
-                            //remove DINING_OPTION_OTHER from dinning_options when other_dining_option_details is undefined or empty array:
-                            var other_index;
-                            if (!Array.isArray(settings_system.other_dining_option_details) || settings_system.other_dining_option_details.length == 0) {
-                                other_index = settings_system.dining_options.indexOf(DINING_OPTION['DINING_OPTION_OTHER']);
-                                if (other_index != -1) {
-                                    settings_system.dining_options.splice(other_index, 1);
-                                }
-                            }
-
                             // Set default dining option.
                             // It's key of DINING_OPTION object property with value corresponding the first element of settings_system.dining_options array
                             (function() {
