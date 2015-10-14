@@ -27,7 +27,7 @@ define(["products_view"], function(products_view) {
         name: 'product',
         mod: 'modifiers',
         bindings: {
-            '.price': 'classes: {"gift-amount": giftMode, "product-price": not(giftMode)}, attr: {size: length(monetaryFormat(initial_price)), readonly: not(giftMode)}, restrictInput: "", allowedChars: "0123456789.,", kbdSwitcher: select(_product_is_gift, "float", "text"), pattern: /^\\d*(\\.\\d{0,2})?$/',
+            '.price': 'classes: {"gift-amount": giftMode, "product-price": not(giftMode)}, attr: {size: length(monetaryFormat(initial_price)), readonly: not(giftMode)}, restrictInput: "", allowedChars: "0123456789.,", kbdSwitcher: select(_product_is_gift, "float", "text"), pattern: /^\\d{0,3}(\\.\\d{0,2})?$/',
             '.product-price': 'value: monetaryFormat(initial_price)',
             '.gift-amount': 'value: monetaryFormat(price), events: ["input"]',
             '.currency': 'text: _system_settings_currency_symbol, toggle: not(uom)',
