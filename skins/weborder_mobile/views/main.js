@@ -62,7 +62,13 @@ define(["done_view", "generator"], function(done_view) {
             this.$el.on('touchend', 'input[type=text], input[type=number], input[type=tel]', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                $(this).focus();
+                var $this = $(this);
+                $this.focus();
+                // Fix for bugs 30986 & 30067
+                if (this.setSelectionRange && $this.attr("type") !== 'text') {
+                    var len = this.value.length;
+                    this.setSelectionRange(len, len);
+                }
             });
             this.iOSSafariCaretFix();
             // Fix for #16070
