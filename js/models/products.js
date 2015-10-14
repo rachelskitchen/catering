@@ -121,7 +121,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
          * @property {number} defaults.original_tax - original tax of product (used to save origin tax rate to restore in Retail mode).
          * @defaults null
          *
-         * @property {} defaults.timetables -
+         * @property {} defaults.timetables - a string with available to order time (originally server returns array of assigned customer menus)
          * @default null
          *
          * @property {string} defaults.compositeId - the unique product id (used for a model identification in App.Collections.Products)
@@ -187,6 +187,10 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
 
             if (App.skin == App.Skins.RETAIL)
                 this.images();
+
+            // listen to timetables change
+            this.listenTo(this, 'change:timetables', this.convertTimetables);
+            this.convertTimetables();
         },
         /**
          * @method
@@ -549,6 +553,17 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
          */
         restoreTax: function() {
             this.set('tax', this.get('original_tax'));
+        },
+        /**
+         * @method
+         * Converts array with timetables to string. Originally server returns timetables as array of custom menus assigned to.
+         * Need to convert the array to user friendly string.
+         */
+        convertTimetables: function() {
+            var timetables = this.get('timetables');
+            if(Array.isArray(timetables)) {
+                this.set('timetables', format_timetables(timetables));
+            }
         }
     });
 
@@ -648,7 +663,6 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                 successResp: function(data) {
                     for (var i = 0; i < data.length; i++) {
                         if(data[i].is_gift && settings.get('skin') === 'mlb') continue; // mlb skin does not support gift cards (bug #9395)
-                        data[i].timetables = format_timetables(data[i].timetables);
                         data[i].compositeId = data[i].id + '_' + data[i].id_category;
                         self.add(data[i]);
                     }
