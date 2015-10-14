@@ -263,7 +263,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             };
 
             this.isDelivery = this.model.get('dining_option') === 'DINING_OPTION_DELIVERY';
-            this.pickupTime = this.options.timetable.getPickupList(this.isDelivery);
+            this.pickupTimeIndexByDelta = {};
+            this.pickupTime = this.options.timetable.getPickupList(this.isDelivery, this.pickupTimeIndexByDelta);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenOrderType(null, this.model.get('dining_option'));
         },
@@ -276,35 +277,39 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
             var today = new Date();
             today.setHours(0,0,0,0);
-            var maxDate = new Date();
-            maxDate.setDate(maxDate.getDate() + this.pickupTime.length - 1);
-
+            if (this.pickupTime.length == 0) {
+                return this;
+            }
             var field = this.$('#datepicker');
-            field.val(_loc['DAYS']['TODAY']);
+
             var picker = new Pikaday({
                 field: field[0],
-                minDate: today,
-                maxDate: maxDate,
+                minDate: this.pickupTime[0].date,
+                maxDate: this.pickupTime[this.pickupTime.length - 1].date,
                 position: 'bottom hcenter',
                 firstDay : _loc['PIKADAY']['FIRST_DAY'],
                 i18n: _loc['PIKADAY']['i18n'],
-                onSelect: function(date) {
-                    var one_day = 1000 * 60 * 60 * 24;
-                    var diffDays = parseInt((date - today) / one_day);
-                    switch (diffDays) {
-                       case 0:
-                          field.val(_loc['DAYS']['TODAY']);
-                          break;
-                       case 1:
-                          field.val(_loc['DAYS']['TOMORROW']);
-                          break;
-                       default:
-                          field.val(date.format()); //field.val(date.format("Dd, Mm dd"));
-                    }
-                    field.data("day", diffDays);
-                    self.changeDay({target: { value: diffDays }});
-                }
+                onSelect: selectDate
             });
+
+            function selectDate(date) {
+                var one_day = 1000 * 60 * 60 * 24;
+                var diffDays = parseInt((date - today) / one_day);
+                switch (diffDays) {
+                   case 0:
+                      field.val(_loc['DAYS']['TODAY']);
+                      break;
+                   case 1:
+                      field.val(_loc['DAYS']['TOMORROW']);
+                      break;
+                   default:
+                      field.val(date.format()); //field.val(date.format("Dd, Mm dd"));
+                }
+                field.data("day", diffDays);
+                self.changeDay({target: { value: diffDays }});
+            }
+
+            selectDate(this.pickupTime[0].date);
 
             return this;
         },
@@ -312,9 +317,17 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             'change select.time': 'changeTime'
         },
         changeDay: function(e) {
-            var index = e.target.value*1,
-                workingDay = this.pickupTime[index].workingDay,
-                time = this.$('select.time'),
+            var index = e.target.value*1, workingDay,
+                day_index = this.pickupTimeIndexByDelta[index];
+
+            if (day_index != undefined) {
+                workingDay = this.pickupTime[day_index].workingDay;
+            } 
+            else {
+                workingDay = ['closed'];
+            }
+
+            var time = this.$('select.time'),
                 label = time.parent();
 
             label.removeAttr('disabled');
@@ -332,13 +345,21 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.model.set('pickupDay',index);
             this.changeTime({target: { value : 0 }});
         },
-
         changeTime: function(e) {
             var index = e.target.value*1,
                 day = this.$('input.pikaday').data("day"),
-                time = this.pickupTime[day].workingDay[index],
-                date = this.pickupTime[day].date,
-                format = new TimeFrm,
+                day_index = this.pickupTimeIndexByDelta[day],
+                time, date;
+
+                if (day_index != undefined) {
+                    time = this.pickupTime[day_index].workingDay[index];
+                    date = this.pickupTime[day_index].date;
+                } 
+                else {
+                    time = 'closed';
+                }
+                
+            var format = new TimeFrm,
                 pickupTS, isPickupASAP = false;
 
             this.model.set('pickupTimeReview',index);
@@ -380,7 +401,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         },
         listenOrderType: function(model, value) {
             this.isDelivery = this.model.get('dining_option') === 'DINING_OPTION_DELIVERY';
-            this.pickupTime = this.options.timetable.getPickupList(this.isDelivery);
+            this.pickupTimeIndexByDelta = {};
+            this.pickupTime = this.options.timetable.getPickupList(this.isDelivery, this.pickupTimeIndexByDelta);
             if (value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_OTHER') {
                 this.$('.pickup').text(_loc.CONFIRM_DELIVERY_TIME);
             } else {

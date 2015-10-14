@@ -24,8 +24,6 @@ define(["backbone"], function(Backbone) {
     'use strict';
 
     var weekDays = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-
-    var MILLISECONDS_A_DAY = 86400000;//24*60*60*1000
 //
 // App.Models.WorkingDay model
 //
@@ -516,20 +514,31 @@ define(["backbone"], function(Backbone) {
             this.workingDay.update({timetable: this.get_working_hours(current_time, 1), curTime : current_time});
             return this.workingDay.checking_work_shop(isDelivery);
         },
+        round_date: function(date) {
+            return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        },
         /**
          * Get lists "Pickup Date and Pickup Time".
+         * returns an array of valid days with pickup time grids
+         * index_by_day_delta - is an object which recieves data mapping the delta in days (between cur date and target date) into an index of the array returned by getPickupList.
+         * index_by_day_delta is needed beacause getPickupList does not returns invalid days within a App.Settings.online_order_date_range period (which timetable is not set (closed) or holidays).
+         * Usage: var out_obj = {}; 
+         *        var list = timetable.getPickupList(true, out_obj);
+         *        list[out_obj[1]] - returns tommorow day (if store is not closed for tommorow, otherwise out_obj[1] is undefined)
          */
-        getPickupList: function(isDelivery) {
+        getPickupList: function(isDelivery, index_by_day_delta) {
             var self = this, wh, check_day,
-                now = this.base(),
+                now = this.base(), key_index = 0,
                 day = now.getDay();
-
             var days = [];
             var date_range = App.Settings.online_order_date_range;
             for (var i = 0; i < date_range; i++) {
                 check_day = new Date(now.getTime() + i * MILLISECONDS_A_DAY);
                 wh = this.get_working_hours(check_day);
-                if (wh != null && wh != false) {
+                if (wh != false) {
+                    if (index_by_day_delta) {
+                        index_by_day_delta[i] = key_index++;
+                    }
                     days.push({day: weekDays[(day + i) % 7], index: i});
                 }
             }
@@ -563,9 +572,10 @@ define(["backbone"], function(Backbone) {
                     isDelivery: isDelivery
                 }); // set flag "Today" for creating the list of time intervals
                 return {
-                    weekDay: weekDay + (i >=2 ? ', ' + month + ' ' + _date : ''),
-                    date: date,
-                    workingDay: working_day
+                    weekDay: weekDay + (ob_day.index >=2 ? ', ' + month + ' ' + _date : ''),
+                    date: self.round_date(date),
+                    workingDay: working_day,
+                    index: ob_day.index
                 };
             }, self);
         },
