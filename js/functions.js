@@ -88,6 +88,8 @@ var EVENT = {
     SEARCH:    "Search"
 };
 
+var MILLISECONDS_A_DAY = 86400000;//24*60*60*1000
+
 /**
 *  format message by formatting string and params.
 *  example: msgFrm("Message text param1 = %s, param2 = %s", 10, 20) returns the string "Message text param1 = 10, param2 = 20"
