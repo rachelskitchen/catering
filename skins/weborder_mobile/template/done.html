@@ -27,7 +27,7 @@
         <dt class="text-right"><%= pickup_type %></dt>
         <dd class="text-left"><%= pickup_time %> <span class="line"><%= pickup_day %></span></dd>
         <% } %>
-        <% if(isDiningOptionOther) { %>
+        <% if(isDiningOptionOther && other_dining_options.length) { %>
         <dt class="text-right"><%= _lp.DONE_DELIVERY_INFO %></dt>
         <dd class="text-left">
             <% for (var i = 0; i < other_dining_options.length; i++) { %>
