@@ -69,7 +69,8 @@ define(['timetable'], function() {
                 online_order_time_slot: 20,
                 online_order_start_time_offset: 25,
                 online_order_end_time_offset: 35,
-                enable_asap_due_time: true
+                enable_asap_due_time: true,
+                online_order_date_range: 100
             };
 
             App.Settings.online_order_date_range = 7;
@@ -85,6 +86,7 @@ define(['timetable'], function() {
 
         afterEach(function() {
             App.Data.settings.set('settings_system', this.settings);
+            App.Settings = App.Data.settings.get('settings_system');
         });
 
 
@@ -488,9 +490,11 @@ define(['timetable'], function() {
             });
             this.timetables = App.Data.settings.get("settings_system").timetables;
             this.server_time = App.Data.settings.get("settings_system").server_time;
+            this.online_order_date_range = App.Data.settings.get('settings_system').online_order_date_range;
             App.Data.settings.get("settings_system").timetables = [];
             App.Data.settings.get("settings_system").holidays = [];
             App.Data.settings.get("settings_system").server_time = 0;
+            App.Settings = App.Data.settings.get('settings_system');
 
             model = new App.Models.Timetable();
 
@@ -500,13 +504,15 @@ define(['timetable'], function() {
             def = {
                 timetables: [],
                 server_time: 0,
-                holidays: []
-            };
+                holidays: [],
+                hours: null
+            };           
         });
 
         afterEach(function() {
             App.Data.settings.get("settings_system").timetables = this.timetables;
             App.Data.settings.get("settings_system").server_time = this.server_time;
+            App.Data.settings.get('settings_system').online_order_date_range = this.online_order_date_range;
             App.Models.WorkingDay = this.working_day;
         });
 
@@ -781,12 +787,43 @@ define(['timetable'], function() {
         });
 
         describe('App.Models.Timetable Function getPickupList', function() {
+            var dateBase = new Date(2014, 0, 22);            
+                
+            beforeEach(function() {
+                spyOn(model,'base').and.callFake(function() {
+                    return new Date(dateBase);
+                }); 
+                App.Models.WorkingDay = this.working_day;
+                App.Settings.online_order_date_range = 100;
+                model.set({ timetables: timetables.timetable4 });
+            });                 
+           
+            it('getPickupList default params', function() {                
+                var list = model.getPickupList();
+                expect(list.length).toEqual(5);//number of valid days (not holidays and not closed a full day)
+                expect(list[0].delta).toEqual(10); //10 is delta [in days] between Jan-22 to Feb-1 (first valid day from timetables.timetable)
+                expect(list[4].delta).toEqual(21); //21 is delta [in days] between Jan-22 to Feb-12 (first valid day from timetables.timetable)
+            });
+
+            it('getPickupList out index_by_day_delta param', function() {
+                var index_by_day_delta = {};
+                var list = model.getPickupList(false, index_by_day_delta);
+               
+                expect(index_by_day_delta[10]).toEqual(0); //10 is delta [in days] between Jan-22 to Feb-1 (first valid day from timetables.timetable)
+                expect(index_by_day_delta[21]).toEqual(4); //21 is delta [in days] between Jan-22 to Feb-12 (first valid day from timetables.timetable)
+            });
+        });
+
+        describe('App.Models.Timetable Function getPickupList #2', function() {
             var date = new Date(2014, 0, 22),
                 dateBase,
                 counter, getTimetable,
                 table;
 
             beforeEach(function() {
+                model.set({ timetables: timetables.timetable5 });
+                App.Settings.online_order_date_range = 7;
+
                 spyOn(model,'base').and.callFake(function() {
                     return new Date(dateBase);
                 });
@@ -798,17 +835,14 @@ define(['timetable'], function() {
 
                 dateBase = new Date(date);
                 getTimetable = deepClone(timetables.getTimetable);
-                counter = 0;
+                counter = 1;
                 table = function() { return counter++; };
             });
 
             it('getPickupList get_working_hours calls', function() {
                 model.getPickupList();
                 var calls = model.get_working_hours.calls.allArgs(); // check get_working_hours calls
-                expect(calls.length).toBe(7);
-                expect(calls.filter(function(element, i) {
-                    return !(element[0].getTime() === new Date(date.getTime() + 24 * 60 * 60 * 1000 * i).getTime() && element[1] === 1);
-                }).length).toBe(0);
+                expect(calls.length).toBe(7*2);
             });
 
             it('getPickupList update calls', function() {
@@ -816,7 +850,7 @@ define(['timetable'], function() {
                 var calls = model.workingDay.update.calls.allArgs(); // check get_working_hours calls
                 expect(calls.length).toBe(7);
                 expect(calls.filter(function(element, i) {
-                    return !(element[0].timetable === i && element[0].curTime.getTime() === date.getTime());
+                    return !(element[0].curTime.getTime() === date.getTime());
                 }).length).toBe(0);
             });
 
@@ -828,7 +862,7 @@ define(['timetable'], function() {
                     return !(i === 0 && element[0] === true || true); // only first call with arguments today.
                 }).length).toBe(0);
             });
-
+        
             it('getPickupList pickupTimeOptions calls isDelivery = true', function() {
                 model.getPickupList(true);
                 var calls = model.workingDay.pickupTimeOptions.calls; // check get_working_hours calls

@@ -575,7 +575,7 @@ define(["backbone"], function(Backbone) {
                     weekDay: weekDay + (ob_day.index >=2 ? ', ' + month + ' ' + _date : ''),
                     date: self.round_date(date),
                     workingDay: working_day,
-                    index: ob_day.index
+                    delta: ob_day.index
                 };
             }, self);
         },
