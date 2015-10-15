@@ -235,7 +235,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         bindings: {
             'input': 'valueTrim: value, events:["blur","change"]',
             'select': 'value: value, options:choices, optionsDefault:{label:name, value:""}',
-            '[isrequired]': 'classes:{required:required}'
+            '[data-isrequired]': 'classes:{required:required}'
         }
     });
 
@@ -312,9 +312,17 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             'change select.time': 'changeTime'
         },
         changeDay: function(e) {
-            var index = e.target.value*1,
-                workingDay = this.pickupTime[index].workingDay,
-                time = this.$('select.time'),
+            var index = e.target.value*1, workingDay,
+                day_index = this.pickupTimeIndexByDelta[index];
+
+            if (day_index != undefined) {
+                workingDay = this.pickupTime[day_index].workingDay;
+            }
+            else {
+                workingDay = ['closed'];
+            }
+
+            var time = this.$('select.time'),
                 label = time.parent();
 
             label.removeAttr('disabled');
@@ -336,9 +344,18 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         changeTime: function(e) {
             var index = e.target.value*1,
                 day = this.$('input.pikaday').data("day"),
-                time = this.pickupTime[day].workingDay[index],
-                date = this.pickupTime[day].date,
-                format = new TimeFrm,
+                day_index = this.pickupTimeIndexByDelta[day],
+                time, date;
+
+                if (day_index != undefined) {
+                    time = this.pickupTime[day_index].workingDay[index];
+                    date = this.pickupTime[day_index].date;
+                }
+                else {
+                    time = 'closed';
+                }
+
+            var format = new TimeFrm,
                 pickupTS, isPickupASAP = false;
 
             this.model.set('pickupTimeReview',index);
