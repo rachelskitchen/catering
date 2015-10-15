@@ -37,6 +37,7 @@
             'click .update-captcha': 'updateCaptcha'
         },
         initialize: function() {
+            this.listenTo(this.model, 'onResetData', this.updateCaptcha);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             inputTypeMask(this.$('.rewards-input'), /^\d*$/, this.model.get('number'), 'numeric');
             this.updateCaptcha();
