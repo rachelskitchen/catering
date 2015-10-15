@@ -67,6 +67,8 @@ define(["main_router"], function(main_router) {
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
+        lastHash: null,
+        rewardsPageReferrerHash: null,
         initialize: function() {
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
             var self = this;
@@ -136,6 +138,10 @@ define(["main_router"], function(main_router) {
 
             var checkout = App.Data.myorder.checkout;
             checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
+
+            this.listenTo(this, 'route', function() {
+                this.lastHash = location.hash.slice(1);
+            });
 
             App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
         },
@@ -276,7 +282,7 @@ define(["main_router"], function(main_router) {
                 App.Data.myorder.splitAllItemsWithPointValue();
                 App.Data.myorder.get_cart_totals().always(function() {
                     App.Data.mainModel.trigger('loadCompleted');
-                    self.navigate('checkout', true);
+                    self.navigate(self.rewardsPageReferrerHash, true);
                 });
             }, this);
 
@@ -1254,6 +1260,7 @@ define(["main_router"], function(main_router) {
         },
         rewards_card_submit: function() {
             var rewardsCard = App.Data.myorder.rewardsCard;
+            this.rewardsPageReferrerHash = this.lastHash;
 
             App.Data.header.set({
                 page_title: _loc.HEADER_REWARDS_CARD_PT,
