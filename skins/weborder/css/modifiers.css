@@ -94,7 +94,7 @@
 .modifiers_table .modifier label {
     cursor: inherit;
     display: inline-block !important;
-    width: 215px;
+    width: 210px;
 }
 
 .modifiers_table .modifier label.no-controls {
@@ -201,43 +201,34 @@
 }
 @media only screen and (min-width: 949px) {
     #modifiers_popup .modifiers_table_scroll {
-        margin-right: -70px;
-    }
-    .modifiers_table .modifier {
-        margin-right: 70px;
-    }
-}
-@media only screen and (min-width: 1200px) {
-    #modifiers_popup .modifiers_table_scroll {
-        margin-right: -80px;
-    }
-    .modifiers_table .modifier {
-        min-height: 45px;
-        margin-bottom: 5px;
-        margin-right: 80px;
-    }
-}
-@media only screen and (min-width: 1440px) {
-    #modifiers_popup .modifiers_table_scroll {
-        margin-right: -150px;
+        margin-right: -25px;
     }
     .modifiers_table .modifier {
         width: 300px;
-        margin-right: 150px;
+        min-height: 45px;
+        margin-right: 25px;
+        margin-bottom: 5px;
     }
     .modifiers_table .modifier label {
         width: 190px;
     }
     .modifiers_table .modifier .title {
-        width: 100px;
+        width: 90px;
     }
 }
-@media only screen and (min-width: 1680px) {
+@media only screen and (min-width: 1440px) {
     #modifiers_popup .modifiers_table_scroll {
-        margin-right: -90px;
+        margin-right: -100px;
     }
     .modifiers_table .modifier {
-        margin-right: 90px;
+        width: 300px;
+        margin-right: 100px;
+    }
+    .modifiers_table .modifier label {
+        width: 195px;
+    }
+    .modifiers_table .modifier .title {
+        width: 100px;
     }
 }
 
