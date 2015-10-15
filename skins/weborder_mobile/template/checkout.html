@@ -43,14 +43,16 @@
 
 <script type="text/template" id="checkout_other_item-template">
     <% if (Array.isArray(choices) && choices.length) { %>
-        <div class="select-wrapper bg-color2" isrequired>
-            <label class="select">
-                <select class="section" name="<%= name %>">
-                </select>
-            </label>
+        <div data-isrequired>
+            <div class="select-wrapper bg-color2">
+                <label class="select">
+                    <select class="section" name="<%= name %>">
+                    </select>
+                </label>
+            </div>
         </div>
     <% } else { %>
-        <div isrequired>
+        <div data-isrequired>
             <input type="text" class="row ios-safari-caret " placeholder="<%= name %>" name="<%= name %>" value="<%= value %>">
         </div>
     <% } %>

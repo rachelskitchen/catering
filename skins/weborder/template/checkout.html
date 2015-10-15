@@ -160,7 +160,7 @@
 
 <script type="text/template" id="checkout_other_item-template">
     <div class="row">
-        <label> <span class="bold clip" isrequired><%= name %>:</span> </label>
+        <label> <span class="bold clip" data-isrequired><%= name %>:</span> </label>
         <% if (Array.isArray(choices) && choices.length) { %>
             <div class="select select-wrapper">
                 <select class="section-select" name="<%= name %>">
