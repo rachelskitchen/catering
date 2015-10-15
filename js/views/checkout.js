@@ -235,7 +235,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         bindings: {
             'input': 'valueTrim: value, events:["blur","change"]',
             'select': 'value: value, options:choices, optionsDefault:{label:name, value:""}',
-            '[isrequired]': 'classes:{required:required}'
+            '[data-isrequired]': 'classes:{required:required}'
         }
     });
 
@@ -322,7 +322,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
             if (day_index != undefined) {
                 workingDay = this.pickupTime[day_index].workingDay;
-            } 
+            }
             else {
                 workingDay = ['closed'];
             }
@@ -354,11 +354,11 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 if (day_index != undefined) {
                     time = this.pickupTime[day_index].workingDay[index];
                     date = this.pickupTime[day_index].date;
-                } 
+                }
                 else {
                     time = 'closed';
                 }
-                
+
             var format = new TimeFrm,
                 pickupTS, isPickupASAP = false;
 
