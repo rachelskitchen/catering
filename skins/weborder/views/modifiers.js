@@ -23,8 +23,6 @@
 define(["modifiers_view"], function(modifiers_view) {
     'use strict';
 
-    var CoreModifiersItemView = App.Views.CoreModifiersView.CoreModifiersItemView;
-
     var ModifiersClassesMatrixesView = App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView.extend({
         addItem: function() {
             App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView.prototype.addItem.apply(this, arguments);
