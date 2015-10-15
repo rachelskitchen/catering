@@ -49,7 +49,7 @@
         <% } %>
         <% if(stanfordCardBalances) { %>
         <% _.each(stanfordCardBalances, function(stanfordCard) { %>
-        <dt class="text-right"><span class="clip">&ldquo;<%= stanfordCard.name %>&rdquo; <%= _lp.DONE_STANFORD_CARD_BALANCE %>: </span></dt>
+        <dt class="text-right"><span>&ldquo;<%= stanfordCard.name %>&rdquo; <%= _lp.DONE_STANFORD_CARD_BALANCE %></span></dt>
         <dd class="text-left">
             <strong>
                 <% if(stanfordCard.type == 'D') { %>
