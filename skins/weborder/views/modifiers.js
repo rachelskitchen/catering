@@ -23,22 +23,7 @@
 define(["modifiers_view"], function(modifiers_view) {
     'use strict';
 
-    var CoreModifiersItemView = App.Views.CoreModifiersView.CoreModifiersItemView,
-        ModifiersItemView = CoreModifiersItemView.extend({
-        bindings: _.extend(CoreModifiersItemView.prototype.bindings, {
-            '.mdf_spacer': 'css:{width:mdf_width}'
-        }),
-        computeds: {
-            mdf_width: {
-                deps: ["_system_settings_enable_split_modifiers", "_system_settings_enable_quantity_modifiers"],
-                get: function(enable_split_modifiers, enable_quantity_modifiers) {
-                    var is_split_selector = enable_split_modifiers ||  this.isSize() || this.isSpecial();
-                    var is_quantity_selector = enable_quantity_modifiers ||  this.isSize() || this.isSpecial();
-                    return (is_split_selector * 55 + is_quantity_selector * 83) + "px";
-                }
-            }
-        }
-    });
+    var CoreModifiersItemView = App.Views.CoreModifiersView.CoreModifiersItemView;
 
     var ModifiersClassesMatrixesView = App.Views.CoreModifiersClassesView.CoreModifiersClassesMatrixesView.extend({
         addItem: function() {
@@ -55,7 +40,6 @@ define(["modifiers_view"], function(modifiers_view) {
     });
 
     return new (require('factory'))(modifiers_view.initViews.bind(modifiers_view), function() {
-        App.Views.ModifiersView.ModifiersItemView = ModifiersItemView;
         App.Views.ModifiersClassesView.ModifiersClassesMatrixesView = ModifiersClassesMatrixesView;
         App.Views.ModifiersClassesView.ModifiersClassesListView = ModifiersClassesListView;
     });
