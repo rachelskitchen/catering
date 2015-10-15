@@ -65,10 +65,10 @@
 }
 
 .modifiers_table .modifier {
-    min-width: 345px;
+    width: 330px;
     float: left;
     word-break: break-all;
-    margin: 0 15px 15px 0;
+    margin: 0 150px 15px 0;
     cursor: pointer;
     min-height: 30px;
 }
@@ -79,6 +79,8 @@
     position: relative;
     top: 5px;
     border-radius: 4px;
+    float: left;
+    margin-right: 3px;
 }
 .modifiers_table .modifier .no-controls .input {
     display: none;
@@ -93,8 +95,8 @@
 
 .modifiers_table .modifier label {
     cursor: inherit;
-    display: inline !important;
-    width: 100%;
+    display: inline-block !important;
+    width: 215px;
 }
 
 .modifiers_table .modifier label.no-controls {
@@ -103,6 +105,10 @@
 
 .modifiers_table .modifier .title {
     line-height: 1.4em;
+    display: inline-block;
+    float: left;
+    width: 120px;
+    word-break: break-word;
 }
 
 .modifiers_table .modifier input {
@@ -111,6 +117,9 @@
 
 .modifier_class_list {
     margin-top: 5px;
+}
+#modifiers_popup .modifiers_table_scroll {
+    margin-right: -150px;
 }
 
 .modifiers_table .special_button {
@@ -140,6 +149,11 @@
     display: none;
 }
 
+.mdf_spacer {
+    display: inline-block;
+    float: right;
+}
+
 .mdf_quantity select,
 .mdf_split select {
     font-size: 14px;
@@ -163,11 +177,8 @@
 .mdf_quantity select {
     padding-right: 18px;
     padding-left: 8px;
+    min-width: 45px;
     max-width: 80px;
-}
-
-.mdf_spacer {
-    display: inline-block;
 }
 
 .mdf_split select {
@@ -185,12 +196,50 @@
 }
 
 @media only screen and (max-device-width: 949px) {
-    .modifiers_table .modifier {
-        min-width: 270px !important;
-    }
     .mdf_quantity select {
         padding-left: 10px !important;
         padding-right: 24px;
+    }
+}
+@media only screen and (min-width: 949px) {
+    #modifiers_popup .modifiers_table_scroll {
+        margin-right: -70px;
+    }
+    .modifiers_table .modifier {
+        margin-right: 70px;
+    }
+}
+@media only screen and (min-width: 1200px) {
+    #modifiers_popup .modifiers_table_scroll {
+        margin-right: -80px;
+    }
+    .modifiers_table .modifier {
+        min-height: 45px;
+        margin-bottom: 5px;
+        margin-right: 80px;
+    }
+}
+@media only screen and (min-width: 1440px) {
+    #modifiers_popup .modifiers_table_scroll {
+        margin-right: -150px;
+    }
+    .modifiers_table .modifier {
+        width: 300px;
+        margin-right: 150px;
+    }
+    .modifiers_table .modifier label {
+        width: 190px;
+    }
+    .modifiers_table .modifier .title {
+        width: 100px;
+    }
+}
+@media only screen and (min-width: 1680px) {
+    #modifiers_popup .modifiers_table_scroll {
+        margin-right: -90px;
+    }
+    .modifiers_table .modifier {
+        margin-right: 90px;
     }
 }
 
