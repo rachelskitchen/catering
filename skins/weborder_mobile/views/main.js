@@ -62,10 +62,11 @@ define(["done_view", "generator"], function(done_view) {
             this.$el.on('touchend', 'input[type=text], input[type=number], input[type=tel]', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                var $this = $(this);
+                var $this = $(this),
+                    inputType = $this.attr("type");
                 $this.focus();
                 // Fix for bugs 30986 & 30067
-                if (this.setSelectionRange && $this.attr("type") !== 'text') {
+                if (this.setSelectionRange && inputType !== 'text' && !(cssua.userAgent.chrome && inputType === 'number')) {
                     var len = this.value.length;
                     this.setSelectionRange(len, len);
                 }
