@@ -1080,7 +1080,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if(this.paymentInProgress)
                 return;
             this.paymentInProgress = true;
-            if(this.preparePickupTime(true) === 0) {
+            if(this.preparePickupTime() === 0) {
                 this.trigger('cancelPayment');
                 delete this.paymentInProgress;
                 App.Data.errors.alert(MSG.ERROR_STORE_IS_CLOSED); // user notification
@@ -1089,7 +1089,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             this.trigger('paymentInProcess');
             this.submit_order_and_pay(payment_type, validationOnly);
         },
-        preparePickupTime: function(createflag) {
+        preparePickupTime: function() {
             var only_gift = this.checkout.get('dining_option') === 'DINING_OPTION_ONLINE';
 
             if(!only_gift) {
@@ -1118,23 +1118,13 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     //for lastPT = "all-the-day" we should not pass any pickupTime to server. i.e. lastPickupTime is undefined
                 }
 
-                var isResponseWithAsapPickupTime = isASAP && App.Data.myorder.paymentResponse && App.Data.myorder.paymentResponse.data;
-                if (isResponseWithAsapPickupTime) {
-                    pickup = new Date(App.Data.myorder.paymentResponse.data.asap_pickup_time);
-                }
+                this.checkout.set({
+                    'pickupTime': isASAP ? 'ASAP (' + pickupToString(pickup) + ')' : pickupToString(pickup),
+                    'createDate': format_date_1(Date.now()),
+                    'pickupTimeToServer': pickup ? format_date_1(pickup.getTime() - App.Settings.server_time) : undefined,
+                    'lastPickupTime': lastPickupTime
+                });
 
-                if (createflag) {
-                    this.checkout.set({
-                        'pickupTime': isASAP ? 'ASAP (' + pickupToString(pickup) + ')' : pickupToString(pickup),
-                        'createDate': format_date_1(Date.now()),
-                        'pickupTimeToServer': pickup ? format_date_1(pickup.getTime() - App.Settings.server_time) : undefined,
-                        'lastPickupTime': lastPickupTime
-                    });
-                }
-
-                if (isResponseWithAsapPickupTime) {
-                    this.checkout.saveCheckout();
-                }
             }
         },
         update_cart_totals: function(params) {
@@ -1505,6 +1495,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
                             data.errorMsg = message;
                             reportError(data.errorMsg);
+                            break;
+                        case "ASAP_TIME_SLOT_BUSY":
+                            var asap_pickup_time = new Date(data.responseJSON.asap_pickup_time);
+                            asap_pickup_time = '' + new TimeFrm(asap_pickup_time.getHours(), asap_pickup_time.getMinutes());
+                            data.errorMsg = msgFrm(MSG.ERROR_ASAP_TIME_SLOT_BUSY, asap_pickup_time);
+                            reportErrorFrm(data.errorMsg);
                             break;
                         case "ORDERS_PICKUPTIME_LIMIT":
                             data.errorMsg = MSG.ERROR_ORDERS_PICKUPTIME_LIMIT;
