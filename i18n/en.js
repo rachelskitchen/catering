@@ -392,6 +392,7 @@
             ],
             'ERROR_GEOLOCATION_NOAPI': 'Geolocation API is not supported in your browser.',
             'ERROR_SUBMIT_ORDER': 'Failed to submit an order. Please try again.',
+            'ERROR_ASAP_TIME_SLOT_BUSY': 'Selected time is not available. Next available time is %s.',
             'ERROR_ORDERS_PICKUPTIME_LIMIT': 'Maximum number of orders for this pickup time exceeded. Please select different pickup time.',
             'ERROR_INSUFFICIENT_STOCK': 'Some products have insufficient stock.',
             'ERROR_OCCURRED': 'Error occurred:',
