@@ -17,6 +17,10 @@
         min = min || 1;
         max = max || 999;
 
+        if(!this.length) {
+            return;
+        }
+
         this.each(function() {
             var originalSelect = $(this);
 
