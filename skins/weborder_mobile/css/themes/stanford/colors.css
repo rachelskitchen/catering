@@ -16,7 +16,8 @@
 }
 
 .bg-color1,
-.bg-color-active1:not([disabled]):active {
+.bg-color-active1:not([disabled]):active,
+.bg-color-active1.selected {
     background-image: linear-gradient(top, #980000,#670000);
     background-image: -moz-linear-gradient(top ,#980000,#670000);
     background-image: -webkit-linear-gradient(top,#980000,#670000);
@@ -37,7 +38,8 @@
     color: #fff;
 }
 
-.font-color-active2:not([disabled]):active {
+.font-color-active2:not([disabled]):active,
+.font-color-active2.selected {
     color: #fff;
 }
 

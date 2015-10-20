@@ -15,7 +15,8 @@
     color: #1a99cd;
 }
 
-.bg-color1, .bg-color-active1:not([disabled]):active {
+.bg-color1, .bg-color-active1:not([disabled]):active,
+.bg-color-active1.selected {
     background-color: #1a99cd;
 }
 
@@ -32,7 +33,8 @@
     color: #fff;
 }
 
-.font-color-active2:not([disabled]):active {
+.font-color-active2:not([disabled]):active,
+.font-color-active2.selected {
     color: #fff;
 }
 
