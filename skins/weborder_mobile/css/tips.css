@@ -28,7 +28,7 @@
     pointer-events: none;
 }
 
-.tip-selection .percent-10, .tip-selection .percent-15, .tip-selection .percent-20 {
+.tip-selection .percent-sum {
     position: relative;
     font-size: 0.7em;
     top: -1.4em;
