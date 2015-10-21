@@ -138,7 +138,7 @@ aside:after, aside:before {
     background: #e4e4e4;
     box-shadow: 0 1px #ccc;
 }
-#cart .main .subtotal {
+#cart .main .cart-total {
     border-top-color: #362b18;
 }
 #cart .main .checkout {

@@ -23,8 +23,8 @@
                 content = (delivery_charge > 0) ? (currency_symbol + delivery_charge) : _lp.HEADER_DELIVERY_FREE;
         %>
         <span title="<%= title %>: <%= content %>">
-            <span class="clip"> <%= title %>: </span>
-            <span class="clip"> <%= content %> </span>
+            <span> <%= title %>: </span>
+            <span> <%= content %> </span>
         </span>
         <%
             var title = _lp.HEADER_DELIVERY_TIME,
@@ -35,7 +35,7 @@
             if (delivery_time.minutes == 0 && delivery_time.hour == 0) content += _lp.HEADER_DELIVERY_ASAP;
         %>
         <span title="<%= title %>: <%= content %>">
-            <span class="clip"> <%= title %>: </span>
+            <span> <%= title %>: </span>
             <%= content %>
         </span>
         <%
@@ -43,7 +43,7 @@
                 content = currency_symbol + min_delivery_amount;
         %>
         <span title="<%= title %>: <%= content %>">
-            <span class="clip"> <%= title %>: </span>
+            <span> <%= title %>: </span>
             <%= content %>
         </span>
         <%
@@ -66,7 +66,7 @@
             }
         %>
         <span title="<%= title %> <%= content %>">
-            <span class="clip"> <%= title %> </span>
+            <span> <%= title %> </span>
             <%= content %>
         </span>
     </div>

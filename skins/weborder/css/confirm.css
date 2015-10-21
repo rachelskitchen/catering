@@ -64,8 +64,9 @@
 }
 .confirmPayCard .pickup_time > span:nth-child(1) {
     font-weight: bold;
+    display: inline-block;
     width: 50%;
-    float: left;
+    text-align: left;
 }
 .confirmPayCard .pickup_time > span:nth-child(2) {
     width: 50%;
@@ -140,6 +141,7 @@
 @media only screen and (max-device-width: 949px) {
     .confirmPayCard .captcha_container {
         left: 180px !important;
+        width: 200px;
     }
 }
 
