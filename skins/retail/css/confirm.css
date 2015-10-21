@@ -136,6 +136,7 @@
 @media only screen and (max-device-width: 949px) {
     .confirmPayCard .captcha_container {
         left: 180px !important;
+        width: 200px;
     }
 }
 
@@ -165,7 +166,7 @@
     line-height: 20px;
     max-width: 80px;
     margin-top: 14px;
-    margin-left: 36px;
+    margin-left: 14px;
 }
 .confirmPayCard.stanford-card .btn-reload {
     margin-top: 14px;

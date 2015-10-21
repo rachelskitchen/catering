@@ -1,6 +1,6 @@
 <script type="text/template" id="total_main-template">
     <li>
-        <span class="title clip"> <%= _lp.TOTAL_SUBTOTAL %>: </span>
+        <span class="title"> <%= _lp.TOTAL_SUBTOTAL %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= _settings.currency_symbol %></span>
             <span class="total"></span>
@@ -10,42 +10,42 @@
 
 <script type="text/template" id="total_checkout-template">
     <li class="total_discounts">
-        <span class="title clip"> <%= _lp.TOTAL_DISCOUNTS %>: </span>
+        <span class="title"> <%= _lp.TOTAL_DISCOUNTS %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= _settings.currency_symbol %></span>
             <span class="discount"></span>
         </span>
     </li>
     <li class="shipping_charge_item">
-        <span class="title clip"> <%= _lp.TOTAL_SHIPPING %>: </span>
+        <span class="title"> <%= _lp.TOTAL_SHIPPING %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= _settings.currency_symbol %></span>
             <span class="shipping_charge"></span>
         </span>
     </li>
     <li class="shipping_discount_item">
-        <span class="title clip"> <%= _lp.TOTAL_SHIPPING_DISCOUNT %>: </span>
+        <span class="title"> <%= _lp.TOTAL_SHIPPING_DISCOUNT %>: </span>
         <span class="cost">
             <span class="currency_symbol">-<%= _settings.currency_symbol %></span>
             <span class="shipping_discount"></span>
         </span>
     </li>
     <li>
-        <span class="title clip"> <%= _lp.TOTAL_SUBTOTAL %>: </span>
+        <span class="title"> <%= _lp.TOTAL_SUBTOTAL %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= _settings.currency_symbol %></span>
             <span class="subtotal"></span>
         </span>
     </li>
     <li class="surcharge_item">
-        <span class="title clip"> <%= _lp.TOTAL_SURCHARGE %>: </span>
+        <span class="title"> <%= _lp.TOTAL_SURCHARGE %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= _settings.currency_symbol %></span>
             <span class="surcharge"></span>
         </span>
     </li>
     <li>
-        <span class="title clip"> <%= _lp.TOTAL_TAX %>: </span>
+        <span class="title"> <%= _lp.TOTAL_TAX %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= _settings.currency_symbol %></span>
             <span class="tax"></span>
@@ -54,7 +54,7 @@
     </li>
 <% if(_settings.accept_tips_online) { %>
     <li>
-        <span class="title clip"> <%= _lp.TOTAL_TIP %>: </span>
+        <span class="title"> <%= _lp.TOTAL_TIP %>: </span>
         <span class="cost">
             <span class="currency_symbol"><%= _settings.currency_symbol %></span>
             <span class="tip"></span>
@@ -62,7 +62,7 @@
     </li>
 <% } %>
     <li>
-        <span class="title bold clip"> <%= _lp.TOTAL_GRAND_TOTAL %>: </span>
+        <span class="title bold"> <%= _lp.TOTAL_GRAND_TOTAL %>: </span>
         <span class="cost">
             <span class="currency_symbol bold"><%= _settings.currency_symbol %></span>
             <span class="grandtotal bold"></span>
