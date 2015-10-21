@@ -11,7 +11,7 @@
 }
 
 .rewards-info h3 {
-    padding-bottom: 24px;
+    padding: 0 0 24px !important;
     font-weight: bold;
     font-size: 20px;
 }
@@ -26,6 +26,7 @@
     font-weight: bold;
     text-align: right;
     padding-right: 10px;
+    vertical-align: middle;
 }
 
 .rewards-info .input_beauty {
@@ -34,6 +35,7 @@
     bottom: 0;
     display: inline-block;
     height: 27px;
+    vertical-align: middle;
 }
 
 .rewards-info .captcha {
@@ -111,6 +113,7 @@
 .reward-selection > li > span {
     display: inline-block;
     vertical-align: middle;
+    width: 98%;
 }
 
 .reward-selection li.active {
@@ -218,9 +221,9 @@
     position: relative;
     padding: 0;
 }
-
+/*
 @media only screen and (max-device-width: 949px) {
     .rewards-info dfn {
-        width: 86px !important;
+        width: 88px !important;
     }
-}
+}*/
