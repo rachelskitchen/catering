@@ -198,7 +198,6 @@ select:-moz-focusring {
 }
 
 .quantity, .modifier_class_wrapper .modifiers,
-.myorder.items > li, .bag_charge.items > li,
 .discount.items > li, .service_fees.items > li {
     border-color: #d6e3e9;
 }
