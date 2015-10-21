@@ -145,10 +145,6 @@ define(["backbone"], function(Backbone) {
                 isCatering = dining_option === 'DINING_OPTION_CATERING';
 
             return isToGo || isCatering || isDelivery && delivery_cold_untaxed;
-        },
-        isBagChargeAvailable: function() {
-            var dining_option = this.get('dining_option');
-            return dining_option != 'DINING_OPTION_EATIN' && dining_option != 'DINING_OPTION_ONLINE';
         }
     });
 

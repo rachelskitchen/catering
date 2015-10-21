@@ -46,9 +46,6 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
          * @prop {App.Models.Delivery} defaults.delivery - the Delivery model.
          * @default null.
          *
-         * @prop {number} defaults.bag_charge - the auto bag charge amount.
-         * @default 0.
-         *
          * @prop {number} defaults.discounts - sum of all discounts applied.
          * @default 0.
          *
@@ -73,7 +70,6 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             surcharge: 0,
             tip: null,
             delivery: null,
-            bag_charge: 0,
             discounts: 0, //sum of all discounts
             tax_country: '',
             prevailing_surcharge: 0,
@@ -84,13 +80,12 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
         },
         /**
          * @method
-         * Set values for `bag_charge`, `tax_country`, `prevailing_surcharge`, `prevailing_tax`, `tip`, `delivery` attributes.
+         * Set values for `tax_country`, `prevailing_surcharge`, `prevailing_tax`, `tip`, `delivery` attributes.
          */
         initialize: function(opts) {
             var settings = App.Settings,
                 delivery = opts && opts.delivery_item || {},
                 set = {
-                    bag_charge: settings.auto_bag_charge,
                     tax_country: settings.tax_country,
                     prevailing_surcharge: settings.prevailing_surcharge,
                     prevailing_tax: settings.prevailing_tax,
@@ -194,13 +189,6 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
          */
         get_shipping_charge: function() {
             return round_monetary_currency(this.get('shipping') || 0);
-        },
-        /**
-         * @method
-         * @returns {string} bag charge amount formatted as a string.
-         */
-        get_bag_charge: function() {
-            return round_monetary_currency(this.get('bag_charge'));
         },
         /**
          * @method

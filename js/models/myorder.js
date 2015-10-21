@@ -399,10 +399,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         overrideProductName: function(product) {
             if (product.id == null) {
                 switch (product.name) {
-                    case MSG.BAG_CHARGE_ITEM:
-                        return 'Bag Charge';
-                    case MSG.DELIVERY_ITEM:
-                        return 'Delivery Charge';
                     case MSG.AUTOAPPLY_FEE_ITEM:
                         return 'AutoApply Fee';
                     default:
@@ -421,12 +417,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         },
         isServiceFee: function() {
             return this.get("isServiceFee") === true;
-        },
-        isDeliveryItem: function() {
-            return this.get("isDeliveryItem") === true && this.collection.checkout.get('dining_option') == 'DINING_OPTION_DELIVERY';
-        },
-        isShippingItem: function() {
-            return this.get("isDeliveryItem") === true && this.collection.checkout.get('dining_option') == 'DINING_OPTION_SHIPPING';
         },
         isRealProduct: function() {
             return this.get("id_product") !== null;
@@ -485,48 +475,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }, this);
         }
     });
-
-    App.Models.DeliveryChargeItem = App.Models.Myorder.extend({
-        initialize: function() {
-            var self = this,
-                charge = this.get('total').get_delivery_charge() * 1;
-            App.Models.Myorder.prototype.initialize.apply(this, arguments);
-            this.set({
-                product: new App.Models.Product({
-                    name: MSG.DELIVERY_ITEM,
-                    price: charge,
-                    service_code: 0,
-                    tax: this.get('total').get('prevailing_tax')
-                }),
-                isDeliveryItem: true,
-                initial_price: charge,
-                sum: charge
-            });
-
-            this.listenTo(this.get("product"), "change:price", function() {
-                if (self.get('total')) {
-                    self.get('total').set_delivery_charge(self.get("product").get("price"));
-                }
-            });
-        }
-    });
-
-    App.Models.BagChargeItem = App.Models.Myorder.extend({
-        initialize: function() {
-            var charge = this.get('total').get_bag_charge() * 1;
-            this.set({
-                product: new App.Models.Product({
-                    name: MSG.BAG_CHARGE_ITEM,
-                    price: charge,
-                    tax: 0
-                }),
-                initial_price: charge,
-                sum: charge
-            });
-            App.Models.Myorder.prototype.initialize.apply(this, arguments);
-        }
-    });
-
 
     App.Models.DiscountItem = Backbone.Model.extend({
         defaults: {
@@ -597,46 +545,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             this.listenTo(this, 'change', this.onModelChange);
         },
         change_dining_option: function(model, value, opts) {
-            var obj, bag_charge = this.total.get_bag_charge() * 1,
-                delivery_charge = this.total.get_delivery_charge() * 1,
-                isShipping = value === 'DINING_OPTION_SHIPPING',
+            var obj, isShipping = value === 'DINING_OPTION_SHIPPING',
                 customer = App.Data.customer;
 
-            if(typeof opts !== 'object'  || !opts.avoid_delivery) {
-//                if (value === 'DINING_OPTION_DELIVERY' && delivery_charge !== 0) {
-//                    if (!this.deliveryItem) {
-//                        this.deliveryItem = new App.Models.DeliveryChargeItem({total: this.total});
-//                    }
-//                    obj = this.find(function(model) {
-//                        return model.get('product').id == null &&
-//                               model.isDeliveryItem() === true;
-//                    });
-//                    if (obj == undefined)
-//                       this.add(this.deliveryItem);
-//
-//                } else {
-//                    this.remove(this.deliveryItem);
-//                }
-
-                // reset shipping
-                if(!isShipping) {
-                    this.total.set('shipping', null);
-                }
-
-                if (this.isBagChargeAvailable() && bag_charge !== 0) {
-                    if (!this.bagChargeItem) {
-                        this.bagChargeItem = new App.Models.BagChargeItem({total: this.total});
-                    }
-                    obj = this.find(function(model) {
-                        return model.get('product').id == null &&
-                               model.get('product').get('name') == MSG.BAG_CHARGE_ITEM;
-                    });
-                    if (obj == undefined)
-                       this.add(this.bagChargeItem);
-
-                } else {
-                    this.remove(this.bagChargeItem);
-                }
+            // reset shipping
+            if(!isShipping) {
+                this.total.set('shipping', null);
             }
 
             // if RETAIl mode and dining option was 'Shipping' need restore original taxes for products
@@ -681,12 +595,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
             return null;
         },
-        get_bag_charge: function() {
-            if (this.isBagChargeAvailable()) {
-                return this.total.get_bag_charge();
-            }
-            return null;
-        },
         /**
          * get quantity without delivery charge and bag charge items
          */
@@ -701,21 +609,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         addJSON: function(data) {
             var self = this, obj;
             data && data.forEach(function(element) {
-                if (element.product.id) { // not add delivery and bag charge items here
+                if (element.product.id) {
                     var myorder = new App.Models.Myorder();
                     myorder.addJSON(element);
                     self.add(myorder);
                     myorder.set('initial_price', myorder.get_initial_price());
-                } else {
-                    //just update discounts for BagCharge and DeliveryCharge items:
-                    if (element.product.name == MSG.BAG_CHARGE_ITEM) {
-                        obj = self.findBagChargeItem();
-                        obj && obj.get("discount").set(element.discount);
-                    }
-                    if (element.product.name == MSG.DELIVERY_ITEM) {
-                        obj = self.findDeliveryItem();
-                        obj && obj.get("discount").set(element.discount);
-                    }
                 }
             });
         },
@@ -788,8 +686,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             if (this.get_only_product_quantity() < 1) {
                 this.discount.zero_discount();
-                this.bagChargeItem && this.bagChargeItem.get("discount").zero_discount();
-                this.deliveryItem && this.deliveryItem.get("discount").zero_discount();
                 this.removeServiceFees();
             }
 
@@ -819,17 +715,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 this.update_cart_totals({update_shipping_options: true});
             }
         },
-        findDeliveryItem: function() {
-            return this.find(function(model) {
-                return model.isDeliveryItem() === true;
-            });
-        },
-        findBagChargeItem: function() {
-            return this.find(function(model) {
-                return model.get('product').id == null &&
-                       model.get('product').get('name') == MSG.BAG_CHARGE_ITEM;
-            });
-        },
         removeServiceFees: function() {
             var fees = this.filter(function(obj){ return obj.isServiceFee(); });
             this.remove(fees);
@@ -838,18 +723,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * save order to localstorage
          */
         saveOrders: function() {
-            var obj = this.findDeliveryItem();
-            if (obj) {
-                setData('delivery_data', {
-                    name: obj.get('product').get('name'),
-                    price: obj.get('product').get('price'),
-                    tax: obj.get('product').get('tax')
-                });
-            }
-            else {
-                setData('delivery_data', {});
-            }
-
             var orderToSave = this.toJSON();
 
             setData('orders', orderToSave);
@@ -867,13 +740,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             this.rewardsCard.loadData();
             this.total.loadTotal();
             var orders = getData('orders');
-            var delivery_data = getData('delivery_data');
-
+            
             if (orders) {
                 this.addJSON(orders);
-
-                if (this.deliveryItem)
-                    this.deliveryItem.get("product").set(delivery_data);
             }
 
             var total  = _.find(orders, function(item) {
@@ -1192,7 +1061,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
 
             myorder.each(function(model) {
-                if (!model.isServiceFee() && !model.isShippingItem())
+                if (!model.isServiceFee())
                   items.push(model.item_submit(true));
             });
 
@@ -1636,11 +1505,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
         },
         empty_myorder: function() {
-            this.remove(this.models); // this can lead to add bagChargeItem or/and deliveryItem automaticaly,
-                                      // so one/two items still exist in the collection and total is non zero.
-            this.remove(this.bagChargeItem);
-            this.remove(this.deliveryItem);
-
+            this.remove(this.models);
+          
             this.total.empty(); //this is for reliability cause of raunding errors exist.
 
             this.checkout.set('dining_option', 'DINING_OPTION_ONLINE');
@@ -1658,9 +1524,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             this.each(function(item) {
                 item.restoreTax();
             });
-        },
-        isBagChargeAvailable: function() {
-            return this.checkout.isBagChargeAvailable();
         },
         /**
          * Cleaning of the cart.
