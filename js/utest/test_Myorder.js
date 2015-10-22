@@ -1065,11 +1065,9 @@ define(['myorder'], function() {
 
         it('Function saveOrders', function() {
             var stored_data;
-        //        deliveryItem = new App.Models.DeliveryChargeItem({total: model.total});
-            var bagChargeItem = new App.Models.BagChargeItem({total: model.total});
             var otherItem = new App.Models.Myorder();
             otherItem.addJSON({id_product: 100, product: {name: 'other'}}); 
-            model.add( [bagChargeItem, otherItem] );
+            model.add( [otherItem] );
           
             spyOn(model.checkout, 'saveCheckout');
             spyOn(model.total, 'saveTotal');
