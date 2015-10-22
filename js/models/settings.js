@@ -372,7 +372,6 @@ define(["backbone", "async"], function(Backbone) {
                                     settings_system.min_delivery_amount = 0;
                             }
 
-                            settings_system.auto_bag_charge = 0; //temp, remove this later                            if (_.isArray(settings_system.delivery_post_code_lookup) && settings_system.delivery_post_code_lookup[0]) {
                             if (_.isArray(settings_system.delivery_post_code_lookup) && settings_system.delivery_post_code_lookup[0]) {
                                 //format codes for better presentation
                                 var  codes = settings_system.delivery_post_code_lookup[1];

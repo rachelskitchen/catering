@@ -192,14 +192,9 @@ define(['orders'], function() {
             
                 expect(objDeep.checkout.set).toHaveBeenCalledWith('dining_option', 'dining_option!');
                 expect(App.Models.Total).toHaveBeenCalledWith({
-                    bag_charge: 3,
                     prevailing_surcharge: 'prevailing_surcharge!',
                     tax_country: 'tax_country!',
-                    prevailing_tax: 'prevailing_tax!',
-                    delivery_item: {
-                        charge: 2,
-                        enable: !!2
-                    }
+                    prevailing_tax: 'prevailing_tax!'
                 });
             });
         });

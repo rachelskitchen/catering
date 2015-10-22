@@ -105,8 +105,6 @@ define(["myorder_view"], function(myorder_view) {
     var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
         render: function() {
             App.Views.CoreMyOrderView.CoreMyOrderItemView.prototype.render.apply(this, arguments);
-            // need hide logo for bag charge (bug Bug 12073)
-            this.options.collection && this.options.collection.bagChargeItem === this.model && this.$el.addClass("no_image");
             App.Settings.hide_images === true && this.$el.addClass("no_image");
             return this;
         },
