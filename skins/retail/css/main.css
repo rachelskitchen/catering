@@ -379,6 +379,9 @@ footer {
     margin: 0 20px;
     text-decoration: none;
 }
+.size_chart {
+    margin: 0;
+}
 
 /* Mercury accepted credit card */
 .mercury-accepted-credit-cards {

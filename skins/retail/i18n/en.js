@@ -99,6 +99,7 @@
         'PRODUCTS_ENTER_GIFT_CARD': 'Enter gift card number you want to load money to',
         'PRODUCTS_GIFT_CARD_NUMBER': 'Gift Card Number',
         'PRODUCTS_AMOUNT': 'Amount',
+        'PRODUCTS_SIZE_CHART': 'Size Chart',
         'QUANTITY_HOW_MANY': 'How many?',
         'QUANTITY_ENTER_WEIGHT': 'Enter weight',
         'STORE_INFO_VIEW': 'View',

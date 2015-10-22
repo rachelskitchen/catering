@@ -132,6 +132,7 @@
         'MYORDER_REMOVE_REWARD_REDEMPTION': 'Remove Reward Redempion?',
         'PRODUCTS_AVAILABLE': 'Available',
         'PRODUCTS_GIFT_CARD_NUMBER': 'Gift Card Number',
+        'PRODUCTS_SIZE_CHART': 'Size Chart',
         'QUANTITY_QUANTITY': 'Quantity',
         'QUANTITY_WEIGHT': 'Weight',
         'REVEL_WELCOME': 'Welcome to the',
