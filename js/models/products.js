@@ -159,7 +159,8 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             created_date: null,
             original_tax: null, // used to save origin tax rate to restore in Retail mode
             timetables: null,
-            compositeId: null
+            compositeId: null,
+            size_chart: '' // URL of product Size Chart image
         },
         /**
          * @method

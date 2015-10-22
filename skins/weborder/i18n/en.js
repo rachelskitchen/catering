@@ -121,6 +121,7 @@
         'PRODUCTS_AVAILABLE': 'Available',
         'PRODUCTS_GIFT_CARD': 'Gift Card Number',
         'PRODUCTS_GIFT_CARD_NUMBER': 'Gift Card Number',
+        'PRODUCTS_SIZE_CHART': 'Size Chart',
         'QUANTITY_HOW_MANY': 'How many?',
         'QUANTITY_ENTER_WEIGHT': 'Enter weight',
         'STORE_INFO_NO_INFORMATION': 'No information',

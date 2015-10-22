@@ -405,6 +405,10 @@ select::-ms-expand { /*Removes default IE style*/
     opacity: .5;
 }
 
+.size_chart {
+    text-decoration: none;
+}
+
 .uppercase {
     text-transform: uppercase;
 }

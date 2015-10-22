@@ -36,6 +36,8 @@ define(["products_view"], function(products_view) {
             '.desc': 'text: _product_description, toggle: _product_description',
             '.timetable': 'toggle: _product_timetables',
             '.timetable span': 'text: _product_timetables',
+            '.size_chart_wrapper': 'toggle: _product_size_chart',
+            'a.size_chart': 'attr:{href: _product_size_chart}',
             '.gift-card': 'classes: {hidden: not(all(_product_is_gift, _system_settings_online_orders))}',
             '.gift-card-number': 'value: _product_gift_card_number, events: ["input"], restrictInput: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/'
         },
