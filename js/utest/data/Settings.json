@@ -7,7 +7,7 @@
     },
     "estimated_order_preparation_time": 0.0,
     "accept_online_orders_when_store_is_closed": true,
-    "auto_bag_charge": 1.0,
+    "auto_bag_charge": 0,
     "delivery_charge": 5.0,
     "online_order_start_time_offset": 5,
     "delivery_cold_untaxed": true,

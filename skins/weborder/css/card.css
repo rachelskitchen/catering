@@ -3,11 +3,14 @@
     display: inline-block;
     width: 230px;
     margin: 10px 0;
-    text-indent: 30px;
+    padding-left: 30px;
     font-weight: bold;
+    height: 19px;
 }
 #credit-card label > span {
     padding-right: 8px;
+    padding-left: 5px;
+    float: left;
 }
 
 #credit-card > div {
@@ -55,7 +58,7 @@
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
     #credit-card label {
-        width: 170px !important;
+        width: 150px !important;
     }
     #credit-card div.input_beauty,
     #credit-card div.tips {

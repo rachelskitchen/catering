@@ -261,10 +261,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             this.collection.each(this.addItem.bind(this));
         },
         addItem: function(model) {
-            if(this.collection.deliveryItem === model)
-                return;
-            var bag_charge = this.collection.get_bag_charge();
-
             var view = App.Views.GeneratorView.create('MyOrder', {
                 mod: 'Item',
                 model: model,
@@ -278,27 +274,9 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 return;
             }
 
-            if (model === App.Data.myorder.bagChargeItem) {
-                this.bagChargeItemView = view;
-                if (this.subViews.indexOf(this.bagChargeItemView) == -1 &&
-                    App.Data.myorder.get_only_product_quantity() > 0 && bag_charge) {
-
-                    this.subViews.push(this.bagChargeItemView);
-                    this.$('.bag_charge').append(this.bagChargeItemView.el);
-                }
-            }
-            else {
-                this.subViews.push(view);
-                if (this.subViews.indexOf(this.bagChargeItemView) == -1 && this.bagChargeItemView && bag_charge) {
-                    this.subViews.push(this.bagChargeItemView);
-                }
-
-                this.$('.myorder').append(view.el);
-                if (this.bagChargeItemView && bag_charge) {
-                    this.$('.bag_charge').append(this.bagChargeItemView.el);
-                }
-            }
-
+            this.subViews.push(view);
+            this.$('.myorder').append(view.el);
+           
             if (this.subViews.indexOf(this.discountItemView) == -1 && this.collection.discount && !this.discountItemView ) {
                 var view = App.Views.GeneratorView.create('MyOrder', {
                     mod: 'Discount',
@@ -316,13 +294,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 if(model === view.model) {
                     view.remove();
                     self.subViews.splice(i, 1);
-                    var bag_charge_index = self.subViews.indexOf(self.bagChargeItemView);
-                    if (self.collection.get_only_product_quantity() < 1) {
-                        if (bag_charge_index != -1) {
-                            Backbone.View.prototype.remove.call(self.bagChargeItemView);
-                            self.subViews.splice(bag_charge_index, 1);
-                        }
-                    }
                     return true;
                 }
             });

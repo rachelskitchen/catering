@@ -13,8 +13,9 @@
     margin-right: -0.2em;
 }
 
-.myorder.items > li, .bag_charge.items > li,
-.discount.items > li, .service_fees.items > li {
+.myorder.items > li,
+.discount.items > li, 
+.service_fees.items > li {
     padding: 2em 0;
     border-bottom-width: 1px;
     border-bottom-style: solid;

@@ -89,24 +89,18 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
                 grandTotal: this.model.get_grand(),
                 tax: this.model.get_tax(),
                 tip: this.model.get_tip(),
-                deliveryCharge: this.model.get_delivery_charge(),
                 shippingCharge: this.model.get_shipping_charge(),
-                deliveryDiscount: round_monetary_currency(this.collection.deliveryItem ? this.collection.deliveryItem.get("discount").get("sum") : 0),
                 shippingDiscount: round_monetary_currency(this.model.get('shipping_discount') || 0),
                 dining_option: dining_option
             };
         },
         bindings: {
             ".total_discounts": "classes:{hide:hide_discounts}",
-            "li.delivery-charge": "classes:{hide:hide_delivery}",
-            ".delivery_discount_item": "classes:{hide:hide_delivery_discount}",
             ".shipping_charge_item": "classes:{hide:hide_shipping}",
             ".shipping_discount_item": "classes:{hide:hide_shipping_discount}",
             ".surcharge_item": "classes:{hide:hide_surcharge_item}",
             ".discount": "text:discountsFrm",
             ".subtotal": "text:totalFrm",
-            "span.delivery-charge": "text:deliveryCharge",
-            ".delivery-discount": "text:deliveryDiscount",
             ".shipping_charge": "text:shippingCharge",
             ".shipping_discount": "text:shippingDiscount",
             ".surcharge": "text:surcharge",
@@ -118,18 +112,8 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
             var viewModel = Backbone.Epoxy.Model.extend({
                 defaults: view.getData(),
                 computeds: {
-                    hide_delivery: {
-                        deps: ['dining_option', 'deliveryCharge'],
-                        get: function(dining_option, deliveryCharge) {
-                             return dining_option != 'DINING_OPTION_DELIVERY' ||  deliveryCharge*1 <= 0 || view.collection.get_only_product_quantity() <= 0;
-                        }
-                    },
                     hide_shipping: function() { //for right automatic binding discovering you may use AND/OR functions instead of &&/|| inline operation with deps: [...]
                         return OR(this.get('dining_option') != 'DINING_OPTION_SHIPPING', this.get('shippingCharge')*1 <= 0) || view.collection.get_only_product_quantity() <= 0;
-                    },
-                    hide_delivery_discount: function() {
-                        var dining_option = this.get('dining_option');
-                        return this.get('deliveryDiscount')*1 <= 0 || dining_option != 'DINING_OPTION_DELIVERY';
                     },
                     hide_shipping_discount: function() { //for right binding discovering you may use AND/OR functions instead of &&/|| operations with extra value declaration
                         return OR(this.get('shippingDiscount')*1 <= 0, this.get('dining_option') != 'DINING_OPTION_SHIPPING');

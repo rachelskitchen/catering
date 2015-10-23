@@ -12,19 +12,15 @@
 }
 #content > .checkout label {
     display: inline-block;
-    width: 302px;
-    /*margin: 10px 0;*/
-    text-indent: 100px;
+    width: 300px;
     background: none;
-    height: 39px;
-    line-height: 39px;
+    height: 25px;
+    padding: 7px 15px 7px 5px;
     vertical-align: top;
+    text-align: right;
 }
 #content > .checkout label > span {
     font-weight: bold;
-}
-#content > .checkout label > span {
-    padding-right: 20px;
 }
 #content > .checkout h2 {
     padding-left: 100px;
@@ -38,7 +34,7 @@
     height: 128px;
 }
 #content > .checkout .input_beauty {
-    left: 287px;
+    left: 327px;
     right: 100px;
     position: absolute;
     top: 6px;
@@ -51,7 +47,6 @@
     display: inline-block;
     width: 210px;
     position: relative;
-    left: -22px;
     top: 4px;
     vertical-align: top;
     height: 29px;
@@ -97,7 +92,7 @@
 }
 
 #content > .checkout .arrival_address > ul {
-    padding-left: 290px;
+    padding-left: 325px;
 }
 
 #content > .checkout .arrival_address > ul li {
@@ -191,11 +186,8 @@
 #content > .checkout .rewards-card-btn,
 #content > .checkout .discount-code-btn {
     display: inline-block;
-    width: 100px;
-    float: right;
-    margin-right: 100px;
-    padding-left: 20px;
-    line-height: 39px;
+    max-width: 85%;
+    padding: 0 10px 0 0;
     text-decoration: underline;
     cursor: pointer;
 }
@@ -204,6 +196,21 @@
     font-size: 24px;
     font-weight: bold;
     padding: 20px;
+}
+
+#content > .checkout .btn-container {
+    width: 210px;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#content > .checkout .btn-container::before {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 39px;
+    vertical-align: middle;
 }
 
 .stanford-student-status {
@@ -274,11 +281,11 @@
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
     #content > .checkout label {
-        width: 202px !important;
-        text-indent: 50px !important;
+        width: 182px !important;
     }
     #content > .checkout label.shipping {
-        width: 100% !important;
+        text-align: left !important;
+        width: 90% !important;
     }
     #content > .checkout .shipping-select-wrap {
         left: 51px;
@@ -287,24 +294,17 @@
         padding-left: 50px !important;
     }
     #content > .checkout div.input_beauty {
-        left: 194px !important;
+        left: 212px !important;
         right: 60px !important;
     }
     #content > .checkout .arrival_address > ul {
-        padding-left: 195px !important;
-    }
-    #content div.specials > label {
-        text-indent: 50px !important;
-    }
-    #content > .checkout div.select {
-        left: -15px !important;
+        padding-left: 213px !important;
     }
     #content > .checkout .rewards-card-input.input_beauty,
     #content > .checkout .discount-code-input.input_beauty {
-        right: 180px !important;
+        right: 145px !important;
     }
-    #content > .checkout .rewards-card-btn,
-    #content > .checkout .discount-code-btn {
-        margin-right: 60px;
+    #content > .checkout .btn-container {
+        width: 140px !important;
     }
 }
