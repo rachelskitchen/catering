@@ -62,9 +62,9 @@
 <script type="text/template" id="main_maintenance-template">
     <section class="maintenance">
         <a href="javascript: void(0);" class="back"> <%= _lp.MAIN_BACK %> </a>
-        <div id="content">
+        <div id="content" class="text-center">
             <p> <%= errMsg %> </p>
-            <div class="btn reload"> <span class="clip"> <%= _lp.MAIN_RESTART %> </span> </div>
+            <div class="btn reload"><span><%= _lp.MAIN_RESTART %></span></div>
         </div>
     </section>
 <footer>
@@ -109,7 +109,7 @@
                                 <td><%= pickup_type %>:</td>
                                 <td><%= pickup_time_date %></td>
                             </tr>
-                            <% } %>                            
+                            <% } %>
                             <% if(reward_points) { %>
                             <tr>
                                 <td> <%= _lp.MAIN_REWARD_CARD_POINTS %>: </td>

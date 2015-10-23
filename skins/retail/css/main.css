@@ -258,23 +258,16 @@ footer {
     top: 32px;
 }
 #header .main ul.menu {
-    width: 340px;
+    min-width: 340px;
     position: absolute;
     right: 0;
     top: 0;
 }
 #header .main ul.menu li {
     display: inline-block;
-    margin: 22px 10px 0;
-}
-#header .main ul.menu li.shop {
-    max-width: 60px;
-}
-#header .main ul.menu li.about {
-    max-width: 60px;
-}
-#header .main ul.menu li.locations {
-    max-width: 80px;
+    margin: 12px 10px 0;
+    vertical-align: middle;
+    padding-bottom: 1px;
 }
 #header .main ul.menu li.active {
     cursor: default;
@@ -283,17 +276,17 @@ footer {
 #header .main ul.menu li:not(.cart):hover {
     border-bottom-width: 1px;
     border-bottom-style: solid;
+    padding-bottom: 0;
 }
 #header .main ul.menu li.cart {
-    position: absolute;
-    top: -18px;
-    right: 55px;
     width: 32px;
-    height: 27px;
-    padding-top: 18px;
+    height: 36px;
     text-align: center;
     text-shadow: none;
     font-weight: bold;
+    position: relative;
+    top: -6px;
+    line-height: 47px
 }
 #header .main.checkout ul.menu li.cart {
     cursor: default;
@@ -407,7 +400,7 @@ footer {
     top: 63px;
     right: 100px;
     width: 323px;
-    height: 273px;
+    min-height: 273px;
     border-style: solid;
     border-width: 1px;
     opacity: 0;
@@ -418,20 +411,29 @@ footer {
     filter: alpha(opacity=100);
     z-index: 800;
 }
-#cart .main .subtotal {
+#cart .main .cart-bottom {
     border-top-width: 1px;
     border-top-style: solid;
     height: 38px;
     margin: 10px 10px 0;
-    line-height: 37px;
+}
+#cart .main .subtotal {
+    display: inline-block;
+    max-width: 97%;
+    vertical-align: middle;
 }
 #cart .main .subtotal span:first-child {
     text-transform: uppercase;
     font-size: 14px;
     font-weight: 700;
-    max-width: 95px;
     display: inline-block;
-    vertical-align: top;
+}
+#cart .main .cart-bottom::before {
+    content: '';
+    display: inline-block;
+    height: 38px;
+    width: 0;
+    vertical-align: middle;
 }
 #cart .main .order-items {
     height: 190px;
@@ -444,19 +446,18 @@ footer {
     margin: 0 10px;
 }
 #cart .main .checkout {
-    position: absolute;
-    bottom: 8px;
-    right: 10px;
+    display: inline-block;
     border-width: 1px;
     border-style: solid;
-    width: 140px;
     height: 20px;
     text-align: center;
     border-radius: 10px;
     cursor: pointer;
     line-height: 20px;
-    padding-left: 0.2em;
-    padding-right: 0.2em;
+    padding-left: 0.6em;
+    padding-right: 0.6em;
+    margin: 8px 5px;
+    vertical-align: middle;
 }
 #cart .main .checkout > span {
     font-weight: bold;
@@ -597,8 +598,9 @@ footer {
     background-size: 100%;
 }
 section.maintenance .btn {
-    margin: 50px auto;
-    width: 160px;
+    display: inline-block;
+    margin: 50px;
+    padding: 0 20px;
 }
 section.maintenance p {
     margin-top: 120px;
@@ -1129,4 +1131,8 @@ span.cancel-input:before {
 
 .cancel-input:not(.hide) + input {
     padding-right: 30px;
+}
+
+.text-center {
+    text-align: center;
 }

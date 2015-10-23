@@ -328,11 +328,6 @@ define([], function() {
                 expect(typeof sys.address.state_province).toBe('string');
             });
 
-            it("Auto bag charge", function() {
-                expect(typeof sys.auto_bag_charge).toBe('number');
-                expect(sys.auto_bag_charge >= 0).toBeTruthy();
-            });
-
         });
 
     });

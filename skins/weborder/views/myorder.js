@@ -25,7 +25,7 @@ define(["myorder_view"], function(myorder_view) {
 
     var MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView.extend({
         bindings: {
-            'size_chart_wrapper': 'toggle: _product_size_chart',
+            '.size_chart_wrapper': 'toggle: _product_size_chart',
             'a.size_chart': 'attr:{href: _product_size_chart}',
         },
         initialize: function() {
