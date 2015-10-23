@@ -740,7 +740,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             this.rewardsCard.loadData();
             this.total.loadTotal();
             var orders = getData('orders');
-            
+
             if (orders) {
                 this.addJSON(orders);
             }
@@ -1345,7 +1345,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                             break;
                         case "INSUFFICIENT_STOCK":
                             var message = '<span style="color: red;"> <b>' + MSG.ERROR_INSUFFICIENT_STOCK + '</b> </span> <br />';
-                            for (var i = 0, j = data.responseJSON.length; i < j; i++) {
+                            var groupedByIdResponseJSON = _.chain(data.responseJSON).indexBy("id").values().value();
+                            for (var i = 0, j = groupedByIdResponseJSON.length; i < j; i++) {
                                 var current_element = data.responseJSON[i],
                                     order = myorder.where({id_product: current_element.id}),
                                     product = order[0].get_product(),
@@ -1506,7 +1507,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         },
         empty_myorder: function() {
             this.remove(this.models);
-          
+
             this.total.empty(); //this is for reliability cause of raunding errors exist.
 
             this.checkout.set('dining_option', 'DINING_OPTION_ONLINE');
