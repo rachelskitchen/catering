@@ -68,7 +68,9 @@ define(["backbone", "factory"], function(Backbone) {
                 tabs.addClass('hidden');
         },
         onMenu: function() {
-            this.model.trigger('onShop');
+            if (!this.onIndex()) {
+                this.model.trigger('onShop');
+            }
         },
         onAbout: function() {
             this.model.trigger('onAbout');
@@ -83,11 +85,14 @@ define(["backbone", "factory"], function(Backbone) {
             event.preventDefault();
             var search = this.$('input[name=search]').val();
             if(search.length > 0) {
-                if (location.hash.indexOf("#index") == -1) {
+                if (!this.onIndex()) {
                     this.model.trigger('onShop');
                 }
                 this.options.search.search(search);
             }
+        },
+        onIndex: function() {
+            return (location.hash.indexOf("#index") !== -1) ? true : false;
         },
         searchComplete: function(result) {
             this.$('.search').get(0).reset();

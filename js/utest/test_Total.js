@@ -24,9 +24,7 @@ define(['total', 'js/utest/data/Total'], function(total, data) {
 
         it('Create model', function() {
             var json = total.toJSON(),
-                expData = _.extend({}, data.DEFAULTS, data.SYSTEM_SETTINGS, {
-                    bag_charge: data.SYSTEM_SETTINGS.auto_bag_charge
-                });
+                expData = _.extend({}, data.DEFAULTS, data.SYSTEM_SETTINGS);
 
             delete json.tip;
             delete json.delivery;
@@ -232,13 +230,6 @@ define(['total', 'js/utest/data/Total'], function(total, data) {
                 total.get_shipping_charge();
                 expect(round_monetary_currency).toHaveBeenCalledWith(shipping);
             });
-        });
-
-        it('get_bag_charge()', function() {
-            var bag_charge = 3;
-            total.set('bag_charge', bag_charge);
-            total.get_bag_charge();
-            expect(round_monetary_currency).toHaveBeenCalledWith(bag_charge);
         });
 
         describe('get_remaining_delivery_amount()', function() {

@@ -674,58 +674,6 @@ define(['myorder'], function() {
     });
     
     
-//////////////////////////////////////////////////////////////////////////////
-        
-    describe("App.Models.DeliveryChargeItem", function() {
-        var total = {
-                get_delivery_charge: function() {
-                    return '10';
-                },
-                get: function(name) {
-                    return '!' + name;
-                }
-            },
-            model;
-        
-        beforeEach(function() {
-            model = new App.Models.DeliveryChargeItem({total: total});
-        });
-        
-        it('check initialization', function() {
-            expect(model.get('sum')).toBe(10);
-            expect(model.get('initial_price')).toBe(10);
-            expect(model.get('product').get('name')).toBe(MSG.DELIVERY_ITEM);
-            expect(model.get('product').get('tax')).toBe('!prevailing_tax');
-        });
-    });
-    
-    
-//////////////////////////////////////////////////////////////////////////////
-        
-    describe("App.Models.BagChargeItem", function() {
-        var total = {
-                get_bag_charge: function() {
-                    return '10';
-                },
-                get: function(name) {
-                    return '!' + name;
-                }
-            },
-            model;
-        
-        beforeEach(function() {
-            model = new App.Models.BagChargeItem({total: total});
-        });
-        
-        it('check initialization', function() {
-            expect(model.get('sum')).toBe(10);
-            expect(model.get('initial_price')).toBe(10);
-            expect(model.get('product').get('name')).toBe(MSG.BAG_CHARGE_ITEM);
-            expect(model.get('product').get('tax')).toBe(0);
-        });
-    });
-    
-    
 //////////////////////////////////////////////////////////////////////////////    
     
 
@@ -754,83 +702,11 @@ define(['myorder'], function() {
                 spyOn(model, 'add');
                 spyOn(model, 'remove');
                 spyOn(model, 'recalculate_tax');
-                spyOn(model.total, 'get_bag_charge').and.callFake(function() {
-                    return bagcharge;
-                });
                 spyOn(model.total, 'get_delivery_charge').and.callFake(function() {
                     return delivery;
                 });
             });
-            
-            it('avoid delivery', function() {
-                model.change_dining_option({}, 'DINING_OPTION_DELIVERY', {avoid_delivery: true});
-                expect(model.add).not.toHaveBeenCalled();
-                expect(model.recalculate_tax).toHaveBeenCalled();
-            });
-            
-            describe('dining_option delivery', function() {
-                
-                it('delivery charge is 0', function() {
-                    model.change_dining_option({}, 'DINING_OPTION_DELIVERY');
-                    expect(model.add).not.toHaveBeenCalled();
-                });
-                
-                it('delivery charge not 0, delivery item not present', function() {
-                    delivery = 10;
-                    model.deliveryItem = undefined;
-                    model.change_dining_option({}, 'DINING_OPTION_DELIVERY');
-                    expect(model.deliveryItem.__proto__).toBe(App.Models.DeliveryChargeItem.prototype);
-                    expect(model.add).toHaveBeenCalledWith(model.deliveryItem);
-                    
-                });
-                
-                it('delivery charge not 0, delivery item present', function() {
-                    var obj = {};
-                    delivery = 10;
-                    model.deliveryItem = obj;
-                    model.change_dining_option({}, 'DINING_OPTION_DELIVERY');
-                    expect(model.add).toHaveBeenCalledWith(obj);                    
-                });
-                
-                it('bag charge is 0', function() {
-                    model.change_dining_option({}, 'DINING_OPTION_DELIVERY');
-                    expect(model.add).not.toHaveBeenCalled();
-                });
-                
-                it('bag charge not 0, bag charge item not present', function() {
-                    bagcharge = 10;
-                    model.bagChargeItem = undefined;
-                    model.change_dining_option({}, 'DINING_OPTION_DELIVERY');
-                    expect(model.bagChargeItem.__proto__).toBe(App.Models.BagChargeItem.prototype);
-                    expect(model.add).toHaveBeenCalledWith(model.bagChargeItem);
-                });
-                
-                it('bag charge not 0, bag charge item present', function() {
-                    var obj = {};
-                    bagcharge = 10;
-                    model.bagChargeItem = obj;
-                    model.change_dining_option({}, 'DINING_OPTION_DELIVERY');
-                    expect(model.add).toHaveBeenCalledWith(obj);
-                    
-                });
-            });
-            
-            it('dining_option to go, bag charge not 0, bag chrage item is present', function() {
-                var obj = {};
-                bagcharge = 10;
-                model.bagChargeItem = obj;
-                model.change_dining_option({}, 'DINING_OPTION_TOGO');
-                expect(model.remove).toHaveBeenCalledWith(model.deliveryItem);
-                expect(model.add).toHaveBeenCalledWith(obj);
-            });
-            
-            it('dining_option eat in', function() {
-                var obj1 = {}, obj2 = {};
-                model.bagChargeItem = obj1;
-                model.deliveryItem = obj2;
-                model.change_dining_option({}, 'DINING_OPTION_EATIN');
-                expect([model.remove.calls.argsFor(0)[0], model.remove.calls.argsFor(1)[0]]).toEqual([obj1, obj2]);
-            });
+            // TODO           
         });
         
         it('Function check_maintenance', function() {
@@ -871,23 +747,7 @@ define(['myorder'], function() {
             dining_option = 'DINING_OPTION_DELIVERY';
             expect(model.get_delivery_charge()).toBe(10);            
         });
-        
-        it('Function get_bag_charge', function() {
-            var dining_option = 'DINING_OPTION_EATIN';
-            spyOn(model.checkout, 'get').and.callFake(function() {
-                return dining_option;
-            });
-            spyOn(model.total, 'get_bag_charge').and.returnValue(10);
-            
-            expect(model.get_bag_charge()).toBeNull();
-            
-            dining_option = 'DINING_OPTION_DELIVERY';
-            expect(model.get_bag_charge()).toBe(10);
-            
-            dining_option = 'DINING_OPTION_TOGO';
-            expect(model.get_bag_charge()).toBe(10);
-        });
-        
+       
         it('Function get_only_product_quantity', function() {
             spyOn(App.Collections.Myorders.prototype, 'listenTo');
             model = new App.Collections.Myorders();
@@ -1204,12 +1064,10 @@ define(['myorder'], function() {
         });
 
         it('Function saveOrders', function() {
-            var stored_data,
-                deliveryItem = new App.Models.DeliveryChargeItem({total: model.total});
-            var bagChargeItem = new App.Models.BagChargeItem({total: model.total});
+            var stored_data;
             var otherItem = new App.Models.Myorder();
             otherItem.addJSON({id_product: 100, product: {name: 'other'}}); 
-            model.add( [deliveryItem, bagChargeItem, otherItem] );
+            model.add( [otherItem] );
           
             spyOn(model.checkout, 'saveCheckout');
             spyOn(model.total, 'saveTotal');

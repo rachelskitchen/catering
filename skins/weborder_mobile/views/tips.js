@@ -29,9 +29,12 @@ define(["tips_view"], function(tips_view) {
         bindings: {
             '.ctrl': 'reset: tipValue, events: ["click"]',
             '.tipAmount': 'value: monetaryFormat(tipValue), events:["blur"], restrictInput: "0123456789.", kbdSwitcher: "float"',
-            '.percent-10': 'text: currencyFormat(percents_10)',
-            '.percent-15': 'text: currencyFormat(percents_15)',
-            '.percent-20': 'text: currencyFormat(percents_20)',
+            '.percent-10': 'classes: {selected: equal(percentValue, 10)}',
+            '.percent-15': 'classes: {selected: equal(percentValue, 15)}',
+            '.percent-20': 'classes: {selected: equal(percentValue, 20)}',
+            '.percent-10 .percent-sum': 'text: currencyFormat(percents_10)',
+            '.percent-15 .percent-sum': 'text: currencyFormat(percents_15)',
+            '.percent-20 .percent-sum': 'text: currencyFormat(percents_20)',
         },
         events: {
             'click .percent': 'setPercent'
@@ -60,6 +63,18 @@ define(["tips_view"], function(tips_view) {
                 },
                 get: function(tipTotal) {
                     return tipTotal;
+                }
+            },
+            percentValue: {
+                deps: ['percent', 'sum', 'subtotal', 'amount', 'type'],
+                get: function(percent, sum, subtotal, amount, type) {
+                    if (!type) {
+                        return 0;
+                    }
+                    if (amount) {
+                        return percent;
+                    }
+                    return sum ? (sum / subtotal * 100) : 0
                 }
             },
             percents_10: {

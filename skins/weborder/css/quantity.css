@@ -20,7 +20,7 @@
     font-weight: bold;
     vertical-align: middle;
     line-height: 30px;
-    max-width: 110px;
+    max-width: 115px;
     float: left;
     margin-right: 0.3em;
 }
@@ -111,7 +111,7 @@
 }
 
 .product_instructions .add_instructions.sold_by_weight {
-    left: 250px;
+    left: 230px;
 }
 
 .quantity .weight_edit_input {

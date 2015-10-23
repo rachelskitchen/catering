@@ -1,15 +1,14 @@
 #content > .checkout label {
     display: inline-block;
-    width: 320px;
-    text-indent: 100px;
+    width: 300px;
     font-weight: bold;
-    height: 39px;
-    line-height: 39px;
+    height: 25px;
+    padding: 7px 15px 7px 5px;
     vertical-align: top;
+    text-align: right;
 }
 #content > .checkout h2 {
-    padding-left: 100px;
-    padding-right: 100px;
+    text-align: center;
     font-weight: bold;
 }
 #content > .checkout div.row, #content > .checkout div.delivery_address > div > div {
@@ -17,14 +16,13 @@
     height: 39px;
 }
 #content > .checkout div.row label > span {
-    padding-right: 15px;
     font-weight: bold;
 }
 #content > .checkout .input_beauty,
 #content > .checkout div.tips {
     right: 100px;
     position: absolute;
-    left: 310px;
+    left: 327px;
     top: 6px;
     bottom: 6px;
 }
@@ -38,7 +36,7 @@
     display: inline-block;
     width: 250px;
     position: relative;
-    left: -17px;
+    left: 0;
     top: 4px;
     vertical-align: top;
     height: 29px;
@@ -50,7 +48,6 @@
     filter: alpha(opacity=50);
 }
 #content > .checkout label.select {
-    line-height: 42px;
     vertical-align: top;
     margin: 0;
 }
@@ -135,7 +132,7 @@
 }
 
 #content > .checkout .arrival_address > ul {
-    padding-left: 308px;
+    padding-left: 325px;
 }
 
 #content > .checkout .arrival_address > ul li {
@@ -192,7 +189,8 @@
     height: auto;
 }
 #pay_popup .btn {
-    width: 260px;
+    display: inline-block;
+    min-width: 260px;
     height: 38px;
     border-radius: 25px;
     margin: 0 auto 20px;
@@ -251,13 +249,25 @@
 #content > .checkout .rewards-card-btn,
 #content > .checkout .discount-code-btn {
     display: inline-block;
-    width: 100px;
-    float: right;
-    margin-right: 100px;
-    padding-left: 20px;
-    line-height: 39px;
+    padding: 0 10px;
+    max-width: 85%;
     text-decoration: underline;
     cursor: pointer;
+}
+
+#content > .checkout .btn-container {
+    width: 210px;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.btn-container::before {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 39px;
+    vertical-align: middle;
 }
 
 #popup h3 {
@@ -334,21 +344,17 @@
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
     #content > .checkout label {
-        width: 202px !important;
-        text-indent: 50px !important;
+        width: 182px !important;
     }
     #content > .checkout label.shipping {
-        width: 100% !important;
+        text-align: left !important;
+        width: 90% !important;
     }
     #content > .checkout div.select {
         left: 0;
     }
     #content > .checkout .shipping-select-wrap {
         left: 51px;
-    }
-    #content > .checkout h2 {
-        padding-left: 50px !important;
-        padding-right: 50px !important;
     }
     #content > .checkout div.input_beauty,
     #content > .checkout div.tips {
@@ -378,9 +384,8 @@
     #content > .checkout .discount-code-input.input_beauty {
         right: 180px !important;
     }
-    #content > .checkout .rewards-card-btn,
-    #content > .checkout .discount-code-btn {
-        margin-right: 60px;
+    #content > .checkout .btn-container {
+        width: 170px !important;
     }
 }
 
