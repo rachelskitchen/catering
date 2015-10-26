@@ -152,15 +152,15 @@ define([], function() {
         "STANFORD_RELOAD_INFO2": "Please specify the plan you'd like to add value to",
         "STANFORD_CARD_NUMBER": "Stanford Card #",
         "STANFORD_CARD_CHOOSE_PLAN": "Stanford Card: Choose Plan",
-        "CONFIRM_SUBMIT_CARD": "Submit Card",
-        "CONFIRM_SUBMIT_ORDER": "Submit Order",
-        "MAIN_REWARD_CARD_VISITS": "Points for Visits",
-        "MAIN_REWARD_CARD_PURCHASES": "Points for Purchases",
-        "MAIN_STANFORD_CARD_BALANCE": "balance",
+        "CONFIRM_SUBMIT_CARD": "Karte einreichen",
+        "CONFIRM_SUBMIT_ORDER": "Bestellung einreichen",
+        "MAIN_REWARD_CARD_VISITS": "Punkte für Besuche",
+        "MAIN_REWARD_CARD_PURCHASES": "Punkte für Einkäufe",
+        "MAIN_STANFORD_CARD_BALANCE": "Mahlzeiten",
         "MAIN_STANFORD_CARD_BALANCE_MEAL": "Meal",
         "MAIN_STANFORD_CARD_BALANCE_MEALS": "Meals",
-        "CATEGORIES_SEARCH": "Search",
-        "SEARCH_ENTER_STRING": "Search",
-        "PRODUCTS_NOT_FOUND": "No products found"
+        "CATEGORIES_SEARCH": "Suchen",
+        "SEARCH_ENTER_STRING": "Suchen",
+        "PRODUCTS_NOT_FOUND": "Keine Produkte gefunden"
     } // end of locale
 }); // end of module
