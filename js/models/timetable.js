@@ -300,7 +300,7 @@ define(["backbone"], function(Backbone) {
         defaults: {
             timetables: null,        // whole timetable. Dates couldn't be intersected
             holidays: null,
-            server_time: 0,          // timezone offset in minutes
+            server_time: null,          // timezone offset in minutes
             hours: null              // array of week days with working hours starting from current day
         },
         initialize: function() {
@@ -308,7 +308,7 @@ define(["backbone"], function(Backbone) {
                 hours;
             if (!this.get('timetables')) this.set('timetables', times.timetables);
             if (!this.get('holidays')) this.set('holidays', times.holidays);
-            if (this.get('server_time') == undefined) this.set('server_time', times.server_time);
+            if (this.get('server_time') == null) this.set('server_time', times.server_time);
             this.workingDay = new App.Models.WorkingDay();
             (hours = this.getHoursOnWeek()) && this.set('hours', hours);
         },
@@ -522,7 +522,7 @@ define(["backbone"], function(Backbone) {
          * returns an array of valid days with pickup time grids
          * index_by_day_delta - is an object which recieves data mapping the delta in days (between cur date and target date) into an index of the array returned by getPickupList.
          * index_by_day_delta is needed beacause getPickupList does not returns invalid days within a App.Settings.online_order_date_range period (which timetable is not set (closed) or holidays).
-         * Usage: var out_obj = {}; 
+         * Usage: var out_obj = {};
          *        var list = timetable.getPickupList(true, out_obj);
          *        list[out_obj[1]] - returns tommorow day (if store is not closed for tommorow, otherwise out_obj[1] is undefined)
          */
@@ -544,7 +544,7 @@ define(["backbone"], function(Backbone) {
             }
 
             return days.map(function(ob_day) {
-                var date = new Date(now.getTime() + ob_day.index * MILLISECONDS_A_DAY),              
+                var date = new Date(now.getTime() + ob_day.index * MILLISECONDS_A_DAY),
                     weekDay = (ob_day.index >= 2) ? ob_day.day : ob_day.index ? _loc['DAYS']['TOMORROW'] : _loc['DAYS']['TODAY'],
                     month = _loc.ARRAY_MONTH[date.getMonth()],
                     _date = date.getDate();
