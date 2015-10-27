@@ -665,8 +665,44 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                     for (var i = 0; i < data.length; i++) {
                         if(data[i].is_gift && settings.get('skin') === 'mlb') continue; // mlb skin does not support gift cards (bug #9395)
                         data[i].compositeId = data[i].id + '_' + data[i].id_category;
+                  /*      var combo = data[i].name.match(/^Combo/);
+                        if (Array.isArray(combo) && combo.length > 0) {
+                           data[i].is_combo = true;
+                       } */
                         self.add(data[i]);
                     }
+                    fetching.resolve();
+                },
+                error: function() {
+                    self.onProductsError();
+                }
+            });
+
+            return fetching;
+        },
+        /**
+         * Get combo products from backend.
+         */
+        get_combo_products: function(product_id) {
+            var self = this,
+                fetching = new $.Deferred(); // Pointer that all data loaded
+            //EE:COMBO
+            //product_id = 477;
+            if (product_id == undefined) {
+                fetching.resolve();
+                return fetching;
+            }
+
+            $.ajax({
+                url: App.Data.settings.get("host") + "/weborders/products/", //"/weborders/combo_products/",
+                data: {
+                    product: product_id,
+                    establishment: App.Data.settings.get("establishment")
+                },
+                dataType: "json",
+                successResp: function(data) {
+                    data[i].combo_product_id = product_id;
+                    self.add(data[i]);
                     fetching.resolve();
                 },
                 error: function() {

@@ -134,6 +134,42 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         }
     });
 
+    App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'matrix',
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            var model = this.model;
+            this.renderProduct();
+            this.renderProductSets();
+            return this;
+        },
+        renderProduct: function() {
+            var model = this.model;
+            this.viewProduct = App.Views.GeneratorView.create('Product', {
+                modelName: 'Product',
+                model: model,
+                mod: 'Modifiers'
+            });
+            this.$('.product_info').append(this.viewProduct.el);
+            this.subViews.push(this.viewProduct);
+        },
+        renderProductSets: function() {
+            var model = this.model,
+                productSets;
+
+             var el = $('<div></div>');
+                this.$('.modifiers_info').append(el);
+                productSets =  App.Views.GeneratorView.create('ProductSets', { //'ModifiersClasses', {
+                    el: el,
+                    model: model,
+                    mod: 'List'
+                });
+
+            this.subViews.push(productSets);
+        }
+    });
+
     App.Views.CoreMyOrderView.CoreMyOrderItemView = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'item',
@@ -434,5 +470,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView;
         App.Views.MyOrderView.MyOrderNoteView = App.Views.CoreMyOrderView.CoreMyOrderNoteView;
         App.Views.MyOrderView.MyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView;
+        App.Views.MyOrderView.MyOrderMatrixComboView = App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView;
     });
 });
