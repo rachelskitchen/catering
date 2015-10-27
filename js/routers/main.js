@@ -37,9 +37,7 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             this.initLocDiningOptionName();
-
-            // set page title
-            pageTitle(App.Data.settings.get("settings_skin").name_app);
+            this.setTabTitle();
 
             // extend Backbone.history.loadUrl method to add validation of route handler availability
             // loadUrl() is responsible to call a handler for current route
@@ -120,6 +118,13 @@ define(["backbone", "factory"], function(Backbone) {
 
             // set handler for window.unload event
             window.onunload = this.beforeUnloadApp.bind(this);
+        },
+        setTabTitle: function() {
+            var title = _loc.TAB_TITLE_ONLINE_ORDERING;
+            if (App.Settings['business_name']) {
+                title = App.Settings['business_name'] + ' ' + title;
+            }
+            pageTitle(title);
         },
         navigate: function() {
             this.started && arguments[0] != location.hash.slice(1) && App.Data.mainModel.trigger('loadStarted');
@@ -365,7 +370,6 @@ define(["backbone", "factory"], function(Backbone) {
             } else {
                 (!App.skin) && settings.set('skin', App.Skins.WEBORDER);
             }
-            !settings.get('settings_skin').name_app && pageTitle('Revel Systems');
 
             App.Routers.MainRouter.prototype.prepare('establishments', function() {
                 var locale = App.Data.locale;
