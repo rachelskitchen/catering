@@ -498,15 +498,35 @@ define(["backbone", "factory"], function(Backbone) {
         },
         navigateDirectory: function() {
             if(App.Data.dirMode) {
-                var prefix = App.Data.is_stanford_mode ? ".stanford" : "";
-                var directoryState = getData('directory.state' + prefix),
-                    directoryHash = '';
+                var navigateToDirectoryConfirmed = function () {
+                    var prefix = App.Data.is_stanford_mode ? ".stanford" : "",
+                        directoryState = getData('directory.state' + prefix),
+                        directoryHash = '';
 
-                if(directoryState instanceof Object && directoryState.hash) {
-                    directoryHash = directoryState.hash;
+                    if (directoryState instanceof Object && directoryState.hash) {
+                        directoryHash = directoryState.hash;
+                    }
+
+                    return window.location.href = getData('directoryReferrer').referrer + directoryHash;
+                };
+                if (App.Data.establishments.getModelForView().get('needShowAlert')) { // cart is not empty
+                    // use '_DESKTOP' i18n strings because we don't have 'Go to directory' link in weborder_mobile
+                    App.Data.errors.alert(MSG.ESTABLISHMENTS_ALERT_MESSAGE_DESKTOP, false, false, { // confirmation popup
+                        isConfirm: true,
+                        confirm: {
+                            ok: MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_DESKTOP,
+                            cancel: MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_DESKTOP,
+                            btnsSwap: true
+                        },
+                        callback: function(result) {
+                            if (result) navigateToDirectoryConfirmed();
+                        }
+                    });
                 }
-
-                return window.location.href = getData('directoryReferrer').referrer + directoryHash;
+                else {
+                    // there is no need to show confirmation popup
+                    navigateToDirectoryConfirmed();
+                }
             }
         },
         /**
