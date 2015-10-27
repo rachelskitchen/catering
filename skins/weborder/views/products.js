@@ -29,12 +29,14 @@ define(['products_view'], function(products_view) {
                 isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
                 def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
 
+            var is_combo = this.model.get('is_combo');
+
             $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
             def.then(function() {
                 $('#main-spinner').removeClass('ui-visible');
                 App.Data.mainModel.set('popup', {
                     modelName: 'MyOrder',
-                    mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
+                    mod: isStanfordItem ? 'StanfordItem' : (is_combo ? 'MatrixCombo' : 'Matrix'),
                     className: isStanfordItem ? 'stanford-reload-item' : '',
                     model: myorder.clone(),
                     action: 'add'

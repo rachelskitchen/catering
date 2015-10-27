@@ -1,0 +1,77 @@
+
+<script type="text/template" id="product_set_item-template">
+    <label for="product<%= id %>" class="s<%= slength %>">
+        <input type="checkbox" id="product<%= id %>">
+        <span class="input checkbox"></span>
+        <span class="cost">
+            (<span class="plus">+</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>)
+        </span>
+    </label>    
+    <div class="mdf_spacer">
+        <span class='mdf_quantity select-wrapper' style="display:none;">
+            <select></select>
+        </span>
+    </div>
+</script>
+
+<script type="text/template" id="product_set_list-template">
+    <ul class="modifiers modifiers-list"></ul>
+    <div class='clear'></div>
+</script>
+
+<script type="text/template" id="modifiers_classes_item-template">
+    <div class='modifiers_classes_title'>
+        <%= name %>
+        <% if (_settings.online_orders) { %>
+            <div class='modifiers_classes_subtitle'>
+            <% if (type === 0 && (typeof maximum_amount != 'number' || maximum_amount === 0) && (typeof minimum_amount != 'number' || minimum_amount === 0)) { %>
+                <%= _lp.MODIFIERS_OPTIONAL %>
+                <% if (free_modifiers) { %>
+                    <span class="free">(<%= free_modifiers %>)</span>
+                <% } %>
+            <% } else if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) { %>
+                <%= _lp.MODIFIERS_CHOOSE %> <%= minimum_amount %>
+                <% if (free_modifiers) { %>
+                    <span class="free">(<%= free_modifiers %>)</span>
+                <% } %>
+            <% } else if (type === 0 && typeof maximum_amount == 'number' && maximum_amount != 0 && typeof minimum_amount == 'number' && minimum_amount != 0) { %>
+                <%= _lp.MODIFIERS_CHOOSE %> <%= minimum_amount %> <%= _lp.MODIFIERS_CHOOSE_TO %> <%= maximum_amount %>
+                <% if (free_modifiers) { %>
+                    <span class="free">(<%= free_modifiers %>)</span>
+                <% } %>
+            <% } else if (type === 0 && typeof maximum_amount == 'number' && (typeof minimum_amount != 'number' || minimum_amount === 0)) { %>
+                <%= _lp.MODIFIERS_OPTIONAL %> (<%= _lp.MODIFIERS_OPTIONAL_UP %> <%= maximum_amount %>)
+                <% if (free_modifiers) { %>
+                    <span class="free">(<%= free_modifiers %>)</span>
+                <% } %>
+            <% } else if (type === 0 && typeof maximum_amount != 'number' && typeof minimum_amount == 'number') { %>
+                <%= _lp.MODIFIERS_CHOOSE %> <%= _lp.MODIFIERS_CHOOSE_LEAST %> <%= minimum_amount %>
+                <% if (free_modifiers) { %>
+                    <span class="free">(<%= free_modifiers %>)</span>
+                <% } %>
+            <% } else if (type === 1) { %>
+                <%= _lp.MODIFIERS_CHOOSE %> <%= _lp.MODIFIERS_CHOOSE_ONE %>
+                <% if (free_modifiers) { %>
+                    <span class="free">(<%= free_modifiers %>)</span>
+                <% } %>
+            <% } else if (type === 2) { %>
+                <%= _lp.MODIFIERS_OPTIONAL %>
+                <% if (free_modifiers) { %>
+                    <span class="free">(<%= free_modifiers %>)</span>
+                <% } %>
+            <% } %>
+            </div>
+        <% } %>
+    </div>
+    <div class="modifier_class_list">
+    </div>
+</script>
+
+<script type="text/template" id="modifiers_classes_list-template">
+    <div class="modifier_classes"></div>
+</script>
+
+<script type="text/template" id="modifiers_classes_matrix-template">
+    <h2> <%= _lp.MODIFIERS_SELECT %>: <%= attributes %> </h2>
+    <div class="modifier_classes"></div>
+</script>
