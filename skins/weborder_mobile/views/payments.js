@@ -35,7 +35,7 @@ define(["factory"], function(factory) {
             '[data-payment="credit_card_button"]': 'classes: {"font-color2": equal(selected, "credit_card_button"), "bg-color1": equal(selected, "credit_card_button")}',
             '[data-payment="gift_card"]': 'classes: {"font-color2": equal(selected, "gift_card"), "bg-color1": equal(selected, "gift_card")}',
             '[data-payment="paypal"]': 'classes: {"font-color2": equal(selected, "paypal"), "bg-color1": equal(selected, "paypal")}',
-            '[data-payment="stanford"]': 'classes: {"font-color2": equal(selected, "stanford"), "bg-color1": equal(selected, "stanford")}'
+            '[data-payment="stanford"]': 'classes: {"font-color2": equal(selected, "stanford"), "bg-color1": equal(selected, "stanford"), hide: equal(checkout_dining_option, "DINING_OPTION_ONLINE")}'
         },
         computeds: {
             cash: {

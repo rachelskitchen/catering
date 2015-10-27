@@ -438,7 +438,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         mod: 'pay_button',
         bindings: {
             '.cash > span': 'text: applyCashLabel(checkout_dining_option)',
-            '.btn.pay': 'classes: {disabled: shipping_pending}'
+            '.btn.pay': 'classes: {disabled: shipping_pending}',
+            '.stanford-card': 'classes:{hide: equal(checkout_dining_option, "DINING_OPTION_ONLINE")}'
         },
         bindingFilters: {
             applyCashLabel: function(dining_option) {
