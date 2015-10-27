@@ -507,7 +507,7 @@
             '',
             ''
         ],
-
+        'TAB_TITLE_ONLINE_ORDERING': 'Online Ordering',
         // page "Total"
         'TOTAL_DISCOUNTS': 'Discounts', // except: Directory, Directory Mobile
         'TOTAL_SUBTOTAL': 'Subtotal', // except: Directory, Directory Mobile
