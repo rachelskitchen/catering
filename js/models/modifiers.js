@@ -703,7 +703,6 @@ define(["backbone"], function(Backbone) {
             return this.get_special().map(function(model) { return model.get('name'); }).join(",");
         },
         /**
-         *
          * return array with not selected force modifiers
          */
         checkForced: function() {
@@ -716,12 +715,11 @@ define(["backbone"], function(Backbone) {
 
             return unselected.length > 0 ? unselected : true;
         },
-         /**
-         *
-         * return array with selected force modifiers with qty > then maximum
+        /**
+         * return array with selected modifiers with qty > then maximum
          */
-        checkForcedMax: function() {
-            var exceeded = this.where({forced: true}).filter(function(modifierBlock) {
+        checkAmount: function() {
+            var exceeded = this.filter(function(modifierBlock) {
                 var maxAmount = modifierBlock.get('maximum_amount');
 
                 if (maxAmount == null || maxAmount == undefined)

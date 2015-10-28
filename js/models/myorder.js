@@ -256,7 +256,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 isDelivery = dining_option == 'DINING_OPTION_DELIVERY',
 
                 forced = modifiers.checkForced(),
-                exceeded = modifiers.checkForcedMax();
+                exceeded = modifiers.checkAmount();
 
             if (product.get("sold_by_weight") && !this.get("weight")) {
                 return {

@@ -44,6 +44,39 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 var splitLabel = $(".selected_option", $element.closest(".mdf_split").parent());
                 removeClassRegexp(splitLabel, "option_\\d+");
                 splitLabel.addClass("option_" + qty_type);
+
+                // Bug #32135. Change amount of quantity options when qty_type is changed.
+                var max_quantity = this.view.getBinding('max_quantity'),
+                    mdf_quantity_el = this.view.$el.find('.mdf_quantity select'),
+                    mdf_quantity_options = mdf_quantity_el.children('option'),
+                    mdf_quantity_options_extra = '',
+                    qty_options_number = mdf_quantity_options.length;
+                if (qty_type > 0) { // first or second half
+                    if (qty_options_number <= max_quantity) {
+                        for (var i = ++qty_options_number; i <= max_quantity * 2; i++) {
+                            mdf_quantity_options_extra += '<option value="' + i + '">x' + i + '</option>';
+                        }
+                        mdf_quantity_el.append(mdf_quantity_options_extra);
+                    }
+                }
+                else { // modifier applied to full item
+                    if (qty_options_number > max_quantity) {
+                        if (this.view.getBinding('quantity') > max_quantity) {
+                            this.view.setBinding('quantity', max_quantity); // set quantity to max allowed value
+                        }
+                        // remove excess quantity options
+                        for (var i = --qty_options_number; i >= max_quantity; i--) {
+                            mdf_quantity_options[i].remove();
+                        }
+                    }
+                }
+            }
+        },
+        computeds: {
+            // Maximum modifiers per group
+            max_quantity: function() {
+                var maximum_amount = this.options.modifierClass.get('maximum_amount');
+                return maximum_amount ? maximum_amount : 5; // default value
             }
         },
         initialize: function() {
@@ -70,21 +103,12 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
 
             this.$el.html(this.template(model));
 
-            var option_el, max_quantity,
-                maximum_amount = modifierBlock.get("maximum_amount"),
+            var option_el,
+                max_quantity = modifierBlock.get("maximum_amount"),
                 mdf_quantity_el = this.$(".mdf_quantity select");
 
-            if (!maximum_amount) {
-                max_quantity = 5; //default value
-            }
-            else {
-                if (App.Settings.enable_split_modifiers) {
-                    max_quantity = maximum_amount * 2;
-                }
-                else {
-                    max_quantity = maximum_amount;
-                }
-            }
+            max_quantity || (max_quantity = 5); //default value
+
             for (var i=1; i <= max_quantity; i++) {
                 option_el = $('<option>').val(i).text("x" + i);
                 mdf_quantity_el.append(option_el);
