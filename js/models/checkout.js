@@ -145,6 +145,13 @@ define(["backbone"], function(Backbone) {
                 isCatering = dining_option === 'DINING_OPTION_CATERING';
 
             return isToGo || isCatering || isDelivery && delivery_cold_untaxed;
+        },
+        /**
+         * @method
+         * @returns true if current 'dining_option' attribute's value is 'DINING_OPTION_ONLINE' and false otherwise.
+         */
+        isDiningOptionOnline: function() {
+            return this.get('dining_option') == 'DINING_OPTION_ONLINE'
         }
     });
 

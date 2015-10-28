@@ -714,7 +714,7 @@ define(["main_router"], function(main_router) {
                         checkout: true,
                         validationOnly: true
                     }, function() {
-                        if(App.Data.stanfordCard && App.Data.stanfordCard.get('needToAskStudentStatus')) {
+                        if(App.Data.stanfordCard && App.Data.stanfordCard.get('needToAskStudentStatus') && !App.Data.myorder.checkout.isDiningOptionOnline()) {
                             // App.Data.router.navigate('stanford_is_student', true);
                             showIsStudentQuestion();
                         } else {

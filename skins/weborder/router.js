@@ -159,7 +159,7 @@ define(["main_router"], function(main_router) {
                 var stanfordCard = App.Data.stanfordCard;
 
                 // need to check if Stanford Card is turned on and ask a customer about student status
-                if(stanfordCard && stanfordCard.get('needToAskStudentStatus')) {
+                if(stanfordCard && stanfordCard.get('needToAskStudentStatus') && !App.Data.myorder.checkout.isDiningOptionOnline()) {
                     showPaymentProcessors.pending = true; // assing 'pending' status to showPaymentProcessors() function
                     App.Data.mainModel.set('popup', {
                         modelName: 'StanfordCard',
