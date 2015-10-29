@@ -23,6 +23,8 @@
 define(["myorder_view"], function(myorder_view) {
     'use strict';
 
+    var CoreViews = App.Views.CoreMyOrderView;
+
     var MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView.extend({
         bindings: {
             '.size_chart_wrapper': 'toggle: _product_size_chart',
@@ -84,7 +86,6 @@ define(["myorder_view"], function(myorder_view) {
             }
         },
         action: function (event) {
-
             var check = this.model.check_order(),
                 self = this;
 
@@ -143,6 +144,128 @@ define(["myorder_view"], function(myorder_view) {
         }
     });
 
+    var DynamicHeightSupport = App.Views.FactoryView.extend({
+        initialize: function() {
+            $('#popup').addClass('ui-invisible');
+            setTimeout(this.change_height.bind(this, 1), 20);
+            this.interval = this.interval || setInterval(this.change_height.bind(this), 500); // check size every 0.5 sec
+            this.$('.modifiers_table_scroll').contentarrow();
+        },
+        events: {
+            'change_height .product_instructions': 'change_height' // if special request button pressed
+        },
+        change_height: function(e) {
+            var prev_height = this.prev_height || 0,
+                inner_height = $('#popup').outerHeight(),
+                prev_window = this.prev_window || 0,
+                window_heigth = $(window).height();
+
+            if (e || prev_height !== inner_height || prev_window !== window_heigth) {
+                var el = this.$('.modifiers_table_scroll'),
+                    wrapper_height,
+
+                    product = this.$('.product_info').outerHeight(),
+                    special = this.$('.instruction_block').outerHeight(),
+                    size = this.$('.quantity_info').outerHeight();
+
+                el.height('auto');
+                inner_height = $('#popup').outerHeight();
+                wrapper_height = $('.popup_wrapper').height();
+
+                if (wrapper_height < inner_height) {
+                        var height = wrapper_height - product - special - size - 117;
+                    el.height(height);
+                }
+
+                inner_height = $('#popup').outerHeight();
+                this.prev_height = inner_height;
+                this.prev_window = window_heigth;
+                $('#popup').removeClass('ui-invisible');
+            }
+        },
+        remove: function() {
+            this.$('.modifiers_table_scroll').contentarrow('destroy');
+            clearInterval(this.interval);
+            App.Views.FactoryView.prototype.remove.apply(this, arguments);
+        }
+    });
+
+
+    var MyOrderMatrixComboView = CoreViews.CoreMyOrderMatrixComboView.extend(DynamicHeightSupport.prototype).extend({
+        initialize: function() {
+            this.extendBindingSources({_product: this.model.get_product()});
+            CoreViews.CoreMyOrderMatrixComboView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model.get('product'), 'change_child_selected', this.check_child_products);
+        },
+        render: function() {
+            CoreViews.CoreMyOrderMatrixComboView.prototype.render.apply(this, arguments);
+            if (this.options.action === 'add') {
+                this.$('.action_button').html(_loc['MYORDER_ADD_ITEM']);
+            } else {
+                this.$('.action_button').html(_loc['MYORDER_UPDATE_ITEM']);
+            }
+            var model = this.model,
+                view;
+
+            var sold_by_weight = this.model.get_product().get("sold_by_weight"),
+                mod = sold_by_weight ? 'Weight' : 'Main';
+
+            view = App.Views.GeneratorView.create('Quantity', {
+                el: this.$('.quantity_info'),
+                model: model,
+                mod: mod
+            });
+            this.subViews.push(view);
+
+            view = App.Views.GeneratorView.create('Instructions', {
+                el: this.$('.product_instructions'),
+                model: model,
+                mod: 'Modifiers'
+            });
+            this.subViews.push(view);
+
+            if (App.Settings.special_requests_online === false) {
+                view.$el.hide(); // hide special request if not allowed
+            }
+
+            DynamicHeightSupport.prototype.initialize.apply(this, arguments);
+
+            this.check_child_products();
+            return this;
+        },
+        events: {
+            'click .action_button:not(.disabled)': 'action',
+            'change_height .product_instructions': 'change_height' // if special request button pressed
+        },
+        check_child_products: function() {
+            if (this.model.get('product').check_selected()) { //TBD: check_combo_selected
+                this.$('.action_button').removeClass('disabled');
+            }
+            else {
+                this.$('.action_button').addClass('disabled');
+            }
+        },
+        action: function (event) {
+            var check = this.model.check_order(),
+                self = this;
+
+            if (check.status === 'OK') {
+                if (self.options.action === 'add') {
+                    App.Data.myorder.add(self.model);
+                } else {
+                    var index = App.Data.myorder.indexOf(self.model) - 1;
+                    App.Data.myorder.remove(self.options.real);
+                    App.Data.myorder.add(self.model, {at: index});
+                    App.Data.myorder.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
+                }
+
+                $('#popup .cancel').trigger('click');
+            } else {
+                App.Data.errors.alert(check.errorMsg); // user notification
+            }
+        }
+    });
+
     var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
         editItem: function(e) {
             e.preventDefault();
@@ -174,6 +297,7 @@ define(["myorder_view"], function(myorder_view) {
 
     return new (require('factory'))(myorder_view.initViews.bind(myorder_view), function() {
         App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
+        App.Views.MyOrderView.MyOrderMatrixComboView = MyOrderMatrixComboView;
         App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
         App.Views.MyOrderView.MyOrderItemSpecialView = MyOrderItemSpecialView;
     });

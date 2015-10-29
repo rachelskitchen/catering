@@ -125,10 +125,21 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 this.get_modifiers().update_prices(max_price > initial_price ? max_price - initial_price : 0);
             }
         },
+
         /**
          * initiate order without product and modifiers
          */
-        add_empty: function (id_product, id_category) {
+        add_empty: function (product) {
+            if (product.get('is_combo')) {
+                return this.add_empty_combo(product.get('id'), product.get('id_category'));
+            } else {
+                return this.add_empty_single(product.get('id'), product.get('id_category'));
+            }
+        },
+        /**
+         * initiate order without product and modifiers
+         */
+        add_empty_single: function (id_product, id_category) {
             var self = this,
                 product_load = App.Collections.Products.init(id_category), // load product
                 quick_modifier_load = App.Collections.ModifierBlocks.init_quick_modifiers(),
@@ -164,6 +175,28 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return loadOrder;
         },
         /**
+         * initiate order for combo product
+         */
+        add_empty_combo: function (id_product, id_category) {
+            var self = this, product,
+                product_load = App.Collections.Products.init(id_category), // load product
+                loadOrder = $.Deferred();
+
+            return product_load.then(function() {
+                product = App.Data.products[id_category].get_product(id_product);
+                trace("add_combo_product 1");
+                return App.Collections.ProductSets.init(id_product);
+            }).then(function() {
+                trace("add_combo_product 2, len = ", App.Data.productSets[id_product].length);
+                product.set("product_sets", App.Data.productSets[id_product]);
+                self.set({
+                    product: product,
+                    id_product: id_product
+                });
+                //return loadOrder.resolve();
+            });
+        },
+        /**
          *  create order from JSON. Used in paypal skin, when repeat order
          */
         addJSON: function(data) {
@@ -171,16 +204,13 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 discount: new App.Models.DiscountItem(data.discount),
                 product: new App.Models.Product().addJSON(data.product),
                 modifiers: new App.Collections.ModifierBlocks().addJSON(data.modifiers),
-                id_product: data.id_product,
-                quantity: data.product.sold_by_weight ? 1 : data.quantity,
+                id_product: data.id_product ? data.id_product : data.product.id,
+                quantity: data.product.sold_by_weight ? 1 : (data.quantity ? data.quantity : 1),
                 weight: data.weight ? data.weight : 0
             });
             data.special && this.set('special', data.special, {silent: true});
             if (!this.get('product').get('gift_card_number') && data.gift_card_number) {
                 this.get('product').set('gift_card_number', data.gift_card_number);
-            }
-            if (!data.id_product) {
-                this.set('id_product', data.product.id);
             }
 
             data.stanfordCard && this.initStanfordReloadItem(data.stanfordCard);
