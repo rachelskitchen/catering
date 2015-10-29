@@ -107,7 +107,7 @@ define(['backbone', 'collection_sort'], function(Backbone) {
             Backbone.$.ajax({
                 url: '/weborders/locations/',
                 data: {
-                    brand: this.meta('brand')
+                    brand: this.meta('brand') || 1 // default brand
                 },
                 dataType: 'json',
                 success: function(data) {

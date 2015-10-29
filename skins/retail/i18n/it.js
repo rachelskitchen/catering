@@ -60,6 +60,7 @@ define([], function() {
         "HEADER_ORDER_DETAILS": "Dettagli sul pagamento e l’ordine",
         "MAIN_CURRENT_STORE": "Punto vendita attuale",
         "MAIN_CHANGE": "Modificare?",
+        'MAIN_CHANGE_ESTABLISHMENT': 'Change to a different store?',
         "MAIN_OR": "o",
         "MAIN_GOTO_DIRECTORY": "Vai alla directory",
         "MAIN_BACK": "Indietro",

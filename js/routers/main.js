@@ -167,7 +167,7 @@ define(["backbone", "factory"], function(Backbone) {
             }
         },
         prepare: function(page, callback, dependencies) {
-            if(isMaintenance && page != 'maintenance') return;
+            if(isMaintenance && page != 'maintenance' &&  page != 'establishments') return;
 
             var settings = App.Data.settings,
                 skin = settings.get('skin'),
@@ -391,14 +391,12 @@ define(["backbone", "factory"], function(Backbone) {
         getEstablishments: function() {
             var self = this;
             var ests = App.Data.establishments;
-            if (!App.Data.settings.get('isMaintenance')) {
-                ests.getEstablishments('once').then(function() { // get establishments from backend
-                    if (ests.length > 1 || (ests.length == 1 &&
-                        ests.models[0].get("id") != App.Data.settings.get("establishment"))) {
-                        self.getEstablishmentsCallback();
-                    }
-                });
-            }
+            ests.getEstablishments('once').then(function() { // get establishments from backend
+                if (ests.length > 1 || (ests.length == 1 &&
+                    ests.models[0].get("id") != App.Data.settings.get("establishment"))) {
+                    self.getEstablishmentsCallback();
+                }
+            });
         },
         /**
         * Remove establishment data in case if establishment ID will change.

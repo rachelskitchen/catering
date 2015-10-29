@@ -80,6 +80,7 @@
         'INSTRUCTIONS_REMOVE_SPECIAL': 'Remove Special Instructions',
         'MAIN_CURRENT_STORE': 'Current Store',
         'MAIN_CHANGE': 'Change?',
+        'MAIN_CHANGE_ESTABLISHMENT': 'Change to a different store?',
         'MAIN_OR': 'or',
         'MAIN_GOTO_DIRECTORY': 'Go To Directory',
         'MAIN_BACK': 'Back',

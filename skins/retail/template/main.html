@@ -68,6 +68,10 @@
         </div>
     </section>
 <footer>
+    <span class="store_choice">
+        <a class="change_establishment link1" href="javascript: void(0);"><%= _lp.MAIN_CHANGE_ESTABLISHMENT %></a>
+        <% if(isDirMode) { %> <%= _lp.MAIN_OR %> <% } %>
+    </span>
     <% if(isDirMode) { %>
         <a class="go-to-directory link1" href="javascript: void(0);"> <%= _lp.MAIN_GOTO_DIRECTORY %> </a>
     <% } %>

@@ -74,6 +74,7 @@ define([], function() {
         "INSTRUCTIONS_REMOVE_SPECIAL": "Eemalda erisuunised",
         "MAIN_CURRENT_STORE": "Praegune kauplus",
         "MAIN_CHANGE": "Kas muuta?",
+        'MAIN_CHANGE_ESTABLISHMENT': 'Change to a different store?',
         "MAIN_OR": "või",
         "MAIN_GOTO_DIRECTORY": "Mine kataloogi",
         "MAIN_BACK": "Tagasi",
