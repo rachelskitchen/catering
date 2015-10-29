@@ -115,21 +115,6 @@ define(["main_router"], function(main_router) {
 //common
                 this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
-                var limitHashes = ["card", "giftcard", "stanfordcard", "confirm", "pay"];
-                if(App.Data.stanfordCard && App.Data.stanfordCard.get('needToAskStudentStatus')) {
-                    Array.prototype.push.apply(this.lockedRoutes, limitHashes);
-                }
-
-                App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'change:needToAskStudentStatus', function(stanfordCard, needToAskStudentStatus) {
-                    if(needToAskStudentStatus) {
-                        Array.prototype.push.apply(self.lockedRoutes, limitHashes);
-                    } else {
-                        var args = _.clone(limitHashes);
-                        args.unshift(self.lockedRoutes);
-                        self.lockedRoutes = _.without.apply(_, args);
-                    }
-                });
-
                 this.navigationControl();
 
                 // run history tracking
@@ -655,7 +640,7 @@ define(["main_router"], function(main_router) {
                             cacheIdUniq: 'checkout' }
             });
 
-            this.prepare('checkout', function checkout1() {
+            this.prepare('checkout', function() {
                 var RevelAPI = App.Data.RevelAPI;
 
                 if(!App.Data.card)
