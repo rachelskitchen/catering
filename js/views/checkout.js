@@ -439,7 +439,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         bindings: {
             '.cash > span': 'text: applyCashLabel(checkout_dining_option)',
             '.btn.pay': 'classes: {disabled: shipping_pending}',
-            '.stanford-card': 'classes:{hide: equal(checkout_dining_option, "DINING_OPTION_ONLINE")}'
+            '.stanford-card': 'classes:{hide: orderItems_hasGiftCard}'
         },
         bindingFilters: {
             applyCashLabel: function(dining_option) {
@@ -461,6 +461,23 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
                 function getStatus() {
                     return customer.get('load_shipping_status') == 'pending';
+                }
+            },
+            orderItems: function() {
+                var model = new Backbone.Model({
+                    hasGiftCard: hasGiftCard()
+                });
+
+                model.listenTo(App.Data.myorder, 'add remove', function() {
+                    model.set('hasGiftCard', hasGiftCard());
+                });
+
+                return model;
+
+                function hasGiftCard() {
+                    return App.Data.myorder.some(function(item) {
+                        return item.is_gift();
+                    });
                 }
             }
         },
