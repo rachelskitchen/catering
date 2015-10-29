@@ -74,6 +74,7 @@ define([], function() {
         "INSTRUCTIONS_REMOVE_SPECIAL": "Supprimer des instructions spéciales",
         "MAIN_CURRENT_STORE": "Magasin actuel",
         "MAIN_CHANGE": "Changer ?",
+        'MAIN_CHANGE_ESTABLISHMENT': 'Passer à un autre magasin ?',
         "MAIN_OR": "ou",
         "MAIN_GOTO_DIRECTORY": "Aller à l’annuaire",
         "MAIN_BACK": "Retour",
