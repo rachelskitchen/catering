@@ -93,7 +93,9 @@ define({
         captcha: 'js/models/captcha',
         search_line_view: 'js/views/search_line',
         spinner_view: 'js/views/spinner',
-        pikaday: 'js/libs/pikaday'
+        pikaday: 'js/libs/pikaday',
+        product_sets: 'js/models/product_sets',
+        product_sets_view: 'js/views/product_sets'
     },
     waitSeconds: 30,
     shim: {
@@ -254,6 +256,9 @@ define({
         },
         'pikaday' : {
             deps: []
+        },
+        'product_sets' : {
+            deps: ['backbone', 'collection_sort']
         }
     },
     map: {

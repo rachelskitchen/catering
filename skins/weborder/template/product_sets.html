@@ -1,0 +1,40 @@
+
+<script type="text/template" id="combo_item-template">
+    <label for="product<%= id %>" class="s<%= slength %>">
+        <input type="checkbox" id="product<%= id %>">
+        <span class="input checkbox"></span>
+        <span class="title"><%= name %></span>
+        <span class="cost">
+            (<span class="plus">+</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>)
+        </span>
+    </label>
+    <div class="mdf_spacer">
+        <span class='mdf_quantity select-wrapper' style="display:none;">
+            <select></select>
+        </span>
+    </div>
+</script>
+
+<script type="text/template" id="combo_list-template">
+    <ul class="modifiers modifiers-list"></ul>
+    <div class='clear'></div>
+</script>
+
+<script type="text/template" id="product_sets_item-template">
+    <div class='modifiers_classes_title'>
+        <%= name %>
+        <% if (_settings.online_orders) { %>
+            <div class='modifiers_classes_subtitle'>
+            <% if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) { %>
+                <%= _lp.MODIFIERS_CHOOSE %> <%= minimum_amount %>
+            <% } %>
+            </div>
+        <% } %>
+    </div>
+    <div class="modifier_class_list">
+    </div>
+</script>
+
+<script type="text/template" id="product_sets_list-template">
+    <div class="modifier_classes"></div>
+</script>

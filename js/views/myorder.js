@@ -134,6 +134,46 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         }
     });
 
+    App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'matrix',
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            var model = this.model;
+            this.renderProduct();
+            this.renderProductSets();
+            return this;
+        },
+        renderProduct: function() {
+            var model = this.model;
+            this.viewProduct = App.Views.GeneratorView.create('Product', {
+                modelName: 'Product',
+                model: model,
+                mod: 'Modifiers'
+            });
+            this.$('.product_info').append(this.viewProduct.el);
+            this.subViews.push(this.viewProduct);
+        },
+        renderProductSets: function() {
+            var model = this.model,
+                productSets,
+                product = this.model.get("product");
+
+            if (!product) return;
+
+            var el = $('<div></div>');
+                this.$('.modifiers_info').append(el);
+                productSets = App.Views.GeneratorView.create('ProductSets', {
+                    el: el,
+                    model: this.model,
+                    collection: product.get('product_sets'),
+                    mod: 'List'
+                });
+
+            this.subViews.push(productSets);
+        }
+    });
+
     App.Views.CoreMyOrderView.CoreMyOrderItemView = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'item',
@@ -276,7 +316,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
 
             this.subViews.push(view);
             this.$('.myorder').append(view.el);
-           
+
             if (this.subViews.indexOf(this.discountItemView) == -1 && this.collection.discount && !this.discountItemView ) {
                 var view = App.Views.GeneratorView.create('MyOrder', {
                     mod: 'Discount',
@@ -434,5 +474,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView;
         App.Views.MyOrderView.MyOrderNoteView = App.Views.CoreMyOrderView.CoreMyOrderNoteView;
         App.Views.MyOrderView.MyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView;
+        App.Views.MyOrderView.MyOrderMatrixComboView = App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView;
     });
 });
