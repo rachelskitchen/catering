@@ -108,6 +108,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 mdf_quantity_el = this.$(".mdf_quantity select");
 
             max_quantity || (max_quantity = 5); //default value
+            if (this.model.get('qty_type') > 0) { // split
+                max_quantity *= 2;
+            }
 
             for (var i=1; i <= max_quantity; i++) {
                 option_el = $('<option>').val(i).text("x" + i);
