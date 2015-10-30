@@ -117,6 +117,7 @@
         'MYORDER_WEIGHT': 'w/',
         'MYORDER_ADD_ITEM': 'Add Item',
         'MYORDER_UPDATE_ITEM': 'Update Item',
+        'PLACE_ORDER': 'Place Order',
         'PRODUCTS_PRICE': 'Price',
         'PRODUCTS_AVAILABLE': 'Available',
         'PRODUCTS_GIFT_CARD': 'Gift Card Number',

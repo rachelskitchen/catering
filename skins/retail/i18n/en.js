@@ -96,6 +96,7 @@
         'MYORDER_ADD_TO_BAG': 'Add to Bag',
         'MYORDER_ADD_ITEM': 'Add to Bag',
         'MYORDER_UPDATE_ITEM': 'Update Item',
+        'PLACE_ORDER': 'Place Order',
         'PRODUCTS_ENTER_GIFT_CARD': 'Enter gift card number you want to load money to',
         'PRODUCTS_GIFT_CARD_NUMBER': 'Gift Card Number',
         'PRODUCTS_AMOUNT': 'Amount',
