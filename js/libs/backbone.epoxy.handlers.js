@@ -231,4 +231,21 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             this.unbind();
         }
     });
+
+    Backbone.Epoxy.binding.addHandler('loadScaledImage', function($el, value) {
+        if (!value) {
+            return;
+        }
+
+        listenToInsertionIntoDOM($el, function() {
+            var parent = $el.parent(),
+                width, height;
+            if (parent.length) {
+                width = Math.round(parent.width()) || 200;
+                height = Math.round(parent.height()) || 200;
+                $el.attr('src', value + '?options={"size":[' + width + ',' + height + ']}');
+                loadSpinner($el);
+            }
+        });
+    });
 });

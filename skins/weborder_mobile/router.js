@@ -115,21 +115,6 @@ define(["main_router"], function(main_router) {
 //common
                 this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
-                var limitHashes = ["card", "giftcard", "stanfordcard", "confirm", "pay"];
-                if(App.Data.stanfordCard && App.Data.stanfordCard.get('needToAskStudentStatus')) {
-                    Array.prototype.push.apply(this.lockedRoutes, limitHashes);
-                }
-
-                App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'change:needToAskStudentStatus', function(stanfordCard, needToAskStudentStatus) {
-                    if(needToAskStudentStatus) {
-                        Array.prototype.push.apply(self.lockedRoutes, limitHashes);
-                    } else {
-                        var args = _.clone(limitHashes);
-                        args.unshift(self.lockedRoutes);
-                        self.lockedRoutes = _.without.apply(_, args);
-                    }
-                });
-
                 this.navigationControl();
 
                 // run history tracking
@@ -655,7 +640,7 @@ define(["main_router"], function(main_router) {
                             cacheIdUniq: 'checkout' }
             });
 
-            this.prepare('checkout', function checkout1() {
+            this.prepare('checkout', function() {
                 var RevelAPI = App.Data.RevelAPI;
 
                 if(!App.Data.card)
@@ -794,12 +779,36 @@ define(["main_router"], function(main_router) {
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card;
 
-                App.Data.footer.set({
-                    btn_title: _loc.CONTINUE,
-                    action: payment_count > 1 ? goToPayments : App.Data.payments.onPay.bind(App.Data.payments)
-                });
+                var payBtn = function() {
+                    App.Data.footer.set({
+                        btn_title: _loc.CONTINUE,
+                        action: payment_count > 1 ? goToPayments : App.Data.payments.onPay.bind(App.Data.payments)
+                    });
+                }
+
+                // Enhancement #12904
+                // If grandTotal is $0 we must show "Place Order" button instead of "Pay".
+                var placeOrderBtn = function() {
+                    if (!Number(myorder.total.get('grandTotal'))) {
+                        App.Data.payments.set('selected', 'cash');
+                        App.Data.footer.set({
+                            btn_title: _loc.PLACE_ORDER,
+                            action: App.Data.payments.onPay.bind(App.Data.payments)
+                        });
+                    }
+                    else {
+                        payBtn();
+                    }
+                };
 
                 if(payment_count > 1) {
+                    placeOrderBtn();
+                    this.listenTo(myorder.total, 'change:grandTotal', placeOrderBtn);
+                    // unbind listener
+                    this.listenToOnce(this, 'route', function() {
+                        this.stopListening(myorder.total, 'change:grandTotal', placeOrderBtn);
+                    });
+
                     App.Data.mainModel.set({
                         footer: {
                             mod: 'Main',
@@ -809,6 +818,7 @@ define(["main_router"], function(main_router) {
                         }
                     });
                 } else {
+                    payBtn();
                     App.Data.mainModel.set({
                         footer: {
                             mod: 'PaymentSelection',
@@ -1106,7 +1116,8 @@ define(["main_router"], function(main_router) {
 
             App.Data.header.set({
                 page_title: success ? _loc.DONE_THANK_YOU + '!' : '',
-                back_title: ''
+                back_title: '',
+                back: this.navigate.bind(this, 'index', true)
             });
 
             App.Data.mainModel.set({

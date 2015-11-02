@@ -1005,6 +1005,35 @@ function saveAllData() {
     settings.saveSettings();
     ests && ests.saveEstablishment(settings.get('establishment'));
 }
+
+/**
+ * @function
+ * Calls callback function when element is inserted to DOM
+ *
+ * @param {Jquery} $el - target element.
+ * @param {Function} cb - callback function.
+ */
+function listenToInsertionIntoDOM($el, cb) {
+    if (typeof cb != 'function') {
+        throw 'listenToInsertionIntoDOM: `cb` parameter should be a function';
+    }
+
+    if ('MutationObserver' in window) {
+        var observer = new MutationObserver(function(mutations) {
+            mutations.some(function(mutation) {
+                if(mutation.addedNodes.length && Backbone.$(mutation.target).find($el).length) {
+                    cb();
+                    observer.disconnect();
+                    return true;
+                }
+            });
+        });
+        observer.observe(document.body, {childList: true, subtree: true});
+    } else {
+        $el.one('DOMNodeInsertedIntoDocument', cb);
+    }
+}
+
 /*
 *  Transfor the first text letter to upper case
 */

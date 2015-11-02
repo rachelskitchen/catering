@@ -722,8 +722,9 @@ define(["backbone"], function(Backbone) {
             var exceeded = this.filter(function(modifierBlock) {
                 var maxAmount = modifierBlock.get('maximum_amount');
 
-                if (maxAmount == null || maxAmount == undefined)
+                if (!maxAmount) {
                     return false;
+                }
 
                 var qty = modifierBlock.get('modifiers').get_selected_qty();
                 return qty > maxAmount ? true : false;

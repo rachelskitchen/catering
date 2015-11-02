@@ -35,7 +35,7 @@ define(["factory"], function(factory) {
             '[data-payment="credit_card_button"]': 'classes: {"font-color2": equal(selected, "credit_card_button"), "bg-color1": equal(selected, "credit_card_button")}',
             '[data-payment="gift_card"]': 'classes: {"font-color2": equal(selected, "gift_card"), "bg-color1": equal(selected, "gift_card")}',
             '[data-payment="paypal"]': 'classes: {"font-color2": equal(selected, "paypal"), "bg-color1": equal(selected, "paypal")}',
-            '[data-payment="stanford"]': 'classes: {"font-color2": equal(selected, "stanford"), "bg-color1": equal(selected, "stanford"), hide: equal(checkout_dining_option, "DINING_OPTION_ONLINE")}'
+            '[data-payment="stanford"]': 'classes: {"font-color2": equal(selected, "stanford"), "bg-color1": equal(selected, "stanford"), hide: orderItems_hasGiftCard}'
         },
         computeds: {
             cash: {
@@ -43,6 +43,25 @@ define(["factory"], function(factory) {
                 get: function(dining_option) {
                     var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING';
                     return isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE;
+                }
+            }
+        },
+        bindingSources: {
+            orderItems: function() {
+                var model = new Backbone.Model({
+                    hasGiftCard: hasGiftCard()
+                });
+
+                model.listenTo(App.Data.myorder, 'add remove', function() {
+                    model.set('hasGiftCard', hasGiftCard());
+                });
+
+                return model;
+
+                function hasGiftCard() {
+                    return App.Data.myorder.some(function(item) {
+                        return item.is_gift();
+                    });
                 }
             }
         },
