@@ -438,13 +438,19 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         mod: 'pay_button',
         bindings: {
             '.cash > span': 'text: applyCashLabel(checkout_dining_option)',
-            '.btn.pay': 'classes: {disabled: shipping_pending}',
-            '.stanford-card': 'classes:{hide: equal(checkout_dining_option, "DINING_OPTION_ONLINE")}'
+            '.btn.place-order': 'classes: {disabled: shipping_pending, cash: placeOrder, pay: not(placeOrder)}',
+            '.btn.place-order > span': 'text: payBtnText(myorder_quantity, total_grandTotal)',
+            '.stanford-card': 'classes:{hide: orderItems_hasGiftCard}'
         },
         bindingFilters: {
             applyCashLabel: function(dining_option) {
                 var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING';
                 return isDelivery ? MSG.PAY_AT_DELIVERY : MSG.PAY_AT_STORE;
+            },
+            payBtnText: function(quantity, grandTotal) {
+                // Enhancement #12904
+                // If grandTotal is $0 we must show "Place Order" button instead of "Pay".
+                return (Number(grandTotal) || !quantity) ? _loc.CHECKOUT_PAY : _loc.PLACE_ORDER;
             }
         },
         bindingSources: {
@@ -462,6 +468,44 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 function getStatus() {
                     return customer.get('load_shipping_status') == 'pending';
                 }
+            },
+            orderItems: function() {
+                var model = new Backbone.Model({
+                    hasGiftCard: hasGiftCard()
+                });
+
+                model.listenTo(App.Data.myorder, 'add remove', function() {
+                    model.set('hasGiftCard', hasGiftCard());
+                });
+
+                return model;
+
+                function hasGiftCard() {
+                    return App.Data.myorder.some(function(item) {
+                        return item.is_gift();
+                    });
+                }
+            },
+            total: App.Data.myorder.total,
+            myorder: function() {
+                var myorder = App.Data.myorder,
+                    model = new Backbone.Model({quantity: myorder.get_only_product_quantity()});
+
+                model.listenTo(App.Data.myorder, 'add remove change', function() {
+                    model.set('quantity', myorder.get_only_product_quantity());
+                });
+
+                return model;
+            }
+        },
+        computeds: {
+            placeOrder: {
+                deps: ['total_grandTotal', 'myorder_quantity'],
+                get: function(grandTotal, quantity) {
+                    var placeOrder = !Number(grandTotal) && quantity;
+                    this.needPreValidate = placeOrder ? true : this.needPreValidateDefault;
+                    return placeOrder;
+                }
             }
         },
         initialize: function() {
@@ -473,7 +517,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 this.collection.trigger('hideSpinner');
             }, this);
             this.flag = this.options.flag === 'checkout',
-            this.needPreValidate = payment.payment_count == 1 && this.flag;
+            this.needPreValidateDefault = this.needPreValidate = payment.payment_count == 1 && this.flag;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
