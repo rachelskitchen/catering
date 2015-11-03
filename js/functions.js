@@ -1269,6 +1269,16 @@ var PaymentProcessor = {
             processor.handlePaymentDataRequest(myorder, data);
         }
     },
+    // Bug #25585
+    setPaymentData: function() {
+        setData(App.Data.router.getUID() + '.paymentData', App.Data.get_parameters);
+    },
+    getPaymentData: function() {
+        return getData(App.Data.router.getUID() + '.paymentData');
+    },
+    removePaymentData: function() {
+        removeData(App.Data.router.getUID() + '.paymentData');
+    },
     getPaymentProcessor: function(payment_type) {
         var payment_processor = null;
         switch (payment_type) {
@@ -1371,6 +1381,7 @@ var PaymentProcessor = {
             return;
         }
         removeData(App.Data.router.getUID() + '.isTransactionInProcess');
+        this.removePaymentData();
     }
 };
 
