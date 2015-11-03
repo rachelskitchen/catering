@@ -78,21 +78,21 @@ define(["tips_view"], function(tips_view) {
                 }
             },
             percents_10: {
-                deps: ['subtotal'],
-                get: function(subtotal) {
-                    return this.getPercentAmount(subtotal, 10);
+                deps: ['subtotal', 'discounts_str'],
+                get: function(subtotal, discounts_str) {
+                    return this.getPercentAmount(subtotal, discounts_str, 10);
                 }
             },
             percents_15: {
-                deps: ['subtotal'],
-                get: function(subtotal) {
-                    return this.getPercentAmount(subtotal, 15);
+                deps: ['subtotal', 'discounts_str'],
+                get: function(subtotal, discounts_str) {
+                    return this.getPercentAmount(subtotal, discounts_str, 15);
                 }
             },
             percents_20: {
-                deps: ['subtotal'],
-                get: function(subtotal) {
-                    return this.getPercentAmount(subtotal, 20);
+                deps: ['subtotal', 'discounts_str'],
+                get: function(subtotal, discounts_str) {
+                    return this.getPercentAmount(subtotal, discounts_str, 20);
                 }
             }
         },
@@ -103,13 +103,13 @@ define(["tips_view"], function(tips_view) {
                 percent: Backbone.$(e.target).data('amount')
             });
         },
-        getPercentAmount: function(subtotal, percent) {
+        getPercentAmount: function(subtotal, discounts_str, percent) {
             var tip = new this.model.constructor({
                 type: true,
                 amount: true,
                 percent: percent
             });
-            return tip.get_tip(subtotal);
+            return tip.get_tip(subtotal, discounts_str);
         }
     });
 
