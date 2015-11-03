@@ -312,9 +312,11 @@ define(["backbone", "factory"], function(Backbone) {
             var myorder = App.Data.myorder,
                 savedDefaultPaymentState = PaymentProcessor.loadDefaultState(); // must be called forever to clear saved state in storage
 
-            if(!App.Data.get_parameters) {
-                App.Data.get_parameters = parse_get_params();
-            }
+            // Bug #25585
+            // Restore payment data if it has been lost.
+            // extend will take effect only if payment data is stored in the storage and is not presented in get parameters
+            // (it happens when user loses connection after return from payment processor, and the app reloads when the connection is restored)
+            App.Data.get_parameters = _.extend({}, parse_get_params(), PaymentProcessor.getPaymentData());
 
             this.listenTo(myorder, 'paymentResponse', function() {
                 var is_gift, card = App.Data.card,
@@ -349,6 +351,12 @@ define(["backbone", "factory"], function(Backbone) {
             // If true change init hash on #pay replacing history entry to immediately handle payment response.
             // If `pay` GET-parameter doesn't exist and `savedDefaultPaymentState` exists change hash on #pay creating new history entry.
             if(App.Data.get_parameters.pay || App.Data.get_parameters[MONERIS_PARAMS.PAY]) {
+                // Bug #25585
+                if (App.Data.get_parameters.pay == 'true' || App.Data.get_parameters[MONERIS_PARAMS.PAY] == 'true') { // check for real get params, not the extended ones.
+                    // We got payment data from payment processor.
+                    // Need to save payment data - it will be restored if something goes wrong with transaction processing.
+                    PaymentProcessor.setPaymentData();
+                }
                 window.location.replace('#pay');
             } else if(savedDefaultPaymentState) {
                 App.Data.get_parameters.pay = savedDefaultPaymentState;
