@@ -282,7 +282,6 @@ define(["backbone", "async"], function(Backbone) {
                         "quickbooks":false,
                         "freedompay":false,
                         "mercury":false,
-                        "paypal_direct_credit_card":false,
                         "gift_card":false,
                         "cash":false,
                         "usaepay":false,
