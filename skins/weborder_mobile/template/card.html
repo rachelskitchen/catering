@@ -1,21 +1,21 @@
 <script type="text/template" id="card_main-template">
-    <ul class="card font-size2 font-color8 <% if(isFirefox) { %>firefox<% } %>">
+    <ul class="card font-size2 font-color8">
         <li>
-            <input type="text" placeholder="<%= _lp.CARD_FIRST_NAME %>" value="<%= firstName %>" class="first_name ios-safari-caret border-color10" maxlength="20">
+            <input type="text" placeholder="<%= _lp.CARD_FIRST_NAME %>" class="first_name ios-safari-caret border-color10" maxlength="20">
         </li>
         <li>
-            <input type="text" placeholder="<%= _lp.CARD_LAST_NAME %>" value="<%= secondName %>" class="last_name ios-safari-caret border-color10"  maxlength="20">
+            <input type="text" placeholder="<%= _lp.CARD_LAST_NAME %>" class="last_name ios-safari-caret border-color10"  maxlength="20">
         </li>
         <li class="required">
-            <input type="text" placeholder="<%= _lp.CARD_NUMBER %>" class="number ios-safari-caret border-color10" value="<%= cardNumber %>" min="0">
+            <input type="text" placeholder="<%= _lp.CARD_NUMBER %>" class="number ios-safari-caret border-color10" min="0">
         </li>
         <li class="required">
-            <input type="text" placeholder="<%= _lp.CARD_SECURITY_CODE %>" class="secure ios-safari-caret border-color10" value="<%= securityCode %>" min="0">
+            <input type="text" placeholder="<%= _lp.CARD_SECURITY_CODE %>" class="secure ios-safari-caret border-color10" min="0">
         </li>
         <li class="required exp">
             <span> <%= _lp.CARD_EXP_DATE %>: </span>
             <div class="select-wrapper bg-color2">
-                <select id="exp-month">
+                <select id="exp-month" class="card-expiration-month">
                     <option value="01">01</option>
                     <option value="02">02</option>
                     <option value="03">03</option>
@@ -31,7 +31,7 @@
                 </select>
             </div>
             <div class="select-wrapper bg-color2">
-                <select id="exp-year">
+                <select id="exp-year" class="card-expiration-year">
                 </select>
             </div>
         </li>

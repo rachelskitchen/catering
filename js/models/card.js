@@ -40,35 +40,26 @@ define(["backbone"], function(Backbone) {
         },
         initialize: function() {
             this.syncWithRevelAPI();
-
-            // trim the changed value
-            this.listenTo(this, 'change:firstName', this.trim, this);
-            this.listenTo(this, 'change:secondName', this.trim, this);
         },
         /**
-         * Trim the changed value.
-         *
-         * @param {object} model Current model.
-         * @param {string} val The changed value.
-         * @param {object} opts Additional options.
+         * @method
+         * Trims the `firstName`, `lastName` attributes value.
          */
-        trim: function(model, val, opts) {
-            var changedValues = [];
-            model.changedAttributes().firstName && changedValues.push('firstName');
-            model.changedAttributes().secondName && changedValues.push('secondName');
-            for (var i = 0; i < changedValues.length; i++) {
-                var type = changedValues[i];
-                opts = (opts instanceof Object) ? opts : {};
+        trim: function() {
+            this.set({
+                firstName: trim.call(this, 'firstName'),
+                secondName: trim.call(this, 'secondName')
+            });
+            function trim(type) {
                 var value = this.get(type);
-                (typeof(value) == 'string') ?
-                    this.set(type, Backbone.$.trim(value), opts) :
-                    this.set(type, this.defaults[type], opts);
+                return typeof value  == 'string' ? Backbone.$.trim(value) : this.defaults[type];
             }
         },
         /**
         * Save current state model in storage (detected automatic).
         */
         saveCard: function() {
+            this.trim();
             setData('card',this);
         },
         /**
@@ -126,11 +117,13 @@ define(["backbone"], function(Backbone) {
             };
         },
         checkPerson: function() {
+            this.trim();
+
             var card = this.toJSON(),
                 payment = App.Data.settings.get_payment_process(),
                 err = [];
 
-            if (payment.paypal && payment.paypal_direct_credit_card) {
+            if (payment.paypal) {
                 (!card.firstName) && err.push(_loc.CARD_FIRST_NAME);
                 (!card.secondName) && err.push(_loc.CARD_LAST_NAME);
             }
