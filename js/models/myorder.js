@@ -1391,11 +1391,19 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     }//end of switch
                 },
                 error: function(xhr) {
+                    var errorMsg = '';
+                    if ('onLine' in window.navigator && !window.navigator.onLine && capturePhase) {
+                        // network connection is lost after return from payment processor
+                        errorMsg = MSG.ERROR_SUBMIT_ORDER_DISCONNECT;
+                    }
+                    else {
+                        errorMsg = MSG.ERROR_SUBMIT_ORDER;
+                    }
                     myorder.paymentResponse = {
                         status: 'ERROR',
-                        errorMsg: MSG.ERROR_SUBMIT_ORDER
+                        errorMsg: errorMsg
                     };
-                    reportErrorFrm(MSG.ERROR_SUBMIT_ORDER);
+                    reportErrorFrm(errorMsg);
                 },
                 complete: function(xhr, result) {
                     payment_type === PAYMENT_TYPE.PAYPAL_MOBILE && $.mobile.loading("hide");
