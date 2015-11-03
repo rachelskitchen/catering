@@ -34,10 +34,23 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenToOnce(App.Data.mainModel, 'loadCompleted', App.Data.myorder.check_maintenance);
         },
         events: {
-            'click .btn': 'reload'
+            'click .btn': 'reload',
+            'click .change-store': 'change_establishment',
         },
         reload: function() {
             window.location.reload();
+        },
+        /**
+         * Show the "Change Establishment" modal window.
+         */
+        change_establishment: function(e) {
+            var ests = App.Data.establishments;
+            ests.getModelForView().set({
+                storeDefined: true
+            }); // get a model for the stores list view
+            ests.trigger('loadStoresList');
+            // App.Data.mainModel.set('isBlurContent', true);
+            e.stopPropagation();
         }
     });
 

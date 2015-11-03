@@ -74,6 +74,7 @@ define([], function() {
         "INSTRUCTIONS_REMOVE_SPECIAL": "Supprimer des instructions spéciales",
         "MAIN_CURRENT_STORE": "Magasin actuel",
         "MAIN_CHANGE": "Changer ?",
+        'MAIN_CHANGE_ESTABLISHMENT': 'Passer à un autre magasin ?',
         "MAIN_OR": "ou",
         "MAIN_GOTO_DIRECTORY": "Aller à l’annuaire",
         "MAIN_BACK": "Retour",
@@ -152,15 +153,15 @@ define([], function() {
         "STANFORD_RELOAD_INFO2": "Please specify the plan you'd like to add value to",
         "STANFORD_CARD_NUMBER": "Stanford Card #",
         "STANFORD_CARD_CHOOSE_PLAN": "Stanford Card: Choose Plan",
-        "CONFIRM_SUBMIT_CARD": "Submit Card",
-        "CONFIRM_SUBMIT_ORDER": "Submit Order",
-        "MAIN_REWARD_CARD_VISITS": "Points for Visits",
-        "MAIN_REWARD_CARD_PURCHASES": "Points for Purchases",
-        "MAIN_STANFORD_CARD_BALANCE": "balance",
-        "MAIN_STANFORD_CARD_BALANCE_MEAL": "Meal",
-        "MAIN_STANFORD_CARD_BALANCE_MEALS": "Meals",
-        "CATEGORIES_SEARCH": "Search",
-        "SEARCH_ENTER_STRING": "Search",
-        "PRODUCTS_NOT_FOUND": "No products found"
+        "CONFIRM_SUBMIT_ORDER": "Soumettre la commande",
+        "MAIN_REWARD_CARD_VISITS": "Points pour les visites",
+        "MAIN_REWARD_CARD_PURCHASES": "Points pour les achats",
+        "MAIN_STANFORD_CARD_BALANCE": "solde",
+        "MAIN_STANFORD_CARD_BALANCE_MEAL": "Repas",
+        "MAIN_STANFORD_CARD_BALANCE_MEALS": "Repas",
+        "CATEGORIES_SEARCH": "Rechercher",
+        "SEARCH_ENTER_STRING": "Rechercher",
+        "PRODUCTS_NOT_FOUND": "Aucun produit trouvé",
+        "CONFIRM_SUBMIT_CARD": "Soumettre la carte"
     } // end of locale
 }); // end of module

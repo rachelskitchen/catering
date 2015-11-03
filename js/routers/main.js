@@ -37,9 +37,7 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             this.initLocDiningOptionName();
-
-            // set page title
-            pageTitle(App.Data.settings.get("settings_skin").name_app);
+            this.setTabTitle();
 
             // extend Backbone.history.loadUrl method to add validation of route handler availability
             // loadUrl() is responsible to call a handler for current route
@@ -121,6 +119,13 @@ define(["backbone", "factory"], function(Backbone) {
             // set handler for window.unload event
             window.onunload = this.beforeUnloadApp.bind(this);
         },
+        setTabTitle: function() {
+            var title = _loc.TAB_TITLE_ONLINE_ORDERING;
+            if (App.Settings['business_name']) {
+                title = App.Settings['business_name'] + ' ' + title;
+            }
+            pageTitle(title);
+        },
         navigate: function() {
             this.started && arguments[0] != location.hash.slice(1) && App.Data.mainModel.trigger('loadStarted');
             if(App.Data.settings.get('isMaintenance') && arguments[0] != 'maintenance')
@@ -162,7 +167,7 @@ define(["backbone", "factory"], function(Backbone) {
             }
         },
         prepare: function(page, callback, dependencies) {
-            if(isMaintenance && page != 'maintenance') return;
+            if(isMaintenance && page != 'maintenance' &&  page != 'establishments') return;
 
             var settings = App.Data.settings,
                 skin = settings.get('skin'),
@@ -365,7 +370,6 @@ define(["backbone", "factory"], function(Backbone) {
             } else {
                 (!App.skin) && settings.set('skin', App.Skins.WEBORDER);
             }
-            !settings.get('settings_skin').name_app && pageTitle('Revel Systems');
 
             App.Routers.MainRouter.prototype.prepare('establishments', function() {
                 var locale = App.Data.locale;
@@ -387,14 +391,12 @@ define(["backbone", "factory"], function(Backbone) {
         getEstablishments: function() {
             var self = this;
             var ests = App.Data.establishments;
-            if (!App.Data.settings.get('isMaintenance')) {
-                ests.getEstablishments('once').then(function() { // get establishments from backend
-                    if (ests.length > 1 || (ests.length == 1 &&
-                        ests.models[0].get("id") != App.Data.settings.get("establishment"))) {
-                        self.getEstablishmentsCallback();
-                    }
-                });
-            }
+            ests.getEstablishments('once').then(function() { // get establishments from backend
+                if (ests.length > 1 || (ests.length == 1 &&
+                    ests.models[0].get("id") != App.Data.settings.get("establishment"))) {
+                    self.getEstablishmentsCallback();
+                }
+            });
         },
         /**
         * Remove establishment data in case if establishment ID will change.
@@ -494,15 +496,35 @@ define(["backbone", "factory"], function(Backbone) {
         },
         navigateDirectory: function() {
             if(App.Data.dirMode) {
-                var prefix = App.Data.is_stanford_mode ? ".stanford" : "";
-                var directoryState = getData('directory.state' + prefix),
-                    directoryHash = '';
+                var navigateToDirectoryConfirmed = function () {
+                    var prefix = App.Data.is_stanford_mode ? ".stanford" : "",
+                        directoryState = getData('directory.state' + prefix),
+                        directoryHash = '';
 
-                if(directoryState instanceof Object && directoryState.hash) {
-                    directoryHash = directoryState.hash;
+                    if (directoryState instanceof Object && directoryState.hash) {
+                        directoryHash = directoryState.hash;
+                    }
+
+                    return window.location.href = getData('directoryReferrer').referrer + directoryHash;
+                };
+                if (App.Data.establishments.getModelForView().get('needShowAlert')) { // cart is not empty
+                    // use '_DESKTOP' i18n strings because we don't have 'Go to directory' link in weborder_mobile
+                    App.Data.errors.alert(MSG.ESTABLISHMENTS_ALERT_MESSAGE_DESKTOP, false, false, { // confirmation popup
+                        isConfirm: true,
+                        confirm: {
+                            ok: MSG.ESTABLISHMENTS_ALERT_PROCEED_BUTTON_DESKTOP,
+                            cancel: MSG.ESTABLISHMENTS_ALERT_BACK_BUTTON_DESKTOP,
+                            btnsSwap: true
+                        },
+                        callback: function(result) {
+                            if (result) navigateToDirectoryConfirmed();
+                        }
+                    });
                 }
-
-                return window.location.href = getData('directoryReferrer').referrer + directoryHash;
+                else {
+                    // there is no need to show confirmation popup
+                    navigateToDirectoryConfirmed();
+                }
             }
         },
         /**

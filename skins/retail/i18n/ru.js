@@ -66,6 +66,7 @@
         'HEADER_ORDER_DETAILS': 'Параметры заказа и доставки',
         'MAIN_CURRENT_STORE': 'Текущий магазин',
         'MAIN_CHANGE': 'Изменить?',
+        'MAIN_CHANGE_ESTABLISHMENT': 'Выбрать другой магазин?',
         'MAIN_OR': 'или',
         'MAIN_GOTO_DIRECTORY': 'Перейти в каталог',
         'MAIN_BACK': 'Назад',

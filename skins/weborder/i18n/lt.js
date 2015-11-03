@@ -74,6 +74,7 @@ define([], function() {
         "INSTRUCTIONS_REMOVE_SPECIAL": "Pašalinti specialius nurodymus",
         "MAIN_CURRENT_STORE": "Dabartinė parduotuvė",
         "MAIN_CHANGE": "Keisti?",
+        'MAIN_CHANGE_ESTABLISHMENT': 'Change to a different store?',
         "MAIN_OR": "arba",
         "MAIN_GOTO_DIRECTORY": "Grįžti į katalogą",
         "MAIN_BACK": "Atgal",

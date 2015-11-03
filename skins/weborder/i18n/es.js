@@ -74,6 +74,7 @@ define([], function() {
         "INSTRUCTIONS_REMOVE_SPECIAL": "Eliminar instrucciones especiales",
         "MAIN_CURRENT_STORE": "Tienda actual",
         "MAIN_CHANGE": "¿Cambiar?",
+        'MAIN_CHANGE_ESTABLISHMENT': 'Change to a different store?',
         "MAIN_OR": "o",
         "MAIN_GOTO_DIRECTORY": "Ir al directorio",
         "MAIN_BACK": "Volver",
