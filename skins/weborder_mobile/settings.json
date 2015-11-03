@@ -56,9 +56,9 @@
         },
         "confirm": {
             "css": ["total", "checkout", "card", "tips"],
-            "views": ["checkout", "card", "tips", "total"],
+            "views": ["checkout", "tips", "total"],
             "templates": ["total", "checkout", "card", "tips"],
-            "core": ["tip", "checkout", "card", "jquery_numbermask"]
+            "core": ["tip", "checkout", "card", "card_view", "jquery_numbermask"]
         },
         "payments": {
             "css": ["payments"],
@@ -67,9 +67,8 @@
         },
         "card": {
             "css": ["card"],
-            "views": ["card"],
             "templates": ["card"],
-            "core": ["card", "jquery_numbermask"]
+            "core": ["card", "card_view", "jquery_numbermask"]
         },
         "giftcard": {
             "css": ["card"],
