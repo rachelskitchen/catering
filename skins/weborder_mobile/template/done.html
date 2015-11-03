@@ -23,7 +23,7 @@
     <dl class="orderCompleted font-color1 font-size2 text-center">
         <dt class="text-right"><%= _lp.DONE_ORDER_ID %></dt>
         <dd class="text-left"><%= order_id %></dd>
-        <% if (!isOnlyGift) { %>
+        <% if (!isOnlyGift && !isDiningOptionShipping) { %>
         <dt class="text-right"><%= pickup_type %></dt>
         <dd class="text-left"><%= pickup_time %> <span class="line"><%= pickup_day %></span></dd>
         <% } %>

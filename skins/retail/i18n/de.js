@@ -60,6 +60,7 @@ define([], function() {
         "HEADER_ORDER_DETAILS": "Zur Kasse gehen & Bestelldetails",
         "MAIN_CURRENT_STORE": "Derzeitiges Geschäft",
         "MAIN_CHANGE": "Ändern?",
+        'MAIN_CHANGE_ESTABLISHMENT': 'Zu einem anderen Geschäft wechseln?',
         "MAIN_OR": "oder",
         "MAIN_GOTO_DIRECTORY": "Zum Verzeichnis gehen",
         "MAIN_BACK": "Zurück",
@@ -83,7 +84,7 @@ define([], function() {
         "MYORDER_REMOVE": "Entfernen",
         "MYORDER_WEIGHT": "w/",
         "MYORDER_ADD_TO_BAG": "Der Tasche Hinzufügen",
-        "MYORDER_ADD_ITEM": "Add to Bag",
+        "MYORDER_ADD_ITEM": "Der Einkaufstasche Hinzufügen",
         "MYORDER_UPDATE_ITEM": "Produkt aktualisieren",
         "PRODUCTS_ENTER_GIFT_CARD": "Geben Sie die Geschenkkartennummer ein, die Sie mit einem Geldbetrag aufladen möchten",
         "PRODUCTS_GIFT_CARD_NUMBER": "Geschenkkartennummer",
@@ -126,9 +127,9 @@ define([], function() {
         "STANFORD_RELOAD_INFO2": "Please specify the plan you'd like to add value to",
         "STANFORD_CARD_NUMBER": "Stanford Card #",
         "STANFORD_CARD_CHOOSE_PLAN": "Stanford Card: Choose Plan",
-        "CONFIRM_SUBMIT_CARD": "Submit Card",
-        "CONFIRM_SUBMIT_ORDER": "Submit Order",
-        "MAIN_REWARD_CARD_VISITS": "Points for Visits",
-        "MAIN_REWARD_CARD_PURCHASES": "Points for Purchases"
+        "CONFIRM_SUBMIT_ORDER": "Bestellung einreichen",
+        "MAIN_REWARD_CARD_VISITS": "Punkte für Besuche",
+        "MAIN_REWARD_CARD_PURCHASES": "Punkte für Einkäufe",
+        "CONFIRM_SUBMIT_CARD": "Karte einreichen"
     } // end of locale
 }); // end of module

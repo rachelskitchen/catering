@@ -261,15 +261,21 @@ define(["done_view", "generator"], function(done_view) {
     var MainMaintenanceView = App.Views.FactoryView.extend({
         name: 'main',
         mod: 'maintenance',
+        initialize: function() {
+            this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.$('.store_choice').css({display: 'inline-block'});
             this.listenToOnce(App.Data.mainModel, 'loadCompleted', App.Data.myorder.check_maintenance);
             if (!App.Data.router.isNotFirstLaunch) this.$('.back').hide();
         },
         events: {
             "click .btn": 'reload',
             'click .go-to-directory': 'goToDirectory',
-            'click .back': 'back'
+            'click .back': 'back',
+            'click .change_establishment': 'change_establishment'
         },
         /**
          * Go to the previous establishment.
@@ -283,6 +289,26 @@ define(["done_view", "generator"], function(done_view) {
         goToDirectory: function() {
             var goToDirectory = this.model.get('goToDirectory');
             typeof goToDirectory == 'function' && goToDirectory();
+        },
+        /**
+         * Show the "Change Establishment" modal window.
+         */
+        change_establishment: function() {
+            var ests = App.Data.establishments;
+            ests.getModelForView().set({
+                storeDefined: true
+            }); // get a model for the stores list view
+            ests.trigger('loadStoresList');
+            this.model.set('isBlurContent', true);
+        },
+        /**
+         * A blur effect of content.
+         * Blur effect supported on Firefox 35, Google Chrome 18, Safari 6, iOS Safari 6.1, Android browser 4.4, Chrome for Android 39.
+         */
+        blurEffect: function() {
+            // http://caniuse.com/#search=filter
+            var mainEl = this.$('.maintenance');
+            this.model.get('isBlurContent') ? mainEl.addClass('blur') : mainEl.removeClass('blur');
         }
     });
 

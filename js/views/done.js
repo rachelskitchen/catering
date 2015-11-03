@@ -72,6 +72,7 @@ define(["backbone", "factory"], function(Backbone) {
                 model.stanfordCardBalances = get.paymentType === PAYMENT_TYPE.STANFORD && Array.isArray(balances.stanford) ? balances.stanford : null;
 
                 model.isDiningOptionOther = dining_option === 'DINING_OPTION_OTHER';
+                model.isDiningOptionShipping = dining_option === 'DINING_OPTION_SHIPPING';
                 model.other_dining_options = _.filter( checkout.get("other_dining_options").toJSON(), function(model){
                     return model.value;
                 });

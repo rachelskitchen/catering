@@ -53,10 +53,10 @@ define([], function() {
         "PIKADAY": {
             "FIRST_DAY": 1,
             "i18n": {
-                "previousMonth": "Previous Month",
-                "nextMonth": "Next Month",
+                "previousMonth": "Voriger Monat",
+                "nextMonth": "Nächster Monat",
                 "months": [
-                    "January",
+                    "Januar",
                     "Februar",
                     "März",
                     "April",
@@ -80,11 +80,11 @@ define([], function() {
                 ],
                 "weekdaysShort": [
                     "So",
-                    "Mon",
-                    "Die",
+                    "Mo",
+                    "Di",
                     "Mi",
-                    "Don",
-                    "Frei",
+                    "Do",
+                    "Fr",
                     "Sa"
                 ]
             }
@@ -92,12 +92,12 @@ define([], function() {
         "FILTERS": {
             "STORE_TYPE_RESTAURANT": "Restaurant",
             "STORE_TYPE_RETAIL": "Einzelhandel",
-            "STORE_TYPE_GROCERY": "Grocery",
-            "STORE_TYPE_ALL": "All",
+            "STORE_TYPE_GROCERY": "Lebensmittel",
+            "STORE_TYPE_ALL": "Alle",
             "DISTANCE_MILE": "Meile",
             "DISTANCE_MILES": "Meilen",
             "SORT_A_Z": "A-Z",
-            "SORT_DISTANCE": "Distance"
+            "SORT_DISTANCE": "Entfernung"
         },
         "COUNTRIES": {
             "AF": "Afghanistan",
@@ -513,7 +513,7 @@ define([], function() {
             "MERCURY_RETURN_MESSAGE_DEFAULT": "Unbekannter Fehler",
             "ERROR_DURING_TOKENIZATION": "Fehler während der Tokenisierung",
             "ERROR_CAN_NOT_LOAD_THE_GOOGLE_MAPS_SERVICE": "Kann den Google Maps-Dienst nicht laden. Die Seite wird erneut geladen.",
-            "AUTOAPPLY_FEE_ITEM": "AutoApply Fee"
+            "AUTOAPPLY_FEE_ITEM": "Gebühr automatisch anwenden"
         },
         "DINING_OPTION_NAME": {
             "DINING_OPTION_TOGO": "Zum Mitnehmen",
@@ -528,8 +528,8 @@ define([], function() {
         "SERVICE_TYPE": [
             "Restaurant",
             "Restaurant",
-            "Retail",
-            "Grocery",
+            "Einzelhandel",
+            "Lebensmittel",
             "",
             "",
             ""
@@ -544,19 +544,19 @@ define([], function() {
         "TOTAL_TAX": "Steuer",
         "TOTAL_TIP": "Trinkgeld",
         "TOTAL_GRAND_TOTAL": "Gesamtsumme",
-        "UPDATE": "Update",
-        "CHECKOUT": "Checkout",
+        "UPDATE": "Aktualisieren",
+        "CHECKOUT": "Bezahlen",
         "PAYPAL": "PayPal",
-        "YES": "Yes",
-        "NO": "No",
-        "CANCEL": "Cancel",
+        "YES": "Ja",
+        "NO": "Nein",
+        "CANCEL": "Stornieren",
         "OK": "Ok",
-        "BACK": "Back",
-        "DELIVERY_TIME": "Delivery Time",
-        "PICKUP_TIME": "Pickup Time",
+        "BACK": "Zurück",
+        "DELIVERY_TIME": "Lieferinfo",
+        "PICKUP_TIME": "Abholzeit",
         "DELIVERY_INFO": "Delivery Info",
-        "AMOUNT": "Amount",
-        "ENTER_CAPTCHA": "Enter Captcha",
-        "NEXT": "Next"
+        "AMOUNT": "Betrag",
+        "ENTER_CAPTCHA": "Captcha eingeben",
+        "NEXT": "Weiter"
     } // end of locale
 }); // end of module

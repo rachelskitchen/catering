@@ -39,8 +39,7 @@ define(["factory", "giftcard_view"], function(factory) {
         }),
         events: {
             'click .btn-reload': 'updateCaptcha',
-            'click .cancel-input': 'reset',
-            'blur .number-input': 'formatStanfordCard'
+            'click .cancel-input': 'reset'
         },
         initialize: function() {
             App.Views.CoreGiftCardView.CoreGiftCardMainView.prototype.initialize.apply(this, arguments);
@@ -65,20 +64,6 @@ define(["factory", "giftcard_view"], function(factory) {
                 myorder.update_cart_totals({type: PAYMENT_TYPE.STANFORD, planId: planId});
             } else {
                 myorder.update_cart_totals();
-            }
-        },
-        formatStanfordCard: function(e) {
-            var MIN_LENGTH = 6,
-                MAX_LENGTH = 15;
-            if (e.target.value.length >= MIN_LENGTH) {
-                e.target.value = rpad(e.target.value, MAX_LENGTH);
-            }
-
-            function rpad(value, length, symbol) {
-                // Usage:  rpad("22", 4) // "2200";
-                symbol = symbol || '0';
-                value = value + '';
-                return value.length >= length ? value : value + new Array(length - value.length + 1).join(symbol);
             }
         }
     });

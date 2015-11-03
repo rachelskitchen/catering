@@ -53,10 +53,10 @@ define([], function() {
         "PIKADAY": {
             "FIRST_DAY": 1,
             "i18n": {
-                "previousMonth": "Previous Month",
-                "nextMonth": "Next Month",
+                "previousMonth": "Mois précédent",
+                "nextMonth": "Mois suivant",
                 "months": [
-                    "January",
+                    "Janvier",
                     "Février",
                     "Mars",
                     "Avril",
@@ -92,11 +92,11 @@ define([], function() {
         "FILTERS": {
             "STORE_TYPE_RESTAURANT": "Restaurant",
             "STORE_TYPE_RETAIL": "Vente au détail",
-            "STORE_TYPE_GROCERY": "Grocery",
-            "STORE_TYPE_ALL": "All",
+            "STORE_TYPE_GROCERY": "Épicerie",
+            "STORE_TYPE_ALL": "Tous",
             "DISTANCE_MILE": "Mile",
             "DISTANCE_MILES": "Miles",
-            "SORT_A_Z": "A-Z",
+            "SORT_A_Z": "A à Z",
             "SORT_DISTANCE": "Distance"
         },
         "COUNTRIES": {
@@ -513,7 +513,7 @@ define([], function() {
             "MERCURY_RETURN_MESSAGE_DEFAULT": "Erreur inconnue",
             "ERROR_DURING_TOKENIZATION": "Erreur pendant la tokenisation",
             "ERROR_CAN_NOT_LOAD_THE_GOOGLE_MAPS_SERVICE": "Impossible de charger le service Google Maps La page va être actualisée.",
-            "AUTOAPPLY_FEE_ITEM": "AutoApply Fee"
+            "AUTOAPPLY_FEE_ITEM": "Appliquer les frais automatiquement"
         },
         "DINING_OPTION_NAME": {
             "DINING_OPTION_TOGO": "À emporter",
@@ -528,8 +528,8 @@ define([], function() {
         "SERVICE_TYPE": [
             "Restaurant",
             "Restaurant",
-            "Retail",
-            "Grocery",
+            "Vente au détail",
+            "Épicerie",
             "",
             "",
             ""
@@ -544,19 +544,19 @@ define([], function() {
         "TOTAL_TAX": "Taxe",
         "TOTAL_TIP": "Pourboire",
         "TOTAL_GRAND_TOTAL": "Total général",
-        "UPDATE": "Update",
-        "CHECKOUT": "Checkout",
+        "UPDATE": "Mettre à jour",
+        "CHECKOUT": "Paiement",
         "PAYPAL": "PayPal",
-        "YES": "Yes",
-        "NO": "No",
-        "CANCEL": "Cancel",
-        "OK": "Ok",
-        "BACK": "Back",
-        "DELIVERY_TIME": "Delivery Time",
-        "PICKUP_TIME": "Pickup Time",
-        "DELIVERY_INFO": "Delivery Info",
-        "AMOUNT": "Amount",
-        "ENTER_CAPTCHA": "Enter Captcha",
-        "NEXT": "Next"
+        "YES": "Oui",
+        "NO": "Non",
+        "CANCEL": "Annuler",
+        "OK": "O.K.",
+        "BACK": "Retour",
+        "DELIVERY_TIME": "Heure de livraison",
+        "PICKUP_TIME": "Heure de retrait",
+        "DELIVERY_INFO": "Informations de livraison",
+        "AMOUNT": "Montant",
+        "ENTER_CAPTCHA": "Saisir les caractères Captcha",
+        "NEXT": "Suivant"
     } // end of locale
 }); // end of module

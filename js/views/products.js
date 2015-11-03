@@ -156,9 +156,12 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
 
             if (App.skin == App.Skins.RETAIL)
                 this.$('.img').attr('data-default-index', 2);
-            loadSpinner(this.$('.img'));
+            this.loadImage(this.$('.img'));
 
             return this;
+        },
+        loadImage: function($el) {
+            loadSpinner($el);
         },
         gift_change: function(e) {
             this.product.set('gift_card_number', e.currentTarget.value);

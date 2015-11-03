@@ -53,10 +53,10 @@ define([], function() {
         "PIKADAY": {
             "FIRST_DAY": 1,
             "i18n": {
-                "previousMonth": "Previous Month",
-                "nextMonth": "Next Month",
+                "previousMonth": "Mese precedente",
+                "nextMonth": "Mese successivo",
                 "months": [
-                    "January",
+                    "Gennaio",
                     "Febbraio",
                     "Marzo",
                     "Aprile",
@@ -92,12 +92,12 @@ define([], function() {
         "FILTERS": {
             "STORE_TYPE_RESTAURANT": "Ristorante",
             "STORE_TYPE_RETAIL": "Vendita al dettaglio",
-            "STORE_TYPE_GROCERY": "Grocery",
-            "STORE_TYPE_ALL": "All",
+            "STORE_TYPE_GROCERY": "Negozio di alimentari",
+            "STORE_TYPE_ALL": "Tutto",
             "DISTANCE_MILE": "Miglio",
             "DISTANCE_MILES": "Miglia",
             "SORT_A_Z": "A-Z",
-            "SORT_DISTANCE": "Distance"
+            "SORT_DISTANCE": "Distanza"
         },
         "COUNTRIES": {
             "AF": "Afghanistan",
@@ -513,7 +513,7 @@ define([], function() {
             "MERCURY_RETURN_MESSAGE_DEFAULT": "Errore sconosciuto",
             "ERROR_DURING_TOKENIZATION": "Errore durante tokenizzazione",
             "ERROR_CAN_NOT_LOAD_THE_GOOGLE_MAPS_SERVICE": "Impossibile caricare i servizi di google maps.La pagina verrà ricaricata.",
-            "AUTOAPPLY_FEE_ITEM": "AutoApply Fee"
+            "AUTOAPPLY_FEE_ITEM": "ApplicaAutomaticamente prezzo"
         },
         "DINING_OPTION_NAME": {
             "DINING_OPTION_TOGO": "Da asporto",
@@ -526,10 +526,10 @@ define([], function() {
             "DINING_OPTION_SHIPPING": "Spedizione"
         },
         "SERVICE_TYPE": [
-            "Restaurant",
-            "Restaurant",
-            "Retail",
-            "Grocery",
+            "Ristorante",
+            "Ristorante",
+            "Negozio al dettaglio",
+            "Negozio di alimentari",
             "",
             "",
             ""
@@ -544,19 +544,19 @@ define([], function() {
         "TOTAL_TAX": "Imposta",
         "TOTAL_TIP": "Mancia",
         "TOTAL_GRAND_TOTAL": "Somma totale",
-        "UPDATE": "Update",
-        "CHECKOUT": "Checkout",
+        "UPDATE": "Aggiorna",
+        "CHECKOUT": "Paga ed esci",
         "PAYPAL": "PayPal",
-        "YES": "Yes",
+        "YES": "Sì",
         "NO": "No",
-        "CANCEL": "Cancel",
+        "CANCEL": "Annulla",
         "OK": "Ok",
-        "BACK": "Back",
-        "DELIVERY_TIME": "Delivery Time",
-        "PICKUP_TIME": "Pickup Time",
-        "DELIVERY_INFO": "Delivery Info",
-        "AMOUNT": "Amount",
-        "ENTER_CAPTCHA": "Enter Captcha",
-        "NEXT": "Next"
+        "BACK": "Indietro",
+        "DELIVERY_TIME": "Ora di consegna",
+        "PICKUP_TIME": "Ora del ritiro",
+        "DELIVERY_INFO": "Informazioni sulla consegna",
+        "AMOUNT": "Importo",
+        "ENTER_CAPTCHA": "Inserire Captcha",
+        "NEXT": "Avanti"
     } // end of locale
 }); // end of module

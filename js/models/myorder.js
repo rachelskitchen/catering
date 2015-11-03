@@ -284,7 +284,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 isDelivery = dining_option == 'DINING_OPTION_DELIVERY',
 
                 forced = modifiers.checkForced(),
-                exceeded = modifiers.checkForcedMax();
+                exceeded = modifiers.checkAmount();
 
             if (product.get("sold_by_weight") && !this.get("weight")) {
                 return {
@@ -1642,7 +1642,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return itemsWithDiscount;
         },
         splitAllItemsWithPointValue: function() {
-            this.each(this.splitItemWithPointValue);
+            var self = this;
+            this.each(function(item, i) {
+                self.splitItemWithPointValue(item);
+            });
         },
         splitItemWithPointValue: function(item, silentFlag) {
             silentFlag = !!silentFlag;
@@ -1662,7 +1665,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         },
         splitItemAfterQuantityUpdate : function(item, oldQuantity, newQuantity, silentFlag) {
             silentFlag = !!silentFlag;
-            if (item.get('discount').get('name') === 'Reward' && oldQuantity == 1 && newQuantity != 1) {
+            if (item.get('discount').get('name') === 'Item Reward' && oldQuantity == 1 && newQuantity != 1) {
                 this.splitItemWithPointValue(item, silentFlag);
             }
         }

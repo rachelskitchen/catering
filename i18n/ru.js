@@ -454,7 +454,7 @@
             'ESTABLISHMENTS_CHOOSE_BRAND_MOBILE': 'Выберите из %s необходимый магазин:',
             'ESTABLISHMENTS_PROCEED_BUTTON': 'Продолжить',
             'ESTABLISHMENTS_BACK_BUTTON': 'Назад',
-            'ESTABLISHMENTS_ALERT_MESSAGE_DESKTOP': 'Если вы выберите другой магазин, то заказ будет отменен. Отменить заказ?',
+            'ESTABLISHMENTS_ALERT_MESSAGE_DESKTOP': 'Если вы выберете другой магазин, то заказ будет отменен. Отменить заказ?',
             'ESTABLISHMENTS_ALERT_MESSAGE_TITLE_MOBILE': 'Предупреждение',
             'ESTABLISHMENTS_ALERT_MESSAGE_MOBILE': 'Если вы измените магазин, то заказ будет отменен.',
             'ESTABLISHMENTS_ALERT_MESSAGE_QUESTION_MOBILE': 'Продолжить?',

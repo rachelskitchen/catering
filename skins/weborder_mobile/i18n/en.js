@@ -246,6 +246,7 @@
         'CONTINUE': 'Continue',
         'PAY': 'Pay',
         'PAY_QUESTION': 'How would you like to pay?',
+        'PLACE_ORDER': 'Place Order',
         'BALANCE_DUE': 'Balance Due',
         'SUBMIT_PAYMENT': 'Submit Payment',
         'ORDER_RECEIVED': 'Your order has been received',
