@@ -34,6 +34,7 @@ define(['products_view'], function(products_view) {
             $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
             def.then(function() {
                 trace("add_combo_product 3");
+                var cache_id = is_combo ? myorder.get("id_product") : undefined;
 
                 $('#main-spinner').removeClass('ui-visible');
                 App.Data.mainModel.set('popup', {
@@ -41,7 +42,8 @@ define(['products_view'], function(products_view) {
                     mod: isStanfordItem ? 'StanfordItem' : (is_combo ? 'MatrixCombo' : 'Matrix'),
                     className: isStanfordItem ? 'stanford-reload-item' : '',
                     model: myorder.clone(),
-                    action: 'add'
+                    action: 'add',
+                    cache_id: cache_id //TBD: should be cached only for product under editing phase
                 });
             });
         },

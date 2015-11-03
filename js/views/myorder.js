@@ -136,7 +136,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
 
     App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView = App.Views.FactoryView.extend({
         name: 'myorder',
-        mod: 'matrix',
+        mod: 'matrix_combo',
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             var model = this.model;
@@ -171,6 +171,85 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 });
 
             this.subViews.push(productSets);
+        }
+    });
+
+    App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'matrix_footer',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'change_child_selected', this.update_child_selected);
+            return this;
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            if (this.options.action === 'add') {
+                this.$('.action_button').html(_loc['MYORDER_ADD_ITEM']);
+            } else {
+                this.$('.action_button').html(_loc['MYORDER_UPDATE_ITEM']);
+            }
+            var model = this.model,
+                view;
+
+            var sold_by_weight = this.model.get_product().get("sold_by_weight"),
+                mod = sold_by_weight ? 'Weight' : 'Main';
+
+            view = App.Views.GeneratorView.create('Quantity', {
+                el: this.$('.quantity_info'),
+                model: model,
+                mod: mod
+            });
+            if (!App.Data.q_view) {
+                App.Data.q_view = [];
+            }
+            App.Data.q_view.push(view);
+
+            this.subViews.push(view);
+
+            view = App.Views.GeneratorView.create('Instructions', {
+                el: this.$('.product_instructions'),
+                model: model,
+                mod: 'Modifiers'
+            });
+            this.subViews.push(view);
+
+            if (App.Settings.special_requests_online === false) {
+                view.$el.hide(); // hide special request if not allowed
+            }
+            this.update_child_selected();
+            return this;
+        },
+        events: {
+            'click .action_button:not(.disabled)': 'action',
+        },
+        update_child_selected: function() {
+            trace("update_child_selected ++>");
+            if (this.model.get('product').check_selected()) {
+                this.$('.action_button').removeClass('disabled');
+            }
+            else {
+                this.$('.action_button').addClass('disabled');
+            }
+        },
+        action: function (event) {
+            var check = this.model.check_order(),
+                self = this;
+
+            if (check.status === 'OK') {
+                if (self.options.action === 'add') {
+                    App.Data.myorder.add(self.model);
+                } else {
+                    var index = App.Data.myorder.indexOf(self.model) - 1;
+                    App.Data.myorder.remove(self.options.real);
+                    App.Data.myorder.add(self.model, {at: index});
+                    App.Data.myorder.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
+                }
+
+                $('#popup .cancel').trigger('click');
+            } else {
+                App.Data.errors.alert(check.errorMsg); // user notification
+            }
         }
     });
 
@@ -472,6 +551,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         App.Views.MyOrderView.MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView;
         App.Views.MyOrderView.MyOrderListView = App.Views.CoreMyOrderView.CoreMyOrderListView;
         App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView;
+        App.Views.MyOrderView.MyOrderMatrixFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView;
         App.Views.MyOrderView.MyOrderNoteView = App.Views.CoreMyOrderView.CoreMyOrderNoteView;
         App.Views.MyOrderView.MyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView;
         App.Views.MyOrderView.MyOrderMatrixComboView = App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView;
