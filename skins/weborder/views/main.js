@@ -92,9 +92,9 @@ define(["done_view", "generator"], function(done_view) {
         },
         popup_change: function(model, value) {
             var popup = this.$('.popup'),
-                data, id;
+                data, cache_id;
 
-            this.subViews[2] && this.subViews[2].remove();//this.subViews[2].removeFromDOMTree();
+            this.subViews[2] && this.subViews[2].removeFromDOMTree();//this.subViews[2].removeFromDOMTree();
 
             if (typeof value == 'undefined')
                 return popup.removeClass('ui-visible');
@@ -106,8 +106,8 @@ define(["done_view", "generator"], function(done_view) {
                 $('#popup').addClass("popup-background");
             }
 
-            id = 'popup_' + data.modelName + '_' + data.mod;
-            this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data);
+            cache_id = data.cache_id ? 'popup_' + data.modelName + '_' + data.mod + '_' + data.cache_id : undefined;
+            this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data, cache_id);
             this.$('#popup').append(this.subViews[2].el);
 
             popup.addClass('ui-visible');

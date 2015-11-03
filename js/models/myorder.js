@@ -179,8 +179,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          */
         add_empty_combo: function (id_product, id_category) {
             var self = this, product,
-                product_load = App.Collections.Products.init(id_category), // load product
-                loadOrder = $.Deferred();
+                product_load = App.Collections.Products.init(id_category);
 
             return product_load.then(function() {
                 product = App.Data.products[id_category].get_product(id_product);
@@ -193,7 +192,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     product: product,
                     id_product: id_product
                 });
-                //return loadOrder.resolve();
             });
         },
         /**

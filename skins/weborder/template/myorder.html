@@ -86,10 +86,7 @@
             </div>
         </div>
         <% if(_settings.online_orders) { %>
-        <div class='product_instructions'>
-        </div>
-            <div class="quantity quantity_info"> </div>
-            <div class="action_button clip"> <%= _lp.MYORDER_ADD_ITEM %> </div>
+        <div class='product_info_footer'> </div>
         <% } %>
     </div>
 </script>
@@ -100,19 +97,20 @@
         </div>
         <div class='modifiers_table'>
             <div class='modifiers_table_scroll'>
-                <div class='product_attribute_info'>
-                </div>
                 <div class='modifiers_info modifiers'>
                 </div>
             </div>
         </div>
         <% if(_settings.online_orders) { %>
-        <div class='product_instructions'>
-        </div>
-            <div class="quantity quantity_info"> </div>
-            <div class="action_button clip"> <%= _lp.MYORDER_ADD_ITEM %> </div>
+        <div class='product_info_footer'> </div>
         <% } %>
     </div>
+</script>
+
+<script type="text/template" id="myorder_matrix_footer-template">
+    <div class='product_instructions'> </div>
+    <div class="quantity quantity_info"> </div>
+    <div class="action_button clip"> <%= _lp.MYORDER_ADD_ITEM %> </div>
 </script>
 
 <script type="text/template" id="myorder_itemSpecial-template">

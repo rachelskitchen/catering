@@ -61,11 +61,11 @@ define(["quantity_view"], function(quantity_view) {
                 selectWrapper.removeClass('disabled');
             }
 
-            if (QuantityMainView.combobox) {
+            if (this.combobox) {
                 //console.log("combobox destroy");
-                QuantityMainView.combobox.destroy();
+                this.combobox.destroy();
             }
-            QuantityMainView.combobox = select.combobox(1, stock_amount);
+            this.combobox = select.combobox(1, stock_amount);
         },
         change: function(e) {
             this.model.set('quantity', e.target.value * 1);

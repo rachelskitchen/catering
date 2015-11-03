@@ -84,7 +84,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                 });
                 this.$('.products').append(view.el);
                 this.subViews.push(view);
-            }         
+            }
             return this;
         },
         addItem: function(model) {
@@ -112,11 +112,16 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         name: 'product',
         mod: 'modifiers',
         initialize: function() {
+            this.extendBindingSources({_product: this.model.get_product()});
             this.product = this.model.get_product();
             this.modifiers = this.model.get_modifiers();
             this.giftCardPriceRegStr = '^\\d{0,3}(\\.\\d{0,2})?$';
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:initial_price', this.update_price, this);
+        },
+        bindings: {
+            '.size_chart_wrapper': 'toggle: _product_size_chart',
+            'a.size_chart': 'attr:{href: _product_size_chart}',
         },
         events: {
             'change .gift_card_number': 'gift_change',

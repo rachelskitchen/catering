@@ -60,10 +60,10 @@ define(["quantity_view"], function(quantity_view) {
             if(product.isParent())
                 this.$el.hide();
 
-            if (QuantityMainView.combobox) {
-                QuantityMainView.combobox.destroy();
+            if (this.combobox) {
+                this.combobox.destroy();
             }
-            QuantityMainView.combobox = select.combobox(1, stock_amount);
+            this.combobox = select.combobox(1, stock_amount);
         },
         change: function(e) {
             this.model.set('quantity', e.target.value * 1);
