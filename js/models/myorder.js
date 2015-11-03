@@ -780,7 +780,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 };
             }
 
-            if (opts.tip && total > 0 && tip > total) {
+            if (opts.tip && tip > total) {
                 return {
                     status: 'ERROR',
                     errorMsg: MSG.ERROR_GRATUITY_EXCEEDS
