@@ -438,8 +438,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         mod: 'pay_button',
         bindings: {
             '.cash > span': 'text: applyCashLabel(checkout_dining_option)',
-            '.btn.place-order': 'classes: {disabled: shipping_pending, cash: placeOrder, pay: not(placeOrder)}',
-            '.btn.place-order > span': 'text: payBtnText(myorder_quantity, total_grandTotal)',
+            '.btn.place-order': 'classes: {disabled: disableBtn, cash: placeOrder, pay: not(placeOrder)}',
+            '.btn.place-order > span': 'text: payBtnText(orderItems_quantity, total_grandTotal)',
             '.stanford-card': 'classes:{hide: orderItems_hasGiftCard}'
         },
         bindingFilters: {
@@ -469,13 +469,21 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     return customer.get('load_shipping_status') == 'pending';
                 }
             },
+
             orderItems: function() {
                 var model = new Backbone.Model({
-                    hasGiftCard: hasGiftCard()
+                    hasGiftCard: hasGiftCard(),
+                    quantity: App.Data.myorder.get_only_product_quantity(),
+                    pending: false
                 });
 
                 model.listenTo(App.Data.myorder, 'add remove', function() {
                     model.set('hasGiftCard', hasGiftCard());
+                    model.set('pending', true);
+                    model.set('quantity', App.Data.myorder.get_only_product_quantity());
+                });
+                model.listenTo(App.Data.myorder, 'DiscountsComplete', function() {
+                    model.set('pending', false);
                 });
 
                 return model;
@@ -486,25 +494,21 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     });
                 }
             },
-            total: App.Data.myorder.total,
-            myorder: function() {
-                var myorder = App.Data.myorder,
-                    model = new Backbone.Model({quantity: myorder.get_only_product_quantity()});
-
-                model.listenTo(App.Data.myorder, 'add remove change', function() {
-                    model.set('quantity', myorder.get_only_product_quantity());
-                });
-
-                return model;
-            }
+            total: App.Data.myorder.total
         },
         computeds: {
             placeOrder: {
-                deps: ['total_grandTotal', 'myorder_quantity'],
+                deps: ['total_grandTotal', 'orderItems_quantity'],
                 get: function(grandTotal, quantity) {
                     var placeOrder = !Number(grandTotal) && quantity;
                     this.needPreValidate = placeOrder ? true : this.needPreValidateDefault;
                     return placeOrder;
+                }
+            },
+            disableBtn: {
+                deps: ['shipping_pending', 'orderItems_pending'],
+                get: function(shipping_pending, orderItems_pending) {
+                    return shipping_pending || orderItems_pending;
                 }
             }
         },
