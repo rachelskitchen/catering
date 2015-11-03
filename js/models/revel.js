@@ -390,9 +390,6 @@ define(["backbone", "card", "customers"], function(Backbone) {
                 useAsDefaultCard = this.get('useAsDefaultCard'),
                 result;
 
-            // CardView listens to this event to set data
-            card.trigger('add_card');
-
             if(useAsDefaultCard) {
                 result = card.check();
             }
