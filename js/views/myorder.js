@@ -200,10 +200,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 model: model,
                 mod: mod
             });
-            if (!App.Data.q_view) {
-                App.Data.q_view = [];
-            }
-            App.Data.q_view.push(view);
 
             this.subViews.push(view);
 
@@ -224,7 +220,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             'click .action_button:not(.disabled)': 'action',
         },
         update_child_selected: function() {
-            trace("update_child_selected ++>");
             if (this.model.get('product').check_selected()) {
                 this.$('.action_button').removeClass('disabled');
             }
@@ -234,19 +229,22 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         },
         action: function (event) {
             var check = this.model.check_order(),
-                self = this;
+                self = this, index, collection;
 
             if (check.status === 'OK') {
                 if (self.options.action === 'add') {
                     App.Data.myorder.add(self.model);
                 } else {
-                    var index = App.Data.myorder.indexOf(self.model) - 1;
-                    App.Data.myorder.remove(self.options.real);
-                    App.Data.myorder.add(self.model, {at: index});
-                    App.Data.myorder.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
+                    collection = self.options.real.collection;
+                    index = collection.indexOf(self.options.real);
+                    collection.remove(self.options.real);
+                    collection.add(self.model, {at: index});
+                    trace ("action: real product index = ", index);
+                    if (collection.splitItemAfterQuantityUpdate)
+                        collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
                 }
-
                 $('#popup .cancel').trigger('click');
+                self.options.action_callback && self.options.action_callback(self.model);
             } else {
                 App.Data.errors.alert(check.errorMsg); // user notification
             }

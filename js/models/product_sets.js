@@ -55,14 +55,14 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             is_combo_saving : false,
             combo_parent_id : null, //id of the root combo product
             order_products : null,
-            minimum_quantity : 1,
-            maximum_quantity : 1
+            minimum_amount : 1,
+            maximum_amount : 1
         },
         addJSON: function(data) {
             var self = this, product;
 
-            data.minimum_quantity = data.quantity ? data.quantity : 2,
-            data.maximum_quantity = data.quantity ? data.quantity : 2
+            data.minimum_amount = data.quantity ? data.quantity : 2,
+            data.maximum_amount = data.quantity ? data.quantity : 2
             this.set(data);
 
             var order_products = new Backbone.Collection();

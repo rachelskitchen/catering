@@ -43,7 +43,9 @@ define(['products_view'], function(products_view) {
                     className: isStanfordItem ? 'stanford-reload-item' : '',
                     model: myorder.clone(),
                     action: 'add',
-                    cache_id: cache_id //TBD: should be cached only for product under editing phase
+                    init_cache_session: is_combo ? true : false,
+                    cache_id: is_combo ? cache_id : undefined //cache is enabled for combo products during the phase of product customization only
+                                                              //the view will be removed from cache after the product is added/updated into the cart.
                 });
             });
         },

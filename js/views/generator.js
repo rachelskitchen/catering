@@ -56,6 +56,16 @@ define(['backbone'], function(Backbone) {
             }
             cache = {};
             App.Data.view_cache = cache; //for debug
+        },
+        /*
+        *
+        */
+        cacheRemoveView: function(ViewClass, mod, id) {
+            id = ViewClass + mod + 'View' + id;
+            if (cache[id]) {
+                cache[id].remove();
+                delete cache[id];
+            }
         }
     };
 

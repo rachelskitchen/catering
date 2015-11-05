@@ -47,7 +47,8 @@ define(["myorder_view"], function(myorder_view) {
                 model: this.model,
                 mod: 'MatrixFooter',
                 action: this.options.action,
-                real: this.options.real
+                real: this.options.real,
+                action_callback: this.options.action_callback
             });
             this.subViews.push(view);
         },
@@ -113,6 +114,9 @@ define(["myorder_view"], function(myorder_view) {
             this.dh_initialize();
             return this;
         },
+        events: {
+            'click #popup .cancel': 'cache_remove',
+        },
         renderProductFooter: function() {
             var model = this.model,
                 product = this.model.get("product");
@@ -122,39 +126,62 @@ define(["myorder_view"], function(myorder_view) {
                 model: this.model,
                 mod: 'MatrixFooter',
                 action: this.options.action,
-                real: this.options.real
+                real: this.options.real,
+                action_callback: this.options.action_callback
             });
             this.subViews.push(view);
         }
     }));
 
-    //TBD: review this: -----------------------------------------------
-    Backbone.inherit = function(_base_class, new_proto) {
-        var new_class =  _base_class.extend(new_proto);
-        new_class.prototype.events =  _.extend({}, _base_class.prototype.events, new_proto.events);
-        new_class.prototype.bindings =  _.extend({}, _base_class.prototype.bindings, new_proto.bindings);
+  //TBD: review this: -----------------------------------------------
+    Backbone.inherit = function(base_class, new_proto) {
+        var new_class =  base_class.extend(new_proto);
+        new_class.prototype.events =  _.extend({}, base_class.prototype.events, new_proto.events);
+        new_class.prototype.bindings =  _.extend({}, base_class.prototype.bindings, new_proto.bindings);
+        new_class.prototype.computeds =  _.extend({}, base_class.prototype.computeds, new_proto.computeds);
         return new_class;
     }
-
+   // use case #1: ---
     var Test_BaseView = (function(_base){ return Backbone.inherit(_base, {
             render: function() {
-                _base.render.apply(this, arguments);
+                trace("Test_BaseView render >");
+                _base.prototype.render.apply(this, arguments);
             },
             events: {
-                "change .test_1":  "render"
+                "change .test_1":  "some_1"
             }
         });
-    })(App.Views.FactoryView);
+    })(Backbone.View);
 
-    var Test_View2 = (function(_base){ return Backbone.inherit(_base, {
+    // use case #2: ---
+    var Test_View2 = _Test_View2( Test_BaseView );
+    function _Test_View2(_base){ return Backbone.inherit(_base, {
             render: function() {
-                _base.render.apply(this, arguments);
+                trace("Test_View2 render >");
+                _base.prototype.render.apply(this, arguments);
             },
             events: {
-                "change .test_2":  "render"
+                "change .test_2":  "some_2"
             }
         });
-    })(Test_BaseView); // -----------------------------------------------------
+    };
+
+    var Test_View3 = _Test_View3( Test_View2 );
+    function _Test_View3(_base){ return Backbone.inherit(_base, {
+            render: function() {
+                trace("Test_View3 render >");
+                _base.prototype.render.apply(this, arguments);
+            },
+            events: {
+                "change .test_3":  "some_3"
+            }
+        });
+    };
+
+    //var t = new Test_View3;
+    // t.render()
+    // t.events
+    // -----------------------------------------------------
 
     var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
         editItem: function(e) {

@@ -94,7 +94,12 @@ define(["done_view", "generator"], function(done_view) {
             var popup = this.$('.popup'),
                 data, cache_id;
 
-            this.subViews[2] && this.subViews[2].removeFromDOMTree();//this.subViews[2].removeFromDOMTree();
+            if (this.subViews[2]) {
+                if (this.subViews[2]['cache_id'])
+                    this.subViews[2].removeFromDOMTree();
+                else
+                    this.subViews[2].remove();
+            }
 
             if (typeof value == 'undefined')
                 return popup.removeClass('ui-visible');
@@ -107,12 +112,20 @@ define(["done_view", "generator"], function(done_view) {
             }
 
             cache_id = data.cache_id ? 'popup_' + data.modelName + '_' + data.mod + '_' + data.cache_id : undefined;
+
+            var is_init_cache_session = data['init_cache_session'];
+            if (is_init_cache_session && cache_id) {
+                App.Views.GeneratorView.cacheRemoveView(data.modelName, data.mod, cache_id);
+            }
+
             this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data, cache_id);
+            this.subViews[2].cache_id = cache_id;
             this.$('#popup').append(this.subViews[2].el);
 
             popup.addClass('ui-visible');
         },
         hide_popup: function() {
+            trace("MainView hide_popup! ==> ");
             this.model.unset('popup');
         },
         header_defaults: function() {

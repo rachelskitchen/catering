@@ -6,7 +6,7 @@
     "color_schemes": ["default", "blue_&_white", "vintage", "stanford"],
     "routing": {
         "main": {
-            "css": ["main", "myorder", "jquery.contentarrow", "products", "modifiers", "instructions", "quantity", "jquery.combobox"],
+            "css": ["main", "myorder", "jquery.contentarrow", "products", "modifiers", "instructions", "quantity", "jquery.combobox", "product_sets"],
             "model": ["main", "header"],
             "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "product_sets", "instructions", "quantity", "stanfordcard"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "instructions", "quantity"],
