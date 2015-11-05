@@ -280,7 +280,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             var product = this.get_product(),
                 modifiers = this.get_modifiers(),
                 size = modifiers.getSizeModel(),
-                dining_option = this.collection ? this.collection.checkout.get('dining_option') : '',
+                dining_option = App.Data.myorder.checkout.get('dining_option'),
                 isDelivery = dining_option == 'DINING_OPTION_DELIVERY',
 
                 forced = modifiers.checkForced(),
@@ -448,6 +448,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         },
         isRealProduct: function() {
             return this.get("id_product") !== null;
+        },
+        isComboProduct: function() {
+            return this.get("product").get("is_combo") === true;
         },
         /**
          * @method

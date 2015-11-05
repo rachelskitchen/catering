@@ -34,13 +34,21 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         name: 'combo',
         mod: 'item',
         events: {
+            'click .customize': 'customize',
             'change input': 'change'
         },
         bindings: {
-            '.mdf_quantity select': 'value: decimal(_product_quantity)'
+            '.mdf_quantity select': 'value: decimal(_product_quantity)',
+            '.customize ': "classes:{hide:not(is_modifiers)}"
+        },
+        computeds: {
+            is_modifiers: function() {
+                return this.orderProduct.get_modifiers().length > 0;
+            }
         },
         initialize: function() {
-            this.extendBindingSources({_product: this.options.parent });
+            this.orderProduct = this.options.parent;
+            this.extendBindingSources({_product: this.orderProduct });
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:selected', this.update, this);
         },
@@ -75,7 +83,35 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
 
             return this;
         },
+        customize: function(event) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+
+            var self = this,
+                isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift');
+
+            //find real product from the productSet:
+            var real_product = this.options.productSet.get('order_products').findWhere({id_product: this.options.parent.get('id_product')});
+
+            App.Data.mainModel.set('popup', {
+                modelName: 'MyOrder',
+                mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
+                className: isStanfordItem ? 'stanford-reload-item' : '',
+                model: real_product.clone(),
+                real: real_product,
+                action: 'update',
+                action_callback: function(model) {
+                    //return back to the combo root product view:
+                    App.Data.mainModel.set('popup', {
+                            modelName: 'MyOrder',
+                            mod: 'MatrixCombo',
+                            cache_id: self.options.myorder_root.get('id_product')
+                        });
+                }
+            });
+        },
         change: function(e, stat) {
+            trace("event change !")
             if(!App.Settings.online_orders) {
                 return;
             }
@@ -91,7 +127,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                     this.model.set('selected', checked);
                 }
             } else {
-                if(checked && exactAmount > 0 && productSet.get('order_products').get_selected_qty() >= exactAmount) {
+                if(checked && exactAmount > 0 && productSet.get_selected_qty() >= exactAmount) {
                     return el.prop('checked', false);
                 }
                 this.model.set('selected', checked);
@@ -103,6 +139,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             }
         },
         update: function() {
+            var quantity;
             if(this.model.get('selected')) {
                 this.$('input').attr('checked', 'checked');
                 this.$('.input').addClass('checked');
@@ -111,8 +148,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                     this.$(".mdf_quantity").css("display", "inline-block");
 
                     this.$('.mdf_quantity option:selected').removeAttr('selected');
-                    if (this.model.get('quantity') > 0) {
-                        this.$(".mdf_quantity select").val(this.model.get('quantity'));
+                    quantity = this.options.parent.get('quantity');
+                    if (quantity > 0) {
+                        this.$(".mdf_quantity select").val(quantity);
                     }
                 }
                 this.$(".split-qty-wrapper").addClass('single')
@@ -141,9 +179,10 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 el: $('<li class="modifier"></li>'),
                 mod: 'Item',
                 model: model.get('product'),
-                parent: model,
+                parent: model, // TBD: exclude it, posible future errors !!!
                 type: this.options.type,
-                productSet: this.options.productSet
+                productSet: this.options.productSet,
+                myorder_root: this.options.myorder_root //root combo instance of App.Models.Myorder model
             });
             App.Views.ListView.prototype.addItem.call(this, view, this.$('.modifiers'), model.get('sort'), 'li');
             this.subViews.push(view);
@@ -158,9 +197,6 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change', this.controlCheckboxes, this);
-        },
-        remove: function() {
-            App.Views.ItemView.prototype.remove.apply(this, arguments);
         },
         render: function() {
             var model = this.model.toJSON(),
@@ -185,7 +221,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 mod: 'List',
                 collection: this.model.get('order_products'),
                 type: 0,
-                productSet: this.model
+                productSet: this.model,
+                myorder_root: this.options.myorder_root //root combo product instance of App.Models.Myorder model
             });
 
             this.afterRender(this.model.escape('sort'));
@@ -200,7 +237,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             var checked = this.subViews[0].$el.find('input:checked').parent(),
                 unchecked = this.subViews[0].$el.find('input:not(:checked)').parent(),
                 maximumAmount = this.model.get('maximum_amount');
-            if(!this.type && maximumAmount > 0 && this.model.get('modifiers').get_selected_qty() >= maximumAmount) {
+            if(!this.type && maximumAmount > 0 && this.model.get_selected_qty() >= maximumAmount) {
                 checked.fadeTo(100, 1);
                 checked.removeClass('fade-out');
                 unchecked.fadeTo(100, 0.5);
@@ -231,7 +268,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             var view = App.Views.GeneratorView.create('ProductSets', {
                 el: $('<div class="modifier_class_wrapper"></div>'),
                 mod: 'Item',
-                model: model
+                model: model,
+                myorder_root: this.model //root combo instance of App.Models.Myorder model
             });
             App.Views.ListView.prototype.addItem.call(this, view, this.$('.modifier_classes'), model.escape('sort'));
             this.subViews.push(view);
