@@ -73,6 +73,11 @@ define(["myorder_view"], function(myorder_view) {
         },
         events: {
             'click .action_button:not(.disabled)': 'action',
+            'keydown .action_button:not(.disabled)': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.action();
+                }
+            },
             'change_height .product_instructions': 'change_height' // if special request button pressed
         },
         attributes_update: function() {

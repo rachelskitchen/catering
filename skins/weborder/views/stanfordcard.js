@@ -32,7 +32,17 @@ define(["factory", "stanfordcard_view"], function(factory, stanfordcard_view) {
         }),
         events: _.extend({}, CoreStanfordCardMainView.prototype.events, {
             'click .btn-cancel': 'cancel',
-            'click .btn-submit': 'submit'
+            'keydown .btn-cancel': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.cancel();
+                }
+            },
+            'click .btn-submit': 'submit',
+            'keydown .btn-submit': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.submit();
+                }
+            }
         }),
         initialize: function() {
             this.listenTo(this.model, 'onStanfordCardError', this.showErrorMsg, this);

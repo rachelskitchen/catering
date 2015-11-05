@@ -57,7 +57,12 @@ define(["myorder_view"], function(myorder_view) {
             return this;
         },
         events: {
-            'click .action_button:not(.disabled)': 'action'
+            'click .action_button:not(.disabled)': 'action',
+            'keydown .action_button:not(.disabled)': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.action();
+                }
+            }
         },
         attributes_update: function() {
             if (this.model.get('product').check_selected()) {
