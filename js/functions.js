@@ -411,7 +411,11 @@ function loadTemplate2(name, file, isCore, loadModelTemplate) {
                 resolve(); // resolve current CSS file
             },
             error: function(xhr) {
-                App.Data.errors.alert(ERROR[RESOURCES.TEMPLATES], true); // user notification
+                var errorMsg = ERROR[RESOURCES.TEMPLATES];
+                if (App.Data.myorder.disconnected) {
+                    errorMsg = App.Data.myorder.paymentResponse.errorMsg;
+                }
+                App.Data.errors.alert(errorMsg, true); // user notification
             }
         });
     } else if(loadTemplate2[id] instanceof $) {
@@ -487,7 +491,11 @@ function loadCSS(name, loadModelCSS) {
          * User notification.
          */
         var error = function() {
-            App.Data.errors.alert(ERROR[RESOURCES.CSS], true, true); // user notification
+            var errorMsg = ERROR[RESOURCES.CSS];
+            if (App.Data.myorder.disconnected) {
+                errorMsg = App.Data.myorder.paymentResponse.errorMsg;
+            }
+            App.Data.errors.alert(errorMsg, true, true); // user notification
         };
         var timer = window.setTimeout(error, App.Data.settings.get('timeout'));
 
