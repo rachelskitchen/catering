@@ -34,7 +34,17 @@
         },
         events: {
             'click .submit-card': 'submit',
-            'click .update-captcha': 'updateCaptcha'
+            'keydown .submit-card': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.submit();
+                }
+            },
+            'click .update-captcha': 'updateCaptcha',
+            'keydown .update-captcha': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.updateCaptcha();
+                }
+            }
         },
         initialize: function() {
             this.listenTo(this.model, 'onResetData', this.updateCaptcha);

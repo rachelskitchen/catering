@@ -15,16 +15,16 @@
         <input type="search" placeholder="<%= _lp.HEADER_SEARCH %>" name="search" autocomplete="off">
     </form>
     <ul class="menu">
-        <li class="shop <% if (menu_index === 0) { %> active <% } %>" title="<%= _lp.HEADER_SHOP %>">
+        <li class="shop <% if (menu_index === 0) { %> active <% } %>" title="<%= _lp.HEADER_SHOP %>" tabindex="0">
             <span class="clip"> <%= _lp.HEADER_SHOP %> </span>
         </li>
-        <li class="about <% if (menu_index === 1) { %> active <% } %>" title="<%= _lp.HEADER_ABOUT %>">
+        <li class="about <% if (menu_index === 1) { %> active <% } %>" title="<%= _lp.HEADER_ABOUT %>" tabindex="0">
             <span class="clip"> <%= _lp.HEADER_ABOUT %> </span>
         </li>
-        <li class="locations <% if (menu_index === 2) { %> active <% } %>" title="<%= _lp.HEADER_LOCATIONS %>">
+        <li class="locations <% if (menu_index === 2) { %> active <% } %>" title="<%= _lp.HEADER_LOCATIONS %>" tabindex="0">
             <span class="clip"> <%= _lp.HEADER_LOCATIONS %> </span>
         </li>
-        <li class="cart <% if(!_settings.online_orders) {print('cursor-default');} %>"></li>
+        <li class="cart <% if(!_settings.online_orders) {print('cursor-default');} %>" tabindex="0"></li>
     </ul>
 </script>
 
@@ -38,13 +38,13 @@
         <img src="<%= logo %>" alt="<%= business_name %> logo" class="logo" data-default-index="1">
     </div>
     <ul class="menu">
-        <li class="shop <% if (menu_index === 0) { %> active <% } %>" title="<%= _lp.HEADER_SHOP %>">
+        <li class="shop <% if (menu_index === 0) { %> active <% } %>" title="<%= _lp.HEADER_SHOP %>" tabindex="0">
             <span class="clip"> <%= _lp.HEADER_SHOP %> </span>
         </li>
-        <li class="about <% if (menu_index === 1) { %> active <% } %>" title="<%= _lp.HEADER_ABOUT %>">
+        <li class="about <% if (menu_index === 1) { %> active <% } %>" title="<%= _lp.HEADER_ABOUT %>" tabindex="0">
             <span class="clip"> <%= _lp.HEADER_ABOUT %> </span>
         </li>
-        <li class="locations <% if (menu_index === 2) { %> active <% } %>" title="<%= _lp.HEADER_LOCATIONS %>">
+        <li class="locations <% if (menu_index === 2) { %> active <% } %>" title="<%= _lp.HEADER_LOCATIONS %>" tabindex="0">
             <span class="clip"> <%= _lp.HEADER_LOCATIONS %> </span>
         </li>
         <li class="cart"></li>

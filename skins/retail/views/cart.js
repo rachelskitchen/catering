@@ -94,7 +94,17 @@ define(["products_view"], function(Backbone) {
         },
         events: {
             'click .checkout': 'checkout_event',
+            'keydown .checkout': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.checkout_event();
+                }
+            },
             'click .cancel': 'cancel',
+            'keydown .cancel': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.cancel();
+                }
+            }
         },
         checkout_event: function() {
             var self = this;

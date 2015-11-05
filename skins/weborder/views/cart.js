@@ -87,7 +87,12 @@ define(["products_view"], function() {
             }));
         },
         events: {
-            'click .btn': 'checkout_event'
+            'click .btn': 'checkout_event',
+            'keydown .btn': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.checkout_event();
+                }
+            },
         },
         checkout_event: function() {
             var self = this;

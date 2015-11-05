@@ -94,7 +94,12 @@ define(["backbone", "factory"], function(Backbone) {
             return this;
         },
         events: {
-            "click .btnReturn": 'return_menu'
+            "click .btnReturn": 'return_menu',
+            'keydown .btnReturn': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.return_menu();
+                }
+            }
         },
         return_menu: function() {
             if (this.model.success) {

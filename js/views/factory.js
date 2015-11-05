@@ -213,6 +213,12 @@ define(['backbone', 'backbone_epoxy', 'backbone_epoxy_handlers', 'backbone_epoxy
          */
         extendBindingSources: function(data) {
             _.extend(this.bindingSources, data);
+        },
+        pressedButtonIsEnter: function(event) {
+            if (event.which === 13) {
+                return true;
+            }
+            return false;
         }
     });
 
