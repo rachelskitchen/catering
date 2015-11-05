@@ -603,6 +603,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     return model.get("id_product") != null ? qty + model.get('quantity') : qty;
                 }, 0);
         },
+        get_service_fee_charge: function() {
+            return _.reduce(this.models, function(sum, model) {
+                    return model.get("id_product") == null ? sum + model.get('sum') : sum;
+                }, 0);
+        },
         /**
          *  create orders from JSON.
          */
