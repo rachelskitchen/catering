@@ -118,15 +118,18 @@ define(['backbone', 'factory'], function(Backbone) {
                 alert.find('.alert_block').addClass('alert-background');
 
                 if (options.isConfirm) {
-                    $('.btnOk', alert).on('click', function() {
+                    $('.btnOk', alert).on('click keydown', function(e) {
+                        if (e.type === 'keydown' && !this.pressedButtonIsEnter(e)) return;
                         options.callback && options.callback(true);
                     });
-                    $('.btnCancel', alert).on('click', function() {
+                    $('.btnCancel', alert).on('click keydown', function(e) {
+                        if (e.type === 'keydown' && !this.pressedButtonIsEnter(e)) return;
                         options.callback && options.callback(false);
                     });
                 }
 
-                $('.btnOk, .btnCancel', alert).on('click', function() {
+                $('.btnOk, .btnCancel', alert).on('click keydown', function(e) {
+                    if (e.type === 'keydown' && !this.pressedButtonIsEnter(e)) return;
                     this.hideAlertMessage(2); // hide user notification
                     options.reloadPage && window.location.reload();
                 }.bind(this));

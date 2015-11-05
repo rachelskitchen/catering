@@ -536,14 +536,44 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         },
         events: {
             'click .pay': 'pay_event',
+            'keydown .pay': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.pay_event();
+                }
+            },
             'click .credit-card': 'credit_card',
+            'keydown .credit-card': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.credit_card();
+                }
+            },
             'click .gift-card': 'gift_card',
+            'keydown .gift-card': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.gift_card();
+                }
+            },
             'click .stanford-card': 'stanford_card',
+            'keydown .stanford-card': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.stanford_card();
+                }
+            },
             'click .paypal': function() {
                 this.pay(PAYMENT_TYPE.PAYPAL);
             },
+            'keydown .paypal': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.pay(PAYMENT_TYPE.PAYPAL);
+                }
+            },
             'click .cash': function(){
                 this.pay(PAYMENT_TYPE.NO_PAYMENT);
+            },
+            'keydown .cash': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.pay(PAYMENT_TYPE.NO_PAYMENT);
+                }
             }
         },
         gift_card: function() {

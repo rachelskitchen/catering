@@ -79,7 +79,12 @@ define(["backbone", "factory"], function() {
             loadSpinner(this.$('img.logo'));
         },
         events: {
-            'click .btn': 'onBack'
+            'click .btn': 'onBack',
+            'keydown .btn': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.onBack();
+                }
+            }
         },
         onBack: function() {
             this.model.trigger('onBack');
