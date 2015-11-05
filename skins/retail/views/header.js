@@ -52,9 +52,29 @@ define(["backbone", "factory"], function(Backbone) {
         },
         events: {
             'click .shop': 'onMenu',
+            'keydown .shop': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.onMenu();
+                }
+            },
             'click .about': 'onAbout',
+            'keydown .about': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.onAbout();
+                }
+            },
             'click .locations': 'onLocations',
+            'keydown .locations': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.onLocations();
+                }
+            },
             'click .cart': 'onCart',
+            'keydown .cart': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.onCart();
+                }
+            },
             'submit .search': 'onSearch'
         },
         menu: function(model, value) {

@@ -489,10 +489,16 @@ aside:after, aside:before {
 .input_beauty input:focus,
 .input_beauty textarea:focus,
 .input_beauty input:hover,
-.input_beauty textarea:hover {
-    -webkit-box-shadow: 0px 0px 3px 4px rgba(129,195,222,0.3);
-    -moz-box-shadow: 0px 0px 3px 3px rgba(129,195,222,0.5);
-    box-shadow: 0px 0px 3px 3px rgba(129,195,222,0.5);
+.input_beauty textarea:hover,
+button:focus,
+input[type="button"]:focus,
+.btn:focus,
+.action_button:focus,
+.cart-bottom .checkout:focus,
+.menu li:focus {
+    -webkit-box-shadow: 0px 0px 3px 4px rgba(129,195,222,0.3) !important;
+    -moz-box-shadow: 0px 0px 3px 3px rgba(129,195,222,0.5) !important;
+    box-shadow: 0px 0px 3px 3px rgba(129,195,222,0.5) !important;
 }
 
 /* end input beauty */

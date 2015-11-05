@@ -272,7 +272,12 @@ define(["done_view", "generator"], function(done_view) {
             if (!App.Data.router.isNotFirstLaunch) this.$('.back').hide();
         },
         events: {
-            "click .btn": 'reload',
+            'click .reload': 'reload',
+            'keydown .reload': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.reload();
+                }
+            },
             'click .go-to-directory': 'goToDirectory',
             'click .back': 'back',
             'click .change_establishment': 'change_establishment'

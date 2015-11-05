@@ -40,7 +40,12 @@ define(["backbone", "factory"], function(Backbone) {
             '#id_captcha_value': 'value: captchaValue, events: ["input"]'
         },
         events: {
-            'click .btn-reload': 'updateCaptcha'
+            'click .btn-reload': 'updateCaptcha',
+            'keydown .btn-reload': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.updateCaptcha();
+                }
+            }
         },
         computeds: {
             url: {

@@ -187,37 +187,37 @@
 <script type="text/template" id="checkout_pay_button-template">
     <% if (payment_count === 1 && flag) {%>
         <% if(paypal) { %>
-            <div class="btn paypal"> <%= _lp.CHECKOUT_PAYPAL %> </div>
+            <div class="btn paypal" tabindex="0"> <%= _lp.CHECKOUT_PAYPAL %> </div>
         <% } %>
         <% if(credit_card_button) { %>
-            <div class="btn credit-card"> <span> <%= _lp.CHECKOUT_PAY_CREDIT_CARD %> </span> </div>
+            <div class="btn credit-card" tabindex="0"> <span> <%= _lp.CHECKOUT_PAY_CREDIT_CARD %> </span> </div>
         <% } %>
         <% if(cash) { %>
-            <div class="btn cash"> <span> </span> </div>
+            <div class="btn cash" tabindex="0"> <span> </span> </div>
         <% } %>
         <% if(gift_card) { %>
-            <div class="btn gift-card"> <span> <%= _lp.CHECKOUT_PAY_GIFT_CARD %> </span> </div>
+            <div class="btn gift-card" tabindex="0"> <span> <%= _lp.CHECKOUT_PAY_GIFT_CARD %> </span> </div>
         <% } %>
         <% if(stanford) { %>
-            <div class="btn stanford-card"> <span> <%= _lp.CHECKOUT_PAY_STANFORD_CARD %> </span> </div>
+            <div class="btn stanford-card" tabindex="0"> <span> <%= _lp.CHECKOUT_PAY_STANFORD_CARD %> </span> </div>
         <% } %>
     <% } else if (flag) { %>
-        <div class="btn pay place-order unselectable"> <span> <%= _lp.CHECKOUT_PAY %> </span> </div>
+        <div class="btn pay place-order unselectable" tabindex="0"> <span> <%= _lp.CHECKOUT_PAY %> </span> </div>
     <% } else { %>
         <% if(paypal) { %>
-        <div class='btn paypal'></div>
+        <div class='btn paypal' tabindex="0"></div>
         <% } %>
         <% if(credit_card_button) { %>
-            <div class="btn credit-card"> <span> <%= _lp.CHECKOUT_CREDIT_CARD %> </span> </div>
+            <div class="btn credit-card" tabindex="0"> <span> <%= _lp.CHECKOUT_CREDIT_CARD %> </span> </div>
         <% } %>
         <% if(gift_card) { %>
-            <div class="btn gift-card"> <span> <%= _lp.CHECKOUT_GIFT_CARD %> </span> </div>
+            <div class="btn gift-card" tabindex="0"> <span> <%= _lp.CHECKOUT_GIFT_CARD %> </span> </div>
         <% } %>
         <% if(cash) { %>
-            <div class="btn cash"> <span> </span> </div>
+            <div class="btn cash" tabindex="0"> <span> </span> </div>
         <% } %>
         <% if(stanford) { %>
-            <div class="btn stanford-card"> <span> <%= _lp.CHECKOUT_STANFORD_CARD %> </span> </div>
+            <div class="btn stanford-card" tabindex="0"> <span> <%= _lp.CHECKOUT_STANFORD_CARD %> </span> </div>
         <% } %>
     <% } %>
 </script>
