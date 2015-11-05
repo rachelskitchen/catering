@@ -420,6 +420,7 @@ define([], function() {
             ],
             "ERROR_GEOLOCATION_NOAPI": "Teie brauser ei toeta geoasukoha API-t.",
             "ERROR_SUBMIT_ORDER": "Tellimuse esitamine nurjus. Proovige uuesti.",
+            'ERROR_ASAP_TIME_SLOT_BUSY': 'Selected time is not available. Next available time from dropdown list is %s.',
             "ERROR_ORDERS_PICKUPTIME_LIMIT": "Maksimaalne arv tellimusi selle kättesaamisaja kohta on täis. Valige mõni muu kättesaamisaeg.",
             "ERROR_INSUFFICIENT_STOCK": "Mõnd toodet pole piisavalt laos.",
             "ERROR_OCCURRED": "Ilmnes tõrge:",
