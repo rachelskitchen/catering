@@ -110,7 +110,8 @@ function msgFrm(msg_format) {
  */
 function parse_get_params() {
     // need to include app.instances config as origin parameters
-    if (!parse_get_params.instance_config_applied) {
+    // if no one GET-parameter exists in url (Bug 32709)
+    if (!window.location.search && !parse_get_params.instance_config_applied) {
         try {
             var app = require('app');
             if(app.REVEL_HOST in app.instances) {
