@@ -1395,6 +1395,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     if ('onLine' in window.navigator && !window.navigator.onLine && capturePhase) {
                         // network connection is lost after return from payment processor
                         errorMsg = MSG.ERROR_SUBMIT_ORDER_DISCONNECT;
+                        myorder.disconnected = true;
                     }
                     else {
                         errorMsg = MSG.ERROR_SUBMIT_ORDER;
