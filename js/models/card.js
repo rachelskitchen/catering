@@ -29,8 +29,8 @@ define(["backbone"], function(Backbone) {
             secondName: '',
             cardNumber: '',
             securityCode: '',
-            expMonth: 0,
-            expDate: 0,
+            expMonth: '01',
+            expDate: new Date().getFullYear().toString(),
             expTotal: "",
             street: '',
             city: '',
@@ -66,7 +66,7 @@ define(["backbone"], function(Backbone) {
          * Removing card information.
          */
         empty_card_number: function() {
-            this.set({cardNumber: '', expMonth: 0, expDate: 0, securityCode: ''});
+            this.set({cardNumber: '', expMonth: this.defaults.expMonth, expDate: this.defaults.expDate, securityCode: ''});
         },
         /**
         * Load state model from storage (detected automatic).
