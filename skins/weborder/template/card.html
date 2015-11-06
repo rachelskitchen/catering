@@ -5,7 +5,7 @@
             <span class="bold"><%= _lp.CARD_FIRST_NAME %>:</span>
         </label>
         <div class="input_beauty">
-            <input type="text" id="firstName" class="first_name" maxlength="20">
+            <input type="text" id="firstName" class="first_name" maxlength="20" name="firstName">
         </div>
     </div>
     <div>
@@ -13,25 +13,25 @@
             <span class="bold"><%= _lp.CARD_LAST_NAME %>:</span>
         </label>
         <div class="input_beauty">
-            <input type="text" id="lastName" class="last_name" maxlength="20">
+            <input type="text" id="lastName" class="last_name" maxlength="20" name="lastName">
         </div>
     </div>
     <div>
         <label for="cardNumber"> <span class="bold required"><%= _lp.CARD_NUMBER %>:</span> </label>
         <div class="input_beauty">
-            <input type="text" id="cardNumber" class="number" min="0">
+            <input type="tel" id="cardNumber" class="number" name="cardName">
         </div>
     </div>
     <div>
         <label for="securityCode"> <span class="bold required"><%= _lp.CARD_SECURITY_CODE %>:</span> </label>
         <div class="input_beauty">
-            <input type="text" id="securityCode" class="secure" min="0">
+            <input type="tel" id="securityCode" class="secure" name="secureCode">
         </div>
     </div>
     <div>
-        <label for="exp-month"> <span class="pickup bold required"><%= _lp.CARD_EXP_DATE %>:</span> </label>
+        <label for="ccMonth"> <span class="pickup bold required"><%= _lp.CARD_EXP_DATE %>:</span> </label>
         <div class="select month select-wrapper" style="display: inline-block;">
-            <select class="month card-expiration-month" id="exp-month">
+            <select class="month card-expiration-month" id="ccMonth">
                 <option value="01">01</option>
                 <option value="02">02</option>
                 <option value="03">03</option>
@@ -47,7 +47,7 @@
             </select>
         </div>
         <div class="select year select-wrapper">
-            <select class="time card-expiration-year" id="exp-year"></select>
+            <select class="time card-expiration-year" id="ccYear"></select>
         </div>
     </div>
 </script>
