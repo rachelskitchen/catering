@@ -1,16 +1,16 @@
 <script type="text/template" id="card_main-template">
     <ul class="card font-size2 font-color8">
         <li>
-            <input type="text" placeholder="<%= _lp.CARD_FIRST_NAME %>" class="first_name ios-safari-caret border-color10" maxlength="20" name="firstName" id="ccName">
+            <input type="text" placeholder="<%= _lp.CARD_FIRST_NAME %>" class="first_name ios-safari-caret border-color10" maxlength="20" name="firstName">
         </li>
         <li>
-            <input type="text" placeholder="<%= _lp.CARD_LAST_NAME %>" class="last_name ios-safari-caret border-color10"  maxlength="20">
+            <input type="text" placeholder="<%= _lp.CARD_LAST_NAME %>" class="last_name ios-safari-caret border-color10"  maxlength="20" name="firstName">
         </li>
         <li class="required">
             <input type="tel" placeholder="<%= _lp.CARD_NUMBER %>" class="number ios-safari-caret border-color10" name="cardNumber">
         </li>
         <li class="required">
-            <input type="text" placeholder="<%= _lp.CARD_SECURITY_CODE %>" class="secure ios-safari-caret border-color10" min="0">
+            <input type="tel" placeholder="<%= _lp.CARD_SECURITY_CODE %>" class="secure ios-safari-caret border-color10" name="secureCode">
         </li>
         <li class="required exp">
             <span> <%= _lp.CARD_EXP_DATE %>: </span>
