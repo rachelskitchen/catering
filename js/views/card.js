@@ -39,7 +39,7 @@ define(["backbone", "factory"], function(Backbone) {
         bindings: {
             '.first_name': 'value: firstLetterToUpperCase(firstName), events: ["input"], trackCaretPosition: firstName',
             '.last_name': 'value: firstLetterToUpperCase(secondName), events: ["input"], trackCaretPosition: secondName',
-            '.number': 'value: cardNumber, events: ["input"], restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^[\\d|-]{0,19}$/',
+            '.number': 'value: cardNumber, events: ["input"], restrictInput: "0123456789", pattern: /^[\\d|-]{0,19}$/',
             '.secure': 'value: securityCode, events: ["input"], restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^[\\d|-]{0,4}$/',
             '.card-expiration-month': 'value: expMonth',
             '.card-expiration-year': 'value: expDate, options: years'
