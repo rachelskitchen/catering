@@ -30,11 +30,11 @@ define(["backbone", "factory"], function(Backbone) {
         mod: 'main',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'add_card', this.setData, this);
             this.updateCaptcha();
         },
         bindings: {
-            '.number-input': 'restrictInput: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/',
+            '.number-input': 'value: cardNumber, events:["input"], restrictInput: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/',
+            '.captcha-input': 'value: captchaValue, events:["input"]',
             'img.captcha': 'updateCaptcha: url',
             '#id_captcha_key': 'value: captchaKey',
             '#id_captcha_value': 'value: captchaValue, events: ["input"]'
@@ -104,13 +104,6 @@ define(["backbone", "factory"], function(Backbone) {
                 }
             }
             this.model.loadCaptcha();
-        },
-        setData: function() {
-            var data = {
-                    cardNumber: this.$('.number-input').val(),
-                    captchaValue: this.$('.captcha-input').val()
-                };
-            this.model.set(data);
         },
         createCaptchaSpinner: function() {
             this.$('.captcha').hide();

@@ -72,9 +72,8 @@
         },
         "giftcard": {
             "css": ["card"],
-            "views": ["giftcard"],
             "templates": ["giftcard"],
-            "core": ["giftcard", "jquery_numbermask"]
+            "core": ["giftcard", "jquery_numbermask", "giftcard_view"]
         },
         "pay": {
             "core": ["checkout", "products", "modifiers", "card", "giftcard", "tip", "customers"]
