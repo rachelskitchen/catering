@@ -65,6 +65,24 @@ define(["factory"], function() {
             this.subViews.push(tabs);
             this.$el.append(tabs.el);
 
+            var mobile = function() {
+                if (cssua.ua.ios) {
+                    return 'ios';
+                } else if (cssua.ua.android) {
+                    return 'android';
+                }
+            }();
+
+            mobile && $.smartbanner({
+                daysHidden : 0,
+                daysReminder : 0,
+                title : 'Revel Systems title',
+                author : 'Revel Systems author',
+                icon : 'https://lh3.googleusercontent.com/xYwbXAZ7QWB0YTdrDm9ZQmrwqJE3jmHROBTkQ_yb0yfglCUW1HHnUneC-1XVnwreweXi=w300',
+                force: mobile,
+                appendToSelector: '#header'
+            })
+
             return this;
         },
         search: function(e) {
