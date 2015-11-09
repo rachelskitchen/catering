@@ -30,6 +30,7 @@ define(["backbone", "factory"], function(Backbone) {
         mod: 'main',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'updateCaptcha', this.updateCaptcha, this);
             this.updateCaptcha();
         },
         bindings: {
