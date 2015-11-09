@@ -7,8 +7,7 @@
 <script type="text/template" id="myorder_item-template">
     <div>
         <span class="cost font-size1 fl-right font-color1">
-            <span class="currency_symbol"><%= currency_symbol %></span>
-            <span class="price"><%= initial_price %></span>
+            <span class="item-sum"></span>
         </span>
         <% if(!sold_by_weight && !is_service_fee) { %>
             <span class="qty bg-color3 font-color2 font-size2 fl-left"><%= quantity %>x</span>
@@ -54,8 +53,7 @@
     </span>
     <span class="cost fl-right">
         <span class="plus">+</span>
-        <span class="currency_symbol"><%= currency_symbol %></span>
-        <span class="price"><%= price %></span>
+        <span class="mdf-sum"></span>
     </span>
 </script>
 
