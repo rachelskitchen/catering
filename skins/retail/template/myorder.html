@@ -10,7 +10,7 @@
         <img src=<%= image %> alt="<%= name %> logo<%= id %>" class="logo" data-default-index="1">
     </div>
     <% } %>
-    <h3 class="s<%= price_length %> <% if(_settings.hide_images) {print('noimage');} %>">
+    <h3<% if(_settings.hide_images) {print(' class="noimage"');} %>>
         <% if(sold_by_weight) { %>
             <span class="name"><%= sizeModifier %> <%= name %></span>
         <% } else { %>
@@ -39,8 +39,7 @@
     </div>
     <% }); %>
     <div class="cost <% if(_settings.hide_images) {print('noimage');} %>">
-        <span class="currency_symbol"><%= currency_symbol %></span>
-        <span class="price"><%= price_sum %></span>
+        <span class="item-sum"><%= currency_symbol %><%= initial_price %></span>
     </div>
     <ul class="discount_place"></ul>
     <% if(id_product !== null) { %>

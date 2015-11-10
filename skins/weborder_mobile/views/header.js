@@ -73,15 +73,31 @@ define(["factory"], function() {
                 }
             }();
 
-            mobile && $.smartbanner({
-                daysHidden : 0,
-                daysReminder : 0,
-                title : 'Revel Systems title',
-                author : 'Revel Systems author',
-                icon : 'https://lh3.googleusercontent.com/xYwbXAZ7QWB0YTdrDm9ZQmrwqJE3jmHROBTkQ_yb0yfglCUW1HHnUneC-1XVnwreweXi=w300',
-                force: mobile,
-                appendToSelector: '#header'
-            })
+            if (mobile && App.Data.is_stanford_mode) {
+                var params = App.Data.get_parameters;
+                var store_app_id = (mobile == 'ios' ? params.apple_app_id : params.google_app_id);
+
+                if (store_app_id) {
+                    var meta = document.createElement('meta');
+                    meta.name = APP_STORE_NAME[mobile];
+                    meta.content = 'app-id=' + store_app_id;
+                    document.querySelector('head').appendChild(meta);
+
+                    $.smartbanner({
+                        daysHidden : 0,
+                        daysReminder : 0,
+                        title : 'Stanford R&DE FOOD ToGo',
+                        author : 'Revel Systems',
+                        icon : 'https://lh3.googleusercontent.com/kj4yHHb6ct6xWUsUPHE38Efh38_1MpIrF3IejoZiI9yLtB4VtrLJ3timHm6EWnfbJSih=w300',
+                        force: mobile,
+                        appendToSelector: '#header',
+                        scale: '1',
+                        onClose:  function() {
+                            $('#section').css('top', $('#section').offset().top - $('#smartbanner').height());
+                        }
+                    })
+                }
+            }
 
             return this;
         },
