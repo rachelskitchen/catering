@@ -44,8 +44,8 @@ require(['app'], function(app) {
         settings.set({
             'img_path' : 'test/path/',
             'settings_skin' : { img_default : 'test/img_default' },
-            'establishment' : 1,
-            'host': 'testHost'
+            'establishment' : 14,
+            'host': app.REVEL_HOST
         });
 
         // init Locale object

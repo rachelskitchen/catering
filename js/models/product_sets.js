@@ -30,7 +30,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
     //      Models.Myorder  * -- product { is_combo = true,
     //                      |             product_sets [* (Collections.ProductSets) }
     //                      *]                          |
-    //                                Models.ProductSet * -- order_products [* (Backbone.Collection)
+    //                                Models.ProductSet * -- order_products [* (Collections.ProductSetModels)
     //                                                  |                    |
     //                                                  *]                   * (Models.Myorder) - {  modifiers,
     //                                                                       |                       product, (Models.Product)
@@ -53,19 +53,18 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             name: null,
             id: null,
             is_combo_saving : false,
-            combo_parent_id : null, //id of the root combo product
+            //combo_parent_id : null, //id of the root combo product
             order_products : null,
             minimum_amount : 1,
             maximum_amount : 1
         },
         addJSON: function(data) {
-            var self = this, product;
+            var self = this, ext_data = {}, product;
+            
+            ext_data.minimum_amount = data.quantity ? data.quantity : 2;
+            ext_data.maximum_amount = data.quantity ? data.quantity : 2;            
 
-            data.minimum_amount = data.quantity ? data.quantity : 2,
-            data.maximum_amount = data.quantity ? data.quantity : 2
-            this.set(data);
-
-            var order_products = new Backbone.Collection();
+            var order_products = new App.Collections.ProductSetModels();
 
             data['products'].forEach(function(p_data) {
                 p_data.attribute_type = 0; // no inventory for combo products now
@@ -79,7 +78,11 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                 order_product.addJSON(json);
                 order_products.add(order_product);
             });
-            self.set('order_products', order_products);
+            ext_data['order_products'] = order_products;
+
+            var data = _.extend({}, data, ext_data);
+            delete data['products'];
+            this.set(data);    
         },
         /*
         *
@@ -92,6 +95,16 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                 qty += order_product.get("quantity");
             });
             return qty;
+        },
+        clone: function() {
+            return this.deepClone();
+        }
+    });
+
+    App.Collections.ProductSetModels = Backbone.Collection.extend({
+        model: App.Models.Myorder,
+        clone: function() {
+            return this.deepClone();
         }
     });
 
@@ -104,9 +117,9 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
          /**
          * Find combo products by product_id.
          */
-        find_combo_products: function(product_id) {
-            return this.find({'combo_parent_id': product_id});
-        },
+        //find_child_products: function(product_id) {
+        //     return this.find({'combo_parent_id': product_id});
+        //},
         /**
          * Get combo products from backend.
          */
@@ -122,13 +135,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                 },
                 dataType: "json",
                 successResp: function(data) {
-                    data.forEach(function(pset, index) {
-                        pset.combo_parent_id = product_id;
-                        var prod_set = new App.Models.ProductSet();
-                        prod_set.addJSON(pset);
-                        self.add(prod_set);
-                    });
-
+                    self.addJSON(data);
                     fetching.resolve();
                 },
                 error: function() {
@@ -136,6 +143,14 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                 }
             });
             return fetching;
+        },
+        addJSON: function(data) {
+            var self = this;
+            data.forEach(function(pset, index) {
+                    var prod_set = new App.Models.ProductSet();
+                    prod_set.addJSON(pset);
+                    self.add(prod_set);
+                });
         },
         /**
          * @method
@@ -147,13 +162,9 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
         /**
          * clone product sets
          */
-        /* clone: function() {
-            var newBlock = new App.Collections.ProductSets();
-            this.each(function(modifierBlock) {
-               newBlock.add(modifierBlock.clone()) ;
-            });
-            return newBlock;
-        }, */
+        clone: function() {
+            return this.deepClone();
+        }
     });
 
     App.Collections.ProductSets.init = function(product_id) {
