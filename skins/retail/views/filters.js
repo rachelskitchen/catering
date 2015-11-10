@@ -121,7 +121,8 @@ define(["factory"], function() {
         mod: 'attribute',
         initialize: function() {
             this.cache = {};
-            this.options.updateEvent = 'change:attribute1';
+            this.attributeName = 'attribute' + this.options.attr;
+            this.options.updateEvent = 'change:' + this.attributeName;
             App.Views.FilterView.FilterSortView.prototype.initialize.apply(this, arguments);
         },
         search: function(result) {
@@ -147,8 +148,8 @@ define(["factory"], function() {
                 this.options.categories.selected.forEach(function(category) {
                     var cachedCategory = category in this.cache ? this.cache[category] : [],
                         products;
-                    // If category was early handled need just add attributes to DOM from cache.
-                    // Otherwise need get available attributes for each product and add them to DOM.
+                    // If category was early handled need to just add attributes to DOM from cache.
+                    // Otherwise need to get available attributes for each product and add them to DOM.
                     if(cachedCategory.length) {
                         cachedCategory.forEach(this.addItem, this);
                         count += cachedCategory.length;
@@ -167,8 +168,8 @@ define(["factory"], function() {
             if(!products || !products.length)
                 return;
 
-            var attrs = id in this.cache ? this.cache[id] : products.getAttributeValues(1),
-                name = products.at(0).get('attribute_1_name');
+            var attrs = id in this.cache ? this.cache[id] : products.getAttributeValues(this.options.attr),
+                name = products.at(0).get('attribute_' + this.options.attr + '_name');
 
             if(!(id in this.cache))
                 this.cache[id] = attrs;
@@ -190,11 +191,11 @@ define(["factory"], function() {
          */
         reset: function() {
             if(!this.model.isRestoring) {
-                this.model.set('attribute1', 1, {replaceState: true});
+                this.model.set(this.attributeName, 1, {replaceState: true});
             }
         },
         change: function(event) {
-            this.model.set('attribute1', event.target.value);
+            this.model.set(this.attributeName, event.target.value);
         },
         control: function(count) {
             if(count == 0)
@@ -203,7 +204,7 @@ define(["factory"], function() {
                 this.enable();
         },
         update: function() {
-            this.$('option[value="' + this.model.get('attribute1') + '"]').prop('selected', true);
+            this.$('option[value="' + this.model.get(this.attributeName) + '"]').prop('selected', true);
         }
     });
 
