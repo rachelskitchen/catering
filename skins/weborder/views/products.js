@@ -33,7 +33,6 @@ define(['products_view'], function(products_view) {
 
             $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
             def.then(function() {
-                trace("add_combo_product 3");
                 var cache_id = is_combo ? myorder.get("id_product") : undefined;
 
                 $('#main-spinner').removeClass('ui-visible');

@@ -97,16 +97,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 this.$('.product_info').append(this.viewProduct.el);
             }
         },
-        renderProduct: function() {
-            var model = this.model;
-            this.viewProduct = App.Views.GeneratorView.create('Product', {
-                modelName: 'Product',
-                model: model,
-                mod: 'Modifiers'
-            });
-            this.$('.product_info').append(this.viewProduct.el);
-            this.subViews.push(this.viewProduct);
-        },
         renderModifiers: function() {
             var model = this.model,
                 viewModifiers;
@@ -131,6 +121,30 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     });
             }
             this.subViews.push(viewModifiers);
+        },
+        renderProduct: function() {
+            var model = this.model;
+            this.viewProduct = App.Views.GeneratorView.create('Product', {
+                modelName: 'Product',
+                model: model,
+                mod: 'Modifiers'
+            });
+            this.$('.product_info').append(this.viewProduct.el);
+            this.subViews.push(this.viewProduct);
+        },
+        renderProductFooter: function() {
+            var model = this.model,
+                product = this.model.get("product");
+
+            var view = App.Views.GeneratorView.create('MyOrder', {
+                el: this.$(".product_info_footer"),
+                model: this.model,
+                mod: 'MatrixFooter',
+                action: this.options.action,
+                real: this.options.real,
+                action_callback: this.options.action_callback
+            });
+            this.subViews.push(view);
         }
     });
 
@@ -143,16 +157,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             this.renderProduct();
             this.renderProductSets();
             return this;
-        },
-        renderProduct: function() {
-            var model = this.model;
-            this.viewProduct = App.Views.GeneratorView.create('Product', {
-                modelName: 'Product',
-                model: model,
-                mod: 'Modifiers'
-            });
-            this.$('.product_info').append(this.viewProduct.el);
-            this.subViews.push(this.viewProduct);
         },
         renderProductSets: function() {
             var model = this.model,
@@ -171,6 +175,30 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 });
 
             this.subViews.push(productSets);
+        },
+        renderProduct: function() {
+            var model = this.model;
+            this.viewProduct = App.Views.GeneratorView.create('Product', {
+                modelName: 'Product',
+                model: model,
+                mod: 'Modifiers'
+            });
+            this.$('.product_info').append(this.viewProduct.el);
+            this.subViews.push(this.viewProduct);
+        },
+        renderProductFooter: function() {
+            var model = this.model,
+                product = this.model.get("product");
+
+            var view = App.Views.GeneratorView.create('MyOrder', {
+                el: this.$(".product_info_footer"),
+                model: this.model,
+                mod: 'MatrixFooter',
+                action: this.options.action,
+                real: this.options.real,
+                action_callback: this.options.action_callback
+            });
+            this.subViews.push(view);
         }
     });
 
@@ -244,7 +272,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                         collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
                 }
                 $('#popup .cancel').trigger('click');
-                self.options.action_callback && self.options.action_callback(self.model);
             } else {
                 App.Data.errors.alert(check.errorMsg); // user notification
             }
@@ -260,7 +287,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             this.listenTo(this.model.get_product(), 'change', this.update);
         },
         render: function() {
-            var self = this,
+            var self = this, view,
                 modifiers = this.model.get_modifiers();
 
             this.$el.html(this.template(this.getData()));
@@ -282,7 +309,15 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 });
             });
 
-            var view = App.Views.GeneratorView.create('MyOrder', {
+            if (this.model.isComboProduct()) {
+                view = App.Views.GeneratorView.create('MyOrder', {
+                    el: this.$('.combo_products_place'),
+                    mod: 'List',
+                    collection: this.model.get('product').get('product_sets').get_selected_products()
+                });
+            }
+
+            view = App.Views.GeneratorView.create('MyOrder', {
                 el: $('<li></li>'),
                 mod: 'ProductDiscount',
                 model: this.model

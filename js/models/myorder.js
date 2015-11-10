@@ -37,7 +37,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             discount: null,
             stanfordCard: null,         // App.Models.StanfordCard instance if product is gift
             stanford_card_number: '',   // stanford card number
-            planId: null                // stanford plan to add some amount to
+            planId: null,                // stanford plan to add some amount to
+            is_child_product: false      //child product in a combo product set
         },
         product_listener: false, // check if listeners for product is present
         modifier_listener: false, // check if listeners for modifiers is preset
@@ -182,23 +183,25 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 product_load = App.Collections.Products.init(id_category),
                 modifier_load = $.Deferred(),
                 quick_modifier_load = App.Collections.ModifierBlocks.init_quick_modifiers();
-            
+
             quick_modifier_load.then(function() {
                 App.Collections.ModifierBlocks.init(id_product).then(modifier_load.resolve); // load product modifiers
             });
-
             return $.when(product_load, modifier_load).then(function() {
                 product = App.Data.products[id_category].get_product(id_product);
-                trace("add_combo_product 1");
                 return App.Collections.ProductSets.init(id_product);
             }).then(function() {
-                trace("add_combo_product 2, len = ", App.Data.productSets[id_product].length);
                 product.set("product_sets", App.Data.productSets[id_product]);
                 self.set({
                     product: product,
                     id_product: id_product,
                     modifiers: App.Data.modifiers[id_product]
                 });
+                self.set({
+                    sum: self.get_modelsum(), // sum with modifiers
+                    initial_price: self.get_initial_price()
+                });
+                self.update_prices();
             });
         },
         /**
@@ -399,6 +402,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     product_name_override: this.overrideProductName(product),
                     quantity: this.get('quantity'),
                     product_sub_id: for_discounts ? this.get('product_sub_id') : undefined,
+                    is_combo: product.is_combo ? product.is_combo : undefined
                 };
 
             if (product.sold_by_weight) {
@@ -427,6 +431,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if (planId && stanford_card_number) {
                 item_obj.planId = planId;
                 item_obj.stanford_card_number = stanford_card_number;
+            }
+
+            if (product.is_combo) {
+                var product_sets = [];
+                product.product_sets.each(function(product_set){
+                    var pset = product_set.item_submit();
+                    product_sets.push(pset);
+                });
+                item_obj['products_sets'] = product_sets;
             }
 
             return item_obj;
