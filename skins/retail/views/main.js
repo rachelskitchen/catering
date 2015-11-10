@@ -151,7 +151,7 @@ define(["done_view", "generator"], function(done_view) {
              };*/
         },
         addContent: function(data, removeClass) {
-            var id = 'content_' + data.modelName + '_' + data.mod;
+            var id = 'content_' + data.modelName + '_' + data.mod + (data.uniqId || '');
             data = _.defaults(data, this.content_defaults());
 
             if (removeClass)
