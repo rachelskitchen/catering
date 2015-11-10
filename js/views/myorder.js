@@ -28,6 +28,9 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
     App.Views.CoreMyOrderView.CoreMyOrderModifierView = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'modifier',
+        bindings: {
+            '.mdf-sum': 'text: currencyFormat(sum)',
+        },
         render: function() {
             var price, model = this.model.toJSON();
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
@@ -58,11 +61,9 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             model.currency_symbol = App.Settings.currency_symbol;
             model.discount_name = discount.get('name');
             model.discount_sum = discount.toString();
-            model.price_length = model.discount_sum.length + 1;
             this.$el.html(this.template(model));
 
             removeClassRegexp(this.$el, "s\\d{1,2}");
-            this.$el.addClass('s' + (model.discount_sum.length + 1));
 
             if (discount.get("sum") <= 0) {
                 this.$el.hide();
@@ -138,9 +139,25 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         name: 'myorder',
         mod: 'item',
         initialize: function() {
+            this.extendBindingSources({_product: this.model.get_product()});
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change', this.update);
             this.listenTo(this.model.get_product(), 'change', this.update);
+        },
+        bindings: {
+             '.item-sum': 'text: select(isServiceFee, currencyFormat(initial_price), currencyFormat(sum_wo_mdfs))'
+        },
+        computeds: {
+            sum_wo_mdfs: {
+                deps: ['initial_price', 'weight', 'quantity', '_product_sold_by_weight'],
+                get: function(initial_price, weight, quantity, sold_by_weight) {
+                    var productSum = initial_price;
+                    if (sold_by_weight && weight) {
+                        productSum *= weight;
+                    }
+                    return productSum * quantity;
+                }
+            }
         },
         render: function() {
             var self = this,
@@ -159,7 +176,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                         model: modifier
                     });
                     self.subViews.push(view);
-                    view.$el.addClass('s' + (round_monetary_currency(modifier.getSum()).length + 1));
 
                     self.$('.modifier_place').append(view.el);
                 });
@@ -186,8 +202,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             model.name = product.get('name');
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
             model.initial_price = round_monetary_currency(this.model.get('initial_price'));
-            model.price_sum = round_monetary_currency(this.model.get('sum'));
-            model.price_length = round_monetary_currency(model.initial_price).length; //price is not changed for the product
             model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;//    product.get('uom');
             model.is_gift = product.get('is_gift');
             model.gift_card_number = product.get('gift_card_number');
@@ -235,7 +249,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             model.currency_symbol = App.Settings.currency_symbol;
             model.discount_sum = this.model.toString();
             model.discount_name = this.model.get('name');
-            model.price_length = model.discount_sum.length + 1;
             this.$el.html(this.template(model));
             if (this.model.get("sum") <= 0) {
                 this.$el.hide();

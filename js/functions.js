@@ -60,6 +60,11 @@ var PAYMENT_TYPE = {
     STANFORD: 6
 };
 
+var APP_STORE_NAME = {
+    ios: 'apple-itunes-app',
+    android: 'google-play-app',
+};
+
 // Dining options
 var DINING_OPTION = {
         DINING_OPTION_TOGO : 0,

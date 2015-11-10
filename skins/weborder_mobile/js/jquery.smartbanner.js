@@ -143,51 +143,12 @@
 
       , show: function(callback) {
             var banner = $('#smartbanner');
-            banner.stop();
-
-            if (this.options.layer) {
-                banner.animate({top: 0, display: 'block'}, this.options.speedIn).addClass('shown').show();
-                $(this.pushSelector).animate({paddingTop: this.origHtmlMargin + (this.bannerHeight * this.scale)}, this.options.speedIn, 'swing', callback);
-            } else {
-                if ($.support.transition) {
-                    banner.animate({top:0},this.options.speedIn).addClass('shown');
-                    var transitionCallback = function() {
-                        $('html').removeClass('sb-animation');
-                        if (callback) {
-                            callback();
-                        }
-                    };
-                    $(this.pushSelector).addClass('sb-animation').one($.support.transition.end, transitionCallback).emulateTransitionEnd(this.options.speedIn).css('margin-top', this.origHtmlMargin+(this.bannerHeight*this.scale));
-                } else {
-                    banner.slideDown(this.options.speedIn).addClass('shown');
-                }
-            }
+            banner.slideDown("slow").addClass('shown');
         }
 
       , hide: function(callback) {
             var banner = $('#smartbanner');
-            banner.stop();
-
-            if (this.options.layer) {
-                banner.animate({top: -1 * this.bannerHeight * this.scale, display: 'block'}, this.options.speedIn).removeClass('shown');
-                $(this.pushSelector).animate({paddingTop: this.origHtmlMargin}, this.options.speedIn, 'swing', callback);
-            } else {
-                if ($.support.transition) {
-                    if ( this.type !== 'android' )
-                      banner.css('top', -1*this.bannerHeight*this.scale).removeClass('shown');
-                    else
-                      banner.css({display:'none'}).removeClass('shown');
-                    var transitionCallback = function() {
-                        $('html').removeClass('sb-animation');
-                        if (callback) {
-                            callback();
-                        }
-                    };
-                    $(this.pushSelector).addClass('sb-animation').one($.support.transition.end, transitionCallback).emulateTransitionEnd(this.options.speedOut).css('margin-top', this.origHtmlMargin);
-                } else {
-                    banner.slideUp(this.options.speedOut).removeClass('shown');
-                }
-            }
+            banner.slideUp("slow").removeClass('shown');
         }
 
       , close: function(e) {
@@ -265,8 +226,6 @@
         button: 'VIEW', // Text for the install button
         url: null, // The URL for the button. Keep null if you want the button to link to the app store.
         scale: 'auto', // Scale based on viewport size (set to 1 to disable)
-        speedIn: 300, // Show animation speed of the banner
-        speedOut: 400, // Close animation speed of the banner
         daysHidden: 15, // Duration to hide the banner after being closed (0 = always show banner)
         daysReminder: 90, // Duration to hide the banner after "VIEW" is clicked *separate from when the close button is clicked* (0 = always show banner)
         force: null, // Choose 'ios', 'android' or 'windows'. Don't do a browser check, just always show this banner
@@ -274,55 +233,9 @@
         layer: false, // Display as overlay layer or slide down the page
         iOSUniversalApp: true, // If the iOS App is a universal app for both iPad and iPhone, display Smart Banner to iPad users, too.
         appendToSelector: 'body', //Append the banner to a specific selector
-		pushSelector: 'html' // What element is going to push the site content down; this is where the banner append animation will start.
+        pushSelector: 'html' // What element is going to push the site content down; this is where the banner append animation will start.
     }
 
     $.smartbanner.Constructor = SmartBanner;
-
-
-    // ============================================================
-    // Bootstrap transition
-    // Copyright 2011-2014 Twitter, Inc.
-    // Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
-
-    function transitionEnd() {
-        var el = document.createElement('smartbanner')
-
-        var transEndEventNames = {
-            WebkitTransition: 'webkitTransitionEnd',
-            MozTransition: 'transitionend',
-            OTransition: 'oTransitionEnd otransitionend',
-            transition: 'transitionend'
-        }
-
-        for (var name in transEndEventNames) {
-            if (el.style[name] !== undefined) {
-                return {end: transEndEventNames[name]}
-            }
-        }
-
-        return false // explicit for ie8 (  ._.)
-    }
-
-    if ($.support.transition !== undefined)
-        return  // Prevent conflict with Twitter Bootstrap
-
-    // http://blog.alexmaccaw.com/css-transitions
-    $.fn.emulateTransitionEnd = function(duration) {
-        var called = false, $el = this
-        $(this).one($.support.transition.end, function() {
-            called = true
-        })
-        var callback = function() {
-            if (!called) $($el).trigger($.support.transition.end)
-        }
-        setTimeout(callback, duration)
-        return this
-    }
-
-    $(function() {
-        $.support.transition = transitionEnd()
-    })
-    // ============================================================
 
 }(window.jQuery);
