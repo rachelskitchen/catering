@@ -179,9 +179,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          */
         add_empty_combo: function (id_product, id_category) {
             var self = this, product,
-                product_load = App.Collections.Products.init(id_category);
+                product_load = App.Collections.Products.init(id_category),
+                modifier_load = $.Deferred(),
+                quick_modifier_load = App.Collections.ModifierBlocks.init_quick_modifiers();
+            
+            quick_modifier_load.then(function() {
+                App.Collections.ModifierBlocks.init(id_product).then(modifier_load.resolve); // load product modifiers
+            });
 
-            return product_load.then(function() {
+            return $.when(product_load, modifier_load).then(function() {
                 product = App.Data.products[id_category].get_product(id_product);
                 trace("add_combo_product 1");
                 return App.Collections.ProductSets.init(id_product);
@@ -190,7 +196,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 product.set("product_sets", App.Data.productSets[id_product]);
                 self.set({
                     product: product,
-                    id_product: id_product
+                    id_product: id_product,
+                    modifiers: App.Data.modifiers[id_product]
                 });
             });
         },

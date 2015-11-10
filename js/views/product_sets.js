@@ -92,15 +92,16 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
 
             //find real product from the productSet:
             var real_product = this.options.productSet.get('order_products').findWhere({id_product: this.options.parent.get('id_product')});
+            var clone = real_product.clone();
 
             App.Data.mainModel.set('popup', {
                 modelName: 'MyOrder',
                 mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
                 className: isStanfordItem ? 'stanford-reload-item' : '',
-                model: real_product.clone(),
+                model: clone,
                 real: real_product,
                 action: 'update',
-                action_callback: function(model) {
+                action_callback: function() {
                     //return back to the combo root product view:
                     App.Data.mainModel.set('popup', {
                             modelName: 'MyOrder',

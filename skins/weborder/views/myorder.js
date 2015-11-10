@@ -27,35 +27,24 @@ define(["myorder_view"], function(myorder_view) {
 
     var DynamicHeightHelper_Modifiers = DynamicHeightHelper(CoreViews.CoreMyOrderMatrixView.prototype);
 
-    var MyOrderMatrixView = CoreViews.CoreMyOrderMatrixView.extend(_.extend(DynamicHeightHelper_Modifiers, {
+    var MyOrderMatrixView = _MyOrderMatrixView( CoreViews.CoreMyOrderMatrixView.prototype )
+                                                    .mixed( DynamicHeightHelper_Modifiers );   
+    function _MyOrderMatrixView(_base){ return Backbone.inherit(_base, {                                                      
         initialize: function() {
-            App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.initialize.apply(this, arguments);
+            _base.initialize.apply(this, arguments);
             this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.attributes_update);
         },
         render: function() {
-            CoreViews.CoreMyOrderMatrixView.prototype.render.apply(this, arguments);
+            _base.render.apply(this, arguments);
             this.renderProductFooter();
             this.dh_initialize();
             return this;
         },
-        renderProductFooter: function() {
-            var model = this.model,
-                product = this.model.get("product");
-
-            var view = App.Views.GeneratorView.create('MyOrder', {
-                el: this.$(".product_info_footer"),
-                model: this.model,
-                mod: 'MatrixFooter',
-                action: this.options.action,
-                real: this.options.real,
-                action_callback: this.options.action_callback
-            });
-            this.subViews.push(view);
-        },
         attributes_update: function() {
             this.model.trigger("change_child_selected");
         }
-    }));
+      })
+    };
 
     function DynamicHeightHelper(_base_proto) {
       return {
@@ -65,9 +54,9 @@ define(["myorder_view"], function(myorder_view) {
             this.interval = this.interval || setInterval(this.dh_change_height.bind(this), 500); // check size every 0.5 sec
             this.$('.modifiers_table_scroll').contentarrow();
         },
-        events: _.extend({}, _base_proto.events, {
+        events: {
             'change_height .product_instructions': 'dh_change_height' // if special request button pressed
-        }),
+        },
         dh_change_height: function(e) {
             var prev_height = this.prev_height || 0,
                 inner_height = $('#popup').outerHeight(),
@@ -107,34 +96,20 @@ define(["myorder_view"], function(myorder_view) {
 
     var DynamicHeightHelper_Combo = DynamicHeightHelper(CoreViews.CoreMyOrderMatrixComboView.prototype);
 
-    var MyOrderMatrixComboView = CoreViews.CoreMyOrderMatrixComboView.extend(_.extend(DynamicHeightHelper_Combo, {
+    var MyOrderMatrixComboView = _MyOrderMatrixComboView( CoreViews.CoreMyOrderMatrixComboView.prototype )
+                                                         .mixed( DynamicHeightHelper_Combo );
+    function _MyOrderMatrixComboView(_base){ return Backbone.inherit(_base, {
         render: function() {
-            CoreViews.CoreMyOrderMatrixComboView.prototype.render.apply(this, arguments);
+            _base.render.apply(this, arguments);
             this.renderProductFooter();
             this.dh_initialize();
             return this;
-        },
-        events: {
-            'click #popup .cancel': 'cache_remove',
-        },
-        renderProductFooter: function() {
-            var model = this.model,
-                product = this.model.get("product");
-
-            var view = App.Views.GeneratorView.create('MyOrder', {
-                el: this.$(".product_info_footer"),
-                model: this.model,
-                mod: 'MatrixFooter',
-                action: this.options.action,
-                real: this.options.real,
-                action_callback: this.options.action_callback
-            });
-            this.subViews.push(view);
-        }
-    }));
+        }        
+      })
+    };
 
   //TBD: review this: -----------------------------------------------
-    Backbone.inherit = function(base_class, new_proto) {
+ /*   Backbone.inherit = function(base_class, new_proto) {
         var new_class =  base_class.extend(new_proto);
         new_class.prototype.events =  _.extend({}, base_class.prototype.events, new_proto.events);
         new_class.prototype.bindings =  _.extend({}, base_class.prototype.bindings, new_proto.bindings);
@@ -177,25 +152,203 @@ define(["myorder_view"], function(myorder_view) {
             }
         });
     };
-
+*/
     //var t = new Test_View3;
     // t.render()
     // t.events
     // -----------------------------------------------------
+Object.deepExtend = function(destination, source) {
+    trace("deepExtend =>");
+  for (var property in source) {
+    if (typeof source[property] === "object" &&
+     source[property] !== null ) {
+      destination[property] = destination[property] || {};
+      arguments.callee(destination[property], source[property]);
+      trace("recursion property=", property);
+    } else {
+      destination[property] = source[property];
+      trace("assigning property=", property);
+    }
+  }
+  return destination;
+};
 
+/*    Backbone.Model.prototype.mixed = Backbone.View.prototype.mixed =
+    function(extend_proto) {
+      extend_proto = extend_proto || {};
+      for (var i in extend_proto) {
+        // Assimilate non-constructor Epoxy prototype properties onto extended object:
+        trace("MIXED, prop", i);
+        if (extend_proto[i].hasOwnProperty(i) && i !== 'constructor') {
+           Object.deepExtend(this.prototype[i], extend_proto[i]);
+        }
+      }
+      return this;
+    }
+    */
+
+// ---------- THE BEST -----------------------------------
+
+ /*   Backbone.inherit = function(base_proto, new_proto) {
+        var new_class =  base_proto.constructor.extend(new_proto);
+        new_proto.events && (new_class.prototype.events =  _.extend({}, base_proto.events, new_proto.events));
+        new_proto.bindings && (new_class.prototype.bindings =  _.extend({}, base_proto.bindings, new_proto.bindings));
+        new_proto.computeds && (new_class.prototype.computeds =  _.extend({}, base_proto.computeds, new_proto.computeds));
+        new_class.mixed = new_class.prototype.mixed;
+        return new_class;
+    }
+    */
+
+    /*Backbone.Model.prototype.mixed = Backbone.View.prototype.mixed =
+    function(extend_proto) {
+      extend_proto = extend_proto || {};
+      for (var i in extend_proto) {      
+        if (i === 'events' || i === 'bindings' || i === 'computeds') {
+            this.prototype[i] = _.extend({}, this.prototype[i], extend_proto[i]);
+            continue;
+        }
+        trace("prop = ", i);    
+        if (extend_proto.hasOwnProperty(i) && i !== 'constructor') {
+           this.prototype[i] = extend_proto[i];
+           trace("assignin:", i,  this.prototype[i]);    
+        }
+      }
+      return this;
+    }*/
+
+/*  var mixins = {
+    mixin: function(extend) {
+      extend = extend || {};
+//don't used it as here
+      for (var i in this.prototype) {
+        // Skip override on pre-defined binding declarations:
+        if (i === 'bindings' && extend.bindings) continue;
+        
+        // Assimilate non-constructor Epoxy prototype properties onto extended object:
+        if (this.prototype.hasOwnProperty(i) && i !== 'constructor') {
+          extend[i] = this.prototype[i];
+        }
+      }
+      return extend;
+    },
+    mixed:  function(extend_proto) {
+      extend_proto = extend_proto || {};
+      for (var i in extend_proto) {      
+        if (i === 'events' || i === 'bindings' || i === 'computeds') {
+            this.prototype[i] = _.extend({}, extend_proto[i], this.prototype[i]);
+            continue;
+        }
+
+        trace("prop = ", i);    
+        if (extend_proto.hasOwnProperty(i) && i !== 'constructor' && !this.prototype[i]) {
+           this.prototype[i] = extend_proto[i];
+           trace("assignin:", i,  this.prototype[i]);
+        }
+      }
+      return this;
+    }
+  };
+  */
+
+  //  Backbone.Model.prototype.mixed = Backbone.View.prototype.mixed = mixins.mixed;
+
+    var mixAPI = {
+            A: function() {
+                return 'mixAPI' + this.callback_test();
+            },
+            B: function() {
+                return mixAPI.A.apply(this, arguments);
+            },
+            events: {
+                "change .mix_2":  "some_2",
+                "change .same":  "B"  
+            }
+        };
+
+    var TestMix = _TestMix( Backbone.Epoxy.View.prototype )
+                            .mixed( mixAPI );
+
+    function _TestMix(_base){ return Backbone.inherit(_base, {
+        A: function() {
+            return mixAPI.A.apply(this) + "_+_some_else";
+        },
+        events: {
+            "change .mix_1":  "some_1",
+            "change .same":  "stop_this_event_processing"  
+        },
+        callback_test: function() {
+            return "_+_callback"
+        }
+      })
+    }
+
+   
+// ------------------------------------------------------------------------------------------------
+    //-- mixin case: -----------
+   /*     var mixModel = Backbone.Epoxy.Model.extend({
+            BB: function() {
+                return 5;
+            },
+            events: {
+                "change .mix_22":  "some_22" 
+            }
+        });
+
+      var TestMix3 = mixModel.mixin(TestMix);
+
+    var TestMix2 = (function(_base) { return Backbone.inherit(_base, {
+        A: function() {
+            return 5;
+        },
+        events: {
+            "change .mix_1":  "some_1" 
+        }
+
+      })
+    })(TestMix.prototype)
+      .mixed(mixModel.prototype);
+
+    var TestMix2 = Backbone.inherit(TestMix.prototype, {
+        A: function() {
+            return 5;
+        },
+        events: {
+            "change .mix_1":  "some_1" 
+        }
+
+      }).mixed(mixModel.prototype);
+
+*/
+ 
     var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
         editItem: function(e) {
             e.preventDefault();
             var model = this.model,
                 isStanfordItem = App.Data.is_stanford_mode && this.model.get_product().get('is_gift');
 
-            App.Data.mainModel.set('popup', {
+           /* App.Data.mainModel.set('popup', {
                 modelName: 'MyOrder',
                 mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
                 className: isStanfordItem ? 'stanford-reload-item' : '',
                 model: model.clone(),
                 real: model,
                 action: 'update'
+            });*/
+
+            var is_combo = model.get('product').get('is_combo');
+
+            var cache_id = is_combo ? model.get("id_product") : undefined;
+
+            App.Data.mainModel.set('popup', {
+                modelName: 'MyOrder',
+                mod: isStanfordItem ? 'StanfordItem' : (is_combo ? 'MatrixCombo' : 'Matrix'),
+                className: isStanfordItem ? 'stanford-reload-item' : '',
+                model: model.clone(),
+                real: model,
+                action: 'update',
+                init_cache_session: is_combo ? true : false,
+                cache_id: is_combo ? cache_id : undefined //cache is enabled for combo products during the phase of product customization only
+                                                          //the view will be removed from cache after the product is added/updated into the cart.
             });
         }
     });
@@ -217,7 +370,7 @@ define(["myorder_view"], function(myorder_view) {
         App.Views.MyOrderView.MyOrderMatrixComboView = MyOrderMatrixComboView;
         App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
         App.Views.MyOrderView.MyOrderItemSpecialView = MyOrderItemSpecialView;
-        App.Views.Test_BaseView = Test_BaseView;
-        App.Views.Test_View2 = Test_View2;
+        //App.Views.Test_BaseView = Test_BaseView;
+        //App.Views.Test_View2 = Test_View2;
     });
 });
