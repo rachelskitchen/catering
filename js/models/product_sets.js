@@ -33,9 +33,9 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
     //                                Models.ProductSet * -- order_products [* (Collections.ProductSetModels)
     //                                                  |                    |
     //                                                  *]                   * (Models.Myorder) - {  modifiers,
-    //                                                                       |                       product, (Models.Product)
-    //                                                                       *]                      is_selected: true/false,
-    //                                                                                               quantity }
+    //                                                                       |                       quantity,
+    //                                                                       *]                      product (Models.Product)
+    //                                                                                             }                 |- selected: true/false,
 
     /**
      * @class
@@ -53,16 +53,18 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             name: null,
             id: null,
             is_combo_saving : false,
-            //combo_parent_id : null, //id of the root combo product
             order_products : null,
             minimum_amount : 1,
             maximum_amount : 1
         },
+        /**
+         * initialization through a json object
+         */
         addJSON: function(data) {
             var self = this, ext_data = {}, product;
-            
-            ext_data.minimum_amount = data.quantity ? data.quantity : 2;
-            ext_data.maximum_amount = data.quantity ? data.quantity : 2;            
+
+            ext_data.minimum_amount = data.quantity ? data.quantity : 1;
+            ext_data.maximum_amount = data.quantity ? data.quantity : 1;
 
             var order_products = new App.Collections.ProductSetModels();
 
@@ -71,21 +73,27 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                 p_data.compositeId = p_data.id + '_' + p_data.id_category;
                 var json = {
                     product: p_data,
-                    modifiers: p_data.modifier_classes ? p_data.modifier_classes : []
+                    modifiers: p_data.modifier_classes ? p_data.modifier_classes : [],
                 }
 
                 var order_product = new App.Models.Myorder();
                 order_product.addJSON(json);
+                order_product.set({
+                    sum: order_product.get_modelsum(), // sum with modifiers
+                    initial_price: order_product.get_initial_price(),
+                    is_child_product: true
+                });
+                order_product.update_prices();
                 order_products.add(order_product);
+
             });
             ext_data['order_products'] = order_products;
 
             var data = _.extend({}, data, ext_data);
             delete data['products'];
-            this.set(data);    
+            this.set(data);
         },
         /*
-        *
         *  get selected modifiers quantity
         */
         get_selected_qty: function() {
@@ -96,8 +104,35 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             });
             return qty;
         },
+        /**
+         * clonning product set
+         */
         clone: function() {
             return this.deepClone();
+        },
+        /**
+         * get json for cart_totals/create_order_and_pay requests
+         */
+        item_submit: function(for_discount) {
+            var json = {
+                   id: this.get('id'),
+                   name: this.get('name'),
+                   products: []
+                }
+            this.get('order_products').each(function(model) {
+                if(model.get('product').get('selected')) {
+                    json.products.push(model.item_submit(for_discount));
+                }
+            });
+            return json;
+        },
+        /**
+         * get all selected products
+         */
+        get_selected_products: function() {
+            return this.get('order_products').filter(function(model) {
+                return model.get('product').get('selected') == true;
+            });
         }
     });
 
@@ -114,12 +149,6 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
      */
     App.Collections.ProductSets = Backbone.Collection.extend({
         model: App.Models.ProductSet,
-         /**
-         * Find combo products by product_id.
-         */
-        //find_child_products: function(product_id) {
-        //     return this.find({'combo_parent_id': product_id});
-        //},
         /**
          * Get combo products from backend.
          */
@@ -144,6 +173,9 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             });
             return fetching;
         },
+        /**
+         * initialization through a json object
+         */
         addJSON: function(data) {
             var self = this;
             data.forEach(function(pset, index) {
@@ -164,6 +196,16 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
          */
         clone: function() {
             return this.deepClone();
+        },
+        /**
+         * get all selected products
+         */
+        get_selected_products: function() {
+            var array = [];
+            this.each( function(model){
+               array = array.concat(model.get_selected_products());
+            });
+            return new App.Collections.ProductSetModels(array);
         }
     });
 

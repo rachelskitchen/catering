@@ -1,3 +1,9 @@
- .test {
+
+#popup .customize.link1 {
+	margin: 0px;
+    text-decoration: underline;
+    font-weight: normal;
+    word-break: normal;
+    font-size: 15px;
 }
 

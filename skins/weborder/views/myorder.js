@@ -28,8 +28,8 @@ define(["myorder_view"], function(myorder_view) {
     var DynamicHeightHelper_Modifiers = DynamicHeightHelper(CoreViews.CoreMyOrderMatrixView.prototype);
 
     var MyOrderMatrixView = _MyOrderMatrixView( CoreViews.CoreMyOrderMatrixView.prototype )
-                                                    .mixed( DynamicHeightHelper_Modifiers );   
-    function _MyOrderMatrixView(_base){ return Backbone.inherit(_base, {                                                      
+                                                    .mixed( DynamicHeightHelper_Modifiers );
+    function _MyOrderMatrixView(_base){ return Backbone.inherit(_base, {
         initialize: function() {
             _base.initialize.apply(this, arguments);
             this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.attributes_update);
@@ -104,7 +104,7 @@ define(["myorder_view"], function(myorder_view) {
             this.renderProductFooter();
             this.dh_initialize();
             return this;
-        }        
+        }
       })
     };
 
@@ -157,39 +157,11 @@ define(["myorder_view"], function(myorder_view) {
     // t.render()
     // t.events
     // -----------------------------------------------------
-Object.deepExtend = function(destination, source) {
-    trace("deepExtend =>");
-  for (var property in source) {
-    if (typeof source[property] === "object" &&
-     source[property] !== null ) {
-      destination[property] = destination[property] || {};
-      arguments.callee(destination[property], source[property]);
-      trace("recursion property=", property);
-    } else {
-      destination[property] = source[property];
-      trace("assigning property=", property);
-    }
-  }
-  return destination;
-};
 
-/*    Backbone.Model.prototype.mixed = Backbone.View.prototype.mixed =
-    function(extend_proto) {
-      extend_proto = extend_proto || {};
-      for (var i in extend_proto) {
-        // Assimilate non-constructor Epoxy prototype properties onto extended object:
-        trace("MIXED, prop", i);
-        if (extend_proto[i].hasOwnProperty(i) && i !== 'constructor') {
-           Object.deepExtend(this.prototype[i], extend_proto[i]);
-        }
-      }
-      return this;
-    }
-    */
 
 // ---------- THE BEST -----------------------------------
 
- /*   Backbone.inherit = function(base_proto, new_proto) {
+   /* Backbone.inherit = function(base_proto, new_proto) {
         var new_class =  base_proto.constructor.extend(new_proto);
         new_proto.events && (new_class.prototype.events =  _.extend({}, base_proto.events, new_proto.events));
         new_proto.bindings && (new_class.prototype.bindings =  _.extend({}, base_proto.bindings, new_proto.bindings));
@@ -197,60 +169,19 @@ Object.deepExtend = function(destination, source) {
         new_class.mixed = new_class.prototype.mixed;
         return new_class;
     }
-    */
 
-    /*Backbone.Model.prototype.mixed = Backbone.View.prototype.mixed =
-    function(extend_proto) {
-      extend_proto = extend_proto || {};
-      for (var i in extend_proto) {      
-        if (i === 'events' || i === 'bindings' || i === 'computeds') {
-            this.prototype[i] = _.extend({}, this.prototype[i], extend_proto[i]);
-            continue;
-        }
-        trace("prop = ", i);    
-        if (extend_proto.hasOwnProperty(i) && i !== 'constructor') {
-           this.prototype[i] = extend_proto[i];
-           trace("assignin:", i,  this.prototype[i]);    
-        }
-      }
-      return this;
+    var TestView = _Test_View( Backbone.View );
+    function _Test_View3(_base){ return Backbone.inherit(_base, {
+            render: function() {
+                trace("Test_View3 render >");
+                _base.prototype.render.apply(this, arguments);
+            },
+            events: {
+                "change .test_3":  "some_3"
+            }
+    })
     }*/
 
-/*  var mixins = {
-    mixin: function(extend) {
-      extend = extend || {};
-//don't used it as here
-      for (var i in this.prototype) {
-        // Skip override on pre-defined binding declarations:
-        if (i === 'bindings' && extend.bindings) continue;
-        
-        // Assimilate non-constructor Epoxy prototype properties onto extended object:
-        if (this.prototype.hasOwnProperty(i) && i !== 'constructor') {
-          extend[i] = this.prototype[i];
-        }
-      }
-      return extend;
-    },
-    mixed:  function(extend_proto) {
-      extend_proto = extend_proto || {};
-      for (var i in extend_proto) {      
-        if (i === 'events' || i === 'bindings' || i === 'computeds') {
-            this.prototype[i] = _.extend({}, extend_proto[i], this.prototype[i]);
-            continue;
-        }
-
-        trace("prop = ", i);    
-        if (extend_proto.hasOwnProperty(i) && i !== 'constructor' && !this.prototype[i]) {
-           this.prototype[i] = extend_proto[i];
-           trace("assignin:", i,  this.prototype[i]);
-        }
-      }
-      return this;
-    }
-  };
-  */
-
-  //  Backbone.Model.prototype.mixed = Backbone.View.prototype.mixed = mixins.mixed;
 
     var mixAPI = {
             A: function() {
@@ -261,7 +192,7 @@ Object.deepExtend = function(destination, source) {
             },
             events: {
                 "change .mix_2":  "some_2",
-                "change .same":  "B"  
+                "change .same":  "B"
             }
         };
 
@@ -274,7 +205,7 @@ Object.deepExtend = function(destination, source) {
         },
         events: {
             "change .mix_1":  "some_1",
-            "change .same":  "stop_this_event_processing"  
+            "change .same":  "stop_this_event_processing"
         },
         callback_test: function() {
             return "_+_callback"
@@ -282,58 +213,11 @@ Object.deepExtend = function(destination, source) {
       })
     }
 
-   
-// ------------------------------------------------------------------------------------------------
-    //-- mixin case: -----------
-   /*     var mixModel = Backbone.Epoxy.Model.extend({
-            BB: function() {
-                return 5;
-            },
-            events: {
-                "change .mix_22":  "some_22" 
-            }
-        });
-
-      var TestMix3 = mixModel.mixin(TestMix);
-
-    var TestMix2 = (function(_base) { return Backbone.inherit(_base, {
-        A: function() {
-            return 5;
-        },
-        events: {
-            "change .mix_1":  "some_1" 
-        }
-
-      })
-    })(TestMix.prototype)
-      .mixed(mixModel.prototype);
-
-    var TestMix2 = Backbone.inherit(TestMix.prototype, {
-        A: function() {
-            return 5;
-        },
-        events: {
-            "change .mix_1":  "some_1" 
-        }
-
-      }).mixed(mixModel.prototype);
-
-*/
- 
     var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
         editItem: function(e) {
             e.preventDefault();
             var model = this.model,
                 isStanfordItem = App.Data.is_stanford_mode && this.model.get_product().get('is_gift');
-
-           /* App.Data.mainModel.set('popup', {
-                modelName: 'MyOrder',
-                mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
-                className: isStanfordItem ? 'stanford-reload-item' : '',
-                model: model.clone(),
-                real: model,
-                action: 'update'
-            });*/
 
             var is_combo = model.get('product').get('is_combo');
 
