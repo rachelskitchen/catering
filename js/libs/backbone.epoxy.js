@@ -54,13 +54,13 @@
     //EE dev: added method for mixins
     mixed:  function(extend_proto) {
       extend_proto = extend_proto || {};
-      for (var i in extend_proto) {      
+      for (var i in extend_proto) {
         if (i === 'events' || i === 'bindings' || i === 'computeds') {
             this.prototype[i] = _.extend({}, extend_proto[i], this.prototype[i]);
             continue;
         }
 
-        //trace("prop = ", i);    
+        //trace("prop = ", i);
         if (extend_proto.hasOwnProperty(i) && i !== 'constructor' && !this.prototype[i]) {
            this.prototype[i] = extend_proto[i];
            //trace("assignin:", i,  this.prototype[i]);
@@ -69,13 +69,25 @@
       return this;
     }
   };
- 
+
   //EE dev: add inheritance way for Backbone
-  Backbone.inherit = function(base_proto, new_proto) {
+  /*Backbone.inherit = function(base_proto, new_proto) {
       var new_class =  base_proto.constructor.extend(new_proto);
       new_proto.events && (new_class.prototype.events =  _.extend({}, base_proto.events, new_proto.events));
       new_proto.bindings && (new_class.prototype.bindings =  _.extend({}, base_proto.bindings, new_proto.bindings));
       new_proto.computeds && (new_class.prototype.computeds =  _.extend({}, base_proto.computeds, new_proto.computeds));
+      new_class.mixed = mixins.mixed;
+      return new_class;
+  }*/
+  var BackboneExtendFunc = Backbone.View.extend;
+    if (Backbone.Model.extend != Backbone.Model.extend || Backbone.Model.extend != Backbone.Collection.extend) {
+        console.error("Backbone 'extend' functions was changed.");
+    }
+  Backbone.View.extend = Backbone.Model.extend = Backbone.Collection.extend = function(new_proto) {
+      var new_class =  BackboneExtendFunc.call(this, new_proto);
+      new_proto.events && (new_class.prototype.events =  _.extend({}, this.prototype.events, new_proto.events));
+      new_proto.bindings && (new_class.prototype.bindings =  _.extend({}, this.prototype.bindings, new_proto.bindings));
+      new_proto.computeds && (new_class.prototype.computeds =  _.extend({}, this.prototype.computeds, new_proto.computeds));
       new_class.mixed = mixins.mixed;
       return new_class;
   }
@@ -89,7 +101,6 @@
   }
 
   Backbone.Model.prototype.deepClone = function() {
-      trace('clone ', this.get('name'));
       var copy = new this.constructor();
       for (var key in this.attributes) {
           var value = this.get(key);
@@ -98,8 +109,6 @@
       }
       return copy;
   }
-
-  
 
   // Calls method implementations of a super-class object:
   function _super(instance, method, args) {

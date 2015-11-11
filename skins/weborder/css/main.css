@@ -602,19 +602,22 @@ section.maintenance #header .btn {
 #cart .order-items li li {
     height: 20px;
 }
-#cart .order-items .combo_products_place {
-    margin-left: 10px;
-}
-#cart .order-items .combo_products_place .myorder > li {
-    height: auto;
-    font-size: 0.9em;
-}
-#cart .order-items .combo_products_place .modifier_place {
-    margin-left: 10px;
-}
 #cart .order-items > li {
     height: auto;
 }
+/* combo products in the cart */
+#cart .order-items .myorder_combo > li {
+    height: auto;
+    font-size: 0.9em;
+}
+#cart .order-items .myorder .modifier_place,
+#cart .order-items .combo_products_place .modifier_place {
+    margin-left: 10px;
+}
+#cart .order-items .combo_products_place {
+    margin-left: 10px;
+}
+/* -- */
 #cart .order-items li.special {
     display: block;
     white-space: nowrap;

@@ -312,9 +312,10 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             if (this.model.isComboProduct()) {
                 view = App.Views.GeneratorView.create('MyOrder', {
                     el: this.$('.combo_products_place'),
-                    mod: 'List',
+                    mod: 'ComboList',
                     collection: this.model.get('product').get('product_sets').get_selected_products()
                 });
+                self.subViews.push(view);
             }
 
             view = App.Views.GeneratorView.create('MyOrder', {
@@ -452,6 +453,22 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         }
     });
 
+    App.Views.CoreMyOrderView.CoreMyOrderComboListView = App.Views.CoreMyOrderView.CoreMyOrderListView.extend({
+        name: 'myorder',
+        mod: 'combo_list',
+        addItem: function(model) {
+            var view = App.Views.GeneratorView.create('MyOrder', {
+                mod: 'Item',
+                model: model,
+                el: $('<li></li>'),
+                collection: this.collection
+            });
+
+            this.subViews.push(view);
+            this.$('.myorder_combo').append(view.el);
+        }
+    });
+
     App.Views.CoreMyOrderView.CoreMyOrderNoteView = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'note',
@@ -583,6 +600,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         App.Views.MyOrderView.MyOrderDiscountView = App.Views.CoreMyOrderView.CoreMyOrderDiscountView;
         App.Views.MyOrderView.MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView;
         App.Views.MyOrderView.MyOrderListView = App.Views.CoreMyOrderView.CoreMyOrderListView;
+        App.Views.MyOrderView.MyOrderComboListView = App.Views.CoreMyOrderView.CoreMyOrderComboListView;
         App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView;
         App.Views.MyOrderView.MyOrderMatrixFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView;
         App.Views.MyOrderView.MyOrderNoteView = App.Views.CoreMyOrderView.CoreMyOrderNoteView;
