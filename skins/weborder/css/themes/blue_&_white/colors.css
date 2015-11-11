@@ -101,7 +101,7 @@ aside:after, aside:before {
     box-shadow: 0 1px 6px #59c0db inset, 0 -2px 2px #fff inset;
     border-color: #bebebe;
 }
-#cart h2, .delivery_info, #popup {
+#cart h2, .delivery_info, #popup, .size_chart {
     color: #fcfcfc;
     text-shadow: 0 0 1px #8dc0d9;
 }
