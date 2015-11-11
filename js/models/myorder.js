@@ -401,7 +401,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     product: product.id,
                     product_name_override: this.overrideProductName(product),
                     quantity: this.get('quantity'),
-                    product_sub_id: for_discounts ? this.get('product_sub_id') : undefined,
+                    product_sub_id: this.get('product_sub_id'), //for_discounts ? this.get('product_sub_id') : undefined,
                     is_combo: product.is_combo ? product.is_combo : undefined
                 };
 
@@ -436,7 +436,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if (product.is_combo) {
                 var product_sets = [];
                 product.product_sets.each(function(product_set){
-                    var pset = product_set.item_submit();
+                    var pset = product_set.item_submit(for_discounts);
                     product_sets.push(pset);
                 });
                 item_obj['products_sets'] = product_sets;

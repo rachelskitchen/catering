@@ -27,15 +27,15 @@ define(["myorder_view"], function(myorder_view) {
 
     var DynamicHeightHelper_Modifiers = DynamicHeightHelper(CoreViews.CoreMyOrderMatrixView.prototype);
 
-    var MyOrderMatrixView = _MyOrderMatrixView( CoreViews.CoreMyOrderMatrixView.prototype )
+    var MyOrderMatrixView = _MyOrderMatrixView( CoreViews.CoreMyOrderMatrixView )
                                                     .mixed( DynamicHeightHelper_Modifiers );
-    function _MyOrderMatrixView(_base){ return Backbone.inherit(_base, {
+    function _MyOrderMatrixView(_base){ return _base.extend({
         initialize: function() {
-            _base.initialize.apply(this, arguments);
+            _base.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.attributes_update);
         },
         render: function() {
-            _base.render.apply(this, arguments);
+            _base.prototype.render.apply(this, arguments);
             this.renderProductFooter();
             this.dh_initialize();
             return this;
@@ -96,122 +96,17 @@ define(["myorder_view"], function(myorder_view) {
 
     var DynamicHeightHelper_Combo = DynamicHeightHelper(CoreViews.CoreMyOrderMatrixComboView.prototype);
 
-    var MyOrderMatrixComboView = _MyOrderMatrixComboView( CoreViews.CoreMyOrderMatrixComboView.prototype )
+    var MyOrderMatrixComboView = _MyOrderMatrixComboView( CoreViews.CoreMyOrderMatrixComboView )
                                                          .mixed( DynamicHeightHelper_Combo );
-    function _MyOrderMatrixComboView(_base){ return Backbone.inherit(_base, {
+    function _MyOrderMatrixComboView(_base){ return _base.extend({
         render: function() {
-            _base.render.apply(this, arguments);
+            _base.prototype.render.apply(this, arguments);
             this.renderProductFooter();
             this.dh_initialize();
             return this;
         }
       })
     };
-
-  //TBD: review this: -----------------------------------------------
- /*   Backbone.inherit = function(base_class, new_proto) {
-        var new_class =  base_class.extend(new_proto);
-        new_class.prototype.events =  _.extend({}, base_class.prototype.events, new_proto.events);
-        new_class.prototype.bindings =  _.extend({}, base_class.prototype.bindings, new_proto.bindings);
-        new_class.prototype.computeds =  _.extend({}, base_class.prototype.computeds, new_proto.computeds);
-        return new_class;
-    }
-   // use case #1: ---
-    var Test_BaseView = (function(_base){ return Backbone.inherit(_base, {
-            render: function() {
-                trace("Test_BaseView render >");
-                _base.prototype.render.apply(this, arguments);
-            },
-            events: {
-                "change .test_1":  "some_1"
-            }
-        });
-    })(Backbone.View);
-
-    // use case #2: ---
-    var Test_View2 = _Test_View2( Test_BaseView );
-    function _Test_View2(_base){ return Backbone.inherit(_base, {
-            render: function() {
-                trace("Test_View2 render >");
-                _base.prototype.render.apply(this, arguments);
-            },
-            events: {
-                "change .test_2":  "some_2"
-            }
-        });
-    };
-
-    var Test_View3 = _Test_View3( Test_View2 );
-    function _Test_View3(_base){ return Backbone.inherit(_base, {
-            render: function() {
-                trace("Test_View3 render >");
-                _base.prototype.render.apply(this, arguments);
-            },
-            events: {
-                "change .test_3":  "some_3"
-            }
-        });
-    };
-*/
-    //var t = new Test_View3;
-    // t.render()
-    // t.events
-    // -----------------------------------------------------
-
-
-// ---------- THE BEST -----------------------------------
-
-   /* Backbone.inherit = function(base_proto, new_proto) {
-        var new_class =  base_proto.constructor.extend(new_proto);
-        new_proto.events && (new_class.prototype.events =  _.extend({}, base_proto.events, new_proto.events));
-        new_proto.bindings && (new_class.prototype.bindings =  _.extend({}, base_proto.bindings, new_proto.bindings));
-        new_proto.computeds && (new_class.prototype.computeds =  _.extend({}, base_proto.computeds, new_proto.computeds));
-        new_class.mixed = new_class.prototype.mixed;
-        return new_class;
-    }
-
-    var TestView = _Test_View( Backbone.View );
-    function _Test_View3(_base){ return Backbone.inherit(_base, {
-            render: function() {
-                trace("Test_View3 render >");
-                _base.prototype.render.apply(this, arguments);
-            },
-            events: {
-                "change .test_3":  "some_3"
-            }
-    })
-    }*/
-
-
-    var mixAPI = {
-            A: function() {
-                return 'mixAPI' + this.callback_test();
-            },
-            B: function() {
-                return mixAPI.A.apply(this, arguments);
-            },
-            events: {
-                "change .mix_2":  "some_2",
-                "change .same":  "B"
-            }
-        };
-
-    var TestMix = _TestMix( Backbone.Epoxy.View.prototype )
-                            .mixed( mixAPI );
-
-    function _TestMix(_base){ return Backbone.inherit(_base, {
-        A: function() {
-            return mixAPI.A.apply(this) + "_+_some_else";
-        },
-        events: {
-            "change .mix_1":  "some_1",
-            "change .same":  "stop_this_event_processing"
-        },
-        callback_test: function() {
-            return "_+_callback"
-        }
-      })
-    }
 
     var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
         editItem: function(e) {
@@ -254,7 +149,5 @@ define(["myorder_view"], function(myorder_view) {
         App.Views.MyOrderView.MyOrderMatrixComboView = MyOrderMatrixComboView;
         App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
         App.Views.MyOrderView.MyOrderItemSpecialView = MyOrderItemSpecialView;
-        //App.Views.Test_BaseView = Test_BaseView;
-        //App.Views.Test_View2 = Test_View2;
     });
 });
