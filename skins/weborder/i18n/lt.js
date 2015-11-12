@@ -81,7 +81,7 @@ define([], function() {
         "MAIN_RESTART": "Paleisti iš naujo",
         "MAIN_ORDER_SUBMITTED": "Jūsų užsakymas pateiktas.",
         "MAIN_ORDER_NOT_SUBMITTED": "Jūsų užsakymas nepateiktas.",
-        "MAIN_RETURN_ORDER_SUMMARY": "Grįžti į užsakymo santrauką",
+        "RETURN_TO_ORDER_SUMMARY": "Grįžti į užsakymo santrauką",
         "MAIN_RECEIPT_SENT_TO": "Jūsų kvitas išsiųstas",
         "MAIN_ORDER_ID": "Užsakymo kodas",
         "MAIN_DELIVERY_INFO": "Pristatymo informacija",

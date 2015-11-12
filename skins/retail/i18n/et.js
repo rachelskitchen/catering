@@ -67,7 +67,7 @@ define([], function() {
         "MAIN_RESTART": "Alusta uuesti",
         "MAIN_ORDER_SUBMITTED": "Teie tellimus on esitatud",
         "MAIN_ORDER_NOT_SUBMITTED": "Teie tellimust ei esitatud",
-        "MAIN_RETURN_TO_SUMMARY": "Tagasi tellimuse kokkuvõttesse",
+        "RETURN_TO_ORDER_SUMMARY": "Tagasi tellimuse kokkuvõttesse",
         "MAIN_RECEIPT_SENT_TO": "Teie kviitung saadeti järgmisele:",
         "MAIN_ORDER_ID": "Tellimuse ID",
         "MAIN_DELIVERY_INFO": "Kohaletoimetamisteave",

@@ -76,6 +76,12 @@ select {
     padding: 0 25px 0 10px;
     float: left;
 }
+select:focus,
+.pikaday:focus {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 15px;
+}
 @-moz-document url-prefix() {
     /* due to firefox does not hide select element arrows need change padding */
     select {
