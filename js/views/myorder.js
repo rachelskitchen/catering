@@ -258,7 +258,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         action: function (event) {
             var check = this.model.check_order(),
                 self = this, index, collection;
-
+            trace('self.model_init_1.collection ', self.model.collection ? true : false );
             if (check.status === 'OK') {
                 if (self.options.action === 'add') {
                     App.Data.myorder.add(self.model);
@@ -267,9 +267,31 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     index = collection.indexOf(self.options.real);
                     collection.remove(self.options.real);
                     collection.add(self.model, {at: index});
+                    trace('self.model_init_.collection ', self.model.collection ? true : false );
                     trace ("action: real product index = ", index);
                     if (collection.splitItemAfterQuantityUpdate)
                         collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
+                }
+                $('#popup .cancel').trigger('click');
+            } else {
+                App.Data.errors.alert(check.errorMsg); // user notification
+            }
+        }
+    });
+
+    App.Views.CoreMyOrderView.CoreMyOrderMatrixComboFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.extend({
+        action: function (event) {
+            var check = this.model.check_order(),
+                self = this, index, collection;
+
+            if (check.status === 'OK') {
+                if (self.options.action === 'add') {
+                    App.Data.myorder.add(self.model);
+                } else {
+                    collection = self.options.real.collection;
+                    //index = collection.indexOf(self.options.real);
+                    //collection.remove(self.options.real);
+                    self.options.real.copyAttrsFrom(self.model);
                 }
                 $('#popup .cancel').trigger('click');
             } else {
@@ -603,6 +625,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         App.Views.MyOrderView.MyOrderComboListView = App.Views.CoreMyOrderView.CoreMyOrderComboListView;
         App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView;
         App.Views.MyOrderView.MyOrderMatrixFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView;
+        App.Views.MyOrderView.MyOrderMatrixComboFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixComboFooterView;
         App.Views.MyOrderView.MyOrderNoteView = App.Views.CoreMyOrderView.CoreMyOrderNoteView;
         App.Views.MyOrderView.MyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView;
         App.Views.MyOrderView.MyOrderMatrixComboView = App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView;

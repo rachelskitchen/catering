@@ -38,7 +38,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             stanfordCard: null,         // App.Models.StanfordCard instance if product is gift
             stanford_card_number: '',   // stanford card number
             planId: null,                // stanford plan to add some amount to
-            is_child_product: false      //child product in a combo product set
+            is_child_product: false,     //child product in a combo product set
+            selected: null
         },
         product_listener: false, // check if listeners for product is present
         modifier_listener: false, // check if listeners for modifiers is preset
@@ -226,6 +227,24 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return this;
         },
         get_modelsum: function() {
+            var productSum = this._get_product_sum(),
+                product = this.get_product(),
+                max_price = product && product.get('max_price'),
+                totalItem;
+
+            var modifiers = this.get_modifiers(),
+                modifiersSum = modifiers ? modifiers.get_sum() : 0,
+                hasModifiers = !!modifiers && modifiers.get_modifierList().some(function(modifier) {
+                    return modifier.get('selected');
+                });
+
+            totalItem = productSum + modifiersSum;
+
+            // subtotal should be less or equal max_price if any no admin modifier is attached to product
+            // Test Case 7047
+            return (hasModifiers && typeof max_price == 'number' && max_price < totalItem ? max_price : totalItem) * this.get('quantity');
+        },
+        get_modelsum_old: function() {
             var sold_by_weight = this.get("product") ?  this.get("product").get('sold_by_weight') : false,
                 weight = this.get('weight'),
                 productSum = this.get_initial_price(),
@@ -248,6 +267,42 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             // subtotal should be less or equal max_price if any no admin modifier is attached to product
             // Test Case 7047
             return (hasModifiers && typeof max_price == 'number' && max_price < totalItem ? max_price : totalItem) * this.get('quantity');
+        },
+        /*
+        *   get product sum w/o modifiers
+        */
+        _get_product_sum: function() {
+            var sold_by_weight = this.get("product") ?  this.get("product").get('sold_by_weight') : false,
+                weight = this.get('weight'),
+                productSum = this.get_initial_price();
+
+                if (sold_by_weight && weight) {
+                    productSum *= weight;
+                }
+
+            return productSum;
+        },
+        /*
+        *   get sum of modifiers prices in accoding to the max price feature
+        */
+        get_sum_of_modifiers: function() {
+            var productSum = this._get_product_sum(),
+                product = this.get_product(),
+                max_price = product && product.get('max_price'),
+                totalItem;
+
+            var modifiers = this.get_modifiers(),
+                modifiersSum = modifiers ? modifiers.get_sum() : 0,
+                hasModifiers = !!modifiers && modifiers.get_modifierList().some(function(modifier) {
+                    return modifier.get('selected');
+                });
+
+            totalItem = productSum + modifiersSum;
+
+            // subtotal should be less or equal max_price if any no admin modifier is attached to product
+            // Test Case 7047
+            var max_price_sum = hasModifiers && typeof max_price == 'number' && max_price < totalItem ? max_price : totalItem;
+            return (max_price_sum - productSum) >= 0 ? (max_price_sum - productSum) : 0;
         },
         get_special: function() {
             var settings = App.Data.settings.get('settings_system');
@@ -529,7 +584,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         *   get combo child product (for debug)
         */
         get_combo_child: function(product_set_index, product_index) {
-            return this.get('product').get('product_sets').models[product_set_index].get('order_products').models[product_index].toJSON();
+            return this.get('product').get('product_sets').models[product_set_index].get('order_products').models[product_index];
         }
     });
 
