@@ -81,7 +81,7 @@ define([], function() {
         "MAIN_RESTART": "Riavvia",
         "MAIN_ORDER_SUBMITTED": "Il tuo ordine è stato inviato",
         "MAIN_ORDER_NOT_SUBMITTED": "Il tuo ordine non è stato inviato",
-        "MAIN_RETURN_ORDER_SUMMARY": "Torna a riepilogo ordine",
+        "RETURN_TO_ORDER_SUMMARY": "Torna a riepilogo ordine",
         "MAIN_RECEIPT_SENT_TO": "La tua ricevuta è stata inviata a",
         "MAIN_ORDER_ID": "ID dell’ordine",
         "MAIN_DELIVERY_INFO": "Informazioni sulla consegna",
