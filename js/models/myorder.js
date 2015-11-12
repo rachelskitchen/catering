@@ -524,6 +524,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             stanfordCard.listenTo(this, 'change:planId', function(model, value) {
                 stanfordCard.set('planId', self.get('planId'));
             }, this);
+        },
+        /*
+        *   get combo child product (for debug)
+        */
+        get_combo_child: function(product_set_index, product_index) {
+            return this.get('product').get('product_sets').models[product_set_index].get('order_products').models[product_index].toJSON();
         }
     });
 
@@ -1222,6 +1228,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 } else {
                     model.get("discount").zero_discount();
                 }
+
+                if (product.combo_items instanceof Object) {
+                    for (var i in product.combo_items) {
+                        var order_product = model.get('product').get('product_sets').find_product(product.combo_items[i].product);
+                        if (order_product) {
+                            order_product.set('sum', product.combo_items[i].price);
+                        }
+                    }
+                }
             });
 
             if (json.service_fees == undefined)
@@ -1691,6 +1706,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if (item.get('discount').get('name') === 'Item Reward' && oldQuantity == 1 && newQuantity != 1) {
                 this.splitItemWithPointValue(item, silentFlag);
             }
+        },
+        /*
+        *   get combo child product (for debug)
+        */
+        get_combo_child: function(product_index, product_set_index, child_index) {
+            return this.models[product_index].get_combo_child(product_set_index, child_index);
         }
     });
 });
