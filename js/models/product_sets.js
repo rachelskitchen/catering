@@ -206,6 +206,16 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                array = array.concat(model.get_selected_products());
             });
             return new App.Collections.ProductSetModels(array);
+        },
+        /**
+         * get all selected products
+         */
+        find_product: function(id_product) {
+            var product;
+            this.some( function(model) {
+               return (product = model.get('order_products').findWhere({ id_product: id_product }));
+            });
+            return product;
         }
     });
 
