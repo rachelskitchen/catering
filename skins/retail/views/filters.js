@@ -121,7 +121,8 @@ define(["factory"], function() {
         mod: 'attribute',
         initialize: function() {
             this.cache = {};
-            this.options.updateEvent = 'change:attribute1';
+            this.attributeName = 'attribute' + this.options.attr;
+            this.options.updateEvent = 'change:' + this.attributeName;
             App.Views.FilterView.FilterSortView.prototype.initialize.apply(this, arguments);
         },
         search: function(result) {
@@ -131,7 +132,7 @@ define(["factory"], function() {
                 pattern = result.get('pattern'),
                 count;
 
-            this.$('option:not([value=1])').remove();
+            this.$('optgroup').remove();
             count = this.setAttributes(products, pattern);
             this.control(count);
 
@@ -143,15 +144,15 @@ define(["factory"], function() {
 
             // add attributes to select element
             if(Array.isArray(this.options.categories.selected)) {
-                this.$('option:not([value=1])').remove();
+                this.$('optgroup').remove();
                 this.options.categories.selected.forEach(function(category) {
-                    var cachedCategory = category in this.cache ? this.cache[category] : [],
-                        products;
-                    // If category was early handled need just add attributes to DOM from cache.
-                    // Otherwise need get available attributes for each product and add them to DOM.
-                    if(cachedCategory.length) {
-                        cachedCategory.forEach(this.addItem, this);
-                        count += cachedCategory.length;
+                    var cachedCategory = category in this.cache ? this.cache[category] : {},
+                        cachedKeysLength, products;
+                    // If category was early handled need to just add attributes to DOM from cache.
+                    // Otherwise need to get available attributes for each product and add them to DOM.
+                    if (cachedKeysLength = Object.keys(cachedCategory).length) {
+                        this.addItems(cachedCategory);
+                        count += cachedKeysLength;
                     } else {
                         products = this.options.products[category];
                         count += this.setAttributes(products, category);
@@ -167,19 +168,32 @@ define(["factory"], function() {
             if(!products || !products.length)
                 return;
 
-            var attrs = id in this.cache ? this.cache[id] : products.getAttributeValues(1),
-                name = products.at(0).get('attribute_1_name');
+            var attrs = id in this.cache ? this.cache[id] : products.getAttributeValues(this.options.attr),
+                name = products.at(0).get('attribute_' + this.options.attr + '_name'),
+                attrsKeysLength;
 
             if(!(id in this.cache))
                 this.cache[id] = attrs;
 
-            if(attrs.length > 0)
-                attrs.forEach(this.addItem, this);
+            if((attrsKeysLength = Object.keys(attrs).length) > 0)
+                this.addItems(attrs);
 
-            return attrs.length;
+            return attrsKeysLength;
         },
-        addItem: function(value) {
-            this.$('select').append('<option value="' + value + '">' + value + '</option>');
+        addItems: function(value) {
+            var html = '',
+                name;
+
+            for (name in value) {
+                html += '<optgroup label ="' + _.escape(name) + '">';
+                Array.isArray(value[name]) && value[name].forEach(function(option) {
+                    option = _.escape(option);
+                    html += '<option value="' + option + '">' + option + '</option>';
+                });
+                html += '</optgroup>';
+            }
+
+            this.$('select').append(html);
         },
         onCategorySelected: function(categories, selected) {
             this.reset();
@@ -190,11 +204,11 @@ define(["factory"], function() {
          */
         reset: function() {
             if(!this.model.isRestoring) {
-                this.model.set('attribute1', 1, {replaceState: true});
+                this.model.set(this.attributeName, 1, {replaceState: true});
             }
         },
         change: function(event) {
-            this.model.set('attribute1', event.target.value);
+            this.model.set(this.attributeName, event.target.value);
         },
         control: function(count) {
             if(count == 0)
@@ -203,7 +217,7 @@ define(["factory"], function() {
                 this.enable();
         },
         update: function() {
-            this.$('option[value="' + this.model.get('attribute1') + '"]').prop('selected', true);
+            this.$('option[value="' + this.model.get(this.attributeName) + '"]').prop('selected', true);
         }
     });
 

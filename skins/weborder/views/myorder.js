@@ -24,12 +24,7 @@ define(["myorder_view"], function(myorder_view) {
     'use strict';
 
     var MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView.extend({
-        bindings: {
-            '.size_chart_wrapper': 'toggle: _product_size_chart',
-            'a.size_chart': 'attr:{href: _product_size_chart}',
-        },
         initialize: function() {
-            this.extendBindingSources({_product: this.model.get_product()});
             App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.attributes_update);
         },

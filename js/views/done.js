@@ -79,10 +79,14 @@ define(["backbone", "factory"], function(Backbone) {
             } else {
                 var error = get.errorMsg.replace(/\+/g, ' ').replace(/%\d+/g, '');
                 this.model.success = false;
+                // Bug 25585.
+                // If network connection has been lost in capture phase, show "Retry to Submit Order" button.
+                var buttonText = App.Data.myorder.disconnected ? _loc.RETRY_SUBMIT_ORDER : _loc.RETURN_TO_ORDER_SUMMARY;
                 model = $.extend(model, {
                     status: 'error',
                     /* message : 'Payment failed - try to repeat',*/
-                    message: error
+                    message: error,
+                    buttonText: buttonText
                 });
             }
 
@@ -104,6 +108,10 @@ define(["backbone", "factory"], function(Backbone) {
         return_menu: function() {
             if (this.model.success) {
                 this.model.trigger('onMenu');
+            } else if (App.Data.myorder.disconnected) {
+                // Bug 25585.
+                // Reload the page on click "Retry to Submit Order" button.
+                reloadPageOnceOnline();
             } else {
                 this.model.trigger('onCheckout');
             }
