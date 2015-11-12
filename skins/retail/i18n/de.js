@@ -67,7 +67,7 @@ define([], function() {
         "MAIN_RESTART": "Neu starten",
         "MAIN_ORDER_SUBMITTED": "Ihre Bestellung wurde Entgegengenommen.",
         "MAIN_ORDER_NOT_SUBMITTED": "Ihre Bestellung wurde nicht Entgegengenommen.",
-        "MAIN_RETURN_TO_SUMMARY": "Zur Bestellzusammenfassung Zurückkehren",
+        "RETURN_TO_ORDER_SUMMARY": "Zur Bestellzusammenfassung Zurückkehren",
         "MAIN_RECEIPT_SENT_TO": "Ihr Beleg wurde versendet an",
         "MAIN_ORDER_ID": "Bestell-ID",
         "MAIN_DELIVERY_INFO": "Informationen zur Lieferung",

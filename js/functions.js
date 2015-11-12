@@ -412,10 +412,9 @@ function loadTemplate2(name, file, isCore, loadModelTemplate) {
                 resolve(); // resolve current CSS file
             },
             error: function(xhr) {
-                var errorMsg = ERROR[RESOURCES.TEMPLATES];
-                if (App.Data.myorder.disconnected) {
-                    errorMsg = App.Data.myorder.paymentResponse.errorMsg;
-                }
+                // Bug 25585.
+                // If network connection has been lost in capture phase, user will get the corresponding notification with reload button.
+                var errorMsg = App.Data.myorder.disconnected ? App.Data.myorder.paymentResponse.errorMsg : ERROR[RESOURCES.TEMPLATES];
                 App.Data.errors.alert(errorMsg, true); // user notification
             }
         });
@@ -492,10 +491,9 @@ function loadCSS(name, loadModelCSS) {
          * User notification.
          */
         var error = function() {
-            var errorMsg = ERROR[RESOURCES.CSS];
-            if (App.Data.myorder.disconnected) {
-                errorMsg = App.Data.myorder.paymentResponse.errorMsg;
-            }
+            // Bug 25585.
+            // If network connection has been lost in capture phase, user will get the corresponding notification with reload button.
+            var errorMsg = App.Data.myorder.disconnected ? App.Data.myorder.paymentResponse.errorMsg : ERROR[RESOURCES.CSS];
             App.Data.errors.alert(errorMsg, true, true); // user notification
         };
         var timer = window.setTimeout(error, App.Data.settings.get('timeout'));
@@ -1901,4 +1899,22 @@ function OR(){
 */
 function testA_5() {
    return 23033 + 'v1';
+}
+
+/**
+ * Reload page in browser once it's online.
+ */
+function reloadPageOnceOnline() {
+    App.Data.mainModel && App.Data.mainModel.trigger('loadStarted'); // show spinner
+    if ('onLine' in window.navigator) {
+        var reloadInterval = window.setInterval(function() {
+            if (window.navigator.onLine) {
+                window.location.reload();
+                clearInterval(reloadInterval);
+            }
+        }, 100);
+    }
+    else {
+        window.location.reload();
+    }
 }
