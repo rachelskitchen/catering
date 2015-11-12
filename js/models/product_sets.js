@@ -35,7 +35,8 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
     //                                                  *]                   * (Models.Myorder) - {  modifiers,
     //                                                                       |                       quantity,
     //                                                                       *]                      product (Models.Product)
-    //                                                                                             }                 |- selected: true/false,
+    //                                                                                               selected (true/false)
+    //                                                                                             }
 
     /**
      * @class
@@ -120,7 +121,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                    products: []
                 }
             this.get('order_products').each(function(model) {
-                if(model.get('product').get('selected')) {
+                if(model.get('selected')) {
                     json.products.push(model.item_submit(for_discount));
                 }
             });
@@ -131,7 +132,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
          */
         get_selected_products: function() {
             return this.get('order_products').filter(function(model) {
-                return model.get('product').get('selected') == true;
+                return model.get('selected') == true;
             });
         }
     });

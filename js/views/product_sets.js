@@ -38,27 +38,46 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             'change input': 'change'
         },
         bindings: {
-            '.mdf_quantity select': 'value: decimal(_product_quantity)',
-            '.customize ': "classes:{hide:not(is_modifiers)}"
+            '.mdf_quantity select': 'value: decimal(quantity)',
+            '.customize ': "classes:{hide:any(not(selected), not(is_modifiers))}",
+            '.cost': "classes: {hide: any(not(selected), not(is_modifiers))}",
+            '.price': "text: currencyFormat(modifiers_sum)",
         },
         computeds: {
             is_modifiers: function() {
-                return this.orderProduct.get_modifiers().length > 0;
+                return this.model.get_modifiers().length > 0;
+            },
+            modifiers_sum: {
+                deps: ['modifiers'],
+                get: function() {
+                    return this.model.get_sum_of_modifiers();
+                }
             }
         },
         initialize: function() {
-            this.orderProduct = this.options.parent;
-            this.extendBindingSources({_product: this.orderProduct });
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:selected', this.update, this);
+            this.listenTo(this.model, 'model_changed', this.reinit_new_model, this);
+        },
+        reinit_new_model: function() {
+            trace('reinit ==> ')
+            this.model = this.options.productSet.get('order_products').findWhere({id_product: this.model.get('id_product')});;
+            this.stopListening();
+            this.initialize();
         },
         render: function() {
             var model = this.model.toJSON(),
+                product = this.model.get('product'),
                 productSet = this.options.productSet;
             model.currency_symbol = App.Settings.currency_symbol;
-            model.price = round_monetary_currency(model.price);
+
+            //model.price = model.sum ? round_monetary_currency(model.sum) : round_monetary_currency(model.initial_price);
+            model.price = round_monetary_currency(this.model.get_sum_of_modifiers());
+
+            //trace("dfgddfgd", model.selected, this.model.get_sum_of_modifiers());
+
             model.slength = model.price.length;
-            model.name = this.model.escape('name');
+            model.name =  product.escape('name');
 
             this.$el.html(this.template(model));
 
@@ -77,10 +96,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 mdf_quantity_el.append(option_el);
             }
 
-            //this.afterRender(model.sort);
             this.update();
-            //this.update_free();
-
             return this;
         },
         customize: function(event) {
@@ -90,16 +106,13 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             var self = this,
                 isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift');
 
-            //find real product from the productSet:
-            var real_product = this.options.productSet.get('order_products').findWhere({id_product: this.options.parent.get('id_product')});
-            var clone = real_product.clone();
-
+            var clone = this.model.clone();
             App.Data.mainModel.set('popup', {
                 modelName: 'MyOrder',
                 mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
                 className: isStanfordItem ? 'stanford-reload-item' : '',
                 model: clone,
-                real: real_product,
+                real: this.model,
                 action: 'update',
                 action_callback: function() {
                     //return back to the combo root product view:
@@ -108,11 +121,13 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                             mod: 'MatrixCombo',
                             cache_id: self.options.myorder_root.get('id_product')
                         });
+                    self.model.trigger("model_changed");
+                    //trace('my test ee: ', self.model == clone);
+                    //trace('self.model.collection ', self.model.collection ? true : false );
                 }
             });
         },
         change: function(e, stat) {
-            trace("event change !")
             if(!App.Settings.online_orders) {
                 return;
             }
@@ -133,11 +148,6 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 }
                 this.model.set('selected', checked);
             }
-
-            if (this.model.get('selected') == false) {
-                //this.model.unset('free_amount');
-                this.model.unset('max_price_amount');
-            }
         },
         update: function() {
             var quantity;
@@ -149,7 +159,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                     this.$(".mdf_quantity").css("display", "inline-block");
 
                     this.$('.mdf_quantity option:selected').removeAttr('selected');
-                    quantity = this.options.parent.get('quantity');
+                    quantity = this.model.get('quantity');
                     if (quantity > 0) {
                         this.$(".mdf_quantity select").val(quantity);
                     }
@@ -179,8 +189,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             var view = App.Views.GeneratorView.create('Combo', {
                 el: $('<li class="modifier"></li>'),
                 mod: 'Item',
-                model: model.get('product'),
-                parent: model, // TBD: exclude it, posible future errors !!!
+                model: model,
                 type: this.options.type,
                 productSet: this.options.productSet,
                 myorder_root: this.options.myorder_root //root combo instance of App.Models.Myorder model
@@ -197,31 +206,20 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         mod: 'item',
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'change', this.controlCheckboxes, this);
+            this.listenTo(this.model.get('order_products'), 'change', this.controlCheckboxes, this);
         },
         render: function() {
             var model = this.model.toJSON(),
-                amount_free = 0, //model.amount_free,
-                isAdmin = false, //model.admin_modifier,
-                isPrice = false, //model.amount_free_is_dollars,
                 currency = App.Data.settings.get('settings_system').currency_symbol,
                 view;
-
             model.type = 0;
-            model.free_modifiers = '';
-            //model.name = 'Select products ...';
-
-            if(amount_free && !isAdmin)
-                model.free_modifiers = isPrice ? MSG.FREE_MODIFIERS_PRICE.replace('%s', currency + amount_free)
-                    : amount_free == 1 ? MSG.FREE_MODIFIERS_QUANTITY1 : MSG.FREE_MODIFIERS_QUANTITY.replace('%s', amount_free);
-
             this.$el.html(this.template(model));
 
             var view = App.Views.GeneratorView.create('Combo', {
                 el: this.$('.modifier_class_list'),
                 mod: 'List',
                 collection: this.model.get('order_products'),
-                type: 0,
+                type: 0, //checkboxes
                 productSet: this.model,
                 myorder_root: this.options.myorder_root //root combo product instance of App.Models.Myorder model
             });

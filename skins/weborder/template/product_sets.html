@@ -1,10 +1,10 @@
 <script type="text/template" id="combo_item-template">
-    <label for="product<%= id %>" class="s<%= slength %>">
-        <input type="checkbox" id="product<%= id %>">
+    <label for="product<%= id_product %>" class="s<%= slength %>">
+        <input type="checkbox" id="product<%= id_product %>">
         <span class="input checkbox"></span>
         <span class="title"><%= name %></span>
         <span class="cost">
-            (<span class="plus">+</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>)
+            (<span class="plus">+</span><span class="price"></span>)
         </span>
         <span class="customize link1"><%= _lp.COMBO_CUSTOMIZE %></span>
     </label>

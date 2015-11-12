@@ -250,6 +250,9 @@
 #popup .order-items .combo_products_place {
     margin-left: 10px;
 }
+#popup .order-items .combo_products_place .product_place .cost {
+    display: none;
+}
 /* -- */
 #popup .order-items li.special {
     display: block;

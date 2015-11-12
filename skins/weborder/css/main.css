@@ -617,6 +617,9 @@ section.maintenance #header .btn {
 #cart .order-items .combo_products_place {
     margin-left: 10px;
 }
+#cart .order-items .combo_products_place .product_place .cost {
+    display: none;
+}
 /* -- */
 #cart .order-items li.special {
     display: block;

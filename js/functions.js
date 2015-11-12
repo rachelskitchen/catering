@@ -1882,3 +1882,16 @@ function OR(){
 function testA_5() {
    return 23033 + 'v1';
 }
+
+/*
+*  copy data from one object (e.g. Myorder class) to another of the same type.
+*  every object can contain other object with toJSON
+*/
+/*Backbone.prototype.deepCopy: function(dest) {
+    other = other.toJSON();
+    for (var key in other) {
+        if (typeof other['key'] != 'object' ){
+
+        }
+    }
+}*/
