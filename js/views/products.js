@@ -112,8 +112,8 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         name: 'product',
         mod: 'modifiers',
         initialize: function() {
-            this.extendBindingSources({_product: this.model.get_product()});
             this.product = this.model.get_product();
+            this.extendBindingSources({_product: this.product});
             this.modifiers = this.model.get_modifiers();
             this.giftCardPriceRegStr = '^\\d{0,3}(\\.\\d{0,2})?$';
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
@@ -121,7 +121,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         },
         bindings: {
             '.size_chart_wrapper': 'toggle: _product_size_chart',
-            'a.size_chart': 'attr:{href: _product_size_chart}',
+            'a.size_chart': 'attr:{href: _product_size_chart}'
         },
         events: {
             'change .gift_card_number': 'gift_change',

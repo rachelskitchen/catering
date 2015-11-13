@@ -935,7 +935,6 @@ define(["main_router"], function(main_router) {
                 App.Data.footer.set({
                     btn_title: _loc.FOOTER_PROCEED,
                     action: function() {
-                        App.Data.card.trigger('add_card');
                         App.Data.myorder.trigger('payWithCreditCard');
                     }
                 });
@@ -977,7 +976,6 @@ define(["main_router"], function(main_router) {
                 App.Data.footer.set({
                     btn_title: _loc.FOOTER_PROCEED,
                     action: function() {
-                        App.Data.giftcard.trigger('add_card');
                         App.Data.giftcard.trigger('pay');
                     }
                 });

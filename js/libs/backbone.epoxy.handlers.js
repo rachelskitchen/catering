@@ -248,4 +248,71 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             }
         });
     });
+
+    // Tracks current caret position and restores it after binding value update.
+    // This handler is often used simultaneously with 'value:anyFilter(binding_value), events: ["input"]' handlers
+    // to avoid a caret position moving to end caused by following process:
+    //     1. Caret position is 'ab|c'.
+    //     2. User enters 'd' symbol.
+    //     3. Value changes on 'abd|c'.
+    //     4. Trigger 'input' event.
+    //     5. Trigger get() method on 'value' handler.
+    //     6. Trigger binding value "change" event
+    //     7. Trigger set() method of 'value' handler that changes el.value on new value.
+    //     8. Caret position is automatically moved to end.
+    Backbone.Epoxy.binding.addHandler('trackCaretPosition', {
+        init: function($el, value, bindings) {
+            var events = 'keyup keydown keypress mouseup mousedown touchstart touchend',
+                el = $el.get(0),
+                self = this;
+
+            this.prevValue = '';
+
+            this.listenToPositionChange = function() {
+                $el.on(events, getPosition);
+            };
+
+            this.stopListening = function() {
+                $el.off(events, getPosition);
+            };
+
+            this.setPosition = function(pos) {
+                // Using Selection API for input[type=number] throws exception in some browsers (Chrome)
+                // ("Browser Compatibility" at https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange)
+                try {
+                    el.setSelectionRange(pos, pos);
+                } catch(e) {
+                    console.log('Unable to set caret position');
+                }
+            };
+
+            getPosition();
+            this.listenToPositionChange();
+
+            function getPosition() {
+                try {
+                    self.startPos = el.selectionStart;
+                    self.endPos = el.selectionEnd;
+                } catch(e) {
+                    self.startPos = 0,
+                    self.endPos = 0;
+                    console.log('Unable to get caret position');
+                }
+            }
+        },
+        // restore correct caret position after el.value update
+        set: function($el, value) {
+            var valueLength = value.toString().length,
+                prevLength = this.prevValue.toString().length,
+                range = Math.abs(this.startPos - this.endPos),
+                diff = valueLength - prevLength,
+                pos = this.startPos + range + diff;
+            this.setPosition(pos);
+            this.startPos = this.endPos = pos;
+            this.prevValue = value;
+        },
+        clean: function() {
+            this.stopListening();
+        }
+    });
 });

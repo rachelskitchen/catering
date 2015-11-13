@@ -74,4 +74,10 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         typeof value != 'number' && (value = Number(value));
         return value.toFixed(decimal);
     });
+
+    Backbone.Epoxy.binding.addFilter('firstLetterToUpperCase', function(value) {
+        return value.toString().replace(/(^\w)|\s(\w)/g, function(m, g1, g2){
+            return g1 ? g1.toUpperCase() : ' ' + g2.toUpperCase();
+        });
+    });
 });

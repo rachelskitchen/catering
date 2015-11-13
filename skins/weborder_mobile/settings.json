@@ -6,11 +6,12 @@
     "img_default": "none.png",
     "routing": {
         "main": {
-            "css": [ "main", "header", "footer", "revel"],
+            "css": [ "main", "header", "footer", "revel", "jquery.smartbanner"],
             "model": ["main", "header", "revel", "payments", "footer"],
             "templates": ["main", "header", "footer", "revel"],
             "views": ["main", "header", "products", "footer"],
-            "core": ["geopoint", "stanfordcard", "giftcard", "revel_view", "revel_api"]
+            "core": ["geopoint", "stanfordcard", "giftcard", "revel_view", "revel_api"],
+            "js" : ["jquery.smartbanner"]
         },
         "index": {
             "css": ["categories", "promo_message"],
@@ -56,9 +57,9 @@
         },
         "confirm": {
             "css": ["total", "checkout", "card", "tips"],
-            "views": ["checkout", "card", "tips", "total"],
+            "views": ["checkout", "tips", "total"],
             "templates": ["total", "checkout", "card", "tips"],
-            "core": ["tip", "checkout", "card", "jquery_numbermask"]
+            "core": ["tip", "checkout", "card", "card_view", "jquery_numbermask"]
         },
         "payments": {
             "css": ["payments"],
@@ -67,15 +68,13 @@
         },
         "card": {
             "css": ["card"],
-            "views": ["card"],
             "templates": ["card"],
-            "core": ["card", "jquery_numbermask"]
+            "core": ["card", "card_view", "jquery_numbermask"]
         },
         "giftcard": {
             "css": ["card"],
-            "views": ["giftcard"],
             "templates": ["giftcard"],
-            "core": ["giftcard", "jquery_numbermask"]
+            "core": ["giftcard", "jquery_numbermask", "giftcard_view"]
         },
         "pay": {
             "core": ["checkout", "products", "modifiers", "card", "giftcard", "tip", "customers"]

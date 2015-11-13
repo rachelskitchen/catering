@@ -39,6 +39,11 @@ define(["factory", "giftcard_view"], function(factory) {
         }),
         events: {
             'click .btn-reload': 'updateCaptcha',
+            'keydown .btn-reload': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.updateCaptcha();
+                }
+            },
             'click .cancel-input': 'reset'
         },
         initialize: function() {
@@ -114,7 +119,17 @@ define(["factory", "giftcard_view"], function(factory) {
         mod: 'student',
         events: {
             'click .btn-yes': 'yes',
+            'keydown .btn-yes': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.yes();
+                }
+            },
             'click .btn-no': 'no',
+            'keydown .btn-no': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.no();
+                }
+            }
         },
         yes: function() {
             this.model.trigger('onStudent');

@@ -60,6 +60,11 @@ var PAYMENT_TYPE = {
     STANFORD: 6
 };
 
+var APP_STORE_NAME = {
+    ios: 'apple-itunes-app',
+    android: 'google-play-app',
+};
+
 // Dining options
 var DINING_OPTION = {
         DINING_OPTION_TOGO : 0,
@@ -110,7 +115,8 @@ function msgFrm(msg_format) {
  */
 function parse_get_params() {
     // need to include app.instances config as origin parameters
-    if (!parse_get_params.instance_config_applied) {
+    // if no one GET-parameter exists in url (Bug 32709)
+    if (!window.location.search && !parse_get_params.instance_config_applied) {
         try {
             var app = require('app');
             if(app.REVEL_HOST in app.instances) {
@@ -411,7 +417,10 @@ function loadTemplate2(name, file, isCore, loadModelTemplate) {
                 resolve(); // resolve current CSS file
             },
             error: function(xhr) {
-                App.Data.errors.alert(ERROR[RESOURCES.TEMPLATES], true); // user notification
+                // Bug 25585.
+                // If network connection has been lost in capture phase, user will get the corresponding notification with reload button.
+                var errorMsg = App.Data.myorder.disconnected ? App.Data.myorder.paymentResponse.errorMsg : ERROR[RESOURCES.TEMPLATES];
+                App.Data.errors.alert(errorMsg, true); // user notification
             }
         });
     } else if(loadTemplate2[id] instanceof $) {
@@ -487,7 +496,10 @@ function loadCSS(name, loadModelCSS) {
          * User notification.
          */
         var error = function() {
-            App.Data.errors.alert(ERROR[RESOURCES.CSS], true, true); // user notification
+            // Bug 25585.
+            // If network connection has been lost in capture phase, user will get the corresponding notification with reload button.
+            var errorMsg = App.Data.myorder.disconnected ? App.Data.myorder.paymentResponse.errorMsg : ERROR[RESOURCES.CSS];
+            App.Data.errors.alert(errorMsg, true, true); // user notification
         };
         var timer = window.setTimeout(error, App.Data.settings.get('timeout'));
 
@@ -1269,6 +1281,16 @@ var PaymentProcessor = {
             processor.handlePaymentDataRequest(myorder, data);
         }
     },
+    // Bug #25585
+    setPaymentData: function() {
+        setData(App.Data.router.getUID() + '.paymentData', App.Data.get_parameters);
+    },
+    getPaymentData: function() {
+        return getData(App.Data.router.getUID() + '.paymentData');
+    },
+    removePaymentData: function() {
+        removeData(App.Data.router.getUID() + '.paymentData');
+    },
     getPaymentProcessor: function(payment_type) {
         var payment_processor = null;
         switch (payment_type) {
@@ -1371,6 +1393,7 @@ var PaymentProcessor = {
             return;
         }
         removeData(App.Data.router.getUID() + '.isTransactionInProcess');
+        this.removePaymentData();
     }
 };
 
@@ -1883,15 +1906,20 @@ function testA_5() {
    return 23033 + 'v1';
 }
 
-/*
-*  copy data from one object (e.g. Myorder class) to another of the same type.
-*  every object can contain other object with toJSON
-*/
-/*Backbone.prototype.deepCopy: function(dest) {
-    other = other.toJSON();
-    for (var key in other) {
-        if (typeof other['key'] != 'object' ){
-
-        }
+/**
+ * Reload page in browser once it's online.
+ */
+function reloadPageOnceOnline() {
+    App.Data.mainModel && App.Data.mainModel.trigger('loadStarted'); // show spinner
+    if ('onLine' in window.navigator) {
+        var reloadInterval = window.setInterval(function() {
+            if (window.navigator.onLine) {
+                window.location.reload();
+                clearInterval(reloadInterval);
+            }
+        }, 100);
     }
-}*/
+    else {
+        window.location.reload();
+    }
+}

@@ -420,6 +420,8 @@ define([], function() {
             ],
             "ERROR_GEOLOCATION_NOAPI": "Jūsų naršyklėje geografinės vietos API nepalaikoma.",
             "ERROR_SUBMIT_ORDER": "Užsakymo pateikti nepavyko.Bandykite dar kartą.",
+            'ERROR_SUBMIT_ORDER_DISCONNECT': "Tinklo ryšys buvo prarastas. Kai jis yra atkurta, paspauskite mygtuką žemiau užbaigti užsakymą.",
+            'ERROR_ASAP_TIME_SLOT_BUSY': 'Selected time is not available. Next available time from dropdown list is %s.',
             "ERROR_ORDERS_PICKUPTIME_LIMIT": "Viršytas didžiausias užsakymų šiam atsiėmimo laikui skaičius.Pasirinkite kitą atsiėmimo laiką.",
             "ERROR_INSUFFICIENT_STOCK": "Kai kurių produktų atsargų nepakanka.",
             "ERROR_OCCURRED": "Įvyko triktis:",

@@ -76,6 +76,12 @@ select {
     padding: 0 25px 0 10px;
     float: left;
 }
+select:focus,
+.pikaday:focus {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 15px;
+}
 @-moz-document url-prefix() {
     /* due to firefox does not hide select element arrows need change padding */
     select {
@@ -599,8 +605,13 @@ section.maintenance #header .btn {
 #cart .order-items .service_fees {
     margin-top: 8px;
 }
-#cart .order-items li li {
-    height: 20px;
+#cart .order-items li li,
+#cart .order-items h3 {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
 }
 #cart .order-items > li {
     height: auto;
@@ -630,61 +641,24 @@ section.maintenance #header .btn {
 #cart .order-items h3 {
     position: relative;
     font-size: inherit;
-    height: 20px;
 }
 #cart .order-items h3 .name {
     font-weight: bold;
 }
 #cart .order-items .name {
-    display: block;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
+    -webkit-flex: auto;
+       -moz-flex: auto;
+        -ms-flex: auto;
+         -o-flex: auto;
+            flex: auto;
 }
 #cart .order-items .name.discount {
     font-style: italic;
 }
 #cart .order-items .cost {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
     letter-spacing: -3px;
     text-align: right;
-}
-#cart .order-items .s4 .name {
-    right: 53px;
-}
-#cart .order-items .s4 .cost {
-    width: 52px;
-}
-#cart .order-items .s5 .name {
-    right: 62px;
-}
-#cart .order-items .s5 .cost {
-    width: 61px;
-}
-#cart .order-items .s6 .name {
-    right: 72px;
-}
-#cart .order-items .s6 .cost {
-    width: 71px;
-}
-#cart .order-items .s7 .name {
-    right: 81px;
-}
-#cart .order-items .s7 .cost {
-    width: 80px;
-}
-#cart .order-items .s8 .name {
-    right: 90px;
-}
-#cart .order-items .s8 .cost {
-    width: 89px;
+    margin-left: 5px;
 }
 #cart .order-items h3 + ul {
     margin: 5px 0;

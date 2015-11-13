@@ -26,8 +26,9 @@ define(["backbone"], function(Backbone) {
     App.Models.Filter = Backbone.Model.extend({
         defaults: {
             attribute1: 1,    // show all
+            attribute2: 1,    // show all
             sort: 'sort',     // default sorting
-            order: 0       // default sorting order
+            order: 0          // default sorting order
         },
         saveSort: function() {
             // save only `sort` and `order` properties

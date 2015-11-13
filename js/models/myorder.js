@@ -38,6 +38,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             stanfordCard: null,         // App.Models.StanfordCard instance if product is gift
             stanford_card_number: '',   // stanford card number
             planId: null,                // stanford plan to add some amount to
+            isServiceFee: false,
             is_child_product: false,     //child product in a combo product set
             selected: null
         },
@@ -47,6 +48,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         initialize: function() {
             this.set("discount", new App.Models.DiscountItem());
             this.listenTo(this, 'change', this.change);
+            this.listenTo(this, 'change:quantity', this.update_mdf_sum);
         },
         get_product: function() {
             return this.get('product').get_product();
@@ -113,9 +115,20 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 });
                 this.listenTo(modifiers, 'modifiers_changed', function() {
                     this.update_prices();
+                    this.update_mdf_sum();
                     this.trigger('change', this); // need to notify a collection about modifier change to ensure cart totals update
                 });
             }
+        },
+        update_mdf_sum: function() {
+            var mdfGroups = this.get_modifiers(),
+                quantity = this.get('quantity');
+            mdfGroups && mdfGroups.each(function(mdfGroup) {
+                var mdfs = mdfGroup.get('modifiers');
+                mdfs && mdfs.each(function(mdf) {
+                    mdf.updateSum(quantity);
+                });
+            });
         },
         /**
          * update modifiers price due to max feature
@@ -252,9 +265,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 max_price = product && product.get('max_price'),
                 totalItem;
 
-                if (sold_by_weight && weight) {
-                    productSum *= weight;
-                }
+            if (sold_by_weight && weight) {
+                productSum *= weight;
+            }
 
             var modifiers = this.get_modifiers(),
                 modifiersSum = modifiers ? modifiers.get_sum() : 0,
@@ -266,7 +279,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             // subtotal should be less or equal max_price if any no admin modifier is attached to product
             // Test Case 7047
-            return (hasModifiers && typeof max_price == 'number' && max_price < totalItem ? max_price : totalItem) * this.get('quantity');
+            return (hasModifiers && typeof max_price == 'number' && max_price > 0 && max_price < totalItem ? max_price : totalItem) * this.get('quantity');
         },
         /*
         *   get product sum w/o modifiers
@@ -713,6 +726,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         get_only_product_quantity: function() {
             return _.reduce(this.models, function(qty, model) {
                     return model.get("id_product") != null ? qty + model.get('quantity') : qty;
+                }, 0);
+        },
+        get_service_fee_charge: function() {
+            return _.reduce(this.models, function(sum, model) {
+                    return model.get("id_product") == null ? sum + model.get('sum') : sum;
                 }, 0);
         },
         /**
@@ -1512,11 +1530,20 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     }//end of switch
                 },
                 error: function(xhr) {
+                    var errorMsg = '';
+                    if ('onLine' in window.navigator && !window.navigator.onLine && capturePhase) {
+                        // network connection is lost after return from payment processor
+                        errorMsg = MSG.ERROR_SUBMIT_ORDER_DISCONNECT;
+                        myorder.disconnected = true;
+                    }
+                    else {
+                        errorMsg = MSG.ERROR_SUBMIT_ORDER;
+                    }
                     myorder.paymentResponse = {
                         status: 'ERROR',
-                        errorMsg: MSG.ERROR_SUBMIT_ORDER
+                        errorMsg: errorMsg
                     };
-                    reportErrorFrm(MSG.ERROR_SUBMIT_ORDER);
+                    reportErrorFrm(errorMsg);
                 },
                 complete: function(xhr, result) {
                     payment_type === PAYMENT_TYPE.PAYPAL_MOBILE && $.mobile.loading("hide");

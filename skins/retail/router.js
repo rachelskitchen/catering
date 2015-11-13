@@ -592,8 +592,21 @@ define(["main_router"], function(main_router) {
                             categories: categories,
                             search: App.Data.search,
                             products: App.Data.products,
+                            attr: 2,
                             mod: 'Attribute',
-                            className: 'filter attribute select-wrapper'
+                            className: 'filter attribute select-wrapper',
+                            uniqId: '2'
+                        },
+                        {
+                            modelName: 'Filter',
+                            model: App.Data.filter,
+                            categories: categories,
+                            search: App.Data.search,
+                            products: App.Data.products,
+                            attr: 1,
+                            mod: 'Attribute',
+                            className: 'filter attribute select-wrapper',
+                            uniqId: '1'
                         },
                         {
                             modelName: 'Categories',

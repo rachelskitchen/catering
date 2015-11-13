@@ -32,6 +32,11 @@ define(["instructions_view"], function(instructions_view) {
         },
         events: {
             'click .add_instructions': 'show_hide',
+            'keydown .add_instructions': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.show_hide();
+                }
+            },
             'change .instructions': 'change_special'
         },
         position: function() {

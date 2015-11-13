@@ -53,11 +53,15 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             this.addCart();
         },
         events: {
-            'click .btn-submit': 'submit_payment'
+            'click .btn-submit': 'submit_payment',
+            'keydown .btn-submit': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.submit_payment();
+                }
+            }
         },
         submit_payment: function() {
             var self = this;
-            this.options.card.trigger('add_card');
             saveAllData();
 
             self.collection.check_order({
@@ -93,9 +97,9 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
         name: 'confirm',
         mod: 'stanford_card',
         initialize: function() {
-            this.listenTo(this.options.card, 'onStanfordCardError', this.showErrorMsg, this); 
+            this.listenTo(this.options.card, 'onStanfordCardError', this.showErrorMsg, this);
             this.listenTo(this.options.card.get('plans'), 'change:selected', this.update, this);
-            App.Views.CoreConfirmView.CoreConfirmPayCardView.prototype.initialize.apply(this, arguments); 
+            App.Views.CoreConfirmView.CoreConfirmPayCardView.prototype.initialize.apply(this, arguments);
             this.update();
         },
         bindings: {
@@ -145,7 +149,7 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
         update: function() {
             if (this.options.card.getSelectedPlan())
                 this.$(".submit-order").removeClass("disabled");
-            else 
+            else
                 this.$(".submit-order").addClass("disabled");
         },
         showErrorMsg: function(msg) {

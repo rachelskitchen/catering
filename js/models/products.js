@@ -705,34 +705,36 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
         /**
          * @method
          * @param {number} type - attribute type (may be 1 or 2).
-         * @returns array of unique attribute values.
+         * @returns object containing unique attribute values grouped by attribute name.
          */
         getAttributeValues: function(type) {
-            var attrs = [],
-                key;
+            var attrs = {},
+                key, name;
 
             if(type != 1 && type != 2)
                 type = 1;
 
             key = 'attribute_' + type + '_values';
+            name = 'attribute_' + type + '_name';
 
-            // attrs should have only unique values
-            attrs.push = function() {
-                Array.prototype.forEach.call(arguments, function(arg) {
-                    this.indexOf(arg) == -1 && Array.prototype.push.call(this, arg);
-                }, this);
-                return this.length;
-            };
+            // get attribute values grouped by name
+            this.length && this.toJSON().forEach(function(product) {
+                var values = product[key],
+                    _name = product[name];
+                if (!_name) {
+                    return;
+                }
+                if (!(_name in attrs)) {
+                    attrs[_name] = [];
+                }
+                attrs[_name].push.apply(attrs[_name], values);
+            });
 
-            // get unique attribute values
-            this.length && this.toJSON().reduce(function(attrs, product) {
-                var values = product[key];
-                if(product.attribute_type == 1 && Array.isArray(values))
-                    attrs.push.apply(attrs, values);
-                return attrs;
-            }, attrs);
+            for(name in attrs) {
+                attrs[name] = _.uniq(attrs[name]).sort();
+            }
 
-            return attrs.sort();
+            return attrs;
         }
     });
 

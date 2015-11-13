@@ -1219,7 +1219,7 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
                 spyOn(collection, 'onProductsError');
                 var id_category = 12;
                 collection.get_products(id_category);
-                 
+
                 ajax.reject();
 
                 checkAjaxRequest();
@@ -1230,7 +1230,7 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
             it('request with no product_id or search param', function() {
                 spyOn(collection, 'onProductsError');
                 var deferred = collection.get_products();
-                expect(deferred.state()).toBe('resolved');               
+                expect(deferred.state()).toBe('resolved');
             });
 
             it('id_category is passed, response.status is "OK"', function() {
@@ -1405,9 +1405,9 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
             });
 
             function expectEmptyResult() {
-                expect(collection.getAttributeValues(0)).toEqual([]);
-                expect(collection.getAttributeValues(1)).toEqual([]);
-                expect(collection.getAttributeValues(2)).toEqual([]);
+                expect(collection.getAttributeValues(0)).toEqual({});
+                expect(collection.getAttributeValues(1)).toEqual({});
+                expect(collection.getAttributeValues(2)).toEqual({});
             }
         });
     });
