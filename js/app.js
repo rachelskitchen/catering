@@ -262,16 +262,7 @@
 
     // 'this' should be HTMLElement
     function addSpinner() {
-        var html = '<div class="ui-spinner">';
-        html += '<div class="point1 point"></div>';
-        html += '<div class="point2 point"></div>';
-        html += '<div class="point3 point"></div>';
-        html += '<div class="point4 point"></div>';
-        html += '<div class="point5 point"></div>';
-        html += '<div class="point6 point"></div>';
-        html += '<div class="point7 point"></div>';
-        html += '<div class="point8 point"></div>';
-        html += '</div>';
+        var html = '<div class="ui-spinner animate-spin"></div>';
         if('absolute' !== this.style.position) {
             this.style.position = 'relative';
         }
