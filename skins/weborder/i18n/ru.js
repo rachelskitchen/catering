@@ -87,7 +87,7 @@
         'MAIN_RESTART': 'Перезагрузить',
         'MAIN_ORDER_SUBMITTED': 'Ваш заказ принят',
         'MAIN_ORDER_NOT_SUBMITTED': 'Ваш заказ не был принят',
-        'MAIN_RETURN_ORDER_SUMMARY': 'Вернуться к данным заказа',
+        'RETURN_TO_ORDER_SUMMARY': 'Вернуться к данным заказа',
         'MAIN_RECEIPT_SENT_TO': 'Уведомление о заказе было отправлено на',
         'MAIN_ORDER_ID': '№ заказа',
         'MAIN_DELIVERY_INFO': 'Информация о доставке',

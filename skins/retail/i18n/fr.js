@@ -67,7 +67,7 @@ define([], function() {
         "MAIN_RESTART": "Redémarrer",
         "MAIN_ORDER_SUBMITTED": "Votre commande a été envoyée.",
         "MAIN_ORDER_NOT_SUBMITTED": "Votre commande n’a pas été envoyée.",
-        "MAIN_RETURN_TO_SUMMARY": "Retour au résumé de la commande",
+        "RETURN_TO_ORDER_SUMMARY": "Retour au résumé de la commande",
         "MAIN_RECEIPT_SENT_TO": "Votre reçu a été envoyé à",
         "MAIN_ORDER_ID": "ID de la commande",
         "MAIN_DELIVERY_INFO": "Informations de livraison",
