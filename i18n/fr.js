@@ -420,6 +420,8 @@ define([], function() {
             ],
             "ERROR_GEOLOCATION_NOAPI": "Votre navigateur ne prend pas en charge l’API de géolocalisation.",
             "ERROR_SUBMIT_ORDER": "Échec de l’envoi d’une commande. Veuillez réessayer.",
+            'ERROR_SUBMIT_ORDER_DISCONNECT': "La connexion au réseau a été perdue. Une fois qu'il est rétabli, appuyez sur le bouton ci-dessous pour compléter votre commande.",
+            'ERROR_ASAP_TIME_SLOT_BUSY': 'Selected time is not available. Next available time from dropdown list is %s.',
             "ERROR_ORDERS_PICKUPTIME_LIMIT": "Le nombre maximum de commandes pour cette heure de retrait a été dépassé. Veuillez sélectionner une autre heure de retrait.",
             "ERROR_INSUFFICIENT_STOCK": "Certains produits disposent d’un stock insuffisant.",
             "ERROR_OCCURRED": "Une erreur s'est produite :",

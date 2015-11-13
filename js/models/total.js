@@ -151,7 +151,7 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
          * @returns {string} tip amount formatted as a string.
          */
         get_tip: function() {
-            return round_monetary_currency(this.get('tip').get_tip(this.get_subtotal()));
+            return round_monetary_currency(this.get('tip').get_tip(this.get_subtotal(), this.get_discounts_str(), App.Data.myorder.get_service_fee_charge()));
         },
         /**
          * @method

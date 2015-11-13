@@ -23,63 +23,51 @@
 define(["backbone", "factory"], function(Backbone) {
     'use strict';
 
+    var years = (function() {
+        var arr= [];
+        for(var i = (new Date).getFullYear(), l = i + 21; i <= l; i++) {
+            arr.push(i);
+        }
+        return arr;
+    })();
+
     App.Views.CoreCardView = {};
 
     App.Views.CoreCardView.CoreCardMainView = App.Views.FactoryView.extend({
         name: 'card',
         mod: 'main',
-        initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'add_card', this.setData, this);
-            this.listenTo(this.model, 'change:firstName change:secondName', this.updateData, this); // update first name & last name of view
-        },
         bindings: {
-            '.number': 'restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^[\\d|-]{0,19}$/',
-            '.secure': 'restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^[\\d|-]{0,4}$/',
-            '.zip': 'restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^(\\d{0,9})$/'
+            '.first_name': 'value: firstLetterToUpperCase(firstName), events: ["input"], trackCaretPosition: firstName',
+            '.last_name': 'value: firstLetterToUpperCase(secondName), events: ["input"], trackCaretPosition: secondName',
+            '.number': 'value: cardNumber, events: ["input"], restrictInput: "0123456789", pattern: /^[\\d|-]{0,19}$/',
+            '.secure': 'value: securityCode, events: ["input"], restrictInput: "0123456789", pattern: /^[\\d|-]{0,4}$/',
+            '.card-expiration-month': 'value: expMonth',
+            '.card-expiration-year': 'value: expDate, options: years'
+        },
+        computeds: {
+            years: function() {
+                return years;
+            }
         },
         render: function() {
             var self = this,
                 model = {},
-                cardNumber, expYear, expMonth, securityCode;
-            model.firstName = this.model.escape('firstName');
-            model.secondName = this.model.escape('secondName');
-            model.cardNumber = this.model.escape('cardNumber');
-            model.securityCode = this.model.escape('securityCode');
-            model.street = this.model.escape('street');
-            model.city = this.model.escape('city');
-            model.state = this.model.escape('state');
-            model.zip = this.model.escape('zip');
+                cardNumber, securityCode;
             model.isFirefox = /firefox/i.test(navigator.userAgent);
-            expYear = this.$('#exp-year');
 
-            var payment = App.Data.settings.get_payment_process();
-            if (payment.paypal && payment.paypal_direct_credit_card)
-                model.paypal_direct_credit_card = true;
-            else
-                model.paypal_direct_credit_card = false;
             this.$el.html(this.template(model));
 
-            expYear = this.$('#exp-year');
+            /**
+             * Hack for bug: https://code.google.com/p/android/issues/detail?id=24626.
+             * Bug of Revel Systems: http://bugzilla.revelup.com/bugzilla/show_bug.cgi?id=5368.
+             */
             cardNumber = this.$('.number');
             securityCode = this.$('.secure');
-            expMonth = this.$('#exp-month');
-
-            for(var i = (new Date).getFullYear(), l = i + 21; i <= l; i++)
-                expYear.append('<option value="' + i + '">' + i + '</option>');
-
-            expMonth.val(this.model.escape('expMonth'));
-            $('option:selected', expMonth).length === 0 && $('option:first', expMonth).prop('selected',true);
-            expYear.val(this.model.escape('expDate'));
-            $('option:selected', expYear).length === 0 && $('option:first', expYear).prop('selected',true);
 
             if (cssua.userAgent.mobile) {
                 if (cssua.userAgent.android) {
-                    /*
-                    Hack for bug: https://code.google.com/p/android/issues/detail?id=24626.
-                    Bug of Revel Systems: http://bugzilla.revelup.com/bugzilla/show_bug.cgi?id=5368.
-                    */
-                    if (check_android_old_version(cssua.userAgent.android)) { // checking version OS Android (old version is Android <= 4.2.1)
+                    // checking version OS Android (old version is Android <= 4.2.1)
+                    if (check_android_old_version(cssua.userAgent.android)) {
                         cardNumber.attr("type", "text");
                         cardNumber.focus(function() {
                             $(this).attr("type", "number");
@@ -98,73 +86,7 @@ define(["backbone", "factory"], function(Backbone) {
                 }
             }
 
-            this.$('.first_name, .last_name').numberMask({pattern: /^.*$/ }).on("keypressNumber", function(event) {
-                try {
-                    var start = event.target.selectionStart,
-                        end = event.target.selectionEnd,
-                        direction = event.target.selectionDirection;
-                } catch(e) {
-                    console.log('There is not selection API');
-                }
-                var new_value = this.value.replace(/(^[a-z])|\s([a-z])/g, function(m, g1, g2){
-                    return g1 ? g1.toUpperCase() : ' ' + g2.toUpperCase();
-                });
-                this.value = new_value;
-
-                if ( ~this.className.indexOf('first_name') ) {
-                    self.model.set({firstName: new_value}, {doNotUpdateView: true});
-                } else {
-                    self.model.set({secondName: new_value}, {doNotUpdateView: true});
-                }
-
-                try {
-                    event.target.setSelectionRange(start, end, direction);
-                } catch(e) {}
-            });
-        },
-        events: {
-            'blur .first_name': 'changeFirstName',
-            'blur .last_name': 'changeLastName',
-        },
-        /**
-         * Change the firstName property of model.
-         *
-         * @param {object} e Event object.
-         */
-        changeFirstName: function(e) {
-            this.model.set('firstName', e.target.value);
-        },
-        /**
-         * Change the secondName property of model.
-         *
-         * @param {object} e Event object.
-         */
-        changeLastName: function(e) {
-            this.model.set('secondName', e.target.value);
-        },
-        setData: function() {
-            var data = {
-                    firstName: this.$('.first_name').val(),
-                    secondName: this.$('.last_name').val(),
-                    cardNumber: this.$('.number').val(),
-                    securityCode: this.$('.secure').val(),
-                    expMonth: this.$('#exp-month').val(),
-                    expDate: this.$('#exp-year').val(),
-                    street: this.$('.address').val(),
-                    city: this.$('.city').val(),
-                    state: this.$('.state').val(),
-                    zip: this.$('.zip').val()
-                };
-            this.model.set(data);
-        },
-        /**
-         * Update first name & last name of view.
-         */
-        updateData: function(model, val, opts) {
-            if (!opts.doNotUpdateView) {
-                this.$('.first_name').val(this.model.get('firstName'));
-                this.$('.last_name').val(this.model.get('secondName'));
-            }
+            return this;
         }
     });
 

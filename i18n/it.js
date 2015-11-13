@@ -420,6 +420,8 @@ define([], function() {
             ],
             "ERROR_GEOLOCATION_NOAPI": "Geolocation API(localizzazione geografica) non è supportata nel tuo browser.",
             "ERROR_SUBMIT_ORDER": "Impossibile inviare un ordine.Riprova.",
+            'ERROR_SUBMIT_ORDER_DISCONNECT': "La connessione di rete viene persa. Una volta restaurato, premere il pulsante per completare l'ordine.",
+            'ERROR_ASAP_TIME_SLOT_BUSY': 'Selected time is not available. Next available time from dropdown list is %s.',
             "ERROR_ORDERS_PICKUPTIME_LIMIT": "Il numero massimo di ordini per l’ orario di ritiro selezionato è stato superato.Seleziona un altro orario.",
             "ERROR_INSUFFICIENT_STOCK": "Alcuni prodotti non hanno scorte sufficienti.",
             "ERROR_OCCURRED": "Errore:",

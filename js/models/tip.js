@@ -75,7 +75,7 @@ define(["backbone"], function(Backbone) {
          * @param {number} subtotal - subtotal amount to calculate percent.
          * @returns {number} tips amount.
          */
-        get_tip: function(subtotal) {
+        get_tip: function(subtotal, discounts, serviceFee) {
             var type = this.get('type'),
                 amount = this.get('amount'),
                 percent = this.get('percent') * 1,
@@ -87,7 +87,7 @@ define(["backbone"], function(Backbone) {
                 return 0;
             } else {
                 if (amount) {
-                    return percent * subtotal / 100;
+                    return percent * (subtotal * 1 + discounts * 1 - serviceFee * 1) / 100;
                 }
                 else {
                     return sum;

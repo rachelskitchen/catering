@@ -9,15 +9,14 @@
 </script>
 
 <script type="text/template" id="myorder_item-template">
-    <h3 class="product_place s<%= price_length %>">
+    <h3 class="product_place">
         <% if(sold_by_weight) { %>
             <span class="name"><%= sizeModifier %> <%= name %></span>
         <% } else { %>
             <span class="name"><% if(!is_service_fee) { print(quantity + "x") }%> <%= sizeModifier %> <%= name %></span>
         <% } %>
-            <span class="cost">
-            <span class="currency_symbol"><%= currency_symbol %></span>
-            <span class="price"><%= initial_price %></span>
+        <span class="cost">
+            <span class="item-sum"><%= currency_symbol %><%= initial_price %></span>
         </span>
     </h3>
     <ul class="modifier_place">
@@ -47,11 +46,10 @@
 </script>
 
 <script type="text/template" id="myorder_discount-template">
-    <h3 class="s<%= price_length %>">
+    <h3>
         <span class="name"><%= discount_name %></span>
         <span class="cost">
-            <span class="currency_symbol">-<%= currency_symbol %></span>
-            <span class="price"><%= discount_sum %></span>
+            <span class="plus">-</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= discount_sum %></span>
         </span>
     </h3>
 </script>
@@ -63,18 +61,14 @@
         <%= _lp.MYORDER_WEIGHT %> <%= name %>
     </span>
     <span class="cost">
-        <span class="plus">+</span>
-        <span class="currency_symbol"><%= currency_symbol %></span>
-        <span class="price"><%= price %></span>
+        <span class="plus">+</span><span class="mdf-sum"></span>
     </span>
 </script>
 
 <script type="text/template" id="myorder_product_discount-template">
     <span class="name discount"><%= discount_name %></span>
     <span class="cost">
-        <span class="plus">-</span>
-        <span class="currency_symbol"><%= currency_symbol %></span>
-        <span class="price"><%= discount_sum %></span>
+        <span class="plus">-</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= discount_sum %></span>
     </span>
 </script>
 

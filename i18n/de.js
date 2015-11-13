@@ -420,6 +420,8 @@ define([], function() {
             ],
             "ERROR_GEOLOCATION_NOAPI": "Geostandort API wird von Ihrem Browser nicht unterstützt.",
             "ERROR_SUBMIT_ORDER": "Übermitteln einer Bestellung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+            'ERROR_SUBMIT_ORDER_DISCONNECT': 'Ihre Netzwerkverbindung wurde unterbrochen. Sobald es wieder hergestellt ist, drücken Sie auf die Schaltfläche unten, um Ihre Bestellung abzuschließen.',
+            'ERROR_ASAP_TIME_SLOT_BUSY': 'Selected time is not available. Next available time from dropdown list is %s.',
             "ERROR_ORDERS_PICKUPTIME_LIMIT": "Maximale Anzahl Bestellungen für diese Abholzeit überschritten. Bitte wählen Sie eine andere Abholzeit.",
             "ERROR_INSUFFICIENT_STOCK": "Einige Produkte haben einen unzureichenden Lagervorrat.",
             "ERROR_OCCURRED": "Fehler aufgetreten:",

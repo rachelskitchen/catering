@@ -25,17 +25,8 @@
 
     $.fn.spinner = function() {
         this.each(function() {
-            var $this = $(this),
-                html = '<div class="ui-spinner">';
-            html += '<div class="point1 point"></div>';
-            html += '<div class="point2 point"></div>';
-            html += '<div class="point3 point"></div>';
-            html += '<div class="point4 point"></div>';
-            html += '<div class="point5 point"></div>';
-            html += '<div class="point6 point"></div>';
-            html += '<div class="point7 point"></div>';
-            html += '<div class="point8 point"></div>';
-            html += '</div>';
+            var $this = $(this);
+            var html = '<div class="ui-spinner animate-spin"></div>';
             if(['absolute', 'relative'].indexOf($this.css('position')) == -1)
                 $this.css('position', 'relative');
             $(this).append(html);

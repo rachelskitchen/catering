@@ -28,6 +28,7 @@ define(["backbone"], function(Backbone) {
             id: null,
             name: null,
             price: null, // base modifier price
+            sum: null, // modifier price * product quantity
             selected: false,
             sort: null,
             cost: null, // only for order send.
@@ -58,6 +59,14 @@ define(["backbone"], function(Backbone) {
                 else { this.set(key, value, {silent: true}); }
             }
             return this;
+        },
+        /**
+         * Updates modifier's sum (its price * product quantity).
+         * @param  {int} multiplier - Product quantity.
+         */
+        updateSum: function(multiplier) {
+            var price = this.get('free_amount') != undefined ? this.get('free_amount') : this.getSum();
+            this.set('sum', price * multiplier);
         },
         /**
          * prepare information for submit order
@@ -454,8 +463,8 @@ define(["backbone"], function(Backbone) {
             this.listenTo(modifiers, 'add', this.initFreeModifiers, this);
 
             function cb(model, opts) {
-                this.trigger('change', this, _.extend({modifier: model}, opts));
                 this.update_free(model);
+                this.trigger('change', this, _.extend({modifier: model}, opts));
             }
 
             this.listenTo(modifiers, 'change:quantity', cb2, this);

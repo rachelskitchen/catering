@@ -420,6 +420,8 @@ define([], function() {
             ],
             "ERROR_GEOLOCATION_NOAPI": "La API de geolocalización no es compatible con su navegador.",
             "ERROR_SUBMIT_ORDER": "Error al enviar un pedido. Vuelva a intentarlo.",
+            'ERROR_SUBMIT_ORDER_DISCONNECT': "La conexión de red se ha perdido. Una vez que se restaura, pulse el botón de abajo para completar su pedido.",
+            'ERROR_ASAP_TIME_SLOT_BUSY': 'Selected time is not available. Next available time from dropdown list is %s.',
             "ERROR_ORDERS_PICKUPTIME_LIMIT": "Se excedió el número máximo de pedidos de este horario de recolección. Seleccione un tiempo de recolección diferente.",
             "ERROR_INSUFFICIENT_STOCK": "Algunos productos tienen existencias insuficientes.",
             "ERROR_OCCURRED": "Hubo un error:",
