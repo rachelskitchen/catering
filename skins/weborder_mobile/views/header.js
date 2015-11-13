@@ -92,11 +92,14 @@ define(["factory"], function() {
                         force: mobile,
                         appendToSelector: '#header',
                         scale: '1',
-                        onClose:  function() {
-                            $('#section').css('top', $('#section').offset().top - $('#smartbanner').height());
-                        }
+                        onInstall: bannerHideHandler,
+                        onClose: bannerHideHandler
                     })
                 }
+            }
+
+            function bannerHideHandler() {
+                $('#section').css('top', $('#section').offset().top - $('#smartbanner').height());
             }
 
             return this;
