@@ -57,7 +57,15 @@ require(['app'], function() {
      * Will allow use brief url "https://revel.revelup.com/weborder/"
      * instead of "https://revel.revelsystems.com/weborder/?skin=retail&establishment=9&dev=true"
      */
-    app.instances = {};
+    app.instances = {
+        "https://rde.revelup.com": {
+            skin: skins['DIRECTORY'],
+            brand: '1',
+            stanford: 'true',
+            apple_app_id: '689035572',
+            google_app_id: 'com.revelsystems.html5client.foodtogo'
+        }
+    };
 
     // run app
     app.init();

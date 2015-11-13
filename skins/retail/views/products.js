@@ -73,18 +73,22 @@ define(["products_view"], function(products_view) {
         },
         filterItems: function(model) {
             var attribute1 = model.get('attribute1'),
-                changed = model.changed;;
-            if(!attribute1 || !('attribute1' in changed))
+                attribute2 = model.get('attribute2'),
+                changed = model.changed;
+            if(!attribute1 || !attribute2 || !('attribute1' in changed || 'attribute2' in changed)) {
                 return;
+            }
             this.subViews.forEach(function(view) {
-                var values = view.model.get('attribute_1_values');
-                if(attribute1 == 1)
-                    return view.$el.removeAttr('style'); // instead of show() because show adds display:list-item
-                if(!Array.isArray(values) || values.indexOf(attribute1) == -1)
+                var values1 = view.model.get('attribute_1_values'),
+                    values2 = view.model.get('attribute_2_values');
+                if(needToHide(values1, attribute1) || needToHide(values2, attribute2))
                     view.$el.hide();
                 else
-                    view.$el.removeAttr('style');
+                    view.$el.removeAttr('style'); // instead of show() because show adds display:list-item
             });
+            function needToHide(values, value) {1
+                return value == 1 ? false : !Array.isArray(values) || values.indexOf(value) == -1;
+            }
         }
     });
 
