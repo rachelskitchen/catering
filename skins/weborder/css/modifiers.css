@@ -72,6 +72,7 @@
     cursor: pointer;
     min-height: 30px;
 }
+
 .modifiers_table .modifier .input {
     display: inline-block;
     height: 21px;
@@ -102,12 +103,35 @@
     cursor: default;
 }
 
-.modifiers_table .modifier .title {
+.modifiers_table .modifier span.title_wrapper {
     line-height: 1.4em;
     display: inline-block;
     float: left;
-    width: 120px;
+    width: 100px;
     word-break: break-word;
+}
+
+.modifiers_table .modifier span.title {
+    line-height: 1.4em;
+    display: inline-block;
+    float: left;
+    word-break: break-word;
+}
+
+.modifiers_table .modifier span.info {
+    position: relative; /* need for Tooltip */
+}
+
+.modifiers_table .modifier span.info::before {
+    float: left;
+    line-height: 1.4em;
+    content: '\f05a';
+    font-family: "FontAwesome";
+    font-size: 1em;
+    display: inline-block;
+    pointer-events: auto;
+    cursor:pointer;
+    padding: 0 0.2em;
 }
 
 .modifiers_table .modifier input {
@@ -194,6 +218,43 @@
     pointer-events:none;
 }
 
+.transparent {
+    opacity: 0;
+}
+
+span.tooltip {
+    -webkit-border-radius: 3px 3px 3px 3px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    -ms-border-radius: 3px 3px 3px 3px;
+    -o-border-radius: 3px 3px 3px 3px;
+    border-radius: 3px 3px 3px 3px;
+    background: #222;
+    color: #fff;
+    text-shadow: none !important;
+    display: block;
+    font-size: 16px;
+    margin: 0;
+    min-width: 200px;
+    padding: 9px 13px;
+    position: absolute;
+    z-index: 9999;
+    left: 16px;
+}
+
+span.tooltip:before {
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-right: 7px solid #222;
+    content: ' ';
+    display: block;
+    height: 0;
+    left: -7px;
+    margin-top: -7px;
+    position: absolute;
+    top: 50%;
+    width: 0;
+}
+
 @media only screen and (max-device-width: 949px) {
     .mdf_quantity select {
         padding-left: 10px !important;
@@ -213,7 +274,7 @@
     .modifiers_table .modifier label {
         width: 190px;
     }
-    .modifiers_table .modifier .title {
+    .modifiers_table .modifier .title_wrapper {
         width: 90px;
     }
     .mdf_quantity select {
@@ -231,7 +292,8 @@
     .modifiers_table .modifier label {
         width: 195px;
     }
-    .modifiers_table .modifier .title {
+
+    .modifiers_table .modifier .title_wrapper {
         width: 100px;
     }
 }

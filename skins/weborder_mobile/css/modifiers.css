@@ -13,7 +13,6 @@
 
 .modifiers .modifier {
     width: 100%;
-    overflow: hidden;
 }
 
 .modifier__inner {
@@ -27,8 +26,29 @@
     left: -5000px;
 }
 
-.modifier .title {
+.modifier span.title_wrapper {
+    display: inline-block;
+    line-height: 1em;
     vertical-align: middle;
+}
+
+.modifier span.title {
+    float: left;
+}
+
+.modifier span.info {
+    float: left;
+    position: relative; /* need for Tooltip */
+}
+
+.modifier span.info::before {
+    content: '\f05a';
+    font-family: "FontAwesome";
+    font-size: 1em;
+    display: inline-block;
+    pointer-events: auto;
+    cursor:pointer;
+    padding: 0 0.2em;
 }
 
 .modifier .input {
@@ -111,4 +131,41 @@
 
 .stanford-reload-name {
     font-weight: normal;
+}
+
+.transparent {
+    opacity: 0;
+}
+
+span.tooltip {
+    -webkit-border-radius: 0.2em 0.2em 0.2em 0.2em;
+    -moz-border-radius: 0.2em 0.2em 0.2em 0.2em;
+    -ms-border-radius: 0.2em 0.2em 0.2em 0.2em;
+    -o-border-radius: 0.2em 0.2em 0.2em 0.2em;
+    border-radius: 0.2em 0.2em 0.2em 0.2em;
+    background: #222;
+    color: #fff;
+    text-shadow: none !important;
+    display: block;
+    font-size: 0.8em;
+    margin: 0;
+    min-width: 15em;
+    padding: 0.5em 0.7em;
+    position: absolute;
+    z-index: 9999;
+    left: 2.5em;
+}
+
+span.tooltip:before {
+    border-top: 0.6em solid transparent;
+    border-bottom: 0.6em solid transparent;
+    border-right: 0.6em solid #222;
+    content: ' ';
+    display: block;
+    height: 0;
+    left: -0.4em;
+    margin-top: -0.6em;
+    position: absolute;
+    top: 50%;
+    width: 0;
 }
