@@ -38,7 +38,7 @@ body {
     position: relative;
     height: 100%;
     width: 100%;
-    min-width: 1200px; /*for checkout page for 'Pay with Credit Card'*/
+    min-width: 100%; /* 1200px; for checkout page for 'Pay with Credit Card'*/
     min-height: 600px;
     margin: 0 auto !important;
     font-size: 16px;

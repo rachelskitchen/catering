@@ -24,18 +24,18 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
     'use strict';
 
     // Combo matrix creation workflow:
-    // ProductListItemView -> user clicks on a product -> 
+    // ProductListItemView -> user clicks on a product ->
     //                     -> { MyOrderMatrixComboView ->
     //                                -> { ProductModifiersView }
     //                                -> { ProductSetsListView ->
     //                                        -> [ ProductSetsItemView  ->
-    //                                                     -> { ComboListView  -> 
-    //                                                              [ ComboItemView ... ] } 
+    //                                                     -> { ComboListView  ->
+    //                                                              [ ComboItemView ... ] }
     //                                             ...
     //                                           ]
     //                                   }
     //                                -> { MyOrderMatrixFooterView }
-    //                        }  
+    //                        }
 
     App.Views.CoreComboView = {};
 
@@ -142,9 +142,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             }
             var productSet = this.options.productSet;
             var el = $(e.currentTarget),
-                checked = !el.attr('checked'),
+                checked = el.attr('checked') == "checked" ? false : true,
                 exactAmount = productSet.get('maximum_amount');
-           
+
             if(checked && exactAmount > 0 && productSet.get_selected_qty() >= exactAmount) {
                 return;
             }
@@ -168,7 +168,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 this.$(".split-qty-wrapper").addClass('single')
             }
             else {
-                this.$('.input').removeAttr('checked');
+                this.$('.input').attr('checked', false);
                 this.$(".mdf_quantity").hide();
             }
         }
@@ -187,7 +187,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         },
         addItem: function(model) {
             var view = App.Views.GeneratorView.create('Combo', {
-                el: $('<li class="modifier"></li>'),
+                el: $('<li class="combo_item"></li>'),
                 mod: 'Item',
                 model: model,
                 type: this.options.type,
@@ -233,17 +233,13 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         controlCheckboxes: function() {
             if(!this.subViews[0])
                 return;
-            var checked = this.subViews[0].$el.find('input:checked').parent(),
-                unchecked = this.subViews[0].$el.find('input:not(:checked)').parent(),
+            var checked = this.subViews[0].$el.find('.input[checked=checked]').parent(),
+                unchecked = this.subViews[0].$el.find('.input').not("[checked=checked]").parent(),
                 maximumAmount = this.model.get('maximum_amount');
             if(!this.type && maximumAmount > 0 && this.model.get_selected_qty() >= maximumAmount) {
-                checked.fadeTo(100, 1);
                 checked.removeClass('fade-out');
-                unchecked.fadeTo(100, 0.5);
                 unchecked.addClass('fade-out');
             } else {
-                checked.fadeTo(100, 1);
-                unchecked.fadeTo(100, 1);
                 checked.removeClass('fade-out');
                 unchecked.removeClass('fade-out');
             }
