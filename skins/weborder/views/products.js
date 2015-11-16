@@ -25,11 +25,12 @@ define(['products_view'], function(products_view) {
 
     var ProductListItemView = App.Views.CoreProductView.CoreProductListItemView.extend({
         showModifiers: function() {
-            var myorder = new App.Models.Myorder(),
-                isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
+            var isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
                 is_combo = this.model.get('is_combo');
 
-            var def = myorder.add_empty(this.model);
+            var myorder = App.Models.create(is_combo ? 'MyorderCombo' : 'Myorder');   
+
+            var def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
 
             $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
             def.then(function() {

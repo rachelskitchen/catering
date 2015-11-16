@@ -28,15 +28,15 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
     //    App.Data.myorder [* (Collections.Myorder)
     //                      |
     //      Models.Myorder  * -- product { is_combo = true,
-    //                      |             product_sets [* (Collections.ProductSets) }
-    //                      *]                          |
-    //                                Models.ProductSet * -- order_products [* (Collections.ProductSetModels)
-    //                                                  |                    |
-    //                                                  *]                   * (Models.Myorder) - {  modifiers,
-    //                                                                       |                       quantity,
-    //                                                                       *]                      product (Models.Product)
-    //                                                                                               selected (true/false)
-    //                                                                                             }
+    //                      |              product_sets [* (Collections.ProductSets) }
+    //                      *]                           |
+    //                                 Models.ProductSet * -- order_products [* (Collections.ProductSetModels)
+    //                                                   |                    |
+    //                                                   *]                   * (Models.Myorder) - {  modifiers,
+    //                                                                        |                       quantity,
+    //                                                                        *]                      product (Models.Product)
+    //                                                                                                selected (true/false)
+    //                                                                                              }
 
     /**
      * @class
@@ -90,9 +90,9 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             });
             ext_data['order_products'] = order_products;
 
-            var data = _.extend({}, data, ext_data);
-            delete data['products'];
-            this.set(data);
+            ext_data = _.extend({}, data, ext_data);
+            delete ext_data['products'];
+            this.set(ext_data);
         },
         /*
         *  get selected modifiers quantity
@@ -150,6 +150,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
      */
     App.Collections.ProductSets = Backbone.Collection.extend({
         model: App.Models.ProductSet,
+        typeName: "ProductSets",
         /**
          * Get combo products from backend.
          */
@@ -199,7 +200,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             return this.deepClone();
         },
         /**
-         * get all selected products
+         * get all selected products and return them as a single collection
          */
         get_selected_products: function() {
             var array = [];
@@ -209,7 +210,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             return new App.Collections.ProductSetModels(array);
         },
         /**
-         * get all selected products
+         * find product in product sets by product id
          */
         find_product: function(id_product) {
             var product;
@@ -217,7 +218,22 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                return (product = model.get('order_products').findWhere({ id_product: id_product }));
             });
             return product;
-        }
+        },
+       /* get_combo_product_price: function(root_product) {
+            if (!root_product || !root_product.get_initial_price){
+                return;
+            }
+            var root_price = root_product.get_initial_price(),
+                models = this.get_selected_products(),
+                sum;
+
+            models.forEach(function(model)) {
+                price = model.get_initial_price();
+                //if (model.)
+                //if (sum < 0) {}
+
+            }
+        }*/
     });
 
     App.Collections.ProductSets.init = function(product_id) {
