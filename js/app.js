@@ -86,6 +86,10 @@
 
     App.Settings = {};
 
+    App.Models.create = function(type_name) {
+        return new App.Models[type_name]();
+    }
+
     // define main module
     define(['config'], function(config) {
         return {

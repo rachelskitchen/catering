@@ -140,21 +140,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 this.get_modifiers().update_prices(max_price > initial_price ? max_price - initial_price : 0);
             }
         },
-
         /**
          * initiate order without product and modifiers
          */
-        add_empty: function (product) {
-            if (product.get('is_combo')) {
-                return this.add_empty_combo(product.get('id'), product.get('id_category'));
-            } else {
-                return this.add_empty_single(product.get('id'), product.get('id_category'));
-            }
-        },
-        /**
-         * initiate order without product and modifiers
-         */
-        add_empty_single: function (id_product, id_category) {
+        add_empty: function (id_product, id_category) {
             var self = this,
                 product_load = App.Collections.Products.init(id_category), // load product
                 quick_modifier_load = App.Collections.ModifierBlocks.init_quick_modifiers(),
@@ -190,35 +179,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return loadOrder;
         },
         /**
-         * initiate order for combo product
-         */
-        add_empty_combo: function (id_product, id_category) {
-            var self = this, product,
-                product_load = App.Collections.Products.init(id_category),
-                modifier_load = $.Deferred(),
-                quick_modifier_load = App.Collections.ModifierBlocks.init_quick_modifiers();
-
-            quick_modifier_load.then(function() {
-                App.Collections.ModifierBlocks.init(id_product).then(modifier_load.resolve); // load product modifiers
-            });
-            return $.when(product_load, modifier_load).then(function() {
-                product = App.Data.products[id_category].get_product(id_product);
-                return App.Collections.ProductSets.init(id_product);
-            }).then(function() {
-                product.set("product_sets", App.Data.productSets[id_product]);
-                self.set({
-                    product: product,
-                    id_product: id_product,
-                    modifiers: App.Data.modifiers[id_product]
-                });
-                self.set({
-                    sum: self.get_modelsum(), // sum with modifiers
-                    initial_price: self.get_initial_price()
-                });
-                self.update_prices();
-            });
-        },
-        /**
          *  create order from JSON. Used in paypal skin, when repeat order
          */
         addJSON: function(data) {
@@ -240,24 +200,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return this;
         },
         get_modelsum: function() {
-            var productSum = this._get_product_sum(),
-                product = this.get_product(),
-                max_price = product && product.get('max_price'),
-                totalItem;
-
-            var modifiers = this.get_modifiers(),
-                modifiersSum = modifiers ? modifiers.get_sum() : 0,
-                hasModifiers = !!modifiers && modifiers.get_modifierList().some(function(modifier) {
-                    return modifier.get('selected');
-                });
-
-            totalItem = productSum + modifiersSum;
-
-            // subtotal should be less or equal max_price if any no admin modifier is attached to product
-            // Test Case 7047
-            return (hasModifiers && typeof max_price == 'number' && max_price < totalItem ? max_price : totalItem) * this.get('quantity');
-        },
-        get_modelsum_old: function() {
             var sold_by_weight = this.get("product") ?  this.get("product").get('sold_by_weight') : false,
                 weight = this.get('weight'),
                 productSum = this.get_initial_price(),
@@ -281,42 +223,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             // Test Case 7047
             return (hasModifiers && typeof max_price == 'number' && max_price > 0 && max_price < totalItem ? max_price : totalItem) * this.get('quantity');
         },
-        /*
-        *   get product sum w/o modifiers
-        */
-        _get_product_sum: function() {
-            var sold_by_weight = this.get("product") ?  this.get("product").get('sold_by_weight') : false,
-                weight = this.get('weight'),
-                productSum = this.get_initial_price();
-
-                if (sold_by_weight && weight) {
-                    productSum *= weight;
-                }
-
-            return productSum;
-        },
-        /*
-        *   get sum of modifiers prices in accoding to the max price feature
-        */
         get_sum_of_modifiers: function() {
-            var productSum = this._get_product_sum(),
-                product = this.get_product(),
-                max_price = product && product.get('max_price'),
-                totalItem;
-
-            var modifiers = this.get_modifiers(),
-                modifiersSum = modifiers ? modifiers.get_sum() : 0,
-                hasModifiers = !!modifiers && modifiers.get_modifierList().some(function(modifier) {
-                    return modifier.get('selected');
-                });
-
-            totalItem = productSum + modifiersSum;
-
-            // subtotal should be less or equal max_price if any no admin modifier is attached to product
-            // Test Case 7047
-            var max_price_sum = hasModifiers && typeof max_price == 'number' && max_price < totalItem ? max_price : totalItem;
-            return (max_price_sum - productSum) >= 0 ? (max_price_sum - productSum) : 0;
-        },
+            var modifiers = this.get_modifiers();
+                
+            return modifiers ? modifiers.get_sum() : 0;
+        },      
         get_special: function() {
             var settings = App.Data.settings.get('settings_system');
             if(settings && !settings.special_requests_online) {
@@ -328,7 +239,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             else return "";
         },
         clone: function() {
-            var order = new App.Models.Myorder(),
+            var order = new this.constructor(),
                 stanfordCard = this.get('stanfordCard');
             for (var key in this.attributes) {
                 var value = this.get(key);
@@ -592,6 +503,74 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             stanfordCard.listenTo(this, 'change:planId', function(model, value) {
                 stanfordCard.set('planId', self.get('planId'));
             }, this);
+        },     
+        get_product_price: function() {
+            return this.get('initial_price');
+        }       
+    });
+
+    App.Models.MyorderCombo = App.Models.Myorder.extend({
+        /**
+         * initiate order for combo product
+         */
+        add_empty: function (id_product, id_category) {
+            var self = this, product,
+                product_load = App.Collections.Products.init(id_category),
+                modifier_load = $.Deferred(),
+                quick_modifier_load = App.Collections.ModifierBlocks.init_quick_modifiers();
+
+            quick_modifier_load.then(function() {
+                App.Collections.ModifierBlocks.init(id_product).then(modifier_load.resolve); // load product modifiers
+            });
+            return $.when(product_load, modifier_load).then(function() {
+                product = App.Data.products[id_category].get_product(id_product);
+                return App.Collections.ProductSets.init(id_product);
+            }).then(function() {
+                product.set("product_sets", App.Data.productSets[id_product]);
+                self.set({
+                    product: product,
+                    id_product: id_product,
+                    modifiers: App.Data.modifiers[id_product]
+                });
+                self.set({
+                    sum: self.get_modelsum(), // sum with modifiers
+                    initial_price: self.get_initial_price()
+                });
+                self.update_prices();
+            });
+        },        
+        get_product_price: function() {            
+            var root_price = this.get_initial_price(),
+                sum = 0, combo_saving_products = [];
+
+            this.get('product').get('product_sets').each( function(product_set) {
+                if ( product_set.get('is_combo_saving') ) {
+                    combo_saving_products.push( product_set );
+                    return;
+                }
+                product_set.get_selected_products().forEach(function(model) {
+                    trace("add product_price : ",  model.get('product').get('name'), model.get_initial_price());
+                    sum  += model.get_initial_price();
+                });
+            });
+
+            if (sum < root_price) {
+                sum = root_price;
+            }
+
+            /*combo_saving_products.some(function(product_set) {
+                return product_set.get_selected_products().some(function(model) {
+                    trace("add product_saving : ", model.get('product').get('name'), model.get_initial_price());
+                    sum += model.get_initial_price();
+                    if (sum >= root_price) {
+                        sum = root_price;
+                        return true; 
+                    }
+                    return false;
+                });
+            });*/
+
+            return sum;
         },
         /*
         *   get combo child product (for debug)

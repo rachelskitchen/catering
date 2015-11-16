@@ -182,7 +182,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             this.viewProduct = App.Views.GeneratorView.create('Product', {
                 modelName: 'Product',
                 model: model,
-                mod: 'Modifiers'
+                mod: 'ModifiersCombo'
             });
             this.$('.product_info').append(this.viewProduct.el);
             this.subViews.push(this.viewProduct);
@@ -247,6 +247,12 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         },
         events: {
             'click .action_button:not(.disabled)': 'action',
+            'keydown .action_button:not(.disabled)': function(e) {
+                //trace('Enter button pushed!')
+                if (this.pressedButtonIsEnter(e)) {
+                    this.action();
+                }
+            }            
         },
         update_child_selected: function() {
             if (this.model.get('product').check_selected()) {
@@ -272,27 +278,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     trace ("action: real product index = ", index);
                     if (collection.splitItemAfterQuantityUpdate)
                         collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
-                }
-                $('#popup .cancel').trigger('click');
-            } else {
-                App.Data.errors.alert(check.errorMsg); // user notification
-            }
-        }
-    });
-
-    App.Views.CoreMyOrderView.CoreMyOrderMatrixComboFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.extend({
-        action: function (event) {
-            var check = this.model.check_order(),
-                self = this, index, collection;
-
-            if (check.status === 'OK') {
-                if (self.options.action === 'add') {
-                    App.Data.myorder.add(self.model);
-                } else {
-                    collection = self.options.real.collection;
-                    //index = collection.indexOf(self.options.real);
-                    //collection.remove(self.options.real);
-                    self.options.real.copyAttrsFrom(self.model);
                 }
                 $('#popup .cancel').trigger('click');
             } else {

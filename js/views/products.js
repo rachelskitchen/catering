@@ -24,6 +24,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
     'use strict';
 
     App.Views.CoreProductView = {};
+    var CoreView = App.Views.CoreProductView;
 
     App.Views.CoreProductView.CoreProductListItemView = App.Views.ItemView.extend({
         name: 'product',
@@ -108,7 +109,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         }
     });
 
-    App.Views.CoreProductView.CoreProductModifiersView = App.Views.FactoryView.extend({
+    CoreView.CoreProductModifiersView = App.Views.FactoryView.extend({
         name: 'product',
         mod: 'modifiers',
         initialize: function() {
@@ -184,7 +185,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         },
         update_price: function() {
             var dt = this.$('dt'),
-                initial_price = round_monetary_currency(this.model.get('initial_price'));
+                initial_price = round_monetary_currency(this.model.get_product_price());
 
             if (dt.length) {
                 dt.prop('className', dt.prop('className').replace(/(\s+)?s\d+(?=\s|$)/, ''));
@@ -199,7 +200,14 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         }
     });
 
-    App.Views.CoreProductView.CoreProductListNoneView = App.Views.ItemView.extend({
+    CoreView.CoreProductModifiersComboView = CoreView.CoreProductModifiersView.extend({
+        initialize: function() {            
+            CoreView.CoreProductModifiersView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'combo_product_change', this.update_price, this);
+        },
+    });
+    
+    CoreView.CoreProductListNoneView = App.Views.ItemView.extend({
         name: 'product',
         mod: 'list_none'
     });
@@ -209,6 +217,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         App.Views.ProductView.ProductListItemView = App.Views.CoreProductView.CoreProductListItemView;
         App.Views.ProductView.ProductListView = App.Views.CoreProductView.CoreProductListView;
         App.Views.ProductView.ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView;
+        App.Views.ProductView.ProductModifiersComboView = App.Views.CoreProductView.CoreProductModifiersComboView;
         App.Views.ProductView.ProductListNoneView = App.Views.CoreProductView.CoreProductListNoneView;
     });
 });

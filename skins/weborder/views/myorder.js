@@ -23,7 +23,6 @@
 define(["myorder_view"], function(myorder_view) {
     'use strict';
 
-<<<<<<< .mine
     var CoreViews = App.Views.CoreMyOrderView;
 
     var DynamicHeightHelper_Modifiers = DynamicHeightHelper(CoreViews.CoreMyOrderMatrixView.prototype);
@@ -31,21 +30,8 @@ define(["myorder_view"], function(myorder_view) {
     var MyOrderMatrixView = _MyOrderMatrixView( CoreViews.CoreMyOrderMatrixView )
                                                     .mixed( DynamicHeightHelper_Modifiers );
     function _MyOrderMatrixView(_base){ return _base.extend({
-=======
-    var MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView.extend({
-
-
-
-
-
-
->>>>>>> .theirs
         initialize: function() {
-<<<<<<< .mine
             _base.prototype.initialize.apply(this, arguments);
-=======
-            App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.initialize.apply(this, arguments);
->>>>>>> .theirs
             this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.attributes_update);
         },
         render: function() {

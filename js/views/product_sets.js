@@ -24,9 +24,18 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
     'use strict';
 
     // Combo matrix creation workflow:
-    // ProductListItemView -> user clicks on a product -> MyOrderMatrixComboView ->
-    //             -> ProductSetsListView -> [ ProductSetsItemView  ->
-    //                             -> ComboListView  -> [ ComboItemView ]  ]
+    // ProductListItemView -> user clicks on a product -> 
+    //                     -> { MyOrderMatrixComboView ->
+    //                                -> { ProductModifiersView }
+    //                                -> { ProductSetsListView ->
+    //                                        -> [ ProductSetsItemView  ->
+    //                                                     -> { ComboListView  -> 
+    //                                                              [ ComboItemView ... ] } 
+    //                                             ...
+    //                                           ]
+    //                                   }
+    //                                -> { MyOrderMatrixFooterView }
+    //                        }  
 
     App.Views.CoreComboView = {};
 
@@ -35,7 +44,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         mod: 'item',
         events: {
             'click .customize': 'customize',
-            'change input': 'change'
+            'click .input': 'change'
         },
         bindings: {
             '.mdf_quantity select': 'value: decimal(quantity)',
@@ -133,27 +142,19 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             }
             var productSet = this.options.productSet;
             var el = $(e.currentTarget),
-                checked = el.prop('checked'),
+                checked = !el.attr('checked'),
                 exactAmount = productSet.get('maximum_amount');
-            if (el.attr('type') !== 'checkbox') {
-                if (stat !== undefined) {
-                    this.model.set('selected', stat);
-                } else {
-                    el.parents('.modifiers-list').find('input').not(el).trigger('change', [false]);
-                    this.model.set('selected', checked);
-                }
-            } else {
-                if(checked && exactAmount > 0 && productSet.get_selected_qty() >= exactAmount) {
-                    return el.prop('checked', false);
-                }
-                this.model.set('selected', checked);
+           
+            if(checked && exactAmount > 0 && productSet.get_selected_qty() >= exactAmount) {
+                return;
             }
+            this.model.set('selected', checked);
+            this.options.myorder_root.trigger('combo_product_change');
         },
         update: function() {
             var quantity;
             if(this.model.get('selected')) {
-                this.$('input').attr('checked', 'checked');
-                this.$('.input').addClass('checked');
+                this.$('.input').attr('checked', 'checked');
 
                 if (App.Settings.enable_quantity_modifiers) {
                     this.$(".mdf_quantity").css("display", "inline-block");
@@ -167,8 +168,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 this.$(".split-qty-wrapper").addClass('single')
             }
             else {
-                this.$('input').removeAttr('checked');
-                this.$('.input').removeClass('checked');
+                this.$('.input').removeAttr('checked');
                 this.$(".mdf_quantity").hide();
             }
         }
@@ -194,7 +194,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 productSet: this.options.productSet,
                 myorder_root: this.options.myorder_root //root combo instance of App.Models.Myorder model
             });
-            App.Views.ListView.prototype.addItem.call(this, view, this.$('.modifiers'), model.get('sort'), 'li');
+            App.Views.ListView.prototype.addItem.call(this, view, this.$('.product_set_list'), model.get('sort'), 'li');
             this.subViews.push(view);
         }
     });

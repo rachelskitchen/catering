@@ -1,10 +1,57 @@
 
-#popup .customize.link1 {
-	margin: 0px;
+#modifiers_popup .customize.link1 {
+	  margin: 0px;
     text-decoration: underline;
     font-weight: normal;
     word-break: normal;
     font-size: 15px;
 }
 
+#modifiers_popup .product_set_list .modifier {
+    width: 500px;
+    float: left;
+    word-break: break-all;
+    margin: 0 30px 15px 0;
+    cursor: pointer;
+    min-height: 30px;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+#modifiers_popup .product_set_list .modifier > span,
+#modifiers_popup .product_set_list .modifier > div {
+	  -webkit-flex: auto;
+    -moz-flex: auto;
+    -ms-flex: auto;
+    -o-flex: auto;
+    flex: auto;
+    margin: 0 5px;
+}
+#modifiers_popup .product_set_list .modifier .checkbox_wrap {
+    flex-basis: 35px;
+    flex-grow: 0;
+}
+#modifiers_popup .product_set_list .modifier .title {
+    flex-basis: 100px;
+    flex-grow: 1;
+}
+#modifiers_popup .product_set_list .modifier .cost {
+    flex-basis: 80px;
+    flex-grow: 0;
+}
+#modifiers_popup .product_set_list .modifier .customize {
+    flex-basis: 80px;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+#modifiers_popup .product_set_list .modifier .mdf_spacer {
+    flex-basis: 80px;
+    flex-grow: 1;
+    flex-shrink: 0;
+}
+#modifiers_popup .product_set_list .modifier .input.checkbox[checked] {
+    background-position: -91px -26px;
+}
 
