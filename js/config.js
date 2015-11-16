@@ -195,6 +195,9 @@ define({
         "checkout_view": {
             deps: ["backbone", "factory"]
         },
+        "modifiers_view": {
+            deps: ["backbone", "factory"]
+        },
         "myorder_view": {
             deps: ["backbone", "factory"]
         },

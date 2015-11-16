@@ -27,9 +27,9 @@
         },
         "modifiers": {
             "css": ["modifiers", "products", "quantity", "instructions", "myorder", "stanfordcard", "card"],
-            "views": ["products", "quantity", "instructions", "myorder", "stanfordcard"],
+            "views": ["products", "quantity", "instructions", "myorder", "stanfordcard", "modifiers"],
             "templates": ["modifiers", "products", "quantity", "instructions", "myorder", "stanfordcard"],
-            "core": ["categories", "products", "modifiers", "modifiers_view"]
+            "core": ["categories", "products", "modifiers"]
         },
         "cart": {
             "css": ["myorder"],

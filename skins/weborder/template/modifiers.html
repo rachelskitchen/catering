@@ -6,7 +6,12 @@
         <% } else { %>
             <span class="special_button"> <span class="clip"> <%= _lp.MODIFIERS_BUTTON_ADD %> </span> </span>
         <% } %>
-        <span class="title <% if(isSpecial) { %>special<% } %>"><%= name %></span>
+        <span class="title_wrapper">
+            <span class="title <% if(isSpecial) { %>special<% } %>"><%= name %></span>
+            <% if (description) { %>
+            <span class="info">&nbsp;<span class="tooltip animation transparent"><%= description %></span></span>
+            <% } %>
+        </span>
         <% if(isSize) { %>
             <span class="cost">
                 (<span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>)

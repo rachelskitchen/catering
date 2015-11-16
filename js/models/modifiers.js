@@ -34,7 +34,12 @@ define(["backbone"], function(Backbone) {
             cost: null, // only for order send.
             img: null,
             quantity: 1,
-            qty_type: 0 //0 - full modifier, 1 - first half, 2 second half
+            qty_type: 0, //0 - full modifier, 1 - first half, 2 second half
+            /**
+             * Modifier description
+             * @type {?string}
+             */
+            description: null
         },
         initialize: function() {
             this.set('img', App.Data.settings.get('img_path'));

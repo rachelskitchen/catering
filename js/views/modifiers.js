@@ -33,7 +33,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         mod: 'item',
         events: {
             'change input': 'change',
-            'click .special_label': 'add_special'
+            'click .special_label': 'add_special',
+            'click .info': 'showTooltip',
+            'mouseout .info': 'hideTooltip'
         },
         bindings: {
             '.mdf_quantity select': 'value: decimal(quantity)',
@@ -129,6 +131,30 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             this.update_free();
 
             return this;
+        },
+        showTooltip: function(event) {
+            event.preventDefault();
+            var $el = this.$(event.target),
+                modifierLabel = $el.parent().parent();
+
+            if (modifierLabel.hasClass('fade-out')) {
+                return; // disabled modifier
+            }
+            this.hideTooltip();
+
+            var $tooltip = this.$('.tooltip');
+            this.setTooltipPosition($tooltip, $el).removeClass('transparent');
+        },
+        hideTooltip: function() {
+            return this.$('.tooltip').addClass('transparent');
+        },
+        setTooltipPosition: function(tooltip, el) {
+            var $tooltip = tooltip || this.$('.tooltip:not(.transparent)'),
+                $el = el || $tooltip.parent();
+            $tooltip.css({
+                top: - $tooltip.outerHeight()/2 + $el.outerHeight()/2
+            });
+            return $tooltip;
         },
         isSpecial: function() {
             return this.options.type === SPECIAL;
