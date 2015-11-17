@@ -59,9 +59,35 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             maximum_amount : 1
         },
         /**
-         * initialization through a json object
+         * initialization through a json object, used for restoring from localStorage
          */
         addJSON: function(data) {
+            var self = this, ext_data, product;
+            var order_products = new App.Collections.ProductSetModels();
+
+            data['order_products'].forEach(function(p_data) {
+                var json = _.extend({}, p_data, {
+                    product: p_data.product,
+                    modifiers: p_data.modifiers
+                });
+                var order_product = new App.Models.Myorder();
+                order_product.addJSON(json);
+                //order_product.set({
+                    //sum: order_product.get_modelsum(), // sum with modifiers
+                    //initial_price: order_product.get_initial_price(),
+                    //is_child_product: true
+                //});
+                //order_product.update_prices();
+                order_products.add(order_product);
+            });
+            ext_data = _.extend({}, data, ext_data);
+            ext_data['order_products'] = order_products;
+            this.set(ext_data);
+        },
+        /**
+         * initialization through a json object
+         */
+        addAjaxJSON: function(data) {
             var self = this, ext_data = {}, product;
 
             ext_data.minimum_amount = data.quantity ? data.quantity : 1;
@@ -76,6 +102,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                     product: p_data,
                     modifiers: p_data.modifier_classes ? p_data.modifier_classes : [],
                 }
+                delete p_data.modifier_classes;
 
                 var order_product = new App.Models.Myorder();
                 order_product.addJSON(json);
@@ -166,7 +193,11 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                 },
                 dataType: "json",
                 successResp: function(data) {
-                    self.addJSON(data);
+                    data.forEach(function(pset, index) {
+                        var prod_set = new App.Models.ProductSet();
+                        prod_set.addAjaxJSON(pset);
+                        self.add(prod_set);
+                    });
                     fetching.resolve();
                 },
                 error: function() {
@@ -218,22 +249,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                return (product = model.get('order_products').findWhere({ id_product: id_product }));
             });
             return product;
-        },
-       /* get_combo_product_price: function(root_product) {
-            if (!root_product || !root_product.get_initial_price){
-                return;
-            }
-            var root_price = root_product.get_initial_price(),
-                models = this.get_selected_products(),
-                sum;
-
-            models.forEach(function(model)) {
-                price = model.get_initial_price();
-                //if (model.)
-                //if (sum < 0) {}
-
-            }
-        }*/
+        }
     });
 
     App.Collections.ProductSets.init = function(product_id) {
