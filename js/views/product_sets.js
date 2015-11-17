@@ -100,7 +100,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             else {
                 max_quantity = exact_amount;
             }
-            for (var i=1; i <= max_quantity; i++) {
+            for (var i=1; i <= 120; i++) {
                 option_el = $('<option>').val(i).text("x" + i);
                 mdf_quantity_el.append(option_el);
             }

@@ -71,20 +71,12 @@
   };
 
   //EE dev: add inheritance way for Backbone
-  /*Backbone.inherit = function(base_proto, new_proto) {
-      var new_class =  base_proto.constructor.extend(new_proto);
-      new_proto.events && (new_class.prototype.events =  _.extend({}, base_proto.events, new_proto.events));
-      new_proto.bindings && (new_class.prototype.bindings =  _.extend({}, base_proto.bindings, new_proto.bindings));
-      new_proto.computeds && (new_class.prototype.computeds =  _.extend({}, base_proto.computeds, new_proto.computeds));
-      new_class.mixed = mixins.mixed;
-      return new_class;
-  }*/
   var BackboneExtendFunc = Backbone.View.extend;
     if (Backbone.Model.extend != Backbone.Model.extend || Backbone.Model.extend != Backbone.Collection.extend) {
         console.error("Backbone 'extend' functions was changed.");
     }
   Backbone.View.extend = Backbone.Model.extend = Backbone.Collection.extend = function(new_proto) {
-      var new_class =  BackboneExtendFunc.call(this, new_proto);
+      var new_class =  BackboneExtendFunc.apply(this, arguments);
       new_proto.events && (new_class.prototype.events =  _.extend({}, this.prototype.events, new_proto.events));
       new_proto.bindings && (new_class.prototype.bindings =  _.extend({}, this.prototype.bindings, new_proto.bindings));
       new_proto.computeds && (new_class.prototype.computeds =  _.extend({}, this.prototype.computeds, new_proto.computeds));

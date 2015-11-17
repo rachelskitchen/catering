@@ -1,6 +1,6 @@
 
 #modifiers_popup .customize.link1 {
-	  margin: 0px;
+	margin: 0px;
     text-decoration: underline;
     font-weight: normal;
     word-break: normal;
@@ -16,11 +16,10 @@
     min-height: 30px;
 }
 .modifiers_table .combo_item .input {
-    display: inline-block;
     height: 21px;
     width: 21px;
+    min-width: 21px;
     border-radius: 4px;
-    float: left;
     margin-right: 3px;
 }
 .modifiers_table .combo_item .no-controls .input {
@@ -86,9 +85,7 @@
         width: 65px; /* max-width is not working for FireFox select tags */
     }
 }
-
 #modifiers_popup .product_set_list .combo_item_wrap {
-    width: 100%;
     cursor: pointer;
     min-height: 30px;
     display: -webkit-box;
@@ -98,25 +95,26 @@
     display: flex;
     justify-content: flex-start;
 }
-#modifiers_popup .product_set_list .combo_item_wrap > span {
-	-webkit-flex: auto;
+#modifiers_popup .product_set_list .combo_item_wrap > div {
+	/*-webkit-flex: auto;
     -moz-flex: auto;
     -ms-flex: auto;
     -o-flex: auto;
-    flex: auto;
+    flex: none;*/
     margin: 0 5px;
+
 }
 #modifiers_popup .product_set_list .combo_item .fade-out {
 	opacity: 0.5;
 }
-#modifiers_popup .product_set_list .combo_item .input.checkbox{
+/*#modifiers_popup .product_set_list .combo_item .input.checkbox{
     flex-basis: 25px;
     flex-grow: 0;
     flex-shrink: 0;
 }
 #modifiers_popup .product_set_list .combo_item .title {
     flex-basis: 100px;
-    flex-grow: 1;
+    flex-grow: 0;
     flex-shrink: 0;
 }
 #modifiers_popup .product_set_list .combo_item .cost {
@@ -126,13 +124,17 @@
 }
 #modifiers_popup .product_set_list .combo_item .mdf_spacer {
     flex-basis: 80px;
-    flex-grow: 1;
+    flex-grow: 0;
     flex-shrink: 0;
 }
 #modifiers_popup .product_set_list .combo_item .customize {
     flex-basis: 80px;
-    flex-grow: 1;
-    flex-shrink: 1;
+    flex-grow: 0;
+    flex-shrink: 0;
+}*/
+#modifiers_popup .product_set_list .combo_item .mdf_spacer {
+    flex-grow: 0;
+    flex-shrink: 0;
 }
 #modifiers_popup .product_set_list .combo_item .input.checkbox[checked] {
     background-position: -91px -26px;
