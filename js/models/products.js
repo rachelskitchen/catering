@@ -225,6 +225,12 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                 data.created_date = 0;
             }
 
+            if (data.is_combo && Array.isArray(data.product_sets)) {
+                var product_sets = new App.Collections.ProductSets;
+                product_sets.addJSON(data.product_sets);
+                data.product_sets = product_sets;
+            }
+
             this.set(data);
             if (data.attribute_type === 1 && data.child_products) {
                 var children = new App.Collections.ChildProducts();

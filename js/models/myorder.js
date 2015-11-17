@@ -188,7 +188,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 modifiers: new App.Collections.ModifierBlocks().addJSON(data.modifiers),
                 id_product: data.id_product ? data.id_product : data.product.id,
                 quantity: data.product.sold_by_weight ? 1 : (data.quantity ? data.quantity : 1),
-                weight: data.weight ? data.weight : 0
+                weight: data.weight ? data.weight : 0,
+                selected: data.selected,
+                is_child_product: data.is_child_product
             });
             data.special && this.set('special', data.special, {silent: true});
             if (!this.get('product').get('gift_card_number') && data.gift_card_number) {
@@ -225,9 +227,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         },
         get_sum_of_modifiers: function() {
             var modifiers = this.get_modifiers();
-                
+
             return modifiers ? modifiers.get_sum() : 0;
-        },      
+        },
         get_special: function() {
             var settings = App.Data.settings.get('settings_system');
             if(settings && !settings.special_requests_online) {
@@ -503,10 +505,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             stanfordCard.listenTo(this, 'change:planId', function(model, value) {
                 stanfordCard.set('planId', self.get('planId'));
             }, this);
-        },     
+        },
         get_product_price: function() {
             return this.get('initial_price');
-        }       
+        }
     });
 
     App.Models.MyorderCombo = App.Models.Myorder.extend({
@@ -538,11 +540,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 });
                 self.update_prices();
             });
-        },        
-        get_product_price: function() {            
+        },
+        get_product_price: function() {
             var root_price = this.get_initial_price(),
                 sum = 0, combo_saving_products = [];
-            
+
             this.get('product').get('product_sets').each( function(product_set) {
                 if ( product_set.get('is_combo_saving') ) {
                     combo_saving_products.push( product_set );
@@ -554,7 +556,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 });
             });
 
-            if (sum < root_price) {
+            if (combo_saving_products.length > 0) {
                 sum = root_price;
             }
 
@@ -564,13 +566,13 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     sum += model.get_initial_price();
                     if (sum >= root_price) {
                         sum = root_price;
-                        return true; 
+                        return true;
                     }
                     return false;
                 });
             });*/
 
-trace("get_product_price = ", sum);
+            trace("get_product_price = ", sum);
 
             return sum;
         },
@@ -721,7 +723,8 @@ trace("get_product_price = ", sum);
             var self = this, obj;
             data && data.forEach(function(element) {
                 if (element.product.id) {
-                    var myorder = new App.Models.Myorder();
+                    var type = element.product.is_combo ? 'MyorderCombo' : 'Myorder';
+                    var myorder = App.Models.create(type);
                     myorder.addJSON(element);
                     self.add(myorder);
                     myorder.set('initial_price', myorder.get_initial_price());
@@ -1290,6 +1293,7 @@ trace("get_product_price = ", sum);
                             order_product.set('sum', product.combo_items[i].price);
                         }
                     }
+                    //model.set("sum", product.price);
                 }
             });
 
