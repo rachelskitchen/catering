@@ -39,8 +39,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             stanford_card_number: '',   // stanford card number
             planId: null,                // stanford plan to add some amount to
             isServiceFee: false,
-            is_child_product: false,     //child product in a combo product set
-            selected: null
+            is_child_product: false,     // child product in a combo product set
+            selected: null               // used for combo products now
         },
         product_listener: false, // check if listeners for product is present
         modifier_listener: false, // check if listeners for modifiers is preset
@@ -1290,10 +1290,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     for (var i in product.combo_items) {
                         var order_product = model.get('product').get('product_sets').find_product(product.combo_items[i].product);
                         if (order_product) {
-                            order_product.set('sum', product.combo_items[i].price);
+                            order_product.get('product').set("combo_price", product.combo_items[i].price);
                         }
                     }
-                    //model.set("sum", product.price);
+                    model.get('product').set("combo_price", product.price);
                 }
             });
 
