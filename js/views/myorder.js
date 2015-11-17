@@ -248,11 +248,10 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         events: {
             'click .action_button:not(.disabled)': 'action',
             'keydown .action_button:not(.disabled)': function(e) {
-                //trace('Enter button pushed!')
                 if (this.pressedButtonIsEnter(e)) {
                     this.action();
                 }
-            }            
+            }
         },
         update_child_selected: function() {
             if (this.model.get('product').check_selected()) {
@@ -296,19 +295,23 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             this.listenTo(this.model.get_product(), 'change', this.update);
         },
         bindings: {
-             '.item-sum': 'text: select(isServiceFee, currencyFormat(initial_price), currencyFormat(sum_wo_mdfs))'
+       //      '.item-sum': 'text: select(isServiceFee, currencyFormat(initial_price), currencyFormat(sum_wo_mdfs))'
         },
         computeds: {
-            sum_wo_mdfs: {
-                deps: ['initial_price', 'weight', 'quantity', '_product_sold_by_weight'],
-                get: function(initial_price, weight, quantity, sold_by_weight) {
+            /*  sum_wo_mdfs: {
+                deps: ['initial_price', 'weight', 'quantity', '_product_sold_by_weight', '_product_combo_price'],
+                get: function(initial_price, weight, quantity, sold_by_weight, combo_price) {
+                    trace("combo_price change : ", combo_price, this.getBinding("product").get("is_combo"));
                     var productSum = initial_price;
                     if (sold_by_weight && weight) {
                         productSum *= weight;
                     }
-                    return productSum * quantity;
+                    if (this.getBinding("product").get("is_combo"))
+                        return combo_price * quantity;
+                    else
+                        return productSum * quantity;
                 }
-            }
+            }*/
         },
         render: function() {
             var self = this, view,
@@ -361,7 +364,9 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             model.sizeModifier = sizeModifier ? sizeModifier.get('name') : '';
             model.name = product.get('name');
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
+
             model.initial_price = round_monetary_currency(this.model.get('initial_price'));
+
             model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;//    product.get('uom');
             model.is_gift = product.get('is_gift');
             model.gift_card_number = product.get('gift_card_number');
@@ -377,6 +382,17 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 model.weight = model.weight.toFixed(num_digits);
             }
 
+            var productSum = model.initial_price;
+            if (model.sold_by_weight && weight) {
+                productSum *= model.weight;
+            }
+            if (product.get("is_combo"))
+                model.product_sum = product.get("combo_price") * model.quantity;
+            else
+                model.product_sum = productSum * model.quantity;
+            model.product_sum  = round_monetary_currency(model.product_sum);
+
+            trace("render ==> ", model.name, product.get("is_combo"), model.initial_price, model.product_sum);
             return model;
         },
         events: {

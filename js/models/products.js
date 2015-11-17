@@ -161,9 +161,8 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             timetables: null,
             compositeId: null,
             size_chart: '', // URL of product Size Chart image\
-            combo_uuid: null,
-            combo_selected: false,
-            is_combo: false
+            is_combo: false,
+            combo_price: null
         },
         /**
          * @method
