@@ -142,6 +142,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 model: this.model,
                 mod: 'MatrixFooter',
                 action: this.options.action,
+                flags: this.options.combo_child ? ['no_specials', 'no_quantity'] : undefined,
                 real: this.options.real,
                 action_callback: this.options.action_callback
             });
@@ -208,7 +209,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         mod: 'matrix_footer',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'change_child_selected', this.update_child_selected);
+            this.listenTo(this.model, 'combo_product_change', this.update_child_selected);
             return this;
         },
         render: function() {
@@ -221,27 +222,31 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             var model = this.model,
                 view;
 
-            var sold_by_weight = this.model.get_product().get("sold_by_weight"),
-                mod = sold_by_weight ? 'Weight' : 'Main';
+            if (!this.options.flags || this.options.flags.indexOf('no_quantity') == -1) {
+                var sold_by_weight = this.model.get_product().get("sold_by_weight"),
+                    mod = sold_by_weight ? 'Weight' : 'Main';
 
-            view = App.Views.GeneratorView.create('Quantity', {
-                el: this.$('.quantity_info'),
-                model: model,
-                mod: mod
-            });
-
-            this.subViews.push(view);
-
-            view = App.Views.GeneratorView.create('Instructions', {
-                el: this.$('.product_instructions'),
-                model: model,
-                mod: 'Modifiers'
-            });
-            this.subViews.push(view);
-
-            if (App.Settings.special_requests_online === false) {
-                view.$el.hide(); // hide special request if not allowed
+                view = App.Views.GeneratorView.create('Quantity', {
+                    el: this.$('.quantity_info'),
+                    model: model,
+                    mod: mod
+                });
+                this.subViews.push(view);
             }
+
+            if (!this.options.flags || this.options.flags.indexOf('no_specials') == -1) {
+                view = App.Views.GeneratorView.create('Instructions', {
+                    el: this.$('.product_instructions'),
+                    model: model,
+                    mod: 'Modifiers'
+                });
+                this.subViews.push(view);
+
+                if (App.Settings.special_requests_online === false) {
+                    view.$el.hide(); // hide special request if not allowed
+                }
+            }
+
             this.update_child_selected();
             return this;
         },
@@ -254,7 +259,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             }
         },
         update_child_selected: function() {
-            if (this.model.get('product').check_selected()) {
+            if (this.model.get('product').get("product_sets").check_selected() ) {
                 this.$('.action_button').removeClass('disabled');
             }
             else {
@@ -264,7 +269,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         action: function (event) {
             var check = this.model.check_order(),
                 self = this, index, collection;
-            trace('self.model_init_1.collection ', self.model.collection ? true : false );
+            //trace('self.model_init_1.collection ', self.model.collection ? true : false );
             if (check.status === 'OK') {
                 if (self.options.action === 'add') {
                     App.Data.myorder.add(self.model);
@@ -273,8 +278,8 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     index = collection.indexOf(self.options.real);
                     collection.remove(self.options.real);
                     collection.add(self.model, {at: index});
-                    trace('self.model_init_.collection ', self.model.collection ? true : false );
-                    trace ("action: real product index = ", index);
+                    //trace('self.model_init_.collection ', self.model.collection ? true : false );
+                    //trace ("action: real product index = ", index);
                     if (collection.splitItemAfterQuantityUpdate)
                         collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
                 }
@@ -289,29 +294,9 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         name: 'myorder',
         mod: 'item',
         initialize: function() {
-            this.extendBindingSources({_product: this.model.get_product()});
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change', this.update);
             this.listenTo(this.model.get_product(), 'change', this.update);
-        },
-        bindings: {
-       //      '.item-sum': 'text: select(isServiceFee, currencyFormat(initial_price), currencyFormat(sum_wo_mdfs))'
-        },
-        computeds: {
-            /*  sum_wo_mdfs: {
-                deps: ['initial_price', 'weight', 'quantity', '_product_sold_by_weight', '_product_combo_price'],
-                get: function(initial_price, weight, quantity, sold_by_weight, combo_price) {
-                    trace("combo_price change : ", combo_price, this.getBinding("product").get("is_combo"));
-                    var productSum = initial_price;
-                    if (sold_by_weight && weight) {
-                        productSum *= weight;
-                    }
-                    if (this.getBinding("product").get("is_combo"))
-                        return combo_price * quantity;
-                    else
-                        return productSum * quantity;
-                }
-            }*/
         },
         render: function() {
             var self = this, view,
@@ -387,12 +372,14 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 productSum *= model.weight;
             }
             if (product.get("is_combo"))
-                model.product_sum = product.get("combo_price") * model.quantity;
-            else
-                model.product_sum = productSum * model.quantity;
-            model.product_sum  = round_monetary_currency(model.product_sum);
-
-            trace("render ==> ", model.name, product.get("is_combo"), model.initial_price, model.product_sum);
+                productSum = product.get("combo_price") * model.quantity;
+            else if( model.is_service_fee ) {
+                productSum = round_monetary_currency(model.initial_price);
+            } else {
+                productSum = productSum * model.quantity;
+            }
+            model.product_sum = round_monetary_currency( productSum );
+            //trace("render ==> ", model.name, product.get("is_combo"), model.initial_price, model.product_sum);
             return model;
         },
         events: {

@@ -45,7 +45,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         events: {
             'click .customize': 'customize',
             'click .checkbox': 'change',
-            'click .title': 'change'                  
+            'click .title': 'change'
         },
         bindings: {
             '.mdf_quantity select': 'value: decimal(quantity)',
@@ -67,10 +67,10 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:selected', this.update, this);
+            this.listenTo(this.model, 'change:quantity', this.update, this);
             this.listenTo(this.model, 'model_changed', this.reinit_new_model, this);
         },
         reinit_new_model: function() {
-            trace('reinit ==> ')
             this.model = this.options.productSet.get('order_products').findWhere({id_product: this.model.get('id_product')});;
             this.stopListening();
             this.initialize();
@@ -150,7 +150,6 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 return;
             }
             this.model.set('selected', checked);
-            this.options.myorder_root.trigger('combo_product_change');
         },
         update: function() {
             var quantity;
@@ -172,6 +171,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 this.$('.input').attr('checked', false);
                 this.$(".mdf_quantity").hide();
             }
+            this.model.get('modifiers').trigger('modifiers_changed');
+            this.options.myorder_root.trigger('combo_product_change');
         }
     });
 

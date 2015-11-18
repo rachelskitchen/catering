@@ -36,10 +36,10 @@ define(['backbone'], function(Backbone) {
             if(App.Views.Generator.enableCache && id in cache) {
                 var view = cache[id];
             } else {
-                options.dbgClassName = ViewClass + 'View.' + ViewClass + options.mod + 'View';
+                options.dbgClassName = ViewClass + options.mod + 'View';
                 root = App.Views[ViewClass + 'View'];
                 if (!root || !root[ViewClass + options.mod + 'View']) {
-                    console.error("Can't find the view class: " + "App.Views." + options.dbgClassName);
+                    console.error("Can't find the view class: " + "App.Views." + ViewClass + 'View.' + options.dbgClassName);
                 }
                 view = new App.Views[ViewClass + 'View'][ViewClass + options.mod + 'View'](options);
                 if(App.Views.Generator.enableCache && id)

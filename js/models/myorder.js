@@ -552,11 +552,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
                 product_set.get_selected_products().forEach(function(model) {
                     trace("add product_price : ",  model.get('product').get('name'), model.get_initial_price());
-                    sum  += model.get_initial_price();
+                    sum  += model.get_initial_price() * model.get('quantity');
                 });
             });
 
-            if (combo_saving_products.length > 0) {
+            if (combo_saving_products.length && sum < root_price) {
                 sum = root_price;
             }
 
@@ -573,6 +573,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             });*/
 
             trace("get_product_price = ", sum);
+            this.get('product').set("combo_price", sum);
 
             return sum;
         },
