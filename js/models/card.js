@@ -20,30 +20,106 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.Card} constructor.
+ * @module card
+ * @requires module:backbone
+ * @see {@link module:config.paths actual path}
+ */
 define(["backbone"], function(Backbone) {
     'use strict';
 
-    App.Models.Card = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents a customer's card
+     * @alias App.Models.Card
+     * @example
+     * // create a card model
+     * require(['card'], function() {
+     *     App.Data.card = new App.Models.Card();
+     * });
+     */
+    App.Models.Card = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Card.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum {string}
+         */
         defaults: {
+            /**
+             * A first name of customer.
+             * @type {string}
+             */
             firstName: '',
+            /**
+             * A last name of customer.
+             * @type {string}
+             */
             secondName: '',
+            /**
+             * A card number.
+             * @type {string}
+             */
             cardNumber: '',
+            /**
+             * A secure code of card.
+             * @type {string}
+             */
             securityCode: '',
+            /**
+             * A card expiration month
+             * @type {sting}
+             */
             expMonth: '01',
+            /**
+             * A card expiration year
+             * @type {sting}
+             */
             expDate: new Date().getFullYear().toString(),
+            /**
+             * A total card expiration date
+             * @type {sting}
+             */
             expTotal: "",
+            /**
+             * Customer's address
+             * @type {sting}
+             */
             street: '',
+            /**
+             * Customer's city
+             * @type {sting}
+             */
             city: '',
+            /**
+             * Customer's state
+             * @type {sting}
+             */
             state: '',
+            /**
+             * Customer's zip code
+             * @type {sting}
+             */
             zip: '',
+            /**
+             * A path for relative image url
+             * @type {sting}
+             */
             img: App.Data.settings.get("img_path")
         },
+        /**
+         * Init synchronization with Revel API.
+         * @ignore
+         */
         initialize: function() {
             this.syncWithRevelAPI();
         },
         /**
-         * @method
-         * Trims the `firstName`, `lastName` attributes value.
+         * Trims the `firstName`, `lastName` attributes values.
          */
         trim: function() {
             this.set({
@@ -56,21 +132,27 @@ define(["backbone"], function(Backbone) {
             }
         },
         /**
-        * Save current state model in storage (detected automatic).
-        */
+         * Save current attributes values of the model in a storage (detected automatic).
+         */
         saveCard: function() {
             this.trim();
             setData('card',this);
         },
         /**
-         * Removing card information.
+         * Removes a card information. Resets `cardNumber`, `expMonth`, `expDate`,
+         * `securityCode` attributes values to default.
          */
         empty_card_number: function() {
-            this.set({cardNumber: '', expMonth: this.defaults.expMonth, expDate: this.defaults.expDate, securityCode: ''});
+            this.set({
+                cardNumber: this.defaults.cardNumber,
+                expMonth: this.defaults.expMonth,
+                expDate: this.defaults.expDate,
+                securityCode: this.defaults.securityCode
+            });
         },
         /**
-        * Load state model from storage (detected automatic).
-        */
+         * Loads attributes values of the model from a storage (detected automatic).
+         */
         loadCard: function() {
             var data = getData('card');
             data = data instanceof Object ? data : {};
@@ -78,15 +160,22 @@ define(["backbone"], function(Backbone) {
             this.set(data);
             return this;
         },
+        /**
+         * Checks current atributes values.
+         * @param {Object} opts - options
+         * @param {boolean} opts.ignorePerson - if it's true a person's data isn't validated
+         * @param {boolean} opts.ignoreCardNumber - if it's true a card number isn't validated
+         * @param {boolean} opts.ignoreSecurityCode - if it's true a security code isn't validated
+         * @param {boolean} opts.ignoreExpDate - if it's true an expiration date isn't validated
+         * @returns {Object} A validation result. Object literal is one of the following sets of key<->value pairs:
+         * - All values are valid: `{status: 'OK'}`
+         * - Has empty fields: `{status: 'ERROR_EMPTY_FIELDS', errorMsg: 'message string', errorList: 'array of empty fields'}`
+         * - Invalid card expiration values: `{status: 'ERROR', errorMsg: 'message string'}`
+         */
         check: function(opts) {
             var card = this.toJSON(),
                 err = [];
 
-            //`opts` object may have following properties:
-            //  `ignorePerson` (if it's true person data isn't validated),
-            //  `ignoreCardNumber` (if it's true card number isn't validated)
-            //  `ignoreSecurityCode` (if it's true security code isn't validated)
-            //  `ignoreExpDate` (if it's true expiration date isn't validated)
             opts = opts instanceof Object ? opts : {};
 
             !opts.ignorePerson && err.push.apply(err, this.checkPerson());
@@ -116,6 +205,10 @@ define(["backbone"], function(Backbone) {
                 status: "OK"
             };
         },
+        /**
+         * Trims `firstName`, `secondName` attributes values then checks them.
+         * @returns {Array} An array contaning empty fields.
+         */
         checkPerson: function() {
             this.trim();
 
@@ -130,6 +223,10 @@ define(["backbone"], function(Backbone) {
 
             return err;
         },
+        /**
+         * Checks a security code.
+         * @returns {Array} An array contaning empty fields.
+         */
         checkSecurityCode: function() {
             var securityPattern = /^\d{3,4}$/,
                 card = this.toJSON(),
@@ -138,6 +235,10 @@ define(["backbone"], function(Backbone) {
             (!securityPattern.test(card.securityCode)) && err.push(_loc.CARD_SECURITY_CODE);
             return err;
         },
+        /**
+         * Checks a card number.
+         * @returns {Array} An array contaning empty fields.
+         */
         checkCardNumber: function() {
             var cardPattern = /^[3-6]\d{12,18}$/,
                 card = this.toJSON(),
@@ -147,7 +248,7 @@ define(["backbone"], function(Backbone) {
             return err;
         },
         /**
-         * Removal of information about credit card.
+         * Removes credit card info from the model and a storage.
          */
         clearData: function() {
             this.empty_card_number();
@@ -155,6 +256,7 @@ define(["backbone"], function(Backbone) {
         },
         /**
          * Synchronization with Revel API.
+         * @ignore
          */
         syncWithRevelAPI: function() {
             var RevelAPI = this.get('RevelAPI');
