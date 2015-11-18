@@ -36,6 +36,8 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:isShowPromoMessage', this.calculatePromoMessageWidth, this);
             this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
             this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
+            this.listenTo(App.Data.search, 'onRestore', this.restoreSearchState);
+            this.listenTo(App.Data.search, 'onClear', this.clearSearchLine);
 
             this.iOSFeatures();
 
@@ -255,6 +257,16 @@ define(["done_view", "generator"], function(done_view) {
         goToDirectory: function() {
             var goToDirectory = this.model.get('goToDirectory');
             typeof goToDirectory == 'function' && goToDirectory();
+        },
+        restoreSearchState: function() {
+            var pattern = App.Data.search.lastPattern;
+            if (pattern && pattern.length) {
+                App.Data.searchLine.set('dummyString', pattern);
+                App.Data.search.search(pattern);
+            }
+        },
+        clearSearchLine: function() {
+            this.$('#search-input').val('').blur();
         }
     });
 

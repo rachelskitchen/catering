@@ -105,12 +105,12 @@ define(["backbone", "factory"], function(Backbone) {
             // start listen to state changes
             this.once('initialized', this.runStateTracking.bind(this));
 
-            // remember state of data of application (begin)
+            // remember state of application data (begin)
             App.Data.stateAppData = {};
             for (var i in App.Data) {
                 App.Data.stateAppData[i] = true;
             }
-            // remember state of data of application (end)
+            // remember state of application data (end)
 
             this.listenTo(App.Data.myorder, 'paymentResponse paymentFailed', function() {
                 App.Data.establishments && App.Data.establishments.removeSavedEstablishment();
@@ -436,9 +436,11 @@ define(["backbone", "factory"], function(Backbone) {
                 el.remove();
             });
         },
-        /*
-         * Push data changes to session history entry.
-         * Tracking state data is stored in `stateData` property of session history entry's data object.
+        /**
+         * Push data changes to browser history entry.
+         * Tracking state data is stored in `stateData` property of history entry's data object.
+         * @param {boolean} replaceState - If true, replace the current state, otherwise push a new state.
+         * @param {string} [url] - Page url.
          */
         updateState: function(replaceState, url) {
             if(typeof this.updateState.counter == 'undefined') {
@@ -454,8 +456,9 @@ define(["backbone", "factory"], function(Backbone) {
                 window.history.pushState({stateData: this.getState()}, title, url);
             }
         },
-        /*
+        /**
          * Create and return session history state-object.
+         * @return {Object}
          */
         getState: function() {
             return {establishment: App.Data.settings.get('establishment')};
@@ -463,8 +466,8 @@ define(["backbone", "factory"], function(Backbone) {
         /*
          * Restore state data from session history entry.
          * Tracking state data is stored in `stateData` property of session history entry's data object.
-         *
-         * @return event.state.stateData object
+         * @param {Object} event - PopStateEvent.
+         * @return {Object} event.state.stateData object
          */
         restoreState: function(event) {
             var data = event.state instanceof Object ? event.state.stateData : undefined,
@@ -479,7 +482,7 @@ define(["backbone", "factory"], function(Backbone) {
             }
             return data;
         },
-        /*
+        /**
          * Start tracking of application state changes
          */
         runStateTracking: function() {

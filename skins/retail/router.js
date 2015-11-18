@@ -373,6 +373,9 @@ define(["main_router"], function(main_router) {
             }
             return state;
         },
+        /**
+         * Enable browser history for navigation through categories, subcategories, filters and search screens.
+         */
         runStateTracking: function() {
             if(!App.Routers.RevelOrderingRouter.prototype.runStateTracking.apply(this, arguments)) {
                 return;
@@ -402,7 +405,11 @@ define(["main_router"], function(main_router) {
                     return;
                 updateState.call(this, search, {});
             }, this);
-
+            /**
+             * Push data changes to browser history entry.
+             * @param {Object} obj - Data object (categories, filter or search model).
+             * @param {Object} opts - Options object.
+             */
             function updateState(obj, opts) {
                 // if obj is in restoring mode we shouldn't update state
                 if(obj.isRestoring || !(opts instanceof Object)) {
@@ -414,6 +421,10 @@ define(["main_router"], function(main_router) {
                 this.updateState(Boolean(opts.replaceState), url);
             }
         },
+        /**
+         * Restore state data from the history.
+         * @param {Object} event - PopStateEvent.
+         */
         restoreState: function(event) {
             var filter = App.Data.filter,
                 search = App.Data.search,
@@ -477,6 +488,10 @@ define(["main_router"], function(main_router) {
                 categories.parent_selected = -1;
             }
         },
+        /**
+         * Returns the current state data.
+         * @return {Object} The object containing information about the current app state.
+         */
         getState: function() {
             var filter = App.Data.filter,
                 categories = App.Data.categories,
