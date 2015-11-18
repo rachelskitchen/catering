@@ -322,7 +322,7 @@ define(["generator", "list"], function() {
             this.$('.categories_products_wrapper').contentarrow();
             this.$('.products_spinner').css('position', 'absolute').spinner();
             this.listenTo(this.options.search, 'onSearchStart', this.showSearchSpinner, this);
-            this.listenTo(this.options.search, 'onSearchComplete', this.hideSpinner, this);      
+            this.listenTo(this.options.search, 'onSearchComplete onClear', this.hideSpinner, this);
         },
         update_table: function(model, value) {
            var isCategories = typeof value != 'undefined',
