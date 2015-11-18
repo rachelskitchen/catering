@@ -69,6 +69,8 @@ define(["main_router"], function(main_router) {
                     isDirMode: App.Data.dirMode && !App.Data.isNewWnd
                 });
                 var ests = App.Data.establishments;
+                App.Data.categories = new App.Collections.Categories();
+                App.Data.search = new App.Collections.Search();
 
                 this.listenTo(mainModel, 'change:mod', this.createMainView);
                 this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
@@ -293,6 +295,126 @@ define(["main_router"], function(main_router) {
                 App.Data.myorder.get_cart_totals();
             });
         },
+        /**
+         * Enable browser history for navigation through categories, subcategories and search screens.
+         */
+        runStateTracking: function() {
+            if (!App.Routers.RevelOrderingRouter.prototype.runStateTracking.apply(this, arguments)) {
+                return;
+            }
+
+            var categories = App.Data.categories,
+                search = App.Data.search,
+                // handle case when subcategory is selected at the first time
+                // (it happens when categories are loaded)
+                subCategoryIsNotSelected = true;
+
+            // add entry to browser history on category or subcategory change
+            this.listenTo(categories, 'change:selected change:parent_selected', function() {
+                App.Data.search.clearLastPattern();
+                updateState.call(this, categories, subCategoryIsNotSelected);
+                subCategoryIsNotSelected = false;
+            }, this);
+
+            // listen to onSearchComplete and add entry to browser history
+            this.listenTo(search, 'onSearchComplete', function(result) {
+                updateState.call(this, search);
+                // if no products found
+                if (!result.get('products') || result.get('products').length == 0) {
+                    // set noResult prop to true AFTER call of updateState()
+                    // so it will be taken in account on next state change, and the current state (search with no results) will be replaced
+                    App.Data.search.noResults = true;
+                }
+            }, this);
+
+            /**
+             * Push data changes to browser history entry.
+             * @param {Object} obj - Data object (categories or search model).
+             * @param {boolean} replaceState - If true, replace the current state, otherwise push a new state.
+             */
+            function updateState(obj, replaceState) {
+                // if obj is in restoring mode we shouldn't update state
+                if (obj.isRestoring) {
+                    return;
+                }
+                // if the previous page was search with no results, replace it in the history
+                if (App.Data.search.noResults) {
+                    replaceState = true;
+                    delete App.Data.search.noResults;
+                }
+                this.updateState(Boolean(replaceState));
+            }
+        },
+        /**
+         * Restore state data from the history.
+         * @param {Object} event - PopStateEvent.
+         */
+        restoreState: function(event) {
+            var search = App.Data.search,
+                categories = App.Data.categories,
+                est = App.Data.settings.get('establishment'),
+                isSearchPatternPresent, data;
+
+            // need execute App.Routers.MainRouter.prototype.restoreState to handle establishment changing
+            data = event instanceof Object && event.state
+                ? App.Routers.RevelOrderingRouter.prototype.restoreState.apply(this, arguments)
+                : App.Routers.RevelOrderingRouter.prototype.restoreState.call(this, {state: null});
+
+            if (!(data instanceof Object) || est != data.establishment) {
+                return;
+            }
+            // check data.searchPattern
+            isSearchPatternPresent = typeof data.searchPattern == 'string' && data.searchPattern.length;
+
+            // If data.categories is an object, restore 'selected' and 'parent_selected' props of App.Data.categories and set restoring mode.
+            // If search pattern is present, categories shouldn't be restored
+            if (data.categories instanceof Object && !isSearchPatternPresent) {
+                categories.isRestoring = true;
+                categories.setParentSelected(data.categories.parent_selected);
+                categories.setSelected(data.categories.selected);
+                // clear search input
+                search.trigger('onClear');
+                App.Data.categories.trigger('show_subcategory');
+                // remove restoring mode
+                delete categories.isRestoring;
+            };
+
+            // If data.searchPattern is a string, restore the last searched pattern and set restoring mode
+            if (isSearchPatternPresent) {
+                search.isRestoring = true;
+                search.lastPattern = data.searchPattern;
+                // set callback on event onSearchComplete (products received)
+                this.listenToOnce(search, 'onSearchComplete', function() {
+                    // remove restoring mode
+                    delete search.isRestoring;
+                }, this);
+                search.trigger('onRestore');
+            }
+        },
+        /**
+         * Returns the current state data.
+         * @return {Object} The object containing information about the current app state.
+         */
+        getState: function() {
+            var categories = App.Data.categories,
+                search = App.Data.search,
+                data = {},
+                searchPattern;
+
+            searchPattern = search.lastPattern;
+
+            // search pattern and categories data cannot be in one state due to views implementation
+            if (searchPattern) {
+                data.searchPattern = searchPattern;
+            } else {
+                data.categories = {
+                    parent_selected: categories.parent_selected,
+                    selected: categories.selected
+                };
+            }
+
+            return _.extend(App.Routers.MobileRouter.prototype.getState.apply(this, arguments), data);
+        },
         showPromoMessage: function() {
             App.Data.mainModel.set('isShowPromoMessage', true);
         },
@@ -317,26 +439,21 @@ define(["main_router"], function(main_router) {
         },
         index: function() {
             this.prepare('index', function() {
-                var dfd = $.Deferred(),
+                var categories = App.Data.categories,
+                    dfd = $.Deferred(),
                     self = this;
 
                 App.Views.TotalView.TotalMainView.prototype.integrity_test();
 
                 // load content block for categories
-                if (!App.Data.categories) {
-                    App.Data.categories = new App.Collections.Categories();
-                    App.Data.categories.get_categories().then(function() {
-                  //      self.change_page();
-                        dfd.resolve();
-                    });
-                } else {
-                    dfd.resolve();
-                //    this.change_page();
+                if (!categories.receiving) {
+                    categories.receiving = categories.get_categories();
                 }
 
-                if (!App.Data.search) {
-                    App.Data.search = new App.Collections.Search();
-                }
+                categories.receiving.then(function() {
+                    dfd.resolve();
+                });
+
                 if (!App.Data.searchLine) {
                     App.Data.searchLine = new App.Models.SearchLine({search: App.Data.search});
                 }
