@@ -372,9 +372,7 @@ define(["main_router"], function(main_router) {
                 categories.isRestoring = true;
                 categories.setParentSelected(data.categories.parent_selected);
                 categories.setSelected(data.categories.selected);
-                // clear search input
-                search.trigger('onClear');
-                App.Data.categories.trigger('show_subcategory');
+                App.Data.categories.trigger('onRestore show_subcategory');
                 // remove restoring mode
                 delete categories.isRestoring;
             };

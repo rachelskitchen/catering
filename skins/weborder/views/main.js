@@ -36,8 +36,14 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:isShowPromoMessage', this.calculatePromoMessageWidth, this);
             this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
             this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
-            this.listenTo(App.Data.search, 'onRestore', this.restoreSearchState);
-            this.listenTo(App.Data.search, 'onClear', this.clearSearchLine);
+            this.listenTo(App.Data.search, 'onRestore', function() {
+                this.hide_popup();
+                this.restoreSearchState();
+            });
+            this.listenTo(App.Data.categories, 'onRestore', function() {
+                this.hide_popup();
+                this.clearSearchLine();
+            });
 
             this.iOSFeatures();
 
