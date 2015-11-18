@@ -44,7 +44,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         mod: 'item',
         events: {
             'click .customize': 'customize',
-            'click .input': 'change'
+            'click .checkbox': 'change',
+            'click .title': 'change'                  
         },
         bindings: {
             '.mdf_quantity select': 'value: decimal(quantity)',
@@ -100,7 +101,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             else {
                 max_quantity = exact_amount;
             }
-            for (var i=1; i <= 120; i++) {
+            for (var i=1; i <= max_quantity; i++) {
                 option_el = $('<option>').val(i).text("x" + i);
                 mdf_quantity_el.append(option_el);
             }
@@ -141,7 +142,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 return;
             }
             var productSet = this.options.productSet;
-            var el = $(e.currentTarget),
+            var el = $(".checkbox", $(e.currentTarget).parent()),
                 checked = el.attr('checked') == "checked" ? false : true,
                 exactAmount = productSet.get('maximum_amount');
 
