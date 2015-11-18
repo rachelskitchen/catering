@@ -134,7 +134,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
 
             model.hide_images = settings.get('settings_system').hide_images;
             model.currency_symbol = settings.get('settings_system').currency_symbol;
-            model.price = round_monetary_currency(this.model.get('initial_price'));
+            model.price = round_monetary_currency(this.model.get_product_price());
             model.price_length = model.price.length;
             model.not_size = this.modifiers && this.modifiers.getSizeModel() === undefined;
             model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
@@ -184,6 +184,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             }
         },
         update_price: function() {
+            trace("update_price ====> ");
             var dt = this.$('dt'),
                 initial_price = round_monetary_currency(this.model.get_product_price());
 
@@ -201,12 +202,12 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
     });
 
     CoreView.CoreProductModifiersComboView = CoreView.CoreProductModifiersView.extend({
-        initialize: function() {            
+        initialize: function() {
             CoreView.CoreProductModifiersView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'combo_product_change', this.update_price, this);
         },
     });
-    
+
     CoreView.CoreProductListNoneView = App.Views.ItemView.extend({
         name: 'product',
         mod: 'list_none'

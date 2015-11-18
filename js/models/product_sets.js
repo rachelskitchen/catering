@@ -72,12 +72,6 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                 });
                 var order_product = new App.Models.Myorder();
                 order_product.addJSON(json);
-                //order_product.set({
-                    //sum: order_product.get_modelsum(), // sum with modifiers
-                    //initial_price: order_product.get_initial_price(),
-                    //is_child_product: true
-                //});
-                //order_product.update_prices();
                 order_products.add(order_product);
             });
             ext_data = _.extend({}, data, ext_data);
@@ -249,6 +243,11 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                return (product = model.get('order_products').findWhere({ id_product: id_product }));
             });
             return product;
+        },
+        check_selected: function() {
+            return !this.some(function(model) {
+                return model.get_selected_qty() > model.get("minimum_amount") || model.get_selected_qty() < model.get("maximum_amount");
+            });
         }
     });
 
