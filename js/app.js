@@ -203,29 +203,10 @@
 
             App.Data.isNewWnd = !!getData("is_new_window");
 
-            settings.on('change:settings_system', function()
+            settings.on('change:settings_system', function(model, value)
             {
-                // Remove old favicon link if it exists
-                var favicon_link = $('link', document.head).filter(function()
-                {
-                    return this.rel.match(/icon/i);
-                });
-
-                if (favicon_link.length)
-                {
-                    favicon_link.remove();
-                }
-
-                // Generate favicon link
-                var settings_system = this.get('settings_system');
-                var favicon_image = (settings_system.favicon_image !== null) ? settings_system.favicon_image : '/favicon.ico';
-
-                var link = document.createElement('link');
-                    link.type = 'image/x-icon';
-                    link.rel = 'shortcut icon';
-                    link.href = favicon_image + '?t=' + Date.now();
-
-                document.head.appendChild(link);
+                var favicon_image = (value.favicon_image !== null) ? value.favicon_image : '/favicon.ico';
+                document.getElementById('favicon').href = favicon_image + '?t=' + Date.now();
             });
 
             settings.on('change:skin', function() {
