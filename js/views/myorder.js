@@ -195,7 +195,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             var view = App.Views.GeneratorView.create('MyOrder', {
                 el: this.$(".product_info_footer"),
                 model: this.model,
-                mod: 'MatrixFooter',
+                mod: 'MatrixFooterCombo',
                 action: this.options.action,
                 real: this.options.real,
                 action_callback: this.options.action_callback
@@ -209,7 +209,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         mod: 'matrix_footer',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'combo_product_change', this.update_child_selected);
+            this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.update_child_selected);
             return this;
         },
         render: function() {
@@ -259,17 +259,19 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             }
         },
         update_child_selected: function() {
-            if (this.model.get('product').get("product_sets").check_selected() ) {
+            if (this.check_model()) {
                 this.$('.action_button').removeClass('disabled');
             }
             else {
                 this.$('.action_button').addClass('disabled');
             }
         },
+        check_model: function() {
+            return this.model.get('product').check_selected();
+        },
         action: function (event) {
             var check = this.model.check_order(),
                 self = this, index, collection;
-            //trace('self.model_init_1.collection ', self.model.collection ? true : false );
             if (check.status === 'OK') {
                 if (self.options.action === 'add') {
                     App.Data.myorder.add(self.model);
@@ -278,9 +280,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     index = collection.indexOf(self.options.real);
                     collection.remove(self.options.real);
                     collection.add(self.model, {at: index});
-                    //trace('self.model_init_.collection ', self.model.collection ? true : false );
-                    //trace ("action: real product index = ", index);
-                    if (collection.splitItemAfterQuantityUpdate)
+                  if (collection.splitItemAfterQuantityUpdate)
                         collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
                 }
                 $('#popup .cancel').trigger('click');
@@ -290,6 +290,19 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         }
     });
 
+    App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterComboView = _MatrixFooterComboView (App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView ) ;
+    function _MatrixFooterComboView(_base) { return _base.extend ({
+        initialize: function() {
+            _base.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'combo_product_change', this.update_child_selected);
+            return this;
+        },
+        check_model: function() {
+            return this.model.get('product').get("product_sets").check_selected();
+        }      
+      });
+    }
+  
     App.Views.CoreMyOrderView.CoreMyOrderItemView = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'item',
@@ -626,7 +639,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         App.Views.MyOrderView.MyOrderComboListView = App.Views.CoreMyOrderView.CoreMyOrderComboListView;
         App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView;
         App.Views.MyOrderView.MyOrderMatrixFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView;
-        App.Views.MyOrderView.MyOrderMatrixComboFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixComboFooterView;
+        App.Views.MyOrderView.MyOrderMatrixFooterComboView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterComboView;
         App.Views.MyOrderView.MyOrderNoteView = App.Views.CoreMyOrderView.CoreMyOrderNoteView;
         App.Views.MyOrderView.MyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView;
         App.Views.MyOrderView.MyOrderMatrixComboView = App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView;

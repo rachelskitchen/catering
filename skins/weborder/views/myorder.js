@@ -30,19 +30,12 @@ define(["myorder_view"], function(myorder_view) {
     var MyOrderMatrixView = _MyOrderMatrixView( CoreViews.CoreMyOrderMatrixView )
                                                     .mixed( DynamicHeightHelper_Modifiers );
     function _MyOrderMatrixView(_base){ return _base.extend({
-        initialize: function() {
-            _base.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.attributes_update);
-        },
         render: function() {
             _base.prototype.render.apply(this, arguments);
             this.renderProductFooter();
             this.dh_initialize();
             return this;
-        },
-        attributes_update: function() {
-            this.model.trigger("change_child_selected");
-        }
+        }        
       })
     };
 

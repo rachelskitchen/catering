@@ -225,11 +225,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             // Test Case 7047
             return (hasModifiers && typeof max_price == 'number' && max_price > 0 && max_price < totalItem ? max_price : totalItem) * this.get('quantity');
         },
-        get_sum_of_modifiers: function() {
-            var modifiers = this.get_modifiers();
-
-            return modifiers ? modifiers.get_sum() : 0;
-        },
         get_special: function() {
             var settings = App.Data.settings.get('settings_system');
             if(settings && !settings.special_requests_online) {
@@ -572,10 +567,18 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 });
             });*/
 
-            trace("get_product_price = ", sum);
+            //trace("get_product_price = ", sum);
             this.get('product').set("combo_price", sum);
 
             return sum;
+        },
+        /*
+        *   get sum of modifiers
+        */
+        get_sum_of_modifiers: function() {
+            var modifiers = this.get_modifiers();
+
+            return modifiers ? modifiers.get_sum() : 0;
         },
         /*
         *   get combo child product (for debug)

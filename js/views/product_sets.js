@@ -81,10 +81,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 productSet = this.options.productSet;
             model.currency_symbol = App.Settings.currency_symbol;
 
-            //model.price = model.sum ? round_monetary_currency(model.sum) : round_monetary_currency(model.initial_price);
             model.price = round_monetary_currency(this.model.get_sum_of_modifiers());
-
-            //trace("dfgddfgd", model.selected, this.model.get_sum_of_modifiers());
 
             model.slength = model.price.length;
             model.name =  product.escape('name');
@@ -122,6 +119,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
                 className: isStanfordItem ? 'stanford-reload-item' : '',
                 model: clone,
+                combo_child: true,
                 real: this.model,
                 action: 'update',
                 action_callback: function() {
@@ -132,8 +130,6 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                             cache_id: self.options.myorder_root.get('id_product')
                         });
                     self.model.trigger("model_changed");
-                    //trace('my test ee: ', self.model == clone);
-                    //trace('self.model.collection ', self.model.collection ? true : false );
                 }
             });
         },
