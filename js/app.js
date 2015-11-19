@@ -205,6 +205,18 @@
 
             settings.on('change:settings_system', function()
             {
+                // Remove old favicon link if it exists
+                var favicon_link = $('link', document.head).filter(function()
+                {
+                    return this.rel.match(/icon/i);
+                });
+
+                if (favicon_link.length)
+                {
+                    favicon_link.remove();
+                }
+
+                // Generate favicon link
                 var settings_system = this.get('settings_system');
                 var favicon_image = (settings_system.favicon_image !== null) ? settings_system.favicon_image : '/favicon.ico';
 
