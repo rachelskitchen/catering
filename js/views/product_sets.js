@@ -68,9 +68,11 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:selected', this.update, this);
             this.listenTo(this.model, 'change:quantity', this.update, this);
+            this.listenTo(this.model, 'change:modifiers', this.update, this);
             this.listenTo(this.model, 'model_changed', this.reinit_new_model, this);
         },
         reinit_new_model: function() {
+            //this.model (reference) for this view has been changed, so reinit it.
             this.model = this.options.productSet.get('order_products').findWhere({id_product: this.model.get('id_product')});;
             this.stopListening();
             this.initialize();
@@ -167,7 +169,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 this.$('.input').attr('checked', false);
                 this.$(".mdf_quantity").hide();
             }
-            this.model.get('modifiers').trigger('modifiers_changed');
+            //this.model.get('modifiers').trigger('modifiers_changed');
             this.options.myorder_root.trigger('combo_product_change');
         }
     });

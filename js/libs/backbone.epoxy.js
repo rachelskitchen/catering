@@ -102,6 +102,10 @@
       return copy;
   }
 
+  Backbone.Model.prototype.json = Backbone.Model.prototype.toJSON;
+  Backbone.Collection.prototype.json = Backbone.Collection.prototype.toJSON;
+
+
   // Calls method implementations of a super-class object:
   function _super(instance, method, args) {
     return instance._super.prototype[method].apply(instance, args);

@@ -83,9 +83,6 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:selected', this.update, this);
             this.listenTo(this.model, 'change:free_amount', this.update_free, this);
-
-            this.enable_quantity_modifiers = App.Settings.enable_quantity_modifiers && (!this.options.flags || this.options.flags.indexOf(' ') == -1);
-            this.enable_split_modifiers = App.Settings.enable_split_modifiers && (!this.options.flags || this.options.flags.indexOf('no_split_modifiers') == -1);
         },
         render: function() {
             var model = this.model.toJSON(),
@@ -186,7 +183,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                     this.$('input').attr('checked', 'checked');
                     this.$('.input').addClass('checked');
 
-                    if (this.enable_quantity_modifiers) {
+                    if (App.Settings.enable_quantity_modifiers) {
                         this.$(".mdf_quantity").css("display", "inline-block");
 
                         this.$('.mdf_quantity option:selected').removeAttr('selected');
@@ -194,7 +191,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                             this.$(".mdf_quantity select").val(this.model.get('quantity'));
                         }
                     }
-                    if (this.enable_split_modifiers) {
+                    if (App.Settings.enable_split_modifiers) {
                         this.$(".mdf_split").css("display", "inline-block");
 
                         this.$(".mdf_split select").val(this.model.get('qty_type'));
@@ -202,7 +199,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                         removeClassRegexp(elem, "option_\\d+");
                         elem.addClass("option_"+this.model.get('qty_type'));
                     }
-                    if (this.enable_quantity_modifiers ? !this.enable_split_modifiers : this.enable_split_modifiers) {
+                    if (App.Settings.enable_quantity_modifiers ? !App.Settings.enable_split_modifiers : App.Settings.enable_split_modifiers) {
                         this.$(".split-qty-wrapper").addClass('single')
                     } else {
                         this.$(".split-qty-wrapper").removeClass('single')

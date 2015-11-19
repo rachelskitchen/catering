@@ -114,15 +114,18 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     this.set('initial_price', price);
                 });
                 this.listenTo(modifiers, 'modifiers_changed', function() {
+                    debugger;
                     this.update_prices();
                     this.update_mdf_sum();
                     this.trigger('change', this); // need to notify a collection about modifier change to ensure cart totals update
                 });
             }
         },
-        update_mdf_sum: function() {
+        update_mdf_sum: function(multiplier) {
             var mdfGroups = this.get_modifiers(),
-                quantity = this.get('quantity');
+                multiplier = multiplier ? multiplier : 1,
+                quantity = this.get('quantity') * multiplier;
+
             mdfGroups && mdfGroups.each(function(mdfGroup) {
                 var mdfs = mdfGroup.get('modifiers');
                 mdfs && mdfs.each(function(mdf) {
@@ -225,6 +228,14 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             // Test Case 7047
             return (hasModifiers && typeof max_price == 'number' && max_price > 0 && max_price < totalItem ? max_price : totalItem) * this.get('quantity');
         },
+         /*
+        *   get sum of modifiers
+        */
+        get_sum_of_modifiers: function() {
+            var modifiers = this.get_modifiers();
+
+            return modifiers ? modifiers.get_sum() : 0;
+        },
         get_special: function() {
             var settings = App.Data.settings.get('settings_system');
             if(settings && !settings.special_requests_online) {
@@ -279,12 +290,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 };
             }
 
-            if (!App.Data.timetables.check_order_enable(isDelivery)) {
+            if (!App.   Data.timetables.check_order_enable(isDelivery)) {
                 return {
                     status: 'ERROR',
                     errorMsg: ERROR.BLOCK_STORE_IS_CLOSED
                 };
-            }
+           }
 
             if (!product.check_selected()) {
                 return {
@@ -506,6 +517,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         }
     });
 
+    if (App.Data.devMode) {
+        /*
+        *  get modifier params by indexes for debug
+        */
+        App.Models.Myorder.prototype.get_mdf = function(mdf_class_index, mdf_index) {
+            return this.get('modifiers').models[mdf_class_index].get('modifiers').models[mdf_index].toJSON();
+        }
+    }
+
     App.Models.MyorderCombo = App.Models.Myorder.extend({
         /**
          * initiate order for combo product
@@ -572,21 +592,32 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             return sum;
         },
-        /*
-        *   get sum of modifiers
-        */
-        get_sum_of_modifiers: function() {
-            var modifiers = this.get_modifiers();
-
-            return modifiers ? modifiers.get_sum() : 0;
+        initialize: function() {
+            App.Models.Myorder.prototype.initialize.apply(this, arguments);
+            this.listenTo(this, 'combo_product_change', this.update_mdf_sum, this);
         },
+        /*
+        *   update sums of modifiers in respect to quantity of root combo product and quantity of child products
+        */
+        update_mdf_sum: function() {
+            var order_products = this.get('product').get('product_sets').get_selected_products(),
+                root_quantity = this.get('quantity');
+
+            order_products && order_products.each( function(order_product) {
+                order_product.update_prices();
+                order_product.update_mdf_sum(root_quantity);
+            });
+        },
+    });
+
+    if (App.Data.devMode) {
         /*
         *   get combo child product (for debug)
         */
-        get_combo_child: function(product_set_index, product_index) {
+        App.Models.MyorderCombo.prototype.get_combo_child = function(product_set_index, product_index) {
             return this.get('product').get('product_sets').models[product_set_index].get('order_products').models[product_index];
         }
-    });
+    }
 
     App.Models.DiscountItem = Backbone.Model.extend({
         defaults: {
