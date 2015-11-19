@@ -243,6 +243,7 @@ define(["backbone", "async"], function(Backbone) {
                 color_scheme_key = 'color_scheme' + this.get('establishment'),
                 saved_color_scheme = getData(color_scheme_key, true),
                 settings_system = {
+                    favicon_image: null,
                     address: {},
                     business_name: "",
                     email: "",

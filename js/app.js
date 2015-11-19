@@ -203,6 +203,19 @@
 
             App.Data.isNewWnd = !!getData("is_new_window");
 
+            settings.on('change:settings_system', function()
+            {
+                var settings_system = this.get('settings_system');
+                var favicon_image = (settings_system.favicon_image !== null) ? settings_system.favicon_image : '/favicon.ico';
+
+                var link = document.createElement('link');
+                    link.type = 'image/x-icon';
+                    link.rel = 'shortcut icon';
+                    link.href = favicon_image + '?t=' + Date.now();
+
+                document.head.appendChild(link);
+            });
+
             settings.on('change:skin', function() {
                 locale.dfd_load = locale.loadLanguagePack(); // load a language pack from backend
                 locale.dfd_load.done(function() {
