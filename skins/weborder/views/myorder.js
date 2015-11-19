@@ -35,13 +35,14 @@ define(["myorder_view"], function(myorder_view) {
             this.renderProductFooter();
             this.dh_initialize();
             return this;
-        }        
+        }
       })
     };
 
     function DynamicHeightHelper(_base_proto) {
       return {
         dh_initialize: function() {
+                trace("dh_initialize ==> ")
             $('#popup').addClass('ui-invisible');
             setTimeout(this.dh_change_height.bind(this, 1), 20);
             this.interval = this.interval || setInterval(this.dh_change_height.bind(this), 500); // check size every 0.5 sec
@@ -55,7 +56,10 @@ define(["myorder_view"], function(myorder_view) {
                 inner_height = $('#popup').outerHeight(),
                 prev_window = this.prev_window || 0,
                 window_heigth = $(window).height();
-
+            if (this.is_hidden == true ){
+                //trace("dh_change_height = HIDDEN => ");
+                return;
+            }
             if (e || prev_height !== inner_height || prev_window !== window_heigth) {
                 var el = this.$('.modifiers_table_scroll'),
                     wrapper_height,
@@ -67,15 +71,18 @@ define(["myorder_view"], function(myorder_view) {
                 el.height('auto');
                 inner_height = $('#popup').outerHeight();
                 wrapper_height = $('.popup_wrapper').height();
-
+                trace("dh_, product, special, size: ", product, special, size);
+                trace("dh_, wh, ih: ", wrapper_height, inner_height);
                 if (wrapper_height < inner_height) {
-                        var height = wrapper_height - product - special - size - 117;
+                    var height = wrapper_height - product - special - size - 117;
                     el.height(height);
                 }
 
                 inner_height = $('#popup').outerHeight();
                 this.prev_height = inner_height;
                 this.prev_window = window_heigth;
+                trace("dh_change_height ==> ", height, inner_height, window_heigth);
+
                 $('#popup').removeClass('ui-invisible');
             }
         },

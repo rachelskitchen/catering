@@ -95,8 +95,10 @@ define(["done_view", "generator"], function(done_view) {
                 data, cache_id;
 
             if (this.subViews[2]) {
-                if (this.subViews[2]['cache_id'])
-                    this.subViews[2].removeFromDOMTree();
+                if (this.subViews[2]['cache_id']) {
+                    this.subViews[2].is_hidden = true; //it's cause of setInterval function in DynamicHeightHelper
+                    this.subViews[2].removeFromDOMTree(); //saving the view which was cached before
+                }
                 else
                     this.subViews[2].remove();
             }
@@ -120,13 +122,14 @@ define(["done_view", "generator"], function(done_view) {
 
             this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data, cache_id);
             this.subViews[2].cache_id = cache_id;
+            this.subViews[2].is_hidden = false;
             this.$('#popup').append(this.subViews[2].el);
 
             popup.addClass('ui-visible');
         },
         hide_popup: function(event, action_callback, model) {
             var callback = this.model.get('popup').action_callback;
-            this.model.unset('popup'); 
+            this.model.unset('popup');
             callback && callback();
         },
         header_defaults: function() {

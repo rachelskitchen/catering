@@ -167,7 +167,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
 
             if (!product) return;
 
-            var el = $('<div></div>');
+            var el = $('<div class="product_sets"></div>');
                 this.$('.modifiers_info').append(el);
                 productSets = App.Views.GeneratorView.create('ProductSets', {
                     el: el,

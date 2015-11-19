@@ -289,7 +289,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 };
             }
 
-            if (!App.   Data.timetables.check_order_enable(isDelivery)) {
+            if (!App.Data.timetables.check_order_enable(isDelivery)) {
                 return {
                     status: 'ERROR',
                     errorMsg: ERROR.BLOCK_STORE_IS_CLOSED
@@ -520,7 +520,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         /*
         *  get modifier params by indexes for debug
         */
-        App.Models.Myorder.prototype.get_mdf = function(mdf_class_index, mdf_index) {
+        App.Models.Myorder.prototype.mdf = function(mdf_class_index, mdf_index) {
             return this.get('modifiers').models[mdf_class_index].get('modifiers').models[mdf_index].toJSON();
         }
     }
@@ -574,21 +574,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 sum = root_price;
             }
 
-            /*combo_saving_products.some(function(product_set) {
-                return product_set.get_selected_products().some(function(model) {
-                    trace("add product_saving : ", model.get('product').get('name'), model.get_initial_price());
-                    sum += model.get_initial_price();
-                    if (sum >= root_price) {
-                        sum = root_price;
-                        return true;
-                    }
-                    return false;
-                });
-            });*/
-
-            //trace("get_product_price = ", sum);
             this.get('product').set("combo_price", sum);
-
             return sum;
         },
         initialize: function() {
@@ -613,7 +599,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         /*
         *   get combo child product (for debug)
         */
-        App.Models.MyorderCombo.prototype.get_combo_child = function(product_set_index, product_index) {
+        App.Models.MyorderCombo.prototype.combo_child = function(product_set_index, product_index) {
             return this.get('product').get('product_sets').models[product_set_index].get('order_products').models[product_index];
         }
     }
@@ -1807,12 +1793,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if (item.get('discount').get('name') === 'Item Reward' && oldQuantity == 1 && newQuantity != 1) {
                 this.splitItemWithPointValue(item, silentFlag);
             }
-        },
+        }
+    });
+
+    if (App.Data.devMode) {
         /*
         *   get combo child product (for debug)
         */
-        get_combo_child: function(product_index, product_set_index, child_index) {
-            return this.models[product_index].get_combo_child(product_set_index, child_index);
+        App.Collections.Myorders.prototype.combo_child = function(product_index, product_set_index, child_index) {
+            return this.models[product_index].combo_child(product_set_index, child_index);
         }
-    });
+    }
 });
