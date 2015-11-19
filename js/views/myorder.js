@@ -299,10 +299,10 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         },
         check_model: function() {
             return this.model.get('product').get("product_sets").check_selected();
-        }      
+        }
       });
     }
-  
+
     App.Views.CoreMyOrderView.CoreMyOrderItemView = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'item',
