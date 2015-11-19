@@ -114,7 +114,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     this.set('initial_price', price);
                 });
                 this.listenTo(modifiers, 'modifiers_changed', function() {
-                    debugger;
                     this.update_prices();
                     this.update_mdf_sum();
                     this.trigger('change', this); // need to notify a collection about modifier change to ensure cart totals update
@@ -123,7 +122,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         },
         update_mdf_sum: function(multiplier) {
             var mdfGroups = this.get_modifiers(),
-                multiplier = multiplier ? multiplier : 1,
+                multiplier = typeof multiplier == 'number' ? multiplier : 1,
                 quantity = this.get('quantity') * multiplier;
 
             mdfGroups && mdfGroups.each(function(mdfGroup) {
