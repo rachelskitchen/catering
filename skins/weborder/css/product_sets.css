@@ -116,3 +116,13 @@
 #modifiers_popup .product_set_list .combo_item .input.checkbox[checked] {
     background-position: -91px -26px;
 }
+#modifiers_popup .product_sets h2 {
+    color: #6E6E6E;
+    text-shadow: none;
+}
+.modifiers_table .product_sets h2 {
+    font-size: 18px;
+}
+
+
+

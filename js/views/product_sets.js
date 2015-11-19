@@ -26,7 +26,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
     // Combo matrix creation workflow:
     // ProductListItemView -> user clicks on a product ->
     //                     -> { MyOrderMatrixComboView ->
-    //                                -> { ProductModifiersView }
+    //                                -> { ProductModifiersComboView }
     //                                -> { ProductSetsListView ->
     //                                        -> [ ProductSetsItemView  ->
     //                                                     -> { ComboListView  ->
@@ -34,7 +34,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
     //                                             ...
     //                                           ]
     //                                   }
-    //                                -> { MyOrderMatrixFooterView }
+    //                                -> { MyOrderMatrixFooterComboView }
     //                        }
 
     App.Views.CoreComboView = {};
@@ -72,7 +72,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             this.listenTo(this.model, 'model_changed', this.reinit_new_model, this);
         },
         reinit_new_model: function() {
-            //this.model (reference) for this view has been changed, so reinit it.
+            //this.model (reference) for this view has been changed, so reinit the view.
             this.model = this.options.productSet.get('order_products').findWhere({id_product: this.model.get('id_product')});;
             this.stopListening();
             this.initialize();
@@ -126,12 +126,14 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 action: 'update',
                 action_callback: function() {
                     //return back to the combo root product view:
+                    //setTimeout( function() {
                     App.Data.mainModel.set('popup', {
                             modelName: 'MyOrder',
                             mod: 'MatrixCombo',
                             cache_id: self.options.myorder_root.get('id_product')
                         });
                     self.model.trigger("model_changed");
+                    //}, 1000);
                 }
             });
         },
@@ -148,6 +150,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 return;
             }
             this.model.set('selected', checked);
+            if (checked && this.model.check_order().status != 'OK') {
+                this.$(".customize").click();
+            }
         },
         update: function() {
             var quantity;
@@ -250,6 +255,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         name: 'product_sets',
         mod: 'list',
         initialize: function() {
+            this.model.set('combo_name', this.model.get('product').get('name'));
             App.Views.ListView.prototype.initialize.apply(this, arguments);
         },
         render: function() {

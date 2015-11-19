@@ -176,5 +176,7 @@
         'STANFORD_CARD_NUMBER': 'Stanford Card #',
         'STANFORD_CARD_CHOOSE_PLAN': 'Stanford Card: Choose Plan',
         'COMBO_CUSTOMIZE': 'Customize',
+        'PRODUCT_SETS_SELECT_1': 'Please choose your "',
+        'PRODUCT_SETS_SELECT_2': '" options'
     } // end of locale
 }); // end of module
