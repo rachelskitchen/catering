@@ -24,6 +24,7 @@
         'CHECKOUT_STATE': 'State',
         'CHECKOUT_PROVINCE': 'Province',
         'CHECKOUT_ZIP_CODE': 'Zip Code',
+        'CHECKOUT_POSTAL_CODE': 'Postal Code',
         'CHECKOUT_SHIPPING_HANDLING': 'Shipping & Handling',
         'CHECKOUT_LEVEL': 'Level',
         'CHECKOUT_SECTION': 'Section',

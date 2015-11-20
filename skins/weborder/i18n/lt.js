@@ -24,6 +24,7 @@ define([], function() {
         "CHECKOUT_STATE": "Valstija",
         "CHECKOUT_PROVINCE": "Provincija",
         "CHECKOUT_ZIP_CODE": "Pašto kodas",
+        "CHECKOUT_POSTAL_CODE": "Pašto kodas",
         "CHECKOUT_SHIPPING_HANDLING": "Užsakymo apdorojimas ir siuntimas",
         "CHECKOUT_LEVEL": "Lygis",
         "CHECKOUT_SECTION": "Sekcija",

@@ -30,6 +30,7 @@ define([], function() {
         "CHECKOUT_STATE": "Bundesstaat",
         "CHECKOUT_PROVINCE": "Provinz",
         "CHECKOUT_ZIP_CODE": "Postleitzahl",
+        "CHECKOUT_POSTAL_CODE": "Postleitzahl",
         "CHECKOUT_SHIPPING": "Versand & Handhabung",
         "CHECKOUT_HOW_LIKE_TO_PAY": "Wie möchten Sie bezahlen?",
         "CHECKOUT_PAYPAL": "Zahlen mit Paypal",

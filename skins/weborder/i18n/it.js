@@ -24,6 +24,7 @@ define([], function() {
         "CHECKOUT_STATE": "Stato",
         "CHECKOUT_PROVINCE": "Provincia",
         "CHECKOUT_ZIP_CODE": "CAP",
+        "CHECKOUT_POSTAL_CODE": "CAP",
         "CHECKOUT_SHIPPING_HANDLING": "Spedizione e trasporto",
         "CHECKOUT_LEVEL": "Livello",
         "CHECKOUT_SECTION": "Sezione",

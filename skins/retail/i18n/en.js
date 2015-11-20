@@ -30,6 +30,7 @@
         'CHECKOUT_STATE': 'State',
         'CHECKOUT_PROVINCE': 'Province',
         'CHECKOUT_ZIP_CODE': 'Zip Code',
+        'CHECKOUT_POSTAL_CODE': 'Postal Code',
         'CHECKOUT_SHIPPING': 'Shipping & Handling',
         'CHECKOUT_HOW_LIKE_TO_PAY': 'How would you like to pay?',
         'CHECKOUT_PAYPAL': 'Checkout with PayPal',

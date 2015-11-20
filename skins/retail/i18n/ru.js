@@ -30,6 +30,7 @@
         'CHECKOUT_STATE': 'Штат',
         'CHECKOUT_PROVINCE': 'Провинция',
         'CHECKOUT_ZIP_CODE': 'Почтовый индекс',
+        'CHECKOUT_POSTAL_CODE': 'Почтовый индекс',
         'CHECKOUT_SHIPPING': 'Служба доставки',
         'CHECKOUT_HOW_LIKE_TO_PAY': 'Выберите способ оплаты',
         'CHECKOUT_PAYPAL': 'PayPal',
