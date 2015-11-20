@@ -26,6 +26,13 @@
         return;
     }
 
+    /**
+     * Object containing all available skins.
+     * @typedef {object} module:app~Skins
+     * @property {string} WEBORDER=weborder - The name of Weborder skin.
+     * @property {string} WEBORDER_MOBILE=weborder_mobile - The name of Weborder Mobile skin.
+     * @property {string} RETAIL=retail - The name of Retail skin.
+     */
     // init `skins` object that contents all available skins
     var skins = Object.create(null, {
         set: {
@@ -59,8 +66,25 @@
         }
     });
 
+    /**
+     * Main application namespace. All new entities should be added to this namespace.
+     * @namespace App
+     */
     window.App = {
+        /**
+         * Contains all available Collection constructors extending Backbone.Collection.
+         * If you create a new collection constructor it should be added to App.Collections.
+         * @namespace App.Collections
+         */
         Collections: {},
+        /**
+         * Contains main application objects that define app structure,
+         * instances of [models]{@link App.Models} , [collections]{@link App.Collections}
+         * and helper data associated with the current app state.
+         * If you create an instance of new entity and would like to get access to it in any part of code
+         * you need to add it to App.Data.
+         * @namespace App.Data
+         */
         Data: {
             modifiers: {},
             myorder: {},
@@ -76,30 +100,92 @@
             log: {},
             curLocale: 'en'
         },
+        /**
+         * Contains all available Model constructors extending Backbone.Model.
+         * If you create a new model constructor it should be added to App.Models.
+         * @namespace App.Models
+         */
         Models: {},
         lastModelViews: {},
+        /**
+         * Contains all available Router constructors extending Backbone.Router.
+         * If you create a new router constructor it should be added to App.Routers.
+         * @namespace App.Routers
+         */
         Routers: {},
+        /**
+         * Contains all available View constructors extending Backbone.View.
+         * If you create a new view constructor it should be added to App.View.
+         * @namespace App.Views
+         */
         Views: {},
+        /**
+         * Contains all available skins.
+         * @memberof App
+         * @type module:app~Skins
+         */
         Skins: skins
     };
 
+    /**
+     * A short name for App.Data.settings.attributes.settings_system object.
+     * @memberof App
+     */
     App.Settings = {};
 
-    // define main module
+    /**
+     * A module representing the application.
+     * @module app
+     * @requires module:config
+     * @see [actual path]{@link module:config.paths}
+     */
     define(['config'], function(config) {
         return {
+            /**
+             * All available skins in the app.
+             * @type {module:app~Skins}
+             * @static
+             */
             skins: skins,
+            /**
+             * Contains an object exported by [config]{@link module:config} module.
+             * @type {module:config}
+             * @static
+             */
             config: config,
             init: init,
             addSpinner: addSpinner,
             getFontSize: getFontSize,
             initSpinner: initSpinner,
+            /**
+             * A function is called before the app init. If you want to do something before the app init need to override this function.
+             * @type {Function}
+             * @static
+             * @method
+             */
             beforeInit: new Function,
+            /**
+             * A function is called after the app init. If you want to do something after the app init need to override this function.
+             * @type {Function}
+             * @static
+             * @method
+             */
             afterInit: new Function,
             loadApp: loadApp // loading application
         }
     });
 
+    /**
+     * Inits and runs the app.
+     * @alias module:app.init
+     * @type {Function}
+     * @static
+     * @example
+     * // load 'app' module and run the app
+     * require(['app'], function('app') {
+     *     app.init();
+     * });
+     */
     // start app
     function init() {
         var app = require('app');
@@ -266,7 +352,17 @@
         });
     }
 
-    // 'this' should be HTMLElement
+    /**
+     * Appends a spinner to html element. 'this' keyword value should be an HTMLElement instance.
+     * @memberof module:app
+     * @type {Function}
+     * @static
+     * @example
+     * // load 'app' module and add spinner to `body` element
+     * require(['app'], function('app') {
+     *     app.addSpinnder.call(document.body);
+     * });
+     */
     function addSpinner() {
         var html = '<div class="ui-spinner animate-spin"></div>';
         if('absolute' !== this.style.position) {
@@ -275,6 +371,19 @@
         this.innerHTML += html;
     }
 
+    /**
+     * Calculates a font size based on client size. This value affects CSS sizes in `em` units.
+     * @memberof module:app
+     * @type {Function}
+     * @static
+     * @example
+     * // load 'app' module and set a font size to `body` element
+     * require(['app'], function('app') {
+     *     var fontSize = app.getFontSize(document.body);
+     *     document.body.style.fontSize = fontSize + 'px';
+     * });
+     * @returns {number} base font size
+     */
     // define font-size for spinner
     function getFontSize() {
         var wCoef = document.documentElement.clientWidth / 640,
@@ -316,7 +425,10 @@
     }
 
     /**
-     * Loading application.
+     * Defines the current establishment id and reloads the app according its value.
+     * @memberof module:app
+     * @type {Function}
+     * @static
      */
     function loadApp() {
         require(['establishments', 'establishments_view'], function() {

@@ -20,37 +20,170 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.Category}, {@link App.Collections.Categories} constructors.
+ * @module categories
+ * @requires module:backbone
+ * @requires module:collection_sort
+ * @see {@link module:config.paths actual path}
+ */
 define(["backbone", "collection_sort"], function(Backbone) {
     'use strict';
 
-    App.Models.Category = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents a menu category.
+     * @alias App.Models.Category
+     * @example
+     * // create a category model
+     * require(['categories'], function() {
+     *     App.Data.category = new App.Models.Category({id: 7});
+     * });
+     */
+    App.Models.Category = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Category.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum {string}
+         */
         defaults: {
+            /**
+             * Category description
+             * @type {string}
+             */
             description: '',
+            /**
+             * Category id
+             * @type {(null|number|string)}
+             */
             id: null,
+            /**
+             * Default url of category icon
+             * @type {(null|string)}
+             */
             image: App.Data.settings.get_img_default(),
+            /**
+             * Category name
+             * @type {(null|string)}
+             */
             name: null,
+            /**
+             * Parent category name
+             * @type {(null|string)}
+             */
             parent_name: null,
+            /**
+             * Parent category sort value
+             * @type {(null|number)}
+             */
             parent_sort: null,
+            /**
+             * Category sort value
+             * @type {(null|number)}
+             */
             sort: null,
+            /**
+             * Custom sort value
+             * @type {(null|number|string)}
+             */
             sort_val: null,
+            /**
+             * Path for relative URL
+             * @type {(null|number|string)}
+             */
             img: App.Data.settings.get("img_path"),
+            /**
+             * Indicates the category is active (`true`) or inactive (`false`)
+             * @type {boolean}
+             */
             active: true,
+            /**
+             * Custom menu
+             * @type {(null|Object)}
+             */
             timetables: null
         }
     });
 
-    App.Collections.Categories = App.Collections.CollectionSort.extend({
+    /**
+     * @class
+     * @classdesc Represents a collection of categories
+     * @alias App.Collections.Categories
+     * @augments App.Collections.CollectionSort
+     * @example
+     * // create a category collection
+     * requires(['categories'], function() {
+     *     App.Data.categories = new App.Collections.Categories();
+     * });
+     */
+    App.Collections.Categories = App.Collections.CollectionSort.extend(
+    /**
+     * @lends App.Collections.Categories.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {App.Models.Category}
+         * @default App.Models.Category
+         */
         model: App.Models.Category,
+        /**
+         * Id or ids array of selected categories.
+         * @type {(null|number|Array.number|string|Array.string)}
+         * @default null
+         */
         selected: null,
+        /**
+         * Id of selected parent category.
+         * @type {?number}
+         * @default null
+         */
         parent_selected: null,
+        /**
+         * Sort strategy.
+         * @type {string}
+         * @default "sortNumbers"
+         */
         sortStrategy: "sortNumbers",
+        /**
+         * A key of model that used for sorting.
+         * @type {string}
+         * @default "sort_val"
+         */
         sortKey: "sort_val",
+        /**
+         * Sorting type ("asc" or "desc").
+         * @type {string}
+         * @default "asc"
+         */
         sortOrder: "asc", //or "desc"
+        /**
+         * A Key of model that used for sorting by Backbone.Collection.
+         * @type {string}
+         * @default "sort"
+         */
         comparator: 'sort',
+        /**
+         * Path for relative URL of images.
+         * @type {string}
+         * @default {@link App.Data.settings#img_path}.
+         */
         img: App.Data.settings.get("img_path"),
         /**
-        * Get categories from backend.
-        */
+         * Gets categories from backend.
+         * Request parameters:
+         * ```
+         * url:  "/weborders/product_categories/"
+         * data: {establishment: %estId%}
+         * type: "GET"
+         * ```
+         * Failure request leads to the app reloading.
+         * @returns {Object} Deffered object that resolves as a response is received.
+         */
         get_categories: function() {
             var self = this;
             var dfd = $.Deferred();
@@ -83,20 +216,27 @@ define(["backbone", "collection_sort"], function(Backbone) {
             return dfd;
         },
         /**
-        * set category as inactive. Fired prom product collection, when all product in category became inactive
-        */
+         * Changes a category on inactive.
+         * @param {(number|string|Array)} id - category id that should be inactivated.
+         */
         set_inactive: function(id) {
             this.where({id: id}).forEach(function(el) {
                 el.set('active', false);
             });
         },
         /**
-         * @method
-         * @returns {Array} [{
-         *                      name: <parent_name>
-         *                      sort: <parent_sort>
-         *                      subcategories: App.Collections.Categories
-         *                   }, ...]
+         * Parses parent categories in the collection.
+         * @returns {Array} An array each item is object literal representation of parent category:
+         * ```
+         * [
+         *     {
+         *          name: <parent_name>
+         *          sort: <parent_sort>
+         *          subcategories: App.Collections.Categories
+         *     },
+         *     ...
+         * ]
+         * ```
          */
         getParents: function() {
             var parents = {};

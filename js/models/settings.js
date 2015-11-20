@@ -413,10 +413,20 @@ define(["backbone", "async"], function(Backbone) {
                                 }
                             })();
 
-                            //check stanford payment processor, set color_scheme to "Stanford"
-                            if (App.Data.is_stanford_mode || settings_system.payment_processor.stanford == true) {
-                                settings_system.color_scheme = "stanford";
+                            // although is_stanford_mode was previously set on app init, need to reset its value to false
+                            // it's needed if establishment in stanford mode was changed to the non-stanford establishment (bug 33421)
+                            App.Data.is_stanford_mode = false;
+                            // then need to check if stanford mode is enabled using get parameter...
+                            var app = require('app');
+                            if (app.get['stanford'] == true
+                                // ...or by using Stanford payment processor
+                                || settings_system.payment_processor.stanford == true)
+                            {
                                 App.Data.is_stanford_mode = true;
+                            }
+                            if (App.Data.is_stanford_mode) {
+                                // set color_scheme to "Stanford"
+                                settings_system.color_scheme = "stanford";
                             }
 
                             self.set("settings_system", settings_system);
