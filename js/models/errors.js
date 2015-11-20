@@ -20,26 +20,94 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.Errors} constructors.
+ * @module errors
+ * @requires module:backbone
+ * @see {@link module:config.paths actual path}
+ */
 define(['backbone'], function(Backbone) {
     'use strict';
 
-    App.Models.Errors = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents notifications model.
+     * @alias App.Models.Errors
+     * @example
+     * // create a notification model
+     * require(['errors'], function() {
+     *     var notification = new App.Models.Errors();
+     * });
+     */
+    App.Models.Errors = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Errors.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum {string}
+         */
         defaults: {
+            /**
+             * A message.
+             * @type {string}
+             * @default 'No alert message'
+             */
             message: 'No alert message',
+            /**
+             * If `true` the app will be reloaded.
+             * @type {boolean}
+             * @default false
+             */
             reloadPage: false,
+            /**
+             * If `true` an error ocurred on server.
+             * @type {boolean}
+             * @default false
+             */
             errorServer: false,
+            /**
+             * Type of icon. Available values are 'info', 'warning',
+             * @type {string}
+             * @default 'info'
+             */
             typeIcon: 'info',
+            /**
+             * If `true` a confirmation popup should be displayed,
+             * @type {boolean}
+             * @default false
+             */
             isConfirm: false,
+            /**
+             * Confirmation popup config,
+             * @type {Object}
+             * @default
+             * ```
+             * {
+             *     ok: 'OK',          // label of 'OK' button
+             *     cancel: 'Cancel',  // label of 'Cancel' button
+             *     btnsSwap: false,   // Swap button
+             *     cancelHide: false  // Hide 'Cancel' button
+             * }
+             * ```
+             */
             confirm: {
                 ok: 'OK',
                 cancel: 'Cancel',
                 btnsSwap: false,
                 cancelHide: false
             },
+            /**
+             * Custom view that should be added into popup.
+             * @type {?Backbone.View}
+             * @default null
+             */
             customView: null
         },
         /**
-         * Clear model (set default values).
+         * Clears model (sets default values).
          */
         clearModel: function() {
             this.set(this.defaults);
@@ -49,23 +117,23 @@ define(['backbone'], function(Backbone) {
             }
         },
         /**
-         * User notification.
+         * Sets poup config and emits event to show alert.
          *
-         * @param {string} message Alert message.
-         * @param {boolean} reloadPage If TRUE - reload page after pressing button.
-         * @param {boolean} defaultView - 'true' value means to Use jQuery alert message.
-         * @param {object} options Options of alert message:
-         *      template: template ID (apply if uses custom alert message) (string);
-         *      errorServer: server return HTTP status 200, but data.status is error (boolean);
-         *      typeIcon: type of icon (info or warning) (string);
-         *      isConfirm: if THUE - show confirm message (boolean);
-         *      confirm: object for confirm message (two button) (object):
-         *          ok: text of OK button (string);
-         *          cancel: text of CANCEL button (string);
-         *          btnsSwap: buttons swap (boolean);
-         *          cancelHide: if TRUE - hide CANCEL button (boolean).
-         *      callback: callback for confirm message (function).
-         *      customView: an instance of Backbone.View
+         * @param {string} message - Alert message.
+         * @param {boolean} reloadPage - If `true` - reload page after pressing button.
+         * @param {boolean} defaultView - `true` value means to Use jQuery alert message.
+         * @param {object} options - Options of alert message:
+         * @param {string} options.template - template ID (apply if uses custom alert message)
+         * @param {boolean} options.errorServer - server return HTTP status 200, but data.status is error
+         * @param {string} options.typeIcon - type of icon ('info' or 'warning')
+         * @param {boolean} options.isConfirm - if `true` - show confirm message
+         * @param {Object} options.confirm - object for confirm message (two button)
+         * @param {string} options.confirm.ok - text of OK button
+         * @param {string} options.confirm.cancel - text of CANCEL button
+         * @param {boolean} options.confirm.btnsSwap - buttons swap
+         * @param {boolean} options.confirm.cancelHide - if `true` - hide CANCEL button
+         * @param {Function} options.confirm.callback - callback for confirm message
+         * @param {Backbone.View} options.confirm.customView - an instance of Backbone.View that shoud be used as popup content.
          */
         alert: function(message, reloadPage, defaultView, options) {
             this.clearModel(); // clear model (set default values)

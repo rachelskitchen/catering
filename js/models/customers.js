@@ -20,80 +20,113 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.Customer} constructors.
+ * @module customers
+ * @requires module:backbone
+ * @requires module:geopoint
+ * @see {@link module:config.paths actual path}
+ */
 define(["backbone", "geopoint"], function(Backbone) {
     'use strict';
 
-    /*
-     * @class App.Models.Customer
-     * Represents customer's data.
+    /**
+     * @class
+     * @classdesc Represents a customer model.
+     * @alias App.Models.Customer
+     * @example
+     * // create a customer model
+     * require(['customers'], function() {
+     *     var customer = new App.Models.Customer();
+     * });
      */
-    App.Models.Customer = Backbone.Model.extend({
+    App.Models.Customer = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Customer.prototype
+     */
+    {
         /**
-         * @property {Object} defaults - the set of model attributes with default values.
-         *
-         * @property {string} defaults.first_name - customer's first name.
-         * @default ''.
-         *
-         * @property {string} defaults.last_name - customer's last name.
-         * @default ''.
-         *
-         * @property {string} defaults.phone - customer's phone number (string type because may have "+", "." signs).
-         * @default ''.
-         *
-         * @property {string} defaults.email - customer's email.
-         * @default ''.
-         *
-         * @property {string|number} defaults.id - customer's id.
-         * @default null.
-         *
-         * @property {Object[]} defaults.addresses - array of customer's addresses.
-         * @default [].
-         * @property {string} defaults.addresses[].address - full address line.
-         * @property {string} defaults.addresses[].city - city of address.
-         * @property {string} defaults.addresses[].country - country of address.
-         * @property {string} defaults.addresses[].state - state of address.
-         * @property {string} defaults.addresses[].street_1 - address line 1.
-         * @property {string} defaults.addresses[].street_2 - address line 2.
-         * @property {string} defaults.addresses[].zipcode - zipcode of address (string type because may contains letter symbols, UK for ex.).
-         * @property {string} defaults.addresses[].province - province of address (used only if country is CA).
-         *
-         * @property {number} defaults.shipping_address - index of selected address (index of adresses array).
-         * @default -1.
-         *
-         * @property {Object[]} defaults.shipping_services - array of shipping sevices.
-         * @default [].
-         * @property {string} defaults.shipping_services[].class_of_service - name of shipping service.
-         * @property {string} defaults.shipping_services[].shipping_charge - shipping cost of shipping service.
-         *
-         * @property {number} defaults.shipping_selected - index of selected shipping service.
-         * @default -1.
-         *
-         * @property {string} defaults.load_shipping_status - status of shipping loading.
-         * @default ''.
-         *
-         * @property {number} defaults.deliveryAddressIndex - index of address used as destination for delivery.
-         * @default 0.
-         *
-         * @property {number} defaults.shippingAddressIndex - index of address used as destination for shipping.
-         * @default 1.
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum {string}
          */
         defaults: {
+            /**
+             * Customer's first name.
+             * @type {string}
+             * @default ""
+             */
             first_name: "",
+            /**
+             * Customer's last name.
+             * @type {string}
+             * @default ""
+             */
             last_name: "",
+            /**
+             * Customer's phone.
+             * @type {string}
+             * @default ""
+             */
             phone: "",
+            /**
+             * Customer's email.
+             * @type {string}
+             * @default ""
+             */
             email: "",
+            /**
+             * Customer ID.
+             * @type {?(number|string)}
+             * @default null
+             */
             id: null,
+            /**
+             * Array of addresses assigned to the customer.
+             * @type {Array}
+             * @default []
+             */
             addresses: [],
+            /**
+             * Index of address selected for shipping. -1 means no address selected.
+             * @type {number}
+             * @default -1
+             */
             shipping_address: -1,
+            /**
+             * Array of available shipping services. This array depends on order items.
+             * @type {Array}
+             * @default []
+             */
             shipping_services: [],
+            /**
+             * Index of selected shipping service. -1 means no shipping service selected.
+             * @type {number}
+             * @default -1
+             */
             shipping_selected: -1,
+            /**
+             * Status of shipping services loading. Can be one of "", "resolved", "restoring", "pending".
+             * @type {string}
+             * @default ""
+             */
             load_shipping_status: "",
+            /**
+             * Index of address used for "Delivery" dining option.
+             * @type {number}
+             * @default 0
+             */
             deliveryAddressIndex: 0,
+            /**
+             * Index of address used for "Shipping" dining option.
+             * @type {number}
+             * @default 1
+             */
             shippingAddressIndex: 1
         },
         /**
-         * @constructor
-         * Sync with RevelAPI, call setAddressesIndexes() method and set validators for `first_name`, `last_name` attributes.
+         * Adds validation listeners for `first_name`, `last_name` attributes changes.
+         * Sets indexes of addresses used for "Delivery" and "Shipping" dinign options.
          */
         initialize: function() {
             this.syncWithRevelAPI();
@@ -112,8 +145,8 @@ define(["backbone", "geopoint"], function(Backbone) {
             }, this);
         },
         /**
-         * @method
-         * Get customer name in the format "Smith M.".
+         * Gets customer name in the format "John M.".
+         * @returns {string} Concatenation of `first_name` attribute value, `last_name` first letter and '.' sign.
          */
         get_customer_name : function() {
             var first_name = this.get('first_name'),
@@ -126,19 +159,14 @@ define(["backbone", "geopoint"], function(Backbone) {
             return (first_name + last_name);
         },
         /**
-         * @method
-         * Save attributes in a storage.
+         * Saves attributes values of the customer in a storage.
          */
         saveCustomer: function() {
             setData('customer', this);
         },
         /**
-         * @method
-         * Load attributes from the storage.
-         * If a shipping service was selected change `load_shipping_status` on 'restoring' value.
-         *
-         * @fires change
-         * @fires change:<any attribute>
+         * Loads attributes from the storage.
+         * If a shipping service was selected changes `load_shipping_status` on 'restoring' value.
          */
         loadCustomer: function() {
             var data = getData('customer');
@@ -150,19 +178,13 @@ define(["backbone", "geopoint"], function(Backbone) {
             }
         },
         /**
-         * @method
-         * Save addresses in the storage.
+         * Saves addresses in a storage.
          */
         saveAddresses: function() {
             setData('address', new Backbone.Model({addresses: this.get('addresses')}), true);
-
         },
         /**
-         * @method
-         * Load addresses from the storage.
-         *
-         * @fires change
-         * @fires change:addresses
+         * Loads addresses from a storage.
          */
         loadAddresses: function() {
             var data = getData('address', true);
@@ -175,11 +197,8 @@ define(["backbone", "geopoint"], function(Backbone) {
             this.set('addresses', data instanceof Object ? (data.addresses || []) : []);
         },
         /**
-         * @method
-         * Convert address object as full address line.
-         *
-         * @param {number} index - index of addresses array
-         * @default last element.
+         * Converts address object literal to full address line.
+         * @param {number} index=index of last element - index of addresses array
          * @see {@link http://mediawiki.middlebury.edu/wiki/LIS/Address_Standards} for detail format information.
          * @returns {string} full address line
          */
@@ -209,10 +228,8 @@ define(["backbone", "geopoint"], function(Backbone) {
             return str.join(', ');
         },
         /**
-         * @method
-         * Validate address object properties `street_1`, `city`, `state`, `province`, `zipcode` values.
-         *
-         * @returns {Object[]} empty array if all properties pass validation or array with invalid properties.
+         * Validates values of address object properties `street_1`, `city`, `state`, `province`, `zipcode`.
+         * @returns {Array} empty array if all properties pass validation or array with invalid properties.
          */
         _check_delivery_fields: function() {
             var settings = App.Settings,
@@ -242,11 +259,23 @@ define(["backbone", "geopoint"], function(Backbone) {
             return empty;
         },
         /**
-         * @method
-         * Validate attributes values.
-         *
+         * Validates attributes values.
          * @param {string} dining_option - order type selected
-         * @returns {Object} {status: "OK"} if all attributes pass validation or {status: "ERROR_EMPTY_FIELDS", errorMsg: <string>, errorList: <array of errors>}.
+         * @returns {Object} One of the following object literals:
+         * - If all fine:
+         * ```
+         * {
+         *     status: "OK"
+         * }
+         * ```
+         * - If validation failed:
+         * ```
+         * {
+         *     status: "ERROR_EMPTY_FIELDS",
+         *     errorMsg: <error message>,
+         *     errorList: [] // Array of invalid properties
+         * }
+         * ```
          */
         check: function(dining_option) {
             var err = [];
@@ -273,22 +302,21 @@ define(["backbone", "geopoint"], function(Backbone) {
             };
         },
         /**
-         * @method
-         * If `load_shipping_status` attribute is 'restoring' change its value on resolved.
-         * Otherwise change `load_shipping_status` on 'pending' and send POST request to "/weborders/shipping_options/" with parameter
+         * Receives shipping_services.
+         * If `load_shipping_status` attribute value is 'restoring' changes its value on 'resolved'.
+         * Otherwise, changes `load_shipping_status` on 'pending' and sends `POST` request to `/weborders/shipping_options/` with parameter
+         * ```
          * {
          *     address: <address object>
          *     items: <array of cart items>
          *     establishment: <establishment>
          * }
+         * ```
          * When a response is processed `load_shipping_status` changes on 'resolved'.
          *
-         * @param {Object} jqXHR - the jqXHR Object.
-         * @param {Function} getShippingOptions - a function returning shipping options (expects a response-object as parameter).
-         *
-         * @fires change:shipping_services
-         * @event change:shipping_services
-         * @type undefined
+         * @param {Object} [jqXHR=create ajax request] - the jqXHR Object.
+         * @param {Function} [getShippingOptions=return raw data] - A function returning shipping options (expects a response-object as parameter).
+         *                                          May be used for raw data mapping.
          */
         get_shipping_services: function(jqXHR, getShippingOptions) {
             var self = this,
@@ -354,15 +382,8 @@ define(["backbone", "geopoint"], function(Backbone) {
             }
         },
         /**
-         * @method
-         * Clear `shipping_services` attribute, change `load_shipping_status`.
-         *
-         * @param {string} status - value of `load_shipping_status` need to be assigned after reset shipping services.
-         * @default ''
-         *
-         * @fires change:shipping_services
-         * @event change:shipping_services
-         * @type undefined
+         * Clears `shipping_services` attribute, changes `load_shipping_status`.
+         * @param {string} [status=""] - value of `load_shipping_status` need to be changed on.
          */
         resetShippingServices: function(status) {
             this.set({
@@ -373,13 +394,8 @@ define(["backbone", "geopoint"], function(Backbone) {
             this.trigger('change:shipping_services');
         },
         /**
-         * @method
-         * Set indexes for delivery and shipping addresses in `addresses` array.
+         * Sets indexes for delivery and shipping addresses in `addresses` array.
          * If initially addresses is empty array deliveryAddressIndex is 0, shippingAddressIndex is 1
-         *
-         * @fires change
-         * @fires change:deliveryAddressIndex
-         * @fires change:shippingAddressIndex
          */
         setAddressesIndexes: function() {
             var addresses = this.get('addresses');
@@ -392,21 +408,21 @@ define(["backbone", "geopoint"], function(Backbone) {
 
         },
         /**
-         * @method
-         * @returns {boolean} true if `shipping_address` is default or false otherwise.
+         * Checks `shipping_address` attribute has default value or not.
+         * @returns {boolean} `true` if `shipping_address` is default or `false` otherwise.
          */
         isDefaultShippingAddress: function() {
             return this.get('shipping_address') === this.defaults.shipping_address;
         },
         /**
-         * @method
-         * @returns {boolean} true if `shipping_selected` is default or false otherwise.
+         * Checks `shipping_selected` attribute has default value or not.
+         * @returns {boolean} `true` if `shipping_selected` is default or `false` otherwise.
          */
         isDefaultShippingSelected: function() {
             return this.get('shipping_selected') === this.defaults.shipping_selected;
         },
         /**
-         * @method
+         * Checks `shipping_address` attribute value is new.
          * @param {string} dining_option - selected order type.
          * @returns {boolean} true is a new address selected or false if address already exists in DB.
          */
@@ -416,23 +432,8 @@ define(["backbone", "geopoint"], function(Backbone) {
             return (shipping_address == this.get('deliveryAddressIndex') || shipping_address == this.get('shippingAddressIndex')) && isDelivery ? true : false;
         },
         /**
-         * @method
          * Fill out RevelAPI.attributes.customer and add listeners for further synchronization with RevelAPI.attributes.customer if RevelAPI.isAvailable() returns true.
-         *
-         * @member {Object} profileCustomer - value of RevelAPI.get('customer');
-         * @member {Object} RevelAPI - value of this.get('RevelAPI');
-         *
-         * @callback updateProfile
-         * Fill out profileCustomer attributes and call RevelAPI.setOriginalProfileData().
-         * @listens change:first_name
-         * @listens change:last_name
-         * @listens change:phone
-         * @listens change:email
-         *
-         * @callback update
-         * Set attributes values as profileCustomer attributes values.
-         * @listens onProfileSaved [RevelAPI]
-         * @listens change [profileCustomer]
+         * @ignore
          */
         syncWithRevelAPI: function() {
             var RevelAPI = this.get('RevelAPI');
@@ -464,29 +465,13 @@ define(["backbone", "geopoint"], function(Backbone) {
             // fill out current model
             this.set(profileCustomer.toJSON());
 
-            /**
-             * @function updateProfile
-             * @callback
-             * Fill out RevelAPI.attributes.customer and call RevelAPI.setOriginalProfileData().
-             *
-             * @listens change:first_name
-             * @listens change:last_name
-             * @listens change:phone
-             * @listens change:email
-             */
+            // Fill out RevelAPI.attributes.customer and call RevelAPI.setOriginalProfileData().
             function updateProfile() {
                 profileCustomer.set(getData(self.toJSON()));
                 RevelAPI.setOriginalProfileData();
             }
 
-            /**
-             * @function update
-             * @callback
-             * Set {Object} attributes values as RevelAPI.get('customer').attributes values.
-             *
-             * @listens onProfileSaved [RevelAPI]
-             * @listens change
-             */
+            // Set attributes values as RevelAPI.get('customer').attributes values.
             function update() {
                 self.set(getData(profileCustomer.toJSON()));
             };
