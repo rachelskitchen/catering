@@ -20,16 +20,64 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.Delivery} constructors.
+ * @module delivery
+ * @requires module:backbone
+ * @see {@link module:config.paths actual path}
+ */
 define(["backbone"], function(Backbone) {
     'use strict';
 
-    App.Models.Delivery = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents 'Delivery' dining option parameters.
+     * @alias App.Models.Delivery
+     * @example
+     * // create a delivery model
+     * require(['delivery'], function() {
+     *     var delivery = new App.Models.Delivery;
+     * });
+     */
+    App.Models.Delivery = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Delivery.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum {string}
+         */
         defaults: {
-            charge: 0, // delivery cost
-            enable: false, // enable delivery for online ordering apps
-            max_distance: 0, // delivery max distance
+            /**
+             * Charge amount for delivery.
+             * @type {number}
+             * @default 0
+             */
+            charge: 0,
+            /**
+             * Indicates 'Delivery' is enabled or disabled.
+             * @type {boolean}
+             * @default false
+             */
+            enable: false,
+            /**
+             * Max distance from a store an order can be delivered.
+             * @type {number}
+             * @default 0
+             */
+            max_distance: 0,
+            /**
+             * Min amount an order has to have to be delivered.
+             * @type {number}
+             * @default 0
+             */
             min_amount: 0 // min total amount for delivery enable. Only sum of products and modifiers
         },
+        /**
+         * Parses delivery parameters from App.Settings and set as attributes.
+         */
         initialize: function(opts) {
             var settings = App.Settings,
                 set = {
@@ -42,15 +90,21 @@ define(["backbone"], function(Backbone) {
             opts = opts instanceof Object ? opts : {};
             this.set($.extend({}, this.defaults, set, opts));
         },
+        /**
+         * @returns {number} `charge` attribute value if 'Delivery' feature is enabled or 0 otherwise.
+         */
         getCharge: function() {
             return this.get('enable') ? this.get('charge') : 0;
         },
+        /**
+         * @returns {?number} Amount that need to be added to order to allow 'Delivery' feature.
+         */
         getRemainingAmount: function(subtotal) {
             var min_amount = this.get('min_amount'),
                 charge = this.get('charge'),
                 diff = this.get('enable') ? min_amount - (subtotal - charge) : null
 
-            return diff
+            return diff;
         }
     });
 });

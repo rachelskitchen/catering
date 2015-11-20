@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
- /**
+/**
  * Contains {@link App.Models.ChildProduct}, {@link App.Collections.ChildProducts} constructors.
  * @module childproducts
  * @requires module:backbone
