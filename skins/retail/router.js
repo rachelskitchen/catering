@@ -500,7 +500,7 @@ define(["main_router"], function(main_router) {
                 hash = location.hash,
                 searchPattern;
 
-            // if hash isn't index and is present need return default valu,
+            // if hash is present but isn't index, need to return default value
             if(hash && !/^#index/i.test(hash) || !filter || !categories || !search) {
                 return App.Routers.MobileRouter.prototype.getState.apply(this, arguments);
             }

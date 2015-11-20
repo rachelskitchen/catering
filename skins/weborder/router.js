@@ -397,7 +397,13 @@ define(["main_router"], function(main_router) {
             var categories = App.Data.categories,
                 search = App.Data.search,
                 data = {},
+                hash = location.hash,
                 searchPattern;
+
+            // if hash is present but isn't index, need to return default value
+            if (hash && !/^#index/i.test(hash) || !categories || !search) {
+                return App.Routers.MobileRouter.prototype.getState.apply(this, arguments);
+            }
 
             searchPattern = search.lastPattern;
 
