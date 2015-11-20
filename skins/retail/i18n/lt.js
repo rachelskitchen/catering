@@ -30,6 +30,7 @@ define([], function() {
         "CHECKOUT_STATE": "Valstija",
         "CHECKOUT_PROVINCE": "Provincija",
         "CHECKOUT_ZIP_CODE": "Pašto kodas",
+        "CHECKOUT_POSTAL_CODE": "Pašto kodas",
         "CHECKOUT_SHIPPING": "Užsakymo apdorojimas ir siuntimas",
         "CHECKOUT_HOW_LIKE_TO_PAY": "Kaip norite mokėti?",
         "CHECKOUT_PAYPAL": "Atsiskaityti per „PayPal“",

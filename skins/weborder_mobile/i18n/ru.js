@@ -28,6 +28,7 @@
         'CHECKOUT_CITY': 'Город',
         'CHECKOUT_PROVINCE': 'Провинция',
         'CHECKOUT_ZIP_CODE': 'Почтовый индекс',
+        'CHECKOUT_POSTAL_CODE': 'Почтовый индекс',
         'DONE_THANK_YOU': 'Спасибо за заказ',
         'DONE_ORDER_ID': '№ заказа',
         'DONE_DELIVERY_INFO': 'Данные по доставке',

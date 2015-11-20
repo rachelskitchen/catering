@@ -28,6 +28,7 @@ define([], function() {
         "CHECKOUT_CITY": "Linn",
         "CHECKOUT_PROVINCE": "Maakond",
         "CHECKOUT_ZIP_CODE": "Sihtnumber",
+        "CHECKOUT_POSTAL_CODE": "Sihtnumber",
         "DONE_THANK_YOU": "Täname!",
         "DONE_ORDER_ID": "Tellimuse ID",
         "DONE_DELIVERY_INFO": "Kohaletoimetamisteave",

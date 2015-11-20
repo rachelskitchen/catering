@@ -28,6 +28,7 @@ define([], function() {
         "CHECKOUT_CITY": "Ville",
         "CHECKOUT_PROVINCE": "Province",
         "CHECKOUT_ZIP_CODE": "Code postal",
+        "CHECKOUT_POSTAL_CODE": "Code postal",
         "DONE_THANK_YOU": "Merci",
         "DONE_ORDER_ID": "ID de la commande",
         "DONE_DELIVERY_INFO": "Informations de livraison",

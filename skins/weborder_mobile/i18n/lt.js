@@ -28,6 +28,7 @@ define([], function() {
         "CHECKOUT_CITY": "Miestas",
         "CHECKOUT_PROVINCE": "Provincija",
         "CHECKOUT_ZIP_CODE": "Pašto kodas",
+        "CHECKOUT_POSTAL_CODE": "Pašto kodas",
         "DONE_THANK_YOU": "Ačiū!",
         "DONE_ORDER_ID": "Užsakymo kodas",
         "DONE_DELIVERY_INFO": "Pristatymo informacija",
