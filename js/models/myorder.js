@@ -1015,8 +1015,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
         },
         update_cart_totals: function(params) {
-            if (!this.getDiscountsTimeout) //it's to reduce the number of requests to the server
+            if (!this.getDiscountsTimeout) { // it's to reduce the number of requests to the server
+                this.pending = true; // bug #32598
                 this.getDiscountsTimeout = setTimeout(this.get_cart_totals.bind(this, params), 500);
+            }
         },
         get_cart_totals: function(params) {
             var self = this;
@@ -1037,6 +1039,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             if (self.get_only_product_quantity() < 1 || self.NoRequestDiscounts === true) {
                 self.trigger("NoRequestDiscountsComplete");
+                delete self.pending;
                 return (new $.Deferred()).reject();
             }
 
@@ -1046,6 +1049,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             this.get_discount_xhr = this._get_cart_totals(params);
             this.get_discount_xhr.always(function() {
+                delete self.pending;
                 delete self.get_discount_xhr;
             });
 
