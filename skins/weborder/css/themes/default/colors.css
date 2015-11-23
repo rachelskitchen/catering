@@ -342,6 +342,7 @@ ul.categories {
 }
 
 #modifiers_popup .modifiers_table .modifiers-list label:not(.fade-out):hover .input,
+#modifiers_popup .modifiers_table .combo_item_wrap:not(.fade-out):hover .input,
 .tipBlock label:hover .pseudo-radio
 {
     -webkit-box-shadow: 0px 0px 3px 4px rgba(129,195,222,0.3);
@@ -576,3 +577,8 @@ span.cancel-input:active:before {
 .stanford-card .btn.disabled, .stanford-card .btn.disabled:before {
     box-shadow: none;
 }
+/* Combo feature */
+#modifiers_popup .product_sets h2 {
+    color: #525252;
+}
+/* --- */

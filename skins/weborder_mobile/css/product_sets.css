@@ -1,0 +1,56 @@
+.modifiers .combo_item {
+    width: 100%;
+    overflow: hidden;
+}
+
+.combo_item input {
+    position: absolute;
+    left: -5000px;
+}
+
+.combo_item .title {
+    vertical-align: middle;
+}
+
+.combo_item .input {
+    vertical-align: middle;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border-radius: 0.2em;
+    border-width: 1px;
+    border-style: solid;
+    text-align: center;
+    line-height: 0.9em;
+    margin-right: 0.3em;
+}
+
+.combo_item .input::before {
+    content: '\f00c';
+    font-family: 'FontAwesome';
+    font-size: 0.8em;
+}
+
+.combo_item .cost {
+    display: inline-block;
+    line-height: 1.5em;
+    margin-left: 0.6em;
+    min-width: 55px;
+    text-align: right;
+}
+
+.combo_item .select-wrapper {
+    width: 4em;
+    margin: -0.3em 0 0 0.5em;
+    padding: 0;
+}
+
+.combo_item select {
+    text-indent: .5em;
+}
+
+@-moz-document url-prefix() {
+    .combo_item select {
+        text-indent: .2em !important;
+    }
+}

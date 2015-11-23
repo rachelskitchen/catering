@@ -526,6 +526,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
     }
 
     App.Models.MyorderCombo = App.Models.Myorder.extend({
+        initialize: function() {
+            App.Models.Myorder.prototype.initialize.apply(this, arguments);
+            this.listenTo(this, 'combo_product_change', this.update_mdf_sum, this);
+        },
         /**
          * initiate order for combo product
          */
@@ -555,6 +559,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 self.update_prices();
             });
         },
+        /*
+        *  get product price for combo
+        */
         get_product_price: function() {
             var root_price = this.get_initial_price(),
                 sum = 0, combo_saving_products = [];
@@ -565,7 +572,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     return;
                 }
                 product_set.get_selected_products().forEach(function(model) {
-                    trace("add product_price : ",  model.get('product').get('name'), model.get_initial_price());
+                    //trace("add product_price : ",  model.get('product').get('name'), model.get_initial_price());
                     sum  += model.get_initial_price() * model.get('quantity');
                 });
             });
@@ -576,10 +583,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             this.get('product').set("combo_price", sum);
             return sum;
-        },
-        initialize: function() {
-            App.Models.Myorder.prototype.initialize.apply(this, arguments);
-            this.listenTo(this, 'combo_product_change', this.update_mdf_sum, this);
         },
         /*
         *   update sums of modifiers in respect to quantity of root combo product and quantity of child products
