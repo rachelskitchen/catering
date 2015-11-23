@@ -102,9 +102,37 @@
       return copy;
   }
 
-  Backbone.Model.prototype.json = Backbone.Model.prototype.toJSON;
-  Backbone.Collection.prototype.json = Backbone.Collection.prototype.toJSON;
+  if (App.Data.devMode) {
+    // alias for toJSON function
+    Backbone.Model.prototype.json = Backbone.Model.prototype.toJSON;
+    Backbone.Collection.prototype.json = Backbone.Collection.prototype.toJSON;
 
+    // reflection for objects
+    Backbone.Model.prototype.getType = function() {
+        return "Model: " + find_constructor.call(this, App.Models );
+    }
+
+    Backbone.Collection.prototype.getType = function() {
+        return "Collection: " + find_constructor.call(this, App.Collections );
+    }
+
+    Backbone.View.prototype.getType = function() {
+        return find_constructor.call(this, App.Views );
+    }
+
+    function find_constructor (startSearchObject) {
+      for (var key in startSearchObject) {
+        if (typeof startSearchObject[key] == 'object') {
+          var key2 = find_constructor.call(this, startSearchObject[key]); //deep search
+          if (key2) return key + "." + key2;
+        }
+        else if (this.constructor == startSearchObject[key]) {
+          return key; // the constructor found
+        }
+      }
+      return false;
+    }
+  }
 
   // Calls method implementations of a super-class object:
   function _super(instance, method, args) {
