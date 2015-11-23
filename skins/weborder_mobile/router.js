@@ -46,6 +46,7 @@ define(["main_router"], function(main_router) {
             "search/:search": "search",
             "products/:ids": "products",
             "modifiers/:id_category(/:id_product)": "modifiers",
+            "combo_product/:id_category(/:id_product)": "combo_product",
             "cart": "cart",
             "checkout" : "checkout",
             "confirm": "confirm",
@@ -523,6 +524,119 @@ define(["main_router"], function(main_router) {
                         model: order,
                         mod: 'Matrix',
                         cacheId: false
+                    };
+
+                    App.Data.mainModel.set({
+                        contentClass: '',
+                        content: content
+                    });
+
+                    self.change_page();
+                }
+
+                this.listenToOnce(this, 'route', function back() {
+                    self.stopListening(order, 'change', setHeaderToUpdate);
+                    if (isOrderChanged) {
+                        var product = order.get_product();
+                        order.update(originOrder);
+                        // need to update input values otherwise current input.value overrides restored values
+                        order.trigger('change:special', order, order.get('special'));
+                        order.trigger('change:quantity', order, order.get('quantity'));
+                        if(product.get('is_gift')) {
+                            order.trigger('change:initial_price', order, order.get('initial_price'));
+                            order.trigger('change:product', order, product); // for Stanford Reload Item
+                            product.trigger('change:price', product, product.get('price'));
+                            product.trigger('change:gift_card_number', product, product.get('gift_card_number'));
+                        }
+                    }
+                });
+
+                function cart() {
+                    self.stopListening(order, 'change', setHeaderToUpdate);
+                    header.set('cart', self.navigate.bind(self, 'cart', true), {silent: true});
+                    self.navigate('cart', true);
+                }
+
+                function setHeaderToUpdate() {
+                    isOrderChanged = true;
+                    header.set({
+                        page_title: _loc.CUSTOMIZE,
+                        link_title: _loc.UPDATE,
+                        link: !App.Settings.online_orders ? header.defaults.link : function() {
+                            header.updateProduct(order);
+                            order.set('discount', originOrder.get('discount').clone(), {silent: true});
+                            App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
+                            // originOrderItem.update(orderItem);
+                            originOrder = order.clone();
+                            isOrderChanged = false;
+                        }
+                    });
+                }
+
+                function setHeaderToAdd() {
+                    header.set({
+                        page_title: _loc.CUSTOMIZE,
+                        link_title: _loc.ADD_TO_CART,
+                        link: !App.Settings.online_orders ? header.defaults.link : function() {
+                            header.addProduct(order).done(function () {
+                                self.listenTo(order, 'change', setHeaderToUpdate);
+                            });
+                        }
+                    });
+                }
+            });
+        },
+        combo_product: function(id_category, id_product) {
+            this.prepare('combo_product', function() {
+                var self = this,
+                    header = App.Data.header,
+                    isEditMode = !id_product,
+                    order = isEditMode ? App.Data.myorder.at(id_category) : new App.Models.MyorderCombo(),
+                    originOrder = null,
+                    isOrderChanged;
+
+                if(!order)
+                    return this.navigate('index', true);
+
+                header.set({
+                    back: window.history.back.bind(window.history),
+                    back_title: _loc.BACK,
+                    cart: cart
+                });
+
+                App.Data.mainModel.set({
+                    header: headerModes.Modifiers,
+                    footer: footerModes.None
+                });
+
+                if(isEditMode) {
+                    originOrder = order.clone();
+                    this.listenTo(order, 'change', setHeaderToUpdate);
+                    setHeaderToUpdate();
+                    showProductDetails();
+                    isOrderChanged = false;
+                } else {
+                    setHeaderToAdd();
+                    order.add_empty(id_product * 1, id_category * 1).then(showProductDetails);
+                }
+
+                var is_combo = true;
+
+
+                function showProductDetails() {
+                    if(!isEditMode) {
+                        order = order.clone();
+                    }
+
+                    var cache_id = order.get("id_product");
+
+                    var content = self.getStanfordReloadItem(order) || {
+                        modelName: 'MyOrder',
+                        model: order,
+                        mod: 'MatrixCombo',
+                        //init_cache_session: is_combo ? true : false,
+                        cache_id: is_combo ? cache_id : undefined //cache is enabled for combo products during the phase of product customization only
+                                                                  //the view will be removed from cache after the product is added/updated into the cart.
                     };
 
                     App.Data.mainModel.set({

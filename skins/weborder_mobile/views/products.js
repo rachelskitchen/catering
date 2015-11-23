@@ -95,7 +95,11 @@ define(["products_view"], function(products_view) {
             e.preventDefault();
             var id_category = this.model.get('id_category'),
                 id = this.model.get('id');
-            App.Data.router.navigate("modifiers/" + id_category + "/" + id, true);
+            var is_combo = this.model.get("is_combo");
+            if (is_combo)
+                App.Data.router.navigate("combo_product/" + id_category + "/" + id, true);
+            else
+                App.Data.router.navigate("modifiers/" + id_category + "/" + id, true);
         }
     });
 

@@ -184,7 +184,6 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             }
         },
         update_price: function() {
-            trace("update_price ====> ");
             var dt = this.$('dt'),
                 initial_price = round_monetary_currency(this.model.get_product_price());
 
