@@ -474,7 +474,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 var model = new Backbone.Model({
                     hasGiftCard: hasGiftCard(),
                     quantity: App.Data.myorder.get_only_product_quantity(),
-                    pending: true
+                    pending: App.Data.myorder.pending
                 });
 
                 model.listenTo(App.Data.myorder, 'add remove', function() {
