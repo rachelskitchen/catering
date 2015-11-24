@@ -33,6 +33,7 @@ define(['backbone'], function(Backbone) {
      * @class
      * @classdesc Represents a model data of "About" section of the app.
      * @alias App.Models.AboutModel
+     * @augments Backbone.Model
      * @example
      * // create a 'about' model
      * require(['about'], function() {

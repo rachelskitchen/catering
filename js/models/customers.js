@@ -34,6 +34,7 @@ define(["backbone", "geopoint"], function(Backbone) {
      * @class
      * @classdesc Represents a customer model.
      * @alias App.Models.Customer
+     * @augments Backbone.Model
      * @example
      * // create a customer model
      * require(['customers'], function() {

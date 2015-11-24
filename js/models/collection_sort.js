@@ -33,6 +33,7 @@ define(["backbone"], function(Backbone) {
      * @class
      * @classdesc Represents API for custom sorting.
      * @alias App.Collections.CollectionSort
+     * @augments Backbone.Collection
      * @example
      * require(['collection_sort'], function() {
      *     var sortCollection = new App.Collections.CollectionSort();

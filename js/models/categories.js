@@ -34,6 +34,7 @@ define(["backbone", "collection_sort"], function(Backbone) {
      * @class
      * @classdesc Represents a menu category.
      * @alias App.Models.Category
+     * @augments Backbone.Model
      * @example
      * // create a category model
      * require(['categories'], function() {

@@ -33,6 +33,7 @@ define(["backbone"], function(Backbone) {
      * @class
      * @classdesc Represents 'Delivery' dining option parameters.
      * @alias App.Models.Delivery
+     * @augments Backbone.Model
      * @example
      * // create a delivery model
      * require(['delivery'], function() {
