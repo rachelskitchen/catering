@@ -33,6 +33,7 @@ define(["backbone"], function(Backbone) {
      * @class
      * @classdesc Represents Captcha API
      * @alias App.Models.Captcha
+     * @augments Backbone.Model
      * @example
      * // create a captcha model
      * require(['captcha'], function() {

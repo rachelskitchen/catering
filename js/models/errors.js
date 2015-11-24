@@ -21,7 +21,7 @@
  */
 
 /**
- * Contains {@link App.Models.Errors} constructors.
+ * Contains {@link App.Models.Errors} constructor.
  * @module errors
  * @requires module:backbone
  * @see {@link module:config.paths actual path}
@@ -31,8 +31,9 @@ define(['backbone'], function(Backbone) {
 
     /**
      * @class
-     * @classdesc Represents notifications model.
+     * @classdesc Represents a model that allows to notify user about any event.
      * @alias App.Models.Errors
+     * @augments Backbone.Model
      * @example
      * // create a notification model
      * require(['errors'], function() {

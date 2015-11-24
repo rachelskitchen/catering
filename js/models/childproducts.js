@@ -35,6 +35,7 @@ define(["backbone", 'products', 'modifiers'], function(Backbone) {
      * @class
      * @classdesc Represents a child product (Inventory Matrix of Retail).
      * @alias App.Models.ChildProduct
+     * @augments Backbone.Model
      * @example
      * // create a child product model
      * require(['childproducts'], function() {
@@ -177,6 +178,7 @@ define(["backbone", 'products', 'modifiers'], function(Backbone) {
      * @class
      * @classdesc Represents a child products collection (Inventory Matrix of Retail).
      * @alias App.Collections.ChildProducts
+     * @augments Backbone.Collection
      * @example
      * // create a collection of child products
      * require(['childproducts'], function() {

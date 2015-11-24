@@ -20,12 +20,37 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.Locale} constructor.
+ * @module locale
+ * @requires module:backbone
+ * @see {@link module:config.paths actual path}
+ */
 define(['backbone'], function(Backbone) {
     'use strict';
 
-    App.Models.Locale = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents a locale model.
+     * @alias App.Models.Locale
+     * @augments Backbone.Model
+     * @example
+     * // create a locale model
+     * require(['locale'], function() {
+     *     var locale = new App.Models.Locale();
+     * });
+     */
+    App.Models.Locale = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Locale.prototype
+     */
+    {
         /**
-         * Load a language pack
+         * Defines current locale and loads core, skin language pack.
+         * If `locale` GET parameter exists its value is used as current locale.
+         * Otherwise, browser locale preferences is used.
+         * By default current locale is 'en'.
+         * @returns {Object} Deferred object.
          */
         loadLanguagePack: function() {
             var self = this,
@@ -68,6 +93,12 @@ define(['backbone'], function(Backbone) {
             });
             return load_all;
         },
+        /**
+         * Loads language pack.
+         * @private
+         * @param {boolean} [load_core=false] - if `true` loads core language pack. Otherwise, skin language pack.
+         * @returns {Object} Deferred object.
+         */
         _loadLanguagePack: function(load_core) {
             var DEFAULT_LOCALE = 'en';
             var self = this, path,
@@ -126,6 +157,9 @@ define(['backbone'], function(Backbone) {
             return loadCompleted;
         } //end of loadLanguagePack
     },
+    /**
+     * List of available locales: 'de', 'en', 'es', 'et', 'fr', 'it', 'lt', 'ru'.
+     */
     {
         SUPPORTED_LOCALES: ['de', 'en', 'es', 'et', 'fr', 'it', 'lt', 'ru']
     });

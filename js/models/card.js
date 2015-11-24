@@ -33,6 +33,7 @@ define(["backbone"], function(Backbone) {
      * @class
      * @classdesc Represents a customer's card
      * @alias App.Models.Card
+     * @augments Backbone.Model
      * @example
      * // create a card model
      * require(['card'], function() {

@@ -33,6 +33,7 @@ define(["backbone"], function(Backbone) {
      * @class
      * @classdesc Represents a checkout model.
      * @alias App.Models.Checkout
+     * @augments Backbone.Model
      * @example
      * // create a checkout model
      * require(['checkout'], function() {
@@ -293,6 +294,7 @@ define(["backbone"], function(Backbone) {
      * @class
      * @classdesc Represents a collection of custom dining option fields.
      * @alias App.Collections.DiningOtherOptions
+     * @augments Backbone.Collection
      * @example
      * // create a other dining options model
      * require(['checkout'], function() {
