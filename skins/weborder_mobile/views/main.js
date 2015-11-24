@@ -62,7 +62,7 @@ define(["done_view", "generator"], function(done_view) {
                     inputType = $this.attr("type");
                 $this.focus();
                 // Fix for bugs 30986 & 30067
-                if (this.setSelectionRange && inputType !== 'text' && !(cssua.userAgent.chrome && inputType === 'number')) {
+                if (this.setSelectionRange && !(cssua.userAgent.chrome && inputType === 'number')) {
                     var len = this.value.length;
                     this.setSelectionRange(len, len);
                 }
