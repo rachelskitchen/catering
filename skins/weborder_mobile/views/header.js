@@ -158,6 +158,78 @@ define(["factory"], function() {
             'click .btn-link': setCallback('link'),
             'click .btn-back': setCallback('back'),
             'click .btn-cart': setCallback('cart')
+        },
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        }
+    });
+
+    var HeaderComboProductView = HeaderModifiersView.extend({
+        events: {
+            'click .btn-link': 'link',
+            'click .btn-cart': 'cart'
+        },
+        link: function() {
+            this.model.get('link').apply(this, arguments);
+        },
+        initialize: function() {
+            this.setHeaders();
+            HeaderModifiersView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'reinit', this.reinit, this);
+            //if (this.options.mode == "update" && this.options.originOrder)
+            //    this.listen(this.options.originOrder, 'change', setHeaderToUpdate);
+        },
+        reinit: function() {
+            this.setHeaders();
+        },
+        setHeaders: function() {
+            if (this.options.mode == "add")
+                this.setHeaderToAdd();
+            else
+                this.setHeaderToUpdate();
+        },
+        cart: function() {
+            //this.stopListening(order, 'change', setHeaderToUpdate);
+            //this.set('cart', self.navigate.bind(self, 'cart', true), {silent: true});
+            App.Data.router.navigate('cart', true);
+        },
+        setHeaderToUpdate: function() {
+            //this.isOrderChanged = true;
+            this.model.set({
+                page_title: _loc.CUSTOMIZE,
+                link_title: _loc.UPDATE,
+                link: this.link_update
+            });
+        },
+        link_update: function () {
+            if(!App.Settings.online_orders) return;
+
+            var order = this.options.order,
+                originOrder = this.options.originOrder;
+
+            this.model.updateProduct(order);
+            order.set('discount', originOrder.get('discount').clone(), {silent: true});
+            App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
+            this.options.originOrder = order.clone();
+            //this.isOrderChanged = false;
+        },
+        setHeaderToAdd: function() {
+            this.model.set({
+                page_title: _loc.CUSTOMIZE,
+                link_title: _loc.ADD_TO_CART,
+                link: this.link_add
+            });
+        },
+        link_add: function() {
+            var self = this;
+            if(!App.Settings.online_orders) return;
+
+            var order = this.options.order;
+
+            this.model.addProduct(order).done(function () {
+                //self.listenTo(order, 'change', setHeaderToUpdate);
+                self.setHeaderToUpdate();
+            });
         }
     });
 
@@ -192,6 +264,7 @@ define(["factory"], function() {
         App.Views.HeaderView.HeaderMainView = HeaderMainView;
         App.Views.HeaderView.HeaderTabsView = HeaderTabsView;
         App.Views.HeaderView.HeaderModifiersView = HeaderModifiersView;
+        App.Views.HeaderView.HeaderComboProductView = HeaderComboProductView;
         App.Views.HeaderView.HeaderCartView = HeaderCartView;
         App.Views.HeaderView.HeaderMaintenanceView = HeaderMaintenanceView;
         App.Views.HeaderView.HeaderEmptyView = HeaderEmptyView;

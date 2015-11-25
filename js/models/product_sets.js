@@ -240,7 +240,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
         find_product: function(id_product) {
             var product;
             this.some( function(model) {
-               return (product = model.get('order_products').findWhere({ id_product: id_product }));
+               return (product = model.get('order_products').findWhere({ id_product: parseInt(id_product) }));
             });
             return product;
         },

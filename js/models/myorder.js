@@ -596,6 +596,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 order_product.update_mdf_sum(root_quantity);
             });
         },
+        /*
+        *   find child by product id
+        */
+        find_child_product: function(product_id) {
+            return this.get('product').get('product_sets').find_product(product_id);
+        }
     });
 
     if (App.Data.devMode) {

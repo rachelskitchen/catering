@@ -138,6 +138,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             });
         },
         change: function(e, stat) {
+            e.stopImmediatePropagation();
+            e.preventDefault();
+
             if(!App.Settings.online_orders) {
                 return;
             }
@@ -150,6 +153,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 return;
             }
             this.model.set('selected', checked);
+            this.$('.input').attr('checked', checked ? 'checked' : false);
             if (checked && this.model.check_order().status != 'OK') {
                 this.$(".customize").click();
             }

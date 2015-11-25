@@ -32,6 +32,7 @@ define(["main_router"], function(main_router) {
     function defaultRouterData() {
         headerModes.Main = {mod: 'Main', className: 'main'};
         headerModes.Modifiers = {mod: 'Modifiers', className: 'modifiers'};
+        headerModes.ComboProduct = {mod: 'ComboProduct', className: 'modifiers'};
         headerModes.Cart = {mod: 'Cart'};
         headerModes.None = null;
         footerModes.Main = {mod: 'Main'};
@@ -515,9 +516,7 @@ define(["main_router"], function(main_router) {
                 }
 
                 function showProductDetails() {
-                    if(!isEditMode) {
-                        order = order.clone();
-                    }
+                    order = order.clone();  //this clone (for edit mode) is needed otherwise Cart item views are re-rendered every time the order is changed, processing of checkbox clicks will be slowly.
 
                     var content = self.getStanfordReloadItem(order) || {
                         modelName: 'MyOrder',
@@ -586,6 +585,118 @@ define(["main_router"], function(main_router) {
                 }
             });
         },
+        combo_child_products: function(combo_order, product_id) {
+            this.prepare('modifiers', function() {
+                var self = this,
+                    header = App.Data.header,
+                    isEditMode = true,
+                    originOrder = null,
+                    isOrderChanged;
+
+                if (!combo_order) {
+                    return this.navigate('index', true);
+                }
+
+                var order = combo_order.find_child_product(product_id);
+
+                if (!order) {
+                    return this.navigate('index', true);
+                }
+
+                header.set({
+                    back: back,
+                    back_title: _loc.BACK
+                });
+
+                App.Data.mainModel.set({
+                    header: headerModes.Modifiers,
+                    footer: footerModes.None
+                });
+
+                if(isEditMode) {
+                    originOrder = order.clone();
+                    //this.listenTo(order, 'change', setHeaderToUpdate);
+                    setHeaderToUpdate();
+                    showProductDetails();
+                }
+
+                function showProductDetails() {
+                    var content = self.getStanfordReloadItem(order) || {
+                        modelName: 'MyOrder',
+                        model: order,
+                        mod: 'Matrix',
+                        cacheId: false
+                    };
+                    App.Data.mainModel.set({
+                        contentClass: '',
+                        content: content
+                    });
+                    self.change_page();
+                }
+
+                function back() {
+                    var cache_id = combo_order.get('id_product');
+                    self.return_to_combo_product(cache_id);
+                }
+
+                function setHeaderToUpdate() {
+                    isOrderChanged = true;
+                    header.set({
+                        page_title: _loc.CUSTOMIZE,
+                        link_title: _loc.UPDATE,
+                        link: !App.Settings.online_orders ? header.defaults.link : function() {
+                            header.updateProduct(order);
+                            order.set('discount', originOrder.get('discount').clone(), {silent: true});
+                            App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
+                            back();
+                        }
+                    });
+                }
+
+                function setHeaderToAdd() {
+                    header.set({
+                        page_title: _loc.CUSTOMIZE,
+                        link_title: _loc.ADD_TO_CART,
+                        link: !App.Settings.online_orders ? header.defaults.link : function() {
+                            header.addProduct(order).done(function () {
+                                back();
+                            });
+                        }
+                    });
+                }
+            });
+        },
+        return_to_combo_product: function(cache_id) {
+            var header = App.Data.header;
+
+            if (!cache_id) {
+                return this.navigate('index', true);
+            }
+
+            header.set({
+                    back: window.history.back.bind(window.history),
+                    back_title: _loc.BACK
+                });
+
+            App.Data.mainModel.set({
+                header:  _.extend({}, headerModes.ComboProduct, { init_cache_session: false,
+                                                                  cacheIdUniq: cache_id}),
+                footer: footerModes.None
+            });
+
+            App.Data.mainModel.set({
+                contentClass: '',
+                content: {
+                    modelName: 'MyOrder',
+                    mod: 'MatrixCombo',
+                    init_cache_session: false, // find the previously cached view
+                    cacheIdUniq: cache_id  // cache is enabled for combo products during the phase of product customization only
+                }
+            });
+
+            header.trigger('reinit');
+            this.change_page();
+        },
         combo_product: function(id_category, id_product) {
             this.prepare('combo_product', function() {
                 var self = this,
@@ -598,45 +709,40 @@ define(["main_router"], function(main_router) {
                 if(!order)
                     return this.navigate('index', true);
 
+                var cache_id = order.get("id_product") ? order.get("id_product") : id_product;
+
                 header.set({
                     back: window.history.back.bind(window.history),
-                    back_title: _loc.BACK,
-                    cart: cart
-                });
-
-                App.Data.mainModel.set({
-                    header: headerModes.Modifiers,
-                    footer: footerModes.None
+                    back_title: _loc.BACK
                 });
 
                 if(isEditMode) {
                     originOrder = order.clone();
-                    this.listenTo(order, 'change', setHeaderToUpdate);
-                    setHeaderToUpdate();
                     showProductDetails();
-                    isOrderChanged = false;
                 } else {
-                    setHeaderToAdd();
                     order.add_empty(id_product * 1, id_category * 1).then(showProductDetails);
                 }
 
-                var is_combo = true;
-
-
                 function showProductDetails() {
-                    if(!isEditMode) {
-                        order = order.clone();
-                    }
+                    order = order.clone();  //this clone (for edit mode) is needed otherwise Cart item views are re-rendered every time the order is changed, processing of checkbox clicks will be slowly.
 
-                    var cache_id = order.get("id_product");
+                    App.Data.mainModel.set({
+                        header: _.extend({}, headerModes.ComboProduct, {
+                                                mode: isEditMode ? 'update' : 'add',
+                                                order: order,
+                                                originOrder: originOrder,
+                                                init_cache_session: true,
+                                                cacheIdUniq: cache_id
+                                }),
+                        footer: footerModes.None
+                    });
 
-                    var content = self.getStanfordReloadItem(order) || {
+                    var content = {
                         modelName: 'MyOrder',
                         model: order,
                         mod: 'MatrixCombo',
-                        //init_cache_session: is_combo ? true : false,
-                        cache_id: is_combo ? cache_id : undefined //cache is enabled for combo products during the phase of product customization only
-                                                                  //the view will be removed from cache after the product is added/updated into the cart.
+                        init_cache_session: true, // 'true' means that the view will be removed from cache before creating a new one.
+                        cacheIdUniq: cache_id  // cache is enabled for combo products during the phase of product customization only.
                     };
 
                     App.Data.mainModel.set({
@@ -645,57 +751,6 @@ define(["main_router"], function(main_router) {
                     });
 
                     self.change_page();
-                }
-
-                this.listenToOnce(this, 'route', function back() {
-                    self.stopListening(order, 'change', setHeaderToUpdate);
-                    if (isOrderChanged) {
-                        var product = order.get_product();
-                        order.update(originOrder);
-                        // need to update input values otherwise current input.value overrides restored values
-                        order.trigger('change:special', order, order.get('special'));
-                        order.trigger('change:quantity', order, order.get('quantity'));
-                        if(product.get('is_gift')) {
-                            order.trigger('change:initial_price', order, order.get('initial_price'));
-                            order.trigger('change:product', order, product); // for Stanford Reload Item
-                            product.trigger('change:price', product, product.get('price'));
-                            product.trigger('change:gift_card_number', product, product.get('gift_card_number'));
-                        }
-                    }
-                });
-
-                function cart() {
-                    self.stopListening(order, 'change', setHeaderToUpdate);
-                    header.set('cart', self.navigate.bind(self, 'cart', true), {silent: true});
-                    self.navigate('cart', true);
-                }
-
-                function setHeaderToUpdate() {
-                    isOrderChanged = true;
-                    header.set({
-                        page_title: _loc.CUSTOMIZE,
-                        link_title: _loc.UPDATE,
-                        link: !App.Settings.online_orders ? header.defaults.link : function() {
-                            header.updateProduct(order);
-                            order.set('discount', originOrder.get('discount').clone(), {silent: true});
-                            App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
-                            // originOrderItem.update(orderItem);
-                            originOrder = order.clone();
-                            isOrderChanged = false;
-                        }
-                    });
-                }
-
-                function setHeaderToAdd() {
-                    header.set({
-                        page_title: _loc.CUSTOMIZE,
-                        link_title: _loc.ADD_TO_CART,
-                        link: !App.Settings.online_orders ? header.defaults.link : function() {
-                            header.addProduct(order).done(function () {
-                                self.listenTo(order, 'change', setHeaderToUpdate);
-                            });
-                        }
-                    });
                 }
             });
         },
