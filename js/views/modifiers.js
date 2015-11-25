@@ -149,7 +149,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             return this.$('.tooltip').addClass('transparent');
         },
         setTooltipPosition: function(tooltip, el) {
-            var $tooltip = tooltip || this.$('.tooltip:not(.transparent)'),
+            var $tooltip = tooltip || Backbone.$('.tooltip:not(.transparent)'),
                 $el = el || $tooltip.parent();
             $tooltip.css({
                 top: - $tooltip.outerHeight()/2 + $el.outerHeight()/2

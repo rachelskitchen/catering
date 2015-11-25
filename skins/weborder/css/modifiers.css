@@ -242,14 +242,14 @@ span.tooltip {
 }
 
 span.tooltip:before {
-    border-top: 7px solid transparent;
-    border-bottom: 7px solid transparent;
-    border-right: 7px solid #222;
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-right: 9px solid #222;
     content: ' ';
     display: block;
     height: 0;
     left: -7px;
-    margin-top: -7px;
+    margin-top: -9px;
     position: absolute;
     top: 50%;
     width: 0;
