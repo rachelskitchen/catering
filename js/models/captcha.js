@@ -20,34 +20,56 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.Captcha} constructor.
+ * @module captcha
+ * @requires module:backbone
+ * @see {@link module:config.paths actual path}
+ */
 define(["backbone"], function(Backbone) {
     'use strict';
 
     /**
      * @class
-     * Represents Captcha API
+     * @classdesc Represents Captcha API
+     * @alias App.Models.Captcha
+     * @augments Backbone.Model
+     * @example
+     * // create a captcha model
+     * require(['captcha'], function() {
+     *     var captcha = new App.Models.Captcha();
+     * });
      */
-    App.Models.Captcha = Backbone.Model.extend({
+    App.Models.Captcha = Backbone.Model.extend(
         /**
-         * @prop {object} defaults - literal object containing attributes with default values.
-         *
-         * @prop {string} defaults.captchaImage - captcha image url.
-         * @default ''.
-         *
-         * @prop {string} defaults.captchaKey - captcha key value (used in backend to validate captcha value).
-         * @default ''.
-         *
-         * @prop {string} defaults.captchaValue - captcha value entered by user.
-         * @default ''.
+         * @lends App.Models.Captcha.prototype
+         */
+        {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum {string}
          */
         defaults: {
+            /**
+             * URL of captcha image
+             * @type {string}
+             */
             captchaImage: '',
+            /**
+             * Unique key of captcha image (used on server to verify captcha value entered)
+             * @type {string}
+             */
             captchaKey: '',
+            /**
+             * Captcha value entered by user
+             * @type {string}
+             */
             captchaValue: ''
         },
         /**
-         * @methods
-         * Gets captcha image from '/weborders/captcha/?establishment=<number>' resource.
+         * Gets captcha image from `/weborders/captcha/?establishment=%estId%` resource.
+         * It updates `captchaImage`, `captchaKey` attributes.
          */
         loadCaptcha: function() {
             var self = this;

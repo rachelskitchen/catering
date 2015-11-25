@@ -20,32 +20,78 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.FilterItem}, {@link App.Collections.FilterItems},
+ * {@link App.Models.Filter}, {@link App.Collections.Filters} constructors.
+ * @module filters
+ * @requires module:backbone
+ * @see {@link module:config.paths actual path}
+ */
 define(['backbone'], function() {
     'use strict';
 
-   App.Models.FilterItem = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents a filter item.
+     * @alias App.Models.FilterItem
+     * @augments Backbone.Model
+     * @example
+     * // create filter item model
+     * require(['filters'], function() {
+     *     var filterItem = new App.Models.FilterItem({name: '1 mile', value: 1});
+     * });
+     */
+    App.Models.FilterItem = Backbone.Model.extend(
+    /**
+     * @lends App.Models.FilterItem.prototype
+     */
+    {
         /**
-         * @param {Object[]} attribues - Object with attributes.
-         * @param {boolean} attribues[].selected - The state of filter.
-         * @param {*} attributes[].value - The value of state.
-         * @param {string} attributes.title - The title of filter.
-         * @param {*} attributs.uid - The unique filter id that uses for saving data in LocalStorage.
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum {string}
          */
         defaults: {
+            /**
+             * A state of the filter item.
+             * @type {boolean}
+             */
             selected: false,
+            /**
+             * A value of the filter item. It is used as pattern for comparing.
+             * @type {*}
+             */
             value: null,
+            /**
+             * Filter item name.
+             * @type {string}
+             */
             title: '',
+            /**
+             * An unique filter id that uses for saving data in a storage.
+             * @type {*}
+             */
             uid: null
         },
+        /**
+         * Restores attributes values from a storage.
+         * Adds listener on `change:selected` event to track any user action and save it in a storage.
+         */
         initialize: function() {
             this.loadData();
             this.listenTo(this, 'change:selected', this.saveData, this);
             Backbone.Model.prototype.initialize.apply(this, arguments);
         },
+        /**
+         * Saves attributes values in a storage. 'filter.%uid%' key is used.
+         */
         saveData: function() {
             var prefix = App.Data.is_stanford_mode ? "stanford." : "";
             setData('filter.' + prefix + this.get('uid'), this, true);
         },
+        /**
+         * Restores data from a storage. 'filter.%uid%' key is used.
+         */
         loadData: function() {
             var prefix = App.Data.is_stanford_mode ? "stanford." : "";
             var data = getData('filter.' + prefix + this.get('uid'), true);
@@ -55,10 +101,32 @@ define(['backbone'], function() {
         }
     });
 
-    App.Collections.FilterItems = Backbone.Collection.extend({
+    /**
+     * @class
+     * @classdesc Represents a filter items collection.
+     * @alias App.Collections.FilterItems
+     * @augments Backbone.Collection
+     * @example
+     * // create filter items collection
+     * require(['filters'], function() {
+     *     var filterItems = new App.Collections.FilterItems({name: '1 mile', value: 1}, {name: '3 miles', value: 3});
+     * });
+     */
+    App.Collections.FilterItems = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.FilterItems.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default {@link App.Models.FilterItem}
+         */
         model: App.Models.FilterItem,
         /**
-         * @param {array} items - The array of objects each of them is attributes of filter item
+         * Sets items in the collection. If item already exists in collection then its attributes update on new values.
+         * Otherwise, a new item is added to the collection.
+         * @param {Array} items - an array of objects each of them has attributes of filter item.
          */
         setItems: function(items) {
             if(!Array.isArray(items)) {
@@ -76,22 +144,59 @@ define(['backbone'], function() {
     });
 
     /**
-     *  @class App.Models.Filter
+     * @class
+     * @classdesc Represents a filter.
+     * @alias App.Models.Filter
+     * @augments Backbone.Model
+     * @example
+     * // create filter
+     * require(['filters'], function() {
+     *     var filter = new App.Models.Filter({
+     *         title: 'Max Distance',
+     *         filterItems: [{name: '1 mile', value: 1}, {name: '3 miles', value: 3}],
+     *         radio: true
+     *     });
+     * });
      */
-    App.Models.Filter = Backbone.Model.extend({
+    App.Models.Filter = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Filter.prototype
+     */
+    {
         /**
-         * @param {string} title - Filter's title.
-         * @param {App.Models.FilterItems} filterItems - Array of filter items. May be set as array.
-         * @callback compare
-         * @param {Backbone.Model} item - item that should be compared with selected filter item value
-         * @param {App.Models.FilterItem} filter - selected filter item
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum {string}
          */
         defaults: {
+            /**
+             * Filter name.
+             * @type {string}
+             */
             title: '',
-            filterItems: null,  // collection of filters models
-            compare: null,      // should be function that accepts `item`, `filter` params
+            /**
+             * Filter items.
+             * @type {App.Collections.FilterItems}
+             */
+            filterItems: null,
+            /**
+             * Compares selected filter item with an item.
+             * @type {Function}
+             * @param {*} item - an item of an array that the filter is applied to.
+             * @param {App.Models.FilterItem} filter - selected filter item.
+             * @returns {boolean} A result of comparing.
+             */
+            compare: null,
+            /**
+             * Type of filter. If it is a `true` then filter items works as radio. Otherwise, user can select multi items.
+             */
             radio: false
         },
+        /**
+         * Converts `filterItems` attribute value to App.Collections.FilterItems instance if it isn't instance of.
+         * Adds listeners on `change:selected` event of filter items to propagate the event on itself
+         * and deselect all selected filter items (non-emitter).
+         */
         initialize: function() {
             var filterItems = this.get('filterItems'),
                 filterItemsCollection = filterItems instanceof App.Collections.FilterItems ? filterItems : new App.Collections.FilterItems();
@@ -104,13 +209,13 @@ define(['backbone'], function() {
             return Backbone.Model.prototype.initialize.apply(this, arguments);
         },
         /**
-         * Trigger 'change:selected' event when any filter item is selected/unselected
+         * Triggers `change:selected` event when any filter item is selected/deselected.
          */
         onChanged: function(model, value) {
             this.trigger('change:selected', this, value);
         },
         /**
-         * Gets selected items and uncheck them if `type` is 'radio'
+         * Gets selected filter items and deselect them if `radio` is `true`.
          */
         uncheck: function(model, value) {
             if(value && this.get('radio')) {
@@ -120,7 +225,9 @@ define(['backbone'], function() {
             }
         },
         /**
-         * `items` should be array of models
+         * Applies the filter to `items`. An item passes the filter
+         * if `compare` function applied to selected filter items at least once returns `true`.
+         * @param {Array} items - an array of models that should be filtered
          */
         applyFilter: function(items) {
             var errorResult = null,
@@ -169,7 +276,9 @@ define(['backbone'], function() {
             return result;
         },
         /**
-         * Set attributes values from simple object (including nested filter items)
+         * Sets attributes values using object literal (including nested filter items).
+         * Converts `data.filterItems` array to App.Collections.FilterItems instance.
+         * @param {Object} data - object literal containing JSON represetation of attributes.
          */
         setData: function(data) {
             if(!(data instanceof Object)) {
@@ -184,7 +293,8 @@ define(['backbone'], function() {
             }
         },
         /**
-         * Get attributes values as simple object (including nested filter items)
+         * Gets attributes values as object literal (including nested filter items).
+         * @returns {Object} Object literal containing JSON represetation of attributes.
          */
         getData: function() {
             var data = this.toJSON();
@@ -192,24 +302,71 @@ define(['backbone'], function() {
             return data;
         },
         /**
-         * Return array of selected filter items
+         * @returns {Array} An array of selected filter items.
          */
         getSelected: function() {
             return this.get('filterItems').where({selected: true});
         }
     });
 
-    App.Collections.Filters = Backbone.Collection.extend({
+    /**
+     * @class
+     * @classdesc Represents a filters collection.
+     * @alias App.Collections.Filters
+     * @augments Backbone.Collection
+     * @example
+     * // create filters
+     * require(['filters'], function() {
+     *     var filter = new App.Collections.Filters({
+     *         title: 'Max Distance',
+     *         filterItems: [{name: '1 mile', value: 1}, {name: '3 miles', value: 3}],
+     *         radio: true
+     *     }, {
+     *         title: 'Store Type',
+     *         filterItems: [{name: 'Retail', value: 2}, {name: 'Restaurant', value: 0}]
+     *     });
+     * });
+     */
+    App.Collections.Filters = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.Filters.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default {@link App.Models.Filter}
+         */
         model: App.Models.Filter,
+        /**
+         * An array of valid items. It updates after each filters application.
+         * Used as items source in {@link App.Collections.Filters#applyFilters applyFilters()} method to minimize comparing iterations.
+         * @type {Array}
+         * @default []
+         */
         valid: [],
+        /**
+         * An array of invalid items. It updates after each filters application.
+         * Used as items source in {@link App.Collections.Filters#applyFilters applyFilters()} method to minimize comparing iterations.
+         * @type {Array}
+         * @default []
+         */
         invalid: [],
+        /**
+         * Adds listener on 'change:selected' event of filter that automatically applies all filters for items.
+         */
         initialize: function() {
             this.listenTo(this, 'change:selected', this.listenToChanges, this);
             Backbone.Collection.prototype.initialize.apply(this, arguments);
         },
+        /**
+         * Applies filters when user select/deselect filter item.
+         * If `selected` attribute of filter item changed on `true` need to check invalid items
+         * because a new valid condition is added that affects only invalid items.
+         * If `selected` changed on `false` need to check valid items
+         * because one valid condition is removed that affects only valid items.
+         */
         listenToChanges: function(model, value) {
-            // if `selected` changed on `true` need check invalid items because a new valid condition is added that affects only invalid items
-            // if `selected` changed on `false` need check valid items because one valid condition is removed that affects only valid items
             if(value === true) {
                 this.applyFilters('invalid');
             } else if(value === false) {
@@ -217,9 +374,11 @@ define(['backbone'], function() {
             }
         },
         /**
-         * Apply each filter.
-         * Original models order may be changed after any filter passing.
-         * Emit 'onFiltered' event after completion with `valid`, `invalid` arguments.
+         * Applies each filter.
+         * Original models order may be changed after any filters application.
+         * An item passes all filters if it passes each of them.
+         * @param {string} src='invalid' - source of items ('invalid', 'valid')
+         * @param {boolean} silent - if `true` the collection emits 'onFiltered' event after filters application.
          */
         applyFilters: function(src, silent) {
             src = src || 'invalid';
@@ -262,6 +421,11 @@ define(['backbone'], function() {
 
             !silent && this.trigger('onFiltered', this.valid, this.invalid);
         },
+        /**
+         * Sets filters in the collection. If item already exists in collection then its attributes update on new values.
+         * Otherwise, a new item is added to the collection.
+         * @param {Array} data - an array of objects containing JSON representation of {@link App.Models.Filter} attributes.
+         */
         setData: function(data) {
             if(!Array.isArray(data)) {
                 return;
@@ -275,6 +439,9 @@ define(['backbone'], function() {
                 }
             }, this);
         },
+        /**
+         * @returns {Array} An array of objects containing JSON representation of {@link App.Models.Filter} attributes.
+         */
         getData: function() {
             return this.map(function(filter) {
                 return filter.getData();

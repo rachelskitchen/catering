@@ -20,32 +20,138 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.Checkout}, {@link App.Collections.DiningOtherOptions} constructors.
+ * @module checkout
+ * @requires module:backbone
+ * @see {@link module:config.paths actual path}
+ */
 define(["backbone"], function(Backbone) {
     'use strict';
 
-    App.Models.Checkout = Backbone.Model.extend({
-        defaults: function() {
-            return {
-                img: App.Data.settings.get("img_path"),
-                pickupTime: '',
-                pickupTS: null,
-                isPickupASAP: false,
-                special: '',
-                section: "",
-                row: "",
-                seat: "",
-                level: "",
-                email: "", //TBD: probably remove this field. Customer.email is used now.
-                rewardCard: '',
-                dining_option: '',
-                selected_dining_option: '', // It set when dining_option has changed on DINING_OPTION_ONLINE. It is used for recovery user selection of Order Type
-                notes: '',
-                other_dining_options: null,
-                discount_code: '',
-                last_discount_code: ''
-            };
+    /**
+     * @class
+     * @classdesc Represents a checkout model.
+     * @alias App.Models.Checkout
+     * @augments Backbone.Model
+     * @example
+     * // create a checkout model
+     * require(['checkout'], function() {
+     *     var checkout = new App.Models.Checkout();
+     * });
+     */
+    App.Models.Checkout = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Checkout.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum {string}
+         */
+        defaults: {
+            /**
+             * A path for relative url of image
+             * @type {string}
+             */
+            img: '',
+            /**
+             * A pickup time
+             * @type {string}
+             */
+            pickupTime: '',
+            /**
+             * A pickup time (timestamp)
+             * @type {?number}
+             */
+            pickupTS: null,
+            /**
+             * Indicates pickup time is ASAP (`true`) or not (`false`)
+             * @type {boolean}
+             */
+            isPickupASAP: false,
+            /**
+             * ???
+             * @type {string}
+             */
+            special: '',
+            /**
+             * A section (for 'Stadium' mode)
+             * @type {string}
+             */
+            section: "",
+            /**
+             * A row (for 'Stadium' mode)
+             * @type {string}
+             */
+            row: "",
+            /**
+             * A seat (for 'Stadium' mode)
+             * @type {string}
+             */
+            seat: "",
+            /**
+             * A level (for 'Stadium' mode)
+             * @type {string}
+             */
+            level: "",
+            /**
+             * @deprecated
+             */
+            email: "", //TBD: probably remove this field. Customer.email is used now.
+            /**
+             * A Reward Card number.
+             * @type {string}
+             */
+            rewardCard: '',
+            /**
+             * A dining option of an order. Available value is one of:
+             * - `'DINING_OPTION_TOGO'`
+             * - `'DINING_OPTION_EATIN'`
+             * - `'DINING_OPTION_DELIVERY'`
+             * - `'DINING_OPTION_CATERING'`
+             * - `'DINING_OPTION_DRIVETHROUGH'`
+             * - `'DINING_OPTION_ONLINE'`
+             * - `'DINING_OPTION_OTHER'`
+             * - `'DINING_OPTION_SHIPPING'`
+             * @type {string}
+             */
+            dining_option: '',
+            /**
+             * It changes when `dining_option` has changed on DINING_OPTION_ONLINE and is a dining option that was before DINING_OPTION_ONLINE.
+             * It is used for recovery user selection of Order Type.
+             * @type {string}
+             */
+            selected_dining_option: '', // It set when dining_option has changed on DINING_OPTION_ONLINE. It is used for recovery user selection of Order Type
+            /**
+             * Order notes.
+             * @type {string}
+             */
+            notes: '',
+            /**
+             * Object literal representing a custom dining option.
+             * @type {?App.Collections.DiningOtherOptions}
+             */
+            other_dining_options: null,
+            /**
+             * A discount code
+             * @typeof {string}
+             */
+            discount_code: '',
+            /**
+             * A last applied discount code. Used for data restoring after page reload.
+             * @typeof {string}
+             */
+            last_discount_code: ''
         },
+        /**
+         * Adds listener to track `dining_option` change and inits `other_dining_options` if it exists.
+         */
         initialize: function() {
+            // set img path
+            this.set('img', App.Data.settings.get("img_path"));
+
             // if dining_option changed on DINING_OPTION_ONLINE previous value should be
             this.listenTo(this, 'change:dining_option', function(model, value) {
                 var prev = model.previousAttributes().dining_option;
@@ -56,32 +162,41 @@ define(["backbone"], function(Backbone) {
             }, this);
 
             if (!this.get('other_dining_options')) {
-                this.set('other_dining_options', new App.Data.DiningOtherOptions( App.Settings.other_dining_option_details ));
+                this.set('other_dining_options', new App.Collections.DiningOtherOptions( App.Settings.other_dining_option_details ));
             }
         },
         /**
-         * Save current state model in storage (detected automatic).
+         * Saves current attributes in a storage (detected automatic).
          */
-        saveCheckout : function() {
+        saveCheckout: function() {
             setData('checkout',this);
         },
         /**
-         * Load state model from storage (detected automatic).
+         * Loads attributes of the model from a storage (detected automatic).
          */
-        loadCheckout : function() {
+        loadCheckout: function() {
             var data = getData('checkout');
             data = data instanceof Object ? data : {};
             delete data.img;
-            data.other_dining_options = new App.Data.DiningOtherOptions( data.other_dining_options );
+            data.other_dining_options = new App.Collections.DiningOtherOptions( data.other_dining_options );
             this.set(data);
             this.trigger("change:dining_option", this, this.get("dining_option"));
         },
         /**
-         * revert dining option to previous value (return from only gift situation)
+         * Reverts a `dining_option` to previous value.
          */
         revert_dining_option: function() {
+            // return from only gift situation
             this.set('dining_option', this.get('selected_dining_option') || App.Settings.default_dining_option);
         },
+        /**
+         * Checks attributes values.
+         * @returns {Object} A validation result. May be one of:
+         * - `{status: 'OK'}`
+         * - result of App.Models.Checkout#isStoreClosed if it is an object
+         * - result of App.Models.Checkout#checkOrderFromSeat if it is an object
+         * - result of App.Models.Checkout#checkOtherDiningOptions if it is an object
+         */
         check: function() {
             var isStoreClosed = this.isStoreClosed(),
                 orderFromSeat = this.checkOrderFromSeat(),
@@ -100,6 +215,10 @@ define(["backbone"], function(Backbone) {
                 status: "OK"
             };
         },
+        /**
+         * Checks a store is closed.
+         * @returns {boolean|Object} Returns `false` if skin is `retail` or object `{status: 'ERROR', errorMsg: <string>'}`
+         */
         isStoreClosed: function() {
             var dining_option = this.get('dining_option');
             if(App.skin == App.Skins.RETAIL)
@@ -111,10 +230,22 @@ define(["backbone"], function(Backbone) {
                 };
             }
         },
+        /**
+         * Checks attributes associated with 'Stadium' mode.
+         */
         checkOrderFromSeat: function() {
         },
         /**
-         *  check if all 'Other' dining options was selected
+         * Checks attributes of `other_dining_options`.
+         * @returns {Object|undefined} If any required attribute isn't filled out returns an array with empty fields.
+         * ```
+         * {
+         *     status: "ERROR_EMPTY_FIELDS",
+         *     errorMsg: <string>,
+         *     errorList: <Array with empty fields>
+         * }
+         * ```
+         * Otherwise, returns `undefined`.
          */
         checkOtherDiningOptions: function() {
             var other_dining_options = this.get("other_dining_options"),
@@ -137,6 +268,10 @@ define(["backbone"], function(Backbone) {
                 };
             }
         },
+        /**
+         * Checks cold items in order are untaxable.
+         * @returns {boolean} See details in source file.
+         */
         isColdUntaxable: function() {
             var delivery_cold_untaxed = App.Settings.delivery_cold_untaxed,
                 dining_option = this.get('dining_option'),
@@ -147,29 +282,81 @@ define(["backbone"], function(Backbone) {
             return isToGo || isCatering || isDelivery && delivery_cold_untaxed;
         },
         /**
-         * @method
-         * @returns true if current 'dining_option' attribute's value is 'DINING_OPTION_ONLINE' and false otherwise.
+         * Checks `dining_option` is `'DINING_OPTION_ONLINE'` or not.
+         * @returns {boolean} `true` if current `dining_option` attribute's value is `'DINING_OPTION_ONLINE'` and `false` otherwise.
          */
         isDiningOptionOnline: function() {
             return this.get('dining_option') == 'DINING_OPTION_ONLINE'
         }
     });
 
-    App.Data.DiningOtherOptions = Backbone.Collection.extend({
-        model: Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents a collection of custom dining option fields.
+     * @alias App.Collections.DiningOtherOptions
+     * @augments Backbone.Collection
+     * @example
+     * // create a other dining options model
+     * require(['checkout'], function() {
+     *     var otherOptions = new App.Collections.DiningOtherOptions();
+     * });
+     */
+    App.Collections.DiningOtherOptions = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.DiningOtherOptions.prototype
+     */
+    {
+        /**
+         * Collection item constructor.
+         * @default {@link module:checkout~CustomDiningOption}
+         */
+        model: Backbone.Model.extend(
+        /**
+         * @class
+         * @classdesc Represents a custom dining option field.
+         * @alias module:checkout~CustomDiningOption
+         */
+        {
+            /**
+             * Contains attributes with default values.
+             * @type {object}
+             * @enum {string}
+             */
             defaults: {
+                /**
+                 * Dining option name.
+                 * @type {string}
+                 */
                 name: '',
+                /**
+                 * An array of objects representing dining option field.
+                 * @type {?Array}
+                 */
                 choices: null,
+                /**
+                 * Indicates the filed is requred or not.
+                 * @type {boolean}
+                 */
                 required: true,
-                value: '' //it can be an option for choices OR '' or 'some string' for inputs (when choices is null)
+                /**
+                 * It can be an option for choices OR '' or 'some string' for inputs (when choices is null).
+                 * @type {string}
+                 */
+                value: ''
             },
+            /**
+             * Splits `choices` on array (',' separator is used) if it is a string.
+             */
             initialize: function() {
                 if (typeof this.get('choices') == 'string') {
                     this.set('choices', this.get('choices').split(','));
                 }
             },
+            /**
+             * Resets `value` attribute to default value.
+             */
             reset: function() {
-                this.set('value', '');
+                this.set('value', this.defaults.value);
             }
         })
     });

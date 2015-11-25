@@ -1048,6 +1048,10 @@ define(["main_router"], function(main_router) {
         stanford_student_verification: function() {
             var self = this;
 
+            // Reload captcha every time when navigated to stanford card verification screen.
+            // No need to restore cached data since this screen is shown only once during the order process.
+            App.Data.stanfordCard.trigger('updateCaptcha');
+
             App.Data.header.set({
                 page_title: _loc.STANFORD_VERIFICATION,
                 back_title: _loc.BACK,

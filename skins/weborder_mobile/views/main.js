@@ -39,11 +39,7 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'restoreSection', this.restoreSection, this);
 
             // Bug 29756: recalculate content position on orientation change
-            var thisView = this;
-            Backbone.$(window).on('windowResize', function() {
-                // use delay to let browser compute new heights first
-                setTimeout(thisView.setContentPadding, 50);
-            });
+            Backbone.$(window).on('windowResize', this.setContentPadding);
 
             this.iOSFeatures();
 
@@ -66,7 +62,7 @@ define(["done_view", "generator"], function(done_view) {
                     inputType = $this.attr("type");
                 $this.focus();
                 // Fix for bugs 30986 & 30067
-                if (this.setSelectionRange && inputType !== 'text' && !(cssua.userAgent.chrome && inputType === 'number')) {
+                if (this.setSelectionRange && !(cssua.userAgent.chrome && inputType === 'number')) {
                     var len = this.value.length;
                     this.setSelectionRange(len, len);
                 }
@@ -271,8 +267,13 @@ define(["done_view", "generator"], function(done_view) {
             fsMin = 4,
             coef = 1,
             resizing = false,
-            interval;
+            interval,
+            wWPrev = $(window).width(),
+            wHPrev = $(window).height();
 
+        /**
+         * Calculate basic font size depending on window size.
+         */
         function resize() {
             resizing = true;
             var wW = $(window).width(),
@@ -297,8 +298,16 @@ define(["done_view", "generator"], function(done_view) {
 
         $(window).resize(function() {
             if (!resizing) {
-                resize();
-                Backbone.$(window).trigger('windowResize');
+                var wW = $(window).width(),
+                    wH = $(window).height();
+                // When soft keyboard appears, only height is getting changed. We don't want to recalculate the font size in this case.
+                // Continue only if window width has been changed, or if window height has been increased (it happens on keyboard close).
+                if (wW != wWPrev || wH > wHPrev) {
+                    wWPrev = wW;
+                    wHPrev = wH;
+                    resize();
+                    Backbone.$(window).trigger('windowResize');
+                }
             }
 
             if (document.activeElement.tagName.toLowerCase() == "input") {

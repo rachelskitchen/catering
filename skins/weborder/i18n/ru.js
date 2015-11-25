@@ -24,6 +24,7 @@
         'CHECKOUT_STATE': 'Штат',
         'CHECKOUT_PROVINCE': 'Провинция',
         'CHECKOUT_ZIP_CODE': 'Почтовый индекс',
+        'CHECKOUT_POSTAL_CODE': 'Почтовый индекс',
         'CHECKOUT_SHIPPING_HANDLING': 'Служба доставки',
         'CHECKOUT_LEVEL': 'Уровень',
         'CHECKOUT_SECTION': 'Секция',

@@ -26,12 +26,16 @@ define(["tips_view"], function(tips_view) {
     var TipsLineView = App.Views.FactoryView.extend({
         name: 'tips',
         mod: 'line',
+        initialize: function() {
+            this.extendBindingSources({_total: App.Data.myorder.total});
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
         bindings: {
             '.ctrl': 'reset: tipValue, events: ["click"]',
             '.tipAmount': 'value: monetaryFormat(tipValue), events:["blur"], restrictInput: "0123456789.", kbdSwitcher: "float"',
-            '.percent-10': 'classes: {selected: equal(percentValue, 10)}',
-            '.percent-15': 'classes: {selected: equal(percentValue, 15)}',
-            '.percent-20': 'classes: {selected: equal(percentValue, 20)}',
+            '.percent-10': 'classes: {selected: equal(percentAmount, 10)}',
+            '.percent-15': 'classes: {selected: equal(percentAmount, 15)}',
+            '.percent-20': 'classes: {selected: equal(percentAmount, 20)}',
             '.percent-10 .percent-sum': 'text: currencyFormat(percents_10)',
             '.percent-15 .percent-sum': 'text: currencyFormat(percents_15)',
             '.percent-20 .percent-sum': 'text: currencyFormat(percents_20)',
@@ -65,34 +69,41 @@ define(["tips_view"], function(tips_view) {
                     return tipTotal;
                 }
             },
-            percentValue: {
-                deps: ['percent', 'sum', 'subtotal', 'amount', 'type'],
-                get: function(percent, sum, subtotal, amount, type) {
+            percentAmount: {
+                deps: ['percent', 'sum', 'subtotal', 'amount', 'type', '_total_discounts'],
+                get: function(percent, sum, subtotal, amount, type, discounts) {
                     if (!type) {
                         return 0;
                     }
+                    // percent amount already set
                     if (amount) {
                         return percent;
                     }
-                    return sum ? (sum / subtotal * 100) : 0
+                    // tips sum is 0
+                    else if (!sum) {
+                        return 0;
+                    }
+                    var serviceFee = App.Data.myorder.get_service_fee_charge(),
+                        total = subtotal * 1 + discounts * 1 - serviceFee * 1; // subtotal before discounts
+                    return total ? (sum / total * 100) : 0
                 }
             },
             percents_10: {
-                deps: ['subtotal', 'discounts_str'],
-                get: function(subtotal, discounts_str) {
-                    return this.getPercentAmount(subtotal, discounts_str, 10);
+                deps: ['subtotal', '_total_discounts'],
+                get: function(subtotal, discounts) {
+                    return this.getPercentAmount(subtotal, discounts, 10);
                 }
             },
             percents_15: {
-                deps: ['subtotal', 'discounts_str'],
-                get: function(subtotal, discounts_str) {
-                    return this.getPercentAmount(subtotal, discounts_str, 15);
+                deps: ['subtotal', '_total_discounts'],
+                get: function(subtotal, discounts) {
+                    return this.getPercentAmount(subtotal, discounts, 15);
                 }
             },
             percents_20: {
-                deps: ['subtotal', 'discounts_str'],
-                get: function(subtotal, discounts_str) {
-                    return this.getPercentAmount(subtotal, discounts_str, 20);
+                deps: ['subtotal', '_total_discounts'],
+                get: function(subtotal, discounts) {
+                    return this.getPercentAmount(subtotal, discounts, 20);
                 }
             }
         },

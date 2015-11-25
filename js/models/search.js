@@ -90,7 +90,7 @@ define(['products'], function() {
     App.Models.SearchLine = Backbone.Epoxy.Model.extend({
         defaults: {
             searchString: '',
-            dummiString: '',
+            dummyString: '',
             isShow: true,
             search: null //the instance of App.Collections.Search
         },
@@ -105,7 +105,7 @@ define(['products'], function() {
             }
         },
         empty_search_line: function() {
-            this.set("dummiString", "");
+            this.set("dummyString", "");
             this.set("searchString", "", {silent: true});
         }
     });

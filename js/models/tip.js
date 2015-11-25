@@ -68,7 +68,7 @@ define(["backbone"], function(Backbone) {
             this.listenTo(this, "change", this.update_tip, this);
         },
         update_tip: function() {
-            this.set("tipTotal", this.get_tip(this.get('subtotal')));
+            this.set("tipTotal", this.get_tip(this.get('subtotal'), App.Data.myorder.total.get_discounts_str(), App.Data.myorder.get_service_fee_charge()));
         },
         /**
          * @method

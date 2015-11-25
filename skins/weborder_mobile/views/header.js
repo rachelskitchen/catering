@@ -37,7 +37,7 @@ define(["factory"], function() {
            '.title': 'text:page_title',
            '.btn-back': 'toggle: back',
            '.btn-back-title': 'text: back_title',
-           '.btn-cart': 'classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}',
+           '.btn-cart': 'toggle: cartItemsQuantity, classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}',
            '.btn-search': 'classes: {active: showSearch, "font-color2": showSearch, "font-color7": not(showSearch)}',
            '.search': 'outsideTouch: showSearch, events:["onOutsideTouch"], classes: {invisible: not(showSearch)}, attr: {contenteditable: false}',
            '.input-search': 'value: search, events: ["input"], classes: {"font-color3": search}',

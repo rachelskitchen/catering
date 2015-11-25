@@ -97,20 +97,6 @@
     text-align: center;
 }
 
-#header .btn-search.active::after {
-    content: '\f04b';
-    font-family: "FontAwesome";
-    font-size: 5em;
-    display: inline-block;
-    -webkit-transform: rotate(-90deg);
-    -moz-transform: rotate(-90deg);
-    -ms-transform: rotate(-90deg);
-    transform: rotate(-90deg);
-    position: relative;
-    z-index: 102;
-    top: -0.1em;
-}
-
 #header .btn-search::before {
     content: '\f002';
     font-family: FontAwesome;
