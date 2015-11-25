@@ -33,7 +33,7 @@
         },
         "combo_product": {
             "css": ["modifiers", "products", "quantity", "instructions", "myorder", "stanfordcard", "card", "product_sets"],
-            "views": ["products", "quantity", "instructions", "myorder", "stanfordcard"],
+            "views": ["products", "quantity", "instructions", "myorder", "stanfordcard", "product_sets"],
             "templates": ["modifiers", "products", "quantity", "instructions", "myorder", "stanfordcard", "product_sets"],
             "core": ["categories", "products", "modifiers", "modifiers_view", "product_sets", "product_sets_view"]
         },

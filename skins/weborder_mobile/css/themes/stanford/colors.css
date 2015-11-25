@@ -211,7 +211,7 @@ select:-moz-focusring {
 }
 
 .modifier input:checked + .input,
-.combo_item input:checked + .input {
+.combo_item .input[checked=checked] {
     background: #670000;
     border-color: #670000;
 }
