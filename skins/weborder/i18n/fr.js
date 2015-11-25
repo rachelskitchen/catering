@@ -24,6 +24,7 @@ define([], function() {
         "CHECKOUT_STATE": "État",
         "CHECKOUT_PROVINCE": "Province",
         "CHECKOUT_ZIP_CODE": "Code postal",
+        "CHECKOUT_POSTAL_CODE": "Code postal",
         "CHECKOUT_SHIPPING_HANDLING": "Envoi et manutention",
         "CHECKOUT_LEVEL": "Niveau",
         "CHECKOUT_SECTION": "Section",

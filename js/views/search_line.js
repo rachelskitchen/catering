@@ -36,7 +36,7 @@ define(["backbone", "factory"], function() {
             this.applyBindings();
         },
         bindings: {
-            "#search-input": "value:dummiString,valueTimeout:searchString,params:{timeout:1500},events:['input','blur','change']"
+            "#search-input": "value:dummyString,valueTimeout:searchString,params:{timeout:1500},events:['input','blur','change']"
         },
         events: {
             "click #delete-btn": "onDelete",

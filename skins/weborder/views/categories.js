@@ -41,10 +41,9 @@ define(["generator", "list"], function() {
             "change input": "change"
         },
         change: function() {
-            var value = this.model.get('parent_name');
-            this.collection.parent_selected = value;
-            this.collection.selected = 0;
-            this.collection.trigger('change:parent_selected', this.collection, value);
+            var parent_name = this.model.get('parent_name');
+            this.collection.setSelected(0, true); // default option for subcategories (show all). Use silent mode so 'change:selected' event will not be triggered.
+            this.collection.setParentSelected(parent_name);
         },
         show_hide: function() {
             var value = this.model.get('parent_name');
@@ -59,6 +58,10 @@ define(["generator", "list"], function() {
         uncheck: function(value) {
             if(this.collection.parent_selected != this.model.get('parent_name')) {
                 this.$('input').prop('checked', false);
+            }
+            else {
+                this.$('input').prop('checked', true);
+                this.$('input').trigger('change');
             }
         }
     });
@@ -102,7 +105,6 @@ define(["generator", "list"], function() {
         },
         reset_selection: function() {
             this.collection.parent_selected = null;
-            this.collection.trigger('change:parent_selected', this.collection);
             this.$('ul').find('label').removeClass('checked');
         },
         update_slider_render: function() {
@@ -240,7 +242,8 @@ define(["generator", "list"], function() {
             this.subViews.push(view);
         },
         update_view: function(model, value) {
-            if (value === this.model.get('id')) {
+            // scroll to the selected subcategory, or to the first one, if value is 0 (default option selected)
+            if (value === this.model.get('id') || (!value && this.model.get('sort') === 1)) {
                 this.$el[0].scrollIntoView();
             }
         }
@@ -319,7 +322,8 @@ define(["generator", "list"], function() {
             this.$('.categories_products_wrapper').contentarrow();
             this.$('.products_spinner').css('position', 'absolute').spinner();
             this.listenTo(this.options.search, 'onSearchStart', this.showSearchSpinner, this);
-            this.listenTo(this.options.search, 'onSearchComplete', this.hideSpinner, this);      
+            this.listenTo(this.options.search, 'onSearchComplete', this.hideSpinner, this);
+            this.listenTo(App.Data.categories, 'onRestore', this.hideSpinner, this);
         },
         update_table: function(model, value) {
            var isCategories = typeof value != 'undefined',

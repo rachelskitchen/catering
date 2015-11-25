@@ -24,6 +24,7 @@ define([], function() {
         "CHECKOUT_STATE": "Osariik",
         "CHECKOUT_PROVINCE": "Maakond",
         "CHECKOUT_ZIP_CODE": "Sihtnumber",
+        "CHECKOUT_POSTAL_CODE": "Sihtnumber",
         "CHECKOUT_SHIPPING_HANDLING": "Tarne ja käsitsemine",
         "CHECKOUT_LEVEL": "Tase",
         "CHECKOUT_SECTION": "Sektsioon",

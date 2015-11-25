@@ -81,7 +81,7 @@ define(['backbone', 'factory'], function(Backbone) {
             return customer.addresses[shipping_address] && typeof customer.addresses[shipping_address].street_1 === 'string' ? customer.addresses[shipping_address] : undefined;
         },
         bindings: {
-            'input[name=zipcode]': 'restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^(\\d{0,9})$/'
+            'input[name=zipcode]': 'pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
         },
         computeds: {
             zipcodeValue: {

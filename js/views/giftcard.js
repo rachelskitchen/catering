@@ -104,7 +104,6 @@ define(["backbone", "factory"], function(Backbone) {
                     }
                 }
             }
-            this.model.loadCaptcha();
         },
         createCaptchaSpinner: function() {
             this.$('.captcha').hide();

@@ -20,20 +20,52 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.GiftCard} constructor.
+ * @module giftcard
+ * @requires module:backbone
+ * @requires module:captcha
+ * @see {@link module:config.paths actual path}
+ */
 define(["backbone", "captcha"], function(Backbone) {
     'use strict';
 
-    App.Models.GiftCard = App.Models.Captcha.extend({
-        defaults: _.extend({}, App.Models.Captcha.prototype.defaults, {
+    /**
+     * @class
+     * @classdesc Represents a Gift Card model.
+     * @alias App.Models.GiftCard
+     * @augments App.Models.Captcha
+     * @example
+     * // create a gift card model
+     * require(['giftcard'], function() {
+     *     var giftcard = new App.Models.GiftCard({cardNumber: '777'});
+     * });
+     */
+    App.Models.GiftCard = App.Models.Captcha.extend(
+    /**
+     * @lends App.Models.GiftCard.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values. Extends {@link App.Models.Captcha#defaults}.
+         * @type {object}
+         * @property {string} cardNumber='' - gift card number
+         * @property {string} storageKey='giftcard' - key in a storage
+         */
+        defaults: _.extend({}, App.Models.Captcha.prototype.defaults,
+        {
             cardNumber: '',
             storageKey: 'giftcard'
         }),
         /**
-        * Save current state model in storage (detected automatic).
-        */
+         * Saves attributes values in a storage (detected automatic).
+         */
         saveCard: function() {
             setData(this.get('storageKey'), this);
         },
+        /**
+         * Restores attributes values from a storage.
+         */
         loadCard: function() {
             var data = getData(this.get('storageKey'));
             data = data instanceof Object ? data : {};
@@ -41,6 +73,19 @@ define(["backbone", "captcha"], function(Backbone) {
             this.set(data);
             return this;
         },
+        /**
+         * Checks `cardNumber`, `captchaValue` values.
+         * @returns {Object} One of the following objects:
+         * - If all attributes aren't empty: `{status: "OK"}`
+         * - If empty attributes exist:
+         * ```
+         * {
+         *     status: "ERROR_EMPTY_FIELDS",
+         *     errorMsg: <error message>,
+         *     errorList: [] // array containing empty attributes
+         * }
+         * ```
+         */
         check: function() {
             var err = [];
             if (!this.get('cardNumber')) {

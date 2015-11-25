@@ -124,7 +124,7 @@
        </li>
         <% } %>
         <li class="required">
-            <input type="text" placeholder="<%= _lp.CHECKOUT_ZIP_CODE %>" name="zipcode" value="<%= zipcode %>" class="ios-safari-caret">
+            <input type="text" placeholder="<% if(country == 'US') {print(_lp.CHECKOUT_ZIP_CODE);} else {print(_lp.CHECKOUT_POSTAL_CODE);} %>" name="zipcode" value="<%= zipcode %>" class="ios-safari-caret">
         </li>
         <% if(isShippingServices) { %>
         <li>

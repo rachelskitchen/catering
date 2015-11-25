@@ -7,10 +7,10 @@
     "routing": {
         "main": {
             "css": ["main", "myorder", "jquery.contentarrow", "products", "modifiers", "instructions", "quantity", "jquery.combobox"],
-            "model": ["main", "header"],
+            "model": ["main", "header", "categories"],
             "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "instructions", "quantity", "stanfordcard"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "instructions", "quantity"],
-            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "stanfordcard"],
+            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "search", "stanfordcard"],
             "js" : ["jquery.contentarrow", "jquery.combobox"]
         },
         "index": {

@@ -30,6 +30,7 @@ define([], function() {
         "CHECKOUT_STATE": "Osariik",
         "CHECKOUT_PROVINCE": "Maakond",
         "CHECKOUT_ZIP_CODE": "Sihtnumber",
+        "CHECKOUT_POSTAL_CODE": "Sihtnumber",
         "CHECKOUT_SHIPPING": "Tarne ja käsitsemine",
         "CHECKOUT_HOW_LIKE_TO_PAY": "Kuidas soovite maksta?",
         "CHECKOUT_PAYPAL": "Vormista PayPaliga",

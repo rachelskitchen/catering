@@ -20,10 +20,34 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.AboutModel} constructor.
+ * @module about
+ * @requires module:backbone
+ * @see {@link module:config.paths actual path}
+ */
 define(['backbone'], function(Backbone) {
     'use strict';
 
-    App.Models.AboutModel = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents a model data of "About" section of the app.
+     * @alias App.Models.AboutModel
+     * @augments Backbone.Model
+     * @example
+     * // create a 'about' model
+     * require(['about'], function() {
+     *     var abountModel = new App.Models.AboutModel();
+     * });
+     */
+    App.Models.AboutModel = Backbone.Model.extend(
+        /**
+         * @lends App.Models.AboutModel.prototype
+         */
+        {
+        /**
+         * Sets values for attributes: `images`, `title`, `content`, `curImageIndex`.
+         */
         initialize: function() {
             var images = App.Settings.about_images,
                 host = App.Data.settings.get('host');
