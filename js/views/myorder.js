@@ -311,6 +311,15 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             this.listenTo(this.model, 'change', this.update);
             this.listenTo(this.model.get_product(), 'change', this.update);
         },
+        start: function() {
+            this.listenTo(this.model, 'change', this.update);
+            this.listenTo(this.model.get_product(), 'change', this.update);
+            this.update();
+        },
+        stop: function() { //called by FactotyView while the view detached from DOM
+            //it's for save time for useless processing:
+            this.stopListening();
+        },
         render: function() {
             var self = this, view,
                 modifiers = this.model.get_modifiers();
@@ -441,8 +450,21 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         mod: 'list',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.startListen();
+        },
+        startListen: function() {
             this.listenTo(this.collection, 'add', this.addItem, this);
             this.listenTo(this.collection, 'remove', this.removeItem, this);
+        },
+        start: function() {
+            this.render();
+            this.startListen();
+            App.Views.FactoryView.prototype.start.apply(this, arguments);
+        },
+        stop: function() { //called by FactotyView while the view detached from DOM
+            //it's for save time for useless processing:
+            this.stopListening();
+            App.Views.FactoryView.prototype.stop.apply(this, arguments);
         },
         render: function() {
             this.$el.html(this.template());

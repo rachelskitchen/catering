@@ -40,7 +40,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             planId: null,                // stanford plan to add some amount to
             isServiceFee: false,
             is_child_product: false,     // child product in a combo product set
-            selected: null               // used for combo products now
+            selected: null              // used for combo products now
         },
         product_listener: false, // check if listeners for product is present
         modifier_listener: false, // check if listeners for modifiers is preset
@@ -528,6 +528,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
     App.Models.MyorderCombo = App.Models.Myorder.extend({
         initialize: function() {
             App.Models.Myorder.prototype.initialize.apply(this, arguments);
+            this.listenTo(this, 'change:initial_price', this.update_product_price, this);
             this.listenTo(this, 'combo_product_change', this.update_mdf_sum, this);
         },
         /**
@@ -563,6 +564,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         *  get product price for combo
         */
         get_product_price: function() {
+            return this.get('product').get('combo_price');
+        },
+        /*
+        *  get product price for combo
+        */
+        update_product_price: function() {
             var root_price = this.get_initial_price(),
                 sum = 0, combo_saving_products = [];
 
@@ -595,6 +602,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 order_product.update_prices();
                 order_product.update_mdf_sum(root_quantity);
             });
+            this.update_product_price();
         },
         /*
         *   find child by product id

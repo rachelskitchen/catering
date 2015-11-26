@@ -344,9 +344,6 @@ ul.categories {
 #modifiers_popup .quantity_select {
     border-radius: 20px;
 }
-#modifiers_popup .product_instructions .instruction_block {
-    height: 135px;
-}
 #modifiers_popup .modifiers_table:before {
     background-color: #e6decb;
     border-color: #a09d94;

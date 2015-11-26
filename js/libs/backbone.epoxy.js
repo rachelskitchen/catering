@@ -102,6 +102,35 @@
       return copy;
   }
 
+  Backbone.Model.prototype.update = function(newModel) {
+      for (var key in newModel.attributes) {
+          var value = newModel.get(key);
+          if (value && value.update) {
+            this.get(key).update(value);
+            //trace("update depper for key: ", key);
+          }
+          else {
+            this.set(key, value, {silent: true});
+            //trace("update key: ", key);
+          }
+      }
+      return this;
+  }
+
+  Backbone.Collection.prototype.update = function(newCollection) {
+      //
+      // Assume that both collections have the same sorted models
+      //
+      for (var key in newCollection.models) {
+          var value = newCollection.models[key];
+          if (value && value.update) {
+             this.models[key].update(value);
+             //trace("update depper for key: ", key);
+          }
+      }
+      return this;
+  }
+
   if (App.Data.devMode) {
     // alias for toJSON function
     Backbone.Model.prototype.json = Backbone.Model.prototype.toJSON;

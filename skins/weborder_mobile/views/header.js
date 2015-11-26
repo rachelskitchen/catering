@@ -167,7 +167,8 @@ define(["factory"], function() {
     var HeaderComboProductView = HeaderModifiersView.extend({
         events: {
             'click .btn-link': 'link',
-            'click .btn-cart': 'cart'
+            'click .btn-cart': 'cart',
+            'click .btn-back': 'back'
         },
         link: function() {
             this.model.get('link').apply(this, arguments);
@@ -176,8 +177,6 @@ define(["factory"], function() {
             this.setHeaders();
             HeaderModifiersView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'reinit', this.reinit, this);
-            //if (this.options.mode == "update" && this.options.originOrder)
-            //    this.listen(this.options.originOrder, 'change', setHeaderToUpdate);
         },
         reinit: function() {
             this.setHeaders();
@@ -188,13 +187,17 @@ define(["factory"], function() {
             else
                 this.setHeaderToUpdate();
         },
+        back: function() {
+            var order = this.options.order,
+                originOrder = this.options.originOrder;
+            if (originOrder)
+                order.update(originOrder);
+            this.model.get('back')();
+        },
         cart: function() {
-            //this.stopListening(order, 'change', setHeaderToUpdate);
-            //this.set('cart', self.navigate.bind(self, 'cart', true), {silent: true});
             App.Data.router.navigate('cart', true);
         },
         setHeaderToUpdate: function() {
-            //this.isOrderChanged = true;
             this.model.set({
                 page_title: _loc.CUSTOMIZE,
                 link_title: _loc.UPDATE,
@@ -210,8 +213,8 @@ define(["factory"], function() {
             this.model.updateProduct(order);
             order.set('discount', originOrder.get('discount').clone(), {silent: true});
             App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
-            this.options.originOrder = order.clone();
-            //this.isOrderChanged = false;
+            originOrder.update(order);
+            this.listenTo(order, 'combo_product_change', this.setHeaderToUpdate, this);
         },
         setHeaderToAdd: function() {
             this.model.set({
@@ -227,8 +230,7 @@ define(["factory"], function() {
             var order = this.options.order;
 
             this.model.addProduct(order).done(function () {
-                //self.listenTo(order, 'change', setHeaderToUpdate);
-                self.setHeaderToUpdate();
+                //self.setHeaderToUpdate();
             });
         }
     });

@@ -95,6 +95,7 @@ define(["done_view", "generator"], function(done_view) {
             while(this.subViews.length > 2) {
                 view = this.subViews.pop();
                 view.removeFromDOMTree();
+                typeof view.stop == 'function' && view.stop();
             }
 
             if(Array.isArray(data))
@@ -177,11 +178,17 @@ define(["done_view", "generator"], function(done_view) {
                 App.Views.GeneratorView.cacheRemoveView(data.modelName, data.mod, cacheId);
             }
 
+            var isViewCached = !!App.Views.GeneratorView.findViewCached(data.modelName, data, cacheId);
+
             var subView = App.Views.GeneratorView.create(data.modelName, data, cacheId);
             if(this.subViews.length > 2)
                 this.subViews.push(subView);
             else
                 this.subViews[2] = subView;
+
+            if (isViewCached) {
+                typeof subView.start == 'function' && subView.start();
+            }
 
             return subView.el;
         },
