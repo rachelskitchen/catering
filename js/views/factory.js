@@ -220,6 +220,16 @@ define(['backbone', 'backbone_epoxy', 'backbone_epoxy_handlers', 'backbone_epoxy
                 return true;
             }
             return false;
+        },
+        start: function() {
+            this.subViews.forEach(function(view) {
+                typeof view.start == 'function' && view.start();
+            });
+        },
+        stop: function() {
+            this.subViews.forEach(function(view) {
+                typeof view.stop == 'function' && view.stop();
+            });
         }
     });
 

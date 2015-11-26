@@ -516,7 +516,9 @@ define(["main_router"], function(main_router) {
                 }
 
                 function showProductDetails() {
-                    order = order.clone();  //this clone (for edit mode) is needed otherwise Cart item views are re-rendered every time the order is changed, processing of checkbox clicks will be slowly.
+                    if(!isEditMode) {
+                        order = order.clone();
+                    }
 
                     var content = self.getStanfordReloadItem(order) || {
                         modelName: 'MyOrder',
@@ -590,8 +592,7 @@ define(["main_router"], function(main_router) {
                 var self = this,
                     header = App.Data.header,
                     isEditMode = true,
-                    originOrder = null,
-                    isOrderChanged;
+                    originOrder = null;
 
                 if (!combo_order) {
                     return this.navigate('index', true);
@@ -615,7 +616,6 @@ define(["main_router"], function(main_router) {
 
                 if(isEditMode) {
                     originOrder = order.clone();
-                    //this.listenTo(order, 'change', setHeaderToUpdate);
                     setHeaderToUpdate();
                     showProductDetails();
                 }
@@ -634,35 +634,29 @@ define(["main_router"], function(main_router) {
                     self.change_page();
                 }
 
+                this.listenToOnce(this, 'route', function() {
+                    back();
+                });
+
                 function back() {
                     var cache_id = combo_order.get('id_product');
+                    order.update(originOrder);
+                    self.stopListening(order, 'change', setHeaderToUpdate);
                     self.return_to_combo_product(cache_id);
                 }
 
                 function setHeaderToUpdate() {
-                    isOrderChanged = true;
                     header.set({
                         page_title: _loc.CUSTOMIZE,
                         link_title: _loc.UPDATE,
                         link: !App.Settings.online_orders ? header.defaults.link : function() {
-                            header.updateProduct(order);
+                            var status = header.updateProduct(order);
                             order.set('discount', originOrder.get('discount').clone(), {silent: true});
                             App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
-                            back();
+                            originOrder.update(order);
                         }
                     });
-                }
-
-                function setHeaderToAdd() {
-                    header.set({
-                        page_title: _loc.CUSTOMIZE,
-                        link_title: _loc.ADD_TO_CART,
-                        link: !App.Settings.online_orders ? header.defaults.link : function() {
-                            header.addProduct(order).done(function () {
-                                back();
-                            });
-                        }
-                    });
+                    self.listenTo(order, 'change', setHeaderToUpdate);
                 }
             });
         },
@@ -724,8 +718,9 @@ define(["main_router"], function(main_router) {
                 }
 
                 function showProductDetails() {
-                    order = order.clone();  //this clone (for edit mode) is needed otherwise Cart item views are re-rendered every time the order is changed, processing of checkbox clicks will be slowly.
-
+                    if(!isEditMode) {
+                        order = order.clone();
+                    }
                     App.Data.mainModel.set({
                         header: _.extend({}, headerModes.ComboProduct, {
                                                 mode: isEditMode ? 'update' : 'add',

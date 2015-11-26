@@ -159,7 +159,6 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
     });
 
     App.Collections.ProductSetModels = Backbone.Collection.extend({
-        model: App.Models.Myorder,
         clone: function() {
             return this.deepClone();
         }

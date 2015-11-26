@@ -58,7 +58,7 @@ define(['backbone'], function(Backbone) {
             App.Data.view_cache = cache; //for debug
         },
         /*
-        *
+        *  remove the view from cache
         */
         cacheRemoveView: function(ViewClass, mod, id) {
             id = ViewClass + mod + 'View' + id;
@@ -66,6 +66,18 @@ define(['backbone'], function(Backbone) {
                 cache[id].remove();
                 delete cache[id];
             }
+        },
+        /*
+        *   find view in the cache
+        */
+        findViewCached: function(ViewClass, options, idParam) {
+            var root, id = idParam && ViewClass + options.mod + 'View' + idParam;
+            options = options || {};
+            options = _.defaults(options, this.options);
+            if(App.Views.Generator.enableCache && id in cache) {
+                var view = cache[id];
+            }
+            return view;
         }
     };
 

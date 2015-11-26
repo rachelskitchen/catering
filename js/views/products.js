@@ -119,6 +119,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             this.giftCardPriceRegStr = '^\\d{0,3}(\\.\\d{0,2})?$';
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:initial_price', this.update_price, this);
+            this.listenTo(this.model.get("product"), 'change:combo_price', this.update_price, this);
         },
         bindings: {
             '.size_chart_wrapper': 'toggle: _product_size_chart',
@@ -203,7 +204,6 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
     CoreView.CoreProductModifiersComboView = CoreView.CoreProductModifiersView.extend({
         initialize: function() {
             CoreView.CoreProductModifiersView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'combo_product_change', this.update_price, this);
         },
     });
 

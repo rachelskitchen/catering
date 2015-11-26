@@ -59,7 +59,7 @@
             "css": ["checkout", "pikaday", "stanfordcard"],
             "views": ["checkout", "stanfordcard"],
             "templates": ["checkout", "stanfordcard"],
-            "core": ["card", "checkout", "products", "delivery_addresses", "customers", "pikaday", "jquery_numbermask", "giftcard"]
+            "core": ["card", "checkout", "products", "product_sets", "delivery_addresses", "customers", "pikaday", "jquery_numbermask", "giftcard"]
         },
         "confirm": {
             "css": ["total", "checkout", "card", "tips"],
@@ -83,13 +83,13 @@
             "core": ["giftcard", "jquery_numbermask", "giftcard_view"]
         },
         "pay": {
-            "core": ["checkout", "products", "modifiers", "card", "giftcard", "tip", "customers"]
+            "core": ["checkout", "products", "product_sets", "modifiers", "card", "giftcard", "tip", "customers"]
         },
         "done": {
             "css": ["done"],
             "views": [],
             "templates": ["done"],
-            "core": ["products", "modifiers", "tip", "checkout", "card", "giftcard", "customers"]
+            "core": ["products", "product_sets", "modifiers", "tip", "checkout", "card", "giftcard", "customers"]
         },
         "rewards": {
             "css": ["rewards"],

@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
+define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], function(Backbone) {
     'use strict';
 
     /**

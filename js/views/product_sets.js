@@ -66,6 +66,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         },
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
+            this.startListening();
+        },
+        startListening: function() {
             this.listenTo(this.model, 'change:selected', this.update, this);
             this.listenTo(this.model, 'change:quantity', this.update, this);
             this.listenTo(this.model, 'change:modifiers', this.update, this);
@@ -75,7 +78,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             //this.model (reference) for this view has been changed, so reinit the view.
             this.model = this.options.productSet.get('order_products').findWhere({id_product: this.model.get('id_product')});;
             this.stopListening();
-            this.initialize();
+            this.startListening();
+            this.applyBindings();
+            this.check_model();
         },
         render: function() {
             var model = this.model.toJSON(),
@@ -126,14 +131,12 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 action: 'update',
                 action_callback: function() {
                     //return back to the combo root product view:
-                    //setTimeout( function() {
                     App.Data.mainModel.set('popup', {
                             modelName: 'MyOrder',
                             mod: 'MatrixCombo',
                             cache_id: self.options.myorder_root.get('id_product')
                         });
                     self.model.trigger("model_changed");
-                    //}, 1000);
                 }
             });
         },
@@ -178,8 +181,13 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 this.$('.input').attr('checked', false);
                 this.$(".mdf_quantity").hide();
             }
-            //this.model.get('modifiers').trigger('modifiers_changed');
             this.options.myorder_root.trigger('combo_product_change');
+        },
+        check_model: function() {
+            var checked = this.$(".checkbox").attr('checked') == "checked" ? true : false;
+            if (checked && this.model.check_order().status != 'OK') {
+                this.$(".checkbox").click(); //return back to the unchecked state
+            }
         }
     });
 

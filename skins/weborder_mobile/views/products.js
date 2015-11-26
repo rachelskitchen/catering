@@ -27,8 +27,8 @@ define(["products_view"], function(products_view) {
         name: 'product',
         mod: 'modifiers',
         bindings: _.extend({}, App.Views.CoreProductView.CoreProductModifiersView.prototype.bindings, {
-            '.price': 'classes: {"gift-amount": giftMode, "product-price": not(giftMode)}, attr: {size: length(monetaryFormat(initial_price)), readonly: not(giftMode)}, restrictInput: "0123456789.,", kbdSwitcher: select(_product_is_gift, "float", "text"), pattern: /^\\d{0,3}(\\.\\d{0,2})?$/',
-            '.product-price': 'value: monetaryFormat(initial_price)',
+            '.price': 'classes: {"gift-amount": giftMode, "product-price": not(giftMode)}, attr: {size: length(monetaryFormat(product_price)), readonly: not(giftMode)}, restrictInput: "0123456789.,", kbdSwitcher: select(_product_is_gift, "float", "text"), pattern: /^\\d{0,3}(\\.\\d{0,2})?$/',
+            '.product-price': 'value: monetaryFormat(product_price)',
             '.gift-amount': 'value: monetaryFormat(price), events: ["input"]',
             '.currency': 'text: _system_settings_currency_symbol, toggle: not(uom)',
             '.uom': 'text: uom, toggle: uom',
@@ -52,6 +52,12 @@ define(["products_view"], function(products_view) {
                 deps: ['_system_settings_scales', '_product_sold_by_weight'],
                 get: function(scales, sold_by_weight) {
                     return scales.default_weighing_unit && sold_by_weight ? '/ ' + scales.default_weighing_unit : false;
+                }
+            },
+            product_price: {
+                deps: ['initial_price', "_product_combo_price"],
+                get: function() {
+                    return this.model.get_product_price();
                 }
             },
             price: {
@@ -81,8 +87,7 @@ define(["products_view"], function(products_view) {
     var ProductModifiersComboView  = ProductModifiersView.extend({
         initialize: function() {
             ProductModifiersView.prototype.initialize.apply(this, arguments);
-            //this.listenTo(this.model, 'combo_product_change', this.update_price, this);
-        },
+        }
     });
 
     var ProductListItemView = App.Views.FactoryView.extend({
