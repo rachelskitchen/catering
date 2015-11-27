@@ -20,34 +20,116 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.Modifier}, {@link App.Collections.Modifiers},
+ * {@link App.Models.ModifierBlock}, {@link App.Collections.ModifierBlocks} constructors.
+ * @module modifiers
+ * @requires module:backbone
+ * @see {@link module:config.paths actual path}
+ */
 define(["backbone"], function(Backbone) {
     'use strict';
 
-    App.Models.Modifier = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents a modifier model.
+     * @alias App.Models.Modifier
+     * @augments Backbone.Model
+     * @example
+     * // create a modifier model
+     * require(['modifiers'], function() {
+     *     var modifier = new App.Models.Modifier();
+     * });
+     */
+    App.Models.Modifier = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Modifier.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum {string}
+         */
         defaults: {
+            /**
+             * Modifier ID.
+             * @type {?number}
+             */
             id: null,
+            /**
+             * Modifier name.
+             * @type {?string}
+             */
             name: null,
-            price: null, // base modifier price
-            sum: null, // modifier price * product quantity
+            /**
+             * Modifier price.
+             * @type {?number}
+             */
+            price: null,
+            /**
+             * The total amount (`price` * `quantity` * product quantity).
+             * @type {?number}
+             */
+            sum: null,
+            /**
+             * Modifier is selected or not.
+             * @type boolean
+             */
             selected: false,
+            /**
+             * Modifier sort number.
+             * @type {?number}
+             */
             sort: null,
-            cost: null, // only for order send.
+            /**
+             * Modifier cost. It's used only for order sending.
+             * @type {?number}
+             */
+            cost: null,
+            /**
+             * Path for relative URL of image.
+             * @type {?string}
+             */
             img: null,
+            /**
+             * Modifier quantity.
+             * @type {?string}
+             */
             quantity: 1,
-            qty_type: 0, //0 - full modifier, 1 - first half, 2 second half
+            /**
+             * Quantity type.
+             * - 0 - full modifier
+             * - 1 - first half
+             * - 2 - second half
+             * @type {number}
+             */
+            qty_type: 0,
             /**
              * Modifier description
              * @type {?string}
              */
             description: null
         },
+        /**
+         * Sets `img` value as App.Data.settings.get('img_path').
+         */
         initialize: function() {
             this.set('img', App.Data.settings.get('img_path'));
         },
+        /**
+         * Sets attributes using `data` object.
+         * @param {Object} data - JSON representation of the model's attributes.
+         * @returns {App.Models.Modifier} The model.
+         */
         addJSON: function(data) {
             this.set(data);
             return this;
         },
+        /**
+         * Deeply clone the model.
+         * @returns {App.Models.Modifier} Cloned model.
+         */
         clone: function() {
             var newModifier = new App.Models.Modifier();
             for (var key in this.attributes) {
@@ -57,6 +139,11 @@ define(["backbone"], function(Backbone) {
             }
             return newModifier;
         },
+        /**
+         * Updates the model's attributes using corresponding attributes values of `newModifier`.
+         * @param {App.Models.Modifier} newModifier - instance of {@link App.Models.Modifier}
+         * @returns {App.Models.Modifier} The model.
+         */
         update: function(newModifier) {
             for (var key in newModifier.attributes) {
                 var value = newModifier.get(key);
@@ -66,15 +153,27 @@ define(["backbone"], function(Backbone) {
             return this;
         },
         /**
-         * Updates modifier's sum (its price * product quantity).
-         * @param  {int} multiplier - Product quantity.
+         * Updates `sum` attributes. New value is calculated
+         * as 'modifier price' * 'modifier quantity' * 'quantity type coef (1 or 0.5)' * 'product quantity'.
+         * @param  {number} multiplier - a product quantity
          */
         updateSum: function(multiplier) {
             var price = this.get('free_amount') != undefined ? this.get('free_amount') : this.getSum();
             this.set('sum', price * multiplier);
         },
         /**
-         * prepare information for submit order
+         * @returns {Object} If the modifier is selected, returns the following object:
+         * ```
+         * {
+         *     modifier: <id>,
+         *     modifier_cost: <cost>,
+         *     modifier_price: <price>,
+         *     free_mod_price: <free mod price>,
+         *     max_price_amount: <max price amount>,
+         *     qty: <quantity>,
+         *     qty_type: <quantity type>
+         * }
+         * ```
          */
         modifiers_submit: function() {
             if (this.get('selected')) {
@@ -90,7 +189,12 @@ define(["backbone"], function(Backbone) {
             }
         },
         /**
-         * update modifiers price due to max feature
+         * Updates `max_price_amount` attribute due to "Max Price" feature
+         * (if total modifier amount is over "max price" then "max price" value overrides total amount).
+         * If `price` > `max_price` the method sets `max_price` as value of `max_price_amount` attribute.
+         * Otherwise unsets `max_price_amount` attribute.
+         * @param {number} max_price - max value for total modifier amount
+         * @returns {number} `0` If `price` > `max_price`, otherwise difference `max_price` - `price`.
          */
         update_prices: function(max_price) {
             var price = this.get('free_amount') != undefined ? this.get('free_amount') : this.getSum();
@@ -101,38 +205,87 @@ define(["backbone"], function(Backbone) {
             }
             return max_price > price ? max_price - price : 0;
         },
+        /**
+         * @returns {boolean} `true` if `free_amount` attribute is specified.
+         */
         isFree: function() {
             return typeof this.get('free_amount') != 'undefined';
         },
+        /**
+         * @see {@link App.Models.Modifier#update_prices max_price_amount} attribute
+         * @returns {boolean} `true` if `max_price_amount` is specified.
+         */
         isMaxPriceFree: function() {
             return typeof this.get('max_price_amount') != 'undefined';
         },
+        /**
+         * Unsets `free_amount` attribute.
+         */
         removeFreeModifier: function() {
             this.unset('free_amount');
         },
+        /**
+         * @returns {number} If `qty_type` is `0` (full) returns `1`. Otherwise, returns `0.5`.
+         */
         half_price_koeff: function() {
             //half or full item price for split modifiers
             return this.get('qty_type') > 0 ? 0.5 : 1;
         },
+        /**
+         * @returns {number} Total amount of the modifier. It's calculated as `price` \* `quantity` \* 'quantity type coefficient'.
+         */
         getSum: function() {
             return this.get('price') * this.get('quantity') * this.half_price_koeff();
         }
     });
 
-    App.Collections.Modifiers = Backbone.Collection.extend({
+    /**
+     * @class
+     * @classdesc Represents a modifiers collection.
+     * @alias App.Collections.Modifiers
+     * @augments Backbone.Collection
+     * @example
+     * // create a modifiers collection
+     * require(['modifiers'], function() {
+     *     var modifiers = new App.Collections.Modifiers();
+     * });
+     */
+    App.Collections.Modifiers = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.Modifiers.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default {@link App.Models.Modifier}
+         */
         model: App.Models.Modifier,
+        /**
+         * Used for items comparing by sorting.
+         * @type {Function}
+         */
         comparator: function(model) {
             return model.get('sort');
         },
+        /**
+         * Adds new items.
+         * @param {Array} data - JSON representation of items
+         * @returns {App.Collections.Modifiers} The collection.
+         */
         addJSON: function(data) {
             var self = this;
-            data && data.forEach(function(element) {
+            Array.isArray(data) && data.forEach(function(element) {
                 var modifier = new App.Models.Modifier();
                 modifier.addJSON(element);
                 self.add(modifier);
             });
             return this;
         },
+        /**
+         * Deeply clones the collection.
+         * @returns {App.Collections.Modifiers} Cloned collection.
+         */
         clone: function() {
             var newModifiers = new App.Collections.Modifiers();
             this.each(function(modifier) {
@@ -140,6 +293,11 @@ define(["backbone"], function(Backbone) {
             });
             return newModifiers;
         },
+        /**
+         * Updates items using values of `newModifiers` items.
+         * @param {App.Collections.Modifiers} newModifiers - {@link App.Collections.Modifiers} instance
+         * @returns {App.Collections.Modifiers} The collection.
+         */
         update: function(newModifiers) {
             var self = this;
             newModifiers.each(function(modifier) {
@@ -152,14 +310,14 @@ define(["backbone"], function(Backbone) {
             });
             return this;
         },
-        /*
-         * unselect selected models
+        /**
+         * Deselects selected items.
          */
         reset_checked: function() {
             this.where({selected: true}).map(function(el) { el.set('selected', false) });
         },
         /**
-         * get modifiers sum
+         * @returns {number} Total modifiers sum.
          */
         get_sum: function() {
             var sum = 0;
@@ -173,10 +331,9 @@ define(["backbone"], function(Backbone) {
             });
             return sum;
         },
-        /*
-        *
-        *  get selected modifiers quantity
-        */
+        /**
+         * @returns {number} Quantity of selected items.
+         */
         get_selected_qty: function() {
             var qty = 0;
             this.where({selected: true}).forEach(function(modifier) {
@@ -185,7 +342,7 @@ define(["backbone"], function(Backbone) {
             return qty;
         },
         /**
-         * prepare information for submit order
+         * @returns {Array} An array. Each item is result of {@link App.Models.Modifier#modifiers_submit item.modifiers_submit()} call.
          */
         modifiers_submit: function() {
             var modifiers = [];
@@ -196,7 +353,12 @@ define(["backbone"], function(Backbone) {
             return modifiers;
         },
         /**
-         * update price due to max price feature
+         * Applies `max_price` to items.
+         *
+         * "Max Price" feature: if total modifier amount is over "max price" then "max price" value overrides total amount.
+         *
+         * @param {number} max_price - Max value for total modifiers sum.
+         * @returns {number} Rest of `max_price` after application to all items.
          */
         update_prices: function(max_price) {
             this.where({selected: true}).forEach(function(el) {
@@ -204,6 +366,9 @@ define(["backbone"], function(Backbone) {
             });
             return max_price;
         },
+        /**
+         * Unsets `free_amount` attribute for all items.
+         */
         removeFreeModifiers: function() {
             this.each(function(modifier) {
                 modifier.removeFreeModifier();
@@ -211,7 +376,48 @@ define(["backbone"], function(Backbone) {
         }
     });
 
-    App.Models.ModifierBlock = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents a product modifiers class model.
+     * @alias App.Models.ModifierBlock
+     * @augments Backbone.Model
+     * @example
+     * // create a product modifiers
+     * require(['modifiers'], function() {
+     *     var modifierClass = new App.Models.ModifierBlock();
+     * });
+     */
+    App.Models.ModifierBlock = Backbone.Model.extend(
+    /**
+     * @lends App.Models.ModifierBlock.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values.
+         * @member
+         * @type {Object}
+         * @property {?number} id=null - product modifier class id
+         * @property {?number} sort=null - sort number
+         * @property {App.Collections.Modifiers} modifiers - collection of modifier items
+         * @property {string} name='' - modifiers class name
+         * @property {string} mod='' - modifiers class mode
+         * @property {string} img='' - path for relative image url
+         * @property {string} modifier_type='modifier_multiple' - modifiers class type
+         * @property {?number} lock_amount=null - max number of items that can be selected
+         * @property {boolean} lock_enable=false - enables the ability to limit max number of items
+         *                                         that can be selected
+         * @property {?number} amount_free=null - number of selected items that are considered as free
+         * @property {boolean} admin_modifier=false - the modifiers class is admin or not
+         * @property {string} admin_mod_key='' - admin mode key:
+         * - 'SIZE' - a modifiers item price overrides a product price.
+         * - 'SPECIAL' - order item instruction.
+         * - 'DISCOUNT' - modifiers class is considered as discount.
+         * @property {boolean} amount_free_is_dollars=false - type of free modifiers:
+         * - `true` - 'Price' type.
+         * - `false` - 'Quantity' type.
+         * @property {Array} amount_free_selected=[] - array of modifiers that are considered as free
+         * @property {boolean} ignore_free_modifiers=false - disables 'Free Modifiers' feature
+         */
         defaults: function() {
             return {
                 id: null,
@@ -231,6 +437,9 @@ define(["backbone"], function(Backbone) {
                 ignore_free_modifiers: false
             };
         },
+        /**
+         * Inits handlers for free modifiers.
+         */
         initialize: function() {
             this.listenTo(this, 'change:modifiers', function(model) {
                 var prevModifiers = model.previousAttributes().modifiers;
@@ -248,6 +457,11 @@ define(["backbone"], function(Backbone) {
 
             this.checkAmountFree();
         },
+        /**
+         * Sets attributes values using `data` object. Converts `data.modifiers` array to {@link App.Collections.Modifiers}.
+         * @param {Object} data - JSON representation of modifiers class
+         * @returns {App.Models.ModifierBlock} The modifiers class.
+         */
         addJSON: function(data) {
             this.set(data);
             var modifiers = new App.Collections.Modifiers();
@@ -257,7 +471,8 @@ define(["backbone"], function(Backbone) {
             return this;
         },
         /**
-         * clone modifier Block
+         * Deeply clones the modifiers class.
+         * @returns {App.Models.ModifierBlock} Cloned modifiers class.
          */
         clone: function() {
             var newBlock = new App.Models.ModifierBlock(),
@@ -280,7 +495,8 @@ define(["backbone"], function(Backbone) {
             return newBlock;
         },
         /**
-         * update modifier Block
+         * Updates the modifiers class.
+         * @param {App.Models.ModifierBlock} newBlock - instance of App.Models.ModifierBlock.
          */
         update: function(newBlock) {
             for (var key in newBlock.attributes) {
@@ -290,13 +506,14 @@ define(["backbone"], function(Backbone) {
             }
         },
         /*
-         * unselect attributes
+         * Deselects items.
          */
         reset_checked: function() {
             this.get('modifiers').reset_checked();
         },
         /**
-         * get modifiers sum
+         * @returns {number} Total amount of selected items. If the modifiers class has 'SIZE' or 'SPECIAL' value of `admin_mod_key`
+         *                   attribute then returns `0`.
          */
         get_sum: function() {
             if(this.get('admin_modifier') && (this.get('admin_mod_key') === 'SIZE' || this.get('admin_mod_key') === 'SPECIAL')) {
@@ -306,7 +523,8 @@ define(["backbone"], function(Backbone) {
             }
         },
         /**
-         * prepare information for submit order
+         * @returns {Array} Result of {@link App.Collections.Modifiers#modifiers_submit modifiers.modifiers_submit()} call.
+         *                  If `admin_mod_key` is 'SPECIAL' returns `[]`.
          */
         modifiers_submit: function() {
             // selected special modifiers add to special_request
@@ -322,14 +540,23 @@ define(["backbone"], function(Backbone) {
             });
             return modifiers;
         },
+        /**
+         * @returns {boolean} `true` if the modifiers class is admin and `admin_mod_key` is 'SPECIAL'.
+         */
         isSpecial: function() {
             return this.get('admin_modifier') && this.get('admin_mod_key') === 'SPECIAL';
         },
+        /**
+         * @returns {boolean} `true` if the modifiers class is admin and `admin_mod_key` is 'SIZE'.
+         */
         isSize: function() {
             return this.get('admin_modifier') && this.get('admin_mod_key') === 'SIZE';
         },
         /**
-         * update modifiers price due to max feature
+         * Updates price of items due to "Max Price" feature.
+         * @param {number} max_price - max price for all selected modifiers.
+         * @returns {number} Rest of max price after application to selected items.
+         *                   Max price doesn't apply to 'SPECIAL', 'SIZE' modifiers class.
          */
         update_prices: function(max_price) {
             if (this.isSpecial() || this.isSize()) {
@@ -338,6 +565,10 @@ define(["backbone"], function(Backbone) {
                 return this.get('modifiers').update_prices(max_price);
             }
         },
+        /**
+         * Updates selected items that are considered as free.
+         * @param {App.Models.Modifier} model - modifiers item.
+         */
         update_free: function(model) {
             if(this.get('ignore_free_modifiers'))
                 return;
@@ -377,6 +608,10 @@ define(["backbone"], function(Backbone) {
 
             this.set('amount_free_selected', selected);
         },
+        /**
+         * Updates free items.
+         * @param {App.Models.Modifier} model - modifiers item
+         */
         update_free_quantity_change: function(model) {
             if(this.get('ignore_free_modifiers'))
                 return;
@@ -392,6 +627,10 @@ define(["backbone"], function(Backbone) {
             else
                 this.update_free_quantity(model);
         },
+        /**
+         * Updates free items.
+         * @param {App.Models.Modifier} model - modifiers item
+         */
         update_free_quantity: function(model) {
             var free_qty_amount = this.get('amount_free'),
                 selected = this.get('amount_free_selected');
@@ -413,6 +652,10 @@ define(["backbone"], function(Backbone) {
                 }
             });
         },
+        /**
+         * Updates free items.
+         * @param {App.Models.Modifier} model - modifiers item
+         */
         update_free_price: function(model) {
             var amount = this.get('amount_free'),
                 selected = this.get('amount_free_selected');
@@ -433,6 +676,9 @@ define(["backbone"], function(Backbone) {
                 }
             });
         },
+        /**
+         * Inits free modifiers.
+         */
         initFreeModifiers: function() {
             if(this.get('ignore_free_modifiers'))
                 return;
@@ -445,6 +691,9 @@ define(["backbone"], function(Backbone) {
                     this.update_free(modifier);
             }, this);
         },
+        /**
+         * Restores free modifiers.
+         */
         restoreFreeModifiers: function() {
             if(this.get('ignore_free_modifiers'))
                 return;
@@ -458,6 +707,9 @@ define(["backbone"], function(Backbone) {
             }, this);
             this.set('amount_free_selected', restored);
         },
+        /**
+         * Adds listeners to `modifiers`.
+         */
         listenToModifiers: function() {
             var modifiers = this.get('modifiers');
 
@@ -479,10 +731,16 @@ define(["backbone"], function(Backbone) {
                 this.trigger('change', this, _.extend({modifier: model}, opts));
             }
         },
+        /**
+         * Validates `amount_free` changing negative values to `0`.
+         */
         checkAmountFree: function() {
             if(this.get('amount_free') < 0)
                 this.set('amount_free', 0);
         },
+        /**
+         * Removes free modifiers.
+         */
         removeFreeModifiers: function() {
             var modifiers = this.get('modifiers');
                 modifiers && modifiers.removeFreeModifiers();
@@ -490,11 +748,38 @@ define(["backbone"], function(Backbone) {
         }
     });
 
-    App.Collections.ModifierBlocks = Backbone.Collection.extend({
+    /**
+     * @class
+     * @classdesc Represents a collection of modifiers classes.
+     * @alias App.Collections.ModifierBlocks
+     * @augments Backbone.Collection
+     * @example
+     * // create a modifiers collection
+     * require(['modifiers'], function() {
+     *     var modifiersClasses = new App.Collections.ModifierBlocks();
+     * });
+     */
+    App.Collections.ModifierBlocks = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.ModifierBlocks.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default {@link App.Models.ModifierBlock}
+         */
         model: App.Models.ModifierBlock,
+        /**
+         * Used for items comparing by sorting.
+         * @type {Function}
+         */
         comparator: function(model) {
             return model.get('sort');
         },
+        /**
+         * Propagates events of items to itself.
+         */
         initialize: function() {
             this.listenTo(this, 'change', function(model, opts) {
                 var isSizeSelection = opts
@@ -521,7 +806,9 @@ define(["backbone"], function(Backbone) {
             }, this);
         },
         /**
-         * update price due to max price feature
+         * Update price of items due to "Max Price" feature.
+         * @param {number} max_price - max price for all items.
+         * @returns {number} Rest of max price after application to items.
          */
         update_prices: function(max_price) {
             this.each(function(el) {
@@ -529,6 +816,11 @@ define(["backbone"], function(Backbone) {
             });
             return max_price;
         },
+        /**
+         * Updates items using object literal as new data source.
+         * @param {Array} data - JSON representation of items
+         * @returns {App.Collections.ModifierBlocks} The collection.
+         */
         addJSON: function(data) {
             var self = this;
             data && data.forEach(function(element) {
@@ -540,7 +832,8 @@ define(["backbone"], function(Backbone) {
             return this;
         },
         /**
-         * clone modifier Blocks
+         * Deeply clones items.
+         * @returns {App.Models.ModifierBlock} Cloned collection.
          */
         clone: function() {
             var newBlock = new App.Collections.ModifierBlocks();
@@ -550,7 +843,8 @@ define(["backbone"], function(Backbone) {
             return newBlock;
         },
         /**
-         * update modifier Blocks
+         * Updates items using instance of {@link App.Collections.ModifierBlocks} as new data source.
+         * @param {App.Models.ModifierBlock} newModel - instance of {@link App.Collections.ModifierBlocks}.
          */
         update: function(newModel) {
             var self = this;
@@ -565,7 +859,16 @@ define(["backbone"], function(Backbone) {
             return this;
         },
         /**
-         * Get modifiers from backend.
+         * Gets modifiers classes specified by a product from backend. Used request parameters are:
+         * ```
+         * url: "/weborders/modifiers/",
+         * data: {
+         *     product: <product id>
+         * }
+         * type: 'GET',
+         * dataType: "json"
+         * ```
+         * @returns {Object} Deferred object.
          */
         get_modifiers: function(id_product) {
             var self = this,
@@ -593,8 +896,9 @@ define(["backbone"], function(Backbone) {
 
             return fetching;
         },
-         /**
-         * It creates a dummi modifierBlock to group all quick modifiers together which are not included in the product's modifiers blocks
+        /**
+         * Creates a modifiers class to group all quick modifiers together which are not included in the product's modifiers classes.
+         * @param {App.Collections.ModifierBlocks} quickModifiers - quick modifiers classes
          */
         create_quick_modifiers_section: function(quickModifiers) {
             if(!(quickModifiers instanceof App.Collections.ModifierBlocks)) {
@@ -627,8 +931,10 @@ define(["backbone"], function(Backbone) {
             if (is_quick_modifiers)
                 self.add(qmBlock);
         },
-         /**
-         * Find modifier by id, it looks through the all modifier blocks
+        /**
+         * Finds modifiers class by id.
+         * @param {number} modifier_id - modifiers class id
+         * @returns {App.Models.ModifierBlock} Found modifiers class.
          */
         find_modifier: function(modifier_id) {
             var obj;
@@ -640,7 +946,16 @@ define(["backbone"], function(Backbone) {
             return obj;
         },
          /**
-         * Get quick modifiers from backend.
+         * Gets quick modifiers from server. Used request parameters are:
+         * ```
+         * url: "/weborders/modifiers/",
+         * data: {
+         *     establishment: App.Data.settings.get("establishment")
+         * },
+         * dataType: "json",
+         * type: "GET"
+         * @returns {Object} Deferred object.
+         * ```
          */
         get_quick_modifiers: function() {
             var self = this,
@@ -668,7 +983,7 @@ define(["backbone"], function(Backbone) {
             return fetching;
         },
         /**
-         * all modifiers to array
+         * @returns {Array} List of modifiers. Modifiers from 'SIZE', 'SPECIAL' classes are excluded.
          */
         get_modifierList: function() {
             if (!this.list || this.list && this.list.length === 0) {
@@ -685,9 +1000,11 @@ define(["backbone"], function(Backbone) {
             return this.list;
         },
         /**
-         * get selected parameter in size modifier
-         * null - size modifiers is unselected
-         * undefined - size modifiers is not defined for current product
+         * Finds a first selected 'SIZE' modifier.
+         * @returns {App.Models.Modifier} One of the following results:
+         * - Found modifier.
+         * - `null` - size modifiers class doens't have selected items.
+         * - `undefined` - size modifiers class doens't exists in the collection.
          */
         getSizeModel: function() {
             var block = this.where({admin_modifier: true, admin_mod_key: 'SIZE'});
@@ -702,6 +1019,9 @@ define(["backbone"], function(Backbone) {
                 return undefined;
             }
         },
+        /**
+         * @returns {Array} Selected items of 'Special' modifiers class.
+         */
         get_special: function() {
             var special = [];
             var specialBlock = this.where({ 'admin_mod_key': 'SPECIAL' });
@@ -711,13 +1031,15 @@ define(["backbone"], function(Backbone) {
             return special;
         },
         /**
-         * get concatenated special
+         * @returns {string} Names of selected special modifiers concatenated via ','.
          */
         get_special_text: function() {
             return this.get_special().map(function(model) { return model.get('name'); }).join(",");
         },
         /**
-         * return array with not selected force modifiers
+         * Checks quantity of selected items for modifiers classes that have a limit for minimum selected items.
+         * @returns {(boolean|Array)} `true` if selected items quantity of each modifiers class is more than `minimum_amount` value.
+         *                            Otherwise, returns array of modifiers classes in which that condition is false.
          */
         checkForced: function() {
             var unselected = this.where({forced: true}).filter(function(modifierBlock) {
@@ -730,7 +1052,9 @@ define(["backbone"], function(Backbone) {
             return unselected.length > 0 ? unselected : true;
         },
         /**
-         * return array with selected modifiers with qty > then maximum
+         * Checks quantity of selected items for modifiers classes that have a limit for maximum selected items.
+         * @returns {(boolean|Array)} `true` if selected items quantity of each modifiers class is less than `maximum_amount` value.
+         *                            Otherwise, returns array of modifiers classes in which that condition is false.
          */
         checkAmount: function() {
             var exceeded = this.filter(function(modifierBlock) {
@@ -747,7 +1071,7 @@ define(["backbone"], function(Backbone) {
             return exceeded.length > 0 ? exceeded : true;
         },
         /**
-         * unselect all special modifiers
+         * Deselects all special modifiers.
          */
         uncheck_special: function(special_text) {
             var special = this.get_special();
@@ -756,7 +1080,7 @@ define(["backbone"], function(Backbone) {
             }
         },
         /**
-         * get modifiers sum
+         * @returns {number} Total amount of all modifiers classes.
          */
         get_sum: function() {
             var sum = 0;
@@ -767,7 +1091,7 @@ define(["backbone"], function(Backbone) {
             return sum;
         },
         /**
-         * combine information for submit order
+         * @returns {Array} JSON representation of modifiers classes.
          */
         modifiers_submit: function() {
             var modifiers = [];
@@ -776,6 +1100,9 @@ define(["backbone"], function(Backbone) {
             });
             return modifiers;
         },
+        /**
+         * Unsets `amount_free` attribute of all modifiers.
+         */
         removeFreeModifiers: function() {
             this.each(function(modifierBlock) {
                 modifierBlock.removeFreeModifiers();
@@ -783,6 +1110,13 @@ define(["backbone"], function(Backbone) {
         }
     });
 
+    /**
+     * Loads all modifiers for specified product.
+     * @static
+     * @alias App.Collections.ModifierBlocks.init
+     * @param {number} id_product - product id.
+     * @returns {Object} Deferred object.
+     */
     App.Collections.ModifierBlocks.init = function(id_product) {
         var modifier_load = $.Deferred();
 
@@ -796,6 +1130,12 @@ define(["backbone"], function(Backbone) {
         return modifier_load;
     };
 
+    /**
+     * Loads all quick modifiers.
+     * @static
+     * @alias App.Collections.ModifierBlocks.init_quick_modifiers
+     * @returns {Object} Deferred object.
+     */
     App.Collections.ModifierBlocks.init_quick_modifiers = function() {
         var fetching = $.Deferred();
 
