@@ -86,6 +86,9 @@ define(["products_view"], function() {
                 collection: this.collection
             }));
         },
+        bindings: {
+            '.btn': 'classes:{disabled: orderItems_pending}'
+        },
         events: {
             'click .btn': 'checkout_event',
             'keydown .btn': function(e) {
@@ -93,6 +96,22 @@ define(["products_view"], function() {
                     this.checkout_event();
                 }
             },
+        },
+        bindingSources: {
+            orderItems: function() {
+                var model = new Backbone.Model({
+                    pending: App.Data.myorder.pending
+                });
+
+                model.listenTo(App.Data.myorder, 'add change remove', function() {
+                    model.set('pending', true); // update_cart_totals in process
+                });
+                model.listenTo(App.Data.myorder, 'DiscountsComplete NoRequestDiscountsComplete', function() {
+                    model.set('pending', false); // update_cart_totals completed
+                });
+
+                return model;
+            }
         },
         checkout_event: function() {
             var self = this;
