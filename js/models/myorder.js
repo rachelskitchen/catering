@@ -20,40 +20,178 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.Myorder}, {@link App.Models.DiscountItem},
+ * {@link App.Models.ServiceFeeItem}, {@link App.Collections.Myorders} constructors.
+ * @module myorder
+ * @requires module:backbone
+ * @requires module:total
+ * @requires module:checkout
+ * @requires module:products
+ * @requires module:rewards
+ * @see {@link module:config.paths actual path}
+ */
 define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'], function(Backbone) {
     'use strict';
 
-    App.Models.Myorder = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents an order item.
+     * @alias App.Models.Myorder
+     * @augments Backbone.Model
+     * @example
+     * // create an order item
+     * require(['myorder'], function() {
+     *     var order = new App.Models.Myorder();
+     * });
+     */
+    App.Models.Myorder = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Myorder.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum
+         */
         defaults: {
-            product: null, //App.Models.Product,
+            /**
+             * A product model of the order item.
+             * @type {?App.Models.Product}
+             * @default null
+             */
+            product: null,
+            /**
+             * A product modifiers collection of the order item.
+             * @type {?App.Collections.ModifierBlocks}
+             * @default null
+             */
             modifiers: null,
-            id_product: null, // id_product
-            sum : 0, // total myorder sum (initial_price + modifiers price)
+            /**
+             * Product ID.
+             * @type {?number}
+             * @default null
+             */
+            id_product: null,
+            /**
+             * Total item sum. It's calculated as `initial_price` + 'modifiers sum'.
+             * @type {number}
+             * @default 0
+             */
+            sum : 0,
+            /**
+             * Quantity of products.
+             * @type {number}
+             * @default 1
+             */
             quantity : 1,
+            /**
+             * Weight of product.
+             * @type {number}
+             * @default 0
+             */
             weight : 0,
+            /**
+             * Previous value of quantity.
+             * @type {number}
+             * @default 1
+             */
             quantity_prev : 1,
+            /**
+             * Special request for the order item. Max length of value is 256 symbols.
+             * @type {string}
+             * @default ''
+             */
             special : '',
-            initial_price: null, // product price including modifier "size",
+            /**
+             * Initial price pf the order item. This is originally a price of product.
+             * But, if 'SIZE' modifier is selected then this is its price.
+             * @type {?number}
+             * @default null
+             */
+            initial_price: null,
+            /**
+             * Discount model assigned to the order item.
+             * @type {?App.Models.DiscountItem}
+             * @default null
+             */
             discount: null,
-            stanfordCard: null,         // App.Models.StanfordCard instance if product is gift
-            stanford_card_number: '',   // stanford card number
-            planId: null,                // stanford plan to add some amount to
+            /**
+             * StanfordCard model. If the order item's product isn't a 'gift' this is `null`.
+             * @ignore
+             * @type {?App.Models.StanfordCard}
+             * @default null
+             */
+            stanfordCard: null,
+            /**
+             * Stanford Card number associated with the order item.
+             * @ignore
+             * @type {string}
+             * @default ''
+             */
+            stanford_card_number: '',
+            /**
+             * Plan Id of Stanford Card used to add some amount to.
+             * @ignore
+             * @type {?number}
+             * @default null
+             */
+            planId: null,
+            /**
+             * Indicates that the order item is service fee.
+             * @type {boolean}
+             * @default false
+             */
             isServiceFee: false
         },
-        product_listener: false, // check if listeners for product is present
-        modifier_listener: false, // check if listeners for modifiers is preset
-        current_modifiers_model: false, // current modifiers model
+        /**
+         * Indicates that listeners are already assigned to `product` events. It gets rid of re-assigning.
+         * @type {boolean}
+         * @default false
+         */
+        product_listener: false,
+        /**
+         * Indicates that listeners are already assigned to events of item's modifiers. It gets rid of re-assigning.
+         * @type {boolean}
+         * @default false
+         */
+        modifier_listener: false,
+        /**
+         * Current modifiers of the order item. This can be value of `modifiers` attribute or modifiers of any child product.
+         * If modifiers aren't specifed yet then this has `false` value.
+         * @type {(boolean|App.Collections.ModifierBlocks)}
+         * @default false
+         */
+        current_modifiers_model: false,
+        /**
+         * Initializes the model.
+         */
         initialize: function() {
             this.set("discount", new App.Models.DiscountItem());
             this.listenTo(this, 'change', this.change);
             this.listenTo(this, 'change:quantity', this.update_mdf_sum);
         },
+        /**
+         * A product specified for the order item may be `product` attribute value or any child product.
+         * If you need to get a product specified for the model then you should use this method.
+         * @returns {App.Models.Product} A product specified for the order item.
+         */
         get_product: function() {
             return this.get('product').get_product();
         },
+        /**
+         * A modifiers specified for the order item may be `modifiers` attribute value or any child product's modifiers.
+         * If you need to get modifiers specified for the model then you should use this method.
+         * @returns {App.Collections.ModifierBlocks} Modifiers specified for the order item.
+         */
         get_modifiers: function() {
             return this.get('product').get_modifiers() || this.get('modifiers');
         },
+        /**
+         * Specifies `initial_price` attribute value.
+         * @returns {number} Initial price of the order item.
+         */
         get_initial_price: function() {
             var modifiers = this.get_modifiers(),
                size = modifiers && modifiers.getSizeModel();
@@ -64,6 +202,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                return this.get_product().get('price');
             }
         },
+        /**
+         * Specifies `special` attribute value.
+         * @returns {string} Special request of the order item.
+         */
         change_special: function(opts) { // logic when modifier special changed
             var settings = App.Data.settings.get('settings_system');
             if(settings && !settings.special_requests_online)
@@ -81,6 +223,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 modifiers.uncheck_special();
             }
         },
+        /**
+         * Listens to changes in product and modifiers to update attributes(`id_product`, `sum`, `initital_price`, `special`),
+         * properties(`modifier_listener`, `product_listener`, `current_modifiers_model`) and propagate the events on itselt.
+         */
         change: function() {
             if (this.get('product') && !this.product_listener) {
                 this.product_listener = true;
@@ -118,6 +264,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 });
             }
         },
+        /**
+         * Updates `sum` attribute of modifiers.
+         */
         update_mdf_sum: function() {
             var mdfGroups = this.get_modifiers(),
                 quantity = this.get('quantity');
@@ -129,7 +278,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             });
         },
         /**
-         * update modifiers price due to max feature
+         * Updates modifiers price due to "Max Price" feature.
          */
         update_prices: function() {
             var max_price = this.get_product().get('max_price'),
@@ -139,7 +288,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
         },
         /**
-         * initiate order without product and modifiers
+         * Initializes the order item and loads product and modifiers .
+         * @param {number} id_product - product id
+         * @param {number} id_category - category id
+         * @returns {Object} Deferred object that is resolved when product and modifiers are loaded.
          */
         add_empty: function (id_product, id_category) {
             var self = this,
@@ -177,7 +329,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return loadOrder;
         },
         /**
-         *  create order from JSON. Used in paypal skin, when repeat order
+         * Updates the order item from JSON.
+         * @param {Object} data - JSON representation of {@link App.Models.Myorder} attributes
+         * @returns {App.Models.Myorder} The order item.
          */
         addJSON: function(data) {
             this.set({
@@ -200,6 +354,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             return this;
         },
+        /**
+         * @returns {number} Total sum of the order item.
+         */
         get_modelsum: function() {
             var sold_by_weight = this.get("product") ?  this.get("product").get('sold_by_weight') : false,
                 weight = this.get('weight'),
@@ -224,6 +381,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             // Test Case 7047
             return (hasModifiers && typeof max_price == 'number' && max_price > 0 && max_price < totalItem ? max_price : totalItem) * this.get('quantity');
         },
+        /**
+         * @returns {string} Special request of the order item.
+         */
         get_special: function() {
             var settings = App.Data.settings.get('settings_system');
             if(settings && !settings.special_requests_online) {
@@ -234,6 +394,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 return this.get_modifiers().get_special_text();
             else return "";
         },
+        /**
+         * Deeply clones the order item.
+         * @returns {App.Models.Myorder} Cloned order item.
+         */
         clone: function() {
             var order = new App.Models.Myorder(),
                 stanfordCard = this.get('stanfordCard');
@@ -246,6 +410,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             order.trigger('change', order, {clone: true});
             return order;
         },
+        /**
+         * Updates the order item using instance of {@link App.Models.Myorder} as new data source.
+         * @param {App.Models.Myorder} newModel - instance of {@link App.Models.Myorder}
+         * @returns {App.Models.Myorder} The order item.
+         */
         update: function(newModel) {
             var stanfordCard = newModel.get('stanfordCard');
             for (var key in newModel.attributes) {
@@ -258,8 +427,19 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return this;
         },
         /**
-         * check if we could add this order to cart
-         * not check_gift here, due to async
+         * Checks all necessary attributes to place an order.
+         * @returns {Object} One of the following objects:
+         * ```
+         * // All attributes are valid:
+         * {
+         *     status: 'OK'
+         * }
+         * // Validation failed:
+         * {
+         *     status: 'ERROR',
+         *     errorMsg: <error message>
+         * }
+         * ```
          */
         check_order: function() {
             var product = this.get_product(),
@@ -327,34 +507,49 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             };
         },
         /**
-         * get product attribute type
+         * @returns {number} Attribute type of `product` (`0` - usual product, `1` - parent product, `2` - child product).
          */
         get_attribute_type: function() {
             return this.get('product').get('attribute_type');
         },
         /**
-         * get attributes in list
+         * @returns {Object} List of attributes if `product` is parent. Otherwise, returns empty object `{}`.
          */
         get_attributes_list: function() {
             return this.get('product').get_attributes_list();
         },
         /**
-         * get selected attributes
-         * returns array with selected attributes
-         *      or `undefined` if there is not any selected attributes
+         * @returns {(Array|undefined)} Array of product attributes if they exist. Otherwise, returns `undefined`.
          */
         get_attributes: function() {
             var product = this.get('product');
             return product ? product.get_attributes() : undefined;
         },
         /**
-         * check if order is gift
+         * @returns {boolean} `true` if specified product is gift.
          */
         is_gift: function() {
             return this.get_product().get('is_gift');
         },
         /**
-         * information about item for submit
+         * Gets the order item info for submitting to server.
+         * @param {boolean} for_discounts - if `true` need to add product sub id to response object.
+         * @returns {Object}
+         * ```
+         * {
+         *     modifieritems: <selected modifiers>,
+         *     special_request: <special request>,
+         *     price: <order price>,
+         *     product: <product id>,
+         *     product_name_override: <product name>,
+         *     quantity: <quantity>,
+         *     product_sub_id: <product sub id>,     // present for discount
+         *     weight: <product weight>,             // present if product is sold by weight
+         *     gift_card_number: <gift card number>  // present if product is gift
+         *     stanford_card_number: <stanford card> // present if product is gift and stanford card support is turned on
+         *     planId: <stanford plan id>            // present if product is gift and stanford card support is turned on
+         * }
+         * ```
          */
         item_submit: function(for_discounts) {
             var modifiers = [],
@@ -409,6 +604,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             return item_obj;
         },
+        /**
+         * @returns {string} Overridden product name.
+         */
         overrideProductName: function(product) {
             if (product.id == null) {
                 switch (product.name) {
@@ -420,31 +618,43 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
             return product.name;
         },
+        /**
+         * Removes free modifiers.
+         */
         removeFreeModifiers: function() {
             var modifiers = this.get_modifiers();
             modifiers && modifiers.removeFreeModifiers();
         },
+        /**
+         * Restores tax value assigned to product.
+         */
         restoreTax: function() {
             var product = this.get_product();
             product && product.restoreTax();
         },
+        /**
+         * @returns {boolean} `true` if the order item is service fee.
+         */
         isServiceFee: function() {
             return this.get("isServiceFee") === true;
         },
+        /**
+         * @returns {boolean} `true` if the order item is real product (should have a valid product id).
+         */
         isRealProduct: function() {
             return this.get("id_product") !== null;
         },
         /**
-         * @method
-         * @returns true if product's `point_value` is number. Otherwise returns false.
+         * @returns {boolean} `true` if product's `point_value` attribute is number. Otherwise, returns `false`.
          */
         hasPointValue: function() {
             var point_value = this.isRealProduct() && this.get_product().get('point_value');
             return typeof point_value == 'number' && !isNaN(point_value);
         },
         /**
-         * @method
          * Inits stanford reload item. If product is gift and App.Data.is_stanford_mode is true then item is stanford reload.
+         * @ignore
+         * @param {Object} data - JSON representation of App.Models.StanfordCard attributes
          */
         initStanfordReloadItem: function(data) {
             var product = this.get_product();
@@ -489,32 +699,95 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         }
     });
 
-    App.Models.DiscountItem = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents a discount.
+     * @alias App.Models.DiscountItem
+     * @augments Backbone.Model
+     * @example
+     * // create a discount
+     * require(['myorder'], function() {
+     *     var discount = new App.Models.DiscountItem();
+     * });
+     */
+    App.Models.DiscountItem = Backbone.Model.extend(
+    /**
+     * @lends App.Models.DiscountItem.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum
+         */
         defaults: {
+            /**
+             * Discount id.
+             * @type {?number}
+             * @default null
+             */
             id: null,
+            /**
+             * Discount name.
+             * @type {string}
+             * @default 'default'
+             */
             name: 'default',
+            /**
+             * Discount sum.
+             * @type {number}
+             * @default 0
+             */
             sum: 0,
+            /**
+             * Discount is taxable or not.
+             * @type {boolean}
+             * @default false
+             */
             taxed: false,
+            /**
+             * Discount type.
+             * @type {?number}
+             * @default null
+             */
             type: null
         },
         /**
-         * get discount format string
+         * @returns {string} Formatted string contaning discount sum (for ex., $1.45).
          */
         toString: function() {
             return round_monetary_currency(this.get('sum'));
         },
+        /**
+         * Saves discount in a storage. 'orderLevelDiscount' key is used.
+         */
         saveDiscount: function(key) {
             var data = this.toJSON();
             if (!key)
                 key = 'orderLevelDiscount';
             setData(key, data);
         },
+        /**
+         * Loads discount from a storage. 'orderLevelDiscount' key is used.
+         */
         loadDiscount: function(key) {
             if (!key)
                 key = 'orderLevelDiscount';
             var data = getData(key);
             this.set(data);
         },
+        /**
+         * Changes attributes on the following values:
+         * ```
+         * {
+         *     name: "No discount",
+         *     sum: 0,
+         *     taxed: false,
+         *     id: null,
+         *     type: 1
+         * }
+         * ```
+         */
         zero_discount: function() {
             this.set({  name: "No discount",
                         sum: 0,
@@ -525,7 +798,25 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         }
     });
 
-    App.Models.ServiceFeeItem = App.Models.Myorder.extend({
+    /**
+     * @class
+     * @classdesc Represents a service fee model.
+     * @alias App.Models.ServiceFeeItem
+     * @augments App.Models.Myorder
+     * @example
+     * // create a service fee
+     * require(['myorder'], function() {
+     *     var serviceFee = new App.Models.ServiceFeeItem();
+     * });
+     */
+    App.Models.ServiceFeeItem = App.Models.Myorder.extend(
+    /**
+     * @lends App.Models.ServiceFeeItem.prototype
+     */
+    {
+        /**
+         * Extends {@link App.Models.Myorder#initialize} method. Sets product name and `isServiceFee` attribute.
+         */
         initialize: function() {
             App.Models.Myorder.prototype.initialize.apply(this, arguments);
             this.set({
@@ -537,16 +828,73 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         }
     });
 
-    App.Collections.Myorders = Backbone.Collection.extend({
+    /**
+     * @class
+     * @classdesc Represents a collection of order items (order).
+     * @alias App.Collections.Myorders
+     * @augments Backbone.Collection
+     * @example
+     * // create a cart
+     * require(['myorder'], function() {
+     *     var cart = new App.Collections.Myorders();
+     * });
+     */
+    App.Collections.Myorders = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.Myorders.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default App.Models.Myorder
+         */
         model: App.Models.Myorder,
+        /**
+         * Quantity of items (item quantity value is included).
+         * @type {number}
+         * @default 0
+         */
         quantity: 0,
-        total: null, // total model
-        discount: null, // discount for the order
-        paymentResponse: null, // contains payment response
+        /**
+         * Total model.
+         * @type {?App.Models.Total}
+         * @default null
+         */
+        total: null,
+        /**
+         * Discount model.
+         * @type {?App.Models.DiscountItem}
+         * @default null
+         */
+        discount: null,
+        /**
+         * Contains payments response.
+         * @type {?Object}
+         * @default null
+         */
+        paymentResponse: null,
+        /**
+         * Initializes the collection.
+         */
         initialize: function( ) {
+            /**
+             * Rewards card model.
+             * @member
+             * @alias App.Collections.Myorders#rewardsCard
+             * @type {App.Models.RewardsCard}
+             * @default instance of {@link App.Models.RewardsCard}
+             */
             this.rewardsCard = new App.Models.RewardsCard();
             this.discount = new App.Models.DiscountItem({"discount_rate": 0});
             this.total = new App.Models.Total();
+            /**
+             * Checkout model.
+             * @member
+             * @alias App.Collections.Myorders#checkout
+             * @type {App.Models.Checkout}
+             * @default instance of {@link App.Models.Checkout}
+             */
             this.checkout = new App.Models.Checkout();
             this.checkout.set('dining_option', App.Settings.default_dining_option);
 
@@ -557,6 +905,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             this.listenTo(this, 'remove', this.onModelRemoved);
             this.listenTo(this, 'change', this.onModelChange);
         },
+        /**
+         * Handles `dining_option` changes of {@link App.Collections.Myorders#checkout} model.
+         * @param {App.Models.Checkout} model - instance of {@link App.Models.Checkout}
+         * @param {string} value - dining option value
+         * @param {Object} opts - event options
+         */
         change_dining_option: function(model, value, opts) {
             var obj, isShipping = value === 'DINING_OPTION_SHIPPING',
                 customer = App.Data.customer;
@@ -576,7 +930,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 this.update_cart_totals(isShipping && customer && customer.isDefaultShippingSelected() ? {update_shipping_options: true} : undefined);
             }
         },
-        // check if user get maintenance after payment
+        /**
+         * Checks if user gets maintenance after payment
+         */
         check_maintenance: function() {
             if (getData('orders')) {
                 App.Data.settings.loadSettings();
@@ -596,12 +952,19 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
             }
         },
+        /**
+         * @returns {?number} Remaining amount that need to reach to satisfy a minimum order amount limit for delivery.
+         *                    If current dining option isn't delivery then returns `null`.
+         */
         get_remaining_delivery_amount: function() {
             if (this.checkout.get('dining_option') === 'DINING_OPTION_DELIVERY') {
                 return this.total.get_remaining_delivery_amount();
             }
             return null;
         },
+        /**
+         * @returns {?number} Delivery charge. If current dining option isn't delivery then returns `null`.
+         */
         get_delivery_charge: function() {
             if (this.checkout.get('dining_option') === 'DINING_OPTION_DELIVERY') {
                 return this.total.get_delivery_charge();
@@ -609,24 +972,28 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return null;
         },
         /**
-         * get quantity without delivery charge and bag charge items
+         * @returns {number} Quantity of real products including quantity of each product.
          */
         get_only_product_quantity: function() {
             return _.reduce(this.models, function(qty, model) {
                     return model.get("id_product") != null ? qty + model.get('quantity') : qty;
                 }, 0);
         },
+        /**
+         * @returns {number} Charge amount of service fee.
+         */
         get_service_fee_charge: function() {
             return _.reduce(this.models, function(sum, model) {
                     return model.get("id_product") == null ? sum + model.get('sum') : sum;
                 }, 0);
         },
         /**
-         *  create orders from JSON.
+         * Added new items to the collection.
+         * @param {Array} data - JSON representation of the collection
          */
         addJSON: function(data) {
             var self = this, obj;
-            data && data.forEach(function(element) {
+            Array.isArray(data) && data.forEach(function(element) {
                 if (element.product.id) {
                     var myorder = new App.Models.Myorder();
                     myorder.addJSON(element);
@@ -635,6 +1002,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
             });
         },
+        /**
+         * Deeply clones the collection
+         * @returns {App.Collections.Myorders} The orders collection.
+         */
         clone: function() {
             var orders = new App.Collections.Myorders();
             this.each(function(order) {
@@ -645,7 +1016,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return orders;
         },
         /**
-         * if products in cart are only gift products, change dining option to DINING_OPTION_ONLINE
+         * If products in cart are only gift then changes dining option to 'DINING_OPTION_ONLINE'.
+         * @returns {boolean} `true` if dining option changes on 'DINING_OPTION_ONLINE'.
          */
         change_only_gift_dining_option: function() {
             var counter = 0;
@@ -662,7 +1034,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return false;
         },
         /**
-         * get quantity without delivery charge and bag charge and gift items
+         * @returns {number} Quantity non-gift items.
          */
         not_gift_product_quantity: function() {
             var quantity = this.get_only_product_quantity();
@@ -674,7 +1046,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return quantity;
         },
         /**
-         *  Recalculate total when model add
+         * Recalculates total when new model is added to the collection.
+         * @param {App.Models.Myorder} model - a new order item model.
          */
         onModelAdded: function(model) {
             var sum = model.get_modelsum(),
@@ -695,7 +1068,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
         },
         /**
-         *  Recalculate total when model remove
+         * Recalculates total when model is removed from the collection.
+         * @param {App.Models.Myorder} model - removed order item model.
          */
         onModelRemoved: function(model) {
             this.quantity -= model.get('quantity');
@@ -712,7 +1086,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
         },
         /**
-         *  Recalculate total when model change
+         * Recalculates total when model changes.
+         * @param {App.Models.Myorder} model - changed order item model.
          */
         onModelChange: function(model) {
 
@@ -733,12 +1108,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 this.update_cart_totals({update_shipping_options: true});
             }
         },
+        /**
+         * Removes service fees from the collection.
+         */
         removeServiceFees: function() {
             var fees = this.filter(function(obj){ return obj.isServiceFee(); });
             this.remove(fees);
         },
         /**
-         * save order to localstorage
+         * Saves the order in a storage. 'orders' key is used.
          */
         saveOrders: function() {
             var orderToSave = this.toJSON();
@@ -750,7 +1128,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             this.discount.saveDiscount();
         },
         /**
-         * load order from localstorage
+         * Loads the order from a storage. 'orders' key is used.
          */
         loadOrders: function() {
             this.empty_myorder();
@@ -780,8 +1158,21 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             this.discount.loadDiscount();
         },
         /**
-         *
-         * check collection myorders
+         * Checks the cart before payment.
+         * @param {Object} opts - checking options
+         * @returns {Object}
+         * ```
+         * // Successful validation
+         * {
+         *       status: 'OK'
+         * }
+         * // Failure validation (may be caused when no one product is added to cart, tip is more than grand total,
+         * // limit of minimum order amount isn't satisfied, limit of minimum items in order isn't satisfied)
+         * {
+         *     status: 'ERROR',
+         *     errorMsg: <error message>
+         * }
+         * ```
          */
         _check_cart: function(opts) {
             var total = this.total.get_total() * 1,
@@ -830,17 +1221,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             };
         },
         /**
-         * check models;
-         * options: {
-         *     checkout: true - test checkout model
-         *     customer: true - test customer model
-         *     card: true - test card model
-         *     order: true - test myorders collection
-         *     tip: true - test add flag tip to order test,
-         *     validationOnly: true - test whole order on backend
-         * }
-         * success - callback if checked is OK
-         * error - callback or alert if checked is ERROR
+         * Checks the order.
+         * @param {Object} options - validation options
+         * @param {boolean} options.checkout - if `true` need to validate {@link App.Collections.Myorders#checkout} model
+         * @param {boolean} options.customer - if `true` need to validate {@link App.Models.Customer App.Data.customer} model
+         * @param {boolean} options.card - if `true` need to validate {@link App.Models.Card App.Data.card} model
+         * @param {boolean} options.order - if `true` need to {@link App.Collections.Myorders#_check_cart validate} the cart
+         * @param {boolean} options.validationOnly - if `true` don't need to proceed the order placing
+         * @param {Function} success - a callback for successful validation
+         * @param {Function} error - a callback for failure validation
          */
         check_order: function(options, success, error) {
             error = error || App.Data.errors.alert.bind(App.Data.errors); // user notification
@@ -961,7 +1350,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
         },
         /**
-         * Pay order and create order to backend.
+         * Prepares the order for placing. This method is used for the order validation and placing.
+         * @param {number} Payment type:
+         * - `1` - PayPal mobile (available in native PayPal client),
+         * - `2` - creadit card,
+         * - `3` - PayPal,
+         * - `4` - no payment,
+         * - `5` - pay with gift card,
+         * - `6` - pay with Stanford card.
+         * @param {boolean} validationOnly - if `true` need to only validate the order
          */
         create_order_and_pay: function(payment_type, validationOnly) {
             if(this.paymentInProgress)
@@ -976,6 +1373,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             this.trigger('paymentInProcess');
             this.submit_order_and_pay(payment_type, validationOnly);
         },
+        /**
+         * Handles a pickup time of the order.
+         * @returns {(number|undefined)} `0` if a store is closed in specified pickup time. Otherwise, returns `undefined`.
+         */
         preparePickupTime: function() {
             var only_gift = this.checkout.get('dining_option') === 'DINING_OPTION_ONLINE';
 
@@ -1014,12 +1415,42 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             }
         },
+        /**
+         * Inits 'cart_totals' request tha will be sent in 500 msec.
+         * If you need to recalculate cart totals need to use this method.
+         * @param {Object} params - Request params.
+         * @param {boolean} params.apply_discount - If `true` need to pass discount code for application.
+         * @param {number} params.type - Payment type. If it's Stanford payment type then need to add `paymentInfo.type`
+         *                               to POST data in cart_totals request.
+         * @param {number} params.planId - Stanford plan id. If it's present then need to add `paymentInfo.cardInfo.planId`
+         *                               to POST data in cart_totals request.
+         * @param {boolean} params.update_shipping_options - If it's `true` need to update available shipping services.
+         */
         update_cart_totals: function(params) {
             if (!this.getDiscountsTimeout) { // it's to reduce the number of requests to the server
+                /**
+                 * Indicates that cart totals is being calculated now. This property is deleted after calculation.
+                 * @type {boolean}
+                 */
                 this.pending = true; // bug #32598
+                /**
+                 * Delayed cart totals update. Timeout is 500 msec.
+                 * @type {Function}
+                 */
                 this.getDiscountsTimeout = setTimeout(this.get_cart_totals.bind(this, params), 500);
             }
         },
+        /**
+         * Prepares a request to `/weborders/cart_totals/`. This is intermediate function.
+         * To update cart totals need to use {@link App.Collections.Myorders#update_cart_totals update_cart_totals()} method.
+         * @param {Object} params - Request params.
+         * @param {boolean} params.apply_discount - If `true` need to pass discount code for application.
+         * @param {number} params.type - Payment type. If it's Stanford payment type then need to add `paymentInfo.type`
+         *                               to POST data in cart_totals request.
+         * @param {number} params.planId - Stanford plan id. If it's present then need to add `paymentInfo.cardInfo.planId`
+         *                               to POST data in cart_totals request.
+         * @param {boolean} params.update_shipping_options - If it's `true` need to update available shipping services.
+         */
         get_cart_totals: function(params) {
             var self = this;
 
@@ -1055,6 +1486,49 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             return this.get_discount_xhr;
         },
+        /**
+         * Sends request to update cart totals. Used request parameters:
+         * ```
+         * {
+         *     type: "POST",
+         *     dataType: "json"
+         *     url: "/weborders/cart_totals/",
+         *     data: {
+         *         establishmentId: <establishment id>,
+         *         items: <order items>,
+         *         orderInfo: {
+         *             dining_option: <specified dining option>,
+         *             shipping: <selected shipping service object>      // optional, used for Shipping' dining option
+         *             customer: {                                       // optional, used for Shipping' dining option
+         *                 address: <specified shipping address object>  // optional, used for Shipping' dining option
+         *             },
+         *             rewards_card: {                    //optional, used for Rewards Card redemption
+         *                 redemption: <redemption code>  //optional, used for Rewards Card redemption
+         *             }
+         *         },
+         *         discount_code: <discount code>      // optional, used for discount code application
+         *         paymentInfo: {                      // optional, used for Stanford card
+         *             type: <stanford payment type>,  // optional, used for Stanford card
+         *             cardInfo: {                     // optional, used for Stanford card
+         *                 planId: <stanford plan id>  // optional, used for Stanford card
+         *             }
+         *         }
+         *     }
+         * }
+         * ```
+         * This is intermediate function.
+         * To update cart totals need to use {@link App.Collections.Myorders#update_cart_totals update_cart_totals()} method.
+         *
+         * @param {Object} params - Request params.
+         * @param {boolean} params.apply_discount - If `true` need to pass discount code for application.
+         * @param {number} params.type - Payment type. If it's Stanford payment type then need to add `paymentInfo.type`
+         *                               to POST data in cart_totals request.
+         * @param {number} params.planId - Stanford plan id. If it's present then need to add `paymentInfo.cardInfo.planId`
+         *                               to POST data in cart_totals request.
+         * @param {boolean} params.update_shipping_options - If it's `true` need to update available shipping services.
+         *
+         * @returns {Object} jsXHR request.
+         */
         _get_cart_totals: function(params) {
             var myorder = this, checkout,
                 customer = App.Data.customer,
@@ -1172,6 +1646,31 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 if (is_apply_discount) App.Data.errors.alert(message); // user notification
             }
         },
+        /**
+         * Updates cart totals. This method is used as handler of cart totals request.
+         * @param {Object} json - Object literal with calculated totals.
+         * @param {number} json.subtotal - Subtotal of the order.
+         * @param {number} json.tax - Tax of the order.
+         * @param {number} json.surcharge - Surcharge of the order.
+         * @param {number} json.discounts - Sum of all discounts applied to the order.
+         * @param {Object} [json.shipping] - Shipping data of the order.
+         * @param {number} [json.shipping.service_charge] - Charge for shipping service.
+         * @param {number} [json.shipping.discount_sum] - Discount for shipping service.
+         * @param {Array} [json.service_fees] - Array of service fees. Each service fee is present as object:
+         * ```
+         * {
+         *     id: <service fee id>,
+         *     name: <service fee name>,
+         *     amount: <service fee charge amount>
+         * }
+         * ```
+         * @param {Object} [json.order_discount] - Order discount calculations.
+         * @param {string} [json.order_discount.name] - Order discount name.
+         * @param {number} [json.order_discount.sum] - Order discount amount.
+         * @param {boolean} [json.order_discount.taxed] - Order discount is taxable or nor.
+         * @param {number} [json.order_discount.id] - Order discount id.
+         * @param {number} [json.order_discount.type] - Order discount type.
+         */
         process_cart_totals: function(json) {
             if (!(json instanceof Object)) return;
 
@@ -1241,6 +1740,93 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             });
         },
 
+        /**
+         * Places or validates the order. Used parameters for request:
+         * ```
+         * {
+         *     type: "POST",
+         *     dataType: "json",
+         *     url: "/weborders/pre_validate/"             // for order validation
+         *     url: "/weborders/create_order_and_pay_v1/"  // for order placing
+         *     data: {
+         *         skin: <the app's skin>,
+         *         establishmentId: <establishment id>,
+         *         items: <order items>,
+         *         orderInfo: {
+         *             created_date: <created at>,
+         *             pickup_time: <pickup time>,
+         *             lastPickupTime: <last pickup time>,
+         *             dining_option: <dining option>,
+         *             notes: <order notes>,
+         *             asap: <true if pickup time is ASAP>,
+         *             discount: <discount data>,
+         *             call_name: <call name of customer>,
+         *             rewards_card: {                      // optional
+         *                 redemption: <redemption code>,   // optional
+         *                 number: <reward card number>     // optional
+         *             },
+         *             shipping: <specified shipping service> // optional
+         *             customer: <customer data>              // optional
+         *         },
+         *         paymentInfo: {
+         *             address: <address object>,              // optional, address for delivery the order to
+         *             phone: <customer's phone>,              // optional
+         *             email: <customer's email>,              // optional
+         *             first_name: <customer's first name>
+         *             last_name: <customer's last name>,
+         *             transaction_id: <transaction id>,       // optional, transaction_id, used in capture phase
+         *             errorMsg: <payment error>,              // optional, in failure payment
+         *             response_order_id: <response order id > // optional, MONERIS_GET_PARAMS.RESPONSE_ORDER_ID
+         *             order_id: <order id>                    // optional, WORLDPAY_GET_PARAMS.ORDER_ID or AYDEN_GET_PARAMS.merchantReference
+         *             refcode: <refcode>                      // optional, WORLDPAY_GET_PARAMS.REFCODE
+         *             payer_id: <payer id>                    // optional, PayPal payment processor
+         *             payment_id: <payment id>                // optional, PayPal payment processor
+         *             tabId: <tab id>                         // optional, PayPal Mobile payment processor
+         *             locationId: <location id>               // optional, PayPal Mobile payment processor
+         *             customerId: <customer id>               // optional, PayPal Mobile payment processor
+         *             phone: <customer's phone>               // optional, PayPal Mobile payment processor
+         *             cardInfo: {                                 // optional, for payment with credit card
+         *                 firstDigits: <first 4 digits of CC>,    // optional
+         *                 lastDigits: <last 4 digits of CC>       // optional
+         *                 firstName: <first name of CC holder>,   // optional
+         *                 lastName: <last name of CC holder>,     // optional
+         *                 token: <token>,                         // optional, QuickBooks payment processor
+         *                 cardNumber: <card number>,              // optional, Gift Card
+         *                 captchaKey: <captcha key>,              // optional, Gift Card
+         *                 captchaValue: <captcha value>           // optional, Gift Card
+         *                 planId: <plan id>                       // optional, Stanford Card
+         *             }
+         *         },
+         *         notifications: [{
+         *             skin: <the app's skin>,
+         *             type: 'email',
+         *             destination: <email>
+         *         }]
+         *     }
+         * }
+         * ```
+         *
+         * A response is a object containing `status` property and may contains `errorMsg`, `data` properties.
+         * `status` of response is:
+         * - 'OK' - order was successfully submitted or validated on server.
+         * - 'REDIRECT' - need to redirect the app to 3rd party page to complete a payment.
+         * - 'PAYMENT_INFO_REQUIRED' - need to get payment info from payment gateway (QuickBooks).
+         * - 'INSUFFICIENT_STOCK' - the order cannot be submitted due to insufficient stock amount one of items.
+         * - 'ASAP_TIME_SLOT_BUSY' - the order cannot be submitted due to specified 'ASAP' time cannot be accepted by server
+         * (need to select another pickup time).
+         * - 'ORDERS_PICKUPTIME_LIMIT' - the order cannot be submitted due to the order is over of limit on specified pickup time
+         * (need to select another pickup time).
+         * - 'REWARD CARD UNDEFINED' - the order cannot be submitted due to reward card is invalid.
+         * - 'DELIVERY_ADDRESS_ERROR' - the order cannot be submitted due to delivery address is invalid.
+         * - 'PRODUCTS_NOT_AVAILABLE_FOR_SELECTED_TIME' - the order cannot be submitted due to at least one item's custom menu is out
+         * of time of order placing.
+         * - 'ERROR' - the order cannot be submitted due to something went wrong on server.
+         *
+         * @param {number} payment_type - payment type
+         * @param {boolean} validationOnly - if it's `true` the order has to be only validated on server
+         * @param {boolean} capturePhase - if it's `true` a payment was handled on 3rd party payment service
+         *                                 and the order should be completed on Revel's server.
+         */
         submit_order_and_pay: function(payment_type, validationOnly, capturePhase) {
             var myorder = this,
                 get_parameters = App.Data.get_parameters,
@@ -1466,6 +2052,13 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 return customer.addresses[App.Data.customer.isDefaultShippingAddress() ? customer.addresses.length - 1 : customer.shipping_address];
             }
         },
+        /**
+         * Used in {@link App.Collections.Myorders#submit_order_and_pay submit_order_and_pay()} method
+         * to get a call name at 'Stadium' mode.
+         * @param {string} [phone] - phone number
+         * @returns {Array} An array in which the first element is a string 'Level: %level% Sect: %section% Row: %row% Seat: %seat%'
+         *                  and the second item is the passed phone number (optional).
+         */
         getOrderSeatCallName: function(phone) {
             var checkout = this.checkout.toJSON(),
                 call_name = [],
@@ -1482,6 +2075,13 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             phone && call_name.push(phone);
             return call_name;
         },
+        /**
+         * Used in {@link App.Collections.Myorders#submit_order_and_pay submit_order_and_pay()} method
+         * to get a call name for 'Other' dining option.
+         * @param {string} [phone] - phone number
+         * @returns {Array} An array in which the first element is a string contaning dining options
+         *                  and the second item is the passed phone number (optional).
+         */
         getOtherDiningOptionCallName: function(phone) {
             var other_dining_options = this.checkout.get('other_dining_options'),
                 call_name = [],
@@ -1495,6 +2095,20 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             phone && call_name.push(phone);
             return call_name;
         },
+        /**
+         * @returns {Object}
+         * ```
+         * {
+         *     call_name: [<contact name>, <pickup time>, <phone>],
+         *     payment_info: {
+         *         phone: <phone>,
+         *         email: <email>,
+         *         first_name: <first name>
+         *         last_name: <last name>
+         *     }
+         * }
+         * ```
+         */
         getCustomerData: function() {
             var checkout = this.checkout.toJSON(),
                 customer = App.Data.customer.toJSON(),
@@ -1523,6 +2137,16 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 payment_info: payment_info
             };
         },
+        /**
+         * Makes array with recipients.
+         * @returns {Array} Array contaning the object if email is specified:
+         * [{
+         *     skin: <skin>,
+         *     type: 'email',
+         *     destination: 'email'
+         * }]
+         *
+         */
         getNotifications: function() {
             var checkout = this.checkout.toJSON(),
                 customer = App.Data.customer.toJSON(),
@@ -1536,6 +2160,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }];
             }
         },
+        /**
+         * Resets the order.
+         */
         empty_myorder: function() {
             this.remove(this.models);
 
@@ -1544,29 +2171,38 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             this.checkout.set('dining_option', 'DINING_OPTION_ONLINE');
             this.checkout.set('notes', '');
         },
+        /**
+         * Removes free modifiers of each order item.
+         */
         removeFreeModifiers: function() {
             this.each(function(item) {
                 item.removeFreeModifiers();
             });
         },
+        /**
+         * @returns {boolean} `true` if dining option is shipping.
+         */
         isShippingOrderType: function() {
             return this.checkout.get('dining_option') == 'DINING_OPTION_SHIPPING';
         },
+        /**
+         * Restores tax rates of each item.
+         */
         restoreTaxes: function() {
             this.each(function(item) {
                 item.restoreTax();
             });
         },
         /**
-         * Cleaning of the cart.
+         * Clears the order collection and orders items in a storage.
          */
         clearData: function() {
             this.empty_myorder();
             this.saveOrders();
         },
         /**
-         * Save paymentResponse in sessionStorage. An amount of payment responses may be more than 1 per session. Need use unique id for each.
-         *
+         * Saves payment response in a storage. Quantity of payment responses may be more than 1 per session.
+         * Need use unique id for each. Composite key (`uid` + '.paymentResponse') is used.
          * @param {string} uid - Unique identificator
          */
         savePaymentResponse: function(uid) {
@@ -1575,8 +2211,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
         },
         /**
-         * Restore paymentResponse and remove it from sessionStorage. An amount of payment responses may be more than 1 per session. Need use unique id for each.
-         *
+         * Restores payment response and removes it from a storage. Quantity of payment responses may be more than 1 per session.
+         * Need use unique id for each. Composite key (`uid` + '.paymentResponse') is used.
          * @param {string} uid - Unique identificator
          */
         restorePaymentResponse: function(uid) {
@@ -1591,12 +2227,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
         },
         /*
-         * @method
-         * Set shipping address after dinign_option change.
-         *
-         * @param {Object} model - App.Data.myorder.checkout object
-         * @param {string} value - result of App.Data.myorder.checkout.get('dining_option')
-         *
+         * Updates App.Data.customer.attributes.shipping_address according specified dining option.
+         * @param {App.Models.Checkout} model - {@link App.Collections.Myorders#checkout} object
+         * @param {string} value - dining option
          * @returns {numder} selected shipping address
          */
         setShippingAddress: function(model, value) {
@@ -1619,9 +2252,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return customer.get('shipping_address');
         },
         /**
-         * @method
+         * Defines items in which product has point value for rewards points collection.
          * @param discount - discount which may be applied to items.
-         * @returns array of items with products which have point value and may be redeemed with points reward.
+         * @returns {App.Models.Myorder[]} Array of items.
          */
         getItemsWithPointsRewardDiscount: function(discount) {
             var itemsWithDiscount = [];
@@ -1644,12 +2277,23 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             });
             return itemsWithDiscount;
         },
+        /**
+         * Applies {@link App.Collections.Myorders#splitItemWithPointValue splitItemWithPointValue()} method to each item.
+         */
         splitAllItemsWithPointValue: function() {
             var self = this;
             this.each(function(item, i) {
                 self.splitItemWithPointValue(item);
             });
         },
+        /**
+         * Splits item with point value assigned.
+         * If item with point value has quantity > 1 then need to split it on 2 items:
+         * - 1 item's quantity is reduced by 1.
+         * - 2 item's quantity is 1.
+         * @param {App.Models.Myorder} item - order item.
+         * @param {boolean} [silentFlag] - if it's `true` need to silently update `quantity` attribute.
+         */
         splitItemWithPointValue: function(item, silentFlag) {
             silentFlag = !!silentFlag;
             var quantity = item.get('quantity');
@@ -1666,6 +2310,14 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
             }
         },
+        /**
+         * Applies {@link App.Collections.Myorders#splitItemWithPointValue splitItemWithPointValue()} method to `item`
+         * when its `quantity` attribute updates.
+         * @param {App.Models.Myorder} item - order item.
+         * @param {number} oldQuantity - previous `quantity` value.
+         * @param {number} newQuantity - new `quantity` value.
+         * @param {boolean} [silentFlag] - if it's `true` need to silently update `quantity` attribute.
+         */
         splitItemAfterQuantityUpdate : function(item, oldQuantity, newQuantity, silentFlag) {
             silentFlag = !!silentFlag;
             if (item.get('discount').get('name') === 'Item Reward' && oldQuantity == 1 && newQuantity != 1) {
