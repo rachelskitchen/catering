@@ -129,7 +129,7 @@ define(["backbone"], function(Backbone) {
             });
             function trim(type) {
                 var value = this.get(type);
-                return typeof value  == 'string' ? Backbone.$.trim(value) : this.defaults[type];
+                return typeof value == 'string' ? Backbone.$.trim(value) : this.defaults[type];
             }
         },
         /**
