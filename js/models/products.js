@@ -20,151 +20,213 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.Product}, {@link App.Collections.Products} constructors.
+ * @module products
+ * @requires module:backbone
+ * @requires module:childproducts
+ * @requires module:collection_sort
+ * @see {@link module:config.paths actual path}
+ */
 define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
     'use strict';
 
     /**
      * @class
-     * Represents product model
+     * @classdesc Represents a product model.
+     * @alias App.Models.Product
+     * @augments Backbone.Model
+     * @example
+     * // create a product
+     * require(['products'], function() {
+     *     var product = new App.Models.Product({
+     *         name: 'Ice Cream',
+     *         price: 4.35
+     *         id: 1243
+     *     });
+     * });
      */
-    App.Models.Product = Backbone.Model.extend({
+    App.Models.Product = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Product.prototype
+     */
+    {
         /**
-         * @property {object} defaults - literal object containing attributes with default values.
-         *
-         * @property {string} defaults.description - product description.
-         * @default null
-         *
-         * @property {number} defaults.id - product id.
-         * @default null
-         *
-         * @property {number} defaults.category_id - category id which product is assigned to.
-         * @default null
-         *
-         * @property {string} defaults.image - link on resource with product image.
-         * @default null
-         *
-         * @property {array} defaults.images - array of links on resources with product image (this is used for product gallary in retail skin).
-         * @default []
-         *
-         * @property {boolean} defaults.is_cold - corresponds to product 'Is Cold' property.
-         * @default false
-         *
-         * @property {string} defaults.name - product name.
-         * @default null
-         *
-         * @property {number} defaults.number - product price.
-         * @default null
-         *
-         * @property {string} defaults.img - link on resource with product image.
-         * @default null
-         *
-         * @property {number} defaults.tax - product tax rate (not used, App.Models.Tax is used instead of it).
-         * @default 0
-         *
-         * @property {number} defaults.sort - product sort number.
-         * @default null
-         *
-         * @property {number} defaults.course_number - product course number (not used).
-         * @default null
-         *
-         * @property {number} defaults.cost - product cost (not used).
-         * @default null
-         *
-         * @property {boolean} defaults.sold_by_weight - flag which means product is sold by weight or not.
-         * @default false
-         *
-         * @property {string} defaults.uom - units of measures (it presents if product is sold by weight).
-         * @default ""
-         *
-         * @property {number} defaults.attribute_type - product type (0 - usual product, 1 - parent product, 2 - child product).
-         * @default 0
-         *
-         * @property {App.Collections.ChildProducts} defaults.child_products - collection of children products.
-         * @default null
-         *
-         * @property {string} defaults.attribute_1_name - name of first product attribute.
-         * @default null
-         *
-         * @property {string} defaults.attribute_2_name - name of second product attribute.
-         * @default null
-         *
-         * @property {boolean} defaults.attribute_1_enable - flag which means first product attribute is enabled or not.
-         * @default false
-         *
-         * @property {boolean} defaults.attribute_2_enable - flag which means second product attribute is enabled or not.
-         * @default false
-         *
-         * @property {boolean} defaults.attribute_1_selected - flag which means first product attribute is selected by user or not.
-         * @default false
-         *
-         * @property {boolean} defaults.attribute_2_selected - flag which means second product attribute is selected by user or not.
-         * @default false
-         *
-         * @property {boolean} defaults.is_gift - flag which means product is gift or not.
-         * @default false
-         *
-         * @property {string} defaults.gift_card_number - gift card number which rewards points will be enrolled to (`is_gift` has to be true).
-         * @default null
-         *
-         * @property {object} defaults.checked_gift_cards - literal object containing list of gift cards checked.
-         * @default null
-         *
-         * @property {number} defaults.stock_amount - product amount available in stock.
-         * @default stock_amount
-         *
-         * @property {boolean} defaults.active - product is active or not.
-         * @default true
-         *
-         * @property {string} defaults.created_date - date of product creation.
-         * @default null
-         *
-         * @property {number} defaults.original_tax - original tax of product (used to save origin tax rate to restore in Retail mode).
-         * @defaults null
-         *
-         * @property {} defaults.timetables - a string with available to order time (originally server returns array of assigned customer menus)
-         * @default null
-         *
-         * @property {string} defaults.compositeId - the unique product id (used for a model identification in App.Collections.Products)
-         * @default null
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum
          */
         defaults: {
+            /**
+             * Product description.
+             * @type {?string}
+             */
             description: null,
+            /**
+             * Product id.
+             * @type {?number}
+             */
             id: null,
+            /**
+             * Category id.
+             * @type {?number}
+             */
             id_category : null,
+            /**
+             * URL of resource with product image.
+             * @type {?string}
+             */
             image: null,
+            /**
+             * array of URLs of resources with product image. This is used for product gallery in retail skin.
+             * @type {Array}
+             */
             images: [],
+            /**
+             * Product is cold or not.
+             * @type {boolean}
+             */
             is_cold: false,
+            /**
+             * Product name.
+             * @type {?string}
+             */
             name: null,
+            /**
+             * Product price.
+             * @type {?number}
+             */
             price: null,
-            img : null,
-            tax : 0, // App.Models.Tax // not used. Know download with product
+            /**
+             * Path for relative URL of product images.
+             * @type {?string}
+             */
+            img: null,
+            /**
+             * Tax rate assigned to the product.
+             * @type {number}
+             */
+            tax: 0,
+            /**
+             * Sort number.
+             * @type {?number}
+             */
             sort: null,
+            /**
+             * Product course number.
+             * @type {?number}
+             */
             course_number : null,
+            /**
+             * Product cost.
+             * @type {?number}
+             */
             cost : null,
+            /**
+             * The product is sold by weight or not..
+             * @type {boolean}
+             */
             sold_by_weight : false,
+            /**
+             * Units of measures.
+             * @type {string}
+             */
             uom : "",
-            attribute_type: 0, // matrix inventory. 0 - none, 1 - parent, 2 - child
+            /**
+             * Product type (0 - usual product, 1 - parent product, 2 - child product).
+             * @type {number}
+             */
+            attribute_type: 0,
+            /**
+             * Collection of children products.
+             * @type {?App.Collections.ChildProducts}
+             */
             child_products: null,
+            /**
+             * Name of the first product attribute.
+             * @type {?string}
+             */
             attribute_1_name: null,
+            /**
+             * Name of the second product attribute.
+             * @type {?string}
+             */
             attribute_2_name: null,
+            /**
+             * The first attribute is enabled or disabled.
+             * @type {boolean}
+             */
             attribute_1_enable: false,
+            /**
+             * The second attribute is enabled or disabled.
+             * @type {boolean}
+             */
             attribute_2_enable: false,
+            /**
+             * The first attribute is selected by user or not.
+             * @type {?boolean}
+             */
             attribute_1_selected: null,
+            /**
+             * The second attribute is selected by user or not.
+             * @type {?boolean}
+             */
             attribute_2_selected: null,
+            /**
+             * Product is gift or not.
+             * @type {boolean}
+             */
             is_gift: false,
+            /**
+             * Gift card number some amount will be added to (`is_gift` has to be `true`).
+             * @type {?number}
+             */
             gift_card_number: null,
+            /**
+             * Object literal containing list of gift cards checked.
+             * @type {?Object}
+             */
             checked_gift_cards: null,
+            /**
+             * Product amount available in stock.
+             * @type {number}
+             */
             stock_amount: 999,
+            /**
+             * Product is active or not.
+             * @type {boolean}
+             */
             active: true,
+            /**
+             * Date of product creation.
+             * @type {?string}
+             */
             created_date: null,
-            original_tax: null, // used to save origin tax rate to restore in Retail mode
+            /**
+             * Original tax rate of product (used to save origin tax rate to restore in Retail mode).
+             * @type {?number}
+             */
+            original_tax: null,
+            /**
+             * Available time for ordering the product.
+             * @type {?string}
+             */
             timetables: null,
+            /**
+             * Unique product id (`id` + '_' + `id_category`). Used for a model identification
+             * in {@link App.Collections.Products} collection.
+             * @type {?string}
+             */
             compositeId: null,
-            size_chart: '' // URL of product Size Chart image
+            /**
+             * URL of resource with product size chart.
+             * @type {string}
+             */
+            size_chart: ''
         },
         /**
-         * @method
-         * Sets `img` as App.Data.settings.get("img_path"), `checked_gift_cards` as {}, default image (if `image` attribute is empty), `original_tax`.
+         * Sets `img` as App.Data.settings.get("img_path") value, `checked_gift_cards` as `{}`,
+         * default image (if `image` attribute isn't defined), `original_tax`.
          * Converts `created_date` to milliseconds.
          */
         initialize: function() {
@@ -194,17 +256,14 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             this.convertTimetables();
         },
         /**
-         * @method
          * Sets a passed data as own attributes.
          * Handles special cases for the following attributes:
-         *  - `image`: if data.image is empty changes `image` value on App.Data.settings.get_img_default() result.
-         *  - `is_gift`: if data.is_gift is true changes `sold_by_weight` value on false.
-         *  - `original_tax`: if data.original_tax cannot be converted to integer changes `original_tax` value on data.tax.
+         *  - `image`: if `data.image` is empty changes `image` value on App.Data.settings.get_img_default() result.
+         *  - `is_gift`: if `data.is_gift` is `true` changes `sold_by_weight` value on `false`.
+         *  - `original_tax`: if `data.original_tax` cannot be converted to integer changes `original_tax` value on `data.tax`.
          *  - `created_date`: converts `created_date` value to milliseconds.
-         *
-         * @param {object} data - literal object containing product data.
-         *
-         * @returns the model.
+         * @param {Object} data - JSON representation of {@link App.Models.Product} attributes.
+         * @returns {App.Models.Product} The model.
          */
         addJSON: function(data) {
             if (!data.image)
@@ -233,10 +292,8 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             return this;
         },
         /**
-         * @method
          * Deeply clones the model.
-         *
-         * @returns a new model.
+         * @returns {App.Models.Product} Cloned model.
          */
         clone: function() {
             var newProduct = new App.Models.Product();
@@ -248,12 +305,10 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             return newProduct;
         },
         /**
-         * @method
-         * Updates the model. Keep in mind it doesn't handle special cases for `is_gift`, `original_tax`, `created_date` attributes like addJSON() method.
-         *
+         * Updates the model. Keep in mind it doesn't handle special cases for `is_gift`, `original_tax`, `created_date` attributes
+         * like in {@link App.Models.Product#addJSON addJSON()} method.
          * @param {App.Models.Product} newProduct - product model.
-         *
-         * @returns the model.
+         * @returns {App.Models.Product} The model.
          */
         update: function(newProduct) {
             for(var key in newProduct.attributes) {
@@ -271,11 +326,11 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             return this;
         },
         /**
-         * @method
-         * Returns product by id. If id is undefined returns this model or child product using attributes data.
-         *
-         * @param {number} id - product id.
-         * @returns a product model.
+         * Seeks a product. If `id` parameter is passed seeks a product by id (returns itself or child product).
+         * Otherwise, if the product isn't parent then returns the product.
+         * If the product is parent then returns specified child product.
+         * @param {number} [id] - product id.
+         * @returns {App.Models.Product} A product model.
          */
         get_product: function(id) {
             var type = this.get('attribute_type'),
@@ -300,8 +355,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             }
         },
         /**
-         * @method
-         * @returns null if product doesn't have children products or modifiers of selected child product.
+         * @returns {?App.Collections.ModifierBlocks} `null` of modifiers classes of selected child product.
          */
         get_modifiers: function() {
             var type = this.get('attribute_type'),
@@ -319,8 +373,8 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             }
         },
         /**
-         * @method
-         * @returns empty object if product doesn't have children or list of available attributes.
+         * @returns {Object} `{}` for non-parent product
+         * and result of {@link App.Collections.ChildProducts#get_attributes_list} method call.
          */
         get_attributes_list: function() {
             var type = this.get('attribute_type'),
@@ -333,9 +387,15 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             }
         },
         /**
-         * @method
-         * @param {number} type - attribute type (1 or 2).
-         * @returns {name: <name>, value: <value>, selected: <id>}.
+         * @param {number} [type=1] - attribute type (`1` or `2`).
+         * @returns {(Object|undefined)} If attribute type is disabled returns `undefined`. Otherwise, returns the following object:
+         * ```
+         * {
+         *     name: name,          // attribute name
+         *     value: value,        // attribute value
+         *     selected: selected   // `true` if the attribute is selected
+         * }
+         * ```
          */
         get_attribute: function(type) {
             if(type != 1 && type != 2)
@@ -356,8 +416,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             };
         },
         /**
-         * @method
-         * @returns array of selected attributes [{name: <name>, value: <value>, selected: <id>}, ...].
+         * @returns {Array} Array of selected attributes `[{name: <name>, value: <value>, selected: <id>}, ...]`.
          */
         get_attributes: function() {
             var attr1 = this.get_attribute(1),
@@ -369,10 +428,17 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                 return attrs;
         },
         /**
-         * @method
-         * Sends request to "/weborders/attributes/" to get children products.
-         *
-         * @return deferred object.
+         * Receives child products. Used parameters of request are:
+         * ```
+         * {
+         *     url: "/weborders/attributes/",
+         *     type: 'GET',
+         *     data: {
+         *         product: <product id>
+         *     }
+         * }
+         * ```
+         * @returns {Object} Deferred object.
          */
         get_child_products: function() {
             var type = this.get('attribute_type'),
@@ -427,18 +493,15 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             return def;
         },
         /**
-         * @method
-         * Updates parent active attribute. Check if all children are inactive.
-         *
-         * @returns the model if any child product is active or false.
+         * Updates parent's `active` attribute. Checks if all children are inactive.
+         * @returns {(boolean|App.Models.Product)} The model if any child product is active or `false`.
          */
         update_active: function() {
             var child = this.get('child_products') || false;
             return child && this.set('active', child.check_active());
         },
         /**
-         * @method
-         * @returns true if all enabled attributes are selected (or all attributes are disabled), false otherwise.
+         * @returns {boolean} `true` if all enabled attributes are selected (or all attributes are disabled).
          */
         check_selected: function() {
             var attr1 = this.get('attribute_1_selected'),
@@ -449,11 +512,21 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             return !!((attr1enable && attr1 || !attr1enable) && (attr2enable && attr2 || !attr2enable));
         },
         /**
-         * @method
-         * Sends request to "/weborders/check_gift/" to check gift card number.
-         *
-         * @callback success - callback for successful result.
-         * @callback error - callback for failure result.
+         * Sends request to server to check a gift card number.
+         * Used parameters for request are:
+         * ```
+         * {
+         *     type: "POST",
+         *     url: "/weborders/check_gift/",
+         *     dataType: "JSON",
+         *     data: {
+         *         card: <gift card number>,
+         *         establishment: <establishment id>
+         *     }
+         * }
+         * ```
+         * @param {Function} success - Сallback for successful result.
+         * @param {Function} error - Сallback for failure result.
          */
         check_gift: function(success, error) {
             var is_gift = this.get('is_gift'),
@@ -498,8 +571,7 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             }
         },
         /**
-         * @method
-         * Adds host to images links.
+         * Adds host to `images` links.
          */
         images: function() {
             var img = this.get('image'),
@@ -526,22 +598,19 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             this.set('image', img, {silent: true});
         },
         /**
-         * @method
-         * Adds host to image link.
+         * Adds host to `image` link.
          */
         image: function() {
             this.set('image', addHost(this.get('image'), App.Data.settings.get('host')));
         },
         /**
-         * @method
-         * @returns true if product is parent, false otherwise.
+         * @returns {boolean} `true` if product is parent.
          */
         isParent: function() {
             return this.get('attribute_type') === 1;
         },
         /**
-         * @method
-         * Sets a `stock_amount` value to 999 if `cannot_order_with_empty_inventory` is turned off.
+         * Changes a `stock_amount` value on `999` if 'cannot_order_with_empty_inventory' is turned off in backend.
          */
         checkStockAmount: function() {
             var inventory = App.Data.settings.get("settings_system").cannot_order_with_empty_inventory;
@@ -549,14 +618,12 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
                 this.set('stock_amount', 999);
         },
         /**
-         * @method
          * Restores tax rate.
          */
         restoreTax: function() {
             this.set('tax', this.get('original_tax'));
         },
         /**
-         * @method
          * Converts array with timetables to string. Originally server returns timetables as array of custom menus assigned to.
          * Need to convert the array to user friendly string.
          */
@@ -570,58 +637,78 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
 
     /**
      * @class
-     * Represents collection of products.
+     * @classdesc Represents a collection of products.
+     * @alias App.Collections.Products
+     * @augments App.Collections.CollectionSort
+     * @example
+     * // create products
+     * require(['products'], function() {
+     *     var products = new App.Collections.Products([{
+     *         name: 'Ice Cream',
+     *         price: 4.35
+     *         id: 1243
+     *     }, {
+     *         name: 'Coffee',
+     *         price: 2.35
+     *         id: 112
+     *     }]);
+     * });
      */
-    App.Collections.Products =  App.Collections.CollectionSort.extend({
+    App.Collections.Products =  App.Collections.CollectionSort.extend(
+    /**
+     * @lends App.Collections.Products.prototype
+     */
+    {
         /**
-         * @property {string} sortStrategy - sort strategy.
+         * Sort strategy.
+         * @type {string}
          * @default "sortNumbers"
          */
         sortStrategy: "sortNumbers",
         /**
-         * @property {string} sortKey - attribute which value is used as a sort comparator.
+         * Attribute which value is used as a sort comparator.
+         * @type {string}
          * @default "sort"
          */
         sortKey: "sort",
         /**
-         * @property {string} sortOrder - sort order ("asc", "desc")
+         * Sort order ("asc", "desc").
+         * @type {string}
          * @default "asc"
          */
         sortOrder: "asc", //or "desc"
         /**
-         * @property {Function} comparator - comparator function.
+         * Comparator function.
+         * @type {Function}
          * @default App.Collections.CollectionSort.prototype.strategies.sortNumbers
          */
         comparator: App.Collections.CollectionSort.prototype.strategies.sortNumbers,
         /**
-         * @property {App.Models.Product} model - items constructor.
+         * Item constructor.
+         * @type {Function}
          * @default App.Models.Product
          */
         model: App.Models.Product,
         /**
-         * @method
-         * Sets `compositeId` as unique id of model. `id` attribute cannot be used due to a product with the same `id` may be in one collection (has multiple categories).
-         *
-         * @params {object} attrs - literal object containing model attributes.
-         * @returns unique id of model.
+         * Sets `compositeId` attribute as unique id of model. `id` attribute cannot be used
+         * due to products with the same `id` may be in the collection (has multiple categories).
+         * @params {Object} attrs - Object literal containing {@link App.Models.Product} attributes.
+         * @returns {string} Unique id of model.
          */
         modelId: function(attrs) {
             return attrs['compositeId'] || App.Collections.CollectionSort.prototype.modelId.apply(this, arguments);
         },
         /**
-         * @method
-         * Adds listener for checking product activity. If all products are inactive category gets inactive.
+         * Adds listener to check products activity. If all products are inactive category gets inactive.
          */
         initialize: function() {
             this.listenTo(this, 'change:active', this.check_active);
         },
         /**
-         * @method
-         * Finds product by id.
+         * Seeks product by id.
          * Please use this method instead of get(), because models are identified in collection via 'compositeId' attribute.
-         *
-         * @param {string} id - product id.
-         * @returns product model if id is valid.
+         * @param {number} id - product id.
+         * @returns {App.Models.Product} A found product model if id is valid.
          */
         get_product: function(id) {
             var res;
@@ -633,13 +720,22 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             return res;
         },
         /**
-         * @method
-         * Sends request to "/weborders/products/" to get products for category. If response is successful add response data as own items.
-         *
+         * Receives products. Used parameters of request are:
+         * ```
+         * {
+         *     type: "GET",
+         *     url: "/weborders/products/",
+         *     dataType: "json",
+         *     data: {
+         *         category: <category id>,
+         *         establishment: <establishment id>,
+         *         search: <lookup string>
+         *     }
+         * }
+         * ```
          * @param {number} id_category - category id.
          * @param {string} search - search pattern (used in retail skin).
-         *
-         * @returns deferred object.
+         * @returns {Object} Deferred object.
          */
         get_products: function(id_category, search) {
             var self = this,
@@ -677,16 +773,13 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             return fetching;
         },
         /**
-         * @method
          * Handles failure response of products request.
          */
         onProductsError: function() {
             App.Data.errors.alert(MSG.ERROR_PRODUCTS_LOAD, true); // user notification
         },
         /**
-         * @method
-         * Checks if all models is inactive. If it's true makes category inactive.
-         *
+         * Checks if all models are inactive. If it's `true` makes category inactive.
          * @param {App.Models.Product} model - product model.
          */
         check_active: function(model) {
@@ -700,9 +793,14 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
             }
         },
         /**
-         * @method
-         * @param {number} type - attribute type (may be 1 or 2).
-         * @returns object containing unique attribute values grouped by attribute name.
+         * @param {number} type - attribute type (may be `1` or `2`).
+         * @returns {Object} Object containing unique attribute values grouped by attribute name.
+         * ```
+         * {
+         *     <attribute name>: [<attribute value 1>, <attribute value 2>, ...],
+         *     ...
+         * }
+         * ```
          */
         getAttributeValues: function(type) {
             var attrs = {},
@@ -736,11 +834,11 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
     });
 
     /**
+     * Loads products for category.
      * @static
-     * Loads products for category
-     *
+     * @alias App.Collections.Products.init
      * @param {number} id_category - category id.
-     * @returns deferred object.
+     * @returns {Object} Deferred object.
      */
     App.Collections.Products.init = function(id_category) {
         var product_load = $.Deferred();
@@ -756,11 +854,11 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
     };
 
     /**
-     * @method
-     * Loads products for several categories in one request
-     *
-     * @param {array} ids - array containing categories ids.
-     * @returns deferred object.
+     * Loads products for several categories in one request.
+     * @static
+     * @alias App.Collections.Products.get_slice_products
+     * @param {Array} ids - array containing categories ids.
+     * @returns {Object} Deferred object.
      */
     App.Collections.Products.get_slice_products = function(ids) {
         var c_id,

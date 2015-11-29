@@ -20,52 +20,96 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.Rewards}, {@link App.Models.RewardsCard} constructors.
+ * @module rewards
+ * @requires module:backbone
+ * @requires module:captcha
+ * @see {@link module:config.paths actual path}
+ */
 define(['backbone', 'captcha'], function(Backbone) {
     'use strict';
 
+    /**
+     * Redemption codes.
+     * @alias module:rewards~REDEMPTION_CODES
+     * @type {Object}
+     * @enum
+     */
     var REDEMPTION_CODES = {
+        /**
+         * Redemption code for 'points' rewards.
+         * @type {number}
+         */
         points: 1,
+        /**
+         * Redemption code for 'visits' rewards.
+         * @type {number}
+         */
         visits: 2,
+        /**
+         * Redemption code for 'purchasess' rewards.
+         * @type {number}
+         */
         purchases: 3
     };
 
     /**
-     * @class App.Models.Rewards
-     * Represents customer's rewards (points, visits, purchases).
+     * @class
+     * @classdesc Represents a rewards model.
+     * @alias App.Models.Rewards
+     * @augments Backbone.Model
+     * @example
+     * // create a rewards model
+     * require(['rewards'], function() {
+     *     var rewards = new App.Models.Rewards();
+     * });
      */
-    App.Models.Rewards = Backbone.Model.extend({
+    App.Models.Rewards = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Rewards.prototype
+     */
+    {
         /**
-         * @property {Object} defaults - the set of model attributes with default values.
-         *
-         * @property {Object} defaults.rewards_earned - number of rewards earned (points / points per rewards). Only 1 reward may be redeemed per time.
-         * @default 0.
-         *
-         * @property {Object} defaults.discount - discount for 1 reward redemption.
-         * @default 0.
-         *
-         * @property {Object} defaults.point_to_next_reward - points to next reward earned.
-         * @default 0.
-         *
-         * @property {Object} defaults.value - points collected.
-         * @default 0.
+         * Contains attributes with default values.
+         * @type {Object}
+         * @enum
          */
         defaults: {
+            /**
+             * Number of rewards earned (points / points per rewards). Only 1 reward may be redeemed per time.
+             * @type {number}
+             */
             rewards_earned: 0,
+            /**
+             * Discount for 1 reward redemption.
+             * @type {number}
+             */
             discount: 0,
+            /**
+             * Points to next reward earned.
+             * @type {number}
+             */
             point_to_next_reward: 0,
+            /**
+             * Collected points.
+             * @type {number}
+             */
             value: 0,
+            /**
+             * Rewards is selected or not.
+             * @type {boolean}
+             */
             selected: false
         },
         /**
-         * @method
-         * @returns {boolean} true if 'reward_earned' attribute isn't less than 1, otherwise false.
+         * @returns {boolean} `true` if `reward_earned` attribute isn't less than `1`.
          */
         isAvailable: function() {
             return this.get('rewards_earned') >= 1;
         },
         /**
-         * @method
-         * @returns {boolean} true if all attributes have default values
+         * @returns {boolean} `true` if all attributes have default values.
          */
         isDefault: function() {
             return Object.keys(this.defaults).every(function(attr) {
@@ -75,27 +119,29 @@ define(['backbone', 'captcha'], function(Backbone) {
     });
 
     /**
-     * @class App.Models.RewardsCard
-     * Represents customer's rewards card data.
+     * @class
+     * @classdesc Represents a rewards card model.
+     * @alias App.Models.RewardsCard
+     * @augments App.Models.Captcha
+     * @example
+     * // create a rewards card model
+     * require(['rewards'], function() {
+     *     var rewards = new App.Models.RewardsCard();
+     * });
      */
-    App.Models.RewardsCard = App.Models.Captcha.extend({
+    App.Models.RewardsCard = App.Models.Captcha.extend(
+    /**
+     * @lends App.Models.RewardsCard.prototype
+     */
+    {
         /**
-         * @property {Object} defaults - the set of model attributes with default values.
-         *
-         * @property {App.Models.Rewards} defaults.purchases - rewards for purchases.
-         * @default instance of App.Models.Rewards.
-         *
-         * @property {App.Models.Rewards} defaults.points - point rewards.
-         * @default instance of App.Models.Rewards.
-         *
-         * @property {App.Models.Rewards} defaults.visits - rewards for visits.
-         * @default instance of App.Models.Rewards.
-         *
-         * @property {string} defaults.number - rewards card number.
-         * @default ''.
-         *
-         * @property {number} defaults.redemption_code - code of selected rewards type. 1 - points reward, 2 - visits reward, 3 - purchases reward.
-         * @defaults null.
+         * Contains attributes with default values. Extends {@link App.Models.Captcha#defaults}.
+         * @type {Object}
+         * @property {App.Models.Rewards} purchases - rewards for purchases
+         * @property {App.Models.Rewards} points - point rewards
+         * @property {App.Models.Rewards} visits - rewards for visits
+         * @property {string} number - rewards card number
+         * @property {?number} redemption_code - code of selected rewards type ({@link module:rewards~REDEMPTION_CODES REDEMPTION_CODES})
          */
         defaults: _.extend({}, App.Models.Captcha.prototype.defaults, {
             purchases: new App.Models.Rewards,
@@ -105,8 +151,7 @@ define(['backbone', 'captcha'], function(Backbone) {
             redemption_code: null
         }),
         /**
-         * @method
-         * Ensures 'purchases', 'points', 'visits' attributes are instances of App.Models.Rewards.
+         * Converts 'purchases', 'points', 'visits' attributes to instances of App.Models.Rewards.
          */
         initialize: function() {
             this.updateRewardsType('purchases', this.get('purchases'));
@@ -120,10 +165,8 @@ define(['backbone', 'captcha'], function(Backbone) {
             }, this);
         },
         /**
-         * @method
-         * Updates passed rewards type.
-         *
-         * @param {string} rewardsType - rewards type (one of purchases, points, visits),
+         * Updates passed `rewardsType`.
+         * @param {string} rewardsType - rewards type (one of 'purchases', 'points', 'visits')
          * @param {Object} data - data of rewards type (simple object is converted to instance of App.Models.Rewards)
          */
         updateRewardsType: function(rewardsType, data) {
@@ -140,10 +183,21 @@ define(['backbone', 'captcha'], function(Backbone) {
             this.updateSelected(rewardsType);
         },
         /**
-         * @method
-         * Receives rewards card data from /weborders/reward_cards/ resource. If request failed restores default rewards types.
-         *
-         * @fires App.Models.RewardsCard#onRewardsReceived - fires when a response from server is received
+         * Receives rewards card data from server. If a request failed restores default rewards types.
+         * Used parameters of the request are:
+         * ```
+         * {
+         *     url: '/weborders/reward_cards/',
+         *     type: 'POST',
+         *     dataType: 'json',
+         *     data: JSON.stringify({
+         *         establishment: <establishment id>,
+         *         number: <rewards card number>,
+         *         captchaKey: <captcha key>,
+         *         captchaValue: <captcha value>
+         *     })
+         * }
+         * ```
          */
         getRewards: function() {
             var number = this.get('number'),
@@ -197,8 +251,8 @@ define(['backbone', 'captcha'], function(Backbone) {
             }
         },
         /**
-         * @method
-         * Set `redemption_code` attribute.
+         * Sets `redemption_code` attribute according `rewardsType` value.
+         * @param {string} rewardsType - rewards type
          */
         selectRewardsType: function(rewardsType) {
             var reward = this.get(rewardsType),
@@ -206,8 +260,7 @@ define(['backbone', 'captcha'], function(Backbone) {
             this.set('redemption_code', isAvailable ? REDEMPTION_CODES[rewardsType] : this.defaults.redemption_code);
         },
         /**
-         * @method
-         * Saves data in storage. 'rewardsCard' is used as entry name.
+         * Saves data in a storage. 'rewardsCard' is used as entry name.
          */
         saveData: function() {
             var data = _.extend(this.toJSON(), {
@@ -218,8 +271,7 @@ define(['backbone', 'captcha'], function(Backbone) {
             setData('rewardsCard', data);
         },
         /**
-         * @method
-         * Restores data from storage. 'rewardsCard' is used as entry name.
+         * Restores data from a storage. 'rewardsCard' is used as entry name.
          */
         loadData: function() {
             var data = getData('rewardsCard');
@@ -227,20 +279,14 @@ define(['backbone', 'captcha'], function(Backbone) {
             this.set(data);
         },
         /**
-         * @method
          * Resets all attributes to default values.
-         *
-         * @fires App.Models.RewardsCard #onResetData
          */
         resetData: function() {
             this.set(this.defaults);
             this.trigger('onResetData');
         },
         /**
-         * @method
-         * Resets all attributes to default values except of 'number' field.
-         *
-         * @fires App.Models.RewardsCard #onResetData
+         * Resets all attributes to default values except `number` attribute.
          */
         resetDataAfterPayment: function() {
             var defaults = $.extend({}, this.defaults);
@@ -249,10 +295,8 @@ define(['backbone', 'captcha'], function(Backbone) {
             this.trigger('onResetData');
         },
         /**
-         * @method
          * Updates `selected` attribute of reward type.
-         *
-         * @param key - one of 'points', 'visits', 'purchases' reward types.
+         * @param {string} key - one of 'points', 'visits', 'purchases' reward types.
          */
         updateSelected: function(key) {
             var redemption = this.get('redemption_code'),

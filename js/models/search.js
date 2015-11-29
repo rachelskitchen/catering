@@ -20,14 +20,52 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.Search}, {@link App.Collections.Search}, {@link App.Models.SearchLine} constructors.
+ * @module search
+ * @requires module:products
+ * @see {@link module:config.paths actual path}
+ */
 define(['products'], function() {
     'use strict';
 
-    App.Models.Search = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents a model for producs lookup.
+     * @alias App.Models.Search
+     * @augments Backbone.Model
+     * @example
+     * // create a search model
+     * require(['search'], function() {
+     *     var search = new App.Models.Search();
+     * });
+     */
+    App.Models.Search = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Search.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum
+         */
         defaults: {
+            /**
+             * Lookup string.
+             * @type {?string}
+             */
             pattern: null,
+            /**
+             * Found products.
+             * @type {?App.Collections.Products}
+             */
             products: null
         },
+        /**
+         * Seeks products that match `pattern` attribute value.
+         * @returns {Object} Deferred object.
+         */
         get_products: function() {
             var self = this,
                 load = $.Deferred(),
@@ -47,25 +85,72 @@ define(['products'], function() {
         }
     });
 
-    App.Collections.Search = Backbone.Collection.extend({
+    /**
+     * @class
+     * @classdesc Represents a collection of producs lookups. Keeps all lookups results.
+     * @alias App.Collections.Search
+     * @augments Backbone.Collection
+     * @example
+     * // create a search model
+     * require(['search'], function() {
+     *     var search = new App.Collections.Search();
+     * });
+     */
+    App.Collections.Search = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.Search.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default {App.Models.Search}
+         */
         model: App.Models.Search,
+        /**
+         * Sets a listener on 'onSearchComplete' event
+         * to update {@link App.Collections.Search#lastPattern lastPattern} property.
+         */
         initialize: function() {
             this.listenTo(this, 'onSearchComplete', this.setLastPattern, this);
         },
+        /**
+         * Updates {@link App.Collections.Search#lastPattern lastPattern} property.
+         * @param {App.Models.Search} result - last performed search model.
+         */
         setLastPattern: function(result) {
             if(!(result instanceof App.Models.Search)) {
                 return;
             }
+            /**
+             * Last performed lookup string.
+             * @alias lastPattern
+             * @memberof! App.Collections.Search#
+             * @type {string}
+             */
             this.lastPattern = result.get('pattern');
         },
+        /**
+         * Clears {@link App.Collections.Search#lastPattern lastPattern} property.
+         */
         clearLastPattern: function() {
             this.lastPattern = '';
         },
+        /**
+         * Performs search.
+         * @param {string} pattern - lookup string
+         */
         search: function(pattern) {
             var cache = this.where({pattern: pattern});
             if (cache.length && cache[0].get('completed') == undefined) {
                 return this;
             }
+            /**
+             * Status of searching ('searchStart', 'searchComplete').
+             * @alias status
+             * @memberof! App.Collections.Search#
+             * @type {string}
+             */
             this.status = 'searchStart';
             if(cache.length > 0) {
                 this.status = 'searchComplete';
@@ -87,16 +172,58 @@ define(['products'], function() {
         }
     });
 
-    App.Models.SearchLine = Backbone.Epoxy.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents a model of search UI.
+     * @alias App.Models.SearchLine
+     * @augments Backbone.Epoxy.Model
+     * @example
+     * // create a search model
+     * require(['search'], function() {
+     *     var searchCtrl = new App.Models.SearchLine();
+     * });
+     */
+    App.Models.SearchLine = Backbone.Epoxy.Model.extend(
+    /**
+     * @lends App.Models.SearchLine.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values.
+         * @type {Object}
+         * @enum
+         */
         defaults: {
+            /**
+             * Search string.
+             * @type {string}
+             */
             searchString: '',
+            /**
+             * Dummy string.
+             * @type {string}
+             */
             dummyString: '',
+            /**
+             * Visibility.
+             * @type {boolean}
+             */
             isShow: true,
-            search: null //the instance of App.Collections.Search
+            /**
+             * Search collection.
+             * @type {?App.Collections.Search}
+             */
+            search: null
         },
+        /**
+         * Adds listener on 'change:searchString' to perform a search.
+         */
         initialize: function() {
             this.listenTo(this, 'change:searchString', this.updateSearch, this);
         },
+        /**
+         * Performs a search by `searchString` attribute value.
+         */
         updateSearch: function() {
             if (this.get('searchString')) {
                 this.get('search').search(this.get('searchString'));
@@ -104,6 +231,9 @@ define(['products'], function() {
                 this.get('search').search(null);
             }
         },
+        /**
+         * Clears `searchString`, `dummyString` attributes.
+         */
         empty_search_line: function() {
             this.set("dummyString", "");
             this.set("searchString", "", {silent: true});
