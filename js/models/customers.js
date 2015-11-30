@@ -361,6 +361,7 @@ define(["backbone", "geopoint"], function(Backbone) {
                 switch (response.status) {
                     case "OK":
                         self.set("shipping_services", getShippingOptions(response), {silent: true});
+                        self.set("shipping_selected", getIndex(response));
                         complete();
                         break;
                     default:
@@ -379,6 +380,13 @@ define(["backbone", "geopoint"], function(Backbone) {
             function complete() {
                 self.set("load_shipping_status", "resolved", {silent: true});
                 self.trigger("change:shipping_services");
+            }
+
+            function getIndex(response) {
+                var shipping = _.isObject(response) && _.isObject(response.data) && response.data.shipping;
+                return _.isObject(shipping) && Array.isArray(shipping.options)
+                    ? _.pluck(shipping.options, 'service_code').indexOf(shipping.service_code)
+                    : -1;
             }
         },
         /**
