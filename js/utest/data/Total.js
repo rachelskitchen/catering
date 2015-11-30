@@ -15,7 +15,6 @@ define([], function() {
             grandTotal: 0
         },
         "SYSTEM_SETTINGS": {
-            auto_bag_charge: 0,
             tax_country: 'US',
             prevailing_surcharge: 4,
             prevailing_tax: 9

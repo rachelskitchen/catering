@@ -245,7 +245,7 @@ define(["backbone", "captcha"], function(Backbone) {
         },
         /**
         * @method selects the first available plan.
-        * @returns the first available plan or null.
+        * @returns the first available plan or undefined.
         */
         selectFirstAvailablePlan: function() {
             var firstDollarPlan = _.find(this.get('plans').models, function(model){

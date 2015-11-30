@@ -1,10 +1,13 @@
-define(['customers', 'revel_api'], function() {
+define(['customers',  'js/utest/data/Customer', 'revel_api'], function(customers, data) {
+
     describe("App.Models.Customer", function() {
 
-        var model, def;
+        var model, def, customer1;
 
         beforeEach(function() {
             model = new App.Models.Customer();
+            def = deepClone(data.defaults);
+            customer1 = deepClone(data.customer1);
         });
 
         it('Environment', function() {
@@ -272,15 +275,20 @@ define(['customers', 'revel_api'], function() {
                 expect(model.get).toHaveBeenCalledWith('addresses');
             });
 
-            it("5. App.Settings.address.state is present", function() {
+            it("5. 'addresses' is array with length > 1, wrong index has been passed", function() {
+                get.and.returnValue([{street_1: 1}, {street_1: 2}]);
+                expect(model.address_str(2)).toEqual('');
+                expect(model.get).toHaveBeenCalledWith('addresses');
+            });
+
+            it("6. App.Settings.address.state is present", function() {
                 var values = {
                     street_1: 'street_1',
                     street_2: 'street_2',
                     city: 'city',
                     state: 'state',
                     zipcode: 'zipcode'
-                }, appCache = App,
-                obj;
+                }, appCache = App;
 
                 App = {Settings: {address: {state: true}}};
 
@@ -289,7 +297,7 @@ define(['customers', 'revel_api'], function() {
                 App = appCache;
             });
 
-            it("6. App.Settings.address.state isn't present", function() {
+            it("7. App.Settings.address.state isn't present", function() {
                 var values = {
                     street_1: 'street_1',
                     street_2: 'street_2',
@@ -303,6 +311,49 @@ define(['customers', 'revel_api'], function() {
                 get.and.returnValue([values]);
                 expect(model.address_str()).toEqual(keys.join(', '));
                 App = appCache;
+            });
+        });
+
+        describe('Call _check_delivery_fields() method:', function() {
+            beforeEach(function() {
+                this.address = deepClone(App.Data.settings.get('settings_system').address);
+            });
+
+            afterEach(function() {
+                App.Data.settings.get('settings_system').address = deepClone(this.address);
+            });
+
+            it('Address is filled', function() {
+                model.set('addresses', customer1.addresses);
+                expect(model._check_delivery_fields().length).toBe(0);
+            });
+
+            it('Address isn\'t filled, country is US', function() {
+                model.set({
+                   addresses: [{
+                     city: '',
+                     country: 'US',
+                     state: 'CA',
+                     street_1: '',
+                     street_2: '',
+                     zipcode: ''
+                   }]
+                });
+                expect(model._check_delivery_fields()).toEqual([ 'Address Line 1', 'City', 'Zip Code' ]);
+            });
+
+            it('Address isn\'t filled, country is CA', function() {
+                model.set({
+                   addresses: [{
+                     city: '',
+                     country: 'CA',
+                     province: '',
+                     street_1: '',
+                     street_2: '',
+                     zipcode: ''
+                   }]
+                });
+                expect(model._check_delivery_fields()).toEqual([ 'Address Line 1', 'City', 'Province', 'Zip Code' ]);
             });
         });
 
@@ -346,38 +397,8 @@ define(['customers', 'revel_api'], function() {
                 expect(RevelAPI.listenTo).toHaveBeenCalled();
             });
         });
-/*
-        it('App.Models.Customer Function _check_delivery_fields.', function() {
-            model.set({
-               addresses: [{
-                 city: '',
-                 country: '',
-                 state: '',
-                 street_1: '',
-                 street_2: '',
-                 zipcode: ''
-               }]
-            });
 
-            this.address = deepClone(App.Data.settings.get('settings_system').address);
-            var address = model.get('addresses')[0];
-            App.Data.settings.get('settings_system').address = {};
-
-            expect(model._check_delivery_fields()).toEqual([ 'Address Line 1', 'City', 'Zip Code' ]);
-
-            App.Data.settings.get('settings_system').address = {state: 'some state'};
-            expect(model._check_delivery_fields()).toEqual([ 'State', 'Address Line 1', 'City', 'Zip Code' ]);
-
-            address.state = 'state';
-            address.street_1 = 'st1';
-            address.zipcode = 'zip';
-            address.city = 'city';
-            expect(model._check_delivery_fields().length).toBe(0);
-
-            App.Data.settings.get('settings_system').address = deepClone(this.address);
-        });
-
-        describe('App.Models.Customer Function check.', function() {
+        describe('check()', function() {
 
             beforeEach(function() {
                 model.set({
@@ -398,41 +419,11 @@ define(['customers', 'revel_api'], function() {
                 App.Data.settings.set('skin', this.skin);
             });
 
-            it('check mlb fields. not delivery', function() {
-                 App.Data.settings.set('skin', 'mlb');
+            it('not delivery', function() {
+                expect(model.check().errorMsg.indexOf('Phone')).not.toBe(-1);
 
-                 expect(model.check().errorMsg.indexOf('Phone Number')).not.toBe(-1);
-                 expect(model.check().status).toBe('ERROR_EMPTY_FIELDS');
-                 expect(Array.isArray(model.check().errorList)).toBe(true);
-
-                 model.set('phone', 'test phone');
-                 expect(model.check().errorMsg.indexOf('Phone Number')).toBe(-1);
-
-                 expect(model.check().errorMsg.indexOf('Email')).not.toBe(-1);
-
-                 model.set('email', 'incorrect email');
-                 expect(model.check().errorMsg.indexOf('Email')).not.toBe(-1);
-
-                 model.set('email', 'test@test.test');
-                 expect(model.check().status).toBe('OK');
-            });
-
-            it('check paypal fields. not delivery', function() {
-                 App.Data.settings.set('skin', 'paypal');
-
-                 expect(model.check().errorMsg.indexOf('Phone Number')).not.toBe(-1);
-
-                 model.set('phone', 'test phone');
-                 expect(model.check().status).toBe('OK');
-            });
-
-            it('check weborder fields. not delivery', function() {
-                 App.Data.settings.set('skin', 'weborder');
-
-                 expect(model.check().errorMsg.indexOf('Phone Number')).not.toBe(-1);
-
-                 model.set('phone', 'test phone');
-                 expect(model.check().errorMsg.indexOf('Phone Number')).toBe(-1);
+                 model.set('phone', '555555555');
+                 expect(model.check().errorMsg.indexOf('Phone')).toBe(-1);
 
                  expect(model.check().errorMsg.indexOf('Email')).not.toBe(-1);
 
@@ -453,190 +444,90 @@ define(['customers', 'revel_api'], function() {
                  expect(model.check().status).toBe('OK');
             });
 
-            it('check weborder_mobile fields. not delivery', function() {
-                 App.Data.settings.set('skin', 'weborder_mobile');
-
-                 expect(model.check().errorMsg.indexOf('Phone Number')).not.toBe(-1);
-
-                 model.set('phone', 'test phone');
-                 expect(model.check().errorMsg.indexOf('Phone Number')).toBe(-1);
-
-                 expect(model.check().errorMsg.indexOf('Email')).not.toBe(-1);
-
-                 model.set('email', 'incorrect email');
-                 expect(model.check().errorMsg.indexOf('Email')).not.toBe(-1);
-
-                 model.set('email', 'test@test.test');
-                 expect(model.check().errorMsg.indexOf('Email')).toBe(-1);
-
-                 expect(model.check().errorMsg.indexOf('First Name')).not.toBe(-1);
-
-                 model.set('first_name', 'test name');
-                 expect(model.check().errorMsg.indexOf('First Name')).toBe(-1);
-
-                 expect(model.check().errorMsg.indexOf('Last Name')).not.toBe(-1);
-
-                 model.set('last_name', 'test name');
-                 expect(model.check().status).toBe('OK');
-            });
-
-            it('check paypal fields delivery', function() {
-                 App.Data.settings.set('skin', 'paypal');
-                 model.set({
-                     phone: 'test phone',
-                     shipping_address: -1
-                 });
-                 var array = ['delivery error'];
-                 spyOn(model, '_check_delivery_fields').and.returnValue(array);
-
-                 expect(model.check('DINING_OPTION_DELIVERY').errorMsg.indexOf('delivery error')).not.toBe(-1);
-
-                 array.pop();
-                 expect(model.check().status).toBe('OK');
+            it('delivery', function() {
+                var dining_option = 'dining_option';
+                spyOn(model, 'isNewAddressSelected').and.returnValue(true);
+                spyOn(model, '_check_delivery_fields');
+                model.check(dining_option);
+                expect(model.isNewAddressSelected).toHaveBeenCalledWith(dining_option);
+                expect(model._check_delivery_fields).toHaveBeenCalled();
             });
         });
 
+        describe('get_shipping_services()', function() {
+            var ajaxStub = function() {
+                arg = arguments;
+            };
 
-        describe('App.Models.Customer Function validate_address.', function() {
-            var settings = {},
-                address = [{
-                 address: 'a1'
-               },{
-                 address: 'a2'
-               }],
-               result = [{
-                   geometry: {
-                        location: {
-                            lat: function() { return 1; },
-                            lng: function() { return 2; }
-                        }
-                   }
-               }],
-               args, argsGeo, func, dist = 6,
-               returnSelf = function(e) {
-                   return e === undefined ? 'none arguments' : e;
-               };
-
-            beforeEach(function() {
-                model.set({
-                   addresses: address,
-                   shipping_address: -1
-                });
-
-                this.settings = deepClone(App.Data.settings.get('settings_system'));
-                App.Data.settings.get('settings_system').address.coordinates = {
-                            lat: 10,
-                            lng: 20
-                        };
-                App.Data.settings.get('settings_system').max_delivery_distance = 5;
-                App.Data.settings.get('settings_system').distance_mearsure = 'mi';
-
-                this.google = window.google;
-                this.GeoPoint = window.GeoPoint;
-
-                GeoPoint = function() {
-                    argsGeo = Array.prototype.slice.apply(arguments);
-                    return this;
-                };
-                GeoPoint.prototype.getDistanceMi = function() {};
-                GeoPoint.prototype.getDistanceKm = function() {};
-
-                google = {
-                    maps: {
-                        Geocoder: function() {},
-                        GeocoderStatus: {
-                            OK: 'ok'
-                        }
-                    }
-                };
-
-                google.maps.Geocoder.prototype.geocode = function(){
-                    args = arguments;
-                    func();
-                };
-
-                func = function() { throw 'error' };
+            it('`addresses` is not set', function() {
+                model.set('addresses', []);
+                expect(model.get_shipping_services()).toBeUndefined();
             });
 
-            afterEach(function() {
-                window.google = this.google;
-                window.GeoPoint = this.GeoPoint;
-                App.Data.settings.set('settings_system', deepClone(this.settings));
+            it('`load_shipping_status` is `restoring`', function() {
+                model.set('addresses', customer1.addresses);
+                model.set('load_shipping_status', 'restoring');
+                spyOn(model, 'trigger');
+                spyOn($, 'ajax');
+
+                model.get_shipping_services();
+
+                expect($.ajax).not.toHaveBeenCalled();
+                expect(model.get('load_shipping_status')).toBe('resolved');
+                expect(model.trigger).toHaveBeenCalledWith('change:shipping_services');
             });
 
-            it('shipping other address', function() {
-                expect(model.validate_address(returnSelf, returnSelf)).toBe(MSG.ERROR_DELIVERY_ADDRESS);
-                expect(args[0].address).toBe(address[1].address);
+            it('POST shipping_options', function() {
+                App.Data.myorder = new Backbone.Collection();
+                model.set('addresses', customer1.addresses);
+
+                spyOn(model, 'resetShippingServices');
+                spyOn($, 'ajax').and.callThrough();
+
+                model.get_shipping_services();
+
+                expect(model.resetShippingServices).toHaveBeenCalledWith('pending');
+                expect($.ajax).toHaveBeenCalledWith({
+                    type: "POST",
+                    url: App.Data.settings.get("host") + "/weborders/shipping_options/",
+                    data: jasmine.any(String),
+                    dataType: 'json'
+                });
             });
-
-            it('shipping exicting address with index 0', function() {
-                model.set('shipping_address', 0);
-                model.validate_address(returnSelf, returnSelf);
-                expect(args[0].address).toBe(address[0].address);
-            });
-
-            it('call callback with error status', function() {
-                model.validate_address(returnSelf, returnSelf);
-                expect(args[1]('', 'ERROR')).toBe(MSG.ERROR_DELIVERY_ADDRESS);
-            });
-
-            it('call callback with ok status and long distance', function() {
-                spyOn(GeoPoint.prototype, 'getDistanceMi').and.callFake(function() {
-                    return dist;
-                });
-                dist = 6;
-
-                model.validate_address(returnSelf, returnSelf);
-                expect(args[1](result, google.maps.GeocoderStatus.OK)).toBe(MSG.ERROR_DELIVERY_EXCEEDED);
-                expect(argsGeo).toEqual([10, 20]);
-                expect(GeoPoint.prototype.getDistanceMi).toHaveBeenCalledWith(1,2);
-            });
-
-            it('call callback with ok status and long distance', function() {
-                spyOn(GeoPoint.prototype, 'getDistanceMi').and.callFake(function() {
-                    return dist;
-                });
-                dist = 4;
-
-                model.validate_address(returnSelf, returnSelf);
-                expect(args[1](result, google.maps.GeocoderStatus.OK)).toBe('none arguments');
-                expect(argsGeo).toEqual([10, 20]);
-                expect(GeoPoint.prototype.getDistanceMi).toHaveBeenCalledWith(1,2);
-            });
-
-            describe('Measurement of max distance is kilometers', function() {
-                beforeEach(function() {
-                    App.Data.settings.get('settings_system').distance_mearsure = 'km';
-                    GeoPoint.prototype.getDistanceKm = function() {};
-                });
-                afterEach(function() {
-                    App.Data.settings.get('settings_system').distance_mearsure = 'mi';
-                });
-                it('call callback with error status and long distance', function() {
-                    spyOn(GeoPoint.prototype, 'getDistanceKm').and.callFake(function() {
-                        return dist;
-                    });
-                    dist = 6;
-
-                    model.validate_address(returnSelf, returnSelf);
-                    expect(args[1](result, google.maps.GeocoderStatus.OK)).toBe(MSG.ERROR_DELIVERY_EXCEEDED);
-                    expect(argsGeo).toEqual([10, 20]);
-                    expect(GeoPoint.prototype.getDistanceKm).toHaveBeenCalledWith(1,2);
-                });
-
-                it('call callback with ok status and short distance', function() {
-                    spyOn(GeoPoint.prototype, 'getDistanceKm').and.callFake(function() {
-                        return dist;
-                    });
-                    dist = 4;
-
-                    model.validate_address(returnSelf, returnSelf);
-                    expect(args[1](result, google.maps.GeocoderStatus.OK)).toBe('none arguments');
-                    expect(argsGeo).toEqual([10, 20]);
-                    expect(GeoPoint.prototype.getDistanceKm).toHaveBeenCalledWith(1,2);
-                });
-            })
         });
-*/
+
+        describe('resetShippingServices()', function() {
+            it('status not passed', function() {
+                spyOn(model, 'trigger');
+                model.resetShippingServices();
+
+                expect(model.get('load_shipping_status')).toBe('');
+                expectations();
+            });
+
+            it('status is a string', function() {
+                var status = 'pending';
+                spyOn(model, 'trigger');
+                model.resetShippingServices(status);
+
+                expect(model.get('load_shipping_status')).toBe(status);
+                expectations();
+            });
+
+            function expectations() {
+                expect(model.get('shipping_services').length).toBe(0);
+                expect(model.get('shipping_selected')).toBe(-1);
+                expect(model.trigger).toHaveBeenCalledWith('change:shipping_services');
+            }
+        });
+
+        it('isDefaultShippingSelected()', function() {
+            model.set('shipping_selected', def.shipping_selected);
+            expect(model.isDefaultShippingSelected()).toBe(true);
+
+            model.set('shipping_selected', 1);
+            expect(model.isDefaultShippingSelected()).toBe(false);
+        });
+
     });
 });

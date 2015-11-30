@@ -582,8 +582,9 @@ define(["backbone"], function(Backbone) {
                 changed = false;
 
             // if it is admin_modifier amount_free functionality should be ignored
-            if(isAdmin)
+            if(isAdmin) {
                 return;
+            }
 
             // add modifier to free selected
             if(amount && needAdd) {
@@ -598,13 +599,16 @@ define(["backbone"], function(Backbone) {
                 changed = true;
             }
 
-            if(!changed)
+            if(!changed) {
                 return;
+            }
 
-            if(isPrice)
+            if(isPrice) {
                 this.update_free_price(model);
-            else
+            }
+            else {
                 this.update_free_quantity(model);
+            }
 
             this.set('amount_free_selected', selected);
         },
@@ -644,11 +648,13 @@ define(["backbone"], function(Backbone) {
                 if (qty_total <= free_qty_amount)
                     model.set('free_amount', 0);
                 else {
-                  delta = qty_total - free_qty_amount;
-                  if (delta.toFixed(1)*1 < qty)
-                    model.set('free_amount', round_monetary_currency(delta * model.get('price'))*1 );
-                  else
-                    model.unset('free_amount');
+                    delta = qty_total - free_qty_amount;
+                    if (delta.toFixed(1)*1 < qty) {
+                        model.set('free_amount', round_monetary_currency(delta * model.get('price'))*1 );
+                    }
+                    else {
+                        model.unset('free_amount');
+                    }
                 }
             });
         },

@@ -58,12 +58,35 @@ define(['delivery'], function() {
 
         it('Create model with settings_system without opts', function() {
             model = new App.Models.Delivery();
-            expect(model.toJSON()).toEqual(set);
+            expect(model.toJSON()).toEqual(def);
         });
 
         it('Create model with settings_system and with opts', function() {
             model = new App.Models.Delivery(opts);
             expect(model.toJSON()).toEqual(opts);
+        });
+
+        describe('getCharge()', function() {
+            it('`enable` is false', function() {
+                expect(model.getCharge()).toBe(0);
+            });
+
+            it('`enable` is true', function() {
+                model.set(set);
+                expect(model.getCharge()).toBe(1);
+            });
+        });
+
+        describe('getRemainingAmount', function() {
+            it('`enable` is false', function() {
+                expect(model.getRemainingAmount()).toBeNull();
+            });
+
+            it('`enable` is true', function() {
+                var subtotal = 2;
+                model.set(set);
+                expect(model.getRemainingAmount(subtotal)).toBe(2); // 4 - (3 - 1) = 2
+            });
         });
     });
 });

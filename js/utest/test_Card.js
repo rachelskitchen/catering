@@ -15,9 +15,9 @@ define(['card', 'revel_api'], function() {
                 secondName: '',
                 cardNumber: '',
                 securityCode: '',
-                expMonth: 0,
-                expDate: 0,
-                expTotal: "",
+                expMonth: '01',
+                expDate: new Date().getFullYear().toString(),
+                expTotal: '',
                 street: '',
                 city: '',
                 state: '',
@@ -34,13 +34,28 @@ define(['card', 'revel_api'], function() {
             expect(model.toJSON()).toEqual(def);
         });
 
-        it('First Name and Second Name contains gaps at the beginning and at the end of both values', function() {
-            model.set({
-                firstName: ' first ',
-                secondName: ' second '
+        describe('Trim()', function() {
+            it('firstName and secondName are strings', function() {
+                model.set({
+                    firstName: ' first ',
+                    secondName: ' second '
+                });
+                model.trim();
+
+                expect(model.get('firstName')).toBe('first');
+                expect(model.get('secondName')).toBe('second');
             });
-            expect(model.get('firstName')).toBe('first');
-            expect(model.get('secondName')).toBe('second');
+
+            it('firstName and secondName are not strings', function() {
+                model.set({
+                    firstName: 123,
+                    secondName: null
+                });
+                model.trim();
+
+                expect(model.get('firstName')).toBe('');
+                expect(model.get('secondName')).toBe('');
+            });
         });
 
         it("SaveCard Function", function() {
@@ -80,7 +95,7 @@ define(['card', 'revel_api'], function() {
             // Revel API isn't available
             var func = model.syncWithRevelAPI; // synchronization with Revel API
             var result = func.call(model);
-            expect(result).toEqual(undefined);
+            expect(result).toBeUndefined();
 
             // Revel API is available
             var revel = new App.Models.RevelAPI;
@@ -153,7 +168,7 @@ define(['card', 'revel_api'], function() {
 
             it('Credit card payments', function() {
                 this.skin = App.Data.settings.get('skin');
-                App.Data.settings.set('skin', 'notmlb');
+                App.Data.settings.set('skin', 'weborder');
                 // not paypal direct credit card
                 expect(model.check().errorMsg.indexOf(locale.CARD_FIRST_NAME)).toBe(-1);
                 expect(model.check().errorMsg.indexOf(locale.CARD_LAST_NAME)).toBe(-1);

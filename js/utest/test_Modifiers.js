@@ -1,16 +1,4 @@
-define(['modifiers'], function() {
-
-    var modifiers;
-    
-    $.ajax({
-        type: "GET",
-        url: "js/utest/data/Modifiers.json",
-        dataType: "json",
-        async: false,
-        success: function(data) {
-            modifiers = data;
-        }
-    });
+define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
     
     describe('App.Models.Modifier', function() {
         
@@ -19,9 +7,10 @@ define(['modifiers'], function() {
         
         beforeEach(function() {
             model = new App.Models.Modifier(),
-            def = deepClone(modifiers.def), 
-            ex = deepClone(modifiers.ex),
-            ex0 = deepClone(modifiers.ex0);
+            def = deepClone(data.defaluts),
+            defInitialized = deepClone(data.defaults_initialized),
+            ex = deepClone(data.ex),
+            ex0 = deepClone(data.ex0);
                 
         });
         
@@ -29,8 +18,8 @@ define(['modifiers'], function() {
             expect(App.Models.Modifier).toBeDefined();
         });
        
-        it('Create empy', function() {
-            expect(model.toJSON()).toEqual(def);
+        it('Create empty', function() {
+            expect(model.toJSON()).toEqual(defInitialized);
         });
         
         it('App.Models.Modifier Function addJSON', function() {
@@ -47,36 +36,24 @@ define(['modifiers'], function() {
         
         it('App.Models.Modifier Function update', function() {
             var clone = model.clone().addJSON(ex);
-            expect(model.toJSON()).toEqual(def);
+            expect(model.toJSON()).toEqual(defInitialized);
             expect(model.update(clone).toJSON()).toEqual(ex);
         });
-        
-        describe('Function check_repeat', function() {
-            
-            beforeEach(function() {
-                var actual_data = {
-                    active: true,
-                    price: 10
-                };
-                model.set(actual_data);
-                model.set('actual_data', actual_data);
+    
+        describe('App.Models.Modifier Function updateSum', function() {
+            it('`free_amount` is undefined', function() {
+                spyOn(model, 'getSum').and.returnValue(10);
+                model.updateSum(2);
+                expect(model.get('sum')).toBe(20);
             });
 
-            it('no changes', function() {
-                expect(model.check_repeat()).toBeUndefined();
-            });
-
-            it('inactive', function() {
-                model.get('actual_data').active = false;
-                expect(model.check_repeat()).toBe('remove');
-            });
-
-            it('price changes', function() {
-                model.set('price', 100);
-                expect(model.check_repeat()).toBe('changed');
+            it('`free_amount` is set', function() {
+                model.set('free_amount', 10);
+                model.updateSum(2);
+                expect(model.get('sum')).toBe(20);
             });
         });
-    
+
         describe('Function modifiers_submit', function() {
             
             it('not selected', function() {
@@ -89,34 +66,47 @@ define(['modifiers'], function() {
                     selected: true,
                     id: 'id',
                     cost: 'cost',
-                    price: '12',
-                    order_price: '20'
+                    price: '12'
                 });
+
                 expect(model.modifiers_submit()).toEqual({
                         modifier: 'id',
                         modifier_cost: 'cost',
-                        modifier_price: 20,
-                        qty: 1 // ??? dont know                       
+                        modifier_price: 12,
+                        free_mod_price: undefined,
+                        max_price_amount: undefined,
+                        qty: 1,
+                        qty_type: 0
                 });
             });
         });
         
         describe('Function update_prices', function() {
-            
+            var max_price = 15;
+
             beforeEach(function() {
-                model.set('price', 12);
+                model.set('max_price', max_price);
             });
             
-            it('current price more than available', function() {
-                expect(model.update_prices(15)).toBe(3);
-                expect(model.get('order_price')).toBe(12);
+            it('price > max_price', function() {
+                model.set('price', 20);
+
+                expect(model.update_prices(max_price)).toBe(0);
+                expect(model.get('max_price_amount')).toBe(max_price);
             });
             
-            it('current price less than available', function() {
-                expect(model.update_prices(9)).toBe(0);
-                expect(model.get('order_price')).toBe(9);
-                
+            it('price < max_price', function() {
+                model.set('price', 10);
+
+                expect(model.update_prices(max_price)).toBe(5);
+                expect(model.get('max_price_amount')).toBeUndefined();
             });
+        });
+
+        it('Function removeFreeModifier', function() {
+            model.set('free_amount', 10);
+            model.removeFreeModifier();
+            expect(model.get('free_amount')).toBeUndefined();
         });
     });
     
@@ -126,9 +116,9 @@ define(['modifiers'], function() {
         
         beforeEach(function() {
             model = new App.Collections.Modifiers(),
-            def = deepClone(modifiers.def), 
-            ex = deepClone(modifiers.ex);
-            ex2 = deepClone(modifiers.ex2);
+            def = deepClone(data.def), 
+            ex = deepClone(data.ex);
+            ex2 = deepClone(data.ex2);
                 
         });
         
@@ -166,7 +156,7 @@ define(['modifiers'], function() {
             expect(model.update(clone).toJSON()).toEqual([ex2, ex]);
         });
                 
-        describe('App.Collections.Modifiers Function reset_checked.', function() {
+        describe('App.Collections.Modifiers Function reset_checked', function() {
             
             it('Check filter options', function() {
                 spyOn(model,'where').and.returnValue([]);
@@ -187,39 +177,8 @@ define(['modifiers'], function() {
             
         });
         
-        
-        describe('Function check_repeat', function() {
-            
-            it('models changed', function() {
-                
-                var changes = 'changed';
-                spyOn(App.Models.Modifier.prototype, 'check_repeat').and.callFake(function() {
-                    var old = changes;
-                    changes = !changes;
-                    return old;
-                });
-
-                model.add([{selected: true}, {selected: true}, {}]);
-                expect(model.check_repeat()).toBe('changed');
-            });
-
-            it('models inactive', function() {                
-                spyOn(App.Models.Modifier.prototype, 'check_repeat').and.returnValue('remove');
-
-                model.add([{selected: true}, {selected: true}, {}]);                
-                expect(model.check_repeat()).toBe('changed');
-                expect(model.length).toBe(1);
-            });
-            
-            it('models not changed', function() {
-                model.add([{selected: true},{selected: true}, {}]);
-                spyOn(App.Models.Modifier.prototype, 'check_repeat').and.returnValue(true);
-                expect(model.check_repeat()).toBeUndefined();
-            });
-        });
-        
         it('Function get_sum', function() {
-            model.add([{selected: true, order_price: 1}, {selected: true, order_price: 10}, {order_price: 100}]);
+            model.add([{selected: true, price: 1}, {selected: true, price: 10}, {price: 100}]);
             expect(model.get_sum()).toBe(11);
         });
     
@@ -241,6 +200,17 @@ define(['modifiers'], function() {
             model.add([{selected: true},{selected: true}]);
             expect(model.update_prices(12)).toBe(10);
         });
+
+        it('Function removeFreeModifiers', function() {
+            model.add(ex);
+            model.each(function(modifier) {
+                spyOn(modifier, 'removeFreeModifier');
+            });
+            model.removeFreeModifiers();
+            model.each(function(modifier) {
+                expect(modifier.removeFreeModifier).toHaveBeenCalled();
+            });
+        });
     });
     
     describe('App.Models.ModifierBlock', function() {
@@ -249,12 +219,12 @@ define(['modifiers'], function() {
         
         beforeEach(function() {
             model = new App.Models.ModifierBlock();
-            def = deepClone(modifiers.def);
-            ex = deepClone(modifiers.ex);
-            ex2 = deepClone(modifiers.ex2);
-            defBlock = deepClone(modifiers.defBlock);
-            exBlock = deepClone(modifiers.exBlock);
-            exBlock2 = deepClone(modifiers.exBlock2);
+            def = deepClone(data.def);
+            ex = deepClone(data.ex);
+            ex2 = deepClone(data.ex2);
+            defBlock = deepClone(data.defBlock);
+            exBlock = deepClone(data.exBlock);
+            exBlock2 = deepClone(data.exBlock2);
             modColl = new App.Collections.Modifiers([ex, ex2]);
             exDef = deepClone(exBlock);
             exDef.modifiers = new App.Collections.Modifiers([ex, ex2]);
@@ -265,20 +235,20 @@ define(['modifiers'], function() {
             expect(App.Models.ModifierBlock).toBeDefined();
         });
        
-        it('Create empy. Test initialization', function() {
+        it('Create empty. Test initialization', function() {
             var spy = jasmine.createSpy('event change'),
                 modifiers = model.get('modifiers');
+
             expect(model.get('modifiers').__proto__).toBe(App.Collections.Modifiers.prototype );
             
-            model.listenTo(model, 'change', spy); // change modifier model trigger
+            model.listenTo(model, 'change:modifiers', spy); // change modifier model trigger
             modifiers.add(ex);
             expect(spy).not.toHaveBeenCalled();
-            modifiers.get(ex).set('price',5);
+            model.set('modifiers', ex2);
             expect(spy).toHaveBeenCalled();
             expect(spy.calls.mostRecent().args[0].cid).toBe(model.cid);
-            expect(spy.calls.mostRecent().args[1].modifier.cid).toBe(modifiers.get(ex.id).cid);
-            
-            
+
+            expect(model.get('amount_free_selected')).toEqual([]);
             model.unset('modifiers'); // check default modifierBlock
             expect(model.toJSON()).toEqual(defBlock);
         });
@@ -347,19 +317,6 @@ define(['modifiers'], function() {
             
         });
         
-        it('Function check_repeat', function() {
-            var obj = {
-                check_repeat: function() {}
-            };
-            spyOn(model, 'get').and.returnValue(obj);
-            spyOn(obj, 'check_repeat');
-
-            model.check_repeat();
-
-            expect(model.get).toHaveBeenCalledWith('modifiers');
-            expect(obj.check_repeat).toHaveBeenCalled();
-        });
-        
         describe('Function get_sum', function() {
             
             it('Size and Special', function() {
@@ -398,8 +355,9 @@ define(['modifiers'], function() {
             });
             
             it('for not special modifier', function() {
-                spyOn(App.Collections.Modifiers.prototype, 'modifiers_submit').and.returnValue('test');
-                expect(model.modifiers_submit()).toBe('test');
+                var collection = new App.Collections.Modifiers();
+                spyOn(App.Collections.Modifiers.prototype, 'modifiers_submit').and.returnValue(collection);
+                expect(model.modifiers_submit()).toBe(collection);
             });
         });
         
@@ -440,6 +398,40 @@ define(['modifiers'], function() {
                 
             });
         });
+
+        describe('Function update_free', function() {
+            var modifier;
+
+            beforeEach(function() {
+                modifier = new App.Models.Modifier();
+                modifier.set(ex);
+            });
+
+            it('`ignore_free_modifiers` is true', function() {
+                model.set('ignore_free_modifiers', true);
+                expect(model.update_free(modifier)).toBeUndefined();
+                expect(model.get('amount_free_selected').length).toBe(0);
+            });
+
+            it('`admin_modifier` is true', function() {
+                model.set('admin_modifier', true);
+                expect(model.update_free(modifier)).toBeUndefined();
+                expect(model.get('amount_free_selected').length).toBe(0);
+            });
+
+            it('no selected modifers', function() {
+                modifier.set('selected', false);
+                expect(model.update_free(modifier)).toBeUndefined();
+                expect(model.get('amount_free_selected').length).toBe(0);
+            });
+
+            it('`amount_free` is set, modifier is selected', function() {
+                model.set('amount_free', 10);
+                modifier.set('selected', true);
+                model.update_free(modifier);
+                expect(model.get('amount_free_selected')).toEqual([modifier]);
+            });
+        });
     });
     
     describe('App.Collections.ModifierBlocks', function() {
@@ -448,23 +440,23 @@ define(['modifiers'], function() {
         
         beforeEach(function() {
             model = new App.Collections.ModifierBlocks();
-            def = deepClone(modifiers.def);
-            ex = deepClone(modifiers.ex);
-            ex2 = deepClone(modifiers.ex2);
-            defBlock = deepClone(modifiers.defBlock);
-            exBlock = deepClone(modifiers.exBlock);
-            exBlock2 = deepClone(modifiers.exBlock2);
-            exBlocks = deepClone(modifiers.exBlocks);
-            exBlocks2 = deepClone(modifiers.exBlocks2);
+            def = deepClone(data.def);
+            ex = deepClone(data.ex);
+            ex2 = deepClone(data.ex2);
+            defBlock = deepClone(data.defBlock);
+            exBlock = deepClone(data.exBlock);
+            exBlock2 = deepClone(data.exBlock2);
+            exBlocks = deepClone(data.exBlocks);
+            exBlocks2 = deepClone(data.exBlocks2);
             modColl = new App.Collections.Modifiers([ex, ex2]);
             exDef = deepClone(exBlocks2);
             exDef.map(function(elem) {
                elem.modifiers =  new App.Collections.Modifiers(elem.modifiers);
                return elem;
             });
-            load = deepClone(modifiers.load);
-            loadModifiers = deepClone(modifiers.loadModifiers);
-            loadModifier = deepClone(modifiers.loadModifier);
+            load = deepClone(data.load);
+            loadModifiers = deepClone(data.loadModifiers);
+            loadModifier = deepClone(data.loadModifier);
         });
         
         it('Environment', function() {
@@ -606,7 +598,7 @@ define(['modifiers'], function() {
             });
             
             it('checkForced. Selected one force as true modifiers not selected', function() {    
-                exBlocks2[2].modifiers[0].selected = false;            
+                exBlocks2[2].modifiers[0].selected = false;
                 model.addJSON(exBlocks2);
                 var forced = model.checkForced();
                 expect(forced.length).toBe(1);
@@ -619,8 +611,9 @@ define(['modifiers'], function() {
             });
             
             it('checkForced. Selected two force as true, zero modifiers selected', function() {   
-                exBlocks2[3].forced = true;          
+                exBlocks2[3].forced = true;
                 exBlocks2[3].modifiers[0].selected = false;
+                exBlocks2[3].minimum_amount = 1;
                 exBlocks2[2].modifiers[0].selected = false;
                 model.addJSON(exBlocks2);
                 var forced = model.checkForced();
@@ -628,8 +621,7 @@ define(['modifiers'], function() {
                 expect([forced[0].id, forced[1].id]).toEqual([3,4]);
             });
             
-            it('checkForced. Selected two force as true, one modifiers selected', function() {   
-                exBlocks2[3].forced = true;          
+            it('checkForced. Selected two force as true, one modifiers selected', function() {
                 exBlocks2[2].modifiers[0].selected = false;
                 model.addJSON(exBlocks2);
                 var forced = model.checkForced();
@@ -641,45 +633,6 @@ define(['modifiers'], function() {
                 exBlocks2[3].forced = true;          
                 model.addJSON(exBlocks2);
                 expect(model.checkForced()).toBe(true);
-            });
-        });
-                
-        describe('App.Collections.ModifierBlocks Function get_all_line', function() {
-            
-            it('get_all_line. Not selected modifiers', function() {
-                exBlocks[0].modifiers[0].selected = false;
-                model.addJSON(exBlocks);
-                expect(model.get_all_line()).toBe('');
-            });
-            
-            it('get_all_line. Not selected size, special modifiers and two other', function() {
-                model.addJSON(exBlocks2);
-                expect(model.get_all_line()).toBe('add Test Special, Test Size size, add Test Ord22, add Test Ord222');
-            });
-
-            it('get_all_line. ignore_special parameter is present', function() {
-                model.addJSON(exBlocks2);
-                expect(model.get_all_line(true)).toBe('Test Size size, add Test Ord22, add Test Ord222');
-            });
-        });
-        
-        describe('Function check_repeat', function() {
-            
-            it('models changed', function() {
-                var changes = 'changed';
-                spyOn(App.Models.ModifierBlock.prototype, 'check_repeat').and.callFake(function() {
-                    var old = changes;
-                    changes = !changes;
-                    return old;
-                });
-                model.add([{},{}]);
-                expect(model.check_repeat()).toBe('changed');
-            });
-            
-            it('models not changed', function() {
-                model.add([{},{}]);
-                spyOn(App.Models.ModifierBlock.prototype, 'check_repeat').and.returnValue(true);
-                expect(model.check_repeat()).toBeUndefined();
             });
         });
         

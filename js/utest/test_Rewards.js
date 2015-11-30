@@ -459,7 +459,9 @@ define(['rewards'], function() {
                 captchaValue: 'test'
             };
 
+            spyOn(rewardsCard, 'trigger').and.callThrough();
             rewardsCard.set(data);
+
             expect(rewardsCard.get('number')).toBe(data.number);
             expect(rewardsCard.get('redemption_code')).toBe(data.redemption_code);
             expect(rewardsCard.get('captchaValue')).toBe(data.captchaValue);
@@ -469,7 +471,30 @@ define(['rewards'], function() {
             expect(rewardsCard.get('purchases').toJSON()).toEqual(data.purchases);
 
             rewardsCard.resetData();
+
             expect(rewardsCard.toJSON()).toEqual(rewardsCard.defaults);
+            expect(rewardsCard.trigger).toHaveBeenCalledWith('onResetData');
+        });
+
+        it('resetDataAfterPayment()', function() {
+            var data = {
+                number: '232312',
+                redemption_code: 2,
+                points: {rewards_earned: 11, discount: 12, point_to_next_reward: 13, value: 14, selected: true},
+                visits: {rewards_earned: 21, discount: 22, point_to_next_reward: 23, value: 24, selected: false},
+                purchases: {rewards_earned: 31, discount: 32, point_to_next_reward: 33, value: 34, selected: false},
+            };
+
+            spyOn(rewardsCard, 'trigger').and.callThrough();
+            rewardsCard.set(data);
+            rewardsCard.resetDataAfterPayment();
+
+            expect(rewardsCard.get('number')).toBe(data.number);
+            expect(rewardsCard.get('redemption_code')).toBe(rewardsCard.defaults.redemption_code);
+            expect(rewardsCard.get('points')).toEqual(rewardsCard.defaults.points);
+            expect(rewardsCard.get('visits')).toEqual(rewardsCard.defaults.visits);
+            expect(rewardsCard.get('purchases')).toEqual(rewardsCard.defaults.purchases);
+            expect(rewardsCard.trigger).toHaveBeenCalledWith('onResetData');
         });
 
         describe('updateSelected()', function() {

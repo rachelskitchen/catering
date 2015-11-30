@@ -208,15 +208,15 @@ define(["backbone", "geopoint"], function(Backbone) {
                 settings = App.Settings,
                 str = [];
 
-            index = index >= 0 ? index : addresses.length - 1;
-
-            if(Array.isArray(addresses) && addresses.length > 0) {
-                addresses = addresses[index];
-            } else {
+            if (!Array.isArray(addresses) || addresses.length <= 0) {
                 return '';
             }
 
-            if(!(addresses instanceof Object)) {
+            index = index >= 0 ? index : addresses.length - 1;
+
+            addresses = addresses[index];
+
+            if (!(addresses instanceof Object)) {
                 return '';
             }
 
@@ -252,7 +252,6 @@ define(["backbone", "geopoint"], function(Backbone) {
             // if not Canada exclude province property
             if(address.country != 'CA')
                 delete req.province;
-
             for(var i in req) {
                 !address[i] && empty.push(req[i]);
             }

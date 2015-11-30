@@ -231,9 +231,10 @@ define(["backbone", "collection_sort"], function(Backbone) {
          * ```
          * [
          *     {
+         *          ids:  {string} comma-delimited ids of subcategories
          *          name: <parent_name>
          *          sort: <parent_sort>
-         *          subcategories: App.Collections.Categories
+         *          subs: {Array} array of subcategories
          *     },
          *     ...
          * ]
