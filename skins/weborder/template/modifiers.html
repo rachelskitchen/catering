@@ -1,7 +1,7 @@
 <script type="text/template" id="modifiers_item-template">
     <label for="modifier<%= id %>" class="s<%= slength %> <% if(isSpecial) { %>special_label<% } %> <% if(!_settings.online_orders) {print('no-controls');} %>">
         <% if (!isSpecial) { %>
-        <input type="<%= type %>" id="modifier<%= id %>" name="modifier<%= modifierClassName %>">
+        <input type="<%= type %>" id="modifier<%= id %>" name="modifier<%= id %>">
         <span class="input <%= type %>"></span>
         <% } else { %>
             <span class="special_button"> <span class="clip"> <%= _lp.MODIFIERS_BUTTON_ADD %> </span> </span>

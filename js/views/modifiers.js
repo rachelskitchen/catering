@@ -134,6 +134,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         },
         showTooltip: function(event) {
             event.preventDefault();
+            if (event.target.className != 'info') {
+                return;
+            }
             var $el = this.$(event.target),
                 modifierLabel = $el.parent().parent();
 
