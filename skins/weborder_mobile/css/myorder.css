@@ -14,7 +14,7 @@
 }
 
 .myorder.items > li,
-.discount.items > li, 
+.discount.items > li,
 .service_fees.items > li {
     padding: 2em 0;
     border-bottom-width: 1px;
@@ -60,3 +60,27 @@
     height: 6.5em;
     margin: 0.5em 0;
 }
+/* combo products */
+.myorderList .combo_products_place .myorder_combo > li {
+    margin-top: 1.5em;
+    margin-left: 2.5em;
+}
+.myorderList .combo_products_place .myorder_combo .product-name {
+    font-size: 2.8em;
+}
+.myorderList .combo_products_place .qty {
+    border: 2px solid #373c40;
+    color: #373c40;
+    background-color: #fff;
+    font-weight: bold;
+    border-radius: 4em;
+    padding: 0.35em 0.5em;
+}
+.myorderList .combo_products_place .btns {
+    display: none;
+}
+.myorderList .combo_products_place .myorder_combo .item-sum {
+    display: none;
+}
+
+

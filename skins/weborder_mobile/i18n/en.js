@@ -259,6 +259,9 @@
         'STANFORD_RELOAD_INFO1': "Please specify the Card # and the amount you'd like to add",
         'STANFORD_RELOAD_INFO2': "Please specify the plan you'd like to add value to",
         'STANFORD_CARD_NUMBER': "Stanford Card #",
-        'CHANGE_ESTABLISHMENT': 'Change to a different store?'
+        'CHANGE_ESTABLISHMENT': 'Change to a different store?',
+        'COMBO_CUSTOMIZE': 'Customize',
+        'PRODUCT_SETS_SELECT_1': 'Please choose your "',
+        'PRODUCT_SETS_SELECT_2': '" options'
     } // end of locale
 }); // end of module

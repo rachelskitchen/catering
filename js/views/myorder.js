@@ -98,16 +98,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 this.$('.product_info').append(this.viewProduct.el);
             }
         },
-        renderProduct: function() {
-            var model = this.model;
-            this.viewProduct = App.Views.GeneratorView.create('Product', {
-                modelName: 'Product',
-                model: model,
-                mod: 'Modifiers'
-            });
-            this.$('.product_info').append(this.viewProduct.el);
-            this.subViews.push(this.viewProduct);
-        },
         renderModifiers: function() {
             var model = this.model,
                 viewModifiers;
@@ -132,35 +122,206 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     });
             }
             this.subViews.push(viewModifiers);
+        },
+        renderProduct: function() {
+            var model = this.model;
+            this.viewProduct = App.Views.GeneratorView.create('Product', {
+                modelName: 'Product',
+                model: model,
+                mod: 'Modifiers'
+            });
+            this.$('.product_info').append(this.viewProduct.el);
+            this.subViews.push(this.viewProduct);
+        },
+        renderProductFooter: function() {
+            var model = this.model,
+                product = this.model.get("product");
+
+            var view = App.Views.GeneratorView.create('MyOrder', {
+                el: this.$(".product_info_footer"),
+                model: this.model,
+                mod: 'MatrixFooter',
+                action: this.options.action,
+                flags: this.options.combo_child ? ['no_specials', 'no_quantity'] : undefined,
+                real: this.options.real,
+                action_callback: this.options.action_callback
+            });
+            this.subViews.push(view);
         }
     });
+
+    App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'matrix_combo',
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            var model = this.model;
+            this.renderProduct();
+            this.renderProductSets();
+            return this;
+        },
+        renderProductSets: function() {
+            var model = this.model,
+                productSets,
+                product = this.model.get("product");
+
+            if (!product) return;
+
+            var el = $('<div class="product_sets"></div>');
+                this.$('.modifiers_info').append(el);
+                productSets = App.Views.GeneratorView.create('ProductSets', {
+                    el: el,
+                    model: this.model,
+                    collection: product.get('product_sets'),
+                    mod: 'List'
+                });
+
+            this.subViews.push(productSets);
+        },
+        renderProduct: function() {
+            var model = this.model;
+            this.viewProduct = App.Views.GeneratorView.create('Product', {
+                modelName: 'Product',
+                model: model,
+                mod: 'ModifiersCombo'
+            });
+            this.$('.product_info').append(this.viewProduct.el);
+            this.subViews.push(this.viewProduct);
+        },
+        renderProductFooter: function() {
+            var model = this.model,
+                product = this.model.get("product");
+
+            var view = App.Views.GeneratorView.create('MyOrder', {
+                el: this.$(".product_info_footer"),
+                model: this.model,
+                mod: 'MatrixFooterCombo',
+                action: this.options.action,
+                real: this.options.real,
+                action_callback: this.options.action_callback
+            });
+            this.subViews.push(view);
+        }
+    });
+
+    App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'matrix_footer',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.update_child_selected);
+            return this;
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            if (this.options.action === 'add') {
+                this.$('.action_button').html(_loc['MYORDER_ADD_ITEM']);
+            } else {
+                this.$('.action_button').html(_loc['MYORDER_UPDATE_ITEM']);
+            }
+            var model = this.model,
+                view;
+
+            if (!this.options.flags || this.options.flags.indexOf('no_quantity') == -1) {
+                var sold_by_weight = this.model.get_product().get("sold_by_weight"),
+                    mod = sold_by_weight ? 'Weight' : 'Main';
+
+                view = App.Views.GeneratorView.create('Quantity', {
+                    el: this.$('.quantity_info'),
+                    model: model,
+                    mod: mod
+                });
+                this.subViews.push(view);
+            }
+
+            if (!this.options.flags || this.options.flags.indexOf('no_specials') == -1) {
+                view = App.Views.GeneratorView.create('Instructions', {
+                    el: this.$('.product_instructions'),
+                    model: model,
+                    mod: 'Modifiers'
+                });
+                this.subViews.push(view);
+
+                if (App.Settings.special_requests_online === false) {
+                    view.$el.hide(); // hide special request if not allowed
+                }
+            }
+
+            this.update_child_selected();
+            return this;
+        },
+        events: {
+            'click .action_button:not(.disabled)': 'action',
+            'keydown .action_button:not(.disabled)': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.action();
+                }
+            }
+        },
+        update_child_selected: function() {
+            if (this.check_model()) {
+                this.$('.action_button').removeClass('disabled');
+            }
+            else {
+                this.$('.action_button').addClass('disabled');
+            }
+        },
+        check_model: function() {
+            return this.model.get('product').check_selected();
+        },
+        action: function (event) {
+            var check = this.model.check_order(),
+                self = this, index, collection;
+            if (check.status === 'OK') {
+                if (self.options.action === 'add') {
+                    App.Data.myorder.add(self.model);
+                } else {
+                    collection = self.options.real.collection;
+                    index = collection.indexOf(self.options.real);
+                    collection.remove(self.options.real);
+                    collection.add(self.model, {at: index});
+                  if (collection.splitItemAfterQuantityUpdate)
+                        collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
+                }
+                $('#popup .cancel').trigger('click');
+            } else {
+                App.Data.errors.alert(check.errorMsg); // user notification
+            }
+        }
+    });
+
+    App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterComboView = _MatrixFooterComboView (App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView ) ;
+    function _MatrixFooterComboView(_base) { return _base.extend ({
+        initialize: function() {
+            _base.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'combo_product_change', this.update_child_selected);
+            return this;
+        },
+        check_model: function() {
+            return this.model.get('product').get("product_sets").check_selected();
+        }
+      });
+    }
 
     App.Views.CoreMyOrderView.CoreMyOrderItemView = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'item',
         initialize: function() {
-            this.extendBindingSources({_product: this.model.get_product()});
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change', this.update);
             this.listenTo(this.model.get_product(), 'change', this.update);
         },
-        bindings: {
-             '.item-sum': 'text: select(isServiceFee, currencyFormat(initial_price), currencyFormat(sum_wo_mdfs))'
+        start: function() {
+            this.listenTo(this.model, 'change', this.update);
+            this.listenTo(this.model.get_product(), 'change', this.update);
+            this.update();
         },
-        computeds: {
-            sum_wo_mdfs: {
-                deps: ['initial_price', 'weight', 'quantity', '_product_sold_by_weight'],
-                get: function(initial_price, weight, quantity, sold_by_weight) {
-                    var productSum = initial_price;
-                    if (sold_by_weight && weight) {
-                        productSum *= weight;
-                    }
-                    return productSum * quantity;
-                }
-            }
+        stop: function() { //called by FactotyView while the view detached from DOM
+            //it's for save time for useless processing:
+            this.stopListening();
         },
         render: function() {
-            var self = this,
+            var self = this, view,
                 modifiers = this.model.get_modifiers();
 
             this.$el.html(this.template(this.getData()));
@@ -181,7 +342,16 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 });
             });
 
-            var view = App.Views.GeneratorView.create('MyOrder', {
+            if (this.model.isComboProduct()) {
+                view = App.Views.GeneratorView.create('MyOrder', {
+                    el: this.$('.combo_products_place'),
+                    mod: 'ComboList',
+                    collection: this.model.get('product').get('product_sets').get_selected_products()
+                });
+                self.subViews.push(view);
+            }
+
+            view = App.Views.GeneratorView.create('MyOrder', {
                 el: $('<li></li>'),
                 mod: 'ProductDiscount',
                 model: this.model
@@ -201,7 +371,9 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             model.sizeModifier = sizeModifier ? sizeModifier.get('name') : '';
             model.name = product.get('name');
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
+
             model.initial_price = round_monetary_currency(this.model.get('initial_price'));
+
             model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;//    product.get('uom');
             model.is_gift = product.get('is_gift');
             model.gift_card_number = product.get('gift_card_number');
@@ -217,6 +389,19 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 model.weight = model.weight.toFixed(num_digits);
             }
 
+            var productSum = model.initial_price;
+            if (model.sold_by_weight && weight) {
+                productSum *= model.weight;
+            }
+            if (product.get("is_combo"))
+                productSum = product.get("combo_price") * model.quantity;
+            else if( model.is_service_fee ) {
+                productSum = round_monetary_currency(model.initial_price);
+            } else {
+                productSum = productSum * model.quantity;
+            }
+            model.product_sum = round_monetary_currency( productSum );
+            //trace("render ==> ", model.name, product.get("is_combo"), model.initial_price, model.product_sum);
             return model;
         },
         events: {
@@ -265,8 +450,21 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         mod: 'list',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.startListen();
+        },
+        startListen: function() {
             this.listenTo(this.collection, 'add', this.addItem, this);
             this.listenTo(this.collection, 'remove', this.removeItem, this);
+        },
+        start: function() {
+            this.render();
+            this.startListen();
+            App.Views.FactoryView.prototype.start.apply(this, arguments);
+        },
+        stop: function() { //called by FactotyView while the view detached from DOM
+            //it's for save time for useless processing:
+            this.stopListening();
+            App.Views.FactoryView.prototype.stop.apply(this, arguments);
         },
         render: function() {
             this.$el.html(this.template());
@@ -289,7 +487,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
 
             this.subViews.push(view);
             this.$('.myorder').append(view.el);
-           
+
             if (this.subViews.indexOf(this.discountItemView) == -1 && this.collection.discount && !this.discountItemView ) {
                 var view = App.Views.GeneratorView.create('MyOrder', {
                     mod: 'Discount',
@@ -310,6 +508,22 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     return true;
                 }
             });
+        }
+    });
+
+    App.Views.CoreMyOrderView.CoreMyOrderComboListView = App.Views.CoreMyOrderView.CoreMyOrderListView.extend({
+        name: 'myorder',
+        mod: 'combo_list',
+        addItem: function(model) {
+            var view = App.Views.GeneratorView.create('MyOrder', {
+                mod: 'Item',
+                model: model,
+                el: $('<li></li>'),
+                collection: this.collection
+            });
+
+            this.subViews.push(view);
+            this.$('.myorder_combo').append(view.el);
         }
     });
 
@@ -444,8 +658,12 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         App.Views.MyOrderView.MyOrderDiscountView = App.Views.CoreMyOrderView.CoreMyOrderDiscountView;
         App.Views.MyOrderView.MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView;
         App.Views.MyOrderView.MyOrderListView = App.Views.CoreMyOrderView.CoreMyOrderListView;
+        App.Views.MyOrderView.MyOrderComboListView = App.Views.CoreMyOrderView.CoreMyOrderComboListView;
         App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView;
+        App.Views.MyOrderView.MyOrderMatrixFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView;
+        App.Views.MyOrderView.MyOrderMatrixFooterComboView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterComboView;
         App.Views.MyOrderView.MyOrderNoteView = App.Views.CoreMyOrderView.CoreMyOrderNoteView;
         App.Views.MyOrderView.MyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView;
+        App.Views.MyOrderView.MyOrderMatrixComboView = App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView;
     });
 });

@@ -26,9 +26,10 @@
  * @requires module:backbone
  * @requires module:childproducts
  * @requires module:collection_sort
+ * @requires module:product_sets
  * @see {@link module:config.paths actual path}
  */
-define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
+define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], function(Backbone) {
     'use strict';
 
     /**
@@ -222,7 +223,17 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
              * URL of resource with product size chart.
              * @type {string}
              */
-            size_chart: ''
+            size_chart: '',
+            /**
+             * Product is combo or not
+             * @type {boolean}
+             */
+            is_combo: false,
+            /**
+             * Combo product price
+             * @type {number}
+             */
+            combo_price: null
         },
         /**
          * Sets `img` as App.Data.settings.get("img_path") value, `checked_gift_cards` as `{}`,
@@ -279,6 +290,12 @@ define(["backbone", 'childproducts', 'collection_sort'], function(Backbone) {
 
             if(isNaN(data.created_date)) {
                 data.created_date = 0;
+            }
+
+            if (data.is_combo && Array.isArray(data.product_sets)) {
+                var product_sets = new App.Collections.ProductSets;
+                product_sets.addJSON(data.product_sets);
+                data.product_sets = product_sets;
             }
 
             this.set(data);

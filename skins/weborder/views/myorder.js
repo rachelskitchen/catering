@@ -23,95 +23,42 @@
 define(["myorder_view"], function(myorder_view) {
     'use strict';
 
-    var MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView.extend({
-        initialize: function() {
-            App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.attributes_update);
-        },
+    var CoreViews = App.Views.CoreMyOrderView;
+
+    var DynamicHeightHelper_Modifiers = DynamicHeightHelper(CoreViews.CoreMyOrderMatrixView.prototype);
+
+    var MyOrderMatrixView = _MyOrderMatrixView( CoreViews.CoreMyOrderMatrixView )
+                                                    .mixed( DynamicHeightHelper_Modifiers );
+    function _MyOrderMatrixView(_base){ return _base.extend({
         render: function() {
-            App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.render.apply(this, arguments);
-            if (this.options.action === 'add') {
-                this.$('.action_button').html(_loc['MYORDER_ADD_ITEM']);
-            } else {
-                this.$('.action_button').html(_loc['MYORDER_UPDATE_ITEM']);
-            }
-            var model = this.model,
-                view;
-
-            var sold_by_weight = this.model.get_product().get("sold_by_weight"),
-                mod = sold_by_weight ? 'Weight' : 'Main';
-
-            view = App.Views.GeneratorView.create('Quantity', {
-                el: this.$('.quantity_info'),
-                model: model,
-                mod: mod
-            });
-            this.subViews.push(view);
-
-            view = App.Views.GeneratorView.create('Instructions', {
-                el: this.$('.product_instructions'),
-                model: model,
-                mod: 'Modifiers'
-            });
-            this.subViews.push(view);
-
-            if (App.Settings.special_requests_online === false) {
-                view.$el.hide(); // hide special request if not allowed
-            }
-
-            $('#popup').addClass('ui-invisible');
-            setTimeout(this.change_height.bind(this, 1), 20);
-            this.interval = this.interval || setInterval(this.change_height.bind(this), 500); // check size every 0.5 sec
-            this.$('.modifiers_table_scroll').contentarrow();
-            this.attributes_update();
+            _base.prototype.render.apply(this, arguments);
+            this.renderProductFooter();
+            this.dh_initialize();
             return this;
+        }
+      })
+    };
+
+    function DynamicHeightHelper(_base_proto) {
+      return {
+        dh_initialize: function() {
+            $('#popup').addClass('ui-invisible');
+            setTimeout(this.dh_change_height.bind(this, 1), 20);
+            this.interval = this.interval || setInterval(this.dh_change_height.bind(this), 500); // check size every 0.5 sec
+            this.$('.modifiers_table_scroll').contentarrow();
         },
         events: {
-            'click .action_button:not(.disabled)': 'action',
-            'keydown .action_button:not(.disabled)': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.action();
-                }
-            },
-            'change_height .product_instructions': 'change_height' // if special request button pressed
+            'change_height .product_instructions': 'dh_change_height' // if special request button pressed
         },
-        attributes_update: function() {
-            if (this.model.get('product').check_selected()) {
-                this.$('.action_button').removeClass('disabled');
-            }
-            else {
-                this.$('.action_button').addClass('disabled');
-            }
-        },
-        action: function (event) {
-
-            var check = this.model.check_order(),
-                self = this;
-
-            if (check.status === 'OK') {
-                this.model.get_product().check_gift(function() {
-                    if (self.options.action === 'add') {
-                        App.Data.myorder.add(self.model);
-                    } else {
-                        App.Data.myorder.remove(self.options.real);
-                        App.Data.myorder.add(self.model);
-                        App.Data.myorder.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
-                    }
-
-                    $('#popup .cancel').trigger('click');
-                }, function(errorMsg) {
-                    App.Data.errors.alert(errorMsg); // user notification
-                });
-            } else {
-                App.Data.errors.alert(check.errorMsg); // user notification
-            }
-        },
-        change_height: function(e) {
+        dh_change_height: function(e) {
             var prev_height = this.prev_height || 0,
                 inner_height = $('#popup').outerHeight(),
                 prev_window = this.prev_window || 0,
                 window_heigth = $(window).height();
-
+            if (this.is_hidden == true ){
+                //don't change size for cached view which was temporary closed
+                return;
+            }
             if (e || prev_height !== inner_height || prev_window !== window_heigth) {
                 var el = this.$('.modifiers_table_scroll'),
                     wrapper_height,
@@ -123,24 +70,42 @@ define(["myorder_view"], function(myorder_view) {
                 el.height('auto');
                 inner_height = $('#popup').outerHeight();
                 wrapper_height = $('.popup_wrapper').height();
-
+                //trace("dh_, product, special, size: ", product, special, size);
+                //trace("dh_, wh, ih: ", wrapper_height, inner_height);
                 if (wrapper_height < inner_height) {
-                        var height = wrapper_height - product - special - size - 117;
+                    var height = wrapper_height - product - special - size - 117;
                     el.height(height);
                 }
 
                 inner_height = $('#popup').outerHeight();
                 this.prev_height = inner_height;
                 this.prev_window = window_heigth;
+                //trace("dh_change_height ==> ", height, inner_height, window_heigth);
+
                 $('#popup').removeClass('ui-invisible');
             }
         },
         remove: function() {
             this.$('.modifiers_table_scroll').contentarrow('destroy');
             clearInterval(this.interval);
-            App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.remove.apply(this, arguments);
+            _base_proto.remove.apply(this, arguments);
         }
-    });
+      }
+    }
+
+    var DynamicHeightHelper_Combo = DynamicHeightHelper(CoreViews.CoreMyOrderMatrixComboView.prototype);
+
+    var MyOrderMatrixComboView = _MyOrderMatrixComboView( CoreViews.CoreMyOrderMatrixComboView )
+                                                         .mixed( DynamicHeightHelper_Combo );
+    function _MyOrderMatrixComboView(_base){ return _base.extend({
+        render: function() {
+            _base.prototype.render.apply(this, arguments);
+            this.renderProductFooter();
+            this.dh_initialize();
+            return this;
+        }
+      })
+    };
 
     var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
         editItem: function(e) {
@@ -148,13 +113,20 @@ define(["myorder_view"], function(myorder_view) {
             var model = this.model,
                 isStanfordItem = App.Data.is_stanford_mode && this.model.get_product().get('is_gift');
 
+            var is_combo = model.get('product').get('is_combo');
+
+            var cache_id = is_combo ? model.get("id_product") : undefined;
+
             App.Data.mainModel.set('popup', {
                 modelName: 'MyOrder',
-                mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
+                mod: isStanfordItem ? 'StanfordItem' : (is_combo ? 'MatrixCombo' : 'Matrix'),
                 className: isStanfordItem ? 'stanford-reload-item' : '',
                 model: model.clone(),
                 real: model,
-                action: 'update'
+                action: 'update',
+                init_cache_session: is_combo ? true : false,
+                cache_id: is_combo ? cache_id : undefined //cache is enabled for combo products during the phase of product customization only
+                                                          //the view will be removed from cache after the product is added/updated into the cart.
             });
         }
     });
@@ -173,6 +145,7 @@ define(["myorder_view"], function(myorder_view) {
 
     return new (require('factory'))(myorder_view.initViews.bind(myorder_view), function() {
         App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
+        App.Views.MyOrderView.MyOrderMatrixComboView = MyOrderMatrixComboView;
         App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
         App.Views.MyOrderView.MyOrderItemSpecialView = MyOrderItemSpecialView;
     });

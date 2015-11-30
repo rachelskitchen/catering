@@ -24,6 +24,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
     'use strict';
 
     App.Views.CoreProductView = {};
+    var CoreView = App.Views.CoreProductView;
 
     App.Views.CoreProductView.CoreProductListItemView = App.Views.ItemView.extend({
         name: 'product',
@@ -108,7 +109,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         }
     });
 
-    App.Views.CoreProductView.CoreProductModifiersView = App.Views.FactoryView.extend({
+    CoreView.CoreProductModifiersView = App.Views.FactoryView.extend({
         name: 'product',
         mod: 'modifiers',
         initialize: function() {
@@ -118,6 +119,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             this.giftCardPriceRegStr = '^\\d{0,3}(\\.\\d{0,2})?$';
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change:initial_price', this.update_price, this);
+            this.listenTo(this.model.get("product"), 'change:combo_price', this.update_price, this);
         },
         bindings: {
             '.size_chart_wrapper': 'toggle: _product_size_chart',
@@ -133,7 +135,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
 
             model.hide_images = settings.get('settings_system').hide_images;
             model.currency_symbol = settings.get('settings_system').currency_symbol;
-            model.price = round_monetary_currency(this.model.get('initial_price'));
+            model.price = round_monetary_currency(this.model.get_product_price());
             model.price_length = model.price.length;
             model.not_size = this.modifiers && this.modifiers.getSizeModel() === undefined;
             model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
@@ -184,7 +186,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         },
         update_price: function() {
             var dt = this.$('dt'),
-                initial_price = round_monetary_currency(this.model.get('initial_price'));
+                initial_price = round_monetary_currency(this.model.get_product_price());
 
             if (dt.length) {
                 dt.prop('className', dt.prop('className').replace(/(\s+)?s\d+(?=\s|$)/, ''));
@@ -199,7 +201,13 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         }
     });
 
-    App.Views.CoreProductView.CoreProductListNoneView = App.Views.ItemView.extend({
+    CoreView.CoreProductModifiersComboView = CoreView.CoreProductModifiersView.extend({
+        initialize: function() {
+            CoreView.CoreProductModifiersView.prototype.initialize.apply(this, arguments);
+        },
+    });
+
+    CoreView.CoreProductListNoneView = App.Views.ItemView.extend({
         name: 'product',
         mod: 'list_none'
     });
@@ -209,6 +217,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         App.Views.ProductView.ProductListItemView = App.Views.CoreProductView.CoreProductListItemView;
         App.Views.ProductView.ProductListView = App.Views.CoreProductView.CoreProductListView;
         App.Views.ProductView.ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView;
+        App.Views.ProductView.ProductModifiersComboView = App.Views.CoreProductView.CoreProductModifiersComboView;
         App.Views.ProductView.ProductListNoneView = App.Views.CoreProductView.CoreProductListNoneView;
     });
 });

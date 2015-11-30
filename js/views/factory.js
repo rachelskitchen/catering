@@ -86,6 +86,7 @@ define(['backbone', 'backbone_epoxy', 'backbone_epoxy_handlers', 'backbone_epoxy
             this.applyBindings();
             App.Data.devMode && this.$el.attr("data-tmpl", this.name + "_" + this.mod + "-template");
             App.Data.devMode && this.$el.attr("data-view", this.options.dbgClassName);
+            App.Data.devMode && (this.dbgClassName = this.options.dbgClassName);
         },
         render: function() {
             this.$el.html(this.template(this.model ? (this.model.toJSON ? this.model.toJSON() : this.model) : undefined));
@@ -219,6 +220,16 @@ define(['backbone', 'backbone_epoxy', 'backbone_epoxy_handlers', 'backbone_epoxy
                 return true;
             }
             return false;
+        },
+        start: function() {
+            this.subViews.forEach(function(view) {
+                typeof view.start == 'function' && view.start();
+            });
+        },
+        stop: function() {
+            this.subViews.forEach(function(view) {
+                typeof view.stop == 'function' && view.stop();
+            });
         }
     });
 

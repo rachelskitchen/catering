@@ -158,7 +158,7 @@ define(["backbone"], function(Backbone) {
          * @param  {number} multiplier - a product quantity
          */
         updateSum: function(multiplier) {
-            var price = this.get('free_amount') != undefined ? this.get('free_amount') : this.getSum();
+                var price = this.get('free_amount') != undefined ? this.get('free_amount') : this.getSum();
             this.set('sum', price * multiplier);
         },
         /**

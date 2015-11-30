@@ -50,8 +50,118 @@
         }
       }
       return extend;
+    },
+    //EE dev: added method for mixins
+    mixed:  function(extend_proto) {
+      extend_proto = extend_proto || {};
+      for (var i in extend_proto) {
+        if (i === 'events' || i === 'bindings' || i === 'computeds') {
+            this.prototype[i] = _.extend({}, extend_proto[i], this.prototype[i]);
+            continue;
+        }
+
+        //trace("prop = ", i);
+        if (extend_proto.hasOwnProperty(i) && i !== 'constructor' && !this.prototype[i]) {
+           this.prototype[i] = extend_proto[i];
+           //trace("assignin:", i,  this.prototype[i]);
+        }
+      }
+      return this;
     }
   };
+
+  //EE dev: add inheritance way for Backbone
+  var BackboneExtendFunc = Backbone.View.extend;
+    if (Backbone.Model.extend != Backbone.Model.extend || Backbone.Model.extend != Backbone.Collection.extend) {
+        console.error("Backbone 'extend' functions was changed.");
+    }
+  Backbone.View.extend = Backbone.Model.extend = Backbone.Collection.extend = function(new_proto) {
+      var new_class =  BackboneExtendFunc.apply(this, arguments);
+      new_proto.events && (new_class.prototype.events =  _.extend({}, this.prototype.events, new_proto.events));
+      new_proto.bindings && (new_class.prototype.bindings =  _.extend({}, this.prototype.bindings, new_proto.bindings));
+      new_proto.computeds && (new_class.prototype.computeds =  _.extend({}, this.prototype.computeds, new_proto.computeds));
+      new_class.mixed = mixins.mixed;
+      return new_class;
+  }
+
+  Backbone.Collection.prototype.deepClone = function() {
+      var copy = new this.constructor();
+      this.each(function(model) {
+         copy.add(model.clone());
+      });
+      return copy;
+  }
+
+  Backbone.Model.prototype.deepClone = function() {
+      var copy = new this.constructor();
+      for (var key in this.attributes) {
+          var value = this.get(key);
+          if (value && value.clone) { value = value.clone(); }
+          copy.set(key, value, {silent: true });
+      }
+      return copy;
+  }
+
+  Backbone.Model.prototype.update = function(newModel) {
+      for (var key in newModel.attributes) {
+          var value = newModel.get(key);
+          if (value && value.update) {
+            this.get(key).update(value);
+            //trace("update depper for key: ", key);
+          }
+          else {
+            this.set(key, value, {silent: true});
+            //trace("update key: ", key);
+          }
+      }
+      return this;
+  }
+
+  Backbone.Collection.prototype.update = function(newCollection) {
+      //
+      // Assume that both collections have the same sorted models
+      //
+      for (var key in newCollection.models) {
+          var value = newCollection.models[key];
+          if (value && value.update) {
+             this.models[key].update(value);
+             //trace("update depper for key: ", key);
+          }
+      }
+      return this;
+  }
+
+  if (App.Data.devMode) {
+    // alias for toJSON function
+    Backbone.Model.prototype.json = Backbone.Model.prototype.toJSON;
+    Backbone.Collection.prototype.json = Backbone.Collection.prototype.toJSON;
+
+    // reflection for objects
+    Backbone.Model.prototype.getType = function() {
+        return "Model: " + find_constructor.call(this, App.Models );
+    }
+
+    Backbone.Collection.prototype.getType = function() {
+        return "Collection: " + find_constructor.call(this, App.Collections );
+    }
+
+    Backbone.View.prototype.getType = function() {
+        return find_constructor.call(this, App.Views );
+    }
+
+    function find_constructor (startSearchObject) {
+      for (var key in startSearchObject) {
+        if (typeof startSearchObject[key] == 'object') {
+          var key2 = find_constructor.call(this, startSearchObject[key]); //deep search
+          if (key2) return key + "." + key2;
+        }
+        else if (this.constructor == startSearchObject[key]) {
+          return key; // the constructor found
+        }
+      }
+      return false;
+    }
+  }
 
   // Calls method implementations of a super-class object:
   function _super(instance, method, args) {

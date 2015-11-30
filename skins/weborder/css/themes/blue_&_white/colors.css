@@ -297,7 +297,8 @@ ul.categories {
     background-position: -92px -81px;
 }
 
-#modifiers_popup .modifier .input.checkbox {
+#modifiers_popup .modifier .input.checkbox,
+#modifiers_popup .combo_item .input.checkbox {
     background: url("img/ui.png") no-repeat scroll -91px -1px transparent;
 }
 
@@ -354,6 +355,7 @@ ul.categories {
 }
 
 #modifiers_popup .modifiers_table .modifiers-list label:not(.fade-out):hover .input,
+#modifiers_popup .modifiers_table .combo_item_wrap:not(.fade-out):hover .input,
 .tipBlock label:hover .pseudo-radio
 {
     -webkit-box-shadow: 0px 0px 3px 4px rgba(129,195,222,0.3);
@@ -541,7 +543,8 @@ select:focus,
 .mdf_split .option_2 {
     background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAASCAYAAAC5DOVpAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDE0IDc5LjE1Njc5NywgMjAxNC8wOC8yMC0wOTo1MzowMiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTQgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NDUyOThDOTA2NkQ1MTFFNEEwNkZFM0VFNDcwQkJFNEMiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NDUyOThDOTE2NkQ1MTFFNEEwNkZFM0VFNDcwQkJFNEMiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo0NTI5OEM4RTY2RDUxMUU0QTA2RkUzRUU0NzBCQkU0QyIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo0NTI5OEM4RjY2RDUxMUU0QTA2RkUzRUU0NzBCQkU0QyIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PrwyVuoAAAJFSURBVHjaYlSbeYoBC8gH4gIglgNiJiD+DcQPgBikeD4Q74UpvJlmCtfEhGYISPMdIJ4gysXKXGYh+77VTuE/kM8KxKpAHA3Ee2T52HdCxVAACxJbEogfMjEyvFvsq/HERIJXFsg/+/zLr3Yg3YOs6fGnn26KAhxPqyzlQGp+YjPsFNCgNxeTTETYmBn/Afnm6rNOg7yljm4YCNz/8EN0/a03D+1k+aWA3H/I3qwGYpkd4Xp/gAa9ArGhBuEF2+6+Ez/x7NNK5DATAhmmIsh5U56PXQLItgAa9JOBSLDz3vsQIKUDM8waiDkLTaUVgfRWoEH3GUgAZ198AVGZMMN0QQygy9iA1CwGEsHLb79AlA3MMA4g/s8KDH0guEGqYb//glIOgzTMsJtAzPj86y+Q6C9SDRPmBCcINphhh0GMtTfegJwmS6phWiLcIOoVzLBHAhwsS9bdesPw/c+/FFINC9MQBVHn4Onsw48/GSA6cevNOGBeYyPWIEtpPgZrGT4QczZyov0qycPmfv7lF4aIjddfAvlcSHreYzMImD8ZJrkoM0Az/W6UjA7Mg7sitcSKgAYKACP2CzAnTAQKmwCxJrpB+mLcDCv9NRn42FnuAbmhMHFG9CJopodq6I5771dtvfuW4Rck2uFAV5SbwVNZiCFRV4IBaOFJoJAfLPCxGgYtoySBGXnilTdfA15/+80KLI4YxLnYGAwleBiA6fE0UMkqIO4D5pZ/yOUZ4/////GFMahEsIMmyudA/AyIj+FKjwABBgBkBq08d23WEwAAAABJRU5ErkJggg==");
 }
-#modifiers_popup .modifier .select-wrapper {
+#modifiers_popup .modifier .select-wrapper,
+#modifiers_popup .combo_item .select-wrapper {
     border-color: #cecece;
 }
 
@@ -593,3 +596,9 @@ span.cancel-input:active:before {
 .stanford-card .btn.disabled, .stanford-card .btn.disabled:before {
     box-shadow: none;
 }
+/* Combo feature */
+#modifiers_popup .product_sets h2 {
+    color: #6E6E6E;
+}
+/* --- */
+

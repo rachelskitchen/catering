@@ -38,7 +38,7 @@ body {
     position: relative;
     height: 100%;
     width: 100%;
-    min-width: 1200px; /*for checkout page for 'Pay with Credit Card'*/
+    min-width: 100%; /* 1200px; for checkout page for 'Pay with Credit Card'*/
     min-height: 600px;
     margin: 0 auto !important;
     font-size: 16px;
@@ -605,7 +605,7 @@ section.maintenance #header .btn {
 #cart .order-items .service_fees {
     margin-top: 8px;
 }
-#cart .order-items li li,
+#cart .order-items .modifier_place li,
 #cart .order-items h3 {
     display: -webkit-box;
     display: -moz-box;
@@ -616,6 +616,21 @@ section.maintenance #header .btn {
 #cart .order-items > li {
     height: auto;
 }
+/* combo products in the cart */
+#cart .order-items .myorder_combo > li {
+    font-size: 0.9em;
+}
+#cart .order-items .myorder .modifier_place,
+#cart .order-items .combo_products_place .modifier_place {
+    margin-left: 10px;
+}
+#cart .order-items .combo_products_place {
+    margin-left: 10px;
+}
+#cart .order-items .combo_products_place .product_place .cost {
+    display: none;
+}
+/* -- */
 #cart .order-items li.special {
     display: block;
     white-space: nowrap;

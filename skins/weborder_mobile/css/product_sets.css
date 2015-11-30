@@ -1,0 +1,74 @@
+.product_set_list .combo_item {
+    width: 100%;
+    overflow: hidden;
+}
+
+.product_set_list .combo_item input {
+    position: absolute;
+    left: -5000px;
+}
+
+.product_set_list .combo_item .title {
+    vertical-align: middle;
+    margin-bottom: 1em;
+}
+
+.product_set_list .combo_item .modifier__label {
+    margin-bottom: 1em;
+}
+
+.product_set_list .combo_item .input {
+    vertical-align: middle;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border-radius: 0.2em;
+    border-width: 1px;
+    border-style: solid;
+    text-align: center;
+    line-height: 0.9em;
+    margin-right: 0.3em;
+}
+
+.product_set_list .combo_item .input::before {
+    content: '\f00c';
+    font-family: 'FontAwesome';
+    font-size: 0.8em;
+}
+
+.product_set_list .combo_item .cost {
+    display: inline-block;
+    line-height: 1.5em;
+    margin-left: 0.6em;
+    min-width: 55px;
+    text-align: right;
+}
+
+.product_set_list .combo_item .select-wrapper {
+    width: auto;
+    margin: -0.3em 0 0 0.5em;
+    padding: 0;
+}
+
+.product_set_list .combo_item select {
+    width: auto;
+    text-indent: 0em;
+    padding: 0px 1.8em 0px 0.5em;
+}
+
+@-moz-document url-prefix() {
+    .product_set_list .combo_item select {
+        text-indent: .2em !important;
+    }
+}
+
+.product_set_list .combo_item .fade-out {
+    opacity: 0.5;
+}
+
+.product_set_list .combo_item .customize {
+    float: right;
+    text-decoration: underline;
+    font-weight: normal;
+    word-break: normal;
+}

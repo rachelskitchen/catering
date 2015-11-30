@@ -90,6 +90,7 @@
             myorder: {},
             orders: {},
             products: {},
+            productSets: {},
             router: {},
             settings: {},
             taxes: {},
@@ -132,6 +133,14 @@
      * @memberof App
      */
     App.Settings = {};
+
+    /**
+     * A simple object factory for App.Models objects
+     * @param {string} type_name - the subname of the object constructor to be used
+     */
+    App.Models.create = function(type_name) {
+        return new App.Models[type_name]();
+    }
 
     /**
      * A module representing the application.
@@ -214,6 +223,7 @@
             app.get['srv'] == 'ap-dev' && (app.REVEL_HOST = 'https://apakhunov-dev-branch.revelup.com');
             app.get['srv'] == 'rde-lab' && (app.REVEL_HOST = 'https://rde-lab.revelup.com');
             app.get['srv'] == 'ab-qa2' && (app.REVEL_HOST = 'https://abeagon-qa2.revelup.com');
+            app.get['srv'] == 'ee-dev1' && (app.REVEL_HOST = 'https://eegorov-dev1.revelup.com');
 
             App.Data.is_stanford_mode = false;
             if (app.get['stanford'] == 'true') {
