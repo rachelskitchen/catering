@@ -83,14 +83,15 @@ define(["done_view", "generator"], function(done_view) {
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
 
-            // this.$('#section > div').remove();
             content.removeClass().addClass(this.model.get('contentClass'));
-
-            // this.$('#section').append(content);
 
             while(this.subViews.length > 2) {
                 view = this.subViews.pop();
-                view.removeFromDOMTree();
+                if (view.options.cacheId || view.options.cacheIdUniq)
+                    view.removeFromDOMTree();
+                else
+                    view.remove();
+                typeof view.stop == 'function' && view.stop();
             }
 
             if(Array.isArray(data))
@@ -105,10 +106,21 @@ define(["done_view", "generator"], function(done_view) {
         },
         header_change: function() {
             var data = _.defaults(this.model.get('header'), this.header_defaults()),
+                id = "header_" + data.modelName + '_' + data.mod,
                 $header = this.$('#header');
+
+            if(data.cacheIdUniq) {
+                id += '_' + data.cacheIdUniq;
+            }
+            var cacheId = (data.cacheId || data.cacheIdUniq) ? id : undefined;
+            var is_init_cache_session = data['init_cache_session'];
+            if (is_init_cache_session && cacheId) {
+                App.Views.GeneratorView.cacheRemoveView(data.modelName, data.mod, cacheId);
+            }
+
             this.subViews[0] && this.subViews[0].removeFromDOMTree();
             if (this.model.get('header')) {
-                this.subViews[0] = App.Views.GeneratorView.create(data.modelName, data, data.modelName + data.mod);
+                this.subViews[0] = App.Views.GeneratorView.create(data.modelName, data, cacheId );
                 $header.append(this.subViews[0].el);
                 $header.removeClass('hidden');
                 this.setContentPadding();
@@ -152,14 +164,27 @@ define(["done_view", "generator"], function(done_view) {
                 id += '_' + data.cacheIdUniq;
             }
 
+            var cacheId = (data.cacheId || data.cacheIdUniq) ? id : undefined;
+
             if(removeClass)
                 delete data.className;
 
-            var subView = App.Views.GeneratorView.create(data.modelName, data, data.cacheId ? id : undefined);
+            var is_init_cache_session = data['init_cache_session'];
+            if (is_init_cache_session && cacheId) {
+                App.Views.GeneratorView.cacheRemoveView(data.modelName, data.mod, cacheId);
+            }
+
+            var isViewCached = !!App.Views.GeneratorView.findViewCached(data.modelName, data, cacheId);
+
+            var subView = App.Views.GeneratorView.create(data.modelName, data, cacheId);
             if(this.subViews.length > 2)
                 this.subViews.push(subView);
             else
                 this.subViews[2] = subView;
+
+            if (isViewCached) {
+                typeof subView.start == 'function' && subView.start();
+            }
 
             return subView.el;
         },

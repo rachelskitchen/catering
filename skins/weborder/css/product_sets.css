@@ -1,0 +1,126 @@
+
+.modifiers_table .combo_item .customize.link1 {
+    text-decoration: underline;
+    font-weight: normal;
+    word-break: normal;
+    font-size: 15px;
+}
+
+.modifiers_table .combo_item {
+    width: 410px;
+    float: left;
+    word-break: break-all;
+    margin: 0 45px 15px 0;
+    cursor: pointer;
+    min-height: 30px;
+}
+
+.modifiers_table .combo_item .input {
+    height: 21px;
+    width: 21px;
+    min-width: 21px;
+    border-radius: 4px;
+    margin-right: 3px;
+}
+
+.modifiers_table .combo_item .title {
+    line-height: 1.4em;
+    word-break: break-word;
+}
+
+.modifiers_table .combo_item .mdf_quantity {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: -2px;
+    height: 26px;
+    position: relative;
+}
+
+.modifiers_table .combo_item .mdf_quantity select {
+    font-size: 14px;
+    font-weight: normal;
+    padding-right: 22px;
+    padding-left: 8px;
+    min-width: 45px;
+    max-width: 65px;
+    border: 1px solid transparent;
+}
+
+@media only screen and (max-device-width: 949px) {
+    .modifiers_table .combo_item .mdf_quantity select {
+        padding-left: 10px !important;
+        padding-right: 24px;
+    }
+}
+@media only screen and (min-width: 949px) {
+    .modifiers_table .combo_item {
+        width: 410px;
+        min-height: 45px;
+        margin-right: 25px; /* test it (45)*/
+        margin-bottom: 5px;
+    }
+}
+@media only screen and (min-width: 1440px) {
+    .modifiers_table .combo_item {
+        width: 420px;
+        margin-right: 90px;
+    }
+}
+
+@-moz-document url-prefix() {
+    .modifiers_table .combo_item .mdf_quantity select {
+        padding-left: 8px !important; /* sumsung tab fix, bug 25260 */
+        width: 65px; /* max-width is not working for FireFox select tags */
+    }
+}
+
+#modifiers_popup .product_set_list .combo_item_wrap {
+    cursor: pointer;
+    min-height: 30px;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    justify-content: flex-start;
+}
+#modifiers_popup .product_set_list .combo_item_wrap > div {
+	/*-webkit-flex: auto;
+    -moz-flex: auto;
+    -ms-flex: auto;
+    -o-flex: auto;
+    flex: none;*/
+    margin: 0 5px;
+}
+#modifiers_popup .product_set_list .combo_item .fade-out {
+	opacity: 0.5;
+}
+#modifiers_popup .product_set_list .combo_item .cost {
+    height: 32px;
+    margin-top: 2px;
+    -webkit-flex: 0 0 auto;
+}
+#modifiers_popup .product_set_list .combo_item .customize {
+    height: 32px;
+    margin-top: 1px;
+    margin-left: 7px;
+    -webkit-flex: 0 0 auto;
+}
+#modifiers_popup .product_set_list .combo_item .mdf_spacer {
+    height: 32px;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+}
+#modifiers_popup .product_set_list .combo_item .input.checkbox[checked] {
+    background-position: -91px -26px;
+}
+#modifiers_popup .product_sets h2 {
+    text-shadow: none;
+}
+.modifiers_table .product_sets h2 {
+    font-size: 18px;
+}
+
+

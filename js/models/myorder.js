@@ -143,7 +143,19 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
              * @type {boolean}
              * @default false
              */
-            isServiceFee: false
+            isServiceFee: false,
+            /**
+             * Indicates that the item is child item of a combo product
+             * @type {boolean}
+             * @default false
+             */
+            is_child_product: false,
+            /**
+             * Indicates if this child product is selected or not
+             * @type {boolean}
+             * @default false
+             */
+            selected: false
         },
         /**
          * Indicates that listeners are already assigned to `product` events. It gets rid of re-assigning.
@@ -266,10 +278,13 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         },
         /**
          * Updates `sum` attribute of modifiers.
+         * @param {number} multiplier - a quantity koefficient which is used to get right modifiers quantity taking into account the quantity of the parent (Combo) product itself
          */
-        update_mdf_sum: function() {
+        update_mdf_sum: function(multiplier) {
             var mdfGroups = this.get_modifiers(),
-                quantity = this.get('quantity');
+                multiplier = typeof multiplier == 'number' ? multiplier : 1,
+                quantity = this.get('quantity') * multiplier;
+
             mdfGroups && mdfGroups.each(function(mdfGroup) {
                 var mdfs = mdfGroup.get('modifiers');
                 mdfs && mdfs.each(function(mdf) {
@@ -338,16 +353,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 discount: new App.Models.DiscountItem(data.discount),
                 product: new App.Models.Product().addJSON(data.product),
                 modifiers: new App.Collections.ModifierBlocks().addJSON(data.modifiers),
-                id_product: data.id_product,
-                quantity: data.product.sold_by_weight ? 1 : data.quantity,
-                weight: data.weight ? data.weight : 0
+                id_product: data.id_product ? data.id_product : data.product.id,
+                quantity: data.product.sold_by_weight ? 1 : (data.quantity ? data.quantity : 1),
+                weight: data.weight ? data.weight : 0,
+                selected: data.selected,
+                is_child_product: data.is_child_product
             });
             data.special && this.set('special', data.special, {silent: true});
             if (!this.get('product').get('gift_card_number') && data.gift_card_number) {
                 this.get('product').set('gift_card_number', data.gift_card_number);
-            }
-            if (!data.id_product) {
-                this.set('id_product', data.product.id);
             }
 
             data.stanfordCard && this.initStanfordReloadItem(data.stanfordCard);
@@ -382,6 +396,14 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return (hasModifiers && typeof max_price == 'number' && max_price > 0 && max_price < totalItem ? max_price : totalItem) * this.get('quantity');
         },
         /**
+         * @returns sum of modifiers of the order item.
+         */
+        get_sum_of_modifiers: function() {
+            var modifiers = this.get_modifiers();
+
+            return modifiers ? modifiers.get_sum() : 0;
+        },
+        /**
          * @returns {string} Special request of the order item.
          */
         get_special: function() {
@@ -399,7 +421,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * @returns {App.Models.Myorder} Cloned order item.
          */
         clone: function() {
-            var order = new App.Models.Myorder(),
+            var order = new this.constructor(),
                 stanfordCard = this.get('stanfordCard');
             for (var key in this.attributes) {
                 var value = this.get(key);
@@ -445,7 +467,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             var product = this.get_product(),
                 modifiers = this.get_modifiers(),
                 size = modifiers.getSizeModel(),
-                dining_option = this.collection ? this.collection.checkout.get('dining_option') : '',
+                dining_option = App.Data.myorder.checkout.get('dining_option'),
                 isDelivery = dining_option == 'DINING_OPTION_DELIVERY',
 
                 forced = modifiers.checkForced(),
@@ -463,7 +485,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     status: 'ERROR',
                     errorMsg: ERROR.BLOCK_STORE_IS_CLOSED
                 };
-            }
+           }
 
             if (!product.check_selected()) {
                 return {
@@ -571,7 +593,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     product: product.id,
                     product_name_override: this.overrideProductName(product),
                     quantity: this.get('quantity'),
-                    product_sub_id: for_discounts ? this.get('product_sub_id') : undefined,
+                    product_sub_id: this.get('product_sub_id'), //for_discounts ? this.get('product_sub_id') : undefined,
+                    is_combo: product.is_combo ? product.is_combo : undefined
                 };
 
             if (product.sold_by_weight) {
@@ -600,6 +623,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if (planId && stanford_card_number) {
                 item_obj.planId = planId;
                 item_obj.stanford_card_number = stanford_card_number;
+            }
+
+            if (product.is_combo) {
+                var product_sets = [];
+                product.product_sets.each(function(product_set){
+                    var pset = product_set.item_submit(for_discounts);
+                    product_sets.push(pset);
+                });
+                item_obj['products_sets'] = product_sets;
             }
 
             return item_obj;
@@ -643,6 +675,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          */
         isRealProduct: function() {
             return this.get("id_product") !== null;
+        },
+        isComboProduct: function() {
+            return this.get("product").get("is_combo") === true;
         },
         /**
          * @returns {boolean} `true` if product's `point_value` attribute is number. Otherwise, returns `false`.
@@ -696,8 +731,159 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             stanfordCard.listenTo(this, 'change:planId', function(model, value) {
                 stanfordCard.set('planId', self.get('planId'));
             }, this);
+        },
+        get_product_price: function() {
+            return this.get('initial_price');
         }
     });
+
+    if (App.Data.devMode) {
+        /*
+        *  get modifier params by indexes for debug
+        */
+        App.Models.Myorder.prototype.mdf = function(mdf_class_index, mdf_index) {
+            return this.get('modifiers').models[mdf_class_index].get('modifiers').models[mdf_index].toJSON();
+        }
+    }
+
+    App.Models.MyorderCombo = App.Models.Myorder.extend({
+        initialize: function() {
+            App.Models.Myorder.prototype.initialize.apply(this, arguments);
+            this.listenTo(this, 'change:initial_price', this.update_product_price, this);
+            this.listenTo(this, 'combo_product_change', this.update_mdf_sum, this);
+        },
+        /**
+         * initiate order for combo product
+         */
+        add_empty: function (id_product, id_category) {
+            var self = this, product,
+                product_load = App.Collections.Products.init(id_category),
+                modifier_load = $.Deferred(),
+                quick_modifier_load = App.Collections.ModifierBlocks.init_quick_modifiers();
+
+            quick_modifier_load.then(function() {
+                App.Collections.ModifierBlocks.init(id_product).then(modifier_load.resolve); // load product modifiers
+            });
+            return $.when(product_load, modifier_load).then(function() {
+                product = App.Data.products[id_category].get_product(id_product);
+                return App.Collections.ProductSets.init(id_product);
+            }).then(function() {
+                product.set("product_sets", App.Data.productSets[id_product]);
+                self.set({
+                    product: product,
+                    id_product: id_product,
+                    modifiers: App.Data.modifiers[id_product]
+                });
+                self.set({
+                    sum: self.get_modelsum(), // sum with modifiers
+                    initial_price: self.get_initial_price()
+                });
+                self.update_prices();
+            });
+        },
+        /*
+        *  get product price for combo
+        */
+        get_product_price: function() {
+            return this.get('product').get('combo_price');
+        },
+        /*
+        *  get product price for combo
+        */
+        update_product_price: function() {
+            var root_price = this.get_initial_price(),
+                sum = 0, combo_saving_products = [];
+
+            this.get('product').get('product_sets').each( function(product_set) {
+                if ( product_set.get('is_combo_saving') ) {
+                    combo_saving_products.push( product_set );
+                    return;
+                }
+                product_set.get_selected_products().forEach(function(model) {
+                    //trace("add product_price : ",  model.get('product').get('name'), model.get_initial_price());
+                    sum  += model.get_initial_price() * model.get('quantity');
+                });
+            });
+
+            if (combo_saving_products.length && sum < root_price) {
+                sum = root_price;
+            }
+
+            this.get('product').set("combo_price", sum);
+            return sum;
+        },
+        /*
+        *   update sums of modifiers in respect to quantity of root combo product and quantity of child products
+        */
+        update_mdf_sum: function() {
+            var order_products = this.get('product').get('product_sets').get_selected_products(),
+                root_quantity = this.get('quantity');
+
+            order_products && order_products.each( function(order_product) {
+                order_product.update_prices();
+                order_product.update_mdf_sum(root_quantity);
+            });
+            this.update_product_price();
+        },
+         /**
+         * check if we could add this order to cart
+         * not check_gift here, due to async
+         */
+        check_order: function() {
+            var result = App.Models.Myorder.prototype.check_order.apply(this, arguments);
+            if (result.status != 'OK') {
+                return result
+            }
+
+            var psets = [];
+            this.get('product').get('product_sets').each( function(product_set) {
+                var exactAmount = product_set.get("minimum_amount");
+                var quantity = product_set.get_selected_qty();
+                if (quantity < exactAmount || quantity > exactAmount) {
+                    psets.push(product_set);
+                }
+            });
+
+            if (psets.length > 0) {
+                return format_error(psets);
+            }
+
+            function format_error (error_psets)  {
+                return {
+                    status: 'ERROR',
+                    errorMsg: function() {
+                        var tmpl = ERROR.PRODUCT_SET_QUANTITY_IS_NOT_VALID;
+                            tmpl = tmpl.split('|');
+                        return tmpl[0].trim() + ' ' + error_psets.map(function(model) {
+                            var exactAmount = model.get('minimum_amount'),
+                                psetName = model.get('name'),
+                                msg = tmpl[1].replace('%d', exactAmount).replace('%s', '&lsquo;' + psetName + '&rsquo;');
+                            return msg;
+                        }).join(', ')
+                    }()
+                };
+            }
+
+            return {
+                status: 'OK'
+            };
+        },
+        /*
+        *   find child by product id
+        */
+        find_child_product: function(product_id) {
+            return this.get('product').get('product_sets').find_product(product_id);
+        }
+    });
+
+    if (App.Data.devMode) {
+        /*
+        *   get combo child product (for debug)
+        */
+        App.Models.MyorderCombo.prototype.combo_child = function(product_set_index, product_index) {
+            return this.get('product').get('product_sets').models[product_set_index].get('order_products').models[product_index];
+        }
+    }
 
     /**
      * @class
@@ -995,7 +1181,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             var self = this, obj;
             Array.isArray(data) && data.forEach(function(element) {
                 if (element.product.id) {
-                    var myorder = new App.Models.Myorder();
+                    var type = element.product.is_combo ? 'MyorderCombo' : 'Myorder';
+                    var myorder = App.Models.create(type);
                     myorder.addJSON(element);
                     self.add(myorder);
                     myorder.set('initial_price', myorder.get_initial_price());
@@ -1692,6 +1879,16 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 } else {
                     model.get("discount").zero_discount();
                 }
+
+                if (product.combo_items instanceof Object) {
+                    for (var i in product.combo_items) {
+                        var order_product = model.get('product').get('product_sets').find_product(product.combo_items[i].product);
+                        if (order_product) {
+                            order_product.get('product').set("combo_price", product.combo_items[i].price);
+                        }
+                    }
+                    model.get('product').set("combo_price", product.price);
+                }
             });
 
             if (json.service_fees == undefined)
@@ -2325,4 +2522,13 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
         }
     });
+
+    if (App.Data.devMode) {
+        /*
+        *   get combo child product (for debug)
+        */
+        App.Collections.Myorders.prototype.combo_child = function(product_index, product_set_index, child_index) {
+            return this.models[product_index].combo_child(product_set_index, child_index);
+        }
+    }
 });

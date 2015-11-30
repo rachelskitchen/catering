@@ -25,19 +25,27 @@ define(['products_view'], function(products_view) {
 
     var ProductListItemView = App.Views.CoreProductView.CoreProductListItemView.extend({
         showModifiers: function() {
-            var myorder = new App.Models.Myorder(),
-                isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
-                def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
+            var isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
+                is_combo = this.model.get('is_combo');
+
+            var myorder = App.Models.create(is_combo ? 'MyorderCombo' : 'Myorder');   
+
+            var def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
 
             $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
             def.then(function() {
+                var cache_id = is_combo ? myorder.get("id_product") : undefined;
+
                 $('#main-spinner').removeClass('ui-visible');
                 App.Data.mainModel.set('popup', {
                     modelName: 'MyOrder',
-                    mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
+                    mod: isStanfordItem ? 'StanfordItem' : (is_combo ? 'MatrixCombo' : 'Matrix'),
                     className: isStanfordItem ? 'stanford-reload-item' : '',
                     model: myorder.clone(),
-                    action: 'add'
+                    action: 'add',
+                    init_cache_session: is_combo ? true : false,
+                    cache_id: is_combo ? cache_id : undefined //cache is enabled for combo products during the phase of product customization only
+                                                              //the view will be removed from cache after the product is added/updated into the cart.
                 });
             });
         },

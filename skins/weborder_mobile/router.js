@@ -32,6 +32,7 @@ define(["main_router"], function(main_router) {
     function defaultRouterData() {
         headerModes.Main = {mod: 'Main', className: 'main'};
         headerModes.Modifiers = {mod: 'Modifiers', className: 'modifiers'};
+        headerModes.ComboProduct = {mod: 'ComboProduct', className: 'modifiers'};
         headerModes.Cart = {mod: 'Cart'};
         headerModes.None = null;
         footerModes.Main = {mod: 'Main'};
@@ -46,6 +47,7 @@ define(["main_router"], function(main_router) {
             "search/:search": "search",
             "products/:ids": "products",
             "modifiers/:id_category(/:id_product)": "modifiers",
+            "combo_product/:id_category(/:id_product)": "combo_product",
             "cart": "cart",
             "checkout" : "checkout",
             "confirm": "confirm",
@@ -585,6 +587,168 @@ define(["main_router"], function(main_router) {
                 }
             });
         },
+        combo_child_products: function(combo_order, product_id) {
+            this.prepare('modifiers', function() {
+                var self = this,
+                    header = App.Data.header,
+                    isEditMode = true,
+                    originOrder = null;
+
+                if (!combo_order) {
+                    return this.navigate('index', true);
+                }
+
+                var order = combo_order.find_child_product(product_id);
+
+                if (!order) {
+                    return this.navigate('index', true);
+                }
+
+                header.set({
+                    back: back,
+                    back_title: _loc.BACK
+                });
+
+                App.Data.mainModel.set({
+                    header: headerModes.Modifiers,
+                    footer: footerModes.None
+                });
+
+                if(isEditMode) {
+                    originOrder = order.clone();
+                    setHeaderToUpdate();
+                    showProductDetails();
+                }
+
+                function showProductDetails() {
+                    var content = self.getStanfordReloadItem(order) || {
+                        modelName: 'MyOrder',
+                        model: order,
+                        mod: 'Matrix',
+                        cacheId: false
+                    };
+                    App.Data.mainModel.set({
+                        contentClass: '',
+                        content: content
+                    });
+                    self.change_page();
+                }
+
+                this.listenToOnce(this, 'route', function() {
+                    back();
+                });
+
+                function back() {
+                    var cache_id = combo_order.get('id_product');
+                    order.update(originOrder);
+                    self.stopListening(order, 'change', setHeaderToUpdate);
+                    self.return_to_combo_product(cache_id);
+                }
+
+                function setHeaderToUpdate() {
+                    header.set({
+                        page_title: _loc.CUSTOMIZE,
+                        link_title: _loc.UPDATE,
+                        link: !App.Settings.online_orders ? header.defaults.link : function() {
+                            var status = header.updateProduct(order);
+                            order.set('discount', originOrder.get('discount').clone(), {silent: true});
+                            App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
+                            originOrder.update(order);
+                        }
+                    });
+                    self.listenTo(order, 'change', setHeaderToUpdate);
+                }
+            });
+        },
+        return_to_combo_product: function(cache_id) {
+            var header = App.Data.header;
+
+            if (!cache_id) {
+                return this.navigate('index', true);
+            }
+
+            header.set({
+                    back: window.history.back.bind(window.history),
+                    back_title: _loc.BACK
+                });
+
+            App.Data.mainModel.set({
+                header:  _.extend({}, headerModes.ComboProduct, { init_cache_session: false,
+                                                                  cacheIdUniq: cache_id}),
+                footer: footerModes.None
+            });
+
+            App.Data.mainModel.set({
+                contentClass: '',
+                content: {
+                    modelName: 'MyOrder',
+                    mod: 'MatrixCombo',
+                    init_cache_session: false, // find the previously cached view
+                    cacheIdUniq: cache_id  // cache is enabled for combo products during the phase of product customization only
+                }
+            });
+
+            header.trigger('reinit');
+            this.change_page();
+        },
+        combo_product: function(id_category, id_product) {
+            this.prepare('combo_product', function() {
+                var self = this,
+                    header = App.Data.header,
+                    isEditMode = !id_product,
+                    order = isEditMode ? App.Data.myorder.at(id_category) : new App.Models.MyorderCombo(),
+                    originOrder = null,
+                    isOrderChanged;
+
+                if(!order)
+                    return this.navigate('index', true);
+
+                var cache_id = order.get("id_product") ? order.get("id_product") : id_product;
+
+                header.set({
+                    back: window.history.back.bind(window.history),
+                    back_title: _loc.BACK
+                });
+
+                if(isEditMode) {
+                    originOrder = order.clone();
+                    showProductDetails();
+                } else {
+                    order.add_empty(id_product * 1, id_category * 1).then(showProductDetails);
+                }
+
+                function showProductDetails() {
+                    if(!isEditMode) {
+                        order = order.clone();
+                    }
+                    App.Data.mainModel.set({
+                        header: _.extend({}, headerModes.ComboProduct, {
+                                                mode: isEditMode ? 'update' : 'add',
+                                                order: order,
+                                                originOrder: originOrder,
+                                                init_cache_session: true,
+                                                cacheIdUniq: cache_id
+                                }),
+                        footer: footerModes.None
+                    });
+
+                    var content = {
+                        modelName: 'MyOrder',
+                        model: order,
+                        mod: 'MatrixCombo',
+                        init_cache_session: true, // 'true' means that the view will be removed from cache before creating a new one.
+                        cacheIdUniq: cache_id  // cache is enabled for combo products during the phase of product customization only.
+                    };
+
+                    App.Data.mainModel.set({
+                        contentClass: '',
+                        content: content
+                    });
+
+                    self.change_page();
+                }
+            });
+        },
         cart: function() {
             App.Data.header.set({
                 page_title: _loc.HEADER_MYORDER_PT,
@@ -610,13 +774,15 @@ define(["main_router"], function(main_router) {
                             modelName: 'MyOrder',
                             collection: App.Data.myorder,
                             mod: 'List',
-                            className: 'myorderList'
+                            className: 'myorderList',
+                            cacheId: true
                         },
                         {
                             modelName: 'MyOrder',
                             model: App.Data.myorder.checkout,
                             mod: 'Note',
-                            className: 'myorderNote'
+                            className: 'myorderNote',
+                            cacheId: true
                         }
                     ]
                 });
@@ -1167,7 +1333,8 @@ define(["main_router"], function(main_router) {
                     content: {
                         modelName: 'StoreInfo',
                         mod: 'Map',
-                        className: 'map'
+                        className: 'map',
+                        cacheId: true
                     }
                 });
 

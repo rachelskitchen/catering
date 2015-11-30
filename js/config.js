@@ -380,7 +380,17 @@ define({
          * @type {string}
          * @description The actual path of [pikaday]{@link module:pikaday} module.
          */
-        pikaday: 'js/libs/pikaday'
+        pikaday: 'js/libs/pikaday',
+         /**
+         * @type {string}
+         * @description The actual path of [product_sets]{@link module:product_sets} module.
+         */
+        product_sets: 'js/models/product_sets',
+         /**
+         * @type {string}
+         * @description The actual path of [product_sets_view]{@link module:product_sets_view} module.
+         */
+        product_sets_view: 'js/views/product_sets'
     },
     /**
      * A waiting time of a module loading.
@@ -560,6 +570,9 @@ define({
         },
         'pikaday' : {
             deps: []
+        },
+        'product_sets' : {
+            deps: ['backbone', 'collection_sort']
         }
     },
     /**

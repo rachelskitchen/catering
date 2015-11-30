@@ -32,7 +32,6 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
         },
         render: function() {
             this.$el.html(this.template());
-            this.applyBindings();
         },
         bindings: {
             ".total_discounts": "classes:{hide:hide_discounts}",

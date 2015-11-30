@@ -254,7 +254,7 @@ define(["generator", "list"], function() {
         mod: 'products',
         initialize: function() {
             App.Views.ListView.prototype.initialize.apply(this, arguments);
-            this.initData();            
+            this.initData();
         },
         addItem: function(products, category) {
             var view = App.Views.GeneratorView.create('Categories', {
@@ -329,12 +329,12 @@ define(["generator", "list"], function() {
            var isCategories = typeof value != 'undefined',
                 mod = isCategories ? 'Products' : 'SearchResults',
                 data = isCategories ? undefined : model;
-               
+
             value = isCategories ? value : model.get('pattern');
 
             // if search result and result is empty
             if(data && (!data.get('products')))
-                return;           
+                return;
 
             this.subViews.forEach(function(view) {
                 this.stopListening(view);
@@ -383,6 +383,6 @@ define(["generator", "list"], function() {
         App.Views.CategoriesView.CategoriesProductsItemView = CategoriesProductsItemView;
         App.Views.CategoriesView.CategoriesProductsView = CategoriesProductsView;
         App.Views.CategoriesView.CategoriesMainProductsView = CategoriesMainProductsView;
-        App.Views.CategoriesView.CategoriesSearchResultsView = CategoriesSearchResultsView;        
+        App.Views.CategoriesView.CategoriesSearchResultsView = CategoriesSearchResultsView;
     });
 });

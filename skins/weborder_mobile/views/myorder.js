@@ -57,7 +57,10 @@ define(["myorder_view"], function(myorder_view) {
         editItem: function(e) {
             e.preventDefault();
             var index = this.model.collection.models.indexOf(this.model);
-            App.Data.router.navigate('modifiers/' + index, true);
+            if (this.model.isComboProduct())
+                App.Data.router.navigate('combo_product/' + index, true);
+            else
+                App.Data.router.navigate('modifiers/' + index, true);
         }
     });
 
@@ -69,6 +72,36 @@ define(["myorder_view"], function(myorder_view) {
             items: function() {
                 return this.getBinding('$collection').get_only_product_quantity();
             }
+        }
+    });
+
+    var MyOrderMatrixComboView = App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView.extend({
+        render: function() {
+            App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView.prototype.render.apply(this, arguments);
+
+            var model = this.model,
+                view;
+
+            var sold_by_weight = this.model.get_product().get("sold_by_weight"),
+                mod = sold_by_weight ? 'Weight' : 'Main';
+
+            view = App.Views.GeneratorView.create('Quantity', {
+                el: this.$('.quantity_info'),
+                model: model,
+                mod: mod
+            });
+            this.subViews.push(view);
+
+            if(App.Settings.special_requests_online) {
+                view = App.Views.GeneratorView.create('Instructions', {
+                    el: this.$('.product_instructions'),
+                    model: model,
+                    mod: 'Modifiers'
+                });
+                this.subViews.push(view);
+            }
+
+            return this;
         }
     });
 
@@ -96,6 +129,7 @@ define(["myorder_view"], function(myorder_view) {
     return new (require('factory'))(myorder_view.initViews.bind(myorder_view), function() {
         App.Views.MyOrderView.MyOrderListView = MyOrderListView;
         App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
+        App.Views.MyOrderView.MyOrderMatrixComboView = MyOrderMatrixComboView;
         App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
         App.Views.MyOrderView.MyOrderStanfordItemView = MyOrderStanfordItemView;
     });

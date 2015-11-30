@@ -255,6 +255,9 @@
         'STANFORD_RELOAD_INFO2': "Выберите план, на который будет выполнено зачисление средств",
         'STANFORD_CARD_NUMBER': "Stanford Card #",
         'STANFORD_CARD_CHOOSE_PLAN': "Stanford Card: Выбор Плана",
-        'CHANGE_ESTABLISHMENT': "Выбрать другой магазин?"
+        'CHANGE_ESTABLISHMENT': "Выбрать другой магазин?",
+        'COMBO_CUSTOMIZE': 'Модифаеры',
+        'PRODUCT_SETS_SELECT_1': 'Пожалуйста, выберите опции для "',
+        'PRODUCT_SETS_SELECT_2': '"'
     } // end of locale
 }); // end of module

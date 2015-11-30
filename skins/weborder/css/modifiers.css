@@ -23,12 +23,13 @@
     content: '';
 }
 
-.modifiers_info > div, .product_attribute_info {
+.modifiers_table .modifiers_info > div, .modifiers_table .product_attribute_info {
     position: relative;
     padding-right: 15px;
 }
 
-.modifiers_table .product_attributes_selected .modifier_class_wrapper:first-child, .modifier_class_wrapper {
+.modifiers_table .product_attributes_selected .modifier_class_wrapper:first-child,
+.modifiers_table .modifier_class_wrapper {
     border-top-style: dotted;
     border-top-width: 1px;
     display: table;
@@ -36,8 +37,6 @@
     text-align: left;
     padding-bottom: 15px;
     padding-top: 15px;
-}
-.modifiers_table .product_attributes_selected .modifier_class_wrapper:first-child {
 }
 .modifiers_table .modifier_class_wrapper:first-child {
     border-top: none;
@@ -138,7 +137,7 @@
     display: none;
 }
 
-.modifier_class_list {
+.modifiers_table .modifier_class_list {
     margin-top: 5px;
 }
 #modifiers_popup .modifiers_table_scroll {
@@ -172,22 +171,22 @@
     display: none;
 }
 
-.mdf_spacer {
+.modifiers_table .modifier .mdf_spacer {
     display: inline-block;
     float: left;
 }
 
-.mdf_quantity select,
-.mdf_split select {
+.modifiers_table .modifier .mdf_quantity select,
+.modifiers_table .modifier .mdf_split select {
     font-size: 14px;
     font-weight: normal;
 }
 
-.mdf_split select {
+.modifiers_table .modifier .mdf_split select {
     width: 50px;
 }
 
-.mdf_quantity, .mdf_split {
+.modifiers_table .modifier .mdf_quantity, .mdf_split {
     display: inline-block;
     vertical-align: middle;
     font-size: 14px;
@@ -197,19 +196,19 @@
     position: relative;
 }
 
-.mdf_quantity select {
+.modifiers_table .modifier .mdf_quantity select {
     padding-right: 18px;
     padding-left: 8px;
     min-width: 45px;
     max-width: 60px;
 }
 
-.mdf_split select {
+.modifiers_table .modifier .mdf_split select {
     padding-right: 28px !important;
     padding-left: 22px !important;
 }
 
-.mdf_split .selected_option {
+.modifiers_table .modifier .mdf_split .selected_option {
     position: absolute;
     top: 5px;
     left: 8px;
@@ -256,7 +255,7 @@ span.tooltip:before {
 }
 
 @media only screen and (max-device-width: 949px) {
-    .mdf_quantity select {
+    .modifiers_table .modifier .mdf_quantity select {
         padding-left: 10px !important;
         padding-right: 24px;
     }
@@ -277,7 +276,7 @@ span.tooltip:before {
     .modifiers_table .modifier .title_wrapper {
         width: 90px;
     }
-    .mdf_quantity select {
+    .modifiers_table .modifier .mdf_quantity select {
         width: 55px;
     }
 }
@@ -299,7 +298,7 @@ span.tooltip:before {
 }
 
 @-moz-document url-prefix() {
-    .mdf_quantity select {
+    .modifiers_table .modifier .mdf_quantity select {
         padding-left: 8px !important; /* sumsung tab fix, bug 25260 */
         width: 65px; /* max-width is not working for FireFox select tags */
     }

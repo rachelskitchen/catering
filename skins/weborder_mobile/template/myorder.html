@@ -4,10 +4,14 @@
     <ul class="service_fees items"></ul>
 </script>
 
+<script type="text/template" id="myorder_combo_list-template">
+    <ul class="myorder_combo"></ul>
+</script>
+
 <script type="text/template" id="myorder_item-template">
     <div>
         <span class="cost font-size1 fl-right font-color1">
-            <span class="item-sum"><%= currency_symbol %><%= initial_price %></span>
+            <span class="item-sum"><%= currency_symbol %><%= product_sum %></span>
         </span>
         <% if(!sold_by_weight && !is_service_fee) { %>
             <span class="qty bg-color3 font-color2 font-size2 fl-left"><%= quantity %>x</span>
@@ -36,6 +40,7 @@
         <li class="special">*** <%= special %></li>
         <% } %>
     </ul>
+    <div class="combo_products_place"></div>
     <ul class="discount_place font-size2 font-color4"></ul>
     <% if(id_product !== null) { %>
     <div class="btns text-right">
@@ -66,6 +71,21 @@
     <% } %>
     <div class="product_attribute_info modifiers <% if(!_settings.online_orders) {print('no-controls');} %>">
     </div>
+    <div class="modifiers_info modifiers <% if(!_settings.online_orders) {print('no-controls');} %>">
+    </div>
+    <% if(_settings.online_orders) { %>
+    <div class='product_instructions'>
+    </div>
+    <% } %>
+</script>
+
+<script type="text/template" id="myorder_matrix_combo-template">
+    <div class='product modifiers-list product_info modifiers-bottom-line'>
+    </div>
+    <% if(_settings.online_orders) { %>
+    <div class='quantity modifiers-list quantity_info modifiers-bottom-line'>
+    </div>
+    <% } %>
     <div class="modifiers_info modifiers <% if(!_settings.online_orders) {print('no-controls');} %>">
     </div>
     <% if(_settings.online_orders) { %>

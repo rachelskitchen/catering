@@ -100,9 +100,16 @@ define(["done_view", "generator"], function(done_view) {
         },
         popup_change: function(model, value) {
             var popup = this.$('.popup'),
-                data, id;
+                data, cache_id;
 
-            this.subViews[2] && this.subViews[2].remove();//this.subViews[2].removeFromDOMTree();
+            if (this.subViews[2]) {
+                if (this.subViews[2].options.cache_id ) {
+                    this.subViews[2].is_hidden = true; //it's cause of setInterval function in DynamicHeightHelper
+                    this.subViews[2].removeFromDOMTree(); //saving the view which was cached before
+                }
+                else
+                    this.subViews[2].remove();
+            }
 
             if (typeof value == 'undefined')
                 return popup.removeClass('ui-visible');
@@ -114,14 +121,23 @@ define(["done_view", "generator"], function(done_view) {
                 $('#popup').addClass("popup-background");
             }
 
-            id = 'popup_' + data.modelName + '_' + data.mod;
-            this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data);
+            cache_id = data.cache_id ? 'popup_' + data.modelName + '_' + data.mod + '_' + data.cache_id : undefined;
+
+            var is_init_cache_session = data['init_cache_session'];
+            if (is_init_cache_session && cache_id) {
+                App.Views.GeneratorView.cacheRemoveView(data.modelName, data.mod, cache_id);
+            }
+
+            this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data, cache_id);
+            this.subViews[2].is_hidden = false;
             this.$('#popup').append(this.subViews[2].el);
 
             popup.addClass('ui-visible');
         },
-        hide_popup: function() {
+        hide_popup: function(event, action_callback, model) {
+            var callback = this.model.get('popup').action_callback;
             this.model.unset('popup');
+            callback && callback();
         },
         header_defaults: function() {
             return {
