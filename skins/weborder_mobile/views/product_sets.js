@@ -28,6 +28,9 @@ define(["product_sets_view"], function(product_sets_view) {
             'click .customize': 'customize',
             'click label': 'change'
         },
+        start: function() {
+            this.check_model();
+        },
         customize: function(event) {
             event.stopImmediatePropagation();
             event.preventDefault();

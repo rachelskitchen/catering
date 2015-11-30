@@ -390,7 +390,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             }
 
             var productSum = model.initial_price;
-            if (model.sold_by_weight && weight) {
+            if (model.sold_by_weight && model.weight) {
                 productSum *= model.weight;
             }
             if (product.get("is_combo"))
