@@ -30,17 +30,19 @@ define(["myorder_view"], function(myorder_view) {
             var model = this.model,
                 view;
 
-            var sold_by_weight = this.model.get_product().get("sold_by_weight"),
-                mod = sold_by_weight ? 'Weight' : 'Main';
+            if (!this.options.combo_child) {
+                var sold_by_weight = this.model.get_product().get("sold_by_weight"),
+                    mod = sold_by_weight ? 'Weight' : 'Main';
 
-            view = App.Views.GeneratorView.create('Quantity', {
-                el: this.$('.quantity_info'),
-                model: model,
-                mod: mod
-            });
-            this.subViews.push(view);
+                view = App.Views.GeneratorView.create('Quantity', {
+                    el: this.$('.quantity_info'),
+                    model: model,
+                    mod: mod
+                });
+                this.subViews.push(view);
+            }
 
-            if(App.Settings.special_requests_online) {
+            if (App.Settings.special_requests_online && !this.options.combo_child) {
                 view = App.Views.GeneratorView.create('Instructions', {
                     el: this.$('.product_instructions'),
                     model: model,
