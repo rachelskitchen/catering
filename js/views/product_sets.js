@@ -71,7 +71,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         startListening: function() {
             this.listenTo(this.model, 'change:selected', this.update, this);
             this.listenTo(this.model, 'change:quantity', this.update, this);
-            this.listenTo(this.model, 'change:modifiers', this.update, this);
+            this.listenTo(this.model.get_modifiers(), 'modifiers_changed', this.update, this);
             this.listenTo(this.model, 'model_changed', this.reinit_new_model, this);
         },
         reinit_new_model: function() {
@@ -182,6 +182,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 this.$(".mdf_quantity").hide();
             }
             this.options.myorder_root.trigger('combo_product_change');
+            this.model.trigger('change:modifiers');
         },
         check_model: function() {
             var checked = this.$(".checkbox").attr('checked') == "checked" ? true : false;

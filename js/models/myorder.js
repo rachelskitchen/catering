@@ -604,6 +604,49 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             });
             this.update_product_price();
         },
+         /**
+         * check if we could add this order to cart
+         * not check_gift here, due to async
+         */
+        check_order: function() {
+            var result = App.Models.Myorder.prototype.check_order.apply(this, arguments);
+            if (result.status != 'OK') {
+                return result
+            }
+
+            var psets = [];
+            this.get('product').get('product_sets').each( function(product_set) {
+                var exactAmount = product_set.get("minimum_amount");
+                var quantity = product_set.get_selected_qty();
+                if (quantity < exactAmount || quantity > exactAmount) {
+                    psets.push(product_set);
+                }
+            });
+
+            if (psets.length > 0) {
+                return format_error(psets);
+            }
+
+            function format_error (error_psets)  {
+                return {
+                    status: 'ERROR',
+                    errorMsg: function() {
+                        var tmpl = ERROR.PRODUCT_SET_QUANTITY_IS_NOT_VALID;
+                            tmpl = tmpl.split('|');
+                        return tmpl[0].trim() + ' ' + error_psets.map(function(model) {
+                            var exactAmount = model.get('minimum_amount'),
+                                psetName = model.get('name'),
+                                msg = tmpl[1].replace('%d', exactAmount).replace('%s', '&lsquo;' + psetName + '&rsquo;');
+                            return msg;
+                        }).join(', ')
+                    }()
+                };
+            }
+
+            return {
+                status: 'OK'
+            };
+        },
         /*
         *   find child by product id
         */

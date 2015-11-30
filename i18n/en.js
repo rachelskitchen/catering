@@ -380,7 +380,8 @@
             'MAINTENANCE_DINING': 'Please setup at least one dining option',
             'MAINTENANCE_ORDER_TYPE': 'Please setup at least one order type (in-store pickup or shipping)',
             'RESOURCES_CSS': 'Unable to load CSS resources. Now the page is reloaded.',
-            'RESOURCES_TEMPLATES': 'Unable to load template resources. Now the page is reloaded.'
+            'RESOURCES_TEMPLATES': 'Unable to load template resources. Now the page is reloaded.',
+            'PRODUCT_SET_QUANTITY_IS_NOT_VALID': 'Please select exact | %d product(s) in %s'
         },
         'MSG': {
             'ERROR_STORE_IS_CLOSED': 'We\'re sorry, your order cannot be processed because the store is closed for selected pickup day/time',

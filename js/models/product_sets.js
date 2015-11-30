@@ -181,8 +181,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             $.ajax({
                 url: App.Data.settings.get("host") + "/weborders/product_sets/", //"/weborders/combo_products/",
                 data: {
-                    product: product_id,
-                    establishment: App.Data.settings.get("establishment")
+                    product: product_id
                 },
                 dataType: "json",
                 successResp: function(data) {
@@ -243,6 +242,9 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             });
             return product;
         },
+        /*
+        *  check that quantity of product sets items equals to required value
+        */
         check_selected: function() {
             return !this.some(function(model) {
                 return model.get_selected_qty() > model.get("minimum_amount") || model.get_selected_qty() < model.get("maximum_amount");
