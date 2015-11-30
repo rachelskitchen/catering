@@ -1,17 +1,5 @@
-define(['childproducts'], function() {
-    
-    var child;
-    
-    $.ajax({
-        type: "GET",
-        url: "js/utest/data/ChildProducts.json",
-        dataType: "json",
-        async: false,
-        success: function(data) {
-            child = data;
-        }
-    });
-        
+define(['childproducts', 'js/utest/data/ChildProducts'], function(childproducts, child) {
+
     describe("App.Models.ChildProduct", function() {
         
         var model, def, exJSON, prod, modif, exJSON2, prodCreate, childJSON;
@@ -23,7 +11,6 @@ define(['childproducts'], function() {
             exJSON2 = deepClone(child.exJSON2);
             childJSON = deepClone(child.childJSON);
             prod = spyOn(App.Models.Product.prototype, 'addJSON').and.returnValue(new App.Models.Product),
-            prodCreate = spyOn(App.Models.Product.prototype, 'create').and.returnValue(new App.Models.Product),
             modif = spyOn(App.Collections.ModifierBlocks.prototype, 'addJSON').and.returnValue(new App.Collections.ModifierBlocks);
         });
 
@@ -35,14 +22,14 @@ define(['childproducts'], function() {
             expect(model.toJSON()).toEqual(def);
         });
 
-        it('Function addJSON', function() {
+        it('addJSON()', function() {
             model.addJSON(exJSON);
             expect(model.get('attributes')).toEqual(exJSON.attributes);
             expect(prod).toHaveBeenCalledWith(exJSON.product);
             expect(modif).toHaveBeenCalledWith(exJSON.modifiers);
         });
         
-        it('Function clone', function() {
+        it('clone()', function() {
             model.addJSON(exJSON);
             var prodClon = spyOn(model.get('product'), 'clone').and.returnValue(new App.Models.Product),
                 modClon = spyOn(model.get('modifiers'), 'clone').and.returnValue(new App.Collections.ModifierBlocks),
@@ -56,7 +43,7 @@ define(['childproducts'], function() {
             expect(clone.get('attributes')).toEqual(model.get('attributes'));
         });
         
-        it('Function update', function() {
+        it('update()', function() {
             model.addJSON(exJSON);
             var prodUp = spyOn(model.get('product'), 'update').and.returnValue(new App.Models.Product),
                 modUp = spyOn(model.get('modifiers'), 'update').and.returnValue(new App.Collections.ModifierBlocks),
@@ -70,29 +57,28 @@ define(['childproducts'], function() {
             expect(model.get('attributes')).toEqual(clone.get('attributes'));
         });
         
-        it('Function create', function() {
+        it('create()', function() {
              model.create(childJSON);
              
-             expect(prodCreate).toHaveBeenCalledWith(childJSON.product);
              expect(modif).toHaveBeenCalledWith(childJSON.modifiers);
              expect(model.get('attributes')).not.toBe(childJSON.attributes);
              expect(model.get('attributes')).toEqual(childJSON.attributes);
         });
         
-        describe('Function get_attributes', function() {
+        describe('get_attributes()', function() {
 
-            it('Function get_attributes active product', function() {
+            it('active product', function() {
                  model.set('product', new App.Models.Product());
                  expect(model.get_attributes()).toEqual(model.get('attributes'));
             });
 
-            it('Function get_attributes not active product', function() {
+            it('not active product', function() {
                  model.set('product', new App.Models.Product({active: false}));
                  expect(model.get_attributes()).toBe(false);
             });
         });
         
-        it('Function is_active', function() {
+        it('is_active()', function() {
              var obj = {};
              model.set('product', new App.Models.Product({active: obj}));
              expect(model.is_active()).toBe(obj);
@@ -118,14 +104,14 @@ define(['childproducts'], function() {
             expect(App.Collections.ChildProducts).toBeDefined();
         });
 
-        it('Function addJSON', function() {
+        it('addJSON()', function() {
             model.addJSON(exJSON);
             expect(model.length).toBe(2);
             expect(add.calls.count()).toBe(2);
             expect(add.calls.mostRecent().args[0]).toBe(exJSON[1]);
         });
         
-        it('Function clone', function() {
+        it('clone()', function() {
             model.addJSON(exJSON);
             var clone = model.clone();
                 
@@ -135,7 +121,7 @@ define(['childproducts'], function() {
             expect(clon.calls.mostRecent().object).toBe(model.at(1));
         });
         
-        it('Function update', function() {
+        it('update()', function() {
             model.addJSON(exJSON);
             
             model.update(model);                
@@ -148,7 +134,7 @@ define(['childproducts'], function() {
             expect(clon.calls.count()).toBe(4);
         });
         
-        it('Function get_product_id', function() {
+        it('get_product_id()', function() {
             var child = new App.Models.ChildProduct(),
                 product = new App.Models.Product({id: 176});
             child.set('product', product);
@@ -157,7 +143,7 @@ define(['childproducts'], function() {
             expect(model.get_product_id(177)).toBeUndefined();
         });
         
-        describe('Function get_product', function() {
+        describe('get_product()', function() {
             
             var get_not_find, get_find;
             
@@ -203,7 +189,7 @@ define(['childproducts'], function() {
             });
         });
         
-        describe('Function get_modifiers', function() {
+        describe('get_modifiers()', function() {
             
             var get_not_find, get_find;
             
@@ -250,7 +236,7 @@ define(['childproducts'], function() {
             });
         });
         
-        describe('Function get_attributes_list', function() {
+        describe('get_attributes_list()', function() {
             
             var attr, attr1, attr2, attr3, attrEx, attrEx2, attrEx3;
             
@@ -285,7 +271,7 @@ define(['childproducts'], function() {
             });
         });
         
-        it('Function add_child', function() {
+        it('add_child()', function() {
             var create = spyOn(App.Models.ChildProduct.prototype, 'create').and.returnValue(new App.Models.ChildProduct),
                 obj = {};
             
@@ -295,7 +281,7 @@ define(['childproducts'], function() {
             expect(create).toHaveBeenCalledWith(obj);
         });
         
-        describe('Function check_active', function() {
+        describe('check_active()', function() {
             
             var attr;
             beforeEach(function() {
