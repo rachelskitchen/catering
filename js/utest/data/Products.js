@@ -32,7 +32,8 @@ define([], function() {
             "created_date": null,
             "original_tax": null,
             "timetables": null,
-            "compositeId": null
+            "compositeId": null,
+            "size_chart" : ""
         },
         "defaults_initialized": {
             "description": null,
@@ -66,7 +67,8 @@ define([], function() {
             "created_date": 0,
             "original_tax": 0,
             "timetables": null,
-            "compositeId": null
+            "compositeId": null,
+            "size_chart" : ""
         },
         "product_with_image": {
             "description": "some product",
@@ -100,7 +102,8 @@ define([], function() {
             "created_date": '2015/01/01',
             "original_tax": null,
             "timetables": null,
-            "compositeId": '12_1'
+            "compositeId": '12_1',
+            "size_chart" : ""
         },
         "addJSON_without_image": {
             "image": "",
@@ -233,7 +236,9 @@ define([], function() {
         "getAttributeValues_items": [
             {
                 "id": 1,
-                "name": 'Test 1',
+                "name": "Test 1",
+                "attribute_1_name": 'Attribute 1',
+                "attribute_2_name": 'Attribute 2',
                 "category_id": 1,
                 "attribute_type": 1,
                 "attribute_1_values": ['f1', 'a1', 'c1'],
@@ -241,7 +246,9 @@ define([], function() {
             },
             {
                 "id": 2,
-                "name": 'Test 2',
+                "name": "Test 2",
+                "attribute_1_name": 'Attribute 1',
+                "attribute_2_name": 'Attribute 2',
                 "category_id": 1,
                 "attribute_type": 1,
                 "attribute_1_values": ['f1', 'd1', 'e1'],

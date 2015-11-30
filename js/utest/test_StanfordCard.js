@@ -204,6 +204,19 @@ define(['stanfordcard', 'js/utest/data/StanfordCard'], function(stanfordcard, da
             expect(result.plans.length).toBe(0);
         });
 
+        it('clearData()', function() {
+            spyOn(card, 'reset');
+            spyOn(window, 'removeData');
+
+            card.set(_.extend(data.CARD_1, {
+                plans: new App.Collections.StanfordCardPlans([data.PLAN_1, data.PLAN_2])
+            }));
+            card.clearData();
+
+            expect(card.reset).toHaveBeenCalled();
+            expect(window.removeData).toHaveBeenCalledWith('stanfordcard');
+        });
+
         describe('getPlans()', function() {
             var ajax, ajaxData, ajaxOpts, result;
 
@@ -348,7 +361,7 @@ define(['stanfordcard', 'js/utest/data/StanfordCard'], function(stanfordcard, da
                     plan2 = plans.at(1);
                 plan1.set('selected', false);
                 plan2.set('selected', false);
-                expect(card.getSelectedPlan()).toBe(undefined);
+                expect(card.getSelectedPlan()).toBeUndefined();
             });
 
             it('a plan is selected', function() {
@@ -357,6 +370,22 @@ define(['stanfordcard', 'js/utest/data/StanfordCard'], function(stanfordcard, da
                 plan1.set('selected', false);
                 plan2.set('selected', true);
                 expect(card.getSelectedPlan()).toBe(plan2);
+            });
+        });
+
+        describe('selectFirstAvailablePlan()', function() {
+            it('there is an available plan', function() {
+                var plans = new App.Collections.StanfordCardPlans([data.PLAN_1, data.PLAN_2]);
+                card.set('plans', plans);
+
+                expect(card.selectFirstAvailablePlan()).toEqual(plans.models[0]);
+            });
+
+            it('there are no available plans', function() {
+                var plans = new App.Collections.StanfordCardPlans([data.PLAN_2]);
+                card.set('plans', plans);
+
+                expect(card.selectFirstAvailablePlan()).toBeUndefined();
             });
         });
 
@@ -469,6 +498,12 @@ define(['stanfordcard', 'js/utest/data/StanfordCard'], function(stanfordcard, da
                 expect(card.get('plans')).toBe(plans);
                 expect(plans.reset).toHaveBeenCalledWith(plansArray);
             });
+        });
+
+        it('getJSON()', function() {
+            expect(card.getJSON()).toEqual(_.extend({}, card.toJSON(), {
+                plans: card.get('plans').toJSON()
+            }));
         });
     });
 });

@@ -175,28 +175,35 @@ define(['timetable'], function() {
             });
 
             it('from 09:00 to 11:30', function() {
-                expect(model._pickupTimesForPeriod(set2n[1])).toEqual([582, 602, 622]);
+                expect(model._pickupTimesForPeriod(set2n[1])).toEqual([582, 602, 622, 642, 662]);
                 /**
                  * 9:00 + online_order_start_time_offset + estimated_order_preparation_time  = 9:42
-                 * 11:30 - online_order_end_time_offset - estimated_order_preparation_time  = 10:38
-                 * 9:42 <= pickup time <= 10:55
+                 * 11:30 - (online_order_end_time_offset - estimated_order_preparation_time) = 11:12
+                 * 9:42 <= pickup time <= 11:29
                  *
                  * 9:42 = 9 * 60 + 42 = 582
                  * 10:02
                  * 10:22
+                 * 10:42
+                 * 11:02
                  */
             });
 
             it('from 10:00 to 13:00, delivery option', function() {
                 model.set(set4);
-                expect(model._pickupTimesForPeriod(set4n[0], true)).toEqual([670, 690]);
+                expect(model._pickupTimesForPeriod(set4n[0], true)).toEqual([670, 690, 710, 730, 750, 770, 790]);
                 /**
                  * 10:00 + online_order_start_time_offset + estimated_delivery_time = 11:10
-                 * 13:00  - online_order_end_time_offset - estimated_delivery_time  = 11:40
-                 * 11:10 <= pickup time <= 11:40
+                 * 13:00 - (online_order_end_time_offset - estimated_delivery_time) = 13:10
+                 * 11:10 <= delivery time <= 13:10
                  *
                  * 11:10 = 11 * 60 + 10 = 670
                  * 11:30
+                 * 11:50
+                 * 12:10
+                 * 12:30
+                 * 12:50
+                 * 13:10
                  */
             });
 
@@ -320,10 +327,15 @@ define(['timetable'], function() {
             });
 
             it('checking_work_shop timetable is defined, time in offset period', function() {
+                /**
+                 * working time:
+                 * 10:00 + online_order_start_time_offset = 10:25
+                 * 13:00 - (online_order_end_time_offset - estimated_order_preparation_time) = 12:42
+                 */
                 model.set('curTime', new Date(2014, 3, 10, 10, 20));
                 expect(model.checking_work_shop()).toBe(false);
 
-                model.set('curTime', new Date(2014, 3, 10, 12, 30));
+                model.set('curTime', new Date(2014, 3, 10, 13, 00));
                 expect(model.checking_work_shop()).toBe(false);
 
             });
@@ -332,15 +344,19 @@ define(['timetable'], function() {
                 model.set('curTime', new Date(2014, 3, 10, 10, 40));
                 expect(model.checking_work_shop()).toBe(true);
 
-                model.set('curTime', new Date(2014, 3, 10, 12, 09));
+                model.set('curTime', new Date(2014, 3, 10, 12, 43));
                 expect(model.checking_work_shop()).toBe(false);
             });
 
             it('checking_work_shop timetable is defined, time in delivery offset period', function() {
+                /**
+                 * 10:00 + online_order_start_time_offset = 10:25
+                 * 13:00 - (online_order_end_time_offset - estimated_delivery_time) = 13:10
+                 */
                 model.set('curTime', new Date(2014, 3, 10, 11, 09));
                 expect(model.checking_work_shop(true)).toBe(true);
 
-                model.set('curTime', new Date(2014, 3, 10, 11, 41));
+                model.set('curTime', new Date(2014, 3, 10, 13, 11));
                 expect(model.checking_work_shop(true)).toBe(false);
             });
 
@@ -470,6 +486,7 @@ define(['timetable'], function() {
                 expect(func).toHaveBeenCalledWith(true);
             });
         });
+
     });
 
     describe('App.Models.Timetable', function() {
@@ -478,6 +495,7 @@ define(['timetable'], function() {
             this.getTime = function() {
                 return 1390396163616;
             };
+            return 'Wed Jan 22 2014 16:09:23 GMT+0300 (MSK)';
         };
 
         beforeEach(function () {
@@ -487,6 +505,7 @@ define(['timetable'], function() {
                 get_dining_offset: function() {},
                 pickupTimeOptions: function() {},
                 checking_work_shop: function() {}
+
             });
             this.timetables = App.Data.settings.get("settings_system").timetables;
             this.server_time = App.Data.settings.get("settings_system").server_time;
@@ -604,9 +623,11 @@ define(['timetable'], function() {
         });
 
         describe("App.Models.Timetable Function isHoliday", function() {
+            var date = new Date(2014, 0, 22),
+                dateBase = new Date(date);
 
             it('Timetable does not contain _testCurTime field', function() {
-                expect(model.get("_testCurTime")).toEqual( undefined );
+                expect(model.get("_testCurTime")).toBeUndefined();
             });
 
             var set1 = {
@@ -645,6 +666,27 @@ define(['timetable'], function() {
             it('isHoliday for [Feb-5, Mar-17, Apr-5] and cur_time = Mar-18', function() {
                 model.set(set4);
                 expect(model.isHoliday(model.get("_testCurTime"))).toEqual( false );
+            });
+
+            it('`holidays` is null or not array or empty array', function() {
+                model.set('holidays', null);
+                expect(model.isHoliday(model.get("_testCurTime"))).toBe(false);
+
+                model.set('holidays', '');
+                expect(model.isHoliday(model.get("_testCurTime"))).toBe(false);
+
+                model.set('holidays', []);
+                expect(model.isHoliday(model.get("_testCurTime"))).toBe(false);
+            });
+
+            it('is called without parameters', function() {
+                spyOn(model, 'base').and.callFake(function() {
+                    return dateBase;
+                });
+
+                model.set('holidays', [{date:"Jan, 1", name:"Holiday#1"}]);
+                expect(model.isHoliday()).toBe(false);
+                expect(model.base).toHaveBeenCalled();
             });
         });
 
@@ -764,6 +806,49 @@ define(['timetable'], function() {
                 table = function() { return counter++; };
 
                 expect(model.get_timetable_on_week(date)).toEqual(getTimetable); // check result;
+            });
+        });
+
+        describe('App.Models.Timetable Function getHoursOnWeek', function() {
+            var date = new Date(2014, 3, 15),
+                dateBase = new Date(date);
+
+            beforeEach(function() {
+                spyOn(model,'base').and.callFake(function() {
+                    return new Date(dateBase);
+                });
+                model.set('timetables', timetable);
+            });
+
+            it('`timetable_on_week` is a timetable object', function() {
+                var timetableOnWeek = model.get_timetable_on_week(),
+                    hoursOnWeek = model.getHoursOnWeek();
+
+                expect(hoursOnWeek.length).toBe(7);
+                $.each(hoursOnWeek, function(day) {
+                    expect(day.hours).toEqual(timetableOnWeek[day.weekDay]);
+                });
+            });
+
+            it('`timetable_on_week` is null', function() {
+                spyOn(model, 'get_timetable_on_week').and.returnValue(null);
+
+                expect(model.getHoursOnWeek()).toBeUndefined();
+            });
+        });
+
+        describe('App.Models.Timetable Function getCurDayHours', function() {
+            it('`hours` is set', function() {
+                model.set('timetables', timetable);
+                expect(model.getCurDayHours()).toEqual(model.get('hours'));
+            });
+
+            it('`hours` is not array or empty array', function() {
+                model.set('hours', null);
+                expect(model.getCurDayHours()).toBeNull();
+
+                model.set('hours', []);
+                expect(model.getCurDayHours()).toBeUndefined();
             });
         });
 
@@ -920,7 +1005,7 @@ define(['timetable'], function() {
             });
         });
 
-        describe('Function check_order_enable.', function() {
+        describe('Function check_order_enable', function() {
             var base = {}, check_work;
 
             beforeEach(function() {
@@ -971,6 +1056,27 @@ define(['timetable'], function() {
                 App.Data.settings.get('settings_system').accept_online_orders_when_store_is_closed = false;
 
                 expect(model.check_order_enable()).toBe(false);
+            });
+        });
+
+        describe('Function openNow', function() {
+            it('isHoliday', function() {
+                spyOn(model, 'isHoliday').and.returnValue(true);
+                expect(model.openNow()).toBe(false);
+            });
+
+            it('not isHoliday', function() {
+                var date = new Date(2014, 0, 22),
+                    dateBase = new Date(date);
+
+                spyOn(model, 'isHoliday').and.returnValue(false);
+                spyOn(model, 'checking_work_shop');
+                spyOn(model, 'base').and.callFake(function() {
+                    return dateBase;
+                });
+                model.openNow();
+
+                expect(model.checking_work_shop).toHaveBeenCalledWith(dateBase);
             });
         });
     });

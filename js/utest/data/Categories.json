@@ -1,5 +1,6 @@
 [
     {
+        "active":true,
         "sort":1,
         "parent_name":"Menu2",
         "description":null,
@@ -9,6 +10,7 @@
         "name":"sub2"
     },
     {
+        "active":true,
         "sort":4,
         "parent_name":"MENU",
         "description":"",
@@ -18,6 +20,7 @@
         "name":"40 Inside"
     },
     {
+        "active":true,
         "sort":3,
         "parent_name":"MENU",
         "description":null,
@@ -27,6 +30,7 @@
         "name":"Programs"
     },
     {
+        "active":false,
         "sort":1,
         "parent_name":"MENU",
         "description":"Test Test \r\nUTF-8: Тест Тест",

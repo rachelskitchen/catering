@@ -30,7 +30,6 @@ define(['total', 'js/utest/data/Total'], function(total, data) {
             delete json.delivery;
             delete expData.tip;
             delete expData.delivery;
-            delete expData.auto_bag_charge;
 
             expect(json).toEqual(expData);
             expect(tip instanceof App.Models.Tip).toBe(true);
@@ -80,7 +79,6 @@ define(['total', 'js/utest/data/Total'], function(total, data) {
                 expect(total.unset).toHaveBeenCalledWith('delivery_item');
                 expect(total.set).toHaveBeenCalled();
                 expect(set).toEqual({
-                    bag_charge: settings.auto_bag_charge,
                     tax_country: settings.tax_country,
                     prevailing_surcharge: settings.prevailing_surcharge,
                     prevailing_tax: settings.prevailing_tax,
@@ -88,6 +86,16 @@ define(['total', 'js/utest/data/Total'], function(total, data) {
                     delivery: delivery
                 });
             }
+        });
+
+        it('update_grand()', function() {
+            spyOn(total, 'set');
+            spyOn(total, 'get_grand').and.returnValue(100);
+
+            total.update_grand();
+
+            expect(total.set).toHaveBeenCalledWith('grandTotal', 100);
+            expect(total.get_grand).toHaveBeenCalled();
         });
 
         it('get_subtotal()', function() {
@@ -150,10 +158,23 @@ define(['total', 'js/utest/data/Total'], function(total, data) {
 
         it('get_tip()', function() {
             var subtotalValue = 50,
-                tipValue = 12;
+                tipValue = 12,
+                discountsValue = 2.5,
+                serviceFeeValue = 5,
+                myorder = App.Data.myorder;
+
+            App.Data.myorder = {
+                get_service_fee_charge: function() {
+                    return serviceFeeValue;
+                }
+            };
 
             spyOn(total, 'get_subtotal').and.callFake(function() {
                 return subtotalValue;
+            });
+
+            spyOn(total, 'get_discounts_str').and.callFake(function() {
+                return discountsValue;
             });
 
             spyOn(tip, 'get_tip').and.callFake(function() {
@@ -164,7 +185,10 @@ define(['total', 'js/utest/data/Total'], function(total, data) {
 
             expect(round_monetary_currency).toHaveBeenCalledWith(tipValue);
             expect(total.get_subtotal).toHaveBeenCalled();
-            expect(tip.get_tip).toHaveBeenCalledWith(subtotalValue);
+            expect(total.get_discounts_str).toHaveBeenCalled();
+            expect(tip.get_tip).toHaveBeenCalledWith(subtotalValue, discountsValue, serviceFeeValue);
+
+            App.Data.myorder = myorder;
         });
 
         it('get_grand()', function() {

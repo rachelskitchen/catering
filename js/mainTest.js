@@ -45,7 +45,7 @@ require(['app'], function(app) {
             'img_path' : 'test/path/',
             'settings_skin' : { img_default : 'test/img_default' },
             'establishment' : 1,
-            'host': 'testHost'
+            'host': 'https://testHost.revelup.com'
         });
 
         // init Locale object

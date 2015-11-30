@@ -30,9 +30,11 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
         });
 
         describe('initialize()', function() {
-            var skin = App.skin;
+            var skin = App.skin,
+                host;
 
             beforeEach(function() {
+                host = App.Data.settings.get('host');
                 spyOn(model, 'listenTo');
                 spyOn(model, 'images');
             });
@@ -46,7 +48,7 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
                 model.initialize();
 
                 generalBehavior();
-                expect(model.get('image')).toEqual(defInitialized.image);
+                expect(model.get('image')).toEqual(addHost(defInitialized.image));
             });
 
             it('`image` exists', function() {
@@ -56,7 +58,7 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
                 model.initialize();
 
                 generalBehavior();
-                expect(model.get('image')).toEqual(productWithImage.image);
+                expect(model.get('image')).toEqual(addHost(productWithImage.image));
             });
 
             it('skin isn\'t RETAIL', function() {
@@ -65,7 +67,7 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
                 model.initialize();
 
                 generalBehavior(model);
-                expect(model.listenTo).not.toHaveBeenCalled();
+                expect(model.listenTo).not.toHaveBeenCalledWith(model, 'change:images change:image', model.images, model);
                 expect(model.images).not.toHaveBeenCalled();
             });
 
@@ -83,10 +85,14 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
                 expect(model.get('img')).toBe(defInitialized.img);
                 expect(model.get('checked_gift_cards')).toEqual(defInitialized.checked_gift_cards);
             }
+
+            function addHost(url) {
+                return host + url.replace(/^([^\/])/, '/$1');
+            }
         });
 
         describe('addJSON(data)', function() {
-            var model;
+            var model, host;
 
             function generalBehavior() {
                 expect(model.checkStockAmount).toHaveBeenCalled();
@@ -94,6 +100,7 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
 
             beforeEach(function() {
                 model = new App.Models.Product();
+                host = App.Data.settings.get('host');
                 spyOn(model, 'checkStockAmount');
                 spyOn(model, 'set').and.callFake(function() {
                     return App.Models.Product.prototype.set.apply(model, arguments);
@@ -175,12 +182,12 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
                     child2;
 
                 model.addJSON(_.clone(modelData));
-
                 child_products = model.get('child_products');
                 child1 = child_products.at(0).get('product').toJSON();
                 child2 = child_products.at(1).get('product').toJSON();
-
                 expect(child_products instanceof App.Collections.ChildProducts).toBe(true);
+                modelData.child_products[0].product.image = addHost(modelData.child_products[0].product.image);
+                modelData.child_products[1].product.image = addHost(modelData.child_products[1].product.image);
                 expect(child1).toEqual(_.extend({}, defInitialized, modelData.child_products[0].product));
                 expect(child2).toEqual(_.extend({}, defInitialized, modelData.child_products[1].product));
                 generalBehavior();
@@ -203,6 +210,10 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
                 expect(child2).toEqual(_.extend({}, defInitialized, modelData.child_products[1].product));
                 generalBehavior();
             });
+
+            function addHost(url) {
+                return host + url.replace(/^([^\/])/, '/$1');
+            }
         });
 
         describe('clone()', function() {
@@ -1101,6 +1112,35 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
             expect(model.get).toHaveBeenCalledWith('original_tax');
             expect(model.set).toHaveBeenCalledWith('tax', original_tax);
         });
+
+        describe('convertTimetables', function() {
+            var timetable;
+
+            $.ajax({
+                type: "GET",
+                url: "js/utest/data/Timetable.json",
+                dataType: "json",
+                async: false,
+                success: function(data) {
+                    timetable = data.timetable;
+                }
+            });
+
+            beforeEach(function() {
+                spyOn(window, 'format_timetables');
+            });
+
+            it('timetables isn\'t set', function() {
+                model.convertTimetables();
+                expect(window.format_timetables).not.toHaveBeenCalled();
+            });
+
+            it('timetables is set', function() {
+                model.set('timetables', timetable)
+                model.convertTimetables();
+                expect(window.format_timetables).toHaveBeenCalledWith(timetable);
+            });
+        });
     });
 
     describe("App.Collections.Products", function() {
@@ -1279,7 +1319,6 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
             function successfulResponse() {
                 checkAjaxRequest();
                 expect(fetching.state()).toBe('resolved');
-                expect(window.format_timetables).toHaveBeenCalledWith(ajaxData[0].timetables);
                 expect(collection.length).toBe(1);
                 expect(collection.at(0).get('compositeId')).toBe(ajaxData[0].id + '_' + ajaxData[0].id_category);
             }
@@ -1379,6 +1418,13 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
                 items[1].attribute_type = 2;
                 collection.add(items);
 
+                expectResult(items);
+            });
+
+            it('item exists, `attribute_1_name` and `attribute_1_name` are not set', function() {
+                var item = deepClone(data.product_with_image);
+                collection.add(item);
+
                 expectEmptyResult();
             });
 
@@ -1390,24 +1436,34 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
                 items[1].attribute_2_values = null;
                 collection.add(items);
 
-                expectEmptyResult();
+                expect(collection.getAttributeValues(0)).toEqual({'Attribute 1': []});
+                expect(collection.getAttributeValues(1)).toEqual({'Attribute 1': []});
+                expect(collection.getAttributeValues(2)).toEqual({'Attribute 2': []});
             });
 
             it('items exist, parent items exist, `attribute_1_values` and `attribute_2_values` are array', function() {
-                var items = deepClone(data.getAttributeValues_items),
-                    result1 = _.union(items[0].attribute_1_values, items[1].attribute_1_values).sort(),
-                    result2 = _.union(items[0].attribute_2_values, items[1].attribute_2_values).sort();
-                collection.add(items);
+                var items = deepClone(data.getAttributeValues_items);
 
-                expect(collection.getAttributeValues(0)).toEqual(result1);
-                expect(collection.getAttributeValues(1)).toEqual(result1);
-                expect(collection.getAttributeValues(2)).toEqual(result2);
+                collection.add(items);
+                expectResult(items);
             });
 
             function expectEmptyResult() {
                 expect(collection.getAttributeValues(0)).toEqual({});
                 expect(collection.getAttributeValues(1)).toEqual({});
                 expect(collection.getAttributeValues(2)).toEqual({});
+            }
+
+            function expectResult(items) {
+                var result1 = {},
+                    result2 = {};
+
+                result1[items[0].attribute_1_name] = _.union(items[0].attribute_1_values, items[1].attribute_1_values).sort();
+                result2[items[0].attribute_2_name] = _.union(items[0].attribute_2_values, items[1].attribute_2_values).sort();
+
+                expect(collection.getAttributeValues(0)).toEqual(result1);
+                expect(collection.getAttributeValues(1)).toEqual(result1);
+                expect(collection.getAttributeValues(2)).toEqual(result2);
             }
         });
     });

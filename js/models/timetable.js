@@ -63,7 +63,7 @@ define(["backbone"], function(Backbone) {
             this.enable_asap = times.enable_asap_due_time;
         },
         /**
-         * Set property "Timetable" to use it.
+         * Set proget_working_hoursperty "Timetable" to use it.
          */
         update: function(data) {
             this.set(data);
@@ -184,7 +184,6 @@ define(["backbone"], function(Backbone) {
                 case null:
                 case true:
                     return true;
-                    break;
                 case false:
                     return false;
             }
@@ -337,7 +336,7 @@ define(["backbone"], function(Backbone) {
         /**
          * Base time
          */
-        base : function() {
+        base: function() {
             return this.get_current_time(new Date());
         },
         /**
@@ -387,15 +386,15 @@ define(["backbone"], function(Backbone) {
             */
             var self = this,
                 holidays = this.get("holidays");
-            if (holidays == null || !$.isArray(holidays)) {
+            if (holidays == null || !$.isArray(holidays) || !holidays.length) {
                 return false;
             }
             if (!cur_date) {
                 cur_date = this.base();
             }
-            var  cur_month = cur_date.getMonth() + 1,
-                 cur_day = cur_date.getDate(),
-                 month, day;
+            var cur_month = cur_date.getMonth() + 1,
+                cur_day = cur_date.getDate(),
+                month, day;
 
             for (var i in holidays) {
                 month = /^[^,]{3}/.exec(holidays[i].date);
@@ -580,7 +579,6 @@ define(["backbone"], function(Backbone) {
             }, self);
         },
         getLastPTforWorkPeriod: function(curtime) {
-
             var wd = new App.Models.WorkingDay( {timetable: this.get_working_hours(curtime, 1),
                                                  curTime : curtime});
 

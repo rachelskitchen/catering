@@ -35,7 +35,7 @@ define(['categories'], function() {
 
     describe("App.Collections.Categories", function() {
 
-        var model, categories, success, error, id, arg,
+        var model, categories, success, error, id, arg, host,
             ajaxStub = function() {
                 success = arguments[0].successResp;
                 error = arguments[0].error;
@@ -55,6 +55,7 @@ define(['categories'], function() {
 
         beforeEach(function() {
             model = new App.Collections.Categories();
+            host = App.Data.settings.get('host');
             id = {
                 description: null,
                 id: 50,
@@ -82,7 +83,7 @@ define(['categories'], function() {
             error();
             success(categories);
             expect(model.length).toBe(4);
-            expect(arg[0].url).toBe("testHost/weborders/product_categories/");
+            expect(arg[0].url).toBe(host + "/weborders/product_categories/");
             expect(model.get(50).toJSON()).toEqual(id);
             expect(model.selected).toBe(0);
             expect(model.parent_selected).toBe(0);
@@ -92,6 +93,23 @@ define(['categories'], function() {
             model.add(categories);
             model.set_inactive(50);
             expect(model.get(50).get('active')).toBe(false);
+            model.remove(categories);
+        });
+
+        it('getParents()', function() {
+            model.add(categories);
+            var parents = model.getParents();
+
+            expect(parents[0].ids).toBe('50');
+            expect(parents[0].name).toBe('Menu2');
+            expect(parents[0].subs.length).toBe(1);
+            expect(parents[0].subs[0].id).toBe(50);
+
+            expect(parents[1].ids).toBe('28,29');
+            expect(parents[1].name).toBe('MENU');
+            expect(parents[1].subs.length).toBe(2);
+            expect(parents[1].subs[0].id).toBe(28);
+            expect(parents[1].subs[1].id).toBe(29);
         });
 
     });

@@ -1,7 +1,7 @@
 define(['filters'], function() {
     'use strict';
 
-    var filter1, filter2, filter3, filters, loadData, loadDataResult;
+    var filter1, filter2, filter3, filter4, filters, loadData, loadDataResult;
 
     loadData = App.Models.FilterItem.prototype.loadData;
     loadDataResult = function() {return;};
@@ -44,6 +44,21 @@ define(['filters'], function() {
             }],
             compare: function(item, filter) {
                 return item.get('cost') === filter.get('value');
+            }
+        });
+
+        // with items and 'radio' type
+        filter4 = new App.Models.Filter({
+            filterItems: [{
+                value: 1,
+                selected: true
+            }, {
+                value: 2,
+                selected: false
+            }],
+            radio: true,
+            compare: function(item, filter) {
+                return true;
             }
         });
 
@@ -164,6 +179,43 @@ define(['filters'], function() {
             filterItem.set('selected', !newValue);
         });
 
+        describe('uncheck()', function() {
+            it ('`value` is true and filter type is `radio`', function() {
+                var filterItem1 = filter4.get('filterItems').at(0),
+                    filterItem2 = filter4.get('filterItems').at(1),
+                    newValue = !filterItem2.get('selected');
+                filterItem2.set('selected', newValue);
+
+                expect(filterItem1.get('selected')).toBe(false);
+                expect(filterItem2.get('selected')).toBe(true);
+
+                filterItem2.set('selected', !newValue);
+            });
+
+            it('`value` is true and filter type is not `radio`', function() {
+                var filterItem1 = filter2.get('filterItems').at(0),
+                    filterItem2 = filter2.get('filterItems').at(1),
+                    newValue = !filterItem2.get('selected');
+                filterItem2.set('selected', newValue);
+
+                expect(filterItem1.get('selected')).toBe(true);
+                expect(filterItem2.get('selected')).toBe(true);
+
+                filterItem2.set('selected', !newValue);
+            });
+
+            it ('`value` is false', function() {
+                var filterItem1 = filter4.get('filterItems').at(0),
+                    filterItem2 = filter4.get('filterItems').at(1),
+                    newValue = !filterItem1.get('selected');
+                filterItem1.set('selected', newValue);
+
+                expect(filterItem1.get('selected')).toBe(false);
+                expect(filterItem2.get('selected')).toBe(false);
+
+                filterItem1.set('selected', !newValue);
+            });
+        });
 
         describe('applyFilter()', function() {
             var emptyResult = null,
