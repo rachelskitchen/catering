@@ -774,13 +774,15 @@ define(["main_router"], function(main_router) {
                             modelName: 'MyOrder',
                             collection: App.Data.myorder,
                             mod: 'List',
-                            className: 'myorderList'
+                            className: 'myorderList',
+                            cacheId: true
                         },
                         {
                             modelName: 'MyOrder',
                             model: App.Data.myorder.checkout,
                             mod: 'Note',
-                            className: 'myorderNote'
+                            className: 'myorderNote',
+                            cacheId: true
                         }
                     ]
                 });
@@ -1327,7 +1329,8 @@ define(["main_router"], function(main_router) {
                     content: {
                         modelName: 'StoreInfo',
                         mod: 'Map',
-                        className: 'map'
+                        className: 'map',
+                        cacheId: true
                     }
                 });
 

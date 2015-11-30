@@ -87,14 +87,14 @@ define(["done_view", "generator"], function(done_view) {
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
 
-            // this.$('#section > div').remove();
             content.removeClass().addClass(this.model.get('contentClass'));
-
-            // this.$('#section').append(content);
 
             while(this.subViews.length > 2) {
                 view = this.subViews.pop();
-                view.removeFromDOMTree();
+                if (view.options.cacheId || view.options.cacheIdUniq)
+                    view.removeFromDOMTree();
+                else
+                    view.remove();
                 typeof view.stop == 'function' && view.stop();
             }
 
