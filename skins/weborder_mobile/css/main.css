@@ -83,22 +83,6 @@ input[type="button"], input[type='submit'] {
     -ms-appearance: none;
 }
 
-input::-webkit-input-placeholder {
-   color: inherit;
-}
-
-input:-moz-placeholder { /* Firefox 18- */
-   color: inherit;
-}
-
-input::-moz-placeholder {  /* Firefox 19+ */
-   color: inherit;
-}
-
-input:-ms-input-placeholder {
-   color: inherit;
-}
-
 ul {
     list-style: none;
 }
