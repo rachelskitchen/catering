@@ -10,7 +10,8 @@ define([], function() {
             "qty_type": 0,
             "selected": false,
             "sort": null,
-            "sum": null
+            "sum": null,
+            "description": null
         },
         "defaults_initialized": {
             "cost": null,
@@ -22,7 +23,8 @@ define([], function() {
             "qty_type": 0,
             "selected": false,
             "sort": null,
-            "sum": null
+            "sum": null,
+            "description": null
         },
         "ex0": {
             "id": 1223,
@@ -43,7 +45,8 @@ define([], function() {
             "cost": null,
             "img": "./skins/weborder/img/",
             "quantity": 1,
-            "qty_type": 0
+            "qty_type": 0,
+            "description": null
         },
         "ex2": {
             "id": 122,
@@ -55,7 +58,8 @@ define([], function() {
             "cost": null,
             "img": "./skins/weborder/img/",
             "quantity": 1,
-            "qty_type": 0
+            "qty_type": 0,
+            "description": null
         },
         "defBlock": {
             "id": null,
@@ -125,7 +129,8 @@ define([], function() {
                         "cost": null,
                         "img": "test/some_image.jpg",
                         "quantity": 1,
-                        "qty_type": 0
+                        "qty_type": 0,
+                        "description": null
                     }
                 ],
                 "img": "./skins/weborder/img/",
@@ -160,7 +165,8 @@ define([], function() {
                         "cost": null,
                         "img": "test/some_image.jpg",
                         "quantity": 1,
-                        "qty_type": 0
+                        "qty_type": 0,
+                        "description": null
                     }
                 ],
                 "img": "./skins/weborder/img/",
@@ -193,7 +199,8 @@ define([], function() {
                         "cost": null,
                         "img": "test/some_image.jpg",
                         "quantity": 1,
-                        "qty_type": 0
+                        "qty_type": 0,
+                        "description": null
                     }
                 ],
                 "img": "./skins/weborder/img/",
@@ -226,7 +233,8 @@ define([], function() {
                         "cost": null,
                         "img": "test/some_image.jpg",
                         "quantity": 1,
-                        "qty_type": 0
+                        "qty_type": 0,
+                        "description": null
                     }
                 ],
                 "img": "./skins/weborder/img/",
@@ -259,7 +267,8 @@ define([], function() {
                         "cost": null,
                         "img": "test/some_image.jpg",
                         "quantity": 1,
-                        "qty_type": 0
+                        "qty_type": 0,
+                        "description": null
                     }
                 ],
                 "img": "./skins/weborder/img/",
