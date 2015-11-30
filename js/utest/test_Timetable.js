@@ -504,8 +504,8 @@ define(['timetable'], function() {
                 update: function() {},
                 get_dining_offset: function() {},
                 pickupTimeOptions: function() {},
-                checking_work_shop: function() {}
-
+                checking_work_shop: function() {},
+                getLastPTforPeriod: function() { return "all-the-day"; }
             });
             this.timetables = App.Data.settings.get("settings_system").timetables;
             this.server_time = App.Data.settings.get("settings_system").server_time;
@@ -1057,6 +1057,13 @@ define(['timetable'], function() {
 
                 expect(model.check_order_enable()).toBe(false);
             });
+        });
+
+        it('Function getLastPTforWorkPeriod', function() {
+            var curtime = model.base(),
+                wd = new App.Models.WorkingDay( {timetable: timetable[2].timetable_data.wednesday,
+                                                 curTime : curtime});
+            expect(model.getLastPTforWorkPeriod(curtime)).toEqual(wd.getLastPTforPeriod(curtime));
         });
 
         describe('Function openNow', function() {

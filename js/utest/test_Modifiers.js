@@ -432,6 +432,25 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
                 expect(model.get('amount_free_selected')).toEqual([modifier]);
             });
         });
+
+        describe('Function removeFreeModifiers', function() {
+            it('modifiers aren\'t set', function() {
+                model.removeFreeModifiers();
+
+                expect(model.get('amount_free_selected')).toEqual([]);
+            });
+
+            it('modifiers are set', function() {
+                model.set('modifiers', exDef.modifiers);
+                var modifiers = model.get('modifiers');
+                spyOn(modifiers, 'removeFreeModifiers');
+
+                model.removeFreeModifiers();
+
+                expect(modifiers.removeFreeModifiers).toHaveBeenCalled();
+                expect(model.get('amount_free_selected')).toEqual([]);
+            });
+        });
     });
     
     describe('App.Collections.ModifierBlocks', function() {
