@@ -75,7 +75,7 @@ define(['categories'], function() {
             expect(App.Collections.Categories).toBeDefined();
         });
 
-        it("Get_categories Function", function() {
+        it("get_categories()", function() {
             expect(model.selected).toBeNull();
             expect(model.parent_selected).toBeNull();
             spyOn($,'ajax').and.callFake(ajaxStub);
@@ -89,7 +89,7 @@ define(['categories'], function() {
             expect(model.parent_selected).toBe(0);
         });
 
-        it("Set_inactive Function", function() {
+        it("set_inactive()", function() {
             model.add(categories);
             model.set_inactive(50);
             expect(model.get(50).get('active')).toBe(false);
