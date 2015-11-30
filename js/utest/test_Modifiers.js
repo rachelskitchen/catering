@@ -70,14 +70,40 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
                 });
 
                 expect(model.modifiers_submit()).toEqual({
-                        modifier: 'id',
-                        modifier_cost: 'cost',
-                        modifier_price: 12,
-                        free_mod_price: undefined,
-                        max_price_amount: undefined,
-                        qty: 1,
-                        qty_type: 0
+                    modifier: 'id',
+                    modifier_cost: 'cost',
+                    modifier_price: 12,
+                    free_mod_price: undefined,
+                    max_price_amount: undefined,
+                    qty: 1,
+                    qty_type: 0
                 });
+
+                // `cost` is null
+                model.set('cost', null);
+                expect(model.modifiers_submit().modifier_cost).toBe(0);
+
+                // is free
+                spyOn(model, 'isFree').and.returnValue(true);
+                var free_amount = 'free_amount';
+                model.set('free_amount', free_amount);
+                expect(model.modifiers_submit().free_mod_price).toBe(free_amount);
+
+                // max price
+                spyOn(model, 'isMaxPriceFree').and.returnValue(true);
+                var max_price_amount = 'max_price_amount';
+                model.set('max_price_amount', max_price_amount);
+                expect(model.modifiers_submit().max_price_amount).toBe(max_price_amount);
+            });
+
+            it('selected, free', function() {
+                model.set({
+                    selected: true,
+                    id: 'id',
+                    cost: null,
+                    price: '12'
+                });
+                expect(model.modifiers_submit().modifier_cost).toBe(0);
             });
         });
         
@@ -107,6 +133,14 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             model.set('free_amount', 10);
             model.removeFreeModifier();
             expect(model.get('free_amount')).toBeUndefined();
+        });
+
+        it('half_price_koeff()', function() {
+            model.set('qty_type', 0);
+            expect(model.half_price_koeff()).toBe(1);
+
+            model.set('qty_type', 1);
+            expect(model.half_price_koeff()).toBe(0.5);
         });
     });
     
@@ -431,6 +465,180 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
                 model.update_free(modifier);
                 expect(model.get('amount_free_selected')).toEqual([modifier]);
             });
+
+            it('remove modifier from free selected', function() {
+                model.set('amount_free_selected', [modifier]);
+                modifier.set('free_amount', 10);
+                modifier.set('selected', false);
+
+                model.update_free(modifier);
+                expect(model.get('free_amount')).toBeUndefined();
+                expect(model.get('amount_free_selected').length).toBe(0);
+            });
+
+            it('`amount_free_is_dollars` it true', function() {
+                spyOn(model, 'update_free_price');
+                modifier.set('selected', true);
+                model.set('amount_free', 10);
+                model.set('amount_free_is_dollars', true);
+                model.update_free(modifier);
+                expect(model.update_free_price).toHaveBeenCalledWith(modifier);
+            });
+        });
+
+        describe('update_free_quantity_change()', function() {
+            var arg = 'model';
+
+            beforeEach(function() {
+                spyOn(model, 'update_free_price');
+                spyOn(model, 'update_free_quantity');
+            });
+
+            it('`ignore_free_modifiers` or `admin_modifier` is true', function() {
+                model.set('ignore_free_modifiers', true);
+                expect(model.update_free_quantity_change()).toBeUndefined();
+
+                model.set('ignore_free_modifiers', false);
+                model.set('admin_modifier', true);
+
+                expect(model.update_free_quantity_change()).toBeUndefined();
+                expect(model.update_free_price).not.toHaveBeenCalled();
+                expect(model.update_free_quantity).not.toHaveBeenCalled();
+            });
+
+            it('`amount_free_is_dollars` is true', function() {
+                model.set('amount_free_is_dollars', true);
+                model.update_free_quantity_change(arg);
+
+                expect(model.update_free_price).toHaveBeenCalledWith(arg);
+            });
+
+            it('`amount_free_is_dollars` is false', function() {
+                model.update_free_quantity_change(arg);
+
+                expect(model.update_free_quantity).toHaveBeenCalledWith(arg);
+            });
+        });
+
+        describe('update_free_quantity', function() {
+            var modifier1, modifier2;
+            beforeEach(function() {
+                modifier1 = new App.Models.Modifier(ex);
+                modifier2 = new App.Models.Modifier(ex2);
+                model.set('amount_free_selected', [modifier1, modifier2]);
+            });
+
+            it('`amount_free` is 1, 1 modifier selected', function() {
+                model.set('amount_free', 1);
+                model.set('amount_free_selected', [modifier1]);
+                model.update_free_quantity();
+
+                expect(modifier1.get('free_amount')).toBe(0);
+            });
+
+            it('`amount_free` is 1, 2 modifiers selected', function() {
+                model.set('amount_free', 1);
+                model.update_free_quantity();
+
+                expect(modifier1.get('free_amount')).toBe(0);
+                expect(modifier2.get('free_amount')).toBeUndefined();
+            });
+
+            it('`amount_free` is 2, 2 modifiers selected', function() {
+                model.set('amount_free', 2);
+                model.update_free_quantity();
+
+                expect(modifier1.get('free_amount')).toBe(0); // free
+                expect(modifier1.get('free_amount')).toBe(0); // free
+            });
+
+            it('`amount_free` is 1.5, 2 modifiers selected', function() {
+                model.set('amount_free', 1.5);
+                modifier2.set('price', 1);
+                model.update_free_quantity();
+
+                expect(modifier1.get('free_amount')).toBe(0); // free
+                expect(modifier2.get('free_amount')).toBe(0.5); // half price
+            });
+
+            it('`amount_free` is 1, 2 modifiers selected, both by one half', function() {
+                spyOn(modifier1, 'half_price_koeff').and.returnValue(0.5);
+                spyOn(modifier2, 'half_price_koeff').and.returnValue(0.5);
+                model.set('amount_free', 1);
+                model.update_free_quantity();
+
+                expect(modifier1.get('free_amount')).toBe(0); // free
+                expect(modifier2.get('free_amount')).toBe(0); // free
+            });
+
+            it('`amount_free` is 1, 2 modifiers selected, modifier1 is one half', function() {
+                spyOn(modifier1, 'half_price_koeff').and.returnValue(0.5);
+                model.set('amount_free', 1);
+                modifier2.set('price', 1);
+                model.update_free_quantity();
+
+                expect(modifier1.get('free_amount')).toBe(0);
+                expect(modifier2.get('free_amount')).toBe(0.5);
+            });
+        });
+
+        describe('update_free_price()', function() {
+            var modifier1, modifier2;
+            beforeEach(function() {
+                modifier1 = new App.Models.Modifier(ex);
+                modifier2 = new App.Models.Modifier(ex2);
+                model.set('amount_free_selected', [modifier1, modifier2]);
+            });
+
+            it('`amount_free` is 0', function() {
+                model.set('amount_free', 0);
+                model.update_free_price();
+
+                expect(modifier1.get('free_amount')).toBeUndefined();
+                expect(modifier2.get('free_amount')).toBeUndefined();
+            });
+
+            it('`amount_free` is 1, modifier1 price is 0.5, modifier2 price is 1', function() {
+                model.set('amount_free', 1);
+                modifier1.set('price', 0.5);
+                modifier2.set('price', 1);
+                model.update_free_price();
+
+                expect(modifier1.get('free_amount')).toBe(0);
+                expect(modifier2.get('free_amount')).toBe(0.5);
+            });
+        });
+
+        describe('initFreeModifiers()', function() {
+            it('`ignore_free_modifiers` is true', function() {
+                model.set('ignore_free_modifiers', true);
+                spyOn(model, 'get').and.callThrough();
+
+                expect(model.initFreeModifiers()).toBeUndefined();
+                expect(model.get).not.toHaveBeenCalledWith('modifiers');
+            });
+        });
+
+        describe('restoreFreeModifiers()', function() {
+            var modifier1, modifier2;
+            beforeEach(function() {
+                modifier1 = new App.Models.Modifier(ex);
+                modifier2 = new App.Models.Modifier(ex2);
+            });
+
+            it('`ignore_free_modifiers` is true', function() {
+                model.set('ignore_free_modifiers', true);
+                spyOn(model, 'get').and.callThrough();
+
+                expect(model.restoreFreeModifiers()).toBeUndefined();
+                expect(model.get).not.toHaveBeenCalledWith('amount_free_selected');
+            });
+        });
+
+        it('checkAmountFree()', function() {
+            model.set('amount_free', -1);
+            model.checkAmountFree();
+            expect(model.get('amount_free')).toBe(0);
         });
 
         describe('removeFreeModifiers()', function() {
@@ -550,6 +758,13 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(model.length).toBe(1);
             expect(add.calls.count()).toBe(1);
             expect(add.calls.mostRecent().args[0]).toBe(load[0]);
+        });
+
+        it('find_modifier()', function() {
+            expect(model.find_modifier('non-existing id')).toBeUndefined();
+            model.addJSON(exBlocks);
+
+            expect(model.find_modifier('122')).toEqual(model.get('12').get('modifiers').get('122'));
         });
         
         it('get_modifierList()', function() {
