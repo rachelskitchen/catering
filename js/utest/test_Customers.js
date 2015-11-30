@@ -34,7 +34,7 @@ define(['customers',  'js/utest/data/Customer', 'revel_api'], function(customers
         });
 
         // App.Models.Customer function get_customer_name
-        describe("Call get_customer_name() method:", function() {
+        describe("get_customer_name()", function() {
             var testValues = [null, undefined, '', true, 123, {}, NaN, Infinity, -Infinity, -0, 0, 2.23],
                 first_name, last_name;
 
@@ -81,13 +81,13 @@ define(['customers',  'js/utest/data/Customer', 'revel_api'], function(customers
             });
         });
 
-        it("Call saveCustomer() method", function() {
+        it("saveCustomer()", function() {
             spyOn(window, 'setData');
             model.saveCustomer();
             expect(window.setData).toHaveBeenCalledWith('customer', model);
         });
 
-        describe("Call loadCustomer() method:", function() {
+        describe("loadCustomer():", function() {
             var values = [1, '', 'asd', true, undefined, null, NaN, -Infinity, {}],
                 get, getData;
 
@@ -161,7 +161,7 @@ define(['customers',  'js/utest/data/Customer', 'revel_api'], function(customers
             });
         });
 
-        it("Call saveAddresses() method", function() {
+        it("saveAddresses()", function() {
             spyOn(model, 'get').and.returnValue(1);
             spyOn(window, 'setData');
             spyOn(Backbone, 'Model').and.returnValue({});
@@ -171,7 +171,7 @@ define(['customers',  'js/utest/data/Customer', 'revel_api'], function(customers
             expect(window.setData).toHaveBeenCalledWith('address', {}, true);
         });
 
-        describe("Call loadAddresses() method:", function() {
+        describe("loadAddresses()", function() {
             var values = [null, undefined, 12, NaN, Infinity, '12', '', 0, 1.223],
                 getData;
 
@@ -241,7 +241,7 @@ define(['customers',  'js/utest/data/Customer', 'revel_api'], function(customers
             });
         });
 
-        describe("Call address_str() method:", function() {
+        describe("address_str()", function() {
             var get;
 
             beforeEach(function() {
@@ -314,7 +314,7 @@ define(['customers',  'js/utest/data/Customer', 'revel_api'], function(customers
             });
         });
 
-        describe('Call _check_delivery_fields() method:', function() {
+        describe('_check_delivery_fields()', function() {
             beforeEach(function() {
                 this.address = deepClone(App.Data.settings.get('settings_system').address);
             });
@@ -357,7 +357,7 @@ define(['customers',  'js/utest/data/Customer', 'revel_api'], function(customers
             });
         });
 
-        describe("Call syncWithRevelAPI() method:", function() {
+        describe("syncWithRevelAPI()", function() {
             var getModel, listenToModel,
                 RevelAPI = new App.Models.RevelAPI({customer: new App.Models.Customer});
 

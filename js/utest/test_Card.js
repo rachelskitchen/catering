@@ -34,7 +34,7 @@ define(['card', 'revel_api'], function() {
             expect(model.toJSON()).toEqual(def);
         });
 
-        describe('Trim()', function() {
+        describe('trim()', function() {
             it('firstName and secondName are strings', function() {
                 model.set({
                     firstName: ' first ',
@@ -58,12 +58,12 @@ define(['card', 'revel_api'], function() {
             });
         });
 
-        it("SaveCard Function", function() {
+        it('saveCard()', function() {
             model.saveCard(); // save current state model in storage (detected automatic)
             expect(setData).toHaveBeenCalledWith('card', model);
         });
 
-        it('Empty_card_number Function', function() {
+        it('empty_card_number()', function() {
             model.set({
                 cardNumber: '4234567890123456',
                 expDate: 2999,
@@ -74,12 +74,12 @@ define(['card', 'revel_api'], function() {
             expect(model.toJSON()).toEqual(def);
         });
 
-        it("LoadCard Function", function() {
+        it('loadCard()', function() {
             model.loadCard(); // load state model from storage (detected automatic)
             expect(getData).toHaveBeenCalledWith('card');
         });
 
-        it('ClearData Function', function() {
+        it('clearData()', function() {
             model.set({
                 cardNumber: '4234567890123456',
                 expDate: 2999,
@@ -91,7 +91,7 @@ define(['card', 'revel_api'], function() {
             expect(setData).toHaveBeenCalledWith('card', model);
         });
 
-        it('SyncWithRevelAPI Function', function() {
+        it('syncWithRevelAPI()', function() {
             // Revel API isn't available
             var func = model.syncWithRevelAPI; // synchronization with Revel API
             var result = func.call(model);

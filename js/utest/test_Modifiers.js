@@ -22,11 +22,11 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(model.toJSON()).toEqual(defInitialized);
         });
         
-        it('App.Models.Modifier Function addJSON', function() {
+        it('addJSON()', function() {
             expect(model.addJSON(ex0).toJSON()).toEqual(ex);
         });
         
-        it('App.Models.Modifier Function clone', function() {
+        it('clone()', function() {
             model.addJSON(ex);
             var clone = model.clone();
             expect(clone.toJSON()).toEqual(ex);
@@ -34,13 +34,13 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(clone.__proto__).toBe(model.__proto__);
         });
         
-        it('App.Models.Modifier Function update', function() {
+        it('update()', function() {
             var clone = model.clone().addJSON(ex);
             expect(model.toJSON()).toEqual(defInitialized);
             expect(model.update(clone).toJSON()).toEqual(ex);
         });
     
-        describe('App.Models.Modifier Function updateSum', function() {
+        describe('updateSum()', function() {
             it('`free_amount` is undefined', function() {
                 spyOn(model, 'getSum').and.returnValue(10);
                 model.updateSum(2);
@@ -54,7 +54,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             });
         });
 
-        describe('Function modifiers_submit', function() {
+        describe('modifiers_submit()', function() {
             
             it('not selected', function() {
                 model.set({selected: false});
@@ -81,7 +81,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             });
         });
         
-        describe('Function update_prices', function() {
+        describe('update_prices()', function() {
             var max_price = 15;
 
             beforeEach(function() {
@@ -103,7 +103,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             });
         });
 
-        it('Function removeFreeModifier', function() {
+        it('removeFreeModifier()', function() {
             model.set('free_amount', 10);
             model.removeFreeModifier();
             expect(model.get('free_amount')).toBeUndefined();
@@ -130,17 +130,17 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(model.toJSON()).toEqual([]);
         });
         
-        it('App.Collections.Modifiers Function comparator', function() {
+        it('comparator()', function() {
             model.add([ex, ex2]);
             expect(model.at(0).toJSON()).toEqual(ex2);
             expect(model.at(1).toJSON().id).toEqual(ex.id);
         });
         
-        it('App.Collections.Modifiers Function addJSON', function() {
+        it('addJSON()', function() {
             expect(model.addJSON([ex, ex2]).toJSON()).toEqual([ex2, ex]);
         });
         
-        it('App.Collections.Modifiers Function clone', function() {
+        it('clone()', function() {
             model.add(ex);
             model.add(ex2);
             var clone = model.clone();
@@ -149,14 +149,14 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(clone.__proto__).toBe(model.__proto__);
         });
         
-        it('App.Collections.Modifiers Function update', function() {
+        it('update()', function() {
             model.add(ex);
             var clone = model.clone().addJSON([ex, ex2]);
             expect(model.toJSON()).toEqual([ex]);
             expect(model.update(clone).toJSON()).toEqual([ex2, ex]);
         });
                 
-        describe('App.Collections.Modifiers Function reset_checked', function() {
+        describe('reset_checked()', function() {
             
             it('Check filter options', function() {
                 spyOn(model,'where').and.returnValue([]);
@@ -177,12 +177,12 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             
         });
         
-        it('Function get_sum', function() {
+        it('get_sum()', function() {
             model.add([{selected: true, price: 1}, {selected: true, price: 10}, {price: 100}]);
             expect(model.get_sum()).toBe(11);
         });
     
-        it('Function modifiers_submit', function() {
+        it('modifiers_submit()', function() {
             var count = 1;
             model.add([{}, {}]);
             spyOn(App.Models.Modifier.prototype, 'modifiers_submit').and.callFake(function() {
@@ -193,7 +193,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(model.modifiers_submit()).toEqual(['test']);
         });
         
-        it('Function update_prices', function() {
+        it('update_prices()', function() {
             spyOn(App.Models.Modifier.prototype, 'update_prices').and.callFake(function(price){
                 return price - 1;
             });
@@ -201,7 +201,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(model.update_prices(12)).toBe(10);
         });
 
-        it('Function removeFreeModifiers', function() {
+        it('removeFreeModifiers()', function() {
             model.add(ex);
             model.each(function(modifier) {
                 spyOn(modifier, 'removeFreeModifier');
@@ -260,7 +260,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(model.toJSON()).toEqual(exBlock);
         });
         
-        it('App.Models.ModifierBlock Function addJSON', function() {
+        it('addJSON()', function() {
             var example = deepClone(exBlock);
             exBlock.modifiers = modColl.toJSON();
             model.addJSON(exBlock);
@@ -269,7 +269,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(model.toJSON()).toEqual(example);
         });
         
-        it('App.Models.ModifierBlock Function clone', function() {
+        it('clone()', function() {
             model.set(exDef);
             var clone = model.clone();
             expect(clone.get('modifiers').toJSON()).toEqual(model.get('modifiers').toJSON());
@@ -284,7 +284,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(clone.__proto__).toBe(model.__proto__);
         });
         
-        it('App.Models.ModifierBlock Function update', function() {
+        it('update()', function() {
             model.get('modifiers').set(ex);
             model.set(exBlock2);
             
@@ -301,7 +301,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(model.toJSON()).toEqual(exBlock);
         });
                 
-        it('App.Models.ModifierBlock Function reset_checked.', function() {
+        it('reset_checked()', function() {
             
             var obj = {
                 reset_checked: function() {}
@@ -317,7 +317,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             
         });
         
-        describe('Function get_sum', function() {
+        describe('get_sum()', function() {
             
             it('Size and Special', function() {
                 model.set({
@@ -339,7 +339,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             });
         });
     
-        describe('Function modifiers_submit', function() {
+        describe('modifiers_submit()', function() {
             var isSpecial;
             
             beforeEach(function() {
@@ -361,7 +361,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             });
         });
         
-        describe('Function isSpecial', function() {
+        describe('isSpecial()', function() {
             
             it('not special', function() {
                 expect(model.isSpecial()).toBe(false);
@@ -374,7 +374,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             });
         });
         
-        describe('Function update_prices', function() {
+        describe('update_prices()', function() {
             var isSpecial;
             
             beforeEach(function() {
@@ -399,7 +399,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             });
         });
 
-        describe('Function update_free', function() {
+        describe('update_free()', function() {
             var modifier;
 
             beforeEach(function() {
@@ -430,6 +430,25 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
                 modifier.set('selected', true);
                 model.update_free(modifier);
                 expect(model.get('amount_free_selected')).toEqual([modifier]);
+            });
+        });
+
+        describe('removeFreeModifiers()', function() {
+            it('modifiers aren\'t set', function() {
+                model.removeFreeModifiers();
+
+                expect(model.get('amount_free_selected')).toEqual([]);
+            });
+
+            it('modifiers are set', function() {
+                model.set('modifiers', exDef.modifiers);
+                var modifiers = model.get('modifiers');
+                spyOn(modifiers, 'removeFreeModifiers');
+
+                model.removeFreeModifiers();
+
+                expect(modifiers.removeFreeModifiers).toHaveBeenCalled();
+                expect(model.get('amount_free_selected')).toEqual([]);
             });
         });
     });
@@ -467,13 +486,13 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(model.toJSON()).toEqual([]);
         });
         
-        it('App.Collections.ModifierBlocks Function comparator', function() {
+        it('comparator()', function() {
             model.add(exDef);
             expect(model.at(0).get('id')).toBe(exBlocks2[1].id);
             expect(model.at(1).get('id')).toBe(exBlocks2[0].id);
         });
         
-        it('Function update_prices', function() {
+        it('update_prices()', function() {
             spyOn(App.Models.ModifierBlock.prototype, 'update_prices').and.callFake(function(price) {
                 return price - 1;
             });
@@ -481,7 +500,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(model.update_prices(12)).toBe(10);
         });
         
-        it('App.Collections.ModifierBlocks Function addJSON', function() {
+        it('addJSON()', function() {
             expect(model.addJSON(exBlocks2).length).toBe(exBlocks2.length);
             expect(model.at(1).get('modifiers').toJSON()).toEqual(exBlocks2[0].modifiers);
             
@@ -490,7 +509,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(model.at(1).toJSON()).toEqual(exBlocks2[0]);
         });
         
-        it('App.Collections.ModifierBlocks Function clone', function() {
+        it('clone()', function() {
             model.addJSON(exBlocks2);
             var clone = model.clone();
             expect(clone.length).toBe(model.length);
@@ -501,7 +520,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(clone.at(1).cid).not.toBe(model.at(1).cid);
         });
         
-        it('App.Collections.ModifierBlocks Function update', function() {
+        it('update()', function() {
             var clone = model.clone();
             model.addJSON(exBlocks);
             clone.addJSON(exBlocks2);
@@ -514,7 +533,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(model.at(1).cid).not.toBe(clone.at(1).cid);
         });
         
-        it('App.Collections.ModifierBlocks Function get_modifiers', function() {
+        it('get_modifiers()', function() {
             var success, error, arg,
                 ajaxStub = function() {
                     arg = arguments;
@@ -533,71 +552,71 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(add.calls.mostRecent().args[0]).toBe(load[0]);
         });
         
-        it('App.Collections.ModifierBlocks Function get_modifierList', function() {
+        it('get_modifierList()', function() {
             model.addJSON(exBlocks2);
             var list = model.get_modifierList();
             expect(list.length).toBe(2);
             expect([list[0].toJSON(), list[1].toJSON()]).toEqual([exBlocks2[2].modifiers[0], exBlocks2[3].modifiers[0]]);
         });
         
-        describe('App.Collections.ModifierBlocks Function getSizeModel', function() {
+        describe('getSizeModel()', function() {
             
-            it('getSizeModel. Not size modifiers', function() {
+            it('Not size modifiers', function() {
                 model.addJSON(exBlocks);
                 expect(model.getSizeModel()).toBeUndefined();
             });
             
-            it('getSizeModel. Not selected size modifiers', function() {
+            it('Not selected size modifiers', function() {
                 exBlocks2[0].modifiers[0].selected = false;
                 model.addJSON(exBlocks2);
                 expect(model.getSizeModel()).toBeNull();
             });
             
-            it('getSizeModel. Selected size modifiers', function() {                
+            it('Selected size modifiers', function() {                
                 model.addJSON(exBlocks2);
                 expect(model.getSizeModel().get('id')).toBe(11);
             });
         });
         
-        describe('App.Collections.ModifierBlocks Function get_special', function() {
+        describe('get_special()', function() {
             
-            it('get_special. Not special modifiers', function() {
+            it('Not special modifiers', function() {
                 model.addJSON(exBlocks);
                 expect(model.get_special().length).toBe(0);
             });
             
-            it('get_special. Not selected special modifiers', function() {
+            it('Not selected special modifiers', function() {
                 exBlocks2[1].modifiers[0].selected = false;
                 model.addJSON(exBlocks2);
                 expect(model.get_special().length).toBe(0);
             });
             
-            it('get_special. Selected size modifiers', function() {                
+            it('Selected size modifiers', function() {                
                 model.addJSON(exBlocks2);
                 expect(model.get_special().length).toBe(1);
                 expect(model.get_special()[0].get('id')).toBe(122);
             });
         });
         
-        it('App.Collections.ModifierBlocks Function get_special_text', function() {
+        it('get_special_text()', function() {
             spyOn(model, 'get_special').and.returnValue([new Backbone.Model({name: 'test1'}), new Backbone.Model({name: 'test2'})]);
             expect(model.get_special_text()).toBe('test1,test2');
         });
         
-        describe('App.Collections.ModifierBlocks Function checkForced', function() {
+        describe('checkForced()', function() {
             
-            it('checkForced. Not forced modifiers', function() {
+            it('Not forced modifiers', function() {
                 model.addJSON(exBlocks);
                 expect(model.checkForced()).toBe(true);
             });
             
-            it('checkForced. Not force as false modifiers', function() {
+            it('Not force as false modifiers', function() {
                 exBlocks2[2].forced = false;
                 model.addJSON(exBlocks2);
                 expect(model.checkForced()).toBe(true);
             });
             
-            it('checkForced. Selected one force as true modifiers not selected', function() {    
+            it('Selected one force as true modifiers not selected', function() {    
                 exBlocks2[2].modifiers[0].selected = false;
                 model.addJSON(exBlocks2);
                 var forced = model.checkForced();
@@ -605,12 +624,12 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
                 expect(forced[0].id).toBe(3);
             });
             
-            it('checkForced. Selected one force as true modifiers selected', function() {           
+            it('Selected one force as true modifiers selected', function() {           
                 model.addJSON(exBlocks2);
                 expect(model.checkForced()).toBe(true);
             });
             
-            it('checkForced. Selected two force as true, zero modifiers selected', function() {   
+            it('Selected two force as true, zero modifiers selected', function() {   
                 exBlocks2[3].forced = true;
                 exBlocks2[3].modifiers[0].selected = false;
                 exBlocks2[3].minimum_amount = 1;
@@ -621,7 +640,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
                 expect([forced[0].id, forced[1].id]).toEqual([3,4]);
             });
             
-            it('checkForced. Selected two force as true, one modifiers selected', function() {
+            it('Selected two force as true, one modifiers selected', function() {
                 exBlocks2[2].modifiers[0].selected = false;
                 model.addJSON(exBlocks2);
                 var forced = model.checkForced();
@@ -629,14 +648,14 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
                 expect(forced[0].id).toBe(3);
             });
             
-            it('checkForced. Selected two force as true, two modifiers selected', function() {   
+            it('Selected two force as true, two modifiers selected', function() {   
                 exBlocks2[3].forced = true;          
                 model.addJSON(exBlocks2);
                 expect(model.checkForced()).toBe(true);
             });
         });
         
-        it('Function uncheck_special', function() {
+        it('uncheck_special()', function() {
             var arr = [new Backbone.Model({name: 'test1', selected: true}), new Backbone.Model({name: 'test2', selected: true})];
             spyOn(model, 'get_special').and.returnValue(arr);
             model.uncheck_special('test1'); // compare only with first selected model
@@ -648,22 +667,22 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(arr[1].get('selected')).toBe(false);
         });
         
-        it('Function get_sum', function() {
+        it('get_sum()', function() {
             model.add([{},{}]);
             spyOn(App.Models.ModifierBlock.prototype, 'get_sum').and.returnValue(2);
             expect(model.get_sum()).toBe(4);
         });
     
-        it('Function modifiers_submit', function() {
+        it('modifiers_submit()', function() {
             model.add([{}, {}]);
             spyOn(App.Models.ModifierBlock.prototype, 'modifiers_submit').and.returnValue(['test']);
             expect(model.modifiers_submit()).toEqual(['test', 'test']);
         });
     });
     
-    describe("App.Collections.ModifierBlocks static methods", function() {
+    describe('static methods', function() {
         
-        it("Function init", function() {
+        it('init()', function() {
             spyOn(App.Collections.ModifierBlocks.prototype, 'get_modifiers');
             App.Collections.ModifierBlocks.init(5);
             
