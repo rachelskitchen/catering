@@ -33,7 +33,9 @@ define([], function() {
             "original_tax": null,
             "timetables": null,
             "compositeId": null,
-            "size_chart" : ""
+            "size_chart" : "",
+            "is_combo": false,
+            "combo_price": null
         },
         "defaults_initialized": {
             "description": null,
@@ -68,7 +70,9 @@ define([], function() {
             "original_tax": 0,
             "timetables": null,
             "compositeId": null,
-            "size_chart" : ""
+            "size_chart" : "",
+            "is_combo": false,
+            "combo_price": null
         },
         "product_with_image": {
             "description": "some product",
@@ -103,7 +107,9 @@ define([], function() {
             "original_tax": null,
             "timetables": null,
             "compositeId": '12_1',
-            "size_chart" : ""
+            "size_chart" : "",
+            "is_combo": false,
+            "combo_price": null
         },
         "addJSON_without_image": {
             "image": "",
