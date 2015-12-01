@@ -34,8 +34,10 @@
         <li class="special">*** <%= special %></li>
         <% } %>
     </ul>
+    <% if(is_child_product != true) { %>
     <div class="combo_products_place"></div>
     <div class="discount_place"></div>
+    <% } %>
     <% if(id_product !== null && is_child_product != true) { %>
     <div class="btns">
         <span class="edit"> <% _lp.MYORDER_EDIT %> </span>
