@@ -553,9 +553,11 @@ define(["main_router"], function(main_router) {
                 });
 
                 function cart() {
-                    self.stopListening(order, 'change', setHeaderToUpdate);
-                    header.set('cart', self.navigate.bind(self, 'cart', true), {silent: true});
-                    self.navigate('cart', true);
+                    if (App.Data.myorder.get_only_product_quantity() > 0) {
+                        self.stopListening(order, 'change', setHeaderToUpdate);
+                        header.set('cart', self.navigate.bind(self, 'cart', true), {silent: true});
+                        self.navigate('cart', true);
+                    }
                 }
 
                 function setHeaderToUpdate() {
@@ -606,7 +608,8 @@ define(["main_router"], function(main_router) {
 
                 header.set({
                     back: back,
-                    back_title: _loc.BACK
+                    back_title: _loc.BACK,
+                    cart: cart
                 });
 
                 App.Data.mainModel.set({
@@ -625,6 +628,7 @@ define(["main_router"], function(main_router) {
                         modelName: 'MyOrder',
                         model: order,
                         mod: 'Matrix',
+                        combo_child: true,
                         cacheId: false
                     };
                     App.Data.mainModel.set({
@@ -643,6 +647,13 @@ define(["main_router"], function(main_router) {
                     order.update(originOrder);
                     self.stopListening(order, 'change', setHeaderToUpdate);
                     self.return_to_combo_product(cache_id);
+                }
+
+                function cart() {
+                    if (App.Data.myorder.get_only_product_quantity() > 0) {
+                        self.stopListening(order, 'change', setHeaderToUpdate);
+                        self.navigate('cart', true);
+                    }
                 }
 
                 function setHeaderToUpdate() {

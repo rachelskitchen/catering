@@ -40,6 +40,8 @@
 .modifier span.info {
     float: left;
     position: relative; /* need for Tooltip */
+    height: 1em;
+    line-height: 1em;
 }
 
 .modifier span.info::before {
@@ -136,6 +138,7 @@
 
 .transparent {
     opacity: 0;
+    pointer-events: none;
 }
 
 span.tooltip {
@@ -154,7 +157,11 @@ span.tooltip {
     padding: 0.5em 0.7em;
     position: absolute;
     z-index: 9999;
-    left: 2.5em;
+    left: 2.3em;
+    -moz-transition: opacity .2s ease-out;
+    -webkit-transition: opacity .2s ease-out;
+    -o-transition: opacity .2s ease-out;
+    transition: opacity .2s ease-out;
 }
 
 span.tooltip:before {
