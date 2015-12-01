@@ -220,11 +220,11 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 this.$('.action_button').html(_loc['MYORDER_UPDATE_ITEM']);
             }
             var model = this.model,
-                view;
+                view, mod,
+                sold_by_weight = this.model.get_product().get("sold_by_weight");
 
-            if (!this.options.flags || this.options.flags.indexOf('no_quantity') == -1) {
-                var sold_by_weight = this.model.get_product().get("sold_by_weight"),
-                    mod = sold_by_weight ? 'Weight' : 'Main';
+            if (sold_by_weight || !this.options.flags || this.options.flags.indexOf('no_quantity') == -1) {
+                mod = sold_by_weight ? 'Weight' : 'Main';
 
                 view = App.Views.GeneratorView.create('Quantity', {
                     el: this.$('.quantity_info'),
@@ -351,13 +351,15 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 self.subViews.push(view);
             }
 
-            view = App.Views.GeneratorView.create('MyOrder', {
-                el: $('<li></li>'),
-                mod: 'ProductDiscount',
-                model: this.model
-            });
-            self.subViews.push(view);
-            self.$('.discount_place').append(view.el);
+            if (!this.model.isChildProduct()) {
+                view = App.Views.GeneratorView.create('MyOrder', {
+                    el: $('<li></li>'),
+                    mod: 'ProductDiscount',
+                    model: this.model
+                });
+                self.subViews.push(view);
+                self.$('.discount_place').append(view.el);
+            }
 
             return this;
         },
