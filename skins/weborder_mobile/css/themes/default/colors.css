@@ -17,8 +17,8 @@
 }
 
 /* [primary_background] Screen backround (exclude lists) */
-.primary-background {
-    background: #ebf4fa;
+.primary-bg {
+    background: #ebf4fa !important;
 }
 
 /* [cart_icon_background] Cart icon background */
@@ -140,6 +140,10 @@
     color: #fff;
 }
 
+.reward-selection li.active::after, .stanford-plan.active::after {
+    color: #fff;
+}
+
 /* [special_text] Discount text, free modifiers */
 .special-text {
     color: #13a11d;
@@ -155,7 +159,7 @@
 }
 
 /* [list_background] cell bg, table bg */
-#section > div {
+#section > div, .list-bg {
     background-color: #fff;
 }
 
@@ -213,18 +217,17 @@
 }
 
 /* [list_separator] Table cells separator */
-.list > li, .list-title {
+.list-title,
+.list > li,
+.myorder.items > li,
+.discount.items > li,
+.service_fees.items > li,
+.totals-checkout > li {
     border-color: #cecece;
 }
 
 .list > li::after {
     color: #cecece;
-}
-
-.myorder.items > li,
-.discount.items > li,
-.service_fees.items > li {
-    border-color: #cecece;
 }
 
 /* [header] Customize screen product description text background */
@@ -258,6 +261,10 @@
 
 ul.reward-selection > li {
     border-color: #199acd;
+}
+
+.reward-selection li.active, .stanford-plan.active {
+    background-color: rgba(23, 154, 205, 0.3);
 }
 
 /* [alternate_button] Close/Remove */
@@ -298,10 +305,6 @@ ul.reward-selection > li {
 }
 
 /* [white] header background */
-.font-color2, .reward-selection li.active::after, .stanford-plan.active::after {
-    color: #fff;
-}
-
 .font-color-active2:not([disabled]):active,
 .font-color-active2.selected {
     color: #fff;
@@ -425,10 +428,6 @@ select:-moz-focusring {
 
 .totals-checkout, .tip-selection {
     box-shadow: 0 0 rgba(0,0,0,.3);
-}
-
-.reward-selection li.active, .stanford-plan.active {
-    background-color: rgba(38, 153, 202, 0.2);
 }
 
 /** establishments styles **/
