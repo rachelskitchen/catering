@@ -28,7 +28,7 @@
             <% } %>
             <span class="title_wrapper">
                 <span class="title <% if(isSpecial) { %>special<% } %>"><%= name %></span>
-                <% if (description) { %>
+                <% if (!isInventoryMatrix && description) { %>
                 <span class="info">&nbsp;<span class="tooltip animation transparent"><%= description %></span></span>
                 <% } %>
             </span>
