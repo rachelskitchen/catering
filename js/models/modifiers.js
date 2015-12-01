@@ -617,19 +617,18 @@ define(["backbone"], function(Backbone) {
          * @param {App.Models.Modifier} model - modifiers item
          */
         update_free_quantity_change: function(model) {
-            if(this.get('ignore_free_modifiers'))
+            if (this.get('ignore_free_modifiers')) {
                 return;
+            }
 
             var isPrice = this.get('amount_free_is_dollars'),
                 isAdmin = this.get('admin_modifier');
             // if it is admin_modifier amount_free functionality should be ignored
-            if(isAdmin)
+            if (isAdmin) {
                 return;
+            }
 
-            if(isPrice)
-                this.update_free_price(model);
-            else
-                this.update_free_quantity(model);
+            isPrice ? this.update_free_price(model) : this.update_free_quantity(model);
         },
         /**
          * Updates free items.
@@ -645,8 +644,9 @@ define(["backbone"], function(Backbone) {
                 qty = model.get("quantity") * model.half_price_koeff();
                 qty_total += qty;
 
-                if (qty_total <= free_qty_amount)
+                if (qty_total <= free_qty_amount) {
                     model.set('free_amount', 0);
+                }
                 else {
                     delta = qty_total - free_qty_amount;
                     if (delta.toFixed(1)*1 < qty) {

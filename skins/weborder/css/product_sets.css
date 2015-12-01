@@ -23,6 +23,10 @@
     margin-right: 3px;
 }
 
+.modifiers_table .combo_item .no-controls .input {
+    opacity: 0.4;
+}
+
 .modifiers_table .combo_item .title {
     line-height: 1.4em;
     word-break: break-word;
@@ -85,6 +89,9 @@
     display: -webkit-flex;
     display: flex;
     justify-content: flex-start;
+}
+#modifiers_popup .product_set_list .combo_item_wrap.no-controls {
+    cursor: default;
 }
 #modifiers_popup .product_set_list .combo_item_wrap > div {
 	/*-webkit-flex: auto;
