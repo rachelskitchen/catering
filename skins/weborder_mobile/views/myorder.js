@@ -28,11 +28,11 @@ define(["myorder_view"], function(myorder_view) {
             App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.render.apply(this, arguments);
 
             var model = this.model,
-                view;
+                view, mod;
 
-            if (!this.options.combo_child) {
-                var sold_by_weight = this.model.get_product().get("sold_by_weight"),
-                    mod = sold_by_weight ? 'Weight' : 'Main';
+            var sold_by_weight = this.model.get_product().get("sold_by_weight");
+            if (!this.options.combo_child || sold_by_weight) {
+                mod = sold_by_weight ? 'Weight' : 'Main';
 
                 view = App.Views.GeneratorView.create('Quantity', {
                     el: this.$('.quantity_info'),

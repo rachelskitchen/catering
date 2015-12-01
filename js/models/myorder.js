@@ -676,8 +676,17 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         isRealProduct: function() {
             return this.get("id_product") !== null;
         },
+         /**
+         * @returns {boolean} `true` if the order item is Combo product.
+         */
         isComboProduct: function() {
             return this.get("product").get("is_combo") === true;
+        },
+        /**
+         * @returns {boolean} `true` if the order item is child product (Combo child product).
+         */
+        isChildProduct: function() {
+            return this.get('is_child_product');
         },
         /**
          * @returns {boolean} `true` if product's `point_value` attribute is number. Otherwise, returns `false`.
@@ -782,6 +791,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             });
         },
         /*
+        *   find child by product id
+        */
+        find_child_product: function(product_id) {
+            return this.get('product').get('product_sets').find_product(product_id);
+        },
+        /*
         *  get product price for combo
         */
         get_product_price: function() {
@@ -835,8 +850,14 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 return result
             }
 
-            var psets = [];
-            this.get('product').get('product_sets').each( function(product_set) {
+            var psets = [],
+                product_name = this.get('product').get('name'),
+                product_sets = this.get('product').get('product_sets');
+            if (!product_sets.length) {
+                return { status: 'ERROR',
+                         errorMsg: ERROR.COMBO_HAS_NO_CHILD_PRODUCTS.replace('%s', product_name) }
+            }
+            product_sets.each( function(product_set) {
                 var exactAmount = product_set.get("minimum_amount");
                 var quantity = product_set.get_selected_qty();
                 if (quantity < exactAmount || quantity > exactAmount) {
@@ -869,10 +890,14 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             };
         },
         /*
-        *   find child by product id
+        * has the combo child products inside? : returns true/false
         */
-        find_child_product: function(product_id) {
-            return this.get('product').get('product_sets').find_product(product_id);
+        has_child_products: function() {
+            var product_sets = this.get_product().get("product_sets");
+            if (product_sets.length > 0)
+                return true;
+            else
+                return false;
         }
     });
 
