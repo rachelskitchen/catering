@@ -10,21 +10,21 @@
 
 <script type="text/template" id="myorder_item-template">
     <div>
-        <span class="cost font-size1 fl-right font-color1">
+        <span class="cost font-size1 fl-right primary-text">
             <span class="item-sum"><%= currency_symbol %><%= product_sum %></span>
         </span>
         <% if(!sold_by_weight && !is_service_fee) { %>
-            <span class="qty bg-color3 font-color2 font-size2 fl-left"><%= quantity %>x</span>
+            <span class="qty alternate-text font-size2 fl-left"><%= quantity %>x</span>
         <% } %>
-            <span class="product-name name font-size1 font-color3"><%= sizeModifier %> <%= name %></span>
+            <span class="product-name name font-size1 title-text"><%= sizeModifier %> <%= name %></span>
     </div>
     <% _.each(attrs, function(attr) { %>
-    <div class="attrs font-size2 font-color4">
+    <div class="attrs font-size2 regular-text">
         <span><%= attr.name %></span>:
         <span><%= attr.value %></span>
     </div>
     <% }); %>
-    <ul class="modifier_place font-size2 font-color4">
+    <ul class="modifier_place font-size2 regular-text">
         <% if(sold_by_weight) { %>
         <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
         <% } %>
@@ -41,11 +41,11 @@
         <% } %>
     </ul>
     <div class="combo_products_place"></div>
-    <ul class="discount_place font-size2 font-color4"></ul>
+    <ul class="discount_place font-size2 regular-text"></ul>
     <% if(id_product !== null) { %>
     <div class="btns text-right">
-        <span class="edit font-size2 bg-color1 font-color2 border-color1 font-color-active1 bg-color-active2"> <%= _lp.MYORDER_EDIT %> </span>
-        <span class="remove font-size2 font-color3 font-color-active2 bg-color-active3"> <%= _lp.MYORDER_REMOVE %> </span>
+        <span class="edit font-size2 primary-button"> <%= _lp.MYORDER_EDIT %> </span>
+        <span class="remove font-size2 alternate-button"> <%= _lp.MYORDER_REMOVE %> </span>
     </div>
     <% } %>
 </script>
@@ -96,9 +96,9 @@
 
 <script type="text/template" id="myorder_note-template">
     <% if(noteAllow) {%>
-        <div class="note_text font-color3 font-size1 text-center"> <%= _lp.MYORDER_ORDER_NOTES %> </div>
+        <div class="note_text title-text font-size1 text-center"> <%= _lp.MYORDER_ORDER_NOTES %> </div>
         <div class='note_field'>
-            <textarea class="ios-safari-caret instructions border-color1 font-size2 font-color3" placeholder="<%= _lp.MYORDER_ORDER_NOTES_INPUT %>"><%= note %></textarea>
+            <textarea class="ios-safari-caret instructions font-size2 input-colors" placeholder="<%= _lp.MYORDER_ORDER_NOTES_INPUT %>"><%= note %></textarea>
         </div>
     <% } %>
 </script>
