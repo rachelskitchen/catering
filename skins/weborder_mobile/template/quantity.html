@@ -1,19 +1,19 @@
 <script type="text/template" id="quantity_main-template">
     <div class="list-title title">
-        <span class="font-color1 font-size3"><%= _lp.QUANTITY_QUANTITY %></span>
+        <span class="list-header-text font-size3"><%= _lp.QUANTITY_QUANTITY %></span>
     </div>
     <div class="controls">
-        <div class="increase btn-qty fl-right border-color1 font-color1 font-color-active2 bg-color-active1"></div>
-        <div class="decrease btn-qty fl-left border-color1 font-color1 font-color-active2 bg-color-active1"></div>
-        <input class="ios-safari-caret quantity_edit_input font-size1 font-color5 border-color1" type="number" inputmode="numeric" value="<%= quantity %>" min="1">
+        <div class="increase btn-qty fl-right"></div>
+        <div class="decrease btn-qty fl-left"></div>
+        <input class="ios-safari-caret quantity_edit_input font-size1 input-colors" type="number" inputmode="numeric" value="<%= quantity %>" min="1">
     </div>
 </script>
 
 <script type="text/template" id="quantity_weight-template">
     <div class="list-title title">
-        <span class="font-color1 font-size3"><%= _lp.QUANTITY_WEIGHT %> <% if (uom) print('/ ' + uom); %></span>
+        <span class="list-header-text font-size3"><%= _lp.QUANTITY_WEIGHT %> <% if (uom) print('/ ' + uom); %></span>
     </div>
     <div class="controls">
-        <input class="ios-safari-caret weight_edit_input font-size1 font-color5 border-color1" value="<%= weight %>">
+        <input class="ios-safari-caret weight_edit_input font-size1 input-colors" value="<%= weight %>">
     </div>
 </script>

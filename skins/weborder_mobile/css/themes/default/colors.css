@@ -110,9 +110,33 @@
     color: #838385;
 }
 
+.modifier .input {
+    border-color: #838385;
+}
+
+/* [special_text] Discount text, free modifiers */
+.special-text {
+    color: #13a11d;
+}
+
 /* [list_background] cell bg, table bg */
 #section > div {
-    background-color: #ffffff;
+    background-color: #fff;
+}
+
+.modifier  .input,
+.combo_item .input {
+    background: #fff;
+}
+
+.modifier .input::before,
+.combo_item .input::before {
+    color: #fff;
+}
+
+.quantity .btn-qty:not([disabled]):active::before,
+.quantity  .btn-qty:not([disabled]):active::after {
+    border-color: #fff;
 }
 
 /* [list_header] Table cells separator */
@@ -135,6 +159,24 @@
     color: #199acd;
 }
 
+.modifier input:checked + .input,
+.combo_item .input[checked=checked] /* TODO change selector */ {
+    background-color: #1a99cd;
+    border-color: #1a99cd;
+}
+
+.quantity .btn-qty {
+    border-color: #199acd;
+}
+
+.quantity .btn-qty:not([disabled]):active {
+    background-color: #199acd;
+}
+
+.modifier .mdf_split::before {
+    color: #199acd;
+}
+
 /* [list_separator] Table cells separator */
 .list > li, .list-title {
     border-color: #cecece;
@@ -152,6 +194,10 @@
 /* [header_text] Customize screen product description text background */
 .header-text {
     color: #fff;
+}
+
+.product-modifiers input:not([readonly]) {
+    border-color: #fff;
 }
 
 /* color #1 - blue */
@@ -297,23 +343,9 @@ select:-moz-focusring {
     background-position: 50%;
 }
 
-.product-modifiers input:not([readonly]) {
-    border: 1px solid #fff;
-}
-
 .quantity, .modifier_class_wrapper .modifiers,
 .discount.items > li, .service_fees.items > li {
     border-color: #d6e3e9;
-}
-
-.modifier input:checked + .input,
-.combo_item .input[checked=checked] {
-    background: #1a99cd;
-    border-color: #1a99cd;
-}
-
-.modifier .mdf_split::before {
-    color: #1a99cd;
 }
 
 .totals-checkout, .tip-selection {

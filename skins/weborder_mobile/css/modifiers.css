@@ -5,6 +5,7 @@
 
 .modifiers .matrix-title {
     font-weight: normal;
+    margin-bottom: 0;
 }
 
 .modifiers .matrix-title::after {
