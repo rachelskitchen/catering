@@ -106,7 +106,7 @@
     line-height: 1.4em;
     display: inline-block;
     float: left;
-    width: 100px;
+    width: 90px;
     word-break: break-word;
 }
 
@@ -114,11 +114,16 @@
     line-height: 1.4em;
     display: inline-block;
     float: left;
+    width: 68px;
     word-break: break-word;
 }
 
 .modifiers_table .modifier span.info {
     position: relative; /* need for Tooltip */
+    display: inline-block;
+    float: left;
+    height: 1.4em;
+    line-height: 1.4em;
 }
 
 .modifiers_table .modifier span.info::before {
@@ -238,7 +243,12 @@ span.tooltip {
     padding: 9px 13px;
     position: absolute;
     z-index: 9999;
-    left: 16px;
+    top: -9999px; /* prevent initial scroll bar in FF */
+    left: 26px;
+    -moz-transition: opacity .2s ease-out;
+    -webkit-transition: opacity .2s ease-out;
+    -o-transition: opacity .2s ease-out;
+    transition: opacity .2s ease-out;
 }
 
 span.tooltip:before {
