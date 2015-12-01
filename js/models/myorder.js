@@ -775,6 +775,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             });
             return $.when(product_load, modifier_load).then(function() {
                 product = App.Data.products[id_category].get_product(id_product);
+                product.set({is_gift: false, // no gifts for combos
+                             max_price: 0}, // turn off max price feature for combo
+                             {silent: true});
                 return App.Collections.ProductSets.init(id_product);
             }).then(function() {
                 product.set("product_sets", App.Data.productSets[id_product]);
