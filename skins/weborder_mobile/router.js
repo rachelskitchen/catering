@@ -989,7 +989,7 @@ define(["main_router"], function(main_router) {
                     App.Data.mainModel.set({
                         footer: {
                             mod: 'Main',
-                            className: 'footer bg-color10',
+                            className: 'footer',
                             cacheId: true,
                             cacheIdUniq: 'confirm'
                         }
@@ -1000,14 +1000,14 @@ define(["main_router"], function(main_router) {
                         footer: {
                             mod: 'PaymentSelection',
                             total: myorder.total,
-                            className: 'footer footer-payments bg-color10',
+                            className: 'footer footer-payments',
                             cacheId: true
                         }
                     });
                 }
 
                 App.Data.mainModel.set({
-                    contentClass: 'bg-color12',
+                    contentClass: 'primary-bg',
                     content: content
                 });
 
