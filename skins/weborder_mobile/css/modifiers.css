@@ -135,6 +135,7 @@
 
 .transparent {
     opacity: 0;
+    pointer-events: none;
 }
 
 span.tooltip {
