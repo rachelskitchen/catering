@@ -1,5 +1,5 @@
 <script type="text/template" id="combo_item-template">
-  <div class = "combo_item_wrap">
+  <div class = "combo_item_wrap <% if(!_settings.online_orders) {print('no-controls');} %>">
     <div type="checkbox" class="input checkbox" id="product<%= id_product %>"></div>
     <div class="title"><%= name %></div>
     <div class="cost">
