@@ -6,10 +6,6 @@ define(['delivery'], function() {
         beforeEach(function() {
             model = new App.Models.Delivery();
             this.settings = App.Data.settings.get('settings_system');
-            App.Data.settings.get('settings_system').delivery_charge = 1;
-            App.Data.settings.get('settings_system').delivery_for_online_orders = true;
-            App.Data.settings.get('settings_system').max_delivery_distance = 2;
-            App.Data.settings.get('settings_system').min_delivery_amount = 3;
             def = {
                 charge: 0, // delivery cost
                 enable: false, // enable delivery for online ordering apps
