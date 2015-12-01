@@ -9,6 +9,7 @@ var tests_list = [
     '../core/js/utest/test_Filters',
     '../core/js/utest/test_Locale',
     '../core/js/utest/test_Modifiers',
+    '../core/js/utest/test_Myorder',
     '../core/js/utest/test_Products',
     '../core/js/utest/test_Rewards',
     '../core/js/utest/test_StanfordCard',
@@ -21,8 +22,6 @@ var tests_list = [
     '../core/js/utest/test_Errors',
     '../core/js/utest/test_Geolocation',
     '../core/js/utest/test_Geopoint',
-    '../core/js/utest/test_Myorder',
-    '../core/js/utest/test_Orders',
     '../core/js/utest/test_Settings',
     '../core/js/utest/test_Tax',
     */
