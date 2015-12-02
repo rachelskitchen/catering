@@ -105,9 +105,17 @@ define(["done_view", "generator"], function(done_view) {
             this.setContentPadding();
         },
         header_change: function() {
+            var $header = this.$('#header');
+
+            if (!this.model.get('header')) { // the case for None header (e.g. #galary hash)
+                this.subViews[0] && this.subViews[0].removeFromDOMTree();
+                $header.addClass('hidden');
+                this.$('#section').css({'top':'0px', 'bottom':'0px'});
+                return;
+            }
+
             var data = _.defaults(this.model.get('header'), this.header_defaults()),
-                id = "header_" + data.modelName + '_' + data.mod,
-                $header = this.$('#header');
+                id = "header_" + data.modelName + '_' + data.mod;
 
             if(data.cacheIdUniq) {
                 id += '_' + data.cacheIdUniq;
@@ -124,9 +132,6 @@ define(["done_view", "generator"], function(done_view) {
                 $header.append(this.subViews[0].el);
                 $header.removeClass('hidden');
                 this.setContentPadding();
-            } else {
-                $header.addClass('hidden');
-                this.$('#section').css({'top':'0px', 'bottom':'0px'});
             }
         },
         footer_change : function() {
