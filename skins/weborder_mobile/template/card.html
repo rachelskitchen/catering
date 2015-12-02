@@ -1,20 +1,20 @@
 <script type="text/template" id="card_main-template">
-    <ul class="card font-size2 font-color8">
+    <ul class="card font-size2 regular-text">
         <li>
-            <input type="text" placeholder="<%= _lp.CARD_FIRST_NAME %>" class="first_name ios-safari-caret border-color10" maxlength="20" name="firstName">
+            <input type="text" placeholder="<%= _lp.CARD_FIRST_NAME %>" class="first_name ios-safari-caret input-colors" maxlength="20" name="firstName">
         </li>
         <li>
-            <input type="text" placeholder="<%= _lp.CARD_LAST_NAME %>" class="last_name ios-safari-caret border-color10"  maxlength="20" name="lastName">
+            <input type="text" placeholder="<%= _lp.CARD_LAST_NAME %>" class="last_name ios-safari-caret input-colors"  maxlength="20" name="lastName">
         </li>
         <li class="required">
-            <input type="tel" placeholder="<%= _lp.CARD_NUMBER %>" class="number ios-safari-caret border-color10" name="cardNumber">
+            <input type="tel" placeholder="<%= _lp.CARD_NUMBER %>" class="number ios-safari-caret input-colors" name="cardNumber">
         </li>
         <li class="required">
-            <input type="tel" placeholder="<%= _lp.CARD_SECURITY_CODE %>" class="secure ios-safari-caret border-color10" name="secureCode">
+            <input type="tel" placeholder="<%= _lp.CARD_SECURITY_CODE %>" class="secure ios-safari-caret input-colors" name="secureCode">
         </li>
         <li class="required exp">
             <span> <%= _lp.CARD_EXP_DATE %>: </span>
-            <div class="select-wrapper bg-color2">
+            <div class="select-wrapper input-colors">
                 <select id="ccMonth" class="card-expiration-month" name="exp_date_mm">
                     <option value="01">01</option>
                     <option value="02">02</option>
@@ -30,7 +30,7 @@
                     <option value="12">12</option>
                 </select>
             </div>
-            <div class="select-wrapper bg-color2">
+            <div class="select-wrapper input-colors">
                 <select id="ccYear" class="card-expiration-year" name="exp_date_yy">
                 </select>
             </div>

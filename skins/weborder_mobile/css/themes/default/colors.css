@@ -17,7 +17,8 @@
 }
 
 /* [primary_background] Screen backround (exclude lists) */
-.primary-bg {
+.primary-bg,
+#popup_container[id] {
     background: #ebf4fa !important;
 }
 
@@ -92,7 +93,8 @@
 }
 
 /* [input_text] Text field text color */
-.input-colors {
+.input-colors,
+.establishments[class] .select-wrapper::after {
    color: #000;
 }
 
@@ -101,12 +103,18 @@
 }
 
 /* [primary_text] Primary text color */
-.primary-text {
+.primary-text,
+.regular-button,
+.establishments[class] select,
+.establishments[class] button,
+#popup_cancel[id],
+#popup_content[id].info::before {
     color: #199acd;
 }
 
 /* [title_text] Text color for item's name etc */
-.title-text {
+.title-text,
+#googlemaps_popup > div:first-child {
     color: #000;
 }
 
@@ -115,7 +123,9 @@
 }
 
 /* [regular_text] Regular text, custom menu, item price in list */
-.regular-text {
+.regular-text,
+#googlemaps_popup > div,
+#popup_container[id] {
     color: #838385;
 }
 
@@ -128,11 +138,13 @@
     color: #fff;
 }
 
-.primary-button {
+.primary-button,
+#popup_ok[id] {
     color: #fff;
 }
 
-.primary-button:not([disabled]):active {
+.primary-button:not([disabled]):active,
+#popup_ok[id]:not([disabled]):active {
     background-color: #fff;
 }
 
@@ -217,6 +229,7 @@
 }
 
 /* [list_separator] Table cells separator */
+.list-separator,
 .list-title,
 .list > li,
 .myorder.items > li,
@@ -245,17 +258,30 @@
 }
 
 /* [button_border] button border */
-.primary-button {
+.primary-button,
+.regular-button,
+.establishments[class] button,
+#popup_ok[id],
+#popup_cancel[id] {
     border-color: #e3eef2;
 }
 
 /* [primary_button] primary background button */
-.primary-button {
+.primary-button,
+#popup_ok[id] {
     background-color: #199acd;
 }
 
-.primary-button:not([disabled]):active {
+.primary-button:not([disabled]):active,
+#popup_ok[id]:not([disabled]):active {
     color: #199acd;
+    border-color: #199acd;
+}
+
+.regular-button:not([disabled]):active,
+#popup_cancel[id]:not([disabled]):active,
+.establishments[class] button:not([disabled]):active,
+.payments .payment {
     border-color: #199acd;
 }
 
@@ -265,6 +291,13 @@ ul.reward-selection > li {
 
 .reward-selection li.active, .stanford-plan.active {
     background-color: rgba(23, 154, 205, 0.3);
+}
+
+/* [regular_button] Reqular button background*/
+.regular-button,
+#popup_cancel[id],
+.establishments[class] button {
+    background-color: #fff;
 }
 
 /* [alternate_button] Close/Remove */
@@ -280,6 +313,11 @@ ul.reward-selection > li {
 /* [toolbar] Toolbar with payment button, footer background */
 .toolbar {
     background-color: #D0D0D0;
+}
+
+/* [warning_icon] Warning icon in popup */
+#popup_content[id].warning::before {
+    color: #ad8a00;
 }
 
 /* color #1 - blue */
@@ -421,54 +459,12 @@ select:-moz-focusring {
     background-position: 50%;
 }
 
-.quantity, .modifier_class_wrapper .modifiers,
-.discount.items > li, .service_fees.items > li {
-    border-color: #d6e3e9;
-}
-
-.totals-checkout, .tip-selection {
-    box-shadow: 0 0 rgba(0,0,0,.3);
-}
-
 /** establishments styles **/
 .establishments[class] {
     background: rgba(0,0,0,.7);
 }
 
-.establishments[class] .select-wrapper::after {
-    color: #373c40;
-}
-
-.establishments[class] select, .establishments[class] button {
-    color: #1a99cd !important;
-}
-
-
 /** popup alert styles **/
 #popup_alert[id] {
     background-color: rgba(0,0,0,.7);
-}
-
-#popup_container[id] {
-    background-color: #eaf3f9;
-    color: #373c40;
-}
-
-#popup_content[id].info::before {
-    color: #1a99cd;
-}
-
-#popup_content[id].warning::before {
-    color: #ad8a00;
-}
-
-#popup_ok[id], #popup_cancel[id]:active {
-    background-color: #1a99cd;
-    color: #fff;
-}
-
-#popup_cancel[id], #popup_ok[id]:active {
-    box-shadow: 0 0 1px rgba(26, 153, 205, 0.31);
-    background-color: #fff;
-    color: #1a99cd;
 }
