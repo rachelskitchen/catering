@@ -6,230 +6,317 @@
     tap-highlight-color: rgba(0,0,0,0);
 }
 
-/* color #1 - blue */
-.font-color1 {
-    color: #670000;
+/* [navigation_bar] Top/Navigation/Header bar on all screens */
+.navigation-bar {
+    background-image: linear-gradient(top,#8C1515,#660F0F);
+    background-image: -moz-linear-gradient(top,#8C1515,#660F0F);
+    background-image: -webkit-linear-gradient(top,#8C1515,#660F0F);
+    background-image: -o-linear-gradient(top,#8C1515,#660F0F);
+    background-image: -ms-linear-gradient(top,#8C1515,#660F0F);
 }
 
-.font-color-active1:not([disabled]):active {
-    color: #670000;
+/* [navigation_bar_item] Any item on navigation bar (text, icons, logo) */
+.navigation-bar-item {
+    color: #FFFFFF;
 }
 
-.bg-color1,
-.bg-color-active1:not([disabled]):active,
-.bg-color-active1.selected {
-    background-image: linear-gradient(top, #980000,#670000);
-    background-image: -moz-linear-gradient(top ,#980000,#670000);
-    background-image: -webkit-linear-gradient(top,#980000,#670000);
-    background-image: -o-linear-gradient(top,#980000,#670000);
-    background-image: -ms-linear-gradient(top,#980000,#670000);
+/* [primary_background] Screen backround (exclude lists) */
+.primary-bg,
+#popup_container[id] {
+    background: #E4E5E2 !important;
 }
 
-.border-color1, input:focus, .select-wrapper:focus {
-    border-color: #670000;
+/* [cart_icon_background] Cart icon background */
+.btn-cart {
+    background-color: #FFFFFF;
 }
 
-.border-color-active1:not([disabled]):active {
-    border-color: #670000;
+/* [cart_quantity_background] Items quantity background */
+.btn-cart[data-count]::after {
+    background: #F22828;
 }
 
-/* [white] header background */
-.font-color2, .reward-selection li.active::after, .stanford-plan.active::after {
+/* [cart_quantity_border] Items quantity border */
+.btn-cart[data-count]::after {
+    border-color: #FFFFFF;
+}
+
+/* [tab] Store details tabs button background */
+.tabs {
+    background-color: #373C40;
+}
+
+/* [tab_text] Store details tabs button background */
+.tab-text {
+    color: rgba(255,255,255,0.3); /* inactive with alpha-channel 0.3 */
+}
+
+.tab-text .active {
     color: #fff;
 }
 
-.font-color-active2:not([disabled]):active,
-.font-color-active2.selected {
-    color: #fff;
+.tab-center {
+    border-color: rgba(255,255,255,0.3);
 }
 
-.border-color2,
-.quantity .btn-qty:active::before,
-.quantity .btn-qty:active::after {
-    border-color: #fff;
-}
-
-/* [white] main background */
-.bg-color2 {
-    background-color: #fff;
-}
-
-.bg-color-active2:not([disabled]):active {
-    background-color: #fff;
-}
-
-/* [dark] main font color */
-.font-color3 {
-    color: #464646;
-}
-
-/* [dark] menu background */
-.bg-color3 {
-    background-color: #464646;
-}
-
-.bg-color-active3:not([disabled]):active {
-    background-color: #464646;
-}
-
-/* [grey] menu font color */
-.font-color4 {
-    color: #81888e;
-}
-
-/* [dark] modifiers font color */
-.font-color5 {
-    color: #717d8b;
-}
-
-.border-color5 {
-    border-color: #717d8b;
-}
-
-select:-moz-focusring {
-    color: transparent !important;
-    text-shadow: 0 0 0 #717d8b !important;
-}
-
-/* [green] modifier price color */
-.font-color6 {
-    color: #00a200;
-}
-
-/* [sky blue] header buttons */
-.font-color7 {
-    color: #bce0f0;
-}
-
-.font-color-active7:not([disabled]):active {
-    color: #bce0f0;
-}
-
-/* [grey] header buttons */
-.font-color8 {
-    color: #93a6ad;
-}
-
-.bg-color8 {
-    color: #93a6ad;
-}
-
-/* [red] product info (modifiers view)*/
-.bg-color9 {
-    background-color: #980000;
-}
-
-.font-color9 {
-    color: #980000;
-}
-
-/* color #10 - blue/grey */
-.font-color10 {
-    color: #d6e3e9;
-}
-
-.bg-color10 {
-    background-color: #969696;
-}
-
-.border-color10 {
-    border-color: #d6e3e9;
-}
-
-/* color #11 - red */
-.font-color11 {
-    color: #cb2222;
-}
-
-/* color #12 - grey */
-.bg-color12 {
-    background-color: #f0f2f4;
-}
-
-.text-shadow1 {
-    text-shadow: 1px 1px #fff;
-}
-
-#header .btn-cart {
-    background: #bce0f0;
-}
-
-#header .btn-cart[data-count]::after {
-    border-color: #fff;
-    background: #f22828;
-}
-
-#header .btn-cart:not([data-count="0"]):active {
-    background-color: #8ed0ff;
-}
-
+/* [tab_active_underline] Store details tabs button background */
 .tabs::after {
     background-color: #d00000;
 }
 
-.tab-center {
-    border-color: #5f6972;
+/* [input_background] Text fields background */
+.input-colors {
+    background-color: #fff;
 }
 
-.list > li {
-    border-color: #d6e3e9;
+/* [input_border] Text fields border */
+.input-colors {
+    border-color: #FFEEF2;
+}
+
+/* [input_border_highlighted] Selected text fields border */
+.input-colors:focus {
+    border-color: #8C1515;
+}
+
+/* [input_placeholder] Text field placeholder text */
+.input-colors::-webkit-input-placeholder,
+.input-colors:-moz-placeholder, /* Firefox 18- */
+.input-colors::-moz-placeholder, /* Firefox 19+ */
+.input-colors:-ms-input-placeholder {
+   color: #cecece;
+}
+
+/* [input_text] Text field text color */
+.input-colors,
+.establishments[class] .select-wrapper::after {
+   color: #000;
+}
+
+.input-control .ctrl-wrapper::after {
+    color: rgba(0,0,0,0.3); /* remove btn */
+}
+
+select:-moz-focusring {
+    color: transparent !important;
+    text-shadow: 0 0 0 #000 !important;
+}
+
+/* [primary_text] Primary text color */
+.primary-text,
+.regular-button,
+.establishments[class] select,
+.establishments[class] button,
+#popup_cancel[id],
+#popup_content[id].info::before,
+.modifier .mdf_split::before {
+    color: #8C1515;
+}
+
+/* [title_text] Text color for item's name etc */
+.title-text,
+#googlemaps_popup > div:first-child,
+.myorderList .combo_products_place .qty {
+    color: #000;
+}
+
+.myorderList .combo_products_place .qty {
+    border-color: #000;
+}
+
+.myorderList .qty {
+    background-color: #000;
+}
+
+/* [regular_text] Regular text, custom menu, item price in list */
+.regular-text,
+#googlemaps_popup > div,
+#popup_container[id] {
+    color: #838385;
+}
+
+.modifier .input {
+    border-color: #838385;
+}
+
+/* [alternate_text] Text color for solid buttons, checkboxes (checkout, subtotal and etc) */
+.alternate-text,
+.primary-button,
+#popup_ok[id],
+.alternate-button:not([disabled]):active,
+.reward-selection li.active::after,
+.stanford-plan.active::after {
+    color: #fff;
+}
+
+.primary-button:not([disabled]):active,
+#popup_ok[id]:not([disabled]):active,
+.myorderList .combo_products_place .qty {
+    background-color: #fff;
+}
+
+/* [special_text] Discount text, free modifiers */
+.special-text {
+    color: #13a11d;
+}
+
+/* [attention_text] Total amount */
+.attention-text,
+.required::before {
+    color: #e73939;
+}
+
+/* [list_background] cell bg, table bg */
+#section > div,
+.list-bg,
+.modifier .input,
+.combo_item .input {
+    background-color: #fff;
+}
+
+.modifier .input::before,
+.combo_item .input::before {
+    color: #fff;
+}
+
+.quantity .btn-qty:not([disabled]):active::before,
+.quantity .btn-qty:not([disabled]):active::after {
+    border-color: #fff;
+}
+
+/* [list_header] Table cells header */
+.list-title {
+    background: -moz-linear-gradient(left,  rgba(255,255,255,0) 0%, #FFF1F6 35%, #FFF1F6 65%, rgba(255,255,255,0) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255,255,255,0)), color-stop(35%, #FFF1F6), color-stop(65%, #FFF1F6), color-stop(100%, rgba(255,255,255,0))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left,  rgba(255,255,255,0) 0%, #FFF1F6 35%, #FFF1F6 65%, rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
+    background: -ms-linear-gradient(left, rgba(255,255,255,0) 0%, #FFF1F6 35%, #FFF1F6 65%, rgba(255,255,255,0) 100%); /* IE10+ */
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, #FFF1F6 35%, #FFF1F6 65%, rgba(255,255,255,0) 100%); /* W3C */
+}
+
+/* [list_header_text] Header text color */
+.list-header-text {
+    color: #8C1515;
+}
+
+.modifier input:checked + .input,
+.combo_item .input[checked=checked] /* TODO change selector */ {
+    background-color: #8C1515;
+    border-color: #8C1515;
+}
+
+.quantity .btn-qty {
+    border-color: #8C1515;
+}
+
+.quantity .btn-qty:not([disabled]):active {
+    background-color: #8C1515;
+}
+
+/* [list_separator] Table cells separator */
+.list-separator,
+.list-title,
+.list > li,
+.myorder.items > li,
+.discount.items > li,
+.service_fees.items > li,
+.totals-checkout > li {
+    border-color: #cecece;
 }
 
 .list > li::after {
-    color: #d1d6d9;
+    color: #cecece;
 }
 
-.list-title {
-    background: -moz-linear-gradient(left, rgba(255,255,255,0) 0%, #f4f7f8 35%, #f4f7f8 65%, rgba(255,255,255,0) 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255,255,255,0)), color-stop(35%, #f4f7f8), color-stop(65%, #f4f7f8), color-stop(100%, rgba(255,255,255,0))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(left,  rgba(255,255,255,0) 0%, #f4f7f8 35%, #f4f7f8 65%, rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
-    background: -ms-linear-gradient(left, rgba(255,255,255,0) 0%, #f4f7f8 35%, #f4f7f8 65%, rgba(255,255,255,0) 100%); /* IE10+ */
-    background: linear-gradient(to right, rgba(255,255,255,0) 0%, #f4f7f8 35%, #f4f7f8 65%, rgba(255,255,255,0) 100%); /* W3C */
-    border-color: #d6e3e9;
+/* [header] Customize screen product description text background */
+.header {
+    background-color: #8C1515;
 }
 
-.list-title::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTUiIGhlaWdodD0iOCI+PHBvbHlnb24gcG9pbnRzPSIwLDAgIDE1LDAgIDgsOCIgc3R5bGU9ImZpbGw6I2Y0ZjdmODsiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSI4IiB5Mj0iOCIgc3R5bGU9InN0cm9rZS13aWR0aDoxO3N0cm9rZTojZDZlM2U5Ii8+PGxpbmUgeDE9IjgiIHkxPSI4IiB4Mj0iMTUiIHkyPSIwIiBzdHlsZT0ic3Ryb2tlLXdpZHRoOjE7c3Ryb2tlOiNkNmUzZTkiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSIxNSIgeTI9IjAiIHN0eWxlPSJzdHJva2Utd2lkdGg6MTtzdHJva2U6I2Y0ZjdmOCIvPjwvc3ZnPg==');
-    background-position: 50%;
-    background-size: 2.5em 1.33em;
+/* [header_text] Customize screen product description text background */
+.header-text {
+    color: #fff;
 }
 
+.product-modifiers input:not([readonly]) {
+    border-color: #fff;
+}
+
+/* [button_border] button border */
+.primary-button,
+.regular-button,
+.establishments[class] button,
+#popup_ok[id],
+#popup_cancel[id] {
+    border-color: #FFEEF2;
+}
+
+/* [primary_button] primary background button */
+.primary-button,
+#popup_ok[id] {
+    background-image: linear-gradient(top,#8C1515,#660F0F);
+    background-image: -moz-linear-gradient(top,#8C1515,#660F0F);
+    background-image: -webkit-linear-gradient(top,#8C1515,#660F0F);
+    background-image: -o-linear-gradient(top,#8C1515,#660F0F);
+    background-image: -ms-linear-gradient(top,#8C1515,#660F0F);
+}
+
+.primary-button:not([disabled]):active,
+#popup_ok[id]:not([disabled]):active {
+    color: #8C1515;
+    border-color: #8C1515;
+}
+
+.regular-button:not([disabled]):active,
+#popup_cancel[id]:not([disabled]):active,
+.establishments[class] button:not([disabled]):active,
+.payments .payment,
+ul.reward-selection > li {
+    border-color: #8C1515;
+}
+
+.reward-selection li.active, .stanford-plan.active {
+    background-color: rgba(140, 21, 21, 0.3);
+}
+
+/* [regular_button] Reqular button background*/
+.regular-button,
+#popup_cancel[id],
+.establishments[class] button {
+    background-color: #fff;
+}
+
+/* [alternate_button] Close/Remove */
+.alternate-button {
+    color: #0B1216;
+    border-color: #0B1216;
+}
+
+.alternate-button:not([disabled]):active {
+    background-color: #0B1216;
+}
+
+/* [toolbar] Toolbar with payment button, footer background */
+.toolbar {
+    background-color: #D0D0D0;
+}
+
+/* [warning_icon] Warning icon in popup */
+#popup_content[id].warning::before {
+    color: #ad8a00;
+}
+
+/* icons */
 #header .btn-cart {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE2MCI+PGRlZnM+PHBhdGggaWQ9ImJhZyIgZmlsbD0iIzAxMmY1MCIgZD0iTTAsMTYwIEwwLDIwIEwyMCwyMCBMMjAsMCBMOTAsMCBMOTAsMTAgTDQwLDEwIEw0MCwyMCBMOTAsMjAgTDkwLDkwIEE0MCw0MCAwIDAsMSA1MCw1MCBBMTAsMTAgMCAxLDAgNDAsNTAgQTUwLDUwIDAgMCwwIDkwLDEwMCBMOTAsMTYwIHoiLz48L2RlZnM+PHVzZSB4PSIwIiB5PSIwIiB4bGluazpocmVmPSIjYmFnIi8+PHVzZSB4PSI5MCIgeT0iMCIgeGxpbms6aHJlZj0iI2JhZyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjY1LDApIHNjYWxlKC0xLCAxKSIvPjwvc3ZnPg==');
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE2MCI+PGRlZnM+PHBhdGggaWQ9ImJhZyIgZmlsbD0iI2ZmZmZmZiIgZD0iTTAsMTYwIEwwLDIwIEwyMCwyMCBMMjAsMCBMOTAsMCBMOTAsMTAgTDQwLDEwIEw0MCwyMCBMOTAsMjAgTDkwLDkwIEE0MCw0MCAwIDAsMSA1MCw1MCBBMTAsMTAgMCAxLDAgNDAsNTAgQTUwLDUwIDAgMCwwIDkwLDEwMCBMOTAsMTYwIHoiLz48L2RlZnM+PHVzZSB4PSIwIiB5PSIwIiB4bGluazpocmVmPSIjYmFnIi8+PHVzZSB4PSI5MCIgeT0iMCIgeGxpbms6aHJlZj0iI2JhZyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjY1LDApIHNjYWxlKC0xLCAxKSIvPjwvc3ZnPg==');
     background-size: 60%;
     background-repeat: no-repeat;
     background-position: 50%;
 }
 
-.product-modifiers input:not([readonly]) {
-    border: 1px solid #fff;
-}
-
-.quantity, .modifier_class_wrapper .modifiers,
-.discount.items > li, .service_fees.items > li {
-    border-color: #d6e3e9;
-}
-
-.modifier input:checked + .input,
-.combo_item .input[checked=checked] {
-    background: #670000;
-    border-color: #670000;
-}
-
-.modifier .mdf_split::before {
-    color: #670000;
-}
-
-.totals-checkout, .tip-selection {
-    box-shadow: 0 0 rgba(0,0,0,.3);
-}
-
-.required::before {
-    color: #ff0000;
-}
-
-.reward-selection li.active, .stanford-plan.active {
-    background-color: rgba(202, 38, 38, 0.2);
+.list-title::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTUiIGhlaWdodD0iOCI+PHBvbHlnb24gcG9pbnRzPSIwLDAgIDE1LDAgIDgsOCIgc3R5bGU9ImZpbGw6I2ViZjRmYTsiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSI4IiB5Mj0iOCIgc3R5bGU9InN0cm9rZS13aWR0aDoxO3N0cm9rZTojY2VjZWNlIi8+PGxpbmUgeDE9IjgiIHkxPSI4IiB4Mj0iMTUiIHkyPSIwIiBzdHlsZT0ic3Ryb2tlLXdpZHRoOjE7c3Ryb2tlOiNjZWNlY2UiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSIxNSIgeTI9IjAiIHN0eWxlPSJzdHJva2Utd2lkdGg6MTtzdHJva2U6I2ViZjRmYSIvPjwvc3ZnPg==');
+    background-position: 50%;
+    background-size: 2.5em 1.33em;
 }
 
 /** establishments styles **/
@@ -237,44 +324,7 @@ select:-moz-focusring {
     background: rgba(0,0,0,.7);
 }
 
-.establishments[class] .select-wrapper::after {
-    color: #373c40;
-}
-
-.establishments[class] select, .establishments[class] button {
-    color: #670000 !important;
-}
-
-
 /** popup alert styles **/
 #popup_alert[id] {
     background-color: rgba(0,0,0,.7);
-}
-
-#popup_container[id] {
-    background-color: #eaf3f9;
-    color: #373c40;
-}
-
-#popup_content[id].info::before {
-    color: #1a99cd;
-}
-
-#popup_content[id].warning::before {
-    color: #ad8a00;
-}
-
-#popup_ok[id], #popup_cancel[id]:active {
-    background-color: #670000;
-    color: #fff;
-}
-
-#popup_cancel[id], #popup_ok[id]:active {
-    box-shadow: 0 0 1px rgba(26, 153, 205, 0.31);
-    background-color: #fff;
-    color: #670000;
-}
-
-.ui-spinner {
-    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTJweCIgaGVpZ2h0PSI1MTJweCI+PHBhdGggZmlsbD0iI0E1MDUwNSIgZD0iTTUxMiwyNTZjLTAuNjM5LTMzLjQzMS03Ljg5Mi02Ni43NTgtMjEuMjg4LTk3LjIzMWMtMTMuMzUyLTMwLjUtMzIuNzMtNTguMTI5LTU2LjUyMS04MC45NmMtMjMuNzc2LTIyLjg0OC01MS45NzMtNDAuOTEtODIuNDkyLTUyLjgyNkMzMjEuMTk3LDEzLjAyMSwyODguNCw3LjMwNywyNTYsOGMtMzIuNDA1LDAuNjQxLTY0LjY2Niw3LjY4Ny05NC4xNjcsMjAuNjc4Yy0yOS41MjQsMTIuOTQ4LTU2LjI3MSwzMS43MzUtNzguMzY3LDU0Ljc4OGMtMjIuMTEyLDIzLjA0MS0zOS41OCw1MC4zNTQtNTEuMDkzLDc5Ljg5OUMyMC44MTYsMTkyLjg5NiwxNS4zMDksMjI0LjYyNSwxNiwyNTZjMC42NDMsMzEuMzgsNy40ODIsNjIuNTc0LDIwLjA2Nyw5MS4xMDRjMTIuNTQ0LDI4LjU0OSwzMC43MzgsNTQuNDEzLDUzLjA1NSw3NS43NzNjMjIuMzA1LDIxLjM3Nyw0OC43MzYsMzguMjUyLDc3LjMwNyw0OS4zNkMxOTQuOTg4LDQ4My4zODksMjI1LjY1Miw0ODguNjg4LDI1Niw0ODhjMzAuMzU0LTAuNjQ1LDYwLjQ4MS03LjI3Nyw4OC4wMzgtMTkuNDU3YzI3LjU3NS0xMi4xNDEsNTIuNTU4LTI5Ljc0LDczLjE4My01MS4zMjJjMjAuNjQyLTIxLjU3LDM2LjkyMi00Ny4xMTcsNDcuNjI3LTc0LjcxNWM2LjUxOC0xNi43MjksMTAuOTQtMzQuMTk5LDEzLjI3MS01MS44OThjMC42MjMsMC4wMzUsMS4yNDksMC4wNiwxLjg4MSwwLjA2YzE3LjY3MywwLDMyLTE0LjMyNiwzMi0zMmMwLTAuODk3LTAuMDQ3LTEuNzg2LTAuMTE5LTIuNjY2TDUxMiwyNTZMNTEyLDI1NnogTTQ2MS4xNTMsMzQwLjk3NWMtMTEuNzM2LDI2LjYwMS0yOC43NDIsNTAuNjk5LTQ5LjU4OSw3MC41OWMtMjAuODM1LDE5LjkwNC00NS41LDM1LjU5My03Mi4xMjIsNDUuODk1QzMxMi44MjgsNDY3Ljc5OCwyODQuMjk3LDQ3Mi42ODUsMjU2LDQ3MmMtMjguMzAyLTAuNjQ5LTU2LjI5OC02Ljg2OC04MS45MS0xOC4yMzdjLTI1LjYyNS0xMS4zMzMtNDguODQyLTI3Ljc0NS02Ny45OTctNDcuODU1Yy0xOS4xNjktMjAuMDk5LTM0LjI2NC00My44ODItNDQuMTYxLTY5LjUyOUM1MS45OTcsMzEwLjczNiw0Ny4zMTgsMjgzLjI3MSw0OCwyNTZjMC42NTEtMjcuMjc2LDYuNjY0LTU0LjIwNiwxNy42MjctNzguODQ1YzEwLjkyOS0yNC42NSwyNi43NDktNDYuOTg1LDQ2LjEyMy02NS40MDVjMTkuMzY1LTE4LjQzNCw0Mi4yNjUtMzIuOTM1LDY2LjkzNy00Mi40MjhDMjAzLjM1Niw1OS43OTIsMjI5Ljc1NSw1NS4zMTksMjU2LDU2YzI2LjI1LDAuNjUzLDUyLjExNCw2LjQ1OSw3NS43ODEsMTcuMDE3YzIzLjY3NiwxMC41MjUsNDUuMTI4LDI1Ljc1MSw2Mi44MTIsNDQuMzkxYzE3LjY5OCwxOC42MjksMzEuNjA1LDQwLjY0Nyw0MC42OTUsNjQuMzQ0QzQ0NC40MTIsMjA1LjQ0OCw0NDguNjc5LDIzMC43ODEsNDQ4LDI1NmgwLjExOWMtMC4wNzIsMC44OC0wLjExOSwxLjc2OC0wLjExOSwyLjY2NmMwLDE2LjUwNiwxMi40OTYsMzAuMDg3LDI4LjU0MywzMS44MTJDNDczLjQzMSwzMDcuODg5LDQ2OC4yNzgsMzI0Ljg4Nyw0NjEuMTUzLDM0MC45NzV6Ii8+PC9zdmc+);
 }
