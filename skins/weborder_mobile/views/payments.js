@@ -31,11 +31,11 @@ define(["factory"], function(factory) {
         },
         bindings: {
             '.cash': 'text: cash',
-            '[data-payment="cash"]': 'classes: {"font-color2": equal(selected, "cash"), "bg-color1": equal(selected, "cash")}',
-            '[data-payment="credit_card_button"]': 'classes: {"font-color2": equal(selected, "credit_card_button"), "bg-color1": equal(selected, "credit_card_button")}',
-            '[data-payment="gift_card"]': 'classes: {"font-color2": equal(selected, "gift_card"), "bg-color1": equal(selected, "gift_card")}',
-            '[data-payment="paypal"]': 'classes: {"font-color2": equal(selected, "paypal"), "bg-color1": equal(selected, "paypal")}',
-            '[data-payment="stanford"]': 'classes: {"font-color2": equal(selected, "stanford"), "bg-color1": equal(selected, "stanford"), hide: orderItems_hasGiftCard}'
+            '[data-payment="cash"]': 'classes: {"primary-button": equal(selected, "cash"), "regular-button": not(equal(selected, "cash"))}',
+            '[data-payment="credit_card_button"]': 'classes: {"primary-button": equal(selected, "credit_card_button"), "regular-button": not(equal(selected, "credit_card_button"))}',
+            '[data-payment="gift_card"]': 'classes: {"primary-button": equal(selected, "gift_card"), "regular-button": not(equal(selected, "gift_card"))}',
+            '[data-payment="paypal"]': 'classes: {"primary-button": equal(selected, "paypal"), "regular-button": not(equal(selected, "paypal"))}',
+            '[data-payment="stanford"]': 'classes: {"primary-button": equal(selected, "stanford"), "regular-button": not(equal(selected, "stanford")), hide: orderItems_hasGiftCard}'
         },
         computeds: {
             cash: {

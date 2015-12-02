@@ -3,15 +3,15 @@
 
         <div class="modifier__controls fl-right">
             <% if(isSize) { %>
-                <span class="cost fl-right">
+                <span class="cost fl-right special-text">
                     <span class="currency_symbol"><%= currency_symbol %></span>
                     <span class="price"><%= price %></span>
                 </span>
             <% } else if(!isSpecial && !isInventoryMatrix) { %>
-                <span class="cost fl-right">
+                <span class="cost fl-right special-text">
                     <span class="plus">+</span>
                     <span class="currency_symbol"><%= currency_symbol %></span>
-                    <span class="price"><%= price %></span>
+                    <span class="price special-text"><%= price %></span>
                 </span>
             <% } %>
             <span class="free fl-right special-text"><span class="value"></span></span>
@@ -24,7 +24,7 @@
             <input type="<%= type %>" id="modifier<%= id %>" name="modifier<%= modifierClassName %>">
             <span class="input <%= type %>"></span>
             <% }  else { %>
-            <span class="special_button fl-right btn-inline font-color-active1"><%= _lp.MODIFIERS_ADD %></span>
+            <span class="special_button fl-right btn-inline primary-text"><%= _lp.MODIFIERS_ADD %></span>
             <% } %>
             <span class="title_wrapper">
                 <span class="title <% if(isSpecial) { %>special<% } %>"><%= name %></span>
