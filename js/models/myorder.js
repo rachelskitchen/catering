@@ -2015,6 +2015,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          *                 lastDigits: <last 4 digits of CC>       // optional
          *                 firstName: <first name of CC holder>,   // optional
          *                 lastName: <last name of CC holder>,     // optional
+         *                 address: <address>,                     // optional
          *                 token: <token>,                         // optional, QuickBooks payment processor
          *                 cardNumber: <card number>,              // optional, Gift Card
          *                 captchaKey: <captcha key>,              // optional, Gift Card
@@ -2341,7 +2342,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 call_name = [],
                 payment_info = {};
 
-            contactName && call_name.push(contactName);
+            contactName && call_name.push($.trim(contactName));
 
             checkout.pickupTime && call_name.push(checkout.pickupTime);
             if (customer.phone) {
