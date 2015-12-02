@@ -193,138 +193,43 @@ define(['myorder'], function() {
             expect(modif.update_prices).toHaveBeenCalledWith(9);
         });
         
-        describe('Function get_myorder_tax_rate', function() {
-            var tax_included,
-                obj = new Backbone.Model(),
-                def = {
-                    is_cold: false,
-                    is_gift: false,
-                    tax: 100
-                };
-            
-            beforeEach(function() {
-                tax_included = true;
-                obj.set(def);
-                model.collection = {
-                    checkout: new Backbone.Model({
-                        dining_option: 'DINING_OPTION_EATIN'
-                    }),
-                    total: new Backbone.Model({
-                        prevailing_tax: 25,
-                        tax_country: 'usa'
-                    })
-                };
-                spyOn(App.TaxCodes, 'is_tax_included').and.callFake(function(){
-                    return tax_included;
-                });
-                spyOn(model, 'get_myorder_surcharge_rate').and.returnValue(0.4);
-                spyOn(model, 'get_product').and.returnValue(obj);
-                this.settings = App.Data.settings.get('settings_system');
-                App.Data.settings.get('settings_system').delivery_cold_untaxed = false;
-            });
-            
-            afterEach(function() {
-                App.Data.settings.set('settings_system', this.settings);
-            });
-            
-            it('is tax included. Else in all conditions', function() {
-                expect(model.get_myorder_tax_rate()).toBe(0.5);
-            });
-            
-            it('product is gift', function() {
-                obj.set({is_gift: true});
-                expect(model.get_myorder_tax_rate()).toBe(0);
-            });
-            
-            it('product is cold, dining_option DINING_OPTION_EATIN', function() {
-                obj.set({is_cold: true});
-                expect(model.get_myorder_tax_rate()).toBe(0.5);
-            });
-            
-            it('product is cold, dining_option DINING_OPTION_DELIVERY, delivery_cold_untaxed = false', function() {
-                obj.set({is_cold: true});
-                model.collection.checkout.set('dining_option', 'DINING_OPTION_DELIVERY');
-                expect(model.get_myorder_tax_rate()).toBe(0.5);
-            });
-            
-            it('product is cold, dining_option DINING_OPTION_DELIVERY, delivery_cold_untaxed = true', function() {
-                obj.set({is_cold: true});
-                model.collection.checkout.set('dining_option', 'DINING_OPTION_DELIVERY');
-                App.Data.settings.get('settings_system').delivery_cold_untaxed = true;
-                expect(model.get_myorder_tax_rate()).toBe(0);
-            });
-            
-            it('not is tax included', function() {
-                tax_included = false;
-                expect(model.get_myorder_tax_rate()).toBe(1.1);
-            });
-        });
-        
-        describe('Function get_myorder_surcharge_rate', function() {
-            var tax_included = false,
-                obj = new Backbone.Model(),
-                def = {
-                    is_cold: false
-                };
-            
-            beforeEach(function() {
-                obj.set(def);
-                model.collection = {
-                    total: new Backbone.Model({
-                        prevailing_surcharge: 25,
-                        tax_country: 'usa'
-                    })
-                };
-                spyOn(App.TaxCodes, 'is_tax_included').and.callFake(function(){
-                    return tax_included;
-                });
-                spyOn(model, 'get_product').and.returnValue(obj);
-            });
-            
-            it('usual surcharge', function() {
-                expect(model.get_myorder_surcharge_rate()).toBe(0.25);
-            });
-            
-            it('product is gift', function() {
-                obj.set({is_gift: true});
-                expect(model.get_myorder_surcharge_rate()).toBe(0);
-            });
-            
-            it('is tax included', function() {
-                tax_included = true;
-                expect(model.get_myorder_surcharge_rate()).toBe(0);
-            });
-        });
-        
-        describe('Function add_empty', function() {
+        describe('add_empty()', function() {
             var id_category = 10,
                 id_product = 5,
                 dfd = $.Deferred(),
                 obj = {
-                    get_child_products: function() {}
+                    get_child_products: function() {},
+                    get_product: function() {}
                 };
 
             dfd.resolve();
             
             beforeEach(function() {
-                App.Data.products[id_category] = new Backbone.Model();
+                App.Data.products[id_category] = new App.Models.Product({
+                    init: function() {},
+                    get_product: function() {}
+                });
                 App.Data.modifiers[id_product] = new Backbone.Model();
+
                 spyOn(App.Data.products[id_category], 'get').and.returnValue(obj);
-                spyOn(App.Collections.ModifierBlocks, 'init').and.returnValue(dfd);
+                spyOn(App.Data.products[id_category], 'get_product').and.returnValue(obj);
+                spyOn(App.Collections.ModifierBlocks, 'init_quick_modifiers').and.returnValue(dfd);
                 spyOn(App.Collections.Products, 'init').and.returnValue(dfd);
                 spyOn(obj, 'get_child_products').and.returnValue(dfd);
+                spyOn(obj, 'get_product');
                 spyOn($, 'when').and.returnValue(dfd);
                 spyOn(model, 'get_modelsum').and.returnValue(1);
                 spyOn(model, 'get_initial_price').and.returnValue(2);
                 spyOn(model, 'set');
                 spyOn(model, 'update_prices');
+                spyOn(model, 'get').and.returnValue(obj);
             });
             
             it('test funciton calls', function() {
                 model.add_empty(id_product, id_category);
                 expect(App.Collections.Products.init).toHaveBeenCalled(); // init products
-                expect(App.Collections.ModifierBlocks.init).toHaveBeenCalled(); // init modifiers
-                expect(App.Data.products[id_category].get).toHaveBeenCalledWith(id_product); // get nessesarry product
+                expect(App.Collections.ModifierBlocks.init_quick_modifiers).toHaveBeenCalled(); // init modifiers
+                expect(App.Data.products[id_category].get_product).toHaveBeenCalledWith(id_product); // get nessesarry product
                 expect(obj.get_child_products).toHaveBeenCalled();
                 expect(model.set.calls.argsFor(0)[0]).toEqual({
                     product: obj,
@@ -339,11 +244,12 @@ define(['myorder'], function() {
             });
         });
         
-        describe('Function addJSON', function() {
+        describe('addJSON()', function() {
             var data, 
                 gift,
                 mod,
-                prod;
+                prod,
+                setSpy;
         
             beforeEach(function() {
                 gift = undefined;
@@ -356,11 +262,13 @@ define(['myorder'], function() {
                     modifiers : {},
                     id_product: 1,
                     quantity: 'quan',
-                    weight: 1
+                    weight: 1,
+                    selected: false,
+                    is_child_product: false
                 };
                 mod = spyOn(App.Collections.ModifierBlocks.prototype, 'addJSON').and.returnValue(data.modifiers)
                 prod = spyOn(App.Models.Product.prototype, 'addJSON').and.returnValue(data.product)
-                spyOn(model, 'set');
+                setSpy = spyOn(model, 'set');
                 spyOn(model, 'get').and.returnValue(data.product);
                 spyOn(data.product, 'get').and.callFake(function() {
                     return gift;
@@ -369,9 +277,11 @@ define(['myorder'], function() {
             });
             
             it('add without gift card, id_product is present', function() {
-                model.addJSON(data);            
+                model.addJSON(data);
                 expect(mod).toHaveBeenCalledWith(data.modifiers);
                 expect(prod).toHaveBeenCalledWith(data.product);
+                expect(setSpy.calls.mostRecent().args[0].discount instanceof App.Models.DiscountItem).toBe(true);
+                delete setSpy.calls.mostRecent().args[0].discount;
                 expect(model.set).toHaveBeenCalledWith(data);
                 expect(data.product.set).not.toHaveBeenCalled();
             });
@@ -388,23 +298,76 @@ define(['myorder'], function() {
                 model.addJSON(data);
                 expect(data.product.set).toHaveBeenCalled();
             });
-            
-            it('id_product not preset', function() {
-                delete data.id_product;
-                model.addJSON(data);
-                expect(model.set.calls.mostRecent().args[0]).toBe('id_product');
-            });
         });
         
-        it('Function get_modelsum', function() {
-            var obj = {
-                get_sum: function() {}
+        describe('get_modelsum()', function() {
+            var modifierList = {
+                get_sum: function() {},
+                get_modifierList: function() {return [];}
+            },
+            modifier = {
+                get: function() {}
+            },
+            product = {
+                get: function() {}
             };
-            spyOn(model, 'get_initial_price').and.returnValue(10);
-            spyOn(model, 'get_modifiers').and.returnValue(obj);
-            spyOn(obj, 'get_sum').and.returnValue(15);
-            model.set({quantity: 4}, {silent: true});
-            expect(model.get_modelsum()).toBe(100);
+
+            it('`modifiers` doesn\'t exist', function() {
+                spyOn(model, 'get_initial_price').and.returnValue(10);
+                spyOn(model, 'get_modifiers').and.returnValue(null);
+                spyOn(model, 'get_product');
+
+                model.set({quantity: 4}, {silent: true});
+                expect(model.get_modelsum()).toBe(40);
+            });
+
+            it('`modifiers` exists, has no selected modifiers', function() {
+                spyOn(model, 'get_initial_price').and.returnValue(10);
+                spyOn(model, 'get_modifiers').and.returnValue(modifierList);
+                spyOn(model, 'get_product');
+                spyOn(modifierList, 'get_sum').and.returnValue(0);
+                spyOn(modifierList, 'get_modifierList').and.returnValue([]);
+
+                model.set({quantity: 4}, {silent: true});
+                expect(model.get_modelsum()).toBe(40);
+            });
+
+            it('`modifiers` exists, has selected modifier, `max_price` doesn\'t exist', function() {
+                spyOn(model, 'get_initial_price').and.returnValue(10);
+                spyOn(model, 'get_modifiers').and.returnValue(modifierList);
+                spyOn(model, 'get_product');
+                spyOn(modifierList, 'get_sum').and.returnValue(15);
+                spyOn(modifierList, 'get_modifierList').and.returnValue([modifier]);
+                spyOn(modifier, 'get').and.returnValue(true);
+
+                model.set({quantity: 4}, {silent: true});
+                expect(model.get_modelsum()).toBe(100);
+            });
+
+            it('`modifiers` exists, has selected modifier, `max_price` exists', function() {
+                spyOn(model, 'get_initial_price').and.returnValue(10);
+                spyOn(model, 'get_modifiers').and.returnValue(modifierList);
+                spyOn(model, 'get_product').and.returnValue(product);
+                spyOn(modifierList, 'get_sum').and.returnValue(15);
+                spyOn(modifierList, 'get_modifierList').and.returnValue([modifier]);
+                spyOn(modifier, 'get').and.returnValue(true);
+                spyOn(product, 'get').and.returnValue(20);
+
+                model.set({quantity: 4}, {silent: true});
+                expect(model.get_modelsum()).toBe(80);
+            });
+
+            it('`modifiers` doesn\'t exist, `sold_by_weight` is true, `weight` is set', function() {
+                spyOn(model, 'get_initial_price').and.returnValue(10);
+                spyOn(model, 'get_modifiers').and.returnValue(null);
+                spyOn(model, 'get_product').and.returnValue(product);
+                spyOn(product, 'get').and.returnValue(true);
+
+                model.set({weight: 2, product: product}, {silent: true});
+                model.set({quantity: 4}, {silent: true});
+                expect(model.get_modelsum()).toBe(80);
+            });
+
         });
         
         it('Function get_special', function() {
@@ -437,6 +400,7 @@ define(['myorder'], function() {
             spyOn(App.Models.Myorder.prototype, 'trigger');
             model.set({id_product: 12}, {silent: true});
             var clone = model.clone();
+            clone.get('discount').cid = model.get('discount').cid;
             expect(clone.toJSON()).toEqual(model.toJSON());
             expect(clone.cid).not.toBe(model.cid);
             expect(clone.__proto__).toBe(model.__proto__);
@@ -452,7 +416,7 @@ define(['myorder'], function() {
             expect(model.update(clone).get('id_product')).toEqual(12);
         });
         
-        describe('Function check_order', function() {
+        describe('check_order()', function() {
             var data = {
                     product : {
                         id: 2,
@@ -547,60 +511,7 @@ define(['myorder'], function() {
             spyOn(product, 'get_attributes_list').and.returnValue(5);
             expect(model.get_attributes_list()).toBe(5);
         });
-        
-        describe('Function check_repeat', function() {
-            var product = {
-                    check_repeat: function() {}
-                },
-                modifiers = {
-                    check_repeat: function() {}
-                },
-                check_product,
-                check_modifiers;
-            
-            beforeEach(function() {
-                check_product = undefined;
-                check_modifiers = undefined;
-                model.collection = {};
-                model.set({
-                    product: product,
-                    modifiers: modifiers
-                }, {silent: true});
-                spyOn(product, 'check_repeat').and.callFake(function() {
-                    return check_product;
-                });
-                spyOn(modifiers, 'check_repeat').and.callFake(function() {
-                    return check_modifiers;
-                });
-            });
-            
-            it('no product', function() {
-                model.unset('product', {silent: true});
-                expect(model.check_repeat()).toBeUndefined();
-            });
-            
-            it('remove product', function() {
-                check_product = 'remove';
-                expect(model.check_repeat()).toBe('remove');
-            });
-            
-            it('remove changed product', function() {
-                check_product = 'remove changed';
-                expect(model.check_repeat()).toBe('remove changed');
-            });
-            
-            it('changed product', function() {
-                check_product = 'changed';
-                expect(model.check_repeat()).toBe('changed');
-                expect(modifiers.check_repeat).toHaveBeenCalled();
-            });
-            
-            it('changed modifiers', function() {
-                check_modifiers = 'changed';
-                expect(model.check_repeat()).toBe('changed');
-            });
-        });
-        
+
         it('Function is_gift', function() {
             var product = new Backbone.Model({is_gift: false});
             spyOn(model, 'get_product').and.returnValue(product);
@@ -614,7 +525,8 @@ define(['myorder'], function() {
             model.set({
                 sum: 100,
                 quantity: 10,
-                initial_price: 4
+                initial_price: 4,
+                product_sub_id: 123
             }, {silent: true});
             var modifiers = {
                     modifiers_submit: function() {
@@ -637,40 +549,22 @@ define(['myorder'], function() {
             spyOn(model, 'get_special').and.returnValue('special');
             spyOn(model, 'get_modifiers').and.returnValue(modifiers);
             spyOn(model, 'get_product').and.returnValue(product);
-            spyOn(model, 'get_myorder_tax_rate').and.returnValue(0.5);
             
             expect(model.item_submit()).toEqual({
-                modifier_amount: 6,
                 modifieritems: 'modifiers block',
-                initial_price: 4,
                 special_request: 'special',
                 price: 4,
                 product: 'id',
                 product_name_override: 'name',
                 quantity: 10,
-                tax_amount: 50,
-                tax_rate: 'tax',//model.get_product_tax_rate(),
-                is_cold: 'is_cold'
+                product_sub_id: 123,
+                is_combo: undefined
             });
             
             gift_card = 10;
             expect(model.item_submit().gift_card_number).toBe(10);
         });
-        
-        it('Function get_all_line: modifiers are present', function() {
-            var modifiers = {
-                get_all_line: function() {
-                    return 'add modifier'
-                }
-            };
-            spyOn(model, 'get_modifiers').and.returnValue(modifiers);
-            expect(model.get_all_line()).toBe('add modifier');
-        });
 
-        it('Function get_all_line: modifiers are empty', function() {
-            spyOn(model, 'get_modifiers').and.returnValue(undefined);
-            expect(model.get_all_line()).toBe('');
-        });
     });
     
     
@@ -701,7 +595,6 @@ define(['myorder'], function() {
                 bagcharge = 0;
                 spyOn(model, 'add');
                 spyOn(model, 'remove');
-                spyOn(model, 'recalculate_tax');
                 spyOn(model.total, 'get_delivery_charge').and.callFake(function() {
                     return delivery;
                 });
@@ -816,138 +709,6 @@ define(['myorder'], function() {
             expect(clone).not.toBe(model);
             expect(clone.__proto__).toBe(model.__proto__);
         });
-        
-        describe('Function check_repeat', function() {
-            var settings,
-                delivery;
-           
-            beforeEach(function() {
-                delivery = new Backbone.Model({enable: true});
-                settings = {
-                    eat_in_for_online_orders: true,
-                    tax_country: 'usa',
-                    prevailing_surcharge: 10
-                };
-                model.total = new Backbone.Model({
-                    delivery: delivery,
-                    tax_country: 'usa',
-                    prevailing_surcharge: 10
-                });
-                model.checkout = new Backbone.Model({
-                    dining_option: 'DINING_OPTION_ONLINE'
-                });
-                spyOn(App.Data.settings, 'get').and.callFake(function() {
-                    return settings;
-                });
-            });
-            
-            it('no changes', function() {
-                expect(model.check_repeat()).toBeUndefined();
-            });
-            
-            it('for delivery, become disable', function() {
-                delivery.set('enable', false);
-                model.checkout.set('dining_option', 'DINING_OPTION_DELIVERY');
-                expect(model.check_repeat()).toBe('changed');
-            });
-            
-            it('for eatin, become disable', function() {
-                settings.eat_in_for_online_orders = false;
-                model.checkout.set('dining_option', 'DINING_OPTION_EATIN');
-                expect(model.check_repeat()).toBe('changed');
-            });
-            
-            it('only gift, tax_country changed', function() {
-                settings.tax_country = 'ua';
-                expect(model.check_repeat()).toBeUndefined();
-            });
-            
-            it('only gift, prevailing_surcharge changed', function() {
-                settings.prevailing_surcharge = 20;
-                expect(model.check_repeat()).toBeUndefined();
-            });
-            
-            it('not only gift, prevailing_surcharge changed', function() {
-                settings.prevailing_surcharge = 20;
-                model.checkout.set('dining_option', 'DINING_OPTION_EATIN');
-                expect(model.check_repeat()).toBe('changed');
-            });
-            
-            describe('check item', function() {                
-                var obj = {
-                        check_repeat: function() {}
-                    },
-                    check_item;
-                beforeEach(function() {
-                    check_item = undefined;
-                    model.models.push(obj);
-                    spyOn(obj, 'check_repeat').and.callFake(function() {
-                        return check_item;
-                    });
-                    spyOn(model, 'remove');
-                });
-                
-                it('return undefined', function() {
-                    expect(model.check_repeat()).toBeUndefined();
-                });
-                
-                it('return remove changed', function() {
-                    check_item = 'remove changed';
-                    expect(model.check_repeat()).toBe('changed');
-                    expect(model.remove).toHaveBeenCalled();
-                });
-                
-                it('return remove', function() {
-                    check_item = 'remove';
-                    expect(model.check_repeat()).toBeUndefined();
-                    expect(model.remove).toHaveBeenCalled();
-                });
-                
-                it('return changed', function() {
-                    check_item = 'changed';
-                    expect(model.check_repeat()).toBe('changed');
-                    expect(model.remove).not.toHaveBeenCalled();
-                });
-            });
-        });
-            
-        describe('Function repeat_order', function() {                
-            var repeat_model,
-                obj = {
-                    eat_in_for_online_orders: true
-                };
-            beforeEach(function() {
-                repeat_model = new App.Collections.Myorders();
-                repeat_model.checkout = new Backbone.Model({dining_option: 'test'});
-                model.total = new Backbone.Model({
-                    delivery: new Backbone.Model({enable: true})
-                });
-                model.checkout = new Backbone.Model();
-                spyOn(App.Data.settings, 'get').and.returnValue(obj);
-                obj.eat_in_for_online_orders = true;
-                spyOn(model, 'empty_myorder');
-            });
-
-            it('check calls', function() {
-                model.repeat_order(repeat_model);
-                expect(model.checkout.get('dining_option')).toBe(repeat_model.checkout.get('dining_option'));
-                expect(model.empty_myorder).toHaveBeenCalled();
-            });
-
-            it('delivery, become disable', function() {
-                model.total.get('delivery').set('enable', false);
-                repeat_model.checkout.set('dining_option', 'DINING_OPTION_DELIVERY');
-                model.repeat_order(repeat_model);
-                expect(model.checkout.get('dining_option')).toBe('DINING_OPTION_TOGO');
-            });
-
-            it('eat in, become disable', function() {
-                obj.eat_in_for_online_orders = false;
-                repeat_model.checkout.set('dining_option', 'DINING_OPTION_EATIN');
-                model.repeat_order(repeat_model);
-                expect(model.checkout.get('dining_option')).toBe('DINING_OPTION_TOGO');
-            });
-        });
 
         describe('Function change_only_gift_dining_option', function() {
             var quan, is_gift, dining_option;
@@ -1007,8 +768,6 @@ define(['myorder'], function() {
             var add = new App.Models.Myorder();
             spyOn(model, 'change_only_gift_dining_option');
             spyOn(add, 'get_modelsum').and.returnValue(10);
-            spyOn(add, 'get_myorder_tax_rate').and.returnValue(0.5);
-            spyOn(add, 'get_myorder_surcharge_rate').and.returnValue(0.3);
             add.set('quantity', 2, {silent: true});
             model.quantity = 5;
             model.total.set('total', 100);
@@ -1026,8 +785,6 @@ define(['myorder'], function() {
         it('Function onModelRemoved', function() {
             var add = new App.Models.Myorder();
             spyOn(model, 'change_only_gift_dining_option');            
-            spyOn(add, 'get_myorder_tax_rate').and.returnValue(0.5);
-            spyOn(add, 'get_myorder_surcharge_rate').and.returnValue(0.3);
             add.set('quantity', 2, {silent: true});
             add.set('sum', 10, {silent: true});
             model.quantity = 5;
@@ -1047,8 +804,6 @@ define(['myorder'], function() {
             var add = new App.Models.Myorder();
             spyOn(add, 'get_modelsum').and.returnValue(10);
             add.set('sum', 30, {silent: true});
-            spyOn(add, 'get_myorder_tax_rate').and.returnValue(0.5);
-            spyOn(add, 'get_myorder_surcharge_rate').and.returnValue(0.3);
             add.set('quantity', 2, {silent: true});
             add.set('quantity_prev', 3, {silent: true});
             model.quantity = 5;
@@ -1099,17 +854,6 @@ define(['myorder'], function() {
             expect(model.addJSON).toHaveBeenCalledWith('test');
         });
 
-        it('Function recalculate_tax', function() {
-            spyOn(App.Models.Myorder.prototype, 'get_myorder_tax_rate').and.returnValue(10);
-            spyOn(App.Models.Myorder.prototype, 'get').and.returnValue(5);
-            spyOn(model.total, 'set');
-
-            model.add([{name: '1'}, {name: '2'}], {silent: true});
-            model.recalculate_tax();
-
-            expect(model.total.set).toHaveBeenCalledWith('tax', 100);
-        });
-        
         describe('Function _check_cart', function() {
             var tips, dining_option, product_quantity, delivery_amount;
             
@@ -1167,7 +911,7 @@ define(['myorder'], function() {
             });
         });
         
-        describe('Function check_order', function() {
+        describe('check_order()', function() {
             var dining_option, card_check,checkout_check, order_check, customer_check, customer_validate_address, fake;
             
             beforeEach(function() {
@@ -1560,8 +1304,6 @@ define(['myorder'], function() {
                 });
                 
                 spyOn(model, 'trigger');
-                
-                spyOn(App.Data.errors, 'alert_red');
                 spyOn(App.Data.errors, 'alert');                
             });
             
@@ -2012,21 +1754,18 @@ define(['myorder'], function() {
                 it('status ORDERS_PICKUPTIME_LIMIT', function() {
                     var data = {status: 'ORDERS_PICKUPTIME_LIMIT'};
                     ajax.success(data);
-                    expect(App.Data.errors.alert_red).toHaveBeenCalledWith(MSG.ERROR_ORDERS_PICKUPTIME_LIMIT);
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                 });
                 
                 it('status REWARD CARD UNDEFINED', function() {
                     var data = {status: 'REWARD CARD UNDEFINED'};
                     ajax.success(data);
-                    expect(App.Data.errors.alert_red).toHaveBeenCalledWith(MSG.REWARD_CARD_UNDEFINED);
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                 });
                 
                 it('status OTHER', function() {
                     var data = {status: 'OTHER', errorMsg: 'other'};
                     ajax.success(data);
-                    expect(App.Data.errors.alert_red).toHaveBeenCalledWith(MSG.ERROR_OCCURRED + 'other');
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                 });
                 

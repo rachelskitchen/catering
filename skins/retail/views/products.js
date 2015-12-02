@@ -51,17 +51,25 @@ define(["products_view"], function(products_view) {
         }
     });
 
-    var ProductListView = App.Views.CoreProductView.CoreProductListView.extend({
+  var ProductListView = _ProductListView( App.Views.CoreProductView.CoreProductListView );
+    function _ProductListView( _base ) {
+      return _base.extend({
         initialize: function() {
             this.listenTo(this.options.filter, 'change', this.sortItems, this);
             this.listenTo(this.options.filter, 'change', this.filterItems, this);
-            App.Views.CoreProductView.CoreProductListView.prototype.initialize.apply(this, arguments);
+            _base.prototype.initialize.apply(this, arguments);
         },
         render: function() {
-            App.Views.CoreProductView.CoreProductListView.prototype.render.apply(this, arguments);
+            _base.prototype.render.apply(this, arguments);
             this.sortItems(this.options.filter, 1);
             this.filterItems(this.options.filter);
             return this;
+        },
+        addItem: function(model) {
+            if ( model.get('is_combo') ) //hide combo products for paypal skin
+                return;
+            else
+               _base.prototype.addItem.apply(this, arguments);
         },
         sortItems: function(model, force) {
             var filter = this.options.filter,
@@ -69,7 +77,7 @@ define(["products_view"], function(products_view) {
                 order = filter.get('order'),
                 changed = model.changed;
             if('sort' in changed || 'order' in changed || force)
-                App.Views.CoreProductView.CoreProductListView.prototype.sortItems.call(this, attr, order);
+                _base.prototype.sortItems.call(this, attr, order);
         },
         filterItems: function(model) {
             var attribute1 = model.get('attribute1'),
@@ -90,7 +98,8 @@ define(["products_view"], function(products_view) {
                 return value == 1 ? false : !Array.isArray(values) || values.indexOf(value) == -1;
             }
         }
-    });
+      });
+    }
 
     var ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView.extend({
         render: function() {
