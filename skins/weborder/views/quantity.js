@@ -36,16 +36,19 @@ define(["quantity_view"], function(quantity_view) {
                 product = this.model.get_product(),
                 quantity = this.model.get('quantity'),
                 stock_amount = product.get('stock_amount'),
-                selectWrapper = this.$('.combobox-wrapper');
+                selectWrapper = this.$('.combobox-wrapper'),
+                max_amount = Math.min(stock_amount, product.defaults.stock_amount);
 
             select.empty();
-            for (var i = 1; i <= stock_amount; i++) {
+            var options = [];
+            for (var i = 1; i <= max_amount; i++) {
                 if (i === quantity) {
-                    select.append('<option selected="selected" value="' + i + '">' + i + '</option>');
+                    options.push('<option selected="selected" value="' + i + '">' + i + '</option>');
                 } else {
-                    select.append('<option value="' + i + '">' + i + '</option>');
+                    options.push('<option value="' + i + '">' + i + '</option>');
                 }
             }
+            select.append(options);
 
             if (stock_amount === 1 || product.isParent()) {
                 select.addClass('disabled');
@@ -60,10 +63,10 @@ define(["quantity_view"], function(quantity_view) {
             if(product.isParent())
                 this.$el.hide();
 
-            if (QuantityMainView.combobox) {
-                QuantityMainView.combobox.destroy();
+            if (this.combobox) {
+                this.combobox.destroy();
             }
-            QuantityMainView.combobox = select.combobox(1, stock_amount);
+            this.combobox = select.combobox(1, max_amount);
         },
         change: function(e) {
             this.model.set('quantity', e.target.value * 1);
