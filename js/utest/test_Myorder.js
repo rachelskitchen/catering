@@ -964,7 +964,7 @@ define(['myorder'], function() {
             it('tips more than product sum', function() {  
                 tips = 20;
                 expect(model._check_cart().status).toBe('OK');
-                expect(model._check_cart(true).status).toBe('ERROR');
+                expect(model._check_cart({tip: true}).status).toBe('ERROR');
             });
             
             it('for delivery. Total less then min dilivery amount', function() {
@@ -1031,8 +1031,6 @@ define(['myorder'], function() {
                 spyOn(App.Data.customer, 'check').and.callFake(function() {
                     return customer_check;
                 });
-                
-                spyOn(window, 'alert_message');
             });
             
             afterEach(function() {
@@ -1102,12 +1100,13 @@ define(['myorder'], function() {
             });
             
             it('check order quantity', function() {
+                spyOn(App.Data.errors, 'alert');
                 order_check = {
                     status: 'ERROR_QUANTITY',
                     errorMsg: 'test'
                 };
-                model.check_order({order: true}, fake.funcOk);
-                expect(window.alert_message).toHaveBeenCalled();
+                model.check_order({order: true}, fake.funcOk, fake.funcError);
+                expect(fake.funcError).toHaveBeenCalled();
             });
             
             it('check customer simple error', function() {
@@ -1133,6 +1132,16 @@ define(['myorder'], function() {
                 model.check_order({customer: true}, fake.funcOk, fake.funcError);
                 expect(App.Data.customer.check).toHaveBeenCalled();
                 expect(fake.funcError).not.toHaveBeenCalled();
+            });
+
+            it('error callback not passed', function() {
+                spyOn(App.Data.errors, 'alert');
+                order_check = {
+                    status: 'ERROR_QUANTITY',
+                    errorMsg: 'test'
+                };
+                model.check_order({order: true}, fake.funcOk);
+                expect(App.Data.errors.alert).toHaveBeenCalled();
             });
         });
         
