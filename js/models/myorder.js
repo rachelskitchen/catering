@@ -1501,7 +1501,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 var check_order = this._check_cart(options);
 
                 if (check_order.status === 'ERROR_QUANTITY') {
-                    if (!arguments[2]) { // if we don't set error callback, use usuall two button alert message or if we on the first page
+                    if (!arguments[2]) { // if we don't set error callback, use usual two button alert message or if we on the first page
+
                         return error(check_order.errorMsg, false, false, {
                             isConfirm: true,
                             confirm: {
@@ -2015,6 +2016,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          *                 lastDigits: <last 4 digits of CC>       // optional
          *                 firstName: <first name of CC holder>,   // optional
          *                 lastName: <last name of CC holder>,     // optional
+         *                 address: <address>,                     // optional
          *                 token: <token>,                         // optional, QuickBooks payment processor
          *                 cardNumber: <card number>,              // optional, Gift Card
          *                 captchaKey: <captcha key>,              // optional, Gift Card
@@ -2341,7 +2343,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 call_name = [],
                 payment_info = {};
 
-            contactName && call_name.push(contactName);
+            contactName && call_name.push($.trim(contactName));
 
             checkout.pickupTime && call_name.push(checkout.pickupTime);
             if (customer.phone) {
