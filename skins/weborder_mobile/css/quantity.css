@@ -44,6 +44,7 @@
     top: 50%;
     left: 25%;
     margin: -1px 0 0 -1px;
+    pointer-events: none;
 }
 
 .quantity .increase::after {
