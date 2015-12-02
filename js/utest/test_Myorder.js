@@ -767,58 +767,120 @@ define(['myorder'], function() {
             expect(model.not_gift_product_quantity()).toBe(3);
         });
 
-        it('Function onModelAdded', function() {
-            var add = new App.Models.Myorder();
-            spyOn(model, 'change_only_gift_dining_option');
-            spyOn(add, 'get_modelsum').and.returnValue(10);
-            add.set('quantity', 2, {silent: true});
-            model.quantity = 5;
-            model.total.set('total', 100);
-            model.total.set('tax', 20);
-            model.total.set('surcharge', 30);
+        describe('onModelAdded()', function() {
+            var add;
 
-            model.onModelAdded(add);
-            expect(model.change_only_gift_dining_option).toHaveBeenCalled();
-            expect(model.total.get('tax')).toBe(25);
-            expect(model.total.get('surcharge')).toBe(33);
-            expect(model.total.get('total')).toBe(110);
-            expect(model.quantity).toBe(7);
+            beforeEach(function() {
+                add = new App.Models.Myorder();
+                spyOn(model, 'change_only_gift_dining_option');
+                spyOn(model, 'update_cart_totals');
+                spyOn(add, 'get_modelsum').and.returnValue(10);
+                spyOn(App.Models.Total.prototype, 'get_tip').and.returnValue(0);
+                model.quantity = 5;
+                add.set('quantity', 2, {silent: true});
+            });
+
+            it('model isn\'t real product', function() {
+                generalBehaviour();
+                expect(model.update_cart_totals).not.toHaveBeenCalled();
+            });
+
+            it('model is real product', function() {
+                add.set('id_product', 1, {silent: true});
+                generalBehaviour();
+                expect(model.update_cart_totals).toHaveBeenCalled();
+            });
+
+
+            function generalBehaviour() {
+                model.onModelAdded(add);
+
+                expect(model.change_only_gift_dining_option).toHaveBeenCalled();
+                expect(model.quantity).toBe(7);
+                expect(add.get('sum')).toBe(10);
+                expect(add.get('product_sub_id')).toBe(add.cid);
+                expect(add.get('quantity_prev')).toBe(2);
+            }
         });
 
-        it('Function onModelRemoved', function() {
-            var add = new App.Models.Myorder();
-            spyOn(model, 'change_only_gift_dining_option');            
-            add.set('quantity', 2, {silent: true});
-            add.set('sum', 10, {silent: true});
-            model.quantity = 5;
-            model.total.set('total', 100);
-            model.total.set('tax', 20);
-            model.total.set('surcharge', 30);
+        describe('onModelRemoved()', function() {
+            var add;
 
-            model.onModelRemoved(add);
-            expect(model.change_only_gift_dining_option).toHaveBeenCalled();
-            expect(model.total.get('tax')).toBe(15);
-            expect(model.total.get('surcharge')).toBe(27);
-            expect(model.total.get('total')).toBe(90);
-            expect(model.quantity).toBe(3);
+            beforeEach(function() {
+                add = new App.Models.Myorder();
+                spyOn(model, 'change_only_gift_dining_option');
+                spyOn(model, 'update_cart_totals');
+                spyOn(model.discount, 'zero_discount');
+                spyOn(model, 'removeServiceFees');
+                spyOn(add, 'get_modelsum').and.returnValue(10);
+                spyOn(App.Models.Total.prototype, 'get_tip').and.returnValue(0);
+                add.set('quantity', 2, {silent: true});
+                model.quantity = 5;
+            });
+
+            it('get_only_product_quantity() < 1', function() {
+                spyOn(model, 'get_only_product_quantity').and.returnValue(0);
+                generalBehaviour();
+                expect(model.discount.zero_discount).toHaveBeenCalled();
+                expect(model.removeServiceFees).toHaveBeenCalled();
+            });
+
+            it('get_only_product_quantity() >= 1', function() {
+                spyOn(model, 'get_only_product_quantity').and.returnValue(1);
+                generalBehaviour();
+                expect(model.discount.zero_discount).not.toHaveBeenCalled();
+                expect(model.removeServiceFees).not.toHaveBeenCalled();
+            });
+
+            it('model isn\'t real product', function() {
+                generalBehaviour();
+                expect(model.update_cart_totals).not.toHaveBeenCalled();
+            });
+
+            it('model is real product', function() {
+                add.set('id_product', 1, {silent: true});
+                generalBehaviour();
+                expect(model.update_cart_totals).toHaveBeenCalled();
+            });
+
+            function generalBehaviour() {
+                model.onModelRemoved(add);
+
+                expect(model.change_only_gift_dining_option).toHaveBeenCalled();
+            }
         });
 
-        it('Function onModelChange', function() {
-            var add = new App.Models.Myorder();
-            spyOn(add, 'get_modelsum').and.returnValue(10);
-            add.set('sum', 30, {silent: true});
-            add.set('quantity', 2, {silent: true});
-            add.set('quantity_prev', 3, {silent: true});
-            model.quantity = 5;
-            model.total.set('total', 100);
-            model.total.set('tax', 20);
-            model.total.set('surcharge', 30);
+        describe('Function onModelChange', function() {
+            var add;
 
-            model.onModelChange(add);
-            expect(model.total.get('tax')).toBe(10);
-            expect(model.total.get('surcharge')).toBe(24);
-            expect(model.total.get('total')).toBe(80);
-            expect(model.quantity).toBe(4);
+            beforeEach(function() {
+                add = new App.Models.Myorder();
+                spyOn(model, 'update_cart_totals');
+                spyOn(App.Models.Total.prototype, 'get_tip').and.returnValue(0);
+                spyOn(add, 'get_modelsum').and.returnValue(10);
+                add.set('sum', 30, {silent: true});
+                add.set('quantity', 2, {silent: true});
+                add.set('quantity_prev', 3, {silent: true});
+                model.quantity = 5;
+            });
+
+            it('model isn\'t real product', function() {
+                generalBehaviour();
+                expect(model.update_cart_totals).not.toHaveBeenCalled();
+            });
+
+            it('model is real product', function() {
+                add.set('id_product', 1, {silent: true});
+                generalBehaviour();
+                expect(model.update_cart_totals).toHaveBeenCalled();
+            });
+
+            function generalBehaviour() {
+                model.onModelChange(add);
+                expect(model.quantity).toBe(4);
+                expect(add.get('sum')).toBe(10);
+                expect(add.get('quantity_prev')).toBe(2);
+            }
         });
 
         it('Function saveOrders', function() {
@@ -1264,6 +1326,7 @@ define(['myorder'], function() {
                 spyOn(model.checkout, 'toJSON').and.callFake(function() {
                     return checkout;
                 });
+                spyOn(model.checkout, 'set');
                 spyOn(model.checkout, 'saveCheckout');
                 
                 this.card = App.Data.card;
@@ -1371,27 +1434,6 @@ define(['myorder'], function() {
                 it('not order from seat', function() {
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                     expect(ajax.data.orderInfo.call_name).toBe('customer name / pickup time');
-                });
-                
-                it('not order from seat, ASAP', function() {
-                    App.Data.timetables = {
-                        base: function() {},
-                        current_dining_time: function() {},
-                        checking_work_shop: function() {},
-                        getLastPTforWorkPeriod: function() {},
-                        current_dining_time: function() {}
-                    };
-
-                    spyOn(App.Data.timetables, 'current_dining_time').and.returnValue(new Date(2011, 10, 10));
-                    spyOn(App.Data.timetables, 'checking_work_shop').and.returnValue(true);
-                    spyOn(App.Data.timetables, 'getLastPTforWorkPeriod').and.returnValue(new Date(2011, 10, 10));
-
-                    model.checkout.attributes.isPickupASAP = true;
-                    model.checkout.attributes.pickupTS = true;
-
-                    model.preparePickupTime();
-                    model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                    expect(ajax.data.orderInfo.call_name).toBe('customer name / ASAP (pickup time)');
                 });
                 
                 it('not order from seat, phone', function() {
