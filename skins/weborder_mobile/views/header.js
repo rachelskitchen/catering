@@ -40,7 +40,7 @@ define(["factory"], function() {
            '.btn-cart': 'toggle: cartItemsQuantity, classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}',
            '.btn-search': 'classes: {active: showSearch}',
            '.search': 'outsideTouch: showSearch, events:["onOutsideTouch"], classes: {invisible: not(showSearch)}, attr: {contenteditable: false}',
-           '.input-search': 'value: search, events: ["input"], classes: {"font-color3": search}',
+           '.input-search': 'value: search, events: ["input"]',
            '.ctrl': 'reset: search, events: ["click"]'
         },
         events: {
