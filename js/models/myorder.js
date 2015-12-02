@@ -1501,7 +1501,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 var check_order = this._check_cart(options);
 
                 if (check_order.status === 'ERROR_QUANTITY') {
-                    if (!arguments[2]) { // if we don't set error callback, use usuall two button alert message or if we on the first page
+                    if (!arguments[2]) { // if we don't set error callback, use usual two button alert message or if we on the first page
+
                         return error(check_order.errorMsg, false, false, {
                             isConfirm: true,
                             confirm: {
