@@ -66,7 +66,7 @@
     <div class='product modifiers-list product_info modifiers-bottom-line'>
     </div>
     <% if(_settings.online_orders) { %>
-    <div class='quantity modifiers-list quantity_info modifiers-bottom-line'>
+    <div class='quantity modifiers-list quantity_info modifiers-bottom-line list-separator'>
     </div>
     <% } %>
     <div class="product_attribute_info modifiers <% if(!_settings.online_orders) {print('no-controls');} %>">
@@ -83,7 +83,7 @@
     <div class='product modifiers-list product_info modifiers-bottom-line'>
     </div>
     <% if(_settings.online_orders) { %>
-    <div class='quantity modifiers-list quantity_info modifiers-bottom-line'>
+    <div class='quantity modifiers-list quantity_info modifiers-bottom-line list-separator'>
     </div>
     <% } %>
     <div class="modifiers_info modifiers <% if(!_settings.online_orders) {print('no-controls');} %>">
@@ -113,16 +113,16 @@
 </script>
 
 <script type="text/template" id="myorder_discount-template">
-    <span class="cost font-size1 font-color1 fl-right">
+    <span class="cost font-size1 primary-text fl-right">
         <span class="plus">-</span>
         <span class="currency_symbol"><%= currency_symbol %></span>
         <span class="price"><%= discount_sum %></span>
     </span>
-    <span class="name product-name font-size1 font-color3"><%= discount_name %></span>
+    <span class="name product-name font-size1 title-text"><%= discount_name %></span>
 </script>
 
 <script type="text/template" id="myorder_stanford_item-template">
-    <div class="product-modifiers font-color2 bg-color9">
+    <div class="product-modifiers header header-text">
         <div class="font-size1 fl-right">
             <span class="currency"></span>
             <input type="text" class="price ios-safari-caret">

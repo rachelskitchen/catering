@@ -18,9 +18,9 @@
             <path fill="#f0f2f4" d=" M 133.98 159.86 C 135.99 157.93 139.26 157.94 141.46 159.56 C 145.64 162.15 147.20 167.32 147.22 171.99 C 147.13 178.75 145.10 185.53 141.22 191.09 C 139.89 192.95 138.28 194.83 136.01 195.52 C 132.54 195.30 130.35 192.05 128.72 189.34 C 125.41 183.87 125.37 177.25 125.94 171.08 C 130.61 168.90 130.11 162.80 133.98 159.86 Z" />
         </svg>
     </div>
-    <p class="order-received font-color1 font-size1"><%= _lp.ORDER_RECEIVED %>.</p>
-    <p class="font-color1 font-size2"><%= _lp.EMAIL_SENT %>.</p>
-    <dl class="orderCompleted font-color1 font-size2 text-center">
+    <p class="order-received primary-text font-size1"><%= _lp.ORDER_RECEIVED %>.</p>
+    <p class="primary-text font-size2"><%= _lp.EMAIL_SENT %>.</p>
+    <dl class="orderCompleted primary-text font-size2 text-center">
         <dt class="text-right"><%= _lp.DONE_ORDER_ID %></dt>
         <dd class="text-left"><%= order_id %></dd>
         <% if (!isOnlyGift && !isDiningOptionShipping) { %>
@@ -74,10 +74,10 @@
             </strong>
         </dd>
     </dl>
-    <div class="btn btnReturn font-size1 font-color1 font-color-active2 bg-color2 bg-color-active1 border-color10"></div>
+    <div class="btn btnReturn font-size1 regular-button"></div>
     <% } else { %>
-        <p class="order-received font-color11 font-size1"><%= _lp.HEADER_DONE_FAILURE_PT %></p>
+        <p class="order-received attention-text font-size1"><%= _lp.HEADER_DONE_FAILURE_PT %></p>
         <span class="failure-message font-size2"><%= message %></span>
-        <div class="btn btnReturn font-size1 font-color1 font-color-active2 bg-color2 bg-color-active1 border-color10"></div>
+        <div class="btn btnReturn font-size1 regular-button"></div>
     <% } %>
 </script>

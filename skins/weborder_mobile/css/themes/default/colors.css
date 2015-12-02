@@ -76,18 +76,9 @@
 }
 
 /* [input_placeholder] Text field placeholder text */
-.input-colors::-webkit-input-placeholder {
-   color: #cecece;
-}
-
-.input-colors:-moz-placeholder { /* Firefox 18- */
-   color: #cecece;
-}
-
-.input-colors::-moz-placeholder {  /* Firefox 19+ */
-   color: #cecece;
-}
-
+.input-colors::-webkit-input-placeholder,
+.input-colors:-moz-placeholder, /* Firefox 18- */
+.input-colors::-moz-placeholder, /* Firefox 19+ */
 .input-colors:-ms-input-placeholder {
    color: #cecece;
 }
@@ -102,20 +93,31 @@
     color: rgba(0,0,0,0.3); /* remove btn */
 }
 
+select:-moz-focusring {
+    color: transparent !important;
+    text-shadow: 0 0 0 #000 !important;
+}
+
 /* [primary_text] Primary text color */
 .primary-text,
 .regular-button,
 .establishments[class] select,
 .establishments[class] button,
 #popup_cancel[id],
-#popup_content[id].info::before {
+#popup_content[id].info::before,
+.modifier .mdf_split::before {
     color: #199acd;
 }
 
 /* [title_text] Text color for item's name etc */
 .title-text,
-#googlemaps_popup > div:first-child {
+#googlemaps_popup > div:first-child,
+.myorderList .combo_products_place .qty {
     color: #000;
+}
+
+.myorderList .combo_products_place .qty {
+    border-color: #000;
 }
 
 .myorderList .qty {
@@ -134,26 +136,19 @@
 }
 
 /* [alternate_text] Text color for solid buttons, checkboxes (checkout, subtotal and etc) */
-.alternate-text {
-    color: #fff;
-}
-
+.alternate-text,
 .primary-button,
-#popup_ok[id] {
+#popup_ok[id],
+.alternate-button:not([disabled]):active,
+.reward-selection li.active::after,
+.stanford-plan.active::after {
     color: #fff;
 }
 
 .primary-button:not([disabled]):active,
-#popup_ok[id]:not([disabled]):active {
+#popup_ok[id]:not([disabled]):active,
+.myorderList .combo_products_place .qty {
     background-color: #fff;
-}
-
-.alternate-button:not([disabled]):active {
-    color: #fff;
-}
-
-.reward-selection li.active::after, .stanford-plan.active::after {
-    color: #fff;
 }
 
 /* [special_text] Discount text, free modifiers */
@@ -162,22 +157,17 @@
 }
 
 /* [attention_text] Total amount */
-.attention-text {
-    color: #e73939;
-}
-
+.attention-text,
 .required::before {
     color: #e73939;
 }
 
 /* [list_background] cell bg, table bg */
-#section > div, .list-bg {
-    background-color: #fff;
-}
-
-.modifier  .input,
+#section > div,
+.list-bg,
+.modifier .input,
 .combo_item .input {
-    background: #fff;
+    background-color: #fff;
 }
 
 .modifier .input::before,
@@ -186,7 +176,7 @@
 }
 
 .quantity .btn-qty:not([disabled]):active::before,
-.quantity  .btn-qty:not([disabled]):active::after {
+.quantity .btn-qty:not([disabled]):active::after {
     border-color: #fff;
 }
 
@@ -197,12 +187,6 @@
     background: -webkit-linear-gradient(left,  rgba(255,255,255,0) 0%, #ebf4fa 35%, #ebf4fa 65%, rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
     background: -ms-linear-gradient(left, rgba(255,255,255,0) 0%, #ebf4fa 35%, #ebf4fa 65%, rgba(255,255,255,0) 100%); /* IE10+ */
     background: linear-gradient(to right, rgba(255,255,255,0) 0%, #ebf4fa 35%, #ebf4fa 65%, rgba(255,255,255,0) 100%); /* W3C */
-}
-
-.list-title::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTUiIGhlaWdodD0iOCI+PHBvbHlnb24gcG9pbnRzPSIwLDAgIDE1LDAgIDgsOCIgc3R5bGU9ImZpbGw6I2ViZjRmYTsiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSI4IiB5Mj0iOCIgc3R5bGU9InN0cm9rZS13aWR0aDoxO3N0cm9rZTojY2VjZWNlIi8+PGxpbmUgeDE9IjgiIHkxPSI4IiB4Mj0iMTUiIHkyPSIwIiBzdHlsZT0ic3Ryb2tlLXdpZHRoOjE7c3Ryb2tlOiNjZWNlY2UiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSIxNSIgeTI9IjAiIHN0eWxlPSJzdHJva2Utd2lkdGg6MTtzdHJva2U6I2ViZjRmYSIvPjwvc3ZnPg==');
-    background-position: 50%;
-    background-size: 2.5em 1.33em;
 }
 
 /* [list_header_text] Header text color */
@@ -222,10 +206,6 @@
 
 .quantity .btn-qty:not([disabled]):active {
     background-color: #199acd;
-}
-
-.modifier .mdf_split::before {
-    color: #199acd;
 }
 
 /* [list_separator] Table cells separator */
@@ -281,10 +261,7 @@
 .regular-button:not([disabled]):active,
 #popup_cancel[id]:not([disabled]):active,
 .establishments[class] button:not([disabled]):active,
-.payments .payment {
-    border-color: #199acd;
-}
-
+.payments .payment,
 ul.reward-selection > li {
     border-color: #199acd;
 }
@@ -320,143 +297,18 @@ ul.reward-selection > li {
     color: #ad8a00;
 }
 
-/* color #1 - blue */
-.font-color1 {
-    color: #1a99cd;
-}
-
-.font-color-active1:not([disabled]):active {
-    color: #1a99cd;
-}
-
-.bg-color1, .bg-color-active1:not([disabled]):active,
-.bg-color-active1.selected {
-    background-color: #1a99cd;
-}
-
-.border-color1, .select-wrapper:focus {
-    border-color: #1a99cd;
-}
-
-.border-color-active1:not([disabled]):active {
-    border-color: #1a99cd;
-}
-
-/* [white] header background */
-.font-color-active2:not([disabled]):active,
-.font-color-active2.selected {
-    color: #fff;
-}
-
-.border-color2,
-.quantity .btn-qty:active::before,
-.quantity .btn-qty:active::after {
-    border-color: #fff;
-}
-
-/* [white] main background */
-.bg-color2, .bg-color-active2:not([disabled]):active {
-    background-color: #fff;
-}
-
-/* [dark] main font color */
-.font-color3 {
-    color: #373c40;
-}
-
-/* [dark] menu background */
-.bg-color3 {
-    background-color: #373c40;
-}
-
-.bg-color-active3:not([disabled]):active {
-    background-color: #373c40;
-}
-
-
-/* [grey] menu font color */
-.font-color4 {
-    color: #81888e;
-}
-
-/* [dark] modifiers font color */
-.font-color5 {
-    color: #717d8b;
-}
-
-.border-color5 {
-    border-color: #717d8b;
-}
-
-select:-moz-focusring {
-    color: transparent !important;
-    text-shadow: 0 0 0 #717d8b !important;
-}
-
-/* [green] modifier price color */
-.font-color6 {
-    color: #00a200;
-}
-
-/* [sky blue] header buttons */
-.font-color7 {
-    color: #bce0f0;
-}
-
-.font-color-active7:not([disabled]):active {
-    color: #bce0f0;
-}
-
-/* [grey] header buttons */
-.font-color8 {
-    color: #93a6ad;
-}
-
-.bg-color8 {
-    color: #93a6ad;
-}
-
-/* [dark blue] product info (modifiers view)*/
-.bg-color9 {
-    background-color: #1a8dbc;
-}
-
-.font-color9 {
-    color: #1a8dbc;
-}
-
-/* color #10 - blue/grey */
-.font-color10 {
-    color: #d6e3e9;
-}
-
-.bg-color10 {
-    background-color: #d6e3e9;
-}
-
-.border-color10 {
-    border-color: #d6e3e9;
-}
-
-/* color #11 - red */
-.font-color11 {
-    color: #cb2222;
-}
-
-/* color #12 - grey */
-.bg-color12 {
-    background-color: #f0f2f4;
-}
-
-.text-shadow1 {
-    text-shadow: 1px 1px #fff;
-}
-
+/* icons */
 #header .btn-cart {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE2MCI+PGRlZnM+PHBhdGggaWQ9ImJhZyIgZmlsbD0iI2ZmZmZmZiIgZD0iTTAsMTYwIEwwLDIwIEwyMCwyMCBMMjAsMCBMOTAsMCBMOTAsMTAgTDQwLDEwIEw0MCwyMCBMOTAsMjAgTDkwLDkwIEE0MCw0MCAwIDAsMSA1MCw1MCBBMTAsMTAgMCAxLDAgNDAsNTAgQTUwLDUwIDAgMCwwIDkwLDEwMCBMOTAsMTYwIHoiLz48L2RlZnM+PHVzZSB4PSIwIiB5PSIwIiB4bGluazpocmVmPSIjYmFnIi8+PHVzZSB4PSI5MCIgeT0iMCIgeGxpbms6aHJlZj0iI2JhZyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjY1LDApIHNjYWxlKC0xLCAxKSIvPjwvc3ZnPg==');
     background-size: 60%;
     background-repeat: no-repeat;
     background-position: 50%;
+}
+
+.list-title::after {
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTUiIGhlaWdodD0iOCI+PHBvbHlnb24gcG9pbnRzPSIwLDAgIDE1LDAgIDgsOCIgc3R5bGU9ImZpbGw6I2ViZjRmYTsiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSI4IiB5Mj0iOCIgc3R5bGU9InN0cm9rZS13aWR0aDoxO3N0cm9rZTojY2VjZWNlIi8+PGxpbmUgeDE9IjgiIHkxPSI4IiB4Mj0iMTUiIHkyPSIwIiBzdHlsZT0ic3Ryb2tlLXdpZHRoOjE7c3Ryb2tlOiNjZWNlY2UiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSIxNSIgeTI9IjAiIHN0eWxlPSJzdHJva2Utd2lkdGg6MTtzdHJva2U6I2ViZjRmYSIvPjwvc3ZnPg==');
+    background-position: 50%;
+    background-size: 2.5em 1.33em;
 }
 
 /** establishments styles **/

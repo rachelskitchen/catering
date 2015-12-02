@@ -19,14 +19,14 @@
 </script>
 
 <script type="text/template" id="combo_list-template">
-    <ul class="modifiers product_set_list modifiers-list"></ul>
+    <ul class="modifiers product_set_list modifiers-list list-separator"></ul>
 </script>
 
 <script type="text/template" id="product_sets_item-template">
     <div class="modifier_class list-title">
-        <span class="font-color1 font-size3"><%= name %></span>
+        <span class="list-header-text font-size3"><%= name %></span>
         <% if (_settings.online_orders) { %>
-            <div class="font-color5 font-size2">
+            <div class="regular-text font-size2">
             <% if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) { %>
                 <%= _lp.MODIFIERS_CHOOSE %> <%= minimum_amount %>
             <% } %>
@@ -38,7 +38,7 @@
 
 <script type="text/template" id="product_sets_list-template">
     <h2 class="list-title matrix-title">
-        <span class="font-size3 font-color5"><%= _lp.PRODUCT_SETS_SELECT_1 %><%= combo_name %><%= _lp.PRODUCT_SETS_SELECT_2 %>:</span>
+        <span class="font-size3 regular-text"><%= _lp.PRODUCT_SETS_SELECT_1 %><%= combo_name %><%= _lp.PRODUCT_SETS_SELECT_2 %>:</span>
     </h2>
     <dl class="modifier_classes"></dl>
 </script>
