@@ -122,6 +122,7 @@
         'MYORDER_UPDATE_ITEM': 'Update Item',
         'PLACE_ORDER': 'Place Order',
         'PRODUCTS_PRICE': 'Price',
+        'PRODUCTS_AMOUNT': 'Amount',
         'PRODUCTS_AVAILABLE': 'Available',
         'PRODUCTS_GIFT_CARD': 'Gift Card Number',
         'PRODUCTS_GIFT_CARD_NUMBER': 'Gift Card Number',

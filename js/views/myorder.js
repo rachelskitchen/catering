@@ -273,17 +273,22 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             var check = this.model.check_order(),
                 self = this, index, collection;
             if (check.status === 'OK') {
-                if (self.options.action === 'add') {
-                    App.Data.myorder.add(self.model);
-                } else {
-                    collection = self.options.real.collection;
-                    index = collection.indexOf(self.options.real);
-                    collection.remove(self.options.real);
-                    collection.add(self.model, {at: index});
-                  if (collection.splitItemAfterQuantityUpdate)
-                        collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
-                }
-                $('#popup .cancel').trigger('click');
+                this.model.get_product().check_gift(function() {
+                    if (self.options.action === 'add') {
+                        App.Data.myorder.add(self.model);
+                    } else {
+                        collection = self.options.real.collection;
+                        index = collection.indexOf(self.options.real);
+                        collection.remove(self.options.real);
+                        collection.add(self.model, {at: index});
+                        if (collection.splitItemAfterQuantityUpdate) {
+                            collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
+                        }
+                    }
+                    $('#popup .cancel').trigger('click');
+                }, function(errorMsg) {
+                    App.Data.errors.alert(errorMsg); // user notification
+                });
             } else {
                 App.Data.errors.alert(check.errorMsg); // user notification
             }

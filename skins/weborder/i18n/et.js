@@ -108,6 +108,7 @@ define([], function() {
         "MYORDER_ADD_ITEM": "Lisa üksus",
         "MYORDER_UPDATE_ITEM": "Värskenda üksust",
         "PRODUCTS_PRICE": "Hind",
+        "PRODUCTS_AMOUNT": "Summa",
         "PRODUCTS_AVAILABLE": "Saadaval",
         "PRODUCTS_GIFT_CARD": "Kinkekaardi number",
         "QUANTITY_HOW_MANY": "Kui palju?",
