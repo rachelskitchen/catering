@@ -741,6 +741,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 stanfordCard.set('planId', self.get('planId'));
             }, this);
         },
+        /**
+         * Get product price
+         * @return {number} - initial product price or inventory child product price
+         */
         get_product_price: function() {
             return this.get('initial_price');
         }
@@ -755,14 +759,38 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         }
     }
 
-    App.Models.MyorderCombo = App.Models.Myorder.extend({
+    /**
+     * @class
+     * @classdesc Represents an combo order item (used for combo products feature).
+     * @alias App.Models.MyorderCombo
+     * @extends App.Models.Myorder
+     * @example
+     * // create an order item
+     * require(['myorder'], function() {
+     *     var order = new App.Models.MyorderCombo();
+     *     //or through the class factory function:
+     *     var order2 = App.Models.create('MyorderCombo')
+     * });
+     */
+    App.Models.MyorderCombo = App.Models.Myorder.extend(
+    /**
+     * @lends App.Models.MyorderCombo.prototype
+     */
+    {
+        /**
+         * Initializes the model.
+         * @override
+         */
         initialize: function() {
             App.Models.Myorder.prototype.initialize.apply(this, arguments);
             this.listenTo(this, 'change:initial_price', this.update_product_price, this);
             this.listenTo(this, 'combo_product_change', this.update_mdf_sum, this);
         },
         /**
-         * initiate order for combo product
+         * Initializes the order item and loads product, modifiers and product sets.
+         * @param {number} id_product - product id
+         * @param {number} id_category - category id
+         * @returns {Object} Deferred object that is resolved when product, modifiers and product sets are loaded.
          */
         add_empty: function (id_product, id_category) {
             var self = this, product,
@@ -793,21 +821,25 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 self.update_prices();
             });
         },
-        /*
-        *   find child by product id
-        */
+        /**
+         * Find child order product by product id.
+         * @param {number} id_product - product id
+         * @returns {Object} - order item (instance of App.Models.Myorder) if the child product found, otherwise it returns {undefined}.
+         */
         find_child_product: function(product_id) {
             return this.get('product').get('product_sets').find_product(product_id);
         },
-        /*
-        *  get product price for combo
-        */
+        /**
+         * Get price for combo product.
+         * @return {number} - combo product price
+         */
         get_product_price: function() {
             return this.get('product').get('combo_price');
         },
-        /*
-        *  get product price for combo
-        */
+        /**
+         * Update price for combo product.
+         * @returns {number} - the calculated price of combo product.
+         */
         update_product_price: function() {
             var root_price = this.get_initial_price(),
                 sum = 0, combo_saving_products = [];
@@ -830,9 +862,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             this.get('product').set("combo_price", sum);
             return sum;
         },
-        /*
-        *   update sums of modifiers in respect to quantity of root combo product and quantity of child products
-        */
+        /**
+         * Calculates sums of all product modifiers in respect to quantity of root combo product and quantity of child products.
+         */
         update_mdf_sum: function() {
             var order_products = this.get('product').get('product_sets').get_selected_products(),
                 root_quantity = this.get('quantity');
@@ -843,9 +875,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             });
             this.update_product_price();
         },
-         /**
-         * check if we could add this order to cart
-         * not check_gift here, due to async
+        /*
+         * Checks all necessary attributes to place an order.
+         * @override
          */
         check_order: function() {
             var result = App.Models.Myorder.prototype.check_order.apply(this, arguments);
@@ -892,9 +924,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 status: 'OK'
             };
         },
-        /*
-        * has the combo child products inside? : returns true/false
-        */
+        /**
+         * Has the combo child products inside? It can be used to check combo product settings on backend side.
+         * @returns {boolean} - true (combo has child products inside) or false (No, it hasn't)
+         */
         has_child_products: function() {
             var product_sets = this.get_product().get("product_sets");
             if (product_sets.length > 0)

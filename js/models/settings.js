@@ -380,8 +380,8 @@ define(["backbone", "async"], function(Backbone) {
                                     settings_system.delivery_post_code_lookup[1] = codes.join(", ");
                                 }
                             }
-                           //for debug:
-                           //settings_system.color_scheme =  "blue_&_white"; // "default", "blue_&_white", "vintage"
+                            //for debug:
+                            //settings_system.color_scheme =  "stanford"; // "default", "blue_&_white", "vintage", "stanford"
                             setData(color_scheme_key, new Backbone.Model({color_scheme: settings_system.color_scheme}), true);
 
                             settings_system.scales.number_of_digits_to_right_of_decimal = Math.abs((settings_system.scales.number_of_digits_to_right_of_decimal).toFixed(0) * 1);
