@@ -52,8 +52,8 @@
 
 .product_set_list .combo_item select {
     width: auto;
-    text-indent: 0em;
-    padding: 0px 1.8em 0px 0.5em;
+    text-indent: 0;
+    padding: 0 2em 0 0.5em;
 }
 
 @-moz-document url-prefix() {
