@@ -915,7 +915,8 @@ define(["backbone"], function(Backbone) {
                 sort: 10000, //set to the end of the modifiers list
                 active: true,
                 modifier_class_id: -1, //useless for Quick Modifiers
-                name: "Quick Modifiers"
+                name: "Quick Modifiers",
+                id: -1 //id should be set for that ModifierBlocks.update() function works fine for the collection containing quick modifiers
             };
 
             var self = this,
