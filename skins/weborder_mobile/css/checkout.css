@@ -49,3 +49,10 @@
 .checkout .required::before {
     top: 0.6em;
 }
+
+.checkout input.pikaday {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
