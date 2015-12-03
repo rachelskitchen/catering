@@ -108,6 +108,7 @@ define([], function() {
         "MYORDER_ADD_ITEM": "Pridėti produktą",
         "MYORDER_UPDATE_ITEM": "Atnaujinti produktą",
         "PRODUCTS_PRICE": "Kaina",
+        "PRODUCTS_AMOUNT": "Suma",
         "PRODUCTS_AVAILABLE": "Yra",
         "PRODUCTS_GIFT_CARD": "Dovanų kortelės numeris",
         "QUANTITY_HOW_MANY": "Kiek?",
