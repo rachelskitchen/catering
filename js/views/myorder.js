@@ -469,11 +469,12 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             App.Views.FactoryView.prototype.start.apply(this, arguments);
         },
         stop: function() { //called by FactotyView while the view detached from DOM
-            //it's for save time for useless processing:
+            //it's to save time by stopping useless processing:
             this.stopListening();
             App.Views.FactoryView.prototype.stop.apply(this, arguments);
         },
         render: function() {
+            this.discountItemView = null;
             this.$el.html(this.template());
 
             this.collection.each(this.addItem.bind(this));
