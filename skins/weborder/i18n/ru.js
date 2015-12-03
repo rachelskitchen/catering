@@ -120,6 +120,7 @@
         'MYORDER_ADD_ITEM': 'Добавить',
         'MYORDER_UPDATE_ITEM': 'Изменить',
         'PRODUCTS_PRICE': 'Цена',
+        'PRODUCTS_AMOUNT': 'Сумма',
         'PRODUCTS_AVAILABLE': 'Доступно',
         'PRODUCTS_GIFT_CARD': '№ подарочной карты',
         'PRODUCTS_GIFT_CARD_NUMBER': '№ подарочной карты',

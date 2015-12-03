@@ -131,6 +131,7 @@
         'MYORDER_APPLY': 'Apply',
         'MYORDER_REMOVE_DISCOUNT': 'Remove Discount Code?',
         'MYORDER_REMOVE_REWARD_REDEMPTION': 'Remove Reward Redempion?',
+        'PRODUCTS_AMOUNT': 'Amount',
         'PRODUCTS_AVAILABLE': 'Available',
         'PRODUCTS_GIFT_CARD_NUMBER': 'Gift Card Number',
         'PRODUCTS_SIZE_CHART': 'Size Chart',

@@ -119,6 +119,7 @@ define([], function() {
         "MYORDER_DISCOUNT_CODE": "Allahindluskood",
         "MYORDER_APPLY": "Rakenda",
         "MYORDER_REMOVE_DISCOUNT": "Remove Discount Code?",
+        "PRODUCTS_AMOUNT": "Summa",
         "PRODUCTS_AVAILABLE": "Saadaval",
         "PRODUCTS_GIFT_CARD_NUMBER": "Kinkekaardi number",
         "QUANTITY_QUANTITY": "Kogus",
