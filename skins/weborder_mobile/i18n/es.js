@@ -119,6 +119,7 @@ define([], function() {
         "MYORDER_DISCOUNT_CODE": "Código de descuento",
         "MYORDER_APPLY": "Aplicar",
         "MYORDER_REMOVE_DISCOUNT": "Remove Discount Code?",
+        "PRODUCTS_AMOUNT": "Monto",
         "PRODUCTS_AVAILABLE": "Disponible",
         "PRODUCTS_GIFT_CARD_NUMBER": "Número de tarjeta de regalo",
         "QUANTITY_QUANTITY": "Cantidad",

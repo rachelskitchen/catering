@@ -108,6 +108,7 @@ define([], function() {
         "MYORDER_ADD_ITEM": "Aggiungi articolo",
         "MYORDER_UPDATE_ITEM": "Aggiorna articolo",
         "PRODUCTS_PRICE": "Prezzo",
+        "PRODUCTS_AMOUNT": "Importo",
         "PRODUCTS_AVAILABLE": "Disponibile",
         "PRODUCTS_GIFT_CARD": "Numero della carta regalo",
         "QUANTITY_HOW_MANY": "Quantità?",
