@@ -602,17 +602,38 @@ define(['myorder'], function() {
             // TODO           
         });
         
-        it('Function check_maintenance', function() {
-            var result = false;
-            spyOn(window, 'getData').and.callFake(function(name) {
-                if (name == 'orders') return {};
+        describe('check_maintenance()', function() {
+            var result, spyAlert;
+
+            beforeEach(function() {
+                result = false;
+                spyOn(window, 'getData').and.callFake(function(name) {
+                    if (name == 'orders') return {};
+                });
+                spyOn(App.Data.settings, "loadSettings");
+                spyAlert = spyOn(App.Data.errors, "alert");
             });
-            spyOn(App.Data.settings, "loadSettings");
-            spyOn(App.Data.errors, "alert").and.callFake(function(mess) {
-                result = mess.indexOf('please contact:') > 0;
+
+            it('email and phone are not set', function() {
+                spyAlert.and.callFake(function(mess) {
+                    result = mess.indexOf('error') > -1;
+                });
+                model.check_maintenance();
+                expect(result).toBe(true);
             });
-            model.check_maintenance();
-            expect(result).toBe(true);
+
+            it('email and phone are set', function() {
+                App.Settings.email = 'email';
+                spyAlert.and.callFake(function(mess) {
+                    result = mess.indexOf('please contact:') > -1;
+                });
+                model.check_maintenance();
+                expect(result).toBe(true);
+
+                App.Settings.phone = 'phone';
+                model.check_maintenance();
+                expect(result).toBe(true);
+            });
         });
         
         it('Function get_remaining_delivery_amount', function() {
@@ -1252,6 +1273,11 @@ define(['myorder'], function() {
                     getLastPTforWorkPeriod: function() {}
                 };
 
+                base = new Date(2011, 10, 10);
+                spyOn(App.Data.timetables, 'base').and.callFake(function() {
+                    return base;
+                });
+
                 dining_time = new Date(2011, 10, 10);
                 spyOn(App.Data.timetables, 'current_dining_time').and.callFake(function() {
                     return dining_time;
@@ -1262,7 +1288,7 @@ define(['myorder'], function() {
                     return checking_work_shop;
                 });
 
-                last_pt = new Date(2011, 10, 10);;
+                last_pt = new Date(2011, 10, 10);
                 spyOn(App.Data.timetables, 'getLastPTforWorkPeriod').and.callFake(function() {
                     return last_pt;
                 });
@@ -1309,19 +1335,21 @@ define(['myorder'], function() {
             it('check checkout changes ASAP', function() {
                 model.checkout.set('isPickupASAP', true);
                 expect(model.preparePickupTime()).toBeUndefined();
-                expect(model.checkout.get('pickupTimeToServer')).toBe('ASAP');
-                expect(model.checkout.get('lastPickupTime')).toBe('!' + last_pt);
+                expect(model.checkout.get('pickupTime')).toBe('ASAP (pickupToString)');
+                expect(model.checkout.get('pickupTimeToServer')).toBe(pickupTimeToServer);
+                expect(model.checkout.get('lastPickupTime')).toBe(format_date_1(last_pt.getTime()));
             });
 
             it('ASAP', function() {
+                //spyOn(App.Models.Total.prototype, 'get_tip').and.returnValue(0);
                 model.checkout.set('isPickupASAP', true);
-                model.create_order_and_pay();
+                expect(model.preparePickupTime()).toBeUndefined();
                 expect(App.Data.timetables.getLastPTforWorkPeriod).toHaveBeenCalledWith(base);
             });
         });
 
         describe('submit_order_and_pay()', function() {
-            var ajax, total, checkout, card, customer, payment_process;
+            var ajax, total, checkout, card, rewardsCard, customer, payment_process;
 
             beforeEach(function() {
                 spyOn($, 'ajax').and.callFake(function(opts) {
@@ -1358,7 +1386,7 @@ define(['myorder'], function() {
                     pickupTimeToServer: 'pickup time to server',
                     lastPickupTime: 'last pt',
                     dining_option: '',
-                    pickupTime: 'pickup time',
+                    pickupTime: '',
                     level: '',
                     section: '',
                     row: '',
@@ -1392,11 +1420,12 @@ define(['myorder'], function() {
                 spyOn(App.Data.card, 'toJSON').and.callFake(function() {
                     return card;
                 });
-                
+
                 this.customer = App.Data.customer;
                 App.Data.customer = {
                     toJSON: function() {},
-                    get_customer_name: function() {}
+                    get_customer_name: function() {},
+                    isDefaultShippingAddress: function() {}
                 };
                 customer = {
                     phone: '',
@@ -1416,6 +1445,9 @@ define(['myorder'], function() {
                     paypal_direct_credit_card: false,
                     usaepay: true
                 };
+                App.Settings.payment_processor = {
+                    usaepay: true
+                }
                 spyOn(App.Data.settings, 'get_payment_process').and.callFake(function() {
                     return payment_process;
                 });
@@ -1476,11 +1508,15 @@ define(['myorder'], function() {
                 });
                 
                 it('not order from seat', function() {
+                    customer.first_name = 'customer name';
+                    checkout.pickupTime = 'pickup time';
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                     expect(ajax.data.orderInfo.call_name).toBe('customer name / pickup time');
                 });
                 
                 it('not order from seat, phone', function() {
+                    customer.first_name = 'customer name';
+                    checkout.pickupTime = 'pickup time';
                     customer.phone = 'phone';
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                     expect(ajax.data.orderInfo.call_name).toBe('customer name / pickup time / phone');
@@ -1493,33 +1529,9 @@ define(['myorder'], function() {
                     });
                     
                     it('all order from seats fields empty', function() {
+                        customer.first_name = 'customer name';
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                         expect(ajax.data.orderInfo.call_name).toBe('customer name');
-                    });
-                    
-                    it('level', function() {
-                        checkout.level = 'level';
-                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                        expect(ajax.data.orderInfo.call_name).toBe('customer name / Level: level');
-                    });
-                    
-                    it('level + section', function() {
-                        checkout.level = 'level';
-                        checkout.section = 'section';                        
-                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                        expect(ajax.data.orderInfo.call_name).toBe('customer name / Level: level Sect: section');
-                    });
-                    
-                    it('row', function() {
-                        checkout.row = 'row';                        
-                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                        expect(ajax.data.orderInfo.call_name).toBe('customer name / Row: row');
-                    });
-                    
-                    it('seat', function() {
-                        checkout.seat = 'seat';                        
-                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                        expect(ajax.data.orderInfo.call_name).toBe('customer name / Seat: seat');
                     });
                 });
             });
@@ -1529,19 +1541,10 @@ define(['myorder'], function() {
                     App.Data.settings.set('skin', 'mlb');
                 });
                 
-                it('default field', function() {                 
+                it('default field', function() {
+                    customer.first_name = '';
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                     expect(ajax.data.orderInfo.call_name).toBe('');
-                });
-                
-                it('TODO: first name, phone, sec, row, seat', function() {
-                    checkout.row = 'row'; 
-                    checkout.seat = 'seat';  
-                    checkout.section = 'section';     
-                    card.firstName = 'first name';
-                    customer.phone = 'phone';
-                    model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                    expect(ajax.data.orderInfo.call_name).toBe('first name / Sect: section Row: row Seat: seat / phone');
                 });
             });
             
@@ -1551,8 +1554,9 @@ define(['myorder'], function() {
                 });
                 
                 it('default field', function() {                 
+                    customer.first_name = '';
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                    expect(ajax.data.orderInfo.call_name).toBe('pickup time');
+                    expect(ajax.data.orderInfo.call_name).toBe('');
                     expect(ajax.data.paymentInfo.phone).toBeUndefined();
                     expect(ajax.data.paymentInfo.email).toBeUndefined();
                     expect(ajax.data.paymentInfo.first_name).toBe('');
@@ -1564,6 +1568,7 @@ define(['myorder'], function() {
                     customer.email = 'email';
                     customer.first_name = 'first name';
                     customer.last_name = '   last   ';
+                    checkout.pickupTime = 'pickup time';
                     
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                     expect(ajax.data.orderInfo.call_name).toBe('first name    last / pickup time / phone');
@@ -1576,12 +1581,13 @@ define(['myorder'], function() {
             
             describe('set address for dining option delivery', function() {
                 beforeEach(function() {
+                    spyOn(App.Data.customer, 'isDefaultShippingAddress');
                     checkout.dining_option = 'DINING_OPTION_DELIVERY';
                     customer.addresses = ['1', '2'];
-                    customer.shipping_address = -1;
                 });
                 
                 it('other delivery address', function() {
+                    customer.shipping_address = 1;
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                     expect(ajax.data.paymentInfo.address).toBe('2');
                 });
@@ -1612,10 +1618,13 @@ define(['myorder'], function() {
             describe('payment type = 2', function() {
                 
                 it('default', function() {
+                    customer.first_name = '';
                     model.submit_order_and_pay(2);
                     expect(ajax.data.paymentInfo).toEqual({ 
                         tip : 1, 
                         type : 2, 
+                        first_name : '',
+                        last_name: '',
                         cardInfo : { 
                             firstDigits : '', 
                             lastDigits : '', 
@@ -1661,17 +1670,15 @@ define(['myorder'], function() {
                         lastDigits : '7890', 
                         firstName : '', 
                         lastName : '',
-                        address : null,
-                        expMonth : 'month', 
-                        expDate : 'date', 
-                        cardNumber : '12345678901234567890', 
-                        securityCode : 'sec'
+                        address : null
                     });
                 });
                 
                 it('direct credit card paid success', function() {
                     payment_process.paypal_direct_credit_card = true;
-                    App.Data.get_parameters.pay = 'true';
+                    App.Data.get_parameters = {
+                        pay: 'true'
+                    };
                     checkout.payment_id = 'pay';
                     model.submit_order_and_pay(2);
                     expect(ajax.data.paymentInfo.payment_id).toEqual('pay');
@@ -1701,11 +1708,15 @@ define(['myorder'], function() {
                     payment_process.usaepay = true;
                     App.Data.get_parameters = {
                         pay: 'false',
-                        UMerror: 'error'
+                        UMerror: 'error message'
                     };
                     checkout.payment_id = 'pay';
                     model.submit_order_and_pay(2);
-                    expect(model.paymentResponse).toEqual({status: 'error', errorMsg: 'error'});
+                    expect(model.paymentResponse).toEqual({
+                        status: 'error',
+                        errorMsg: 'error message',
+                        capturePhase: undefined
+                    });
                     expect(model.trigger).toHaveBeenCalledWith('paymentResponse');                  
                 });
                 
@@ -1717,7 +1728,9 @@ define(['myorder'], function() {
                     model.submit_order_and_pay(3);
                     expect(ajax.data.paymentInfo).toEqual({ 
                         tip : 1, 
-                        type : 3
+                        type : 3,
+                        first_name: 'customer name',
+                        last_name: ''
                     });
                 });
                 
@@ -1731,15 +1744,21 @@ define(['myorder'], function() {
                     expect(ajax.data.paymentInfo).toEqual({ 
                         tip : 1, 
                         type : 3,
+                        first_name: 'customer name',
+                        last_name: '',
                         payer_id : 'id', 
                         payment_id : 'payment'
                     });                    
                 });
                 
-                it('paid false', function() {
+                it('paid fail', function() {
                     App.Data.get_parameters.pay = 'false';
                     model.submit_order_and_pay(3);
-                    expect(model.paymentResponse).toEqual({status: 'error', errorMsg: 'Payment Canceled'});
+                    expect(model.paymentResponse).toEqual({
+                        status: 'error',
+                        errorMsg: 'Payment Canceled',
+                        capturePhase: undefined
+                    });
                     expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
                 });
             });
@@ -1752,8 +1771,7 @@ define(['myorder'], function() {
                     App.Data.settings.set('skin', 'mlb');
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                     expect(ajax.data.notifications).toEqual([
-                        { skin : 'mlb', type : 'email', destination : 'email' }, 
-                        { skin : 'mlb', type : 'sms', destination : 'phone' } 
+                        { skin : 'mlb', type : 'email', destination : 'email' }
                     ]);
                 });
                 
@@ -1766,15 +1784,20 @@ define(['myorder'], function() {
             });
             
             it('reward card', function() {
-                checkout.rewardCard = 123;
+                rewardsCard = {
+                    number: '123'
+                };
+                spyOn(model.rewardsCard, 'toJSON').and.callFake(function() {
+                    return rewardsCard;
+                });
                 model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                expect(ajax.data.paymentInfo.reward_card).toEqual('123'); 
+                expect(ajax.data.orderInfo.rewards_card.number).toEqual('123');
             });
             
             describe('ajax success', function() {
                 
                 beforeEach(function() {
-                    model.submit_order_and_pay(5);
+                    model.submit_order_and_pay(2);
                 });
                 
                 it('status OK', function() {
@@ -1791,9 +1814,10 @@ define(['myorder'], function() {
                             payment_id: 'id'
                         }
                     };
+                    spyOn(PaymentProcessor, 'handleRedirect');
                     ajax.success(data);
-                    expect(model.checkout.set.calls.allArgs()).toEqual([['payment_id', 'id'],['payment_type', 5]]);
-                    expect(model.checkout.saveCheckout).toHaveBeenCalled();
+                    //expect(model.checkout.set.calls.allArgs()).toEqual([['payment_id', 'id'],['payment_type', 5]]);
+                    expect(PaymentProcessor.handleRedirect).toHaveBeenCalled();
                 });
                 
                 describe('status INSUFFICIENT_STOCK', function() {
