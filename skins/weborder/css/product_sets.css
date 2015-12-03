@@ -120,9 +120,6 @@
     -webkit-flex: 0 0 auto;
     flex: 0 0 auto;
 }
-#modifiers_popup .product_set_list .combo_item .input.checkbox[checked] {
-    background-position: -91px -26px;
-}
 #modifiers_popup .product_sets h2 {
     text-shadow: none;
 }

@@ -302,7 +302,8 @@ ul.categories {
     background: url("img/ui.png") no-repeat scroll -91px -1px transparent;
 }
 
-#modifiers_popup .modifier input:checked + .input.checkbox {
+#modifiers_popup .modifier input:checked + .input.checkbox,
+#modifiers_popup .product_set_list .combo_item .input.checkbox[checked] {
     background-position: -91px -26px;
 }
 
