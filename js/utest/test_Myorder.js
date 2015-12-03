@@ -1145,7 +1145,7 @@ define(['myorder'], function() {
             });
         });
         
-        describe('Function create_order_and_pay', function() {
+        describe('create_order_and_pay()', function() {
             var pickup, base, dining_time, checking_work_shop, last_pt;
             
             beforeEach(function() {
@@ -1229,63 +1229,98 @@ define(['myorder'], function() {
                     expect(model.submit_order_and_pay).not.toHaveBeenCalled();
                 });
             });
-            
-            describe('weborder skin, not gift', function() {
-                beforeEach(function() {
-                    App.Data.settings.set('skin', 'weborder');
-                    model.checkout.set('dining_option', 'DINING_OPTION_TOGO');
+        });
+
+        describe('preparePickupTime()', function() {
+            var pickup, base, dining_time, checking_work_shop, last_pt, createDate, pickupTimeToServer;
+            beforeEach(function() {
+                base = new Date(2011, 10, 10);
+                pickup = new Date(2011, 11, 11);
+                App.Settings.server_time = 0;
+                model.checkout = new Backbone.Model({
+                    dining_option: 'DINING_OPTION_ONLINE',
+                    pickupTS: pickup,
+                    isPickupASAP: false
                 });
-                
-                it('no pickup time', function() {
-                    model.checkout.set('pickupTS', undefined);
-                    model.create_order_and_pay();
-                    expect(model.submit_order_and_pay).not.toHaveBeenCalled();
-                });
-                
-                it('pickup time less current time. Check pickup time update', function() {
-                    dining_time = new Date(2011, 12, 12);
-                    model.create_order_and_pay();
-                    expect(App.Data.timetables.checking_work_shop).toHaveBeenCalledWith(dining_time, false);
+                model.checkout.set('dining_option', 'DINING_OPTION_TOGO');
+                this.timetables = App.Data.timetables;
+                spyOn(window, 'pickupToString').and.returnValue('pickupToString');
+                App.Data.timetables = {
+                    base: function() {},
+                    current_dining_time: function() {},
+                    checking_work_shop: function() {},
+                    getLastPTforWorkPeriod: function() {}
+                };
+
+                dining_time = new Date(2011, 10, 10);
+                spyOn(App.Data.timetables, 'current_dining_time').and.callFake(function() {
+                    return dining_time;
                 });
 
-                it('checking_work_shop is called with delivery = true', function() {
-                    dining_time = new Date(2011, 12, 12);
-                    model.checkout.set('dining_option', 'DINING_OPTION_DELIVERY');
-                    model.create_order_and_pay();
-                    expect(App.Data.timetables.checking_work_shop).toHaveBeenCalledWith(dining_time, true);
+                checking_work_shop = true;
+                spyOn(App.Data.timetables, 'checking_work_shop').and.callFake(function() {
+                    return checking_work_shop;
                 });
-                
-                it('store closed', function() {
-                    checking_work_shop = false;
-                    model.create_order_and_pay();
-                    expect(App.Data.timetables.checking_work_shop).toHaveBeenCalledWith(pickup, false);
-                    expect(model.submit_order_and_pay).not.toHaveBeenCalled();
+
+                last_pt = new Date(2011, 10, 10);;
+                spyOn(App.Data.timetables, 'getLastPTforWorkPeriod').and.callFake(function() {
+                    return last_pt;
                 });
-                
-                it('check checkout changes not ASAP', function() {
-                    model.create_order_and_pay();
-                    expect(model.checkout.get('pickupTime')).toBe('pickupToString');
-                    expect(model.checkout.get('createDate')).toBe('!' + base);
-                    expect(model.checkout.get('pickupTimeToServer')).toBe('!' + pickup);
-                    expect(model.checkout.get('lastPickupTime')).toBeUndefined();
-                });
-                
-                it('check checkout changes ASAP', function() {
-                    model.checkout.set('isPickupASAP', true);
-                    model.create_order_and_pay();
-                    expect(model.checkout.get('pickupTimeToServer')).toBe('ASAP');
-                    expect(model.checkout.get('lastPickupTime')).toBe('!' + last_pt);
-                });
-                
-                it('ASAP', function() {
-                    model.checkout.set('isPickupASAP', true);
-                    model.create_order_and_pay();
-                    expect(App.Data.timetables.getLastPTforWorkPeriod).toHaveBeenCalledWith(base);
-                });
+
+                createDate = format_date_1(new Date(new Date().getTime()));
+                pickupTimeToServer = format_date_1(pickup);
+            });
+            afterEach(function() {
+                App.Data.timetables = this.timetables;
+            });
+
+            it('no pickup time', function() {
+                model.checkout.set('pickupTS', undefined);
+                expect(model.preparePickupTime()).toBe(0);
+            });
+
+            it('pickup time less current time. Check pickup time update', function() {
+                dining_time = new Date(2011, 12, 12);
+                model.preparePickupTime();
+                expect(App.Data.timetables.checking_work_shop).toHaveBeenCalledWith(dining_time, false);
+            });
+
+            it('checking_work_shop is called with delivery = true', function() {
+                dining_time = new Date(2011, 12, 12);
+                model.checkout.set('dining_option', 'DINING_OPTION_DELIVERY');
+                model.preparePickupTime();
+                expect(App.Data.timetables.checking_work_shop).toHaveBeenCalledWith(dining_time, true);
+            });
+
+            it('store closed', function() {
+                checking_work_shop = false;
+                expect(model.preparePickupTime()).toBe(0);
+                expect(App.Data.timetables.checking_work_shop).toHaveBeenCalledWith(pickup, false);
+            });
+
+            it('check checkout changes not ASAP', function() {
+                expect(model.preparePickupTime()).toBeUndefined();
+                expect(model.checkout.get('pickupTime')).toBe('pickupToString');
+                expect(model.checkout.get('createDate')).toBe(createDate);
+                expect(model.checkout.get('pickupTimeToServer')).toBe(pickupTimeToServer);
+                expect(model.checkout.get('lastPickupTime')).toBeUndefined();
+            });
+
+            it('check checkout changes ASAP', function() {
+                model.checkout.set('isPickupASAP', true);
+                expect(model.preparePickupTime()).toBeUndefined();
+                expect(model.checkout.get('pickupTimeToServer')).toBe('ASAP');
+                expect(model.checkout.get('lastPickupTime')).toBe('!' + last_pt);
+            });
+
+            it('ASAP', function() {
+                model.checkout.set('isPickupASAP', true);
+                model.create_order_and_pay();
+                expect(App.Data.timetables.getLastPTforWorkPeriod).toHaveBeenCalledWith(base);
             });
         });
-        
-        describe('Function submit_order_and_pay', function() {
+
+        describe('submit_order_and_pay()', function() {
             var ajax, total, checkout, card, customer, payment_process;
 
             beforeEach(function() {
