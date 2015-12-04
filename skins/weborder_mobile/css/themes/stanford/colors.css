@@ -8,11 +8,11 @@
 
 /* [navigation_bar] Top/Navigation/Header bar on all screens */
 .navigation-bar {
-    background-image: linear-gradient(top,#8C1515,#660F0F);
-    background-image: -moz-linear-gradient(top,#8C1515,#660F0F);
-    background-image: -webkit-linear-gradient(top,#8C1515,#660F0F);
-    background-image: -o-linear-gradient(top,#8C1515,#660F0F);
-    background-image: -ms-linear-gradient(top,#8C1515,#660F0F);
+    background: -moz-linear-gradient(top,#8C1515,#660F0F);
+    background: -webkit-linear-gradient(top,#8C1515,#660F0F);
+    background: -o-linear-gradient(top,#8C1515,#660F0F);
+    background: -ms-linear-gradient(top,#8C1515,#660F0F);
+    background: linear-gradient(top,#8C1515,#660F0F);
 }
 
 /* [navigation_bar_item] Any item on navigation bar (text, icons, logo) */
@@ -28,7 +28,7 @@
 
 /* [cart_icon_background] Cart icon background */
 .btn-cart {
-    background-color: #FFFFFF;
+    background: #FFFFFF;
 }
 
 /* [cart_quantity_background] Items quantity background */
@@ -43,7 +43,7 @@
 
 /* [tab] Store details tabs button background */
 .tabs {
-    background-color: #373C40;
+    background: #373C40;
 }
 
 /* [tab_text] Store details tabs button background */
@@ -61,12 +61,12 @@
 
 /* [tab_active_underline] Store details tabs button background */
 .tabs::after {
-    background-color: #d00000;
+    background: #d00000;
 }
 
 /* [input_background] Text fields background */
 .input-colors {
-    background-color: #fff;
+    background: #fff;
 }
 
 /* [input_border] Text fields border */
@@ -125,7 +125,7 @@ select:-moz-focusring {
 }
 
 .myorderList .qty {
-    background-color: #000;
+    background: #000;
 }
 
 /* [regular_text] Regular text, custom menu, item price in list */
@@ -152,7 +152,7 @@ select:-moz-focusring {
 .primary-button:not([disabled]):active,
 #popup_ok[id]:not([disabled]):active,
 .myorderList .combo_products_place .qty {
-    background-color: #fff;
+    background: #fff;
 }
 
 /* [special_text] Discount text, free modifiers */
@@ -171,7 +171,7 @@ select:-moz-focusring {
 .list-bg,
 .modifier .input,
 .combo_item .input {
-    background-color: #fff;
+    background: #fff;
 }
 
 .modifier .input::before,
@@ -200,7 +200,7 @@ select:-moz-focusring {
 
 .modifier input:checked + .input,
 .combo_item .input[checked=checked] /* TODO change selector */ {
-    background-color: #8C1515;
+    background: #8C1515;
     border-color: #8C1515;
 }
 
@@ -209,7 +209,7 @@ select:-moz-focusring {
 }
 
 .quantity .btn-qty:not([disabled]):active {
-    background-color: #8C1515;
+    background: #8C1515;
 }
 
 /* [list_separator] Table cells separator */
@@ -229,7 +229,7 @@ select:-moz-focusring {
 
 /* [header] Customize screen product description text background */
 .header {
-    background-color: #8C1515;
+    background: #8C1515;
 }
 
 /* [header_text] Customize screen product description text background */
@@ -253,11 +253,11 @@ select:-moz-focusring {
 /* [primary_button] primary background button */
 .primary-button,
 #popup_ok[id] {
-    background-image: linear-gradient(top,#8C1515,#660F0F);
-    background-image: -moz-linear-gradient(top,#8C1515,#660F0F);
-    background-image: -webkit-linear-gradient(top,#8C1515,#660F0F);
-    background-image: -o-linear-gradient(top,#8C1515,#660F0F);
-    background-image: -ms-linear-gradient(top,#8C1515,#660F0F);
+    background: -moz-linear-gradient(top,#8C1515,#660F0F);
+    background: -webkit-linear-gradient(top,#8C1515,#660F0F);
+    background: -o-linear-gradient(top,#8C1515,#660F0F);
+    background: -ms-linear-gradient(top,#8C1515,#660F0F);
+    background: linear-gradient(top,#8C1515,#660F0F);
 }
 
 .primary-button:not([disabled]):active,
@@ -275,14 +275,14 @@ ul.reward-selection > li {
 }
 
 .reward-selection li.active, .stanford-plan.active {
-    background-color: rgba(140, 21, 21, 0.3);
+    background: rgba(140, 21, 21, 0.3);
 }
 
 /* [regular_button] Reqular button background*/
 .regular-button,
 #popup_cancel[id],
 .establishments[class] button {
-    background-color: #fff;
+    background: #fff;
 }
 
 /* [alternate_button] Close/Remove */
@@ -292,12 +292,12 @@ ul.reward-selection > li {
 }
 
 .alternate-button:not([disabled]):active {
-    background-color: #0B1216;
+    background: #0B1216;
 }
 
 /* [toolbar] Toolbar with payment button, footer background */
 .toolbar {
-    background-color: #D0D0D0;
+    background: #D0D0D0;
 }
 
 /* [warning_icon] Warning icon in popup */
@@ -307,14 +307,14 @@ ul.reward-selection > li {
 
 /* icons */
 #header .btn-cart {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE2MCI+PGRlZnM+PHBhdGggaWQ9ImJhZyIgZmlsbD0iI2ZmZmZmZiIgZD0iTTAsMTYwIEwwLDIwIEwyMCwyMCBMMjAsMCBMOTAsMCBMOTAsMTAgTDQwLDEwIEw0MCwyMCBMOTAsMjAgTDkwLDkwIEE0MCw0MCAwIDAsMSA1MCw1MCBBMTAsMTAgMCAxLDAgNDAsNTAgQTUwLDUwIDAgMCwwIDkwLDEwMCBMOTAsMTYwIHoiLz48L2RlZnM+PHVzZSB4PSIwIiB5PSIwIiB4bGluazpocmVmPSIjYmFnIi8+PHVzZSB4PSI5MCIgeT0iMCIgeGxpbms6aHJlZj0iI2JhZyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjY1LDApIHNjYWxlKC0xLCAxKSIvPjwvc3ZnPg==');
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE2MCI+PGRlZnM+PHBhdGggaWQ9ImJhZyIgZmlsbD0iIzhjMTUxNSIgZD0iTTAsMTYwIEwwLDIwIEwyMCwyMCBMMjAsMCBMOTAsMCBMOTAsMTAgTDQwLDEwIEw0MCwyMCBMOTAsMjAgTDkwLDkwIEE0MCw0MCAwIDAsMSA1MCw1MCBBMTAsMTAgMCAxLDAgNDAsNTAgQTUwLDUwIDAgMCwwIDkwLDEwMCBMOTAsMTYwIHoiLz48L2RlZnM+PHVzZSB4PSIwIiB5PSIwIiB4bGluazpocmVmPSIjYmFnIi8+PHVzZSB4PSI5MCIgeT0iMCIgeGxpbms6aHJlZj0iI2JhZyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjY1LDApIHNjYWxlKC0xLCAxKSIvPjwvc3ZnPg==');
     background-size: 60%;
     background-repeat: no-repeat;
     background-position: 50%;
 }
 
 .list-title::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTUiIGhlaWdodD0iOCI+PHBvbHlnb24gcG9pbnRzPSIwLDAgIDE1LDAgIDgsOCIgc3R5bGU9ImZpbGw6I2ViZjRmYTsiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSI4IiB5Mj0iOCIgc3R5bGU9InN0cm9rZS13aWR0aDoxO3N0cm9rZTojY2VjZWNlIi8+PGxpbmUgeDE9IjgiIHkxPSI4IiB4Mj0iMTUiIHkyPSIwIiBzdHlsZT0ic3Ryb2tlLXdpZHRoOjE7c3Ryb2tlOiNjZWNlY2UiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSIxNSIgeTI9IjAiIHN0eWxlPSJzdHJva2Utd2lkdGg6MTtzdHJva2U6I2ViZjRmYSIvPjwvc3ZnPg==');
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTUiIGhlaWdodD0iOCI+PHBvbHlnb24gcG9pbnRzPSIwLDAgIDE1LDAgIDgsOCIgc3R5bGU9ImZpbGw6I2ZmZjFmNjsiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSI4IiB5Mj0iOCIgc3R5bGU9InN0cm9rZS13aWR0aDoxO3N0cm9rZTojY2VjZWNlIi8+PGxpbmUgeDE9IjgiIHkxPSI4IiB4Mj0iMTUiIHkyPSIwIiBzdHlsZT0ic3Ryb2tlLXdpZHRoOjE7c3Ryb2tlOiNjZWNlY2UiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSIxNSIgeTI9IjAiIHN0eWxlPSJzdHJva2Utd2lkdGg6MTtzdHJva2U6I2ZmZjFmNiIvPjwvc3ZnPg==');
     background-position: 50%;
     background-size: 2.5em 1.33em;
 }
@@ -326,5 +326,5 @@ ul.reward-selection > li {
 
 /** popup alert styles **/
 #popup_alert[id] {
-    background-color: rgba(0,0,0,.7);
+    background: rgba(0,0,0,.7);
 }

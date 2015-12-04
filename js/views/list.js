@@ -101,7 +101,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.list_elem = this.options.list_elem || "li";
             this.image_url_key = this.options.image_url_key || "image"; //it's name of image property in a model
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.collection, 'sort', this.sort);           
+            this.listenTo(this.collection, 'sort', this.sort);
         },
         render: function(sortedModels) {
             this.sortedModels = sortedModels ? sortedModels : this.collection.models;
@@ -153,7 +153,7 @@ define(["backbone", "factory"], function(Backbone) {
                     var model = this.sortedModels[i];
 
                     img.attr('src', model.get("logo_url_final") ? model.get("logo_url_final") : model.get(this.image_url_key));
-                    loadSpinner(img, {spinner: true, anim: true, view_spinner: true});                   
+                    loadSpinner(img, {spinner: true, anim: true});
                 }
             }
         },

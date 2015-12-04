@@ -429,6 +429,9 @@
         // jquery `spinner` plugin
         $.fn.spinner = function() {
             this.each(addSpinner);
+            if (App.Data.is_stanford_mode) {
+                this.find(".ui-spinner").addClass("stanford");
+            }
         };
 
         return loader;

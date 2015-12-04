@@ -8,7 +8,7 @@
 
 /* [navigation_bar] Top/Navigation/Header bar on all screens */
 .navigation-bar {
-    background-color: #199acd;
+    background: #199acd;
 }
 
 /* [navigation_bar_item] Any item on navigation bar (text, icons, logo) */
@@ -24,7 +24,7 @@
 
 /* [cart_icon_background] Cart icon background */
 .btn-cart {
-    background-color: #1a6398;
+    background: #1a6398;
 }
 
 /* [cart_quantity_background] Items quantity background */
@@ -39,7 +39,7 @@
 
 /* [tab] Store details tabs button background */
 .tabs {
-    background-color: #373c40;
+    background: #373c40;
 }
 
 /* [tab_text] Store details tabs button background */
@@ -57,12 +57,12 @@
 
 /* [tab_active_underline] Store details tabs button background */
 .tabs::after {
-    background-color: #199acd;
+    background: #199acd;
 }
 
 /* [input_background] Text fields background */
 .input-colors {
-    background-color: #fff;
+    background: #fff;
 }
 
 /* [input_border] Text fields border */
@@ -121,7 +121,7 @@ select:-moz-focusring {
 }
 
 .myorderList .qty {
-    background-color: #000;
+    background: #000;
 }
 
 /* [regular_text] Regular text, custom menu, item price in list */
@@ -148,7 +148,7 @@ select:-moz-focusring {
 .primary-button:not([disabled]):active,
 #popup_ok[id]:not([disabled]):active,
 .myorderList .combo_products_place .qty {
-    background-color: #fff;
+    background: #fff;
 }
 
 /* [special_text] Discount text, free modifiers */
@@ -167,7 +167,7 @@ select:-moz-focusring {
 .list-bg,
 .modifier .input,
 .combo_item .input {
-    background-color: #fff;
+    background: #fff;
 }
 
 .modifier .input::before,
@@ -196,7 +196,7 @@ select:-moz-focusring {
 
 .modifier input:checked + .input,
 .combo_item .input[checked=checked] /* TODO change selector */ {
-    background-color: #1a99cd;
+    background: #1a99cd;
     border-color: #1a99cd;
 }
 
@@ -205,7 +205,7 @@ select:-moz-focusring {
 }
 
 .quantity .btn-qty:not([disabled]):active {
-    background-color: #199acd;
+    background: #199acd;
 }
 
 /* [list_separator] Table cells separator */
@@ -225,7 +225,7 @@ select:-moz-focusring {
 
 /* [header] Customize screen product description text background */
 .header {
-    background-color: #1b8dbd;
+    background: #1b8dbd;
 }
 
 /* [header_text] Customize screen product description text background */
@@ -249,7 +249,7 @@ select:-moz-focusring {
 /* [primary_button] primary background button */
 .primary-button,
 #popup_ok[id] {
-    background-color: #199acd;
+    background: #199acd;
 }
 
 .primary-button:not([disabled]):active,
@@ -267,14 +267,14 @@ ul.reward-selection > li {
 }
 
 .reward-selection li.active, .stanford-plan.active {
-    background-color: rgba(23, 154, 205, 0.3);
+    background: rgba(23, 154, 205, 0.3);
 }
 
 /* [regular_button] Reqular button background*/
 .regular-button,
 #popup_cancel[id],
 .establishments[class] button {
-    background-color: #fff;
+    background: #fff;
 }
 
 /* [alternate_button] Close/Remove */
@@ -284,12 +284,12 @@ ul.reward-selection > li {
 }
 
 .alternate-button:not([disabled]):active {
-    background-color: #0B1216;
+    background: #0B1216;
 }
 
 /* [toolbar] Toolbar with payment button, footer background */
 .toolbar {
-    background-color: #D0D0D0;
+    background: #D0D0D0;
 }
 
 /* [warning_icon] Warning icon in popup */
@@ -318,5 +318,5 @@ ul.reward-selection > li {
 
 /** popup alert styles **/
 #popup_alert[id] {
-    background-color: rgba(0,0,0,.7);
+    background: rgba(0,0,0,.7);
 }
