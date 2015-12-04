@@ -174,7 +174,50 @@ define(['myorder', 'products'], function() {
                 expect(model.listenTo.callCount).toBe(count);
             });
         });
-        
+
+        describe('update_mdf_sum(multiplier)', function() {
+            var mdfData = require('js/utest/data/Modifiers'),
+                mdfs = deepClone(mdfData.exBlocks2);
+            mdfs.map(function(elem) {
+               elem.modifiers =  new App.Collections.Modifiers(elem.modifiers);
+               return elem;
+            });
+            var mdfGroups = new App.Collections.ModifierBlocks(mdfs);
+
+            beforeEach(function() {
+                spyOn(model, 'get_modifiers').and.returnValue(mdfGroups);
+                mdfGroups.each(function(mdfGroup) {
+                    var mdfs = mdfGroup.get('modifiers');
+                    mdfs && mdfs.each(function(mdf) {
+                        spyOn(mdf, 'updateSum');
+                    });
+                });
+                model.set('quantity', 3, {silent: true});
+            });
+
+            it('called without arguments', function() {
+                model.update_mdf_sum(2);
+
+                mdfGroups.each(function(mdfGroup) {
+                    var mdfs = mdfGroup.get('modifiers');
+                    mdfs && mdfs.each(function(mdf) {
+                        expect(mdf.updateSum).toHaveBeenCalledWith(3 * 2);
+                    });
+                });
+            });
+
+            it('called with `multiplier`', function() {
+                model.update_mdf_sum();
+
+                mdfGroups.each(function(mdfGroup) {
+                    var mdfs = mdfGroup.get('modifiers');
+                    mdfs && mdfs.each(function(mdf) {
+                        expect(mdf.updateSum).toHaveBeenCalledWith(3);
+                    });
+                });
+            });
+        });
+
         it('update_prices()', function() {
             var prod = new Backbone.Model({max_price: 0}),
                 modif = new App.Collections.ModifierBlocks();  
@@ -377,14 +420,16 @@ define(['myorder', 'products'], function() {
             });
 
             it('modifiers exist', function() {
-                spyOn(model, 'get_modifiers').and.returnValue(true);
-                spyOn(model, 'get_sum_of_modifiers').and.returnValue(10);
+                var mdfs = {
+                    get_sum: function() {return 10;}
+                };
+                spyOn(model, 'get_modifiers').and.returnValue(mdfs);
                 expect(model.get_sum_of_modifiers()).toBe(10);
             });
         });
 
         describe('get_special()', function() {
-            var obj, settingsSpy, special_requests_online = false;
+            var obj, settingsSpy, getMdfSpy, special_requests_online = false;
 
             beforeEach(function() {
                 obj = {
@@ -393,33 +438,36 @@ define(['myorder', 'products'], function() {
                     }
                 };
 
+                getMdfSpy = spyOn(model, 'get_modifiers');
                 spyOn(App.Data.settings, 'get').and.returnValue({
                     special_requests_online: special_requests_online
                 });
             });
 
+            afterEach(function() {
+                special_requests_online = true;
+            });
+
             it('special requests are disabled', function() {
                 expect(model.get_special()).toBe('');
+                expect(model.get_modifiers).not.toHaveBeenCalled();
             });
 
             it('special requests are enabled, special` doesn\'t exist, modifiers don\'t exist', function() {
-                special_requests_online = true;
                 model.set({special: ''}, {silent: true});
                 spyOn(model, 'get_initial_price').and.returnValue(10);
-                spyOn(model, 'get_modifiers');
                 expect(model.get_special()).toBe('');
+                expect(model.get_modifiers).toHaveBeenCalled();
             });
 
             it('special requests are enabled, special` doesn\'t exist, modifiers special text exist', function() {
-                special_requests_online = true;
                 model.set({special: ''}, {silent: true});
                 spyOn(model, 'get_initial_price').and.returnValue(10);
-                spyOn(model, 'get_modifiers').and.returnValue(obj);
+                getMdfSpy.and.returnValue(obj);
                 expect(model.get_special()).toBe('test1,test2');
             });
 
             it('`special` exists', function() {
-                special_requests_online = true;
                 model.set({special: 'test3'}, {silent: true});
                 expect(model.get_special()).toBe('test3');
             });
@@ -591,19 +639,16 @@ define(['myorder', 'products'], function() {
             expect(model.is_gift()).toBe(true);
         });
         
-        it('item_submit()', function() {
-            model.set({
-                sum: 100,
-                quantity: 10,
-                initial_price: 4,
-                product_sub_id: 123
-            }, {silent: true});
+        describe('item_submit()', function() {
             var modifiers = {
                     modifiers_submit: function() {
                         return 'modifiers block';
                     }
                 },
-                gift_card = false,
+                giftCardNumber = false,
+                soldByWeight = false,
+                productSets = undefined,
+                isCombo = undefined,
                 product = {
                     toJSON: function() {
                         return {
@@ -612,27 +657,97 @@ define(['myorder', 'products'], function() {
                             name: 'name',
                             tax: 'tax',
                             is_cold: 'is_cold',
-                            gift_card_number: gift_card
+                            gift_card_number: giftCardNumber,
+                            sold_by_weight: soldByWeight,
+                            is_combo: isCombo,
+                            product_sets: productSets
                         };
                     }
-                };
-            spyOn(model, 'get_special').and.returnValue('special');
-            spyOn(model, 'get_modifiers').and.returnValue(modifiers);
-            spyOn(model, 'get_product').and.returnValue(product);
-            
-            expect(model.item_submit()).toEqual({
-                modifieritems: 'modifiers block',
-                special_request: 'special',
-                price: 4,
-                product: 'id',
-                product_name_override: 'name',
-                quantity: 10,
-                product_sub_id: 123,
-                is_combo: undefined
+                },
+                product2 = {
+                    toJSON: function() {
+                        return {
+                            price: 'price',
+                            id: 'id',
+                            name: 'name',
+                            tax: 'tax',
+                            is_cold: 'is_cold',
+                            gift_card_number: giftCardNumber,
+                            sold_by_weight: soldByWeight
+                        };
+                    }
+                },
+                result;
+
+            beforeEach(function() {
+                model.set({
+                    sum: 100,
+                    quantity: 10,
+                    initial_price: 4,
+                    product_sub_id: 123
+                }, {silent: true});
+
+                spyOn(model, 'get_special').and.returnValue('special');
+                spyOn(model, 'get_modifiers').and.returnValue(modifiers);
+                spyOn(model, 'get_product').and.returnValue(product);
             });
-            
-            gift_card = 10;
-            expect(model.item_submit().gift_card_number).toBe(10);
+
+            it('general', function() {
+                expect(model.item_submit()).toEqual({
+                    modifieritems: 'modifiers block',
+                    special_request: 'special',
+                    price: 4,
+                    product: 'id',
+                    product_name_override: 'name',
+                    quantity: 10,
+                    product_sub_id: 123,
+                    is_combo: isCombo
+                });
+            });
+
+            it('product.sold_by_weight', function() {
+                soldByWeight = true;
+                model.set('weight', 5, {silent: true});
+                result = model.item_submit();
+
+                expect(result.weight).toBe(5);
+                expect(result.product_name_override).toBe('name\n 5 MAN @ Fr4.00/Lb');
+            });
+
+            it('product.gift_card_number', function() {
+                giftCardNumber = 1234;
+                expect(model.item_submit().gift_card_number).toBe(giftCardNumber);
+            });
+
+            it('planId && stanford_card_number', function() {
+                model.set({
+                    planId: 1,
+                    stanford_card_number: 1234
+                }, {silent: true});
+                result = model.item_submit();
+
+                expect(result.planId).toBe(1);
+                expect(result.stanford_card_number).toBe(1234);
+            });
+
+            it('product.is_combo', function() {
+                var model2 = new App.Models.Myorder();
+                model2.set({
+                    sum: 100,
+                    quantity: 10,
+                    initial_price: 4,
+                    product_sub_id: 123
+                }, {silent: true});
+                spyOn(model2, 'get_special').and.returnValue('special');
+                spyOn(model2, 'get_modifiers').and.returnValue(modifiers);
+                spyOn(model2, 'get_product').and.returnValue(product2);
+
+                isCombo = true;
+                productSets = new App.Collections.ProductSets([model2]);
+
+                expect(model.item_submit().products_sets).toEqual([model2.item_submit()]);
+            });
+
         });
 
     });
@@ -1982,5 +2097,32 @@ define(['myorder', 'products'], function() {
                 
             });
         });
+    });
+
+//===============================================================
+
+    describe('App.Models.MyorderCombo', function() {
+        var model;
+
+        beforeEach(function() {
+            model = new App.Models.MyorderCombo();
+        });
+
+        it('Environment', function() {
+            expect(App.Models.MyorderCombo).toBeDefined();
+        });
+
+/*        it('initialize()', function() {
+            var update_product_price = spyOn(App.Models.MyorderCombo.prototype, 'update_product_price'),
+                update_mdf_sum = spyOn(App.Models.MyorderCombo.prototype, 'update_mdf_sum');
+            spyOn(App.Models.MyorderCombo.prototype, 'change');
+
+            model = new App.Models.Myorder();
+            model.set('initial_price', '1');
+            expect(update_product_price).toHaveBeenCalled();
+
+            model.set('combo_product_change', '1');
+            expect(update_product_price).toHaveBeenCalled();
+        });*/
     });
 });
