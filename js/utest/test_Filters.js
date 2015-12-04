@@ -82,6 +82,7 @@ define(['filters'], function() {
         });
 
         it('saveData()', function() {
+            App.Data.is_stanford_mode = false;
             spyOn(window, 'setData');
             filterItem.set('selected', false);
 
