@@ -225,7 +225,7 @@ define(['myorder'], function() {
                 spyOn(model, 'get').and.returnValue(obj);
             });
             
-            it('test funciton calls', function() {
+            it('test function calls', function() {
                 model.add_empty(id_product, id_category);
                 expect(App.Collections.Products.init).toHaveBeenCalled(); // init products
                 expect(App.Collections.ModifierBlocks.init_quick_modifiers).toHaveBeenCalled(); // init modifiers
@@ -369,32 +369,69 @@ define(['myorder'], function() {
             });
 
         });
-        
-        it('Function get_special', function() {
-            var obj = {
-                get_special_text: function() {
-                    return 'test1,test2';
-                }
-            }, settings = {
-                special_requests_online: true
-            };
-            model.set({special: ''}, {silent: true});
-            spyOn(model, 'get_initial_price').and.returnValue(10);
-            spyOn(model, 'get_modifiers').and.returnValue(obj);
-            spyOn(App.Data.settings, 'get').and.returnValue(settings);
-            expect(model.get_special()).toBe('test1,test2');
 
-            model.set({special: 'test3'}, {silent: true});
-            expect(model.get_special()).toBe('test3');
+        describe('get_sum_of_modifiers()', function() {
+            it('modifiers don\'t exist', function() {
+                spyOn(model, 'get_modifiers');
+                expect(model.get_sum_of_modifiers()).toBe(0);
+            });
+
+            it('modifiers exist', function() {
+                spyOn(model, 'get_modifiers').and.returnValue(true);
+                spyOn(model, 'get_sum_of_modifiers').and.returnValue(10);
+                expect(model.get_sum_of_modifiers()).toBe(10);
+            });
         });
 
-        it('Function get_special: special requests are disabled', function() {
-            var obj = {
-                special_requests_online: false
-            };
-            spyOn(App.Data.settings, 'get').and.returnValue(obj);
-            expect(model.get_special()).toBe('');
+        describe('get_special()', function() {
+            var obj, settingsSpy;
+
+            beforeEach(function() {
+                obj = {
+                    get_special_text: function() {
+                        return 'test1,test2';
+                    }
+                };
+
+                settingsSpy = spyOn(App.Data.settings, 'get');
+            });
+
+            it('special requests are disabled', function() {
+                settingsSpy.and.returnValue({
+                    special_requests_online: false
+                });
+                expect(model.get_special()).toBe('');
+            });
+
+            it('special requests are enabled, special` doesn\'t exist, modifiers don\'t exist', function() {
+                settingsSpy.and.returnValue({
+                    special_requests_online: true
+                });
+                model.set({special: ''}, {silent: true});
+                spyOn(model, 'get_initial_price').and.returnValue(10);
+                spyOn(model, 'get_modifiers');
+                expect(model.get_special()).toBe('');
+            });
+
+            it('special requests are enabled, special` doesn\'t exist, modifiers special text exist', function() {
+                settingsSpy.and.returnValue({
+                    special_requests_online: true
+                });
+                model.set({special: ''}, {silent: true});
+                spyOn(model, 'get_initial_price').and.returnValue(10);
+                spyOn(model, 'get_modifiers').and.returnValue(obj);
+                expect(model.get_special()).toBe('test1,test2');
+            });
+
+            it('`special` exists', function() {
+                settingsSpy.and.returnValue({
+                    special_requests_online: true
+                });
+                model.set({special: 'test3'}, {silent: true});
+                expect(model.get_special()).toBe('test3');
+            });
         });
+
 
         it('Function clone', function() {
             spyOn(App.Models.Myorder.prototype, 'trigger');
@@ -432,10 +469,11 @@ define(['myorder'], function() {
                 checkForced,
                 timetable,
                 modifiers;
+
             var model = new App.Models.Myorder();
                 model.addJSON(data);
                 
-            beforeEach(function() {            
+            beforeEach(function() {
                 this.timetables = App.Data.timetables;
                 App.Data.timetables = {
                     check_order_enable: function() {}
@@ -455,6 +493,7 @@ define(['myorder'], function() {
                     return checkForced;
                 });
                 spyOn(App.Data.timetables, 'check_order_enable').and.callFake(function() {
+                    debugger;
                     return timetable;
                 });
             });
@@ -466,7 +505,15 @@ define(['myorder'], function() {
             it('pass check', function() {
                 expect(model.check_order().status).toBe('OK');
             });
-            
+
+            it('`sold_by_weight` is true, `weight` is not set', function() {
+                spyOn(model.get_product(), 'get').and.returnValue(true);
+                model.set('weight', 0, {silent: true});
+                var result = model.check_order();
+                expect(result.status).toBe('ERROR');
+                expect(result.errorMsg.indexOf('weight')).not.toBe(-1);
+            });
+
             it('timetable close', function() {
                 timetable = false;
                 expect(model.check_order().status).toBe('ERROR');
@@ -1674,22 +1721,20 @@ define(['myorder'], function() {
                     });
                 });
                 
-                it('direct credit card paid success', function() {
-                    payment_process.paypal_direct_credit_card = true;
-                    App.Data.get_parameters = {
-                        pay: 'true'
+                it('cresecure payment fail', function() {
+                    App.Settings.payment_processor = {
+                        usaepay: false,
+                        cresecure: true
                     };
-                    checkout.payment_id = 'pay';
-                    model.submit_order_and_pay(2);
-                    expect(ajax.data.paymentInfo.payment_id).toEqual('pay');
-                });
-                
-                it('direct credit card paid fail', function() {
                     payment_process.paypal_direct_credit_card = true;
                     App.Data.get_parameters.pay = 'false';
                     checkout.payment_id = 'pay';
                     model.submit_order_and_pay(2);
-                    expect(model.paymentResponse).toEqual({status: 'error', errorMsg: 'Payment Canceled'});
+                    expect(model.paymentResponse).toEqual({
+                        status: 'error',
+                        errorMsg: 'Payment canceled.',
+                        capturePhase: undefined
+                    });
                     expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
                 });
                 
