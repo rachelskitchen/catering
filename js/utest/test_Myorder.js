@@ -1,4 +1,4 @@
-define(['myorder'], function() {
+define(['myorder', 'products'], function() {
             
     describe("App.Models.Myorder", function() {
         var model, change, special;
@@ -18,7 +18,7 @@ define(['myorder'], function() {
             expect(change).toHaveBeenCalled();
         });
         
-        it('Function get_product', function() {
+        it('get_product()', function() {
             var obj = {
                 get_product: function() {}
             };
@@ -29,7 +29,7 @@ define(['myorder'], function() {
             expect(obj.get_product).toHaveBeenCalled();
         });
         
-        describe('Function get_modifiers', function() {
+        describe('get_modifiers()', function() {
             var obj = {
                     product: {
                         get_modifiers: function() {}
@@ -56,7 +56,7 @@ define(['myorder'], function() {
             });
         });
         
-        describe('Function get_initial_price', function() {
+        describe('get_initial_price()', function() {
             var obj = {
                     getSizeModel: function() {}
                 },
@@ -89,7 +89,7 @@ define(['myorder'], function() {
             });
         });
         
-        describe('Function change_special', function() {
+        describe('change_special()', function() {
             var text, arg,
                 modifierBlocks = new App.Collections.ModifierBlocks();                
                 modifierBlocks.get_special_text = function() {
@@ -120,7 +120,7 @@ define(['myorder'], function() {
             });
         });
         
-        describe('Function change', function() {
+        describe('change()', function() {
             var obj;
             
             beforeEach(function() {
@@ -175,7 +175,7 @@ define(['myorder'], function() {
             });
         });
         
-        it('Function update_prices', function() {
+        it('update_prices()', function() {
             var prod = new Backbone.Model({max_price: 0}),
                 modif = new App.Collections.ModifierBlocks();  
                 modif.get_special_text = function() {};
@@ -384,7 +384,7 @@ define(['myorder'], function() {
         });
 
         describe('get_special()', function() {
-            var obj, settingsSpy;
+            var obj, settingsSpy, special_requests_online = false;
 
             beforeEach(function() {
                 obj = {
@@ -393,20 +393,17 @@ define(['myorder'], function() {
                     }
                 };
 
-                settingsSpy = spyOn(App.Data.settings, 'get');
+                spyOn(App.Data.settings, 'get').and.returnValue({
+                    special_requests_online: special_requests_online
+                });
             });
 
             it('special requests are disabled', function() {
-                settingsSpy.and.returnValue({
-                    special_requests_online: false
-                });
                 expect(model.get_special()).toBe('');
             });
 
             it('special requests are enabled, special` doesn\'t exist, modifiers don\'t exist', function() {
-                settingsSpy.and.returnValue({
-                    special_requests_online: true
-                });
+                special_requests_online = true;
                 model.set({special: ''}, {silent: true});
                 spyOn(model, 'get_initial_price').and.returnValue(10);
                 spyOn(model, 'get_modifiers');
@@ -414,9 +411,7 @@ define(['myorder'], function() {
             });
 
             it('special requests are enabled, special` doesn\'t exist, modifiers special text exist', function() {
-                settingsSpy.and.returnValue({
-                    special_requests_online: true
-                });
+                special_requests_online = true;
                 model.set({special: ''}, {silent: true});
                 spyOn(model, 'get_initial_price').and.returnValue(10);
                 spyOn(model, 'get_modifiers').and.returnValue(obj);
@@ -424,16 +419,14 @@ define(['myorder'], function() {
             });
 
             it('`special` exists', function() {
-                settingsSpy.and.returnValue({
-                    special_requests_online: true
-                });
+                special_requests_online = true;
                 model.set({special: 'test3'}, {silent: true});
                 expect(model.get_special()).toBe('test3');
             });
         });
 
 
-        it('Function clone', function() {
+        it('clone()', function() {
             spyOn(App.Models.Myorder.prototype, 'trigger');
             model.set({id_product: 12}, {silent: true});
             var clone = model.clone();
@@ -444,7 +437,7 @@ define(['myorder'], function() {
             expect(model.trigger).toHaveBeenCalled()
         });
         
-        it('Function update', function() {
+        it('update()', function() {
             spyOn(App.Models.Myorder.prototype, 'trigger');
             model.set('id_product', 12);
             var clone = model.clone();
@@ -468,7 +461,8 @@ define(['myorder'], function() {
                 check_selected,
                 checkForced,
                 timetable,
-                modifiers;
+                modifiers,
+                result;
 
             var model = new App.Models.Myorder();
                 model.addJSON(data);
@@ -477,6 +471,9 @@ define(['myorder'], function() {
                 this.timetables = App.Data.timetables;
                 App.Data.timetables = {
                     check_order_enable: function() {}
+                };
+                App.Data.myorder.checkout = {
+                    get: function() {}
                 };
                 check_selected = true;
                 getSizeModel = true;
@@ -493,9 +490,9 @@ define(['myorder'], function() {
                     return checkForced;
                 });
                 spyOn(App.Data.timetables, 'check_order_enable').and.callFake(function() {
-                    debugger;
                     return timetable;
                 });
+                spyOn(App.Data.myorder.checkout, 'get').and.returnValue('DINING_OPTION_TOGO');
             });
             
             afterEach(function() {
@@ -507,7 +504,10 @@ define(['myorder'], function() {
             });
 
             it('`sold_by_weight` is true, `weight` is not set', function() {
-                spyOn(model.get_product(), 'get').and.returnValue(true);
+                spyOn(model.get_product(), 'get_product').and.returnValue({
+                    get: function() {return true;}
+                });
+
                 model.set('weight', 0, {silent: true});
                 var result = model.check_order();
                 expect(result.status).toBe('ERROR');
@@ -532,16 +532,26 @@ define(['myorder'], function() {
             it('size is undefined. forced not empty', function() {
                 getSizeModel = undefined;
                 checkForced = [new Backbone.Model({name: 'test1'})];
-                expect(model.check_order().status).toBe('ERROR');
+                result = model.check_order();
+                expect(result.status).toBe('ERROR');
+                expect(result.errorMsg.indexOf('at least')).not.toBe(-1);
             });
-            
+
+            it('size is undefined. exceeded is array', function() {
+                getSizeModel = undefined;
+                spyOn(modifiers, 'checkAmount').and.returnValue([]);
+                result = model.check_order();
+                expect(result.status).toBe('ERROR');
+                expect(result.errorMsg.indexOf('no more')).not.toBe(-1);
+            });
+
             it('size is null', function() {
                 getSizeModel = null;
                 expect(model.check_order().status).toBe('ERROR');
             });
         });
         
-        it('Function get_attribute_type', function() {
+        it('get_attribute_type()', function() {
             var product = {
                 get: function() {}
             };
@@ -550,7 +560,7 @@ define(['myorder'], function() {
             expect(model.get_attribute_type()).toBe(5);
         });
         
-        it('Function get_attributes_list', function() {
+        it('get_attributes_list()', function() {
             var product = {
                 get_attributes_list: function() {}
             };
@@ -559,7 +569,20 @@ define(['myorder'], function() {
             expect(model.get_attributes_list()).toBe(5);
         });
 
-        it('Function is_gift', function() {
+        it('get_attributes()', function() {
+            model.set('product', null, {silent: true});
+            expect(model.get_attributes()).toBeUndefined();
+
+            var product = {
+                get_attributes: function() {
+                    return 'attributes';
+                }
+            }
+            model.set('product', product, {silent: true});
+            expect(model.get_attributes()).toBe('attributes');
+        });
+
+        it('is_gift()', function() {
             var product = new Backbone.Model({is_gift: false});
             spyOn(model, 'get_product').and.returnValue(product);
             expect(model.is_gift()).toBe(false);
@@ -568,7 +591,7 @@ define(['myorder'], function() {
             expect(model.is_gift()).toBe(true);
         });
         
-        it('Function item_submit', function() {
+        it('item_submit()', function() {
             model.set({
                 sum: 100,
                 quantity: 10,
@@ -629,12 +652,12 @@ define(['myorder'], function() {
             expect(App.Collections.Myorders).toBeDefined();
         });
 
-        it('Function initialize', function() {
+        it('initialize()', function() {
             expect(model.total.__proto__).toBe(App.Models.Total.prototype);
             expect(model.checkout.__proto__).toBe(App.Models.Checkout.prototype);
         });
 
-        describe('Function change_dining_option', function() {
+        describe('change_dining_option()', function() {
             var delivery, bagcharge;
             
             beforeEach(function() {
@@ -683,7 +706,7 @@ define(['myorder'], function() {
             });
         });
         
-        it('Function get_remaining_delivery_amount', function() {
+        it('get_remaining_delivery_amount()', function() {
             var dining_option = 'DINING_OPTION_TOGO';
             spyOn(model.checkout, 'get').and.callFake(function() {
                 return dining_option;
@@ -696,7 +719,7 @@ define(['myorder'], function() {
             expect(model.get_remaining_delivery_amount()).toBe(10);
         });
         
-        it('Function get_delivery_charge', function() {
+        it('get_delivery_charge()', function() {
             var dining_option = 'DINING_OPTION_TOGO';
             spyOn(model.checkout, 'get').and.callFake(function() {
                 return dining_option;
@@ -709,7 +732,7 @@ define(['myorder'], function() {
             expect(model.get_delivery_charge()).toBe(10);            
         });
        
-        it('Function get_only_product_quantity', function() {
+        it('get_only_product_quantity()', function() {
             spyOn(App.Collections.Myorders.prototype, 'listenTo');
             model = new App.Collections.Myorders([
                 {id_product: 1},
@@ -729,7 +752,7 @@ define(['myorder'], function() {
             expect(model.get_only_product_quantity()).toBe(3);
         });
         
-        describe('Function addJSON', function() {
+        describe('addJSON()', function() {
             
             beforeEach(function() {
                 spyOn(App.Models.Myorder.prototype, 'addJSON');
@@ -775,13 +798,13 @@ define(['myorder'], function() {
             });
         });
         
-        it('Function clone', function() {
+        it('clone()', function() {
             var clone = model.clone();
             expect(clone).not.toBe(model);
             expect(clone.__proto__).toBe(model.__proto__);
         });
 
-        describe('Function change_only_gift_dining_option', function() {
+        describe('change_only_gift_dining_option()', function() {
             var quan, is_gift, dining_option;
             
             beforeEach(function() {
@@ -825,7 +848,7 @@ define(['myorder'], function() {
             });
         });
 
-        it('Function not_gift_product_quantity', function() {
+        it('not_gift_product_quantity()', function() {
             var count = 2;
             spyOn(model, 'get_only_product_quantity').and.returnValue(5);
             spyOn(App.Models.Myorder.prototype, 'is_gift').and.callFake(function() {
@@ -918,7 +941,7 @@ define(['myorder'], function() {
             }
         });
 
-        describe('Function onModelChange', function() {
+        describe('onModelChange()', function() {
             var add;
 
             beforeEach(function() {
@@ -951,7 +974,7 @@ define(['myorder'], function() {
             }
         });
 
-        it('Function saveOrders', function() {
+        it('saveOrders()', function() {
             var stored_data;
             var otherItem = new App.Models.Myorder();
             otherItem.addJSON({id_product: 100, product: {name: 'other'}}); 
@@ -976,7 +999,7 @@ define(['myorder'], function() {
             expect(stored_data[0].product.get("name")).toEqual("other");
         });
 
-        it('Function loadOrders', function() {
+        it('loadOrders()', function() {
             spyOn(model.checkout, 'loadCheckout');
             spyOn(model.total, 'loadTotal');
             spyOn(window, 'getData').and.returnValue('test');
@@ -991,7 +1014,7 @@ define(['myorder'], function() {
             expect(model.addJSON).toHaveBeenCalledWith('test');
         });
 
-        describe('Function _check_cart', function() {
+        describe('_check_cart()', function() {
             var tips, dining_option, product_quantity, delivery_amount;
             
             beforeEach(function() {
