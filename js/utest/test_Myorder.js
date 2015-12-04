@@ -91,41 +91,53 @@ define(['myorder', 'products'], function() {
         
         describe('change_special()', function() {
             var text, arg,
+                special_requests_online = false,
                 modifierBlocks = new App.Collections.ModifierBlocks();                
                 modifierBlocks.get_special_text = function() {
                         return text;
                     }
 
             beforeEach(function() {
-                spyOn(model, 'get_modifiers').and.returnValue(modifierBlocks);                
+                spyOn(model, 'get_modifiers').and.returnValue(modifierBlocks);
+                spyOn(model.get_modifiers(), 'uncheck_special');
                 spyOn(model, 'set').and.callFake(function() {
                     arg = arguments;
                 });
+
+                spyOn(App.Data.settings, 'get').and.returnValue({
+                    special_requests_online: special_requests_online
+                });
             });
-            
+
             it('not selected special modifiers', function() {
                 text = '';
                 model.change_special();
                 expect(model.set).not.toHaveBeenCalled();
+                special_requests_online = true; // for next test
             });
-            
+
             it('some special modifiers selected', function() {
-                var settings = {
-                    special_requests_online: true
-                };
-                spyOn(App.Data.settings, 'get').and.returnValue(settings);
-                text = 'test,test';
+                text = ' test,test ';
                 model.change_special();
                 expect(model.set).toHaveBeenCalledWith({special: 'test,test'});
+                expect(model.get_modifiers().uncheck_special).toHaveBeenCalled();
+            });
+
+            it('some special modifiers selected, opts.ingore_uncheck is true', function() {
+                text = ' test,test ';
+                model.change_special({ignore_uncheck: true});
+                expect(model.set).toHaveBeenCalledWith({special: 'test,test'});
+                expect(model.get_modifiers().uncheck_special).not.toHaveBeenCalled();
             });
         });
-        
+
         describe('change()', function() {
-            var obj;
+            var obj, product;
             
             beforeEach(function() {
                 obj = undefined;
-                spyOn(model, 'listenTo');
+                product = new Backbone.Model();
+                spyOn(model, 'listenTo').and.callThrough();
                 spyOn(model, 'get_modifiers').and.callFake(function() {
                     return obj;
                 });
@@ -139,14 +151,14 @@ define(['myorder', 'products'], function() {
             });
             
             it('product is present, modifiers - not', function() {
-                model.set({product: new Backbone.Model()}, {silent: true});
+                model.set({product: product}, {silent: true});
                 model.change();
                 expect(model.product_listener).toBe(true);
                 expect(model.modifier_listener).toBe(false);
             });
             
             it('product and modifiers is present. Not special', function() {
-                model.set({product: new Backbone.Model()}, {silent: true});
+                model.set({product: product}, {silent: true});
                 obj = {};
                 model.change();
                 expect(model.product_listener).toBe(true);
@@ -155,7 +167,7 @@ define(['myorder', 'products'], function() {
             });
             
             it('product and modifiers is present. With special', function() {
-                model.set({product: new Backbone.Model()}, {silent: true});
+                model.set({product: product}, {silent: true});
                 model.set({special: 'test'}, {silent: true});
                 obj = {};
                 model.change();
@@ -164,7 +176,7 @@ define(['myorder', 'products'], function() {
             });
             
             it('double change for presented product and modifiers', function() {
-                model.set({product: new Backbone.Model()}, {silent: true});
+                model.set({product: product}, {silent: true});
                 obj = {};
                 model.change();
                 expect(model.product_listener).toBe(true);
@@ -173,6 +185,7 @@ define(['myorder', 'products'], function() {
                 model.change();
                 expect(model.listenTo.callCount).toBe(count);
             });
+
         });
 
         describe('update_mdf_sum(multiplier)', function() {
@@ -269,6 +282,7 @@ define(['myorder', 'products'], function() {
             });
             
             it('test function calls', function() {
+                spyOn(model, 'initStanfordReloadItem');
                 model.add_empty(id_product, id_category);
                 expect(App.Collections.Products.init).toHaveBeenCalled(); // init products
                 expect(App.Collections.ModifierBlocks.init_quick_modifiers).toHaveBeenCalled(); // init modifiers
@@ -284,6 +298,7 @@ define(['myorder', 'products'], function() {
                     initial_price: 2
                 });
                 expect(model.update_prices).toHaveBeenCalled();
+                expect(model.initStanfordReloadItem).toHaveBeenCalled();
             });
         });
         
@@ -444,13 +459,10 @@ define(['myorder', 'products'], function() {
                 });
             });
 
-            afterEach(function() {
-                special_requests_online = true;
-            });
-
             it('special requests are disabled', function() {
                 expect(model.get_special()).toBe('');
                 expect(model.get_modifiers).not.toHaveBeenCalled();
+                special_requests_online = true; // for next tests
             });
 
             it('special requests are enabled, special` doesn\'t exist, modifiers don\'t exist', function() {
@@ -750,13 +762,137 @@ define(['myorder', 'products'], function() {
 
         });
 
+        it('removeFreeModifiers()', function() {
+            var mdfs = {
+                removeFreeModifiers: function() {}
+            };
+            spyOn(model, 'get_modifiers').and.returnValue(mdfs);
+            spyOn(mdfs, 'removeFreeModifiers');
+            model.removeFreeModifiers();
+
+            expect(mdfs.removeFreeModifiers).toHaveBeenCalled();
+        });
+
+        it('restoreTax()', function() {
+            var product = {
+                restoreTax: function() {}
+            };
+            spyOn(model, 'get_product').and.returnValue(product);
+            spyOn(product, 'restoreTax');
+            model.restoreTax();
+
+            expect(product.restoreTax).toHaveBeenCalled();
+        });
+
+        it('isComboProduct()', function() {
+            var product = new Backbone.Model();
+            model.set('product', product, {silent: true});
+
+            expect(model.isComboProduct()).toBe(false);
+
+            product.set('is_combo', true);
+            expect(model.isComboProduct()).toBe(true);
+        });
+
+        it('isChildProduct()', function() {
+            expect(model.isChildProduct()).toBeFalsy();
+
+            model.set('is_child_product', true, {silent: true});
+            expect(model.isChildProduct()).toBe(true);
+        });
+
+        it('hasPointValue()', function() {
+            expect(model.hasPointValue()).toBe(false);
+
+            var product = new Backbone.Model();
+            spyOn(model, 'get_product').and.returnValue(product);
+            spyOn(model, 'isRealProduct').and.returnValue(true);
+            spyOn(model.get_product(), 'get').and.returnValue(123);
+            expect(model.hasPointValue()).toBe(true);
+        });
+
+        it('get_product_price()', function() {
+            model.set('initial_price', 10, {silent: true});
+            expect(model.get_product_price()).toBe(10);
+        });
+
+        describe('initStanfordReloadItem()', function() {
+            var product = new Backbone.Model({
+                get_modifiers: function() {}
+            });
+
+            beforeEach(function() {
+                App.Data.is_stanford_mode = true;
+                model.set('product', {
+                    get_modifiers: function() {}
+                }, {silent: true});
+
+                spyOn(model, 'get_product').and.returnValue(product);
+                spyOn(model, 'set').and.callThrough();
+                spyOn(product, 'set').and.callThrough();
+            });
+
+            afterEach(function() {
+                App.Data.is_stanford_mode = false;
+            });
+
+            it('App.Data.is_stanford_mode is false', function() {
+                App.Data.is_stanford_mode = false;
+                model.initStanfordReloadItem();
+                expect(product.set).not.toHaveBeenCalled();
+            });
+
+            it('App.Data.is_stanford_mode is true, product is not gift', function() {
+                model.initStanfordReloadItem();
+                expect(product.set).not.toHaveBeenCalled();
+            });
+
+            it('App.Data.is_stanford_mode is true, product is gift', function() {
+                product.set({
+                    is_gift: true,
+                    price: '10'
+                }, {silent: true});
+
+                model.initStanfordReloadItem();
+
+                expect(model.set).toHaveBeenCalled();
+                expect(product.set).toHaveBeenCalled();
+                expect(product.get('price')).toBe(10);
+            });
+
+            it('StanfordCard listeners', function() {
+                var stanfordCard = new App.Models.StanfordCard({
+                    number: 123,
+                    planId: 5
+                });
+
+                model.initStanfordReloadItem();
+
+                spyOn(App.Data.errors, 'alert');
+                model.get('stanfordCard').trigger('onStanfordCardError', 'Stanford Card Error');
+                expect(App.Data.errors.alert).toHaveBeenCalledWith('Stanford Card Error');
+
+                model.get('stanfordCard').set('number', '456');
+                expect(model.get('stanford_card_number')).toBe('456');
+
+                model.set('stanford_card_number', '789');
+                expect(model.get('stanfordCard').get('number')).toBe('789');
+
+                model.get('stanfordCard').set('planId', '6');
+                expect(model.get('planId')).toBe('6');
+
+                model.set('planId', '7');
+                expect(model.get('stanfordCard').get('planId')).toBe('7');
+            });
+        });
+
     });
     
     
 //////////////////////////////////////////////////////////////////////////////    
     
 
-    describe("App.Collections.Myorders", function() {
+    describe('App.Collections.Myorders', function() {
         var model;
         
         beforeEach(function() {
@@ -2124,5 +2260,103 @@ define(['myorder', 'products'], function() {
             model.set('combo_product_change', '1');
             expect(update_product_price).toHaveBeenCalled();
         });*/
+
+        it('find_child_product', function() {
+            var product = new Backbone.Model(),
+                product_sets = {
+                    find_product: function() {}
+                };
+            product.get_modifiers = function() {};
+            product.set('product_sets', product_sets);
+            model.set('product', product);
+            spyOn(product_sets, 'find_product');
+
+            model.find_child_product(100);
+            expect(product_sets.find_product).toHaveBeenCalledWith(100);
+        });
+
+        it('get_product_price()', function() {
+            var product = new Backbone.Model();
+            product.set('combo_price', 15);
+            model.set('product', product, {silent: true});
+            expect(model.get_product_price()).toBe(15);
+        });
+
     });
+
+//===============================================================
+
+    describe('App.Models.DiscountItem', function() {
+        var model;
+
+        beforeEach(function() {
+            model = new App.Models.DiscountItem();
+        });
+
+        it('Environment', function() {
+            expect(App.Models.DiscountItem).toBeDefined();
+        });
+
+        it('toString()', function() {
+            spyOn(window, 'round_monetary_currency');
+            model.set('sum', '3.5', {silent: true});
+
+            model.toString();
+            expect(window.round_monetary_currency).toHaveBeenCalledWith('3.5');
+        });
+
+        describe('saveDiscount(key)', function() {
+            it('called without arguments', function() {
+                spyOn(window, 'setData');
+                model.saveDiscount();
+                expect(window.setData).toHaveBeenCalledWith('orderLevelDiscount', model.toJSON());
+            });
+
+            it('called with `key`', function() {
+                spyOn(window, 'setData');
+                model.saveDiscount('key');
+                expect(window.setData).toHaveBeenCalledWith('key', model.toJSON());
+            });
+        });
+
+        describe('loadDiscount(key)', function() {
+            var key;
+
+            it('called without arguments', function() {
+                spyOn(window, 'getData').and.returnValue({'orderLevelDiscount': 'discount'});
+                model.loadDiscount();
+                expect(window.getData).toHaveBeenCalledWith('orderLevelDiscount');
+                expect(model.get('orderLevelDiscount')).toBe('discount');
+            });
+
+            it('called with `key`', function() {
+                spyOn(window, 'getData').and.returnValue({'key': 'discount'});
+                model.loadDiscount('key');
+                expect(window.getData).toHaveBeenCalledWith('key');
+                expect(model.get('key')).toBe('discount');
+            });
+        });
+
+        it('zero_discount', function() {
+            model.set({
+                name: 'discount name',
+                sum: 5,
+                taxed: true,
+                id: 123,
+                type: 2
+            }, {silent: true});
+
+            model.zero_discount();
+
+            expect(model.toJSON()).toEqual({
+                name: "No discount",
+                sum: 0,
+                taxed: false,
+                id: null,
+                type: 1
+            });
+        });
+
+    });
+
 });
