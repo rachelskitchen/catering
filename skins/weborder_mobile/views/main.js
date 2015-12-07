@@ -146,7 +146,8 @@ define(["done_view", "generator"], function(done_view) {
         header_defaults: function() {
             return {
                 model: App.Data.header,
-                modelName: 'Header'
+                modelName: 'Header',
+                cacheId: true // use header cache, if it's not disabled by setting cacheId to false
             }
         },
         footer_defaults : function() {
