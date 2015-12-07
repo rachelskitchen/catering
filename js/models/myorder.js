@@ -925,7 +925,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             };
         },
         /**
-         * Has the combo child products inside? It can be used to check combo product settings on backend side.
+         * Checks whether combo has child products inside. It can be used to check combo product settings on backend side.
          * @returns {boolean} - true (combo has child products inside) or false (No, it hasn't)
          */
         has_child_products: function() {

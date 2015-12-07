@@ -718,12 +718,19 @@ define(['myorder', 'products'], function() {
             });
 
             it('product.sold_by_weight', function() {
+                var prevSettings = App.Data.settings.get('settings_system');
+                App.Data.settings.get('settings_system').currency_symbol = '$';
+                App.Data.settings.get("settings_system").scales.default_weighing_unit = 'Lb';
+                App.Data.settings.get("settings_system").scales.label_for_manual_weights = 'MAN';
+
                 soldByWeight = true;
                 model.set('weight', 5, {silent: true});
                 result = model.item_submit();
 
                 expect(result.weight).toBe(5);
-                expect(result.product_name_override).toBe('name\n 5 MAN @ Fr4.00/Lb');
+                expect(result.product_name_override).toBe('name\n 5 MAN @ $4.00/Lb');
+
+                App.Data.settings.set('settings_system', prevSettings);
             });
 
             it('product.gift_card_number', function() {
@@ -760,6 +767,29 @@ define(['myorder', 'products'], function() {
                 expect(model.item_submit().products_sets).toEqual([model2.item_submit()]);
             });
 
+        });
+
+        describe('overrideProductName(product)', function() {
+            var product;
+
+            beforeEach(function() {
+                product = {
+                    id: null,
+                    name: 'product name'
+                };
+            });
+
+            it('product.id is null', function() {
+                expect(model.overrideProductName(product)).toBe('product name');
+
+                product.name = MSG.AUTOAPPLY_FEE_ITEM;
+                expect(model.overrideProductName(product)).toBe('AutoApply Fee');
+            });
+
+            it('product.id is not null', function() {
+                product.id = 1;
+                expect(model.overrideProductName(product)).toBe('product name');
+            });
         });
 
         it('removeFreeModifiers()', function() {
@@ -909,7 +939,7 @@ define(['myorder', 'products'], function() {
         });
 
         describe('change_dining_option()', function() {
-            var delivery, bagcharge;
+            var delivery, bagcharge, checkout;
             
             beforeEach(function() {
                 delivery = 0;
@@ -919,8 +949,24 @@ define(['myorder', 'products'], function() {
                 spyOn(model.total, 'get_delivery_charge').and.callFake(function() {
                     return delivery;
                 });
+                checkout = new App.Models.Checkout();
+                spyOn(model, 'update_cart_totals');
             });
-            // TODO           
+
+            it('not shipping', function() {
+                model.total.set('shipping', true);
+                model.change_dining_option(checkout, 'DINING_OPTION_TOGO');
+                expect(model.total.get('shipping')).toBeNull();
+                expect(model.update_cart_totals).toHaveBeenCalledWith(undefined);
+            });
+
+            it('shipping', function() {
+                App.Data.customer = {
+                    isDefaultShippingSelected: function() {return true;}
+                };
+                model.change_dining_option(checkout, 'DINING_OPTION_SHIPPING');
+                expect(model.update_cart_totals).toHaveBeenCalledWith({update_shipping_options: true});
+            });
         });
         
         describe('check_maintenance()', function() {
@@ -943,7 +989,7 @@ define(['myorder', 'products'], function() {
                 expect(result).toBe(true);
             });
 
-            it('email and phone are set', function() {
+            it('email or/and phone are set', function() {
                 App.Settings.email = 'email';
                 spyAlert.and.callFake(function(mess) {
                     result = mess.indexOf('please contact:') > -1;
@@ -2261,7 +2307,21 @@ define(['myorder', 'products'], function() {
             expect(update_product_price).toHaveBeenCalled();
         });*/
 
-        it('find_child_product', function() {
+
+        it('has_child_products()', function() {
+            var product = new Backbone.Model(),
+                product_sets = new Backbone.Collection();
+
+            product.set('product_sets', product_sets);
+            spyOn(model, 'get_product').and.returnValue(product);
+
+            expect(model.has_child_products()).toBe(false);
+
+            product_sets.add({1: 1})
+            expect(model.has_child_products()).toBe(true);
+        });
+
+        it('find_child_product()', function() {
             var product = new Backbone.Model(),
                 product_sets = {
                     find_product: function() {}
@@ -2356,7 +2416,26 @@ define(['myorder', 'products'], function() {
                 type: 1
             });
         });
+    });
 
+//===============================================================
+
+    describe('App.Models.ServiceFeeItem', function() {
+        var model;
+
+        beforeEach(function() {
+            model = new App.Models.ServiceFeeItem();
+        });
+
+        it('enviroment', function() {
+            expect(App.Models.ServiceFeeItem).toBeDefined();
+        });
+
+        it('initialize()', function() {
+            expect(model.get('product') instanceof App.Models.Product).toBe(true);
+            expect(model.get('product').get('name')).toBe('default fee');
+            expect(model.get('isServiceFee')).toBe(true);
+        });
     });
 
 });
