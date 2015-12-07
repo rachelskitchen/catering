@@ -90,8 +90,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             model.currency_symbol = App.Settings.currency_symbol;
 
             model.price = round_monetary_currency(this.model.get_sum_of_modifiers());
-
-            model.sold_by_weight =  model.product.get("sold_by_weight");
+            model.is_gift = product.get('is_gift');
+            model.sold_by_weight = product.get("sold_by_weight");
 
             model.slength = model.price.length;
             model.name =  product.escape('name');
