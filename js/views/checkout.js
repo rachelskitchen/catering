@@ -481,8 +481,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     model.set('hasGiftCard', hasGiftCard());
                 });
                 model.listenTo(App.Data.myorder, 'add change remove', function() {
-                    model.set('pending', true); // update_cart_totals in process
                     model.set('quantity', App.Data.myorder.get_only_product_quantity());
+                });
+                model.listenTo(App.Data.myorder, 'onCartTotalsUpdate', function() {
+                    model.set('pending', true); // update_cart_totals in process
                 });
                 model.listenTo(App.Data.myorder, 'DiscountsComplete NoRequestDiscountsComplete', function() {
                     model.set('pending', false); // update_cart_totals completed
