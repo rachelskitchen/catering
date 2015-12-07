@@ -131,10 +131,70 @@
       return this;
   }
 
+  function isObject(obj) {
+    return obj && typeof obj == 'object';
+  }
+
   if (App.Data.devMode) {
     // alias for toJSON function
     Backbone.Model.prototype.json = Backbone.Model.prototype.toJSON;
     Backbone.Collection.prototype.json = Backbone.Collection.prototype.toJSON;
+
+    Backbone.Model.prototype.deepCompare = function(dest, subPath) {
+        !subPath && (subPath = "> ");
+        var dismatches = [], destVal, value, result;
+        for (var key in this.attributes) {
+            value = this.get(key);
+            destVal = dest.get(key);
+            if (isObject(value) && value.deepCompare ) {
+                if (isObject(destVal)) {
+                    result = value.deepCompare(destVal, subPath + key + " > ");
+                    if (!result) {
+                      dismatches.push(key);
+                    }
+                }
+                else {
+                    trace(subPath, key, 'is object != ', destVal, isObject(destVal), typeof destVal);
+                    dismatches.push(key);
+                }
+            } else {
+                if (isObject(value) && !value.deepCompare) {
+                    trace(subPath, key, 'is object, can\'t deep compared');
+                }
+                if (value !== destVal) {
+                    trace(subPath, key, ">", value, '!=', destVal);
+                    dismatches.push(key);
+                }
+                //else
+                //   trace(subPath, key, ">", value, '=', destVal, 'ok');
+            }
+        }
+        return dismatches.length > 0 ? false : true;
+    }
+
+    Backbone.Collection.prototype.deepCompare = function(dest, subPath) {
+        !subPath && (subPath = "> ");
+        var dismatches = [], destModel, model;
+        if (this.models.length != dest.models.length) {
+            trace(subPath, 'collection length is', this.models.length, '!=', dest.models.length);
+        }
+        for (var index in this.models) {
+            model = this.models[index];
+            destModel = dest.models[index];
+            if (isObject(model) && isObject(destModel) && model.deepCompare) {
+               model.deepCompare(destModel);
+            } else {
+               if (isObject(model) && !model.deepCompare) {
+                  trace(subPath, key, 'is object, can\'t deep compared');
+               }
+               if (model !== destModel) {
+                  trace(subPath, key, ">", model, 'vz', destModel);
+                  dismatches.push(key);
+               }
+            }
+        }
+      return dismatches.length > 0 ? false : true;
+    }
 
     // reflection for objects
     Backbone.Model.prototype.getType = function() {
