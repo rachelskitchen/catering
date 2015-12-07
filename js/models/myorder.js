@@ -1310,6 +1310,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }, {silent: true});
 
             this.change_only_gift_dining_option();
+            model.update_mdf_sum(countProd);
 
             if (model.isRealProduct()) {
                 this.update_cart_totals({update_shipping_options: true});
