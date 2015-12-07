@@ -803,17 +803,6 @@ define(['myorder', 'products'], function() {
             expect(mdfs.removeFreeModifiers).toHaveBeenCalled();
         });
 
-        it('restoreTax()', function() {
-            var product = {
-                restoreTax: function() {}
-            };
-            spyOn(model, 'get_product').and.returnValue(product);
-            spyOn(product, 'restoreTax');
-            model.restoreTax();
-
-            expect(product.restoreTax).toHaveBeenCalled();
-        });
-
         it('isComboProduct()', function() {
             var product = new Backbone.Model();
             model.set('product', product, {silent: true});

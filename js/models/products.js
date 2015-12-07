@@ -204,11 +204,6 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
              */
             created_date: null,
             /**
-             * Original tax rate of product (used to save origin tax rate to restore in Retail mode).
-             * @type {?number}
-             */
-            original_tax: null,
-            /**
              * Available time for ordering the product.
              * @type {?string}
              */
@@ -237,7 +232,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
         },
         /**
          * Sets `img` as App.Data.settings.get("img_path") value, `checked_gift_cards` as `{}`,
-         * default image (if `image` attribute isn't defined), `original_tax`.
+         * default image (if `image` attribute isn't defined).
          * Converts `created_date` to milliseconds.
          */
         initialize: function() {
@@ -271,7 +266,6 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          * Handles special cases for the following attributes:
          *  - `image`: if `data.image` is empty changes `image` value on App.Data.settings.get_img_default() result.
          *  - `is_gift`: if `data.is_gift` is `true` changes `sold_by_weight` value on `false`.
-         *  - `original_tax`: if `data.original_tax` cannot be converted to integer changes `original_tax` value on `data.tax`.
          *  - `created_date`: converts `created_date` value to milliseconds.
          * @param {Object} data - JSON representation of {@link App.Models.Product} attributes.
          * @returns {App.Models.Product} The model.
@@ -282,9 +276,6 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
 
             if (data.is_gift)
                 data.sold_by_weight = false;
-
-            if(isNaN(parseInt(data.original_tax, 10)))
-                data.original_tax = data.tax;
 
             data.created_date = new Date(data.created_date).valueOf();
 
@@ -322,7 +313,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             return newProduct;
         },
         /**
-         * Updates the model. Keep in mind it doesn't handle special cases for `is_gift`, `original_tax`, `created_date` attributes
+         * Updates the model. Keep in mind it doesn't handle special cases for `is_gift`, `created_date` attributes
          * like in {@link App.Models.Product#addJSON addJSON()} method.
          * @param {App.Models.Product} newProduct - product model.
          * @returns {App.Models.Product} The model.
@@ -633,12 +624,6 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             var inventory = App.Data.settings.get("settings_system").cannot_order_with_empty_inventory;
             if (!inventory)
                 this.set('stock_amount', 999);
-        },
-        /**
-         * Restores tax rate.
-         */
-        restoreTax: function() {
-            this.set('tax', this.get('original_tax'));
         },
         /**
          * Converts array with timetables to string. Originally server returns timetables as array of custom menus assigned to.

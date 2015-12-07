@@ -135,25 +135,6 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
                 generalBehavior();
             });
 
-            it('parseInt(data.original_tax, 10) isn\'t NaN', function() {
-                var modelData = _.clone(data.addJSON_with_original_tax1);
-                model.addJSON(_.clone(modelData));
-                expect(model.set).toHaveBeenCalledWith(modelData);
-
-                modelData = _.clone(data.addJSON_with_original_tax2);
-                model.addJSON(_.clone(modelData));
-                expect(model.set).toHaveBeenCalledWith(modelData);
-
-                generalBehavior();
-            });
-
-            it('parseInt(data.original_tax, 10) is NaN', function() {
-                var modelData = _.clone(data.addJSON_without_original_tax);
-                model.addJSON(_.clone(modelData));
-                expect(model.set).toHaveBeenCalledWith(_.extend({}, modelData, {original_tax: modelData.tax}));
-                generalBehavior();
-            });
-
             it('data.created_date exists', function() {
                 var modelData = _.clone(data.addJSON_with_created_date);
                 model.addJSON(_.clone(modelData));
@@ -1097,20 +1078,6 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
 
                 expect(model.get('stock_amount')).toBe(stockAmount);
             });
-        });
-
-        it('restoreTax()', function() {
-            var model = new App.Models.Product(),
-                original_tax = 4;
-
-            spyOn(model, 'set');
-            spyOn(model, 'get').and.callFake(function() {
-                return original_tax;
-            });
-
-            model.restoreTax();
-            expect(model.get).toHaveBeenCalledWith('original_tax');
-            expect(model.set).toHaveBeenCalledWith('tax', original_tax);
         });
 
         describe('convertTimetables', function() {
