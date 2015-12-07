@@ -101,7 +101,7 @@ define(["done_view", "generator"], function(done_view) {
             else
                 content.append(this.addContent(data));
 
-            content.scrollTop(0);
+            this.$('#section').scrollTop(0);
             this.setContentPadding();
         },
         header_change: function() {
