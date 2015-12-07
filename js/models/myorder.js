@@ -658,13 +658,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             modifiers && modifiers.removeFreeModifiers();
         },
         /**
-         * Restores tax value assigned to product.
-         */
-        restoreTax: function() {
-            var product = this.get_product();
-            product && product.restoreTax();
-        },
-        /**
          * @returns {boolean} `true` if the order item is service fee.
          */
         isServiceFee: function() {
@@ -1166,11 +1159,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if(!isShipping) {
                 this.total.set('shipping', null);
             }
-
-            // if RETAIl mode and dining option was 'Shipping' need restore original taxes for products
-            if(App.Skins.RETAIL == App.skin && model.previousAttributes().dining_option == 'DINING_OPTION_DELIVERY'
-                && model.previousAttributes().dining_option != value)
-                this.restoreTaxes();
 
             if(!this.paymentInProgress) {
                 // need pass `update_shipping_options` flag if 'Shipping' order type is choosen at first time (shipping_selected === -1).
@@ -2444,14 +2432,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          */
         isShippingOrderType: function() {
             return this.checkout.get('dining_option') == 'DINING_OPTION_SHIPPING';
-        },
-        /**
-         * Restores tax rates of each item.
-         */
-        restoreTaxes: function() {
-            this.each(function(item) {
-                item.restoreTax();
-            });
         },
         /**
          * Clears the order collection and orders items in a storage.
