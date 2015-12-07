@@ -71,6 +71,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         startListening: function() {
             this.listenTo(this.model, 'change:selected', this.update, this);
             this.listenTo(this.model, 'change:quantity', this.update, this);
+            this.listenTo(this.model, 'change:weight', this.update, this);
             this.listenTo(this.model.get_modifiers(), 'modifiers_changed', this.update, this);
             this.listenTo(this.model, 'model_changed', this.reinit_new_model, this);
         },
@@ -89,6 +90,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             model.currency_symbol = App.Settings.currency_symbol;
 
             model.price = round_monetary_currency(this.model.get_sum_of_modifiers());
+
+            model.sold_by_weight =  model.product.get("sold_by_weight");
 
             model.slength = model.price.length;
             model.name =  product.escape('name');
@@ -110,7 +113,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 mdf_quantity_el.append(option_el);
             }
 
-            this.update();
+            this.update_elements();
             return this;
         },
         customize: function(event) {
@@ -161,7 +164,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 this.$(".customize").click();
             }
         },
-        update: function() {
+        update_elements: function() {
             var quantity;
             if(this.model.get('selected')) {
                 this.$('.input').attr('checked', 'checked');
@@ -181,6 +184,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 this.$('.input').attr('checked', false);
                 this.$(".mdf_quantity").hide();
             }
+        },
+        update: function() {
+            this.update_elements();
             this.options.myorder_root.trigger('combo_product_change');
             this.model.trigger('change:modifiers');
         },
