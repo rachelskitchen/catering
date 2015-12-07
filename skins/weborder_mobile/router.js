@@ -638,10 +638,7 @@ define(["main_router"], function(main_router) {
                     self.change_page();
                 }
 
-                this.listenToOnce(this, 'route', function() {
-                    back();
-                });
-
+                this.listenToOnce(this, 'route', back);
                 function back() {
                     var cache_id = combo_order.get('id_product');
                     order.update(originOrder);
@@ -652,6 +649,7 @@ define(["main_router"], function(main_router) {
                 function cart() {
                     if (App.Data.myorder.get_only_product_quantity() > 0) {
                         self.stopListening(order, 'change', setHeaderToUpdate);
+                        self.stopListening(self, 'route', back);
                         self.navigate('cart', true);
                     }
                 }
@@ -664,6 +662,7 @@ define(["main_router"], function(main_router) {
                             var status = header.updateProduct(order);
                             order.set('discount', originOrder.get('discount').clone(), {silent: true});
                             App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
+                            self.stopListening(self, 'route', back);
                             originOrder.update(order);
                         }
                     });

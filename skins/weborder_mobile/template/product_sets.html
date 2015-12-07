@@ -7,7 +7,9 @@
                 <span class="price"><%= price %></span>
             </span>
             <span class="free fl-right font-color6"><span class="value"></span></span>
+            <% if (!sold_by_weight) { %>
             <label class="mdf_quantity select-wrapper fl-right font-color5 border-color5 bg-color2" style="display:none;"><select></select></label>
+            <% } %>
         </div>
         <div class="customize font-color1"><%= _lp.COMBO_CUSTOMIZE %></div>
 
