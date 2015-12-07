@@ -1151,6 +1151,7 @@ define(['myorder', 'products'], function() {
                 add = new App.Models.Myorder();
                 spyOn(model, 'change_only_gift_dining_option');
                 spyOn(model, 'update_cart_totals');
+                spyOn(add, 'update_mdf_sum');
                 spyOn(add, 'get_modelsum').and.returnValue(10);
                 spyOn(App.Models.Total.prototype, 'get_tip').and.returnValue(0);
                 model.quantity = 5;
