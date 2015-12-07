@@ -1671,6 +1671,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                  * @type {boolean}
                  */
                 this.pending = true; // bug #32598
+                this.trigger('onCartTotalsUpdate');
                 /**
                  * Delayed cart totals update. Timeout is 500 msec.
                  * @type {Function}
