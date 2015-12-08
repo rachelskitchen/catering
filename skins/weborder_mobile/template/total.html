@@ -12,29 +12,29 @@
 </script>
 
 <script type="text/template" id="total_checkout-template">
-    <ul class="totals-checkout bg-color2 font-size3 font-color3">
-        <li class="discount-links border-color10 text-left font-color1">
+    <ul class="totals-checkout font-size3 list-bg title-text">
+        <li class="discount-links text-left primary-text">
             <span class="have-discounts"></span>
             <span class="have-discount-code"></span>
             <span class="have-rewards"></span>
         </li>
-        <li class="total_discounts border-color10 text-left font-color6">
+        <li class="total_discounts text-left special-text">
             <span class="cost fl-right">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="discount"></span>
             </span>
             <span class="title"><%= _lp.TOTAL_DISCOUNTS %></span>
-            <div class="remove-discount-code link font-color1 text-right"><%= _lp.MYORDER_REMOVE_DISCOUNT %></div>
-            <div class="remove-reward-redemption link font-color1 text-right"><%= _lp.MYORDER_REMOVE_REWARD_REDEMPTION %></div>
+            <div class="remove-discount-code link primary-text text-right"><%= _lp.MYORDER_REMOVE_DISCOUNT %></div>
+            <div class="remove-reward-redemption link primary-text text-right"><%= _lp.MYORDER_REMOVE_REWARD_REDEMPTION %></div>
         </li>
-        <li class="shipping_charge_item border-color10 text-left">
+        <li class="shipping_charge_item text-left">
             <span class="cost fl-right">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="shipping_charge"></span>
             </span>
             <span class="title"><%= _lp.TOTAL_SHIPPING %></span>
         </li>
-        <li class="shipping_discount_item border-color10 text-left">
+        <li class="shipping_discount_item text-left">
             <span class="cost fl-right">
                 <span class="plus">-</span>
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
@@ -42,21 +42,21 @@
             </span>
             <span class="title"><%= _lp.TOTAL_SHIPPING_DISCOUNT %></span>
         </li>
-        <li class="border-color10 text-left">
+        <li class="text-left">
             <span class="cost fl-right">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="subtotal"></span>
             </span>
             <span class="title"><%= _lp.TOTAL_SUBTOTAL %></span>
         </li>
-        <li class="surcharge_item border-color10 text-left">
+        <li class="surcharge_item text-left">
             <span class="cost fl-right">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="surcharge"></span>
             </span>
             <span class="title"><%= _lp.TOTAL_SURCHARGE %></span>
         </li>
-        <li class="border-color10 text-left">
+        <li class="text-left">
             <span class="cost fl-right">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="tax"></span>
@@ -64,7 +64,7 @@
             <span class="title"><%= _lp.TOTAL_TAX %></span>
         </li>
     <% if(_settings.accept_tips_online) { %>
-        <li class="border-color10 text-left">
+        <li class="text-left">
             <span class="cost fl-right">
                 <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                 <span class="tip"></span>
@@ -73,7 +73,7 @@
         </li>
     <% } %>
         <li class="text-left">
-            <strong class="fl-right font-color11">
+            <strong class="fl-right attention-text">
                 <span class="cost">
                     <span class="currency_symbol"><%= _settings.currency_symbol %></span>
                     <span class="grandtotal"></span>

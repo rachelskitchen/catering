@@ -1,34 +1,34 @@
 <script type="text/template" id="store_info_main-template">
-    <div class="img-block border-color10">
+    <div class="img-block list-separator">
         <div class="img-wrapper text-center mask">
             <img src="">
         </div>
     </div>
-    <div class="desc border-color10 font-color4 font-size3"></div>
-    <div class="address defs border-color10 text-center">
-        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_ADDRESS %></div>
-        <div class="info font-size3 font-color4 text-left">
+    <div class="desc list-separator regular-text font-size3"></div>
+    <div class="address defs list-separator text-center">
+        <div class="title font-size3 title-text text-right"><%= _lp.STORE_INFO_ADDRESS %></div>
+        <div class="info font-size3 regular-text text-left">
             <div class="business-name"></div>
             <div class="address-line1"></div>
             <div class="address-line2"></div>
-            <div class="change-store link font-color1 font-color-active7 animation"><%= _lp.CHANGE_ESTABLISHMENT %></div>
+            <div class="change-store link primary-text animation"><%= _lp.CHANGE_ESTABLISHMENT %></div>
         </div>
     </div>
-    <div class="phone defs border-color10 text-center">
-        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_PHONE %></div>
-        <div class="info font-size3 font-color4 text-left">
-            <a href="tel:" class="phone-number font-color1 font-color-active7 animation"></a>
+    <div class="phone defs list-separator text-center regular-text">
+        <div class="title font-size3 title-text text-right"><%= _lp.STORE_INFO_PHONE %></div>
+        <div class="info font-size3 regular-text text-left">
+            <a href="tel:" class="phone-number primary-text animation"></a>
         </div>
     </div>
-    <div class="email-wrapper defs border-color10 text-center">
-        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_EMAIL %></div>
-        <div class="info font-size3 font-color4 text-left">
-            <a href="mail:" class="email font-color1 font-color-active7 animation"></a>
+    <div class="email-wrapper defs list-separator text-center">
+        <div class="title font-size3 title-text title-text text-right"><%= _lp.STORE_INFO_EMAIL %></div>
+        <div class="info font-size3 text-left">
+            <a href="mail:" class="email primary-text animation"></a>
         </div>
     </div>
-    <div class="delivery-info-wrapper defs border-color10 text-center">
-        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_DELIVERY %></div>
-        <div class="info font-size3 font-color4 text-left">
+    <div class="delivery-info-wrapper defs list-separator text-center">
+        <div class="title font-size3 title-text text-right"><%= _lp.STORE_INFO_DELIVERY %></div>
+        <div class="info font-size3 regular-text text-left">
             <ul>
                 <li>
                     <span><%= _lp.STORE_INFO_DELIVERY_CHARGE %></span>: <span class="delivery-charge"></span>
@@ -43,9 +43,9 @@
         </div>
     </div>
     <% if(Array.isArray(hours)) { %>
-    <div class="timetables defs border-color10 text-center">
-        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_HOURS%></div>
-        <ul class="info font-size3 font-color4 text-left">
+    <div class="timetables defs list-separator text-center">
+        <div class="title font-size3 title-text text-right"><%= _lp.STORE_INFO_HOURS%></div>
+        <ul class="info font-size3 regular-text text-left">
             <% _.each(hours, function(day, i) { %>
             <li>
                 <% if(day.hours instanceof Array) { %>
@@ -60,16 +60,16 @@
                     <span><%= _lp.STORE_INFO_ROUND_THE_CLOCK %></span>
                 <% } else { %>
                     <span class="weekDay uppercase"><%= _lp['DAYS_OF_WEEK_SHORT'][day.weekDay] %></span>
-                    <span class="uppercase font-color11"><%= _lp.STORE_INFO_CLOSED %></span>
+                    <span class="uppercase attention-text"><%= _lp.STORE_INFO_CLOSED %></span>
                 <% } %>
             </li>
             <% }); %>
         </ul>
     </div>
     <% } %>
-    <div class="access defs border-color10 text-center">
-        <div class="title font-size3 font-color3 text-right"><%= _lp.STORE_INFO_ACCESS %></div>
-        <div class="access-info info font-size3 font-color4 text-left"></div>
+    <div class="access defs list-separator text-center">
+        <div class="title font-size3 title-text text-right"><%= _lp.STORE_INFO_ACCESS %></div>
+        <div class="access-info info font-size3 regular-text text-left"></div>
     </div>
 </script>
 

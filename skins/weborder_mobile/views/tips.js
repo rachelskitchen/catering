@@ -33,12 +33,12 @@ define(["tips_view"], function(tips_view) {
         bindings: {
             '.ctrl': 'reset: tipValue, events: ["click"]',
             '.tipAmount': 'value: monetaryFormat(tipValue), events:["blur"], restrictInput: "0123456789.", kbdSwitcher: "float"',
-            '.percent-10': 'classes: {selected: equal(percentAmount, 10)}',
-            '.percent-15': 'classes: {selected: equal(percentAmount, 15)}',
-            '.percent-20': 'classes: {selected: equal(percentAmount, 20)}',
+            '.percent-10': 'classes: {selected: equal(percentAmount, 10), "primary-button": equal(percentAmount, 10), "regular-button": not(equal(percentAmount, 10))}',
+            '.percent-15': 'classes: {selected: equal(percentAmount, 15), "primary-button": equal(percentAmount, 15), "regular-button": not(equal(percentAmount, 15))}',
+            '.percent-20': 'classes: {selected: equal(percentAmount, 20), "primary-button": equal(percentAmount, 20), "regular-button": not(equal(percentAmount, 20))}',
             '.percent-10 .percent-sum': 'text: currencyFormat(percents_10)',
             '.percent-15 .percent-sum': 'text: currencyFormat(percents_15)',
-            '.percent-20 .percent-sum': 'text: currencyFormat(percents_20)',
+            '.percent-20 .percent-sum': 'text: currencyFormat(percents_20)'
         },
         events: {
             'click .percent': 'setPercent'

@@ -25,6 +25,11 @@
     border-radius: 0;
 }
 
+.product-modifiers input:not([readonly]) {
+    border-width: 1px;
+    border-style: solid;
+}
+
 .product-modifiers input[type="number"] {
     -moz-appearance: textfield;
 }

@@ -83,22 +83,6 @@ input[type="button"], input[type='submit'] {
     -ms-appearance: none;
 }
 
-input::-webkit-input-placeholder {
-   color: inherit;
-}
-
-input:-moz-placeholder { /* Firefox 18- */
-   color: inherit;
-}
-
-input::-moz-placeholder {  /* Firefox 19+ */
-   color: inherit;
-}
-
-input:-ms-input-placeholder {
-   color: inherit;
-}
-
 ul {
     list-style: none;
 }
@@ -404,10 +388,6 @@ select::-ms-expand { /*Removes default IE style*/
     opacity: .5;
 }
 
-.size_chart {
-    text-decoration: none;
-}
-
 .uppercase {
     text-transform: uppercase;
 }
@@ -526,7 +506,8 @@ select::-ms-expand { /*Removes default IE style*/
 
 .establishments[class] button {
     font-size: 3em;
-    border: none;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 2em;
     font-weight: 100;
     margin-bottom: 1em;
@@ -582,7 +563,8 @@ select::-ms-expand { /*Removes default IE style*/
 
 #popup_panel[id] > input[type='button'] {
     min-width: 6em;
-    border: none;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 2em;
     padding: 0.5em 2em;
     margin: 1em 0.5em 0;

@@ -1,30 +1,30 @@
 <script type="text/template" id="modifiers_item-template">
-    <div class="modifier__inner s<%= slength %> <% if (isSpecial) { %>special_label<% } %> <% if(!_settings.online_orders) {print('no-controls');} %> font-size3 font-color5">
+    <div class="modifier__inner s<%= slength %> <% if (isSpecial) { %>special_label<% } %> <% if(!_settings.online_orders) {print('no-controls');} %> font-size3 regular-text">
 
         <div class="modifier__controls fl-right">
             <% if(isSize) { %>
-                <span class="cost fl-right">
+                <span class="cost fl-right special-text">
                     <span class="currency_symbol"><%= currency_symbol %></span>
                     <span class="price"><%= price %></span>
                 </span>
             <% } else if(!isSpecial && !isInventoryMatrix) { %>
-                <span class="cost fl-right">
+                <span class="cost fl-right special-text">
                     <span class="plus">+</span>
                     <span class="currency_symbol"><%= currency_symbol %></span>
-                    <span class="price"><%= price %></span>
+                    <span class="price special-text"><%= price %></span>
                 </span>
             <% } %>
-            <span class="free fl-right font-color6"><span class="value"></span></span>
-            <label class="mdf_quantity select-wrapper fl-right font-color5 border-color5 bg-color2" style="display:none;"><select></select></label>
-            <label class="mdf_split select-wrapper selected_option option_0 fl-right font-color5 border-color5 bg-color2" style="display:none;"><select></select></label>
+            <span class="free fl-right special-text"><span class="value"></span></span>
+            <label class="mdf_quantity select-wrapper fl-right input-colors" style="display:none;"><select></select></label>
+            <label class="mdf_split select-wrapper selected_option option_0 fl-right input-colors" style="display:none;"><select></select></label>
         </div>
 
         <label for="modifier<%= id %>" class="modifier__label">
             <% if (!isSpecial) { %>
             <input type="<%= type %>" id="modifier<%= id %>" name="modifier<%= modifierClassName %>">
-            <span class="input <%= type %> font-color2 border-color5"></span>
+            <span class="input <%= type %>"></span>
             <% }  else { %>
-            <span class="special_button fl-right btn-inline font-color-active1"><%= _lp.MODIFIERS_ADD %></span>
+            <span class="special_button fl-right btn-inline primary-text"><%= _lp.MODIFIERS_ADD %></span>
             <% } %>
             <span class="title_wrapper">
                 <span class="title <% if(isSpecial) { %>special<% } %>"><%= name %></span>
@@ -38,48 +38,48 @@
 </script>
 
 <script type="text/template" id="modifiers_list-template">
-    <ul class="modifiers modifiers-list"></span>
+    <ul class="modifiers modifiers-list list-separator"></span>
 </script>
 
 <script type="text/template" id="modifiers_classes_item-template">
     <div class="modifier_class list-title">
-        <span class="font-color1 font-size3"><%= name %></span>
+        <span class="list-header-text font-size3"><%= name %></span>
         <% if (_settings.online_orders) { %>
-            <div class="font-color5 font-size2">
+            <div class="regular-text font-size2">
             <% if (type === 0 && (typeof maximum_amount != 'number' || maximum_amount === 0) && (typeof minimum_amount != 'number' || minimum_amount === 0)) { %>
                 <%= _lp.MODIFIERS_OPTIONAL %>
                 <% if (free_modifiers) { %>
-                    <span class="free font-color6">(<%= free_modifiers %>)</span>
+                    <span class="free special-text">(<%= free_modifiers %>)</span>
                 <% } %>
             <% } else if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) { %>
                 <%= _lp.MODIFIERS_CHOOSE %> <%= minimum_amount %>
                 <% if (free_modifiers) { %>
-                    <span class="free font-color6">(<%= free_modifiers %>)</span>
+                    <span class="free special-text">(<%= free_modifiers %>)</span>
                 <% } %>
             <% } else if (type === 0 && typeof maximum_amount == 'number' && maximum_amount != 0 && typeof minimum_amount == 'number' && minimum_amount != 0) { %>
                 <%= _lp.MODIFIERS_CHOOSE %> <%= minimum_amount %> <%= _lp.MODIFIERS_CHOOSE_TO %> <%= maximum_amount %>
                 <% if (free_modifiers) { %>
-                    <span class="free font-color6">(<%= free_modifiers %>)</span>
+                    <span class="free special-text">(<%= free_modifiers %>)</span>
                 <% } %>
             <% } else if (type === 0 && typeof maximum_amount == 'number' && (typeof minimum_amount != 'number' || minimum_amount === 0)) { %>
                 <%= _lp.MODIFIERS_OPTIONAL %> (<%= _lp.MODIFIERS_OPTIONAL_UP %> <%= maximum_amount %>)
                 <% if (free_modifiers) { %>
-                    <span class="free font-color6">(<%= free_modifiers %>)</span>
+                    <span class="free special-text">(<%= free_modifiers %>)</span>
                 <% } %>
             <% } else if (type === 0 && typeof maximum_amount != 'number' && typeof minimum_amount == 'number') { %>
                 <%= _lp.MODIFIERS_CHOOSE %> <%= _lp.MODIFIERS_CHOOSE_LEAST %> <%= minimum_amount %>
                 <% if (free_modifiers) { %>
-                    <span class="free font-color6">(<%= free_modifiers %>)</span>
+                    <span class="free special-text">(<%= free_modifiers %>)</span>
                 <% } %>
             <% } else if (type === 1) { %>
                 <%= _lp.MODIFIERS_CHOOSE %> <%= _lp.MODIFIERS_CHOOSE_ONE %>
                 <% if (free_modifiers) { %>
-                    <span class="free font-color6">(<%= free_modifiers %>)</span>
+                    <span class="free special-text">(<%= free_modifiers %>)</span>
                 <% } %>
             <% } else if (type === 2) { %>
                 <%= _lp.MODIFIERS_OPTIONAL %>
                 <% if (free_modifiers) { %>
-                    <span class="free font-color6">(<%= free_modifiers %>)</span>
+                    <span class="free special-text">(<%= free_modifiers %>)</span>
                 <% } %>
             <% } %>
             </div>
@@ -94,7 +94,7 @@
 
 <script type="text/template" id="modifiers_classes_matrix-template">
     <h2 class="list-title matrix-title">
-        <span class="font-size3 font-color5"><%= _lp.MODIFIERS_PLEASE_SELECT %>: <%= attributes %></span>
+        <span class="font-size3 regular-text"><%= _lp.MODIFIERS_PLEASE_SELECT %>: <%= attributes %></span>
     </h2>
     <dl class="modifier_classes modifiers-bottom-line"></dl>
 </script>
