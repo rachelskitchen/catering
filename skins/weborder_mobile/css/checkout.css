@@ -51,7 +51,13 @@
 
 .checkout input.pikaday {
     -webkit-user-select: none;
-    -moz-user-select: none;
+    -moz-user-select: none; /* does not work on some FF versions, workaround below */
     -ms-user-select: none;
-    user-select: none;
+    user-select: none; /* disable text selection and hide cursor btw */
+    text-indent: 0.6em;
+}
+
+.checkout input.pikaday:focus {
+    color: transparent; /* hide the blinking cursor */
+    text-shadow: 0px 0px 0px #000; /* show input text only */
 }
