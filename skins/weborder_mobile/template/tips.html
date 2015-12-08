@@ -1,22 +1,22 @@
 <script type="text/template" id="tips_line-template">
     <% if(_settings.accept_tips_online) { %>
-    <ul class="tip-selection bg-color2 font-size3 font-color3 text-center">
+    <ul class="tip-selection list-bg font-size3 text-center">
         <li class="tip-amount-item fl-left">
-            <div class="tip_label"> <%= _lp.TIPS_ADD %>: </div>
+            <div class="tip_label title-text"> <%= _lp.TIPS_ADD %>: </div>
             <div class="input-control" data-currency="<%= _settings.currency_symbol %>">
-                <input type="number" class="amount tipAmount ios-safari-caret border-color10">
-                <label class="ctrl-wrapper font-color8"><input type="button" class="ctrl"></label>
+                <input type="number" class="amount tipAmount ios-safari-caret input-colors">
+                <label class="ctrl-wrapper"><input type="button" class="ctrl"></label>
             </div>
         </li>
-        <li class="percent percent-10 border-color10 font-color1 bg-color-active1 font-color-active2" data-amount="10">
+        <li class="percent percent-10 regular-button" data-amount="10">
             <span class="percent-amount">10%</span>
             <span class="percent-sum"></span>
         </li>
-        <li class="percent percent-15 border-color10 font-color1 bg-color-active1 font-color-active2" data-amount="15">
+        <li class="percent percent-15 regular-button" data-amount="15">
             <span class="percent-amount">15%</span>
             <span class="percent-sum"></span>
         </li>
-        <li class="percent percent-20 border-color10 font-color1 bg-color-active1 font-color-active2" data-amount="20">
+        <li class="percent percent-20 regular-button" data-amount="20">
             <span class="percent-amount">20%</span>
             <span class="percent-sum"></span>
         </li>

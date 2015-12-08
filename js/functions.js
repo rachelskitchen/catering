@@ -779,13 +779,12 @@ function isAndroidWebKit() {
  * Loading img spinner
  */
 function loadSpinner(logo, anim_params, cb) {
-    var show_spinner = true, is_view_spinner = false,
+    var show_spinner = true,
         anim = typeof anim_params == 'undefined' ? true : anim_params;
     if (anim_params instanceof Object) {
         //anim_params is params like {spinner: false, anim: false}
         anim = typeof anim_params.anim == 'undefined' ? true : anim_params.anim;
         show_spinner = typeof anim_params.spinner == 'undefined' ? true : anim_params.spinner;
-        is_view_spinner = anim_params.view_spinner;
     }
     var s;
     logo.each(function() {
@@ -802,10 +801,7 @@ function loadSpinner(logo, anim_params, cb) {
         spinner = $('<div class="img-spinner"></div>');
 
         if (show_spinner) {
-            if (is_view_spinner)
-                spinner.view_spinner();
-            else
-                spinner.spinner();
+            spinner.spinner();
         }
 
         logo.replaceWith(spinner);

@@ -1,13 +1,13 @@
 <script type="text/template" id="product_list_item-template">
     <div>
-        <div class="price font-size2 font-color5"></div>
-        <div class="title font-size1 font-color3"></div>
-        <div class="desc font-size2 font-color5"></div>
+        <div class="price font-size2 regular-text"></div>
+        <div class="title font-size1 title-text"></div>
+        <div class="desc font-size2 regular-text"></div>
     <div>
 </script>
 
 <script type="text/template" id="product_modifiers-template">
-    <div class="product-modifiers font-color2 bg-color9">
+    <div class="product-modifiers header header-text">
         <div class="font-size1 fl-right">
             <span class="currency"></span>
             <input type="text" class="price ios-safari-caret">
@@ -16,7 +16,7 @@
         <div class="title font-size1"></div>
         <div class="desc info font-size2"></div>
         <div class="timetable info font-size2"><%= _lp.PRODUCTS_AVAILABLE %>: <span></span></div>
-        <div class="size_chart_wrapper info font-size2"><a href="#" target="_blank" class="link font-color7 size_chart"><%= _lp.PRODUCTS_SIZE_CHART %></a></div>
+        <div class="size_chart_wrapper info font-size2"><a href="#" target="_blank" class="link size_chart header-text"><%= _lp.PRODUCTS_SIZE_CHART %></a></div>
         <label class="gift-card info font-size2">
             <%= _lp.PRODUCTS_GIFT_CARD_NUMBER %>: <input type="text" class="gift-card-number ios-safari-caret" />
         </label>

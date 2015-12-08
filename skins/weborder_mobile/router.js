@@ -36,7 +36,7 @@ define(["main_router"], function(main_router) {
         headerModes.Cart = {mod: 'Cart'};
         headerModes.None = null;
         footerModes.Main = {mod: 'Main'};
-        footerModes.Promo = {modelName: 'PromoMessage', mod: 'Main', className: 'promo-message-container bg-color1'};
+        footerModes.Promo = {modelName: 'PromoMessage', mod: 'Main', className: 'promo-message-container navigation-bar'};
         footerModes.None = null;
     }
 
@@ -776,7 +776,7 @@ define(["main_router"], function(main_router) {
                     footer:  {
                             total: App.Data.myorder.total,
                             mod: 'Cart',
-                            className: 'footer bg-color10'
+                            className: 'footer'
                         },
                     contentClass: '',
                     content: [
@@ -811,7 +811,7 @@ define(["main_router"], function(main_router) {
 
             App.Data.mainModel.set({
                 header: headerModes.Cart,
-                footer: {   className: 'footer bg-color10',
+                footer: {   className: 'footer',
                             cacheId: true,
                             cacheIdUniq: 'checkout' }
             });
@@ -833,7 +833,7 @@ define(["main_router"], function(main_router) {
                 });
 
                 App.Data.mainModel.set({
-                    contentClass: 'bg-color12',
+                    contentClass: 'primary-bg',
                     content: [
                         {
                             modelName: 'Checkout',
@@ -988,7 +988,7 @@ define(["main_router"], function(main_router) {
                     App.Data.mainModel.set({
                         footer: {
                             mod: 'Main',
-                            className: 'footer bg-color10',
+                            className: 'footer',
                             cacheId: true,
                             cacheIdUniq: 'confirm'
                         }
@@ -999,14 +999,14 @@ define(["main_router"], function(main_router) {
                         footer: {
                             mod: 'PaymentSelection',
                             total: myorder.total,
-                            className: 'footer footer-payments bg-color10',
+                            className: 'footer footer-payments',
                             cacheId: true
                         }
                     });
                 }
 
                 App.Data.mainModel.set({
-                    contentClass: 'bg-color12',
+                    contentClass: 'primary-bg',
                     content: content
                 });
 
@@ -1061,7 +1061,7 @@ define(["main_router"], function(main_router) {
                 footer: {
                     mod: 'PaymentSelection',
                     total: App.Data.myorder.total,
-                    className: 'footer footer-payments bg-color10',
+                    className: 'footer footer-payments',
                     cacheId: true
                 }
             });
@@ -1099,7 +1099,7 @@ define(["main_router"], function(main_router) {
                 header: headerModes.Cart,
                 footer: {   mod: 'PaymentInfo',
                             total: App.Data.myorder.total,
-                            className: 'footer bg-color10',
+                            className: 'footer',
                             cacheId: true,
                             cacheIdUniq: 'card' }
             });
@@ -1143,7 +1143,7 @@ define(["main_router"], function(main_router) {
             App.Data.mainModel.set({
                 header: headerModes.Cart,
                 footer: {   mod: 'Main',
-                            className: 'footer bg-color10',
+                            className: 'footer',
                             cacheId: true,
                             cacheIdUniq: 'giftcard' }
             });
@@ -1185,7 +1185,7 @@ define(["main_router"], function(main_router) {
                         submitCard: submitCard,
                         submitOrder: App.Data.stanfordCard.trigger.bind(App.Data.stanfordCard, 'pay'),
                         card: App.Data.stanfordCard,
-                        className: 'footer bg-color10',
+                        className: 'footer',
                         cacheId: true,
                         cacheIdUniq: 'stanford_card'
                 }
@@ -1239,7 +1239,7 @@ define(["main_router"], function(main_router) {
                 footer: {
                         mod: 'Card',
                         card: App.Data.stanfordCard,
-                        className: 'footer bg-color10',
+                        className: 'footer',
                         cacheId: true,
                         cacheIdUniq: 'stanford_student_verification'
                 }
@@ -1311,7 +1311,7 @@ define(["main_router"], function(main_router) {
                 }
 
                 App.Data.mainModel.set({
-                    contentClass: 'bg-color12 done-container',
+                    contentClass: 'primary-bg done-container',
                     content: {
                         modelName: 'Main',
                         model: App.Data.mainModel,
@@ -1468,7 +1468,7 @@ define(["main_router"], function(main_router) {
                 footer: {
                         card: rewardsCard,
                         mod: 'Card',
-                        className: 'footer bg-color10',
+                        className: 'footer',
                         cacheId: true,
                         cacheIdUniq: 'rewards_card'
                     }
@@ -1503,7 +1503,7 @@ define(["main_router"], function(main_router) {
                 footer: {
                         rewardsCard: rewardsCard,
                         mod: 'RewardRedemption',
-                        className: 'footer bg-color10'
+                        className: 'footer'
                     }
             });
 
@@ -1550,7 +1550,7 @@ define(["main_router"], function(main_router) {
                     mod: 'StanfordReload',
                     card: stanfordCard,
                     orderItem: order,
-                    className: 'footer bg-color10'
+                    className: 'footer'
                 };
 
                 App.Data.footer.set({

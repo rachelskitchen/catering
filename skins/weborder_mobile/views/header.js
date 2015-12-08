@@ -38,9 +38,9 @@ define(["factory"], function() {
            '.btn-back': 'toggle: back',
            '.btn-back-title': 'text: back_title',
            '.btn-cart': 'toggle: cartItemsQuantity, classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}',
-           '.btn-search': 'classes: {active: showSearch, "font-color2": showSearch, "font-color7": not(showSearch)}',
+           '.btn-search': 'classes: {active: showSearch}',
            '.search': 'outsideTouch: showSearch, events:["onOutsideTouch"], classes: {invisible: not(showSearch)}, attr: {contenteditable: false}',
-           '.input-search': 'value: search, events: ["input"], classes: {"font-color3": search}',
+           '.input-search': 'value: search, events: ["input"]',
            '.ctrl': 'reset: search, events: ["click"]'
         },
         events: {
@@ -59,7 +59,7 @@ define(["factory"], function() {
             var tabs = App.Views.GeneratorView.create('Header', {
                 model: this.model,
                 mod: 'Tabs',
-                className: 'tabs bg-color3 font-color8'
+                className: 'tabs tab-text'
             }, 'header_tabs');
 
             this.subViews.push(tabs);
@@ -130,9 +130,9 @@ define(["factory"], function() {
         tagName: 'ul',
         bindings: {
             ':el': "attr: {'data-active-tab': tab}",
-            '[data-tab="0"]': "classes: {'font-color2': equal(0, tab)}",
-            '[data-tab="1"]': "classes: {'font-color2': equal(1, tab)}",
-            '[data-tab="2"]': "classes: {'font-color2': equal(2, tab)}",
+            '[data-tab="0"]': "classes: {active: equal(0, tab)}",
+            '[data-tab="1"]': "classes: {active: equal(1, tab)}",
+            '[data-tab="2"]': "classes: {active: equal(2, tab)}",
         },
         events: {
             'click li': 'onTab'
