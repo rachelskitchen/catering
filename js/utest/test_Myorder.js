@@ -1037,7 +1037,16 @@ define(['myorder', 'products'], function() {
             model.add(obj2);
             expect(model.get_only_product_quantity()).toBe(3);
         });
-        
+
+        it('get_service_fee_charge()', function() {
+            model = new App.Collections.Myorders([
+                {id_product: 1, sum: 1},
+                {id_product: null, sum: 1},
+                {id_product: null, sum: 1}
+            ]);
+            expect(model.get_service_fee_charge()).toBe(2);
+        });
+
         describe('addJSON()', function() {
             
             beforeEach(function() {
@@ -1085,9 +1094,13 @@ define(['myorder', 'products'], function() {
         });
         
         it('clone()', function() {
+            var order = new App.Models.Myorder();
+            spyOn(order, 'clone');
+            model = new App.Collections.Myorders([order]);
             var clone = model.clone();
             expect(clone).not.toBe(model);
             expect(clone.__proto__).toBe(model.__proto__);
+            expect(order.clone).toHaveBeenCalled();
         });
 
         describe('change_only_gift_dining_option()', function() {
@@ -1261,6 +1274,26 @@ define(['myorder', 'products'], function() {
             }
         });
 
+        it('removeServiceFees', function() {
+            var fee = new App.Models.Myorder(),
+                order = new App.Models.Myorder(),
+                product = new Backbone.Model();
+
+            spyOn(App.Models.Myorder.prototype, 'get_product').and.returnValue(product);
+            spyOn(App.Models.Myorder.prototype, 'get');
+
+            spyOn(order, 'isServiceFee').and.returnValue(false);
+            spyOn(fee, 'isServiceFee').and.returnValue(true);
+            model = new App.Collections.Myorders([
+                order,
+                fee
+            ]);
+
+            expect(model.models.length).toBe(2);
+            model.removeServiceFees();
+            expect(model.models.length).toBe(1);
+        });
+
         it('saveOrders()', function() {
             var stored_data;
             var otherItem = new App.Models.Myorder();
@@ -1287,18 +1320,30 @@ define(['myorder', 'products'], function() {
         });
 
         it('loadOrders()', function() {
+            var orders = [{
+                total: {
+                    subtotal: 10,
+                    tax: 2,
+                    surcharge: 1,
+                    discounts: 0
+                }
+            }]
             spyOn(model.checkout, 'loadCheckout');
             spyOn(model.total, 'loadTotal');
-            spyOn(window, 'getData').and.returnValue('test');
+            spyOn(window, 'getData').and.returnValue(orders);
             spyOn(model, 'empty_myorder');
             spyOn(model, 'addJSON');
+            spyOn(model.total, 'set');
+            spyOn(model.discount, 'loadDiscount');
             
             model.loadOrders();
 
             expect(model.empty_myorder).toHaveBeenCalled();
             expect(model.checkout.loadCheckout).toHaveBeenCalled();
             expect(model.total.loadTotal).toHaveBeenCalled();
-            expect(model.addJSON).toHaveBeenCalledWith('test');
+            expect(model.addJSON).toHaveBeenCalledWith(orders);
+            expect(model.discount.loadDiscount).toHaveBeenCalled();
+            expect(model.total.set).toHaveBeenCalledWith(orders[0].total);
         });
 
         describe('_check_cart()', function() {
