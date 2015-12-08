@@ -1,0 +1,357 @@
+.resolve-background (@color) when (length(@color) > 1) {
+    @startColor: extract(@color, 1);
+    @endColor: extract(@color, 2);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, @startColor), color-stop(1, @endColor));
+    background: -o-linear-gradient(bottom, @startColor 0%, @endColor 100%);
+    background: -moz-linear-gradient(bottom, @startColor 0%, @endColor 100%);
+    background: -webkit-linear-gradient(bottom, @startColor 0%, @endColor 100%);
+    background: -ms-linear-gradient(bottom, @startColor 0%, @endColor 100%);
+    background: linear-gradient(to bottom, @startColor 0%, @endColor 100%);
+}
+
+.resolve-background (@color) when (length(@color) = 1) {
+    background: @color;
+}
+
+.resolve-background-alpha (@color, @alpha) {
+    background: fade(extract(@color, 1), @alpha);
+}
+
+.resolve-color (@color) {
+    color: extract(@color, 1);
+}
+
+.resolve-color-alpha (@color, @alpha) {
+    color: fade(extract(@color, 1), @alpha);
+}
+
+.resolve-border-color (@color) {
+    border-color: extract(@color, 1);
+}
+
+.resolve-border-color-alpha (@color, @alpha) {
+    border-color: fade(extract(@color, 1), @alpha);
+}
+
+* {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -o-tap-highlight-color: rgba(0,0,0,0);
+    -moz-tap-highlight-color: rgba(0,0,0,0);
+    -ms-tap-highlight-color: rgba(0,0,0,0);
+    tap-highlight-color: rgba(0,0,0,0);
+}
+
+/* [navigation_bar] Top/Navigation/Header bar on all screens */
+.navigation-bar {
+    .resolve-background(@navigation_bar);
+}
+
+/* [navigation_bar_item] Any item on navigation bar (text, icons, logo) */
+.navigation-bar-item {
+    .resolve-color(@navigation_bar_item);
+}
+
+/* [primary_background] Screen backround (exclude lists) */
+.primary-bg,
+#popup_container[id] {
+    .resolve-background(@primary_background) !important;
+}
+
+/* [cart_icon_background] Cart icon background */
+.btn-cart {
+    .resolve-background(@cart_icon_background);
+}
+
+/* [cart_quantity_background] Items quantity background */
+.btn-cart[data-count]::after {
+    .resolve-background(@cart_quantity_background);
+}
+
+/* [cart_quantity_border] Items quantity border */
+.btn-cart[data-count]::after {
+    .resolve-border-color(@cart_quantity_border);
+}
+
+/* [tab] Store details tabs button background */
+.tabs {
+    .resolve-background(@tab);
+}
+
+/* [tab_text] Store details tabs button background */
+.tab-text {
+    .resolve-color-alpha(@tab_text, 30%);
+}
+
+.tab-text .active {
+    .resolve-color(@tab_text);
+}
+
+.tab-center {
+    .resolve-border-color-alpha(@tab_text, 30%);
+}
+
+/* [tab_active_underline] Store details tabs button background */
+.tabs::after {
+    .resolve-background(@tab_active_underline);
+}
+
+/* [input_background] Text fields background */
+.input-colors {
+    .resolve-background(@input_background);
+}
+
+/* [input_border] Text fields border */
+.input-colors {
+    .resolve-border-color(@input_border);
+}
+
+/* [input_border_highlighted] Selected text fields border */
+.input-colors:focus {
+    .resolve-border-color(@input_border_highlighted);
+}
+
+/* [input_placeholder] Text field placeholder text */
+.input-colors::-webkit-input-placeholder,
+.input-colors:-moz-placeholder, /* Firefox 18- */
+.input-colors::-moz-placeholder, /* Firefox 19+ */
+.input-colors:-ms-input-placeholder {
+    .resolve-color(@input_placeholder);
+}
+
+/* [input_text] Text field text color */
+.input-colors,
+.establishments[class] .select-wrapper::after {
+   .resolve-color(@input_text);
+}
+
+.input-control .ctrl-wrapper::after {
+    .resolve-color-alpha(@input_text, 30%);
+}
+
+select:-moz-focusring {
+    color: transparent !important;
+    text-shadow: 0 0 0 extract(@input_text, 1) !important;
+}
+
+/* [primary_text] Primary text color */
+.primary-text,
+.regular-button,
+.establishments[class] select,
+.establishments[class] button,
+#popup_cancel[id],
+#popup_content[id].info::before,
+.modifier .mdf_split::before {
+    .resolve-color(@primary_text);
+}
+
+/* [title_text] Text color for item's name etc */
+.title-text,
+#googlemaps_popup > div:first-child,
+.myorderList .combo_products_place .qty {
+    .resolve-color(@title_text);
+}
+
+.myorderList .combo_products_place .qty {
+    .resolve-border-color(@title_text);
+}
+
+.myorderList .qty {
+    .resolve-background(@title_text);
+}
+
+/* [regular_text] Regular text, custom menu, item price in list */
+.regular-text,
+#googlemaps_popup > div,
+#popup_container[id] {
+    .resolve-color(@regular_text);
+}
+
+.modifier .input {
+    .resolve-border-color(@regular_text);
+}
+
+/* [alternate_text] Text color for solid buttons, checkboxes (checkout, subtotal and etc) */
+.alternate-text,
+.primary-button,
+#popup_ok[id],
+.alternate-button:not([disabled]):active,
+.reward-selection li.active::after,
+.stanford-plan.active::after {
+    .resolve-color(@alternate_text);
+}
+
+.primary-button:not([disabled]):active,
+#popup_ok[id]:not([disabled]):active,
+.myorderList .combo_products_place .qty {
+    .resolve-background(alternate_text);
+}
+
+/* [special_text] Discount text, free modifiers */
+.special-text {
+    .resolve-color(@special_text);
+}
+
+/* [attention_text] Total amount */
+.attention-text,
+.required::before {
+    .resolve-color(@attention_text);
+}
+
+/* [list_background] cell bg, table bg */
+#section > div,
+.list-bg,
+.modifier .input,
+.combo_item .input {
+    .resolve-background(@list_background);
+}
+
+.modifier .input::before,
+.combo_item .input::before {
+    .resolve-color(@list_background);
+}
+
+.quantity .btn-qty:not([disabled]):active::before,
+.quantity .btn-qty:not([disabled]):active::after {
+    .resolve-border-color(@list_background);
+}
+
+/* [list_header] Table cells header */
+.list-title {
+    background: -moz-linear-gradient(left,  rgba(255,255,255,0) 0%, extract(@list_header, 1) 35%, extract(@list_header, 1) 65%, rgba(255,255,255,0) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255,255,255,0)), color-stop(35%, extract(@list_header, 1)), color-stop(65%, extract(@list_header, 1)), color-stop(100%, rgba(255,255,255,0))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left,  rgba(255,255,255,0) 0%, extract(@list_header, 1) 35%, extract(@list_header, 1) 65%, rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
+    background: -ms-linear-gradient(left, rgba(255,255,255,0) 0%, extract(@list_header, 1) 35%, extract(@list_header, 1) 65%, rgba(255,255,255,0) 100%); /* IE10+ */
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, extract(@list_header, 1) 35%, extract(@list_header, 1) 65%, rgba(255,255,255,0) 100%); /* W3C */
+}
+
+/* [list_header_text] Header text color */
+.list-header-text {
+    .resolve-color(@list_header_text);
+}
+
+.modifier input:checked + .input,
+.combo_item .input[checked=checked] /* TODO change selector */ {
+    .resolve-background(@list_header_text);
+    .resolve-border-color(@list_header_text);
+}
+
+.quantity .btn-qty {
+    .resolve-border-color(@list_header_text);
+}
+
+.quantity .btn-qty:not([disabled]):active {
+    .resolve-background(@list_header_text);
+}
+
+/* [list_separator] Table cells separator */
+.list-separator,
+.list-title,
+.list > li,
+.myorder.items > li,
+.discount.items > li,
+.service_fees.items > li,
+.totals-checkout > li {
+    .resolve-border-color(@list_separator);
+}
+
+.list > li::after {
+    .resolve-color(@list_separator);
+}
+
+/* [header] Customize screen product description text background */
+.header {
+    .resolve-background(@header);
+}
+
+/* [header_text] Customize screen product description text background */
+.header-text {
+    .resolve-color(@header_text);
+}
+
+.product-modifiers input:not([readonly]) {
+    .resolve-border-color(@header_text);
+}
+
+/* [button_border] button border */
+.primary-button,
+.regular-button,
+.establishments[class] button,
+#popup_ok[id],
+#popup_cancel[id] {
+    .resolve-border-color(@button_border);
+}
+
+/* [primary_button] primary background button */
+.primary-button,
+#popup_ok[id] {
+    .resolve-background(@primary_button);
+}
+
+.primary-button:not([disabled]):active,
+#popup_ok[id]:not([disabled]):active {
+    .resolve-color(@primary_button);
+    .resolve-border-color(@primary_button);
+}
+
+.regular-button:not([disabled]):active,
+#popup_cancel[id]:not([disabled]):active,
+.establishments[class] button:not([disabled]):active,
+.payments .payment,
+ul.reward-selection > li {
+    .resolve-border-color(@primary_button);
+}
+
+.reward-selection li.active, .stanford-plan.active {
+    .resolve-background-alpha(@primary_button, 30%);
+}
+
+/* [regular_button] Reqular button background*/
+.regular-button,
+#popup_cancel[id],
+.establishments[class] button {
+    .resolve-background(@regular_button);
+}
+
+/* [alternate_button] Close/Remove */
+.alternate-button {
+    .resolve-color(@alternate_button);
+    .resolve-border-color(@alternate_button);
+}
+
+.alternate-button:not([disabled]):active {
+    .resolve-background(@alternate_button);
+}
+
+/* [toolbar] Toolbar with payment button, footer background */
+.toolbar {
+    .resolve-background(@toolbar);
+}
+
+/* [warning_icon] Warning icon in popup */
+#popup_content[id].warning::before {
+    .resolve-color(@warning_icon);
+}
+
+/* icons */
+#header .btn-cart {
+    background-image: data-uri('image/svg+xml;base64', 'img/bag.svg');
+    background-size: 60%;
+    background-repeat: no-repeat;
+    background-position: 50%;
+}
+
+.list-title::after {
+    background-image: data-uri('image/svg+xml;base64', 'img/arrow-down.svg');
+    background-position: 50%;
+    background-size: 2.5em 1.33em;
+}
+
+/** establishments styles **/
+.establishments[class] {
+    background: rgba(0,0,0,.7);
+}
+
+/** popup alert styles **/
+#popup_alert[id] {
+    background: rgba(0,0,0,.7);
+}

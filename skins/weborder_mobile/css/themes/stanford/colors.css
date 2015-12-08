@@ -1,107 +1,89 @@
 * {
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-    -o-tap-highlight-color: rgba(0,0,0,0);
-    -moz-tap-highlight-color: rgba(0,0,0,0);
-    -ms-tap-highlight-color: rgba(0,0,0,0);
-    tap-highlight-color: rgba(0,0,0,0);
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -o-tap-highlight-color: rgba(0, 0, 0, 0);
+  -moz-tap-highlight-color: rgba(0, 0, 0, 0);
+  -ms-tap-highlight-color: rgba(0, 0, 0, 0);
+  tap-highlight-color: rgba(0, 0, 0, 0);
 }
-
 /* [navigation_bar] Top/Navigation/Header bar on all screens */
 .navigation-bar {
-    background: -moz-linear-gradient(top,#8C1515,#660F0F);
-    background: -webkit-linear-gradient(top,#8C1515,#660F0F);
-    background: -o-linear-gradient(top,#8C1515,#660F0F);
-    background: -ms-linear-gradient(top,#8C1515,#660F0F);
-    background: linear-gradient(top,#8C1515,#660F0F);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #8C1515), color-stop(1, #660F0F));
+  background: -o-linear-gradient(bottom, #8C1515 0%, #660F0F 100%);
+  background: -moz-linear-gradient(bottom, #8C1515 0%, #660F0F 100%);
+  background: -webkit-linear-gradient(bottom, #8C1515 0%, #660F0F 100%);
+  background: -ms-linear-gradient(bottom, #8C1515 0%, #660F0F 100%);
+  background: linear-gradient(to bottom, #8C1515 0%, #660F0F 100%);
 }
-
 /* [navigation_bar_item] Any item on navigation bar (text, icons, logo) */
 .navigation-bar-item {
-    color: #FFFFFF;
+  color: #FFFFFF;
 }
-
 /* [primary_background] Screen backround (exclude lists) */
 .primary-bg,
 #popup_container[id] {
-    background: #E4E5E2 !important;
+  background: #E4E5E2 !important;
 }
-
 /* [cart_icon_background] Cart icon background */
 .btn-cart {
-    background: #FFFFFF;
+  background: #FFFFFF;
 }
-
 /* [cart_quantity_background] Items quantity background */
 .btn-cart[data-count]::after {
-    background: #F22828;
+  background: #F22828;
 }
-
 /* [cart_quantity_border] Items quantity border */
 .btn-cart[data-count]::after {
-    border-color: #FFFFFF;
+  border-color: #FFFFFF;
 }
-
 /* [tab] Store details tabs button background */
 .tabs {
-    background: #373C40;
+  background: #373C40;
 }
-
 /* [tab_text] Store details tabs button background */
 .tab-text {
-    color: rgba(255,255,255,0.3); /* inactive with alpha-channel 0.3 */
+  color: rgba(255, 255, 255, 0.3);
 }
-
 .tab-text .active {
-    color: #fff;
+  color: #FFFFFF;
 }
-
 .tab-center {
-    border-color: rgba(255,255,255,0.3);
+  border-color: rgba(255, 255, 255, 0.3);
 }
-
 /* [tab_active_underline] Store details tabs button background */
 .tabs::after {
-    background: #d00000;
+  background: #d00000;
 }
-
 /* [input_background] Text fields background */
 .input-colors {
-    background: #fff;
+  background: #FFFFFF;
 }
-
 /* [input_border] Text fields border */
 .input-colors {
-    border-color: #FFEEF2;
+  border-color: #FFEEF2;
 }
-
 /* [input_border_highlighted] Selected text fields border */
 .input-colors:focus {
-    border-color: #8C1515;
+  border-color: #8C1515;
 }
-
 /* [input_placeholder] Text field placeholder text */
 .input-colors::-webkit-input-placeholder,
-.input-colors:-moz-placeholder, /* Firefox 18- */
-.input-colors::-moz-placeholder, /* Firefox 19+ */
+.input-colors:-moz-placeholder,
+.input-colors::-moz-placeholder,
 .input-colors:-ms-input-placeholder {
-   color: #cecece;
+  color: #CECECE;
 }
-
 /* [input_text] Text field text color */
 .input-colors,
 .establishments[class] .select-wrapper::after {
-   color: #000;
+  color: #000000;
 }
-
 .input-control .ctrl-wrapper::after {
-    color: rgba(0,0,0,0.3); /* remove btn */
+  color: rgba(0, 0, 0, 0.3);
 }
-
 select:-moz-focusring {
-    color: transparent !important;
-    text-shadow: 0 0 0 #000 !important;
+  color: transparent !important;
+  text-shadow: 0 0 0 #000000 !important;
 }
-
 /* [primary_text] Primary text color */
 .primary-text,
 .regular-button,
@@ -110,35 +92,29 @@ select:-moz-focusring {
 #popup_cancel[id],
 #popup_content[id].info::before,
 .modifier .mdf_split::before {
-    color: #8C1515;
+  color: #8C1515;
 }
-
 /* [title_text] Text color for item's name etc */
 .title-text,
 #googlemaps_popup > div:first-child,
 .myorderList .combo_products_place .qty {
-    color: #000;
+  color: #000000;
 }
-
 .myorderList .combo_products_place .qty {
-    border-color: #000;
+  border-color: #000000;
 }
-
 .myorderList .qty {
-    background: #000;
+  background: #000000;
 }
-
 /* [regular_text] Regular text, custom menu, item price in list */
 .regular-text,
 #googlemaps_popup > div,
 #popup_container[id] {
-    color: #838385;
+  color: #838385;
 }
-
 .modifier .input {
-    border-color: #838385;
+  border-color: #838385;
 }
-
 /* [alternate_text] Text color for solid buttons, checkboxes (checkout, subtotal and etc) */
 .alternate-text,
 .primary-button,
@@ -146,72 +122,65 @@ select:-moz-focusring {
 .alternate-button:not([disabled]):active,
 .reward-selection li.active::after,
 .stanford-plan.active::after {
-    color: #fff;
+  color: #FFFFFF;
 }
-
 .primary-button:not([disabled]):active,
 #popup_ok[id]:not([disabled]):active,
 .myorderList .combo_products_place .qty {
-    background: #fff;
+  background: alternate_text;
 }
-
 /* [special_text] Discount text, free modifiers */
 .special-text {
-    color: #13a11d;
+  color: #13A11D;
 }
-
 /* [attention_text] Total amount */
 .attention-text,
 .required::before {
-    color: #e73939;
+  color: #E73939;
 }
-
 /* [list_background] cell bg, table bg */
 #section > div,
 .list-bg,
 .modifier .input,
 .combo_item .input {
-    background: #fff;
+  background: #FFFFFF;
 }
-
 .modifier .input::before,
 .combo_item .input::before {
-    color: #fff;
+  color: #FFFFFF;
 }
-
 .quantity .btn-qty:not([disabled]):active::before,
 .quantity .btn-qty:not([disabled]):active::after {
-    border-color: #fff;
+  border-color: #FFFFFF;
 }
-
 /* [list_header] Table cells header */
 .list-title {
-    background: -moz-linear-gradient(left,  rgba(255,255,255,0) 0%, #FFF1F6 35%, #FFF1F6 65%, rgba(255,255,255,0) 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255,255,255,0)), color-stop(35%, #FFF1F6), color-stop(65%, #FFF1F6), color-stop(100%, rgba(255,255,255,0))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(left,  rgba(255,255,255,0) 0%, #FFF1F6 35%, #FFF1F6 65%, rgba(255,255,255,0) 100%); /* Chrome10+,Safari5.1+ */
-    background: -ms-linear-gradient(left, rgba(255,255,255,0) 0%, #FFF1F6 35%, #FFF1F6 65%, rgba(255,255,255,0) 100%); /* IE10+ */
-    background: linear-gradient(to right, rgba(255,255,255,0) 0%, #FFF1F6 35%, #FFF1F6 65%, rgba(255,255,255,0) 100%); /* W3C */
+  background: -moz-linear-gradient(left, rgba(255, 255, 255, 0) 0%, #FFF1F6 35%, #FFF1F6 65%, rgba(255, 255, 255, 0) 100%);
+  /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(35%, #FFF1F6), color-stop(65%, #FFF1F6), color-stop(100%, rgba(255, 255, 255, 0)));
+  /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, #FFF1F6 35%, #FFF1F6 65%, rgba(255, 255, 255, 0) 100%);
+  /* Chrome10+,Safari5.1+ */
+  background: -ms-linear-gradient(left, rgba(255, 255, 255, 0) 0%, #FFF1F6 35%, #FFF1F6 65%, rgba(255, 255, 255, 0) 100%);
+  /* IE10+ */
+  background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, #FFF1F6 35%, #FFF1F6 65%, rgba(255, 255, 255, 0) 100%);
+  /* W3C */
 }
-
 /* [list_header_text] Header text color */
 .list-header-text {
-    color: #8C1515;
+  color: #8C1515;
 }
-
 .modifier input:checked + .input,
-.combo_item .input[checked=checked] /* TODO change selector */ {
-    background: #8C1515;
-    border-color: #8C1515;
+.combo_item .input[checked=checked] {
+  background: #8C1515;
+  border-color: #8C1515;
 }
-
 .quantity .btn-qty {
-    border-color: #8C1515;
+  border-color: #8C1515;
 }
-
 .quantity .btn-qty:not([disabled]):active {
-    background: #8C1515;
+  background: #8C1515;
 }
-
 /* [list_separator] Table cells separator */
 .list-separator,
 .list-title,
@@ -220,111 +189,95 @@ select:-moz-focusring {
 .discount.items > li,
 .service_fees.items > li,
 .totals-checkout > li {
-    border-color: #cecece;
+  border-color: #CECECE;
 }
-
 .list > li::after {
-    color: #cecece;
+  color: #CECECE;
 }
-
 /* [header] Customize screen product description text background */
 .header {
-    background: #8C1515;
+  background: #8C1515;
 }
-
 /* [header_text] Customize screen product description text background */
 .header-text {
-    color: #fff;
+  color: #FFFFFF;
 }
-
 .product-modifiers input:not([readonly]) {
-    border-color: #fff;
+  border-color: #FFFFFF;
 }
-
 /* [button_border] button border */
 .primary-button,
 .regular-button,
 .establishments[class] button,
 #popup_ok[id],
 #popup_cancel[id] {
-    border-color: #FFEEF2;
+  border-color: #FFEEF2;
 }
-
 /* [primary_button] primary background button */
 .primary-button,
 #popup_ok[id] {
-    background: -moz-linear-gradient(top,#8C1515,#660F0F);
-    background: -webkit-linear-gradient(top,#8C1515,#660F0F);
-    background: -o-linear-gradient(top,#8C1515,#660F0F);
-    background: -ms-linear-gradient(top,#8C1515,#660F0F);
-    background: linear-gradient(top,#8C1515,#660F0F);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #8C1515), color-stop(1, #660F0F));
+  background: -o-linear-gradient(bottom, #8C1515 0%, #660F0F 100%);
+  background: -moz-linear-gradient(bottom, #8C1515 0%, #660F0F 100%);
+  background: -webkit-linear-gradient(bottom, #8C1515 0%, #660F0F 100%);
+  background: -ms-linear-gradient(bottom, #8C1515 0%, #660F0F 100%);
+  background: linear-gradient(to bottom, #8C1515 0%, #660F0F 100%);
 }
-
 .primary-button:not([disabled]):active,
 #popup_ok[id]:not([disabled]):active {
-    color: #8C1515;
-    border-color: #8C1515;
+  color: #8C1515;
+  border-color: #8C1515;
 }
-
 .regular-button:not([disabled]):active,
 #popup_cancel[id]:not([disabled]):active,
 .establishments[class] button:not([disabled]):active,
 .payments .payment,
 ul.reward-selection > li {
-    border-color: #8C1515;
+  border-color: #8C1515;
 }
-
-.reward-selection li.active, .stanford-plan.active {
-    background: rgba(140, 21, 21, 0.3);
+.reward-selection li.active,
+.stanford-plan.active {
+  background: rgba(140, 21, 21, 0.3);
 }
-
 /* [regular_button] Reqular button background*/
 .regular-button,
 #popup_cancel[id],
 .establishments[class] button {
-    background: #fff;
+  background: #FFFFFF;
 }
-
 /* [alternate_button] Close/Remove */
 .alternate-button {
-    color: #0B1216;
-    border-color: #0B1216;
+  color: #0B1216;
+  border-color: #0B1216;
 }
-
 .alternate-button:not([disabled]):active {
-    background: #0B1216;
+  background: #0B1216;
 }
-
 /* [toolbar] Toolbar with payment button, footer background */
 .toolbar {
-    background: #D0D0D0;
+  background: #D0D0D0;
 }
-
 /* [warning_icon] Warning icon in popup */
 #popup_content[id].warning::before {
-    color: #ad8a00;
+  color: #AD8A00;
 }
-
 /* icons */
 #header .btn-cart {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE2MCI+PGRlZnM+PHBhdGggaWQ9ImJhZyIgZmlsbD0iIzhjMTUxNSIgZD0iTTAsMTYwIEwwLDIwIEwyMCwyMCBMMjAsMCBMOTAsMCBMOTAsMTAgTDQwLDEwIEw0MCwyMCBMOTAsMjAgTDkwLDkwIEE0MCw0MCAwIDAsMSA1MCw1MCBBMTAsMTAgMCAxLDAgNDAsNTAgQTUwLDUwIDAgMCwwIDkwLDEwMCBMOTAsMTYwIHoiLz48L2RlZnM+PHVzZSB4PSIwIiB5PSIwIiB4bGluazpocmVmPSIjYmFnIi8+PHVzZSB4PSI5MCIgeT0iMCIgeGxpbms6aHJlZj0iI2JhZyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjY1LDApIHNjYWxlKC0xLCAxKSIvPjwvc3ZnPg==');
-    background-size: 60%;
-    background-repeat: no-repeat;
-    background-position: 50%;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE2MCI+PGRlZnM+PHBhdGggaWQ9ImJhZyIgZmlsbD0iIzhDMTUxNSIgZD0iTTAsMTYwIEwwLDIwIEwyMCwyMCBMMjAsMCBMOTAsMCBMOTAsMTAgTDQwLDEwIEw0MCwyMCBMOTAsMjAgTDkwLDkwIEE0MCw0MCAwIDAsMSA1MCw1MCBBMTAsMTAgMCAxLDAgNDAsNTAgQTUwLDUwIDAgMCwwIDkwLDEwMCBMOTAsMTYwIHoiLz48L2RlZnM+PHVzZSB4PSIwIiB5PSIwIiB4bGluazpocmVmPSIjYmFnIi8+PHVzZSB4PSI5MCIgeT0iMCIgeGxpbms6aHJlZj0iI2JhZyIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjY1LDApIHNjYWxlKC0xLCAxKSIvPjwvc3ZnPg==");
+  background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: 50%;
 }
-
 .list-title::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTUiIGhlaWdodD0iOCI+PHBvbHlnb24gcG9pbnRzPSIwLDAgIDE1LDAgIDgsOCIgc3R5bGU9ImZpbGw6I2ZmZjFmNjsiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSI4IiB5Mj0iOCIgc3R5bGU9InN0cm9rZS13aWR0aDoxO3N0cm9rZTojY2VjZWNlIi8+PGxpbmUgeDE9IjgiIHkxPSI4IiB4Mj0iMTUiIHkyPSIwIiBzdHlsZT0ic3Ryb2tlLXdpZHRoOjE7c3Ryb2tlOiNjZWNlY2UiLz48bGluZSB4MT0iMCIgeTE9IjAiIHgyPSIxNSIgeTI9IjAiIHN0eWxlPSJzdHJva2Utd2lkdGg6MTtzdHJva2U6I2ZmZjFmNiIvPjwvc3ZnPg==');
-    background-position: 50%;
-    background-size: 2.5em 1.33em;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTUiIGhlaWdodD0iOCI+PHBvbHlnb24gcG9pbnRzPSIwLDAgIDE1LDAgIDgsOCIgc3R5bGU9ImZpbGw6I0ZGRjFGNiIvPjxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjgiIHkyPSI4IiBzdHlsZT0ic3Ryb2tlLXdpZHRoOjE7c3Ryb2tlOiNDRUNFQ0UiLz48bGluZSB4MT0iOCIgeTE9IjgiIHgyPSIxNSIgeTI9IjAiIHN0eWxlPSJzdHJva2Utd2lkdGg6MTtzdHJva2U6I0NFQ0VDRSIvPjxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjE1IiB5Mj0iMCIgc3R5bGU9InN0cm9rZS13aWR0aDoxO3N0cm9rZTojRkZGMUY2Ii8+PC9zdmc+");
+  background-position: 50%;
+  background-size: 2.5em 1.33em;
 }
-
 /** establishments styles **/
 .establishments[class] {
-    background: rgba(0,0,0,.7);
+  background: rgba(0, 0, 0, 0.7);
 }
-
 /** popup alert styles **/
 #popup_alert[id] {
-    background: rgba(0,0,0,.7);
+  background: rgba(0, 0, 0, 0.7);
 }
