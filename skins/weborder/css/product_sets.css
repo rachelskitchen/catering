@@ -1,9 +1,18 @@
 
-.modifiers_table .combo_item .customize.link1 {
+#modifiers_popup .customize.link1 {
     text-decoration: underline;
     font-weight: normal;
     word-break: normal;
+}
+
+.modifiers_table .combo_item .customize.link1 {
     font-size: 15px;
+}
+
+#modifiers_popup .product_info .customize.link1 {
+    font-size: 20px;
+    float: right;
+    cursor: pointer;
 }
 
 .modifiers_table .combo_item {

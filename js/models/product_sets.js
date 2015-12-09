@@ -23,11 +23,11 @@
 define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone) {
     'use strict';
 
-    //  ---- Combo products model arhitecture -----
+    //  ---- Combo / Upsell products model arhitecture -----
     //
     //    App.Data.myorder [* (Collections.Myorder)
     //                      |
-    //      Models.Myorder  * -- product { is_combo = true,
+    //      Models.Myorder  * -- product { is_combo = true (has_upsell: true),
     //                      |              product_sets [* (Collections.ProductSets) }
     //                      *]                           |
     //                                 Models.ProductSet * -- order_products [* (Collections.ProductSetModels)
@@ -171,20 +171,24 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
         model: App.Models.ProductSet,
         typeName: "ProductSets",
         /**
-         * Get combo products from backend.
+         * Get product sets info from server.
+         * @param {number} product_id - product id
+         * @param {number} combo_type - 'combo' or 'upsell'
+         * @returns {$.Deffered} - deferred object that is resolved when the request is processed.
          */
-        get_product_sets: function(product_id) {
+        get_product_sets: function(product_id, combo_type) {
             var self = this,
                 fetching = new $.Deferred(); // Pointer that all data loaded
 
             $.ajax({
-                url: App.Data.settings.get("host") + "/weborders/product_sets/", //"/weborders/combo_products/",
+                url: App.Data.settings.get("host") + "/weborders/" + (combo_type == 'combo' ? "product_sets/" : "product_upcharge/"),
                 data: {
                     product: product_id
                 },
                 dataType: "json",
                 successResp: function(data) {
-                    data.forEach(function(pset, index) {
+                    var product_sets = combo_type == 'combo' ? data : data['slots'];
+                    product_sets.forEach(function(pset, index) {
                         var prod_set = new App.Models.ProductSet();
                         prod_set.addAjaxJSON(pset);
                         self.add(prod_set);
@@ -251,12 +255,12 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
         }
     });
 
-    App.Collections.ProductSets.init = function(product_id) {
+    App.Collections.ProductSets.init = function(product_id, combo_type) {
         var load = $.Deferred();
 
         if (App.Data.productSets[product_id] === undefined ) {
             App.Data.productSets[product_id] = new App.Collections.ProductSets;
-            load = App.Data.productSets[product_id].get_product_sets(product_id);
+            load = App.Data.productSets[product_id].get_product_sets(product_id, combo_type);
         } else {
             load.resolve();
         }

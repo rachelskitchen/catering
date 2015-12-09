@@ -269,8 +269,15 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         check_model: function() {
             return this.model.get('product').check_selected();
         },
+        check_order: function() {
+            var opt, has_upsell = this.model.isUpsellProduct();
+            if (has_upsell) { //this is modifiers customization for Upcharge combo product
+                opt = { modifiers_only: true };
+            }
+            return this.model.check_order(opt);
+        },
         action: function (event) {
-            var check = this.model.check_order(),
+            var check = this.check_order(),
                 self = this, index, collection;
             if (check.status === 'OK') {
                 this.model.get_product().check_gift(function() {
@@ -278,10 +285,14 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                         App.Data.myorder.add(self.model);
                     } else {
                         collection = self.options.real.collection;
-                        index = collection.indexOf(self.options.real);
+                    /*    index = collection.indexOf(self.options.real);
                         collection.remove(self.options.real);
                         collection.add(self.model, {at: index});
                         if (collection.splitItemAfterQuantityUpdate) {
+                            collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
+                        } */
+                        self.options.real.update(self.model);
+                        if (collection && collection.splitItemAfterQuantityUpdate) {
                             collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
                         }
                     }
@@ -304,6 +315,9 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         },
         check_model: function() {
             return this.model.get('product').get("product_sets").check_selected();
+        },
+        check_order: function() {
+            return this.model.check_order();
         }
       });
     }
@@ -347,7 +361,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 });
             });
 
-            if (this.model.isComboProduct()) {
+            if (this.model.isComboBased()) {
                 view = App.Views.GeneratorView.create('MyOrder', {
                     el: this.$('.combo_products_place'),
                     mod: 'ComboList',
@@ -400,7 +414,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             if (model.sold_by_weight && model.weight) {
                 productSum *= model.weight;
             }
-            if (product.get("is_combo"))
+            if (product.get("is_combo") || product.get("has_upsell"))
                 productSum = product.get("combo_price") * model.quantity;
             else if( model.is_service_fee ) {
                 productSum = round_monetary_currency(model.initial_price);

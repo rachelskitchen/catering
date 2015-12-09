@@ -59,7 +59,7 @@ define(["myorder_view"], function(myorder_view) {
         editItem: function(e) {
             e.preventDefault();
             var index = this.model.collection.models.indexOf(this.model);
-            if (this.model.isComboProduct())
+            if (this.model.isComboBased())
                 App.Data.router.navigate('combo_product/' + index, true);
             else
                 App.Data.router.navigate('modifiers/' + index, true);

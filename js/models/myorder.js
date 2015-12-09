@@ -463,7 +463,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * }
          * ```
          */
-        check_order: function() {
+        check_order: function(opt) {
             var product = this.get_product(),
                 modifiers = this.get_modifiers(),
                 size = modifiers.getSizeModel(),
@@ -471,16 +471,17 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 isDelivery = dining_option == 'DINING_OPTION_DELIVERY',
 
                 forced = modifiers.checkForced(),
-                exceeded = modifiers.checkAmount();
+                exceeded = modifiers.checkAmount(),
+                is_modifiers_only = _.isObject(opt) ? opt.modifiers_only : false;
 
-            if (product.get("sold_by_weight") && !this.get("weight")) {
+            if (!is_modifiers_only && product.get("sold_by_weight") && !this.get("weight")) {
                 return {
                     status: 'ERROR',
                     errorMsg: ERROR.BLOCK_WEIGHT_IS_NOT_VALID
                 };
             }
 
-            if (!App.Data.timetables.check_order_enable(isDelivery)) {
+            if (!is_modifiers_only && !App.Data.timetables.check_order_enable(isDelivery)) {
                 return {
                     status: 'ERROR',
                     errorMsg: ERROR.BLOCK_STORE_IS_CLOSED
@@ -594,7 +595,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     product_name_override: this.overrideProductName(product),
                     quantity: this.get('quantity'),
                     product_sub_id: this.get('product_sub_id'), //for_discounts ? this.get('product_sub_id') : undefined,
-                    is_combo: product.is_combo ? product.is_combo : undefined
+                    is_combo: product.is_combo ? product.is_combo : undefined,
+                    has_upsell: product.has_upsell ? product.has_upsell : undefined
                 };
 
             if (product.sold_by_weight) {
@@ -625,7 +627,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 item_obj.stanford_card_number = stanford_card_number;
             }
 
-            if (product.is_combo) {
+            if (product.is_combo || product.has_upsell) {
                 var product_sets = [];
                 product.product_sets.each(function(product_set){
                     var pset = product_set.item_submit(for_discounts);
@@ -674,6 +676,18 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          */
         isComboProduct: function() {
             return this.get("product").get("is_combo") === true;
+        },
+         /**
+         * @returns {boolean} `true` if the order item is Upsell product.
+         */
+        isUpsellProduct: function() {
+            return this.get("product").get("has_upsell") === true;
+        },
+        /**
+         * @returns {boolean} `true` if the order item is Upsell product.
+         */
+        isComboBased: function() {
+            return this.get("product").isComboBased();
         },
         /**
          * @returns {boolean} `true` if the order item is child product (Combo child product).
@@ -799,7 +813,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 product.set({is_gift: false, // no gifts for combos
                              max_price: 0}, // turn off max price feature for combo
                              {silent: true});
-                return App.Collections.ProductSets.init(id_product);
+                var combo_type = product.get('is_combo') ? 'combo' : 'upsell';
+                return App.Collections.ProductSets.init(id_product, combo_type);
             }).then(function() {
                 product.set("product_sets", App.Data.productSets[id_product]);
                 self.set({
@@ -872,10 +887,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * Checks all necessary attributes to place an order.
          * @override
          */
-        check_order: function() {
-            var result = App.Models.Myorder.prototype.check_order.apply(this, arguments);
-            if (result.status != 'OK') {
-                return result
+        check_order: function(opt) {
+            var result = App.Models.Myorder.prototype.check_order.apply(this, arguments),
+                is_modifiers_only = _.isObject(opt) ? opt.modifiers_only : false;
+            if (result.status != 'OK' || is_modifiers_only) {
+                return result;
+            }
+
+            if (is_modifiers_only) {
+                return status;
             }
 
             var psets = [],
@@ -1230,7 +1250,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             var self = this, obj;
             Array.isArray(data) && data.forEach(function(element) {
                 if (element.product.id) {
-                    var type = element.product.is_combo ? 'MyorderCombo' : 'Myorder';
+                    var type = (element.product.is_combo || element.product.has_upsell)? 'MyorderCombo' : 'Myorder';
                     var myorder = App.Models.create(type);
                     myorder.addJSON(element);
                     self.add(myorder);

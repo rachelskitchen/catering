@@ -228,7 +228,12 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
              * Combo product price
              * @type {number}
              */
-            combo_price: null
+            combo_price: null,
+            /**
+             * Combo product price
+             * @type {number}
+             */
+            has_upsell: false
         },
         /**
          * Sets `img` as App.Data.settings.get("img_path") value, `checked_gift_cards` as `{}`,
@@ -283,7 +288,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 data.created_date = 0;
             }
 
-            if (data.is_combo && Array.isArray(data.product_sets)) {
+            if ((data.is_combo || data.has_upsell) && Array.isArray(data.product_sets)) {
                 var product_sets = new App.Collections.ProductSets;
                 product_sets.addJSON(data.product_sets);
                 data.product_sets = product_sets;
@@ -634,6 +639,12 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             if(Array.isArray(timetables)) {
                 this.set('timetables', format_timetables(timetables));
             }
+        },
+        /**
+         * @returns {boolean} `true` if the product is root Combo or Upsell product.
+         */
+        isComboBased: function() {
+            return this.get("is_combo") === true || this.get("has_upsell") === true;
         }
     });
 
