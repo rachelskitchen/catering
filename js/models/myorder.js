@@ -1945,8 +1945,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 var myorder_fees = myorder.filter(function(obj){ return obj.isServiceFee(); });
 
                 var diff = myorder_fees.filter(function(obj){
-                           return !_.findWhere(json.service_fees, {id: obj.id});
-                       });
+                        return !_.findWhere(json.service_fees, {id: obj.id});
+                    });
                 //remove all service fees from myorder which aren't present in the responce now
                 myorder.remove(diff);
 
