@@ -1490,9 +1490,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 var giftcard = App.Data.giftcard,
                     check_card = giftcard.check();
 
-                if (giftcard.status === 'ERROR') {
-                    errorMsg = check_card.errorMsg;
-                } else if (check_card.status === 'ERROR_EMPTY_FIELDS') {
+                if (check_card.status === 'ERROR_EMPTY_FIELDS') {
                     fields = fields.concat(check_card.errorList);
                 }
             }
@@ -1501,9 +1499,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 var stanfordcard = App.Data.stanfordCard,
                     check_card = stanfordcard.check();
 
-                if (stanfordcard.status === 'ERROR') {
-                    errorMsg = check_card.errorMsg;
-                } else if (check_card.status === 'ERROR_EMPTY_FIELDS') {
+                if (check_card.status === 'ERROR_EMPTY_FIELDS') {
                     fields = fields.concat(check_card.errorList);
                 }
             }
@@ -1772,7 +1768,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             var myorder = this, checkout,
                 customer = App.Data.customer,
                 rewardsCard = this.rewardsCard.toJSON(),
-                total = myorder.total.get_all(),
                 items = [],
                 order_info = {},
                 is_apply_discount = params && params.apply_discount ? params.apply_discount : false,
