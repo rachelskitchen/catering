@@ -90,7 +90,6 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             var order_products = new App.Collections.ProductSetModels();
 
             data['products'].forEach(function(p_data) {
-                p_data.attribute_type = 0; // no inventory for combo products now
                 p_data.compositeId = p_data.id + '_' + p_data.id_category;
                 var json = {
                     product: p_data,
