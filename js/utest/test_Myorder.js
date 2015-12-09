@@ -704,7 +704,7 @@ define(['myorder', 'products'], function() {
                 spyOn(model, 'get_product').and.returnValue(product);
             });
 
-            it('general', function() {
+            it('general behaviour', function() {
                 expect(model.item_submit()).toEqual({
                     modifieritems: 'modifiers block',
                     special_request: 'special',
@@ -1037,7 +1037,16 @@ define(['myorder', 'products'], function() {
             model.add(obj2);
             expect(model.get_only_product_quantity()).toBe(3);
         });
-        
+
+        it('get_service_fee_charge()', function() {
+            model = new App.Collections.Myorders([
+                {id_product: 1, sum: 1},
+                {id_product: null, sum: 1},
+                {id_product: null, sum: 1}
+            ]);
+            expect(model.get_service_fee_charge()).toBe(2);
+        });
+
         describe('addJSON()', function() {
             
             beforeEach(function() {
@@ -1085,9 +1094,13 @@ define(['myorder', 'products'], function() {
         });
         
         it('clone()', function() {
+            var order = new App.Models.Myorder();
+            spyOn(order, 'clone');
+            model = new App.Collections.Myorders([order]);
             var clone = model.clone();
             expect(clone).not.toBe(model);
             expect(clone.__proto__).toBe(model.__proto__);
+            expect(order.clone).toHaveBeenCalled();
         });
 
         describe('change_only_gift_dining_option()', function() {
@@ -1261,6 +1274,26 @@ define(['myorder', 'products'], function() {
             }
         });
 
+        it('removeServiceFees', function() {
+            var fee = new App.Models.Myorder(),
+                order = new App.Models.Myorder(),
+                product = new Backbone.Model();
+
+            spyOn(App.Models.Myorder.prototype, 'get_product').and.returnValue(product);
+            spyOn(App.Models.Myorder.prototype, 'get');
+
+            spyOn(order, 'isServiceFee').and.returnValue(false);
+            spyOn(fee, 'isServiceFee').and.returnValue(true);
+            model = new App.Collections.Myorders([
+                order,
+                fee
+            ]);
+
+            expect(model.models.length).toBe(2);
+            model.removeServiceFees();
+            expect(model.models.length).toBe(1);
+        });
+
         it('saveOrders()', function() {
             var stored_data;
             var otherItem = new App.Models.Myorder();
@@ -1287,18 +1320,30 @@ define(['myorder', 'products'], function() {
         });
 
         it('loadOrders()', function() {
+            var orders = [{
+                total: {
+                    subtotal: 10,
+                    tax: 2,
+                    surcharge: 1,
+                    discounts: 0
+                }
+            }]
             spyOn(model.checkout, 'loadCheckout');
             spyOn(model.total, 'loadTotal');
-            spyOn(window, 'getData').and.returnValue('test');
+            spyOn(window, 'getData').and.returnValue(orders);
             spyOn(model, 'empty_myorder');
             spyOn(model, 'addJSON');
+            spyOn(model.total, 'set');
+            spyOn(model.discount, 'loadDiscount');
             
             model.loadOrders();
 
             expect(model.empty_myorder).toHaveBeenCalled();
             expect(model.checkout.loadCheckout).toHaveBeenCalled();
             expect(model.total.loadTotal).toHaveBeenCalled();
-            expect(model.addJSON).toHaveBeenCalledWith('test');
+            expect(model.addJSON).toHaveBeenCalledWith(orders);
+            expect(model.discount.loadDiscount).toHaveBeenCalled();
+            expect(model.total.set).toHaveBeenCalledWith(orders[0].total);
         });
 
         describe('_check_cart()', function() {
@@ -1359,7 +1404,7 @@ define(['myorder', 'products'], function() {
         });
         
         describe('check_order()', function() {
-            var dining_option, card_check,checkout_check, order_check, customer_check, fake;
+            var dining_option, card_check, giftcard_check, stanfordcard_check, checkout_check, order_check, customer_check, fake;
             
             beforeEach(function() {
                 fake = {
@@ -1378,11 +1423,33 @@ define(['myorder', 'products'], function() {
                 App.Data.card = {
                     check: function() {}
                 };
+                this.giftcard = App.Data.giftcard;
+                App.Data.giftcard = {
+                    check: function() {}
+                };
+                this.stanfordcard = App.Data.stanfordCard;
+                App.Data.stanfordCard = {
+                    check: function() {}
+                };
                 card_check = {
                     status: 'OK'
                 };
                 spyOn(App.Data.card, 'check').and.callFake(function() {
                     return card_check;
+                });
+
+                giftcard_check = {
+                    status: 'OK'
+                };
+                spyOn(App.Data.giftcard, 'check').and.callFake(function() {
+                    return giftcard_check;
+                });
+
+                stanfordcard_check = {
+                    status: 'OK'
+                };
+                spyOn(App.Data.stanfordCard, 'check').and.callFake(function() {
+                    return stanfordcard_check;
                 });
 
                 checkout_check = {
@@ -1413,6 +1480,8 @@ define(['myorder', 'products'], function() {
             
             afterEach(function() {
                 App.Data.card = this.card;
+                App.Data.giftcard = this.giftcard;
+                App.Data.stanfordCard = this.stanfordcard;
                 App.Data.customer = this.customer;
             });
             
@@ -1430,6 +1499,36 @@ define(['myorder', 'products'], function() {
                     tip: true
                 }, fake.funcOk, fake.funcError);
                 expect(fake.funcOk).toHaveBeenCalled();
+            });
+
+            describe('check pass with validationOnly option', function() {
+                beforeEach(function() {
+                    spyOn(model, 'create_order_and_pay');
+                });
+
+                it('paymentResponseValid', function() {
+                    model.check_order({validationOnly: true}, fake.funcOk, fake.funcError);
+
+                    expectations();
+                    model.trigger('paymentResponseValid');
+                    expect(fake.funcOk).toHaveBeenCalled();
+                    expect(fake.funcError).not.toHaveBeenCalled();
+                });
+
+                it('paymentFailedValid', function() {
+                    model.check_order({validationOnly: true}, fake.funcOk, fake.funcError);
+
+                    expectations();
+                    model.trigger('paymentFailedValid');
+                    expect(fake.funcError).toHaveBeenCalled();
+                    expect(fake.funcOk).not.toHaveBeenCalled();
+                });
+
+                function expectations() {
+                    expect(fake.funcOk).not.toHaveBeenCalled();
+                    expect(fake.funcError).not.toHaveBeenCalled();
+                    expect(model.create_order_and_pay).toHaveBeenCalledWith(PAYMENT_TYPE.NO_PAYMENT, true);
+                }
             });
             
             it('check card simple error', function() {
@@ -1449,7 +1548,25 @@ define(['myorder', 'products'], function() {
                 model.check_order({card: true}, fake.funcOk, fake.funcError);
                 expect(fake.funcError).toHaveBeenCalled();
             });
-            
+
+            it('check giftcard empty fields', function() {
+                giftcard_check = {
+                    status: 'ERROR_EMPTY_FIELDS',
+                    errorList: ['field']
+                };
+                model.check_order({giftcard: true}, fake.funcOk, fake.funcError);
+                expect(fake.funcError).toHaveBeenCalled();
+            });
+
+            it('check stanfordcard empty fields', function() {
+                stanfordcard_check = {
+                    status: 'ERROR_EMPTY_FIELDS',
+                    errorList: ['field']
+                };
+                model.check_order({stanfordcard: true}, fake.funcOk, fake.funcError);
+                expect(fake.funcError).toHaveBeenCalled();
+            });
+
             it('check checkout simple error', function() {
                 checkout_check = {
                     status: 'ERROR',
@@ -1575,12 +1692,18 @@ define(['myorder', 'products'], function() {
                 App.Data.timetables = this.timetables;
                 App.Data.settings.set('skin', this.skin);
             });
-            
+
+            it('paymentInProgress', function() {
+                model.paymentInProgress = true;
+                model.create_order_and_pay();
+                expect(model.submit_order_and_pay).not.toHaveBeenCalled();
+            });
+
             it('check pass', function() {
                 model.create_order_and_pay();
                 expect(model.submit_order_and_pay).toHaveBeenCalled();
             });
-            
+
             describe('check pass mlb skin, only gift, order seat', function() {
                 beforeEach(function() {
                     model.checkout.set('pickupTS', undefined);
@@ -1606,6 +1729,280 @@ define(['myorder', 'products'], function() {
                     model.create_order_and_pay();
                     expect(model.submit_order_and_pay).not.toHaveBeenCalled();
                 });
+            });
+        });
+
+        describe('get_cart_totals()', function() {
+            var getQtySpy, get_discount_xhr;
+
+            beforeEach(function() {
+                get_discount_xhr = Backbone.$.ajax();
+                spyOn(model, '_get_cart_totals').and.returnValue(get_discount_xhr);
+                getQtySpy = spyOn(model, 'get_only_product_quantity').and.returnValue(2);
+            });
+
+            it('general behaviour', function() {
+                expect(model.get_cart_totals()).toEqual(get_discount_xhr);
+            });
+
+            it('`getDiscountsTimeout` exists', function() {
+                spyOn(window, 'clearTimeout');
+                model.getDiscountsTimeout = 1;
+                model.get_cart_totals();
+                expect(model.getDiscountsTimeout).toBeUndefined();
+                expect(window.clearTimeout).toHaveBeenCalledWith(1);
+            });
+
+            it('get_only_product_quantity() < 1', function() {
+                getQtySpy.and.returnValue(0);
+                spyOn(model.total, 'set');
+
+                model.get_cart_totals();
+                expect(model.total.set).toHaveBeenCalled();
+            });
+
+            it('get_only_product_quantity() < 1 or `NoRequestDiscounts` is true', function() {
+                spyOn(model, 'listenTo');
+                getQtySpy.and.returnValue(0);
+                model.pending = true;
+
+                expect(model.get_cart_totals().state()).toBe('rejected');
+                expect(model.pending).toBeUndefined;
+
+                getQtySpy.and.returnValue(2);
+                model.NoRequestDiscounts = true;
+                expect(model.get_cart_totals().state()).toBe('rejected');
+                expect(model.pending).toBeUndefined;
+            });
+
+            it('`get_discount_xhr` exists', function() {
+                spyOn(get_discount_xhr, 'abort');
+                model.get_discount_xhr = get_discount_xhr;
+
+                model.get_cart_totals();
+                expect(get_discount_xhr.abort).toHaveBeenCalled();
+            });
+        });
+
+        describe('_get_cart_totals(params)', function() {
+            var data, checkout, rewardsCard, ajaxSpy;
+
+            beforeEach(function() {
+                ajaxSpy = spyOn($, 'ajax').and.callThrough();
+                spyOn(model, 'preparePickupTime');
+                spyOn(model, 'trigger');
+            });
+
+            it('general behaviour', function() {
+                var order = new App.Models.Myorder(),
+                    fee = new App.Models.Myorder();
+
+                spyOn(order, 'isServiceFee').and.returnValue(false);
+                spyOn(fee, 'isServiceFee').and.returnValue(true);
+                spyOn(order, 'item_submit').and.callFake(function() {
+                    return order;
+                });
+                model.add([
+                    order,
+                    fee
+                ], {silent: true});
+
+                model._get_cart_totals();
+                expect(model.preparePickupTime).toHaveBeenCalled();
+
+                expect($.ajax).toHaveBeenCalledWith({
+                    type: "POST",
+                    url: App.Data.settings.get("host") + "/weborders/cart_totals/",
+                    data: jasmine.any(String),
+                    dataType: 'json',
+                    success: jasmine.any(Function),
+                    error: jasmine.any(Function),
+                    complete: jasmine.any(Function)
+                });
+
+                data = JSON.parse($.ajax.calls.mostRecent().args[0].data);
+                expect(data.items.length).toBe(1);
+            });
+
+            it('ajax complete', function() {
+                ajaxSpy.and.callFake(function(e) {
+                    e.complete();
+                });
+                model._get_cart_totals();
+
+                expect(model.trigger).toHaveBeenCalledWith('DiscountsComplete');
+            });
+
+            describe('ajax success', function() {
+                beforeEach(function() {
+                    spyOn(App.Data.errors, 'alert');
+
+                    ajaxSpy.and.callFake(function(e) {
+                        e.success(data);
+                    });
+                })
+
+                it('data.status doesn\'t exist', function() {
+                    data = {};
+                    model._get_cart_totals({apply_discount: true});
+
+                    expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(MSG.ERROR_INCORRECT_AJAX_DATA) > -1).toBe(true);
+                });
+
+                it('data.status is `OK`', function() {
+                    data = {
+                        status: 'OK',
+                        data: 'data'
+                    };
+                    checkout = new Backbone.Model({
+                        discount_code: 'test'
+                    });
+                    model.checkout = checkout;
+                    spyOn(model, 'get_only_product_quantity').and.returnValue(1);
+                    spyOn(model, 'process_cart_totals');
+
+                    model._get_cart_totals({apply_discount: true});
+
+                    expect(model.checkout.get('last_discount_code')).toBe('test');
+                    expect(model.process_cart_totals).toHaveBeenCalledWith(data.data);
+                });
+
+                it('data.status is `DISCOUNT_CODE_NOT_FOUND` or `DISCOUNT_CODE_NOT_APPLICABLE`', function() {
+                    spyOn(model, 'update_cart_totals');
+                    data = {
+                        status: 'DISCOUNT_CODE_NOT_FOUND',
+                        data: 'data'
+                    };
+                    model._get_cart_totals({apply_discount: true});
+
+                    expect(model.checkout.get('last_discount_code')).toBeNull();
+                    expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(MSG.DISCOUNT_CODE_NOT_FOUND) > -1).toBe(true);
+                    expect(model.update_cart_totals).toHaveBeenCalled();
+
+                    data = {
+                        status: 'DISCOUNT_CODE_NOT_APPLICABLE',
+                        data: 'data'
+                    };
+                    model._get_cart_totals({apply_discount: true});
+
+                    expect(model.checkout.get('last_discount_code')).toBeNull();
+                    expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(MSG.DISCOUNT_CODE_NOT_APPLICABLE) > -1).toBe(true);
+                    expect(model.update_cart_totals).toHaveBeenCalled();
+                });
+
+                it('data.status is something else, data.errorMsg exists', function() {
+                    data = {
+                        status: 'some status',
+                        data: 'data',
+                        errorMsg: 'error message'
+                    };
+                    model._get_cart_totals({apply_discount: true});
+
+                    expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf('error message') > -1).toBe(true);
+                });
+
+                it('data.status is something else, data.errorMsg doesn\'t exist', function() {
+                    data = {
+                        status: 'some status',
+                        data: 'data'
+                    };
+                    model._get_cart_totals({apply_discount: true});
+
+                    expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(MSG.ERROR_NO_MSG_FROM_SERVER) > -1).toBe(true);
+                });
+            });
+
+            it('ajax error', function() {
+                spyOn(App.Data.errors, 'alert');
+                ajaxSpy.and.callFake(function(e) {
+                    e.error({statusText: 'error'});
+                });
+                model._get_cart_totals({apply_discount: true});
+
+                expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(MSG.ERROR_GET_DISCOUNTS) > -1).toBe(true);
+            });
+
+            it('params.apply_discount is true, checkout.discount_code exists', function() {
+                checkout = new Backbone.Model({
+                    discount_code: 'test'
+                });
+                model.checkout = checkout;
+
+                model._get_cart_totals({apply_discount: true});
+                data = JSON.parse($.ajax.calls.mostRecent().args[0].data);
+
+                expect(data.discount_code).toBe('test');
+            });
+
+            it('params.apply_discount is false, checkout.last_discount_code exists', function() {
+                checkout = new Backbone.Model({
+                    last_discount_code: 'test'
+                });
+                model.checkout = checkout;
+
+                model._get_cart_totals({apply_discount: false});
+                data = JSON.parse($.ajax.calls.mostRecent().args[0].data);
+
+                expect(data.discount_code).toBe('test');
+            });
+
+            it('`isShipping` is true, params.update_shipping_options is true', function() {
+                this.customer = App.Data.customer;
+                checkout = new Backbone.Model({
+                    dining_option: 'DINING_OPTION_SHIPPING'
+                });
+                model.checkout = checkout;
+                App.Data.customer = new Backbone.Model({
+                    shipping_address: 0,
+                    addresses: ['address'],
+                    shipping_selected: 0,
+                    shipping_services: ['shipping service']
+                });
+                App.Data.customer._check_delivery_fields = function() {return []};
+                App.Data.customer.get_shipping_services = function() {};
+
+                var cb = jasmine.createSpy('cb'),
+                    shippingOptions = null;
+                spyOn(App.Data.customer, 'get_shipping_services').and.callFake(function(request, callback) {
+                    cb(callback({
+                        data: {
+                            shipping: {
+                                options: shippingOptions
+                            }
+                        }
+                    }));
+                });
+
+                model._get_cart_totals({update_shipping_options: true});
+                data = JSON.parse($.ajax.calls.mostRecent().args[0].data);
+                expect(data.orderInfo.shipping).toBe('shipping service');
+                expect(data.orderInfo.customer.address).toBe('address');
+                expect(App.Data.customer.get_shipping_services).toHaveBeenCalled();
+                expect(cb).toHaveBeenCalledWith([]);
+
+                shippingOptions = [1, 2];
+                model._get_cart_totals({update_shipping_options: true});
+                expect(cb).toHaveBeenCalledWith(shippingOptions);
+
+                App.Data.customer = this.customer;
+            });
+
+            it('rewards card', function() {
+                rewardsCard = new Backbone.Model({
+                    number: 123,
+                    redemption_code: 'code'
+                });
+                model.rewardsCard = rewardsCard;
+
+                model._get_cart_totals();
+                data = JSON.parse($.ajax.calls.mostRecent().args[0].data);
+                expect(data.orderInfo.rewards_card.redemption).toBe('code');
+            });
+
+            it('stanford card', function() {
+                model._get_cart_totals({type: PAYMENT_TYPE.STANFORD, planId: 'plan id'});
+                data = JSON.parse($.ajax.calls.mostRecent().args[0].data);
+                expect(data.paymentInfo.cardInfo.planId).toBe('plan id');
             });
         });
 
