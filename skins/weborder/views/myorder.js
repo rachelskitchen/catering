@@ -113,19 +113,21 @@ define(["myorder_view"], function(myorder_view) {
             var model = this.model,
                 isStanfordItem = App.Data.is_stanford_mode && this.model.get_product().get('is_gift');
 
-            var is_combo = model.get('product').get('is_combo');
+            var is_combo = model.get('product').get('is_combo'),
+                has_upsell = model.get('product').get('has_upsell'),
+                combo_based = model.isComboBased();
 
-            var cache_id = is_combo ? model.get("id_product") : undefined;
+            var cache_id = combo_based ? model.get("id_product") : undefined;
 
             App.Data.mainModel.set('popup', {
                 modelName: 'MyOrder',
-                mod: isStanfordItem ? 'StanfordItem' : (is_combo ? 'MatrixCombo' : 'Matrix'),
+                mod: isStanfordItem ? 'StanfordItem' : (combo_based ? 'MatrixCombo' : 'Matrix'),
                 className: isStanfordItem ? 'stanford-reload-item' : '',
                 model: model.clone(),
                 real: model,
                 action: 'update',
-                init_cache_session: is_combo ? true : false,
-                cache_id: is_combo ? cache_id : undefined //cache is enabled for combo products during the phase of product customization only
+                init_cache_session: combo_based ? true : false,
+                cache_id: combo_based ? cache_id : undefined //cache is enabled for combo products during the phase of product customization only
                                                           //the view will be removed from cache after the product is added/updated into the cart.
             });
         }

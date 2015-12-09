@@ -204,7 +204,48 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
     CoreView.CoreProductModifiersComboView = CoreView.CoreProductModifiersView.extend({
         initialize: function() {
             CoreView.CoreProductModifiersView.prototype.initialize.apply(this, arguments);
+            if (this.model.check_order().status != 'OK') {
+                this.$(".customize").click();
+            }
         },
+        bindings: {
+            '.customize': 'classes:{hide:not(is_modifiers)}'
+        },
+        events: {
+            'click .customize': 'customize'
+        },
+        computeds: {
+            is_modifiers: function() {
+                return this.model.get_modifiers().length > 0;
+            }
+        },
+        customize: function(event) {
+            //event.stopImmediatePropagation();
+            //event.preventDefault();
+            var self = this;
+
+            var clone = this.model.clone();
+            App.Data.mainModel.set('popup', {
+                modelName: 'MyOrder',
+                mod: 'Matrix',
+                className: '',
+                model: clone,
+                combo_child: true,
+                real: this.model,
+                action: 'update',
+                action_callback: function(status) { ///TODO: use Status = Ok / Cancel
+                    if (self.model.check_order({modifiers_only: true}).status == 'OK') {
+                        //return back to the combo root product view:
+                        App.Data.mainModel.set('popup', {
+                                modelName: 'MyOrder',
+                                mod: 'MatrixCombo',
+                                cache_id: self.model.get('id_product')
+                            });
+                        //self.model.trigger("model_changed"); ///TODO !
+                    }
+                }
+            });
+        }
     });
 
     CoreView.CoreProductListNoneView = App.Views.ItemView.extend({

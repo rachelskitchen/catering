@@ -66,7 +66,7 @@ define(["products_view"], function(products_view) {
             return this;
         },
         addItem: function(model) {
-            if ( model.get('is_combo') ) //hide combo products for paypal skin
+            if ( model.get('is_combo') ||  model.get('has_upsell') ) //hide combo products for paypal skin
                 return;
             else
                _base.prototype.addItem.apply(this, arguments);

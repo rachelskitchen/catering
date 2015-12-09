@@ -131,9 +131,9 @@
       return this;
   }
 
-  function isObject(obj) {
-    return obj && typeof obj == 'object';
-  }
+  //function isObject(obj) {
+  //  return obj && typeof obj == 'object';
+  //}
 
   if (App.Data.devMode) {
     // alias for toJSON function
