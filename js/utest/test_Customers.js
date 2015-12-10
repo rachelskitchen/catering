@@ -1,4 +1,4 @@
-define(['customers',  'js/utest/data/Customer', 'revel_api'], function(customers, data) {
+define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
     describe("App.Models.Customer", function() {
 
@@ -25,12 +25,6 @@ define(['customers',  'js/utest/data/Customer', 'revel_api'], function(customers
             });
             expect(model.get('first_name')).toBe('firstName');
             expect(model.get('last_name')).toBe('lastName');
-        });
-
-        it("Call syncWithRevelAPI() method", function() {
-            spyOn(model, 'syncWithRevelAPI');
-            model.initialize();
-            expect(model.syncWithRevelAPI).toHaveBeenCalled();
         });
 
         // App.Models.Customer function get_customer_name
@@ -354,47 +348,6 @@ define(['customers',  'js/utest/data/Customer', 'revel_api'], function(customers
                    }]
                 });
                 expect(model._check_delivery_fields()).toEqual([ 'Address Line 1', 'City', 'Province', 'Zip Code' ]);
-            });
-        });
-
-        describe("syncWithRevelAPI()", function() {
-            var getModel, listenToModel,
-                RevelAPI = new App.Models.RevelAPI({customer: new App.Models.Customer});
-
-            beforeEach(function() {
-                getModel = spyOn(model, 'get');
-                listenToModel = spyOn(model, 'listenTo');
-            });
-
-            it("'RevelAPI' isn't present. Shouldn't be synced.", function() {
-                getModel.and.returnValue(null);
-                spyOn(RevelAPI, 'get');
-                spyOn(RevelAPI, 'listenTo');
-                model.syncWithRevelAPI();
-                expect(model.get).toHaveBeenCalledWith('RevelAPI');
-                expect(RevelAPI.get).not.toHaveBeenCalled();
-                expect(RevelAPI.listenTo).not.toHaveBeenCalled();
-            });
-
-            it("'RevelAPI' is present and not available. Shouldn't be synced.", function() {
-                getModel.and.returnValue(RevelAPI);
-                spyOn(RevelAPI, 'isAvailable').and.returnValue(false);
-                spyOn(RevelAPI, 'get');
-                spyOn(RevelAPI, 'listenTo');
-                model.syncWithRevelAPI();
-                expect(model.get).toHaveBeenCalledWith('RevelAPI');
-                expect(RevelAPI.get).not.toHaveBeenCalled();
-                expect(RevelAPI.listenTo).not.toHaveBeenCalled();
-            });
-
-            it("'RevelAPI' is present and available. Should be synced.", function() {
-                getModel.and.returnValue(RevelAPI);
-                spyOn(RevelAPI, 'isAvailable').and.returnValue(true);
-                spyOn(RevelAPI, 'listenTo');
-                model.syncWithRevelAPI();
-                expect(model.get).toHaveBeenCalledWith('RevelAPI');
-                expect(model.listenTo).toHaveBeenCalled();
-                expect(RevelAPI.listenTo).toHaveBeenCalled();
             });
         });
 

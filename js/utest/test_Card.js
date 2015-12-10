@@ -1,4 +1,4 @@
-define(['card', 'revel_api'], function() {
+define(['card'], function() {
     'use strict';
 
     describe("App.Models.Card", function() {
@@ -89,31 +89,6 @@ define(['card', 'revel_api'], function() {
             model.clearData(); // removal of information about credit card
             expect(model.toJSON()).toEqual(def);
             expect(setData).toHaveBeenCalledWith('card', model);
-        });
-
-        it('syncWithRevelAPI()', function() {
-            // Revel API isn't available
-            var func = model.syncWithRevelAPI; // synchronization with Revel API
-            var result = func.call(model);
-            expect(result).toBeUndefined();
-
-            // Revel API is available
-            var revel = new App.Models.RevelAPI;
-            model.set('RevelAPI', revel);
-            cssua.ua.revelsystemswebview = '1.0';
-            revel.set('profileExists', true);
-            func.call(model);
-            var customer = revel.get('customer');
-            var objForTest = {
-                first_name: 'John',
-                last_name: 'Smith'
-            }
-            customer.set(objForTest);
-            var result = {
-                first_name: model.get('firstName'),
-                last_name: model.get('secondName')
-            }
-            expect(result).toEqual(objForTest);
         });
 
         describe("Functions check", function() {
