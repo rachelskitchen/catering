@@ -234,7 +234,7 @@ define(["done_view", "generator"], function(done_view) {
         },
         unblurBg: function() {
             this.$('section, footer, header').removeClass('blur');
-            if (window.picker.isVisible())
+            if (window.picker != undefined && window.picker.isVisible())
             {
                 window.picker.hide();
             }
