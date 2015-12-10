@@ -271,6 +271,9 @@ define(['backbone', 'factory'], function(Backbone) {
             var model = this.model;
             if (this.isShippingServices && model.street_1 && model.city && model.country && model.zipcode
                 && (model.country == 'US' ? model.state : true) && (model.country == 'CA' ? model.province : true)) {
+                // need to reset shipping services before updating them
+                // due to server needs a no shipping service specified to return a new set of shipping services.
+                this.options.customer.resetShippingServices();
                 App.Data.myorder.update_cart_totals({update_shipping_options: true});
             }
         }

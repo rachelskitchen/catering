@@ -671,6 +671,9 @@ define(["main_router"], function(main_router) {
 
                 var settings = App.Data.settings.get('settings_system');
 
+                // Need to specify shipping address (Bug 34676)
+                App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+
                 App.Data.mainModel.set('mod', 'Main');
                 App.Data.mainModel.set({
                     header: headers.checkout,
