@@ -1,4 +1,4 @@
-define(['myorder', 'products'], function() {
+define(['js/utest/data/Myorder', 'myorder', 'products'], function(data) {
             
     describe("App.Models.Myorder", function() {
         var model, change, special;
@@ -186,6 +186,43 @@ define(['myorder', 'products'], function() {
                 expect(model.listenTo.callCount).toBe(count);
             });
 
+            it('product listeners', function() {
+                spyOn(model, 'get_modelsum');
+                spyOn(model, 'get_initial_price');
+                product.get_product = function() {
+                    return {
+                        get: function() {}
+                    }
+                };
+
+                model.set({product: product}, {silent: true});
+                model.set({special: 'test'}, {silent: true});
+                obj = null;
+                model.change();
+
+                model.get('product').trigger('change:attribute_1_selected');
+                expect(model.modifier_listener).toBe(false);
+            });
+
+            it('modifiers listeners', function() {
+                spyOn(model, 'update_prices');
+                spyOn(model, 'update_mdf_sum');
+
+                model.set({product: product}, {silent: true});
+                model.set({special: 'test'}, {silent: true});
+                obj = new Backbone.Model();
+                model.change();
+
+                model.get_modifiers().trigger('modifiers_special');
+                expect(model.change_special).toHaveBeenCalled();
+
+                model.get_modifiers().trigger('modifiers_size', 123);
+                expect(model.get('initial_price')).toBe(123);
+
+                model.get_modifiers().trigger('modifiers_changed');
+                expect(model.update_prices).toHaveBeenCalled();
+                expect(model.update_mdf_sum).toHaveBeenCalled();
+            });
         });
 
         describe('update_mdf_sum(multiplier)', function() {
@@ -1298,11 +1335,12 @@ define(['myorder', 'products'], function() {
             var stored_data;
             var otherItem = new App.Models.Myorder();
             otherItem.addJSON({id_product: 100, product: {name: 'other'}}); 
-            model.add( [otherItem] );
+            model.add([otherItem], {silent: true});
           
             spyOn(model.checkout, 'saveCheckout');
             spyOn(model.total, 'saveTotal');
             spyOn(model.discount, 'saveDiscount');
+            spyOn(model.rewardsCard, 'saveData');
             
             spyOn(window, 'setData').and.callFake(function(key, data) {
                 if (key == 'orders') {
@@ -1313,6 +1351,7 @@ define(['myorder', 'products'], function() {
             model.saveOrders();
             
             expect(model.checkout.saveCheckout).toHaveBeenCalled();
+            expect(model.rewardsCard.saveData).toHaveBeenCalled();
             expect(model.total.saveTotal).toHaveBeenCalled();
             expect(model.discount.saveDiscount).toHaveBeenCalled();
             expect(stored_data.length).toEqual(1);
@@ -2003,6 +2042,124 @@ define(['myorder', 'products'], function() {
                 model._get_cart_totals({type: PAYMENT_TYPE.STANFORD, planId: 'plan id'});
                 data = JSON.parse($.ajax.calls.mostRecent().args[0].data);
                 expect(data.paymentInfo.cardInfo.planId).toBe('plan id');
+            });
+        });
+
+        describe('process_cart_totals()', function() {
+            var orders, json,
+            orders_combo = deepClone(data.orders_combo),
+            json_combo = deepClone(data.cart_totals_combo),
+            orders_serviceFee = deepClone(data.oriders_serviceFee),
+            json_serviceFee = deepClone(data.cart_totals_serviceFee);
+
+            beforeEach(function() {
+                spyOn(App.Models.Total.prototype, 'update_grand');
+                spyOn(App.Models.Total.prototype, 'get_tip');
+
+                orders = deepClone(data.orders_product_discount);
+                json = deepClone(data.cart_totals_product_discount);
+            });
+
+            it('got incorrect json', function() {
+                spyOn(model, 'get');
+                model.process_cart_totals(null);
+                expect(model.get).not.toHaveBeenCalled();
+            });
+
+            it('json contains model not presented in collection', function() {
+                spyOn(model, 'get');
+                model.process_cart_totals({
+                    "items": [{
+                        product_sub_id: 99999,
+                        product: 99999
+                    }]
+                });
+                expect(model.get).not.toHaveBeenCalled();
+            });
+
+            it('product.discount', function() {
+                model.add(orders, {silent: true});
+                spyOn(model.models[1].get('discount'), 'zero_discount');
+
+                model.process_cart_totals(json);
+
+                expect(model.models[0].get('discount').get('name')).toBe('test discount');
+                expect(model.models[1].get('discount').zero_discount).toHaveBeenCalled();
+            });
+
+            it('product.combo_items', function() {
+                model.add(orders_combo, {silent: true});
+                var order_product = new App.Models.Product(),
+                    product = new App.Models.Product();
+                order_product.set('product', product, {silent: true});
+
+                model.models[0].get('product').get = jasmine.createSpy().and.returnValue({
+                    find_product: function() {return order_product}
+                });
+                model.models[0].get('product').set = jasmine.createSpy();
+
+                model.process_cart_totals(json_combo);
+
+                expect(product.get('combo_price')).toBe(5);
+                expect(model.models[0].get('product').set).toHaveBeenCalledWith('combo_price', 5);
+            });
+
+            describe('json.service_fees', function() {
+                beforeEach(function() {
+                    spyOn(App.Models.Myorder.prototype, 'isServiceFee');
+                });
+
+                it('is not array', function() {
+                    orders[0].isServiceFee = jasmine.createSpy();
+                    model.add(orders, {silent: true});
+                    json.service_fees = {};
+                    model.process_cart_totals(json);
+
+                    expect(App.Models.Myorder.prototype.isServiceFee).not.toHaveBeenCalled();
+                });
+
+                it('is undefined', function() {
+                    model.add(orders, {silent: true});
+                    json.service_fees = undefined;
+                    model.process_cart_totals(json);
+
+                    expect(App.Models.Myorder.prototype.isServiceFee).toHaveBeenCalled();
+                });
+
+                it('is array. Fee exists in collection', function() {
+                    model.add(orders_serviceFee, {silent: true});
+                    model.process_cart_totals(json_serviceFee);
+
+                    expect(model.models[0].get('product').get('name')).toBe('test fee');
+                    expect(model.models[0].get('product').get('price')).toBe(2);
+                    expect(model.models[0].get('initial_price')).toBe(2);
+                    expect(model.models[0].get('sum')).toBe(2);
+                });
+
+                it('is array. Fee doesn\'t exist in collection', function() {
+                    model.add(orders, {silent: true});
+                    spyOn(model, 'add');
+                    model.process_cart_totals(json_serviceFee);
+
+                    expect(model.add).toHaveBeenCalled();
+                });
+            });
+
+            it('json.order_discount exists', function() {
+                json.order_discount = {
+                    name: 'test'
+                };
+                model.process_cart_totals(json);
+                expect(model.discount.get('name')).toBe('test');
+            });
+
+            it('json.order_discount is null', function() {
+                spyOn(model.discount, 'zero_discount');
+                json.order_discount = null;
+
+                model.process_cart_totals(json);
+
+                expect(model.discount.zero_discount).toHaveBeenCalled();
             });
         });
 
