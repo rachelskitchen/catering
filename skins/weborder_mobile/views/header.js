@@ -25,10 +25,6 @@ define(["factory"], function() {
 
     function setCallback(prop) {
         return function() {
-            if (prop == 'back')
-            {
-                console.log( window.picker.isVisible() );
-            }
             var cb = this.model.get(prop);
             typeof cb == 'function' && cb();
         };
