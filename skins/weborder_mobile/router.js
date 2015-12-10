@@ -827,6 +827,9 @@ define(["main_router"], function(main_router) {
                     App.Data.customer.loadAddresses();
                 }
 
+                // Need to specify shipping address (Bug 34676)
+                App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+
                 App.Data.footer.set({
                     btn_title: _loc.CONTINUE,
                     action: setAction(this.navigate.bind(this, 'confirm', true))
