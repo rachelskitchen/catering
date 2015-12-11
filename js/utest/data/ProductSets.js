@@ -3,7 +3,7 @@ define([], function() {
 
         "ajaxJson": {
             "sort": 1,
-            "name": "Product set",
+            "name": "Product set 1",
             "products": [{
                 "sort": 5,
                 "id_category": 479,
@@ -106,7 +106,7 @@ define([], function() {
         },
 
         "addJson": [{
-            "name": "Sandwiches",
+            "name": "Product set 1",
             "id": 4,
             "is_combo_saving": false,
             "order_products": [{
@@ -242,7 +242,7 @@ define([], function() {
             "sort": 1,
             "quantity": 1
         }, {
-            "name": "Drinks",
+            "name": "Product set 2",
             "id": 5,
             "is_combo_saving": true,
             "order_products": [{

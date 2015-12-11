@@ -192,6 +192,25 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
                 generalBehavior();
             });
 
+            it('data.is_combo is true, data.product_sets is array', function() {
+                var modelData = _.clone(data.addJSON_is_combo_true),
+                    product_sets,
+                    set1,
+                    set2,
+                    product1,
+                    product2;
+                model.addJSON(_.clone(modelData));
+
+                product_sets = model.get('product_sets');
+                set1 = product_sets.models[0].toJSON();
+                product1 = product_sets.models[0].get('order_products').models[0].get('product').toJSON();
+                product2 = product_sets.models[0].get('order_products').models[1].get('product').toJSON();
+
+                expect(product_sets instanceof App.Collections.ProductSets).toBe(true);
+                expect(product1).toEqual(_.extend({}, defInitialized, modelData.product_sets[0].order_products[0].product));
+                expect(product2).toEqual(_.extend({}, defInitialized, modelData.product_sets[0].order_products[1].product));
+            });
+
             function addHost(url) {
                 return host + url.replace(/^([^\/])/, '/$1');
             }
