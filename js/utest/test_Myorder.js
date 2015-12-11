@@ -2838,18 +2838,22 @@ define(['js/utest/data/Myorder', 'myorder', 'products'], function(data) {
             expect(App.Models.MyorderCombo).toBeDefined();
         });
 
-/*        it('initialize()', function() {
+        it('initialize()', function() {
             var update_product_price = spyOn(App.Models.MyorderCombo.prototype, 'update_product_price'),
                 update_mdf_sum = spyOn(App.Models.MyorderCombo.prototype, 'update_mdf_sum');
-            spyOn(App.Models.MyorderCombo.prototype, 'change');
 
-            model = new App.Models.Myorder();
+            model = new App.Models.MyorderCombo();
+            var product = {
+                get_modifiers: function() {}
+            };
+            spyOn(product, 'get_modifiers');
+            spyOn(model, 'get').and.returnValue(product);
             model.set('initial_price', '1');
             expect(update_product_price).toHaveBeenCalled();
 
             model.set('combo_product_change', '1');
             expect(update_product_price).toHaveBeenCalled();
-        });*/
+        });
 
 
         it('has_child_products()', function() {
