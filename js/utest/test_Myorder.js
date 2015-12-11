@@ -1,4 +1,4 @@
-define(['js/utest/data/Myorder', 'myorder', 'products'], function(data) {
+define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'], function(data, productsData) {
             
     describe("App.Models.Myorder", function() {
         var model, change, special;
@@ -2888,6 +2888,108 @@ define(['js/utest/data/Myorder', 'myorder', 'products'], function(data) {
             product.set('combo_price', 15);
             model.set('product', product, {silent: true});
             expect(model.get_product_price()).toBe(15);
+        });
+
+        describe('update_product_price()', function() {
+            var product, productData, comboInitialPrice, getInitialPriceSpy,
+                orderInitialPrice = 10;
+
+            beforeEach(function() {
+                getInitialPriceSpy = spyOn(model, 'get_initial_price');
+                spyOn(App.Models.Myorder.prototype, 'get_initial_price').and.returnValue(orderInitialPrice);
+
+                product = new App.Models.Product();
+                productData = deepClone(productsData.addJSON_is_combo_true);
+            });
+
+            it('collection has combo_saving products. sum of selected products prices less than combo initial price', function() {
+                comboInitialPrice = 123;
+                getInitialPriceSpy.and.returnValue(comboInitialPrice);
+                product.addJSON(productData);
+                model.set('product', product, {silent: true});
+                expect(model.update_product_price()).toBe(comboInitialPrice);
+                expect(model.get('product').get('combo_price')).toBe(comboInitialPrice);
+            });
+
+            it('collection has combo_saving products. sum of selected products prices more than combo initial price', function() {
+                comboInitialPrice = 0;
+                getInitialPriceSpy.and.returnValue(comboInitialPrice);
+                product.addJSON(productData);
+                model.set('product', product, {silent: true});
+                expect(model.update_product_price()).toBe(orderInitialPrice);
+                expect(model.get('product').get('combo_price')).toBe(orderInitialPrice);
+            });
+
+            it('collection doesn\'t have combo_saving products. sum of selected products prices less than combo initial price', function() {
+                productData.product_sets[0].is_combo_saving = false;
+                productData.product_sets[1].is_combo_saving = false;
+                comboInitialPrice = 123;
+                getInitialPriceSpy.and.returnValue(comboInitialPrice);
+                product.addJSON(productData);
+                model.set('product', product, {silent: true});
+                expect(model.update_product_price()).toBe(orderInitialPrice * 2);
+                expect(model.get('product').get('combo_price')).toBe(orderInitialPrice * 2);
+            });
+
+            it('collection doesn\'t have combo_saving products. sum of selected products prices more than combo initial price', function() {
+                productData.product_sets[0].is_combo_saving = false;
+                productData.product_sets[1].is_combo_saving = false;
+                comboInitialPrice = 0;
+                getInitialPriceSpy.and.returnValue(comboInitialPrice);
+                product.addJSON(productData);
+                model.set('product', product, {silent: true});
+                expect(model.update_product_price()).toBe(orderInitialPrice * 2);
+                expect(model.get('product').get('combo_price')).toBe(orderInitialPrice * 2);
+            });
+        });
+
+        it('update_mdf_sum()', function() {
+            var product = new App.Models.Product(),
+                productData = deepClone(productsData.addJSON_is_combo_true);
+            product.addJSON(productData);
+            model.set({product: product, quantity: 10}, {silent: true});
+
+            var productSets = model.get('product').get('product_sets').get_selected_products();
+            spyOn(model, 'update_product_price');
+            spyOn(productSets.models[0], 'update_prices');
+            spyOn(productSets.models[0], 'update_mdf_sum');
+            spyOn(productSets.models[1], 'update_prices');
+            spyOn(productSets.models[1], 'update_mdf_sum');
+
+            model.update_mdf_sum();
+            expect(model.update_product_price).toHaveBeenCalled();
+            expect(productSets.models[0].update_prices).toHaveBeenCalled();
+            expect(productSets.models[0].update_mdf_sum).toHaveBeenCalledWith(10);
+            expect(productSets.models[1].update_prices).toHaveBeenCalled();
+            expect(productSets.models[1].update_mdf_sum).toHaveBeenCalledWith(10);
+        });
+
+        describe('check_order()', function() {
+            var checkOrderSpy;
+
+            beforeEach(function() {
+                checkOrderSpy = spyOn(App.Models.Myorder.prototype, 'check_order').and.returnValue({status: 'OK'});
+            });
+
+            it('Myorder.check_order().status is not OK', function() {
+                var checkResult = {status: 'error'};
+                checkOrderSpy.and.returnValue(checkResult);
+
+                expect(model.check_order()).toEqual(checkResult);
+            });
+
+            it('combo has no child products', function() {
+                var product = new Backbone.Model({
+                    name: 'test name',
+                    product_sets: []
+                })
+                model.set('product', product, {silent: true});
+
+                var result = model.check_order();
+                expect(result.status).toBe('ERROR');
+                expect(result.errorMsg.indexOf('test name')).not.toBe(-1);
+                // TODO
+            });
         });
 
     });
