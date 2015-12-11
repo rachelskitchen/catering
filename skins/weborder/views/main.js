@@ -134,10 +134,10 @@ define(["done_view", "generator"], function(done_view) {
 
             popup.addClass('ui-visible');
         },
-        hide_popup: function(event, action_callback, model) {
+        hide_popup: function(event, status) {
             var callback = this.model.get('popup').action_callback;
             this.model.unset('popup');
-            callback && callback();
+            callback && callback(status);
         },
         header_defaults: function() {
             return {

@@ -90,6 +90,12 @@ define(["products_view"], function(products_view) {
         }
     });
 
+    var ProductModifiersUpsellView  = ProductModifiersView.extend({
+        initialize: function() {
+            ProductModifiersView.prototype.initialize.apply(this, arguments);
+        }
+    });
+
     var ProductListItemView = App.Views.FactoryView.extend({
         name: 'product',
         mod: 'list_item',
@@ -107,8 +113,8 @@ define(["products_view"], function(products_view) {
             e.preventDefault();
             var id_category = this.model.get('id_category'),
                 id = this.model.get('id');
-            var is_combo = this.model.get("is_combo");
-            if (is_combo) {
+            var has_combo = this.model.isComboBased();
+            if (has_combo) {
                 App.Data.router.navigate("combo_product/" + id_category + "/" + id, true);
             }
             else
@@ -195,6 +201,7 @@ define(["products_view"], function(products_view) {
     return new (require('factory'))(products_view.initViews.bind(products_view), function() {
         App.Views.ProductView.ProductModifiersView = ProductModifiersView;
         App.Views.ProductView.ProductModifiersComboView = ProductModifiersComboView;
+        App.Views.ProductView.ProductModifiersUpsellView = ProductModifiersUpsellView;
         App.Views.ProductView.ProductListItemView = ProductListItemView;
         App.Views.ProductView.ProductListView = ProductListView;
         App.Views.ProductView.ProductSearchListView = ProductSearchListView;

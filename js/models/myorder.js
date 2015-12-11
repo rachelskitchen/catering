@@ -629,7 +629,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             if (product.is_combo || product.has_upsell) {
                 var product_sets = [];
-                product.product_sets.each(function(product_set){
+                    product.product_sets.each(function(product_set){
                     var pset = product_set.item_submit(for_discounts);
                     product_sets.push(pset);
                 });

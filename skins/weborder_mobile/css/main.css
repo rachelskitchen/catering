@@ -382,6 +382,7 @@ select::-ms-expand { /*Removes default IE style*/
 
 .link {
     text-decoration: underline;
+    cursor: pointer;
 }
 
 .link:active {
