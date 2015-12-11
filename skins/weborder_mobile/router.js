@@ -821,10 +821,7 @@ define(["main_router"], function(main_router) {
 
                 self.listenToOnce(self, 'route', function()
                 {
-                    if ( App.Data.myorder.checkout.get('datepickerIsVisible') )
-                    {
-                        App.Data.myorder.checkout.trigger('hide:datepicker');
-                    }
+                    App.Data.myorder.checkout.trigger('hide:datepicker');
                 });
 
                 if(!App.Data.card)
