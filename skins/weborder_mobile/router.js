@@ -823,7 +823,6 @@ define(["main_router"], function(main_router) {
                 {
                     if ( App.Data.myorder.checkout.get('datepickerIsVisible') )
                     {
-                        // hide the datepicker
                         App.Data.myorder.checkout.trigger('hide:datepicker');
                     }
                 });

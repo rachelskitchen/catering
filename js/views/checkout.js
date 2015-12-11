@@ -289,7 +289,6 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             }
             var field = this.$('#datepicker');
 
-            // var picker = new Pikaday({
             this.picker = new Pikaday({
                 field: field[0],
                 minDate: this.pickupTime[0].date,
