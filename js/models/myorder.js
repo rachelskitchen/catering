@@ -844,7 +844,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
                 product_set.get_selected_products().forEach(function(model) {
                     //trace("add product_price : ",  model.get('product').get('name'), model.get_initial_price());
-                    sum  += model.get_initial_price() * model.get('quantity');
+                    sum += model.get_initial_price() * model.get('quantity');
                 });
             });
 
