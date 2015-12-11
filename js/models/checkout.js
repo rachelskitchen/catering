@@ -143,7 +143,12 @@ define(["backbone"], function(Backbone) {
              * A last applied discount code. Used for data restoring after page reload.
              * @typeof {string}
              */
-            last_discount_code: ''
+            last_discount_code: '',
+            /**
+             * Visibility state of the datepicker.
+             * @typeof {boolean}
+             */
+            datepickerIsVisible: false
         },
         /**
          * Adds listener to track `dining_option` change and inits `other_dining_options` if it exists.
