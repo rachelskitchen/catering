@@ -156,7 +156,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             var model = this.model;
-            this.renderProduct();
+            this.renderProduct(); //header of matrix
             this.renderProductSets();
             return this;
         },
@@ -183,7 +183,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             this.viewProduct = App.Views.GeneratorView.create('Product', {
                 modelName: 'Product',
                 model: model,
-                mod: 'ModifiersCombo'
+                mod: model.isComboProduct() ? 'ModifiersCombo' : 'ModifiersUpsell'
             });
             this.$('.product_info').append(this.viewProduct.el);
             this.subViews.push(this.viewProduct);
@@ -296,7 +296,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                             collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
                         }
                     }
-                    $('#popup .cancel').trigger('click');
+                    $('#popup .cancel').trigger('click', ['OK']);
                 }, function(errorMsg) {
                     App.Data.errors.alert(errorMsg); // user notification
                 });
@@ -395,7 +395,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
 
             model.initial_price = round_monetary_currency(this.model.get('initial_price'));
 
-            model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;//    product.get('uom');
+            model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
             model.is_gift = product.get('is_gift');
             model.gift_card_number = product.get('gift_card_number');
             model.sold_by_weight = model.product.get("sold_by_weight");

@@ -56,7 +56,8 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             is_combo_saving : false,
             order_products : null,
             minimum_amount : 1,
-            maximum_amount : 1
+            maximum_amount : 1,
+            default_products: null
         },
         /**
          * initialization through a json object, used for restoring from localStorage
@@ -86,6 +87,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
 
             ext_data.minimum_amount = data.quantity ? data.quantity : 1;
             ext_data.maximum_amount = data.quantity ? data.quantity : 1;
+            !Array.isArray(data.default_products) && (data.default_products = []);
 
             var order_products = new App.Collections.ProductSetModels();
 
@@ -102,7 +104,8 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                 order_product.set({
                     sum: order_product.get_modelsum(), // sum with modifiers
                     initial_price: order_product.get_initial_price(),
-                    is_child_product: true
+                    is_child_product: true,
+                    selected: data.default_products.indexOf(p_data.id) != -1
                 });
                 order_product.update_prices();
                 order_products.add(order_product);

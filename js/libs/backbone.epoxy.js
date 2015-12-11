@@ -137,8 +137,10 @@
 
   if (App.Data.devMode) {
     // alias for toJSON function
-    Backbone.Model.prototype.json = Backbone.Model.prototype.toJSON;
-    Backbone.Collection.prototype.json = Backbone.Collection.prototype.toJSON;
+    Backbone.Model.prototype.j = Backbone.Model.prototype.toJSON;
+    Backbone.Collection.prototype.j = Backbone.Collection.prototype.toJSON;
+    // alias for App.Data
+    if (window.D == undefined && App.Data) window.D = App.Data;
 
     Backbone.Model.prototype.deepCompare = function(dest, subPath) {
         !subPath && (subPath = "> ");

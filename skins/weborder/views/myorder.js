@@ -113,9 +113,7 @@ define(["myorder_view"], function(myorder_view) {
             var model = this.model,
                 isStanfordItem = App.Data.is_stanford_mode && this.model.get_product().get('is_gift');
 
-            var is_combo = model.get('product').get('is_combo'),
-                has_upsell = model.get('product').get('has_upsell'),
-                combo_based = model.isComboBased();
+            var combo_based = model.isComboBased();
 
             var cache_id = combo_based ? model.get("id_product") : undefined;
 

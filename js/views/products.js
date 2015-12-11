@@ -204,8 +204,15 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
     CoreView.CoreProductModifiersComboView = CoreView.CoreProductModifiersView.extend({
         initialize: function() {
             CoreView.CoreProductModifiersView.prototype.initialize.apply(this, arguments);
+        },
+    });
+
+    CoreView.CoreProductModifiersUpsellView = CoreView.CoreProductModifiersView.extend({
+        initialize: function() {
+            var self = this;
+            CoreView.CoreProductModifiersView.prototype.initialize.apply(this, arguments);
             if (this.model.check_order().status != 'OK') {
-                this.$(".customize").click();
+                setTimeout( function(){ self.$(".customize").click(); }, 200);
             }
         },
         bindings: {
@@ -220,10 +227,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             }
         },
         customize: function(event) {
-            //event.stopImmediatePropagation();
-            //event.preventDefault();
             var self = this;
-
             var clone = this.model.clone();
             App.Data.mainModel.set('popup', {
                 modelName: 'MyOrder',
@@ -233,15 +237,14 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                 combo_child: true,
                 real: this.model,
                 action: 'update',
-                action_callback: function(status) { ///TODO: use Status = Ok / Cancel
+                action_callback: function(status) {
                     if (self.model.check_order({modifiers_only: true}).status == 'OK') {
-                        //return back to the combo root product view:
+                        //return back to the Upsell root product view:
                         App.Data.mainModel.set('popup', {
                                 modelName: 'MyOrder',
                                 mod: 'MatrixCombo',
                                 cache_id: self.model.get('id_product')
                             });
-                        //self.model.trigger("model_changed"); ///TODO !
                     }
                 }
             });
@@ -255,10 +258,11 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
 
     return new (require('factory'))(function() {
         App.Views.ProductView = {};
-        App.Views.ProductView.ProductListItemView = App.Views.CoreProductView.CoreProductListItemView;
-        App.Views.ProductView.ProductListView = App.Views.CoreProductView.CoreProductListView;
-        App.Views.ProductView.ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView;
-        App.Views.ProductView.ProductModifiersComboView = App.Views.CoreProductView.CoreProductModifiersComboView;
-        App.Views.ProductView.ProductListNoneView = App.Views.CoreProductView.CoreProductListNoneView;
+        App.Views.ProductView.ProductListItemView = CoreView.CoreProductListItemView;
+        App.Views.ProductView.ProductListView = CoreView.CoreProductListView;
+        App.Views.ProductView.ProductModifiersView = CoreView.CoreProductModifiersView;
+        App.Views.ProductView.ProductModifiersComboView = CoreView.CoreProductModifiersComboView;
+        App.Views.ProductView.ProductModifiersUpsellView = CoreView.CoreProductModifiersUpsellView;
+        App.Views.ProductView.ProductListNoneView = CoreView.CoreProductListNoneView;
     });
 });
