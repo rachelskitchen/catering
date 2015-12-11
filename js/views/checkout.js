@@ -296,15 +296,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 position: 'bottom hcenter',
                 firstDay : _loc['PIKADAY']['FIRST_DAY'],
                 i18n: _loc['PIKADAY']['i18n'],
-                onSelect: selectDate,
-                onOpen: function()
-                {
-                    self.model.set('datepickerIsVisible', true);
-                },
-                onClose: function()
-                {
-                    self.model.set('datepickerIsVisible', false);
-                }
+                onSelect: selectDate
             });
 
             function selectDate(date) {
