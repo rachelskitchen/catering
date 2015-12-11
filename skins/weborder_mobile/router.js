@@ -819,6 +819,15 @@ define(["main_router"], function(main_router) {
             this.prepare('checkout', function() {
                 var RevelAPI = App.Data.RevelAPI;
 
+                self.listenToOnce(self, 'route', function()
+                {
+                    if ( App.Data.myorder.checkout.get('datepickerIsVisible') )
+                    {
+                        // hide the datepicker
+                        App.Data.myorder.checkout.trigger('hide:datepicker');
+                    }
+                });
+
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card({RevelAPI: RevelAPI});
 

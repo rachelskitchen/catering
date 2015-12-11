@@ -256,7 +256,14 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         name: 'checkout',
         mod: 'pickup',
         initialize: function() {
+            var self = this;
+
             this.listenTo(this.model, 'change:dining_option', this.listenOrderType, this);
+
+            this.listenTo(this.model, 'hide:datepicker', function()
+            {
+                self.picker.hide();
+            }, this);
 
             this.templateData = {
                 isFirefox: /firefox/i.test(navigator.userAgent)
@@ -282,14 +289,23 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             }
             var field = this.$('#datepicker');
 
-            window.picker = new Pikaday({
+            // var picker = new Pikaday({
+            this.picker = new Pikaday({
                 field: field[0],
                 minDate: this.pickupTime[0].date,
                 maxDate: this.pickupTime[this.pickupTime.length - 1].date,
                 position: 'bottom hcenter',
                 firstDay : _loc['PIKADAY']['FIRST_DAY'],
                 i18n: _loc['PIKADAY']['i18n'],
-                onSelect: selectDate
+                onSelect: selectDate,
+                onOpen: function()
+                {
+                    self.model.set('datepickerIsVisible', true);
+                },
+                onClose: function()
+                {
+                    self.model.set('datepickerIsVisible', false);
+                }
             });
 
             function selectDate(date) {
