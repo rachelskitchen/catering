@@ -24,9 +24,9 @@ define(['products_view'], function(products_view) {
     'use strict';
 
     var ProductListItemView = App.Views.CoreProductView.CoreProductListItemView.extend({
-        showModifiers: function() {
+        showModifiers: function(event, status) {
             var isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
-                combo_based = this.model.isComboBased();
+                combo_based = this.model.isComboBased() && status != 'No_Combo';
 
             var myorder = App.Models.create(combo_based ? 'MyorderCombo' : 'Myorder');
 
@@ -35,13 +35,17 @@ define(['products_view'], function(products_view) {
             $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
             def.then(function() {
                 var cache_id = combo_based ? myorder.get("id_product") : undefined;
+                var clone = myorder.clone();
+                if (status == 'No_Combo') {
+                    clone.get('product').set('has_upsell', false, {silent: true});
+                }
 
                 $('#main-spinner').removeClass('ui-visible');
                 App.Data.mainModel.set('popup', {
                     modelName: 'MyOrder',
                     mod: isStanfordItem ? 'StanfordItem' : (combo_based ? 'MatrixCombo' : 'Matrix'),
                     className: isStanfordItem ? 'stanford-reload-item' : '',
-                    model: myorder.clone(),
+                    model: clone,
                     action: 'add',
                     init_cache_session: combo_based ? true : false,
                     cache_id: combo_based ? cache_id : undefined //cache is enabled for combo products during the phase of product customization only

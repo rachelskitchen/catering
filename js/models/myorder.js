@@ -874,8 +874,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * Calculates sums of all product modifiers in respect to quantity of root combo product and quantity of child products.
          */
         update_mdf_sum: function() {
-            var order_products = this.get('product').get('product_sets').get_selected_products(),
+            var has_upsell = this.isUpsellProduct(),
+                order_products = this.get('product').get('product_sets').get_selected_products(),
                 root_quantity = this.get('quantity');
+
+            has_upsell && App.Models.Myorder.prototype.update_mdf_sum.apply(this, arguments);
 
             order_products && order_products.each( function(order_product) {
                 order_product.update_prices();

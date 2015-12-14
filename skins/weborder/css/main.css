@@ -366,6 +366,11 @@ footer {
 .current_establishment {
     margin-right: 20px;
 }
+.link {
+    text-decoration: underline;
+    word-break: normal;
+    cursor: pointer;
+}
 .link1 {
     margin: 0 20px;
     text-decoration: none;
@@ -628,7 +633,7 @@ section.maintenance #header .btn {
     margin-left: 10px;
 }
 #cart .order-items .combo_products_place .product_place .cost {
-    /*display: none;*/
+    display: none;
 }
 /* -- */
 #cart .order-items li.special {

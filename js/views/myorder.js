@@ -195,7 +195,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             var view = App.Views.GeneratorView.create('MyOrder', {
                 el: this.$(".product_info_footer"),
                 model: this.model,
-                mod: 'MatrixFooterCombo',
+                mod: model.isComboProduct() ? 'MatrixFooterCombo' : 'MatrixFooterUpsell',
                 action: this.options.action,
                 real: this.options.real,
                 action_callback: this.options.action_callback
@@ -318,6 +318,29 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         },
         check_order: function() {
             return this.model.check_order();
+        }
+      });
+    }
+
+    App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterUpsellView = _MatrixFooterUpsellView (App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterComboView ) ;
+    function _MatrixFooterUpsellView(_base) { return _base.extend ({
+        mod: 'matrix_footer_upsell',
+        initialize: function() {
+            _base.prototype.initialize.apply(this, arguments);
+            if (this.options.action === 'update') {
+               this.$('.no_combo').hide();
+            }
+            return this;
+        },
+        events: {
+            'click .no_combo': 'no_combo'
+        },
+        no_combo: function() {
+            $('#popup .cancel').trigger('click');
+            var target_product_view = $('.product_list_item[data-id='+ this.model.get('product').get('compositeId') + ']');
+            setTimeout( function() {
+                target_product_view && target_product_view.trigger('click', ['No_Combo']);
+            }, 10);
         }
       });
     }
@@ -684,6 +707,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         App.Views.MyOrderView.MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView;
         App.Views.MyOrderView.MyOrderMatrixFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView;
         App.Views.MyOrderView.MyOrderMatrixFooterComboView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterComboView;
+        App.Views.MyOrderView.MyOrderMatrixFooterUpsellView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterUpsellView;
         App.Views.MyOrderView.MyOrderNoteView = App.Views.CoreMyOrderView.CoreMyOrderNoteView;
         App.Views.MyOrderView.MyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView;
         App.Views.MyOrderView.MyOrderMatrixComboView = App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView;

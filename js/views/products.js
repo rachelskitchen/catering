@@ -34,6 +34,9 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             this.listenTo(this.model, 'change:active', this.show_hide);
             this.show_hide();
         },
+        bindings: {
+            '.product_list_item': "attr:{'data-id':compositeId}"
+        },
         render: function() {
             var model = this.model.toJSON();
             model.hide_images = App.Data.settings.get('settings_system').hide_images;
