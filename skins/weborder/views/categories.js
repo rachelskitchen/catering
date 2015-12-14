@@ -106,6 +106,7 @@ define(["generator", "list"], function() {
         reset_selection: function() {
             this.collection.parent_selected = null;
             this.$('ul').find('label').removeClass('checked');
+            this.$('ul').find('input').attr('checked', false);
         },
         update_slider_render: function() {
             this.create_slider();
