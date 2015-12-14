@@ -2304,7 +2304,8 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     seat: '',
                     email: '',
                     payment_id: '',
-                    rewardCard: ''
+                    rewardCard: '',
+                    notes: ''
                 };
                 spyOn(model.checkout, 'toJSON').and.callFake(function() {
                     return checkout;
@@ -2344,7 +2345,9 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     last_name: '',
                     addresses: [],
                     shipping_address: null,
-                    email: ''
+                    email: '',
+                    shipping_services: [],
+                    shipping_selected: -1
                 };
                 spyOn(App.Data.customer, 'toJSON').and.callFake(function() {
                     return customer;
@@ -2387,7 +2390,8 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                         call_name: "",
                         created_date: 'create date',
                         lastPickupTime: "last pt",
-                        pickup_time: "pickup time to server"
+                        pickup_time: "pickup time to server",
+                        notes: ""
                     },
                     paymentInfo: {
                         tip: 1,
@@ -2412,6 +2416,53 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 expect(ajax.data.items).toEqual(['modif', 'modif']);
             });
             
+            it('`checkout.last_discount_code` exists', function() {
+                checkout.last_discount_code = 'last discount code';
+                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                expect(ajax.data.discount_code).toBe('last discount code');
+            });
+
+            it('`checkout.dining_option` is `DINING_OPTION_OTHER`, `checkout.notes` is empty string', function() {
+                checkout.dining_option = 'DINING_OPTION_OTHER';
+                spyOn(model, 'getOtherDiningOptionCallName').and.returnValue('call name');
+
+                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                expect(model.getOtherDiningOptionCallName).toHaveBeenCalled();
+                expect(ajax.data.orderInfo.notes).toBe('Delivery Info: call name');
+            });
+
+            it('`checkout.dining_option` is `DINING_OPTION_OTHER`, `checkout.notes` is not empty string', function() {
+                checkout.dining_option = 'DINING_OPTION_OTHER';
+                checkout.notes = 'checkout notes';
+                spyOn(model, 'getOtherDiningOptionCallName').and.returnValue('call name');
+
+                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                expect(model.getOtherDiningOptionCallName).toHaveBeenCalled();
+                expect(ajax.data.orderInfo.notes).toBe('checkout notes\nDelivery Info: call name');
+            });
+
+            it('`checkout.dining_option` is `DINING_OPTION_SHIPPING`', function() {
+                checkout.dining_option = 'DINING_OPTION_SHIPPING';
+                customer.shipping_services = ['shipping service 1', 'shipping service 2'];
+                customer.shipping_selected = 1;
+
+                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                expect(ajax.data.orderInfo.shipping).toBe('shipping service 2');
+                expect(ajax.data.orderInfo.customer).toEqual({
+                    tip: 1,
+                    type: 2,
+                    first_name: '',
+                    last_name: '',
+                    cardInfo: {
+                        firstDigits: '',
+                        lastDigits: '',
+                        firstName: '',
+                        lastName: '',
+                        address: null
+                    }
+                });
+            });
+
             describe('skin paypal', function() {
                 
                 beforeEach(function() {
@@ -2988,7 +3039,52 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 var result = model.check_order();
                 expect(result.status).toBe('ERROR');
                 expect(result.errorMsg.indexOf('test name')).not.toBe(-1);
-                // TODO
+            });
+
+            it('product_set selected quantity is less than product_set minimum amount', function() {
+                var product = new App.Models.Product(),
+                    productData = deepClone(productsData.addJSON_is_combo_true);
+                product.addJSON(productData);
+                model.set({product: product}, {silent: true});
+
+                var productSets = model.get('product').get('product_sets');
+                productSets.models[0].set('minimum_amount', 3);
+                spyOn(productSets.models[0], 'get_selected_qty').and.returnValue(10);
+
+                var result = model.check_order();
+                expect(result.status).toBe('ERROR');
+                expect(result.errorMsg.indexOf('select exact 3 product')).not.toBe(-1);
+                expect(result.errorMsg.indexOf('Product set 1')).not.toBe(-1);
+            });
+
+            it('product_set selected quantity is more than product_set minimum amount', function() {
+                var product = new App.Models.Product(),
+                    productData = deepClone(productsData.addJSON_is_combo_true);
+                product.addJSON(productData);
+                model.set({product: product}, {silent: true});
+
+                var productSets = model.get('product').get('product_sets');
+                productSets.models[0].set('minimum_amount', 10);
+                spyOn(productSets.models[0], 'get_selected_qty').and.returnValue(1);
+
+                var result = model.check_order();
+                expect(result.status).toBe('ERROR');
+                expect(result.errorMsg.indexOf('select exact 10 product')).not.toBe(-1);
+                expect(result.errorMsg.indexOf('Product set 1')).not.toBe(-1);
+            });
+
+            it('product_set selected quantity is equal to product_set minimum amount', function() {
+                var product = new App.Models.Product(),
+                    productData = deepClone(productsData.addJSON_is_combo_true);
+                product.addJSON(productData);
+                model.set({product: product}, {silent: true});
+
+                var productSets = model.get('product').get('product_sets');
+                productSets.models[0].set('minimum_amount', 10);
+                spyOn(productSets.models[0], 'get_selected_qty').and.returnValue(10);
+
+                var result = model.check_order();
+                expect(result.status).toBe('OK');
             });
         });
 
