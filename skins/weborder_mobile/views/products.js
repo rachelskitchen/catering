@@ -93,6 +93,22 @@ define(["products_view"], function(products_view) {
     var ProductModifiersUpsellView  = ProductModifiersView.extend({
         initialize: function() {
             ProductModifiersView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            '.customize': 'classes:{hide:not(is_modifiers)}'
+        },
+        events: {
+            'click .customize': 'customize'
+        },
+        computeds: {
+            is_modifiers: function() {
+                return this.model.get_modifiers().length > 0;
+            }
+        },
+        customize: function() {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            App.Data.router.combo_child_products(this.model, this.model.get("id_product"));
         }
     });
 
