@@ -906,7 +906,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                         return tmpl[0].trim() + ' ' + error_psets.map(function(model) {
                             var exactAmount = model.get('minimum_amount'),
                                 psetName = model.get('name'),
-                                msg = tmpl[1].replace('%d', exactAmount).replace('%s', '&lsquo;' + psetName + '&rsquo;');
+                                msg = tmpl[1].trim().replace('%d', exactAmount).replace('%s', '&lsquo;' + psetName + '&rsquo;');
                             return msg;
                         }).join(', ')
                     }()
@@ -2111,7 +2111,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.notes = checkout.notes;
             if (checkout.dining_option == "DINING_OPTION_OTHER")  {
-                order_info.notes += "\n" + _loc.DELIVERY_INFO + ": " + this.getOtherDiningOptionCallName();
+                order_info.notes.length && (order_info.notes += "\n");
+                order_info.notes += _loc.DELIVERY_INFO + ": " + this.getOtherDiningOptionCallName();
             }
             order_info.asap = checkout.isPickupASAP;
             order_info.discount = this.discount.get("id") ? this.discount.toJSON() : undefined;
