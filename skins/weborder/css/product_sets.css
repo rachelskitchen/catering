@@ -8,11 +8,16 @@
 .modifiers_table .combo_item .customize.link1 {
     font-size: 15px;
 }
-
 #modifiers_popup .product_info .customize.link1 {
     font-size: 20px;
     float: right;
     cursor: pointer;
+}
+#modifiers_popup  .no_combo.link {
+    position: absolute;
+    left: 390px;
+    bottom: 14px;
+    font-size: 18px;
 }
 
 .modifiers_table .combo_item {

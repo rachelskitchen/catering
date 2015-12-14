@@ -108,9 +108,10 @@ define(["myorder_view"], function(myorder_view) {
     };
 
     var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
-        editItem: function(e) {
-            e.preventDefault();
-            var model = this.model,
+        editItem: function(event) {
+            event.preventDefault();
+            var self = this,
+                model = this.model,
                 isStanfordItem = App.Data.is_stanford_mode && this.model.get_product().get('is_gift');
 
             var combo_based = model.isComboBased();
