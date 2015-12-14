@@ -127,7 +127,7 @@ select:-moz-focusring {
 .primary-button:not([disabled]):active,
 #popup_ok[id]:not([disabled]):active,
 .myorderList .combo_products_place .qty {
-  background: alternate_text;
+  background: #FFFFFF;
 }
 /* [special_text] Discount text, free modifiers */
 .special-text {
