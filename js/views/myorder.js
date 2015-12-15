@@ -183,7 +183,8 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             this.viewProduct = App.Views.GeneratorView.create('Product', {
                 modelName: 'Product',
                 model: model,
-                mod: model.isComboProduct() ? 'ModifiersCombo' : 'ModifiersUpsell'
+                mod: model.isComboProduct() ? 'ModifiersCombo' : 'ModifiersUpsell',
+                action: this.options.action
             });
             this.$('.product_info').append(this.viewProduct.el);
             this.subViews.push(this.viewProduct);
@@ -269,7 +270,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         check_model: function() {
             return this.model.get('product').check_selected();
         },
-        check_order: function() {
+        view_check_order: function() {
             var opt, has_upsell = this.model.isUpsellProduct();
             if (has_upsell) { //this is modifiers customization for Upcharge combo product
                 opt = { modifiers_only: true };
@@ -277,7 +278,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             return this.model.check_order(opt);
         },
         action: function (event) {
-            var check = this.check_order(),
+            var check = this.view_check_order(),
                 self = this, index, collection;
             if (check.status === 'OK') {
                 this.model.get_product().check_gift(function() {
@@ -285,12 +286,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                         App.Data.myorder.add(self.model);
                     } else {
                         collection = self.options.real.collection;
-                    /*    index = collection.indexOf(self.options.real);
-                        collection.remove(self.options.real);
-                        collection.add(self.model, {at: index});
-                        if (collection.splitItemAfterQuantityUpdate) {
-                            collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
-                        } */
                         self.options.real.update(self.model);
                         if (collection && collection.splitItemAfterQuantityUpdate) {
                             collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
@@ -316,7 +311,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         check_model: function() {
             return this.model.get('product').get("product_sets").check_selected();
         },
-        check_order: function() {
+        view_check_order: function() {
             return this.model.check_order();
         }
       });

@@ -48,7 +48,9 @@
     display: inline-block;
     margin-top: 0.5em;
 }
-
+.product-modifiers .no_combo_link {
+    float: right;
+}
 .product-modifiers .timetable {
     font-style: italic;
 }

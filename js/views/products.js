@@ -214,7 +214,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         initialize: function() {
             var self = this;
             CoreView.CoreProductModifiersView.prototype.initialize.apply(this, arguments);
-            if (this.model.check_order().status != 'OK') {
+            if (this.model.check_order({modifiers_only: true}).status != 'OK') {
                 setTimeout( function(){ self.$(".customize").click(); }, 200);
             }
         },

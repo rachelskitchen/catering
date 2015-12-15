@@ -111,9 +111,17 @@ define(["backbone"], function(Backbone) {
                 def.resolve();
             }
         },
+        header_check_order: function(orderItem) {
+            var opt, has_upsell = orderItem.isUpsellProduct();
+            var child_mode = App.Data.mainModel.get('header').submode == 'child';
+            if (has_upsell && child_mode) { //this is modifiers customization for Upcharge combo product
+                opt = { modifiers_only: true };
+            }
+            return orderItem.check_order(opt);
+        },
         updateProduct: function(orderItem, originOrderItem) {
             var self = this,
-                check = orderItem.check_order();
+                check = this.header_check_order(orderItem);
 
             if (check.status === 'OK') {
                 // no need to check a 'is_gift' for stanford reload item
@@ -142,6 +150,12 @@ define(["backbone"], function(Backbone) {
             if(search) {
                 App.Data.router.navigate('search/' + encodeURIComponent(search), true);
             }
+        }
+    });
+
+    App.Models.HeaderComboModel = App.Models.HeaderModel.extend({
+        header_check_order: function(orderItem) {
+            return orderItem.check_order(opt);
         }
     });
 });

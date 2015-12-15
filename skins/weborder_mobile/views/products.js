@@ -92,23 +92,33 @@ define(["products_view"], function(products_view) {
 
     var ProductModifiersUpsellView  = ProductModifiersView.extend({
         initialize: function() {
+            var self = this;
             ProductModifiersView.prototype.initialize.apply(this, arguments);
+            if (this.model.check_order({modifiers_only: true}).status != 'OK') {
+                setTimeout( function(){ self.$(".customize").click(); }, 200);
+            }
         },
         bindings: {
-            '.customize': 'classes:{hide:not(is_modifiers)}'
+            '.customize': 'classes:{hide:not(is_modifiers)}',
+            '.no_combo_link': 'classes:{hide:not(is_no_combo_link)}'
         },
         events: {
-            'click .customize': 'customize'
+            'click .customize': 'customize',
+            'click .no_combo_link': 'no_combo'
         },
         computeds: {
             is_modifiers: function() {
                 return this.model.get_modifiers().length > 0;
+            },
+            is_no_combo_link: function() {
+                return this.options.action === 'add';
             }
         },
         customize: function() {
-            event.stopImmediatePropagation();
-            event.preventDefault();
             App.Data.router.combo_child_products(this.model, this.model.get("id_product"));
+        },
+        no_combo: function() {
+            App.Data.router.modifiers(this.model.get('product').get('id_category'), this.model.get("id_product"), 'No_Combo');
         }
     });
 

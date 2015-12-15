@@ -481,7 +481,7 @@ define(["main_router"], function(main_router) {
                 });
             });
         },
-        modifiers: function(id_category, id_product) {
+        modifiers: function(id_category, id_product, sub_action) {
             this.prepare('modifiers', function() {
                 var self = this,
                     header = App.Data.header,
@@ -504,6 +504,8 @@ define(["main_router"], function(main_router) {
                     footer: footerModes.None
                 });
 
+
+
                 if(isEditMode) {
                     originOrder = order.clone();
                     this.listenTo(order, 'change', setHeaderToUpdate);
@@ -518,6 +520,11 @@ define(["main_router"], function(main_router) {
                 function showProductDetails() {
                     if(!isEditMode) {
                         order = order.clone();
+                    }
+
+                    if (sub_action == 'No_Combo') {
+                        order.get('product').set('has_upsell', false, {silent: true});
+                        originOrder && originOrder.get('product').set('has_upsell', false, {silent: true});
                     }
 
                     var content = self.getStanfordReloadItem(order) || {
@@ -591,7 +598,7 @@ define(["main_router"], function(main_router) {
         },
         combo_child_products: function(combo_order, product_id) {
             this.prepare('modifiers', function() {
-                var self = this,
+                var self = this, order,
                     header = App.Data.header,
                     isEditMode = true,
                     originOrder = null;
@@ -600,7 +607,13 @@ define(["main_router"], function(main_router) {
                     return this.navigate('index', true);
                 }
 
-                var order = combo_order.find_child_product(product_id);
+                if (combo_order.get('id_product') == product_id) {
+                    //the case to customize Upsell root product
+                    order = combo_order;
+                } else {
+                    //the case for custmization of child products
+                    order = combo_order.find_child_product(product_id);
+                }
 
                 if (!order) {
                     return this.navigate('index', true);
@@ -613,7 +626,7 @@ define(["main_router"], function(main_router) {
                 });
 
                 App.Data.mainModel.set({
-                    header: headerModes.Modifiers,
+                    header: _.extend({}, headerModes.Modifiers, {submode: 'child'}),
                     footer: footerModes.None
                 });
 
@@ -734,6 +747,7 @@ define(["main_router"], function(main_router) {
                     App.Data.mainModel.set({
                         header: _.extend({}, headerModes.ComboProduct, {
                                                 mode: isEditMode ? 'update' : 'add',
+                                                submode: 'root',
                                                 order: order,
                                                 originOrder: originOrder,
                                                 init_cache_session: true,
@@ -746,6 +760,7 @@ define(["main_router"], function(main_router) {
                         modelName: 'MyOrder',
                         model: order,
                         mod: 'MatrixCombo',
+                        action: isEditMode ? 'update' : 'add',
                         init_cache_session: true, // 'true' means that the view will be removed from cache before creating a new one.
                         cacheIdUniq: cache_id  // cache is enabled for combo products during the phase of product customization only.
                     };
