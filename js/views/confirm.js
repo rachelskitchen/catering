@@ -53,8 +53,8 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             this.addCart();
         },
         events: {
-            'click .btn-submit': 'submit_payment',
-            'keydown .btn-submit': function(e) {
+            'click .btn-submit.submit-payment': 'submit_payment',
+            'keydown .btn-submit.submit-payment': function(e) {
                 if (this.pressedButtonIsEnter(e)) {
                     this.submit_payment();
                 }
