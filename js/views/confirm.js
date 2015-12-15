@@ -53,8 +53,8 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             this.addCart();
         },
         events: {
-            'click .btn-submit.submit-payment': 'submit_payment',
-            'keydown .btn-submit.submit-payment': function(e) {
+            'click .btn-submit': 'submit_payment',
+            'keydown .btn-submit': function(e) {
                 if (this.pressedButtonIsEnter(e)) {
                     this.submit_payment();
                 }
@@ -107,6 +107,7 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             '.submit-card': 'toggle: not(card_validated), classes: {disabled: any(not(card_number), not(card_captchaKey), not(card_captchaValue))}',
         },
         events: {
+            'click .btn-submit': '',
             'click .btn-submit.submit-order': 'submit_payment',
             'click .btn-submit.submit-card': 'submit_card'
         },
