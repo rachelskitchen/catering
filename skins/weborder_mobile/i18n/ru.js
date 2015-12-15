@@ -259,6 +259,7 @@
         'CHANGE_ESTABLISHMENT': "Выбрать другой магазин?",
         'COMBO_CUSTOMIZE': 'Модифаеры',
         'PRODUCT_SETS_SELECT_1': 'Пожалуйста, выберите опции для "',
-        'PRODUCT_SETS_SELECT_2': '"'
+        'PRODUCT_SETS_SELECT_2': '"',
+        'UPSELL_DONT_WANT_COMBO': 'Убрать комбо-опции'
     } // end of locale
 }); // end of module
