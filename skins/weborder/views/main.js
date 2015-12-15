@@ -135,7 +135,7 @@ define(["done_view", "generator"], function(done_view) {
             popup.addClass('ui-visible');
         },
         hide_popup: function(event, action_callback, model) {
-            var callback = this.model.get('popup').action_callback;
+            var callback = _.isObject(this.model.get('popup')) ? this.model.get('popup').action_callback : null;
             this.model.unset('popup');
             callback && callback();
         },
