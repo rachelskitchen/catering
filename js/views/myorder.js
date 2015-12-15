@@ -328,12 +328,12 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         initialize: function() {
             _base.prototype.initialize.apply(this, arguments);
             if (this.options.action === 'update') {
-               this.$('.no_combo').hide();
+               this.$('.no_combo_link').hide();
             }
             return this;
         },
         events: {
-            'click .no_combo': 'no_combo'
+            'click .no_combo_link': 'no_combo'
         },
         no_combo: function() {
             $('#popup .cancel').trigger('click');
