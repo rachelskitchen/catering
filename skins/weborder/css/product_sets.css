@@ -1,8 +1,6 @@
 
 #modifiers_popup .customize.link1 {
     text-decoration: underline;
-    font-weight: normal;
-    word-break: normal;
 }
 
 .modifiers_table .combo_item .customize.link1 {
@@ -11,15 +9,19 @@
 #modifiers_popup .product_info .customize.link1 {
     font-size: 20px;
     float: right;
-    cursor: pointer;
+    margin-right: 30px;
+    margin-top: 1px;
 }
-#modifiers_popup  .no_combo.link {
+#modifiers_popup  .no_combo_link {
     position: absolute;
     left: 390px;
+    right: 190px;
     bottom: 14px;
     font-size: 18px;
 }
-
+#modifiers_popup  .no_combo_link span {
+    float: right;
+}
 .modifiers_table .combo_item {
     width: 410px;
     float: left;
