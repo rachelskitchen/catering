@@ -999,12 +999,18 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             var result, spyAlert;
 
             beforeEach(function() {
+                this.settings = App.Settings;
+                App.Settings.email = '';
+                App.Settings.phone = '';
                 result = false;
                 spyOn(window, 'getData').and.callFake(function(name) {
                     if (name == 'orders') return {};
                 });
                 spyOn(App.Data.settings, "loadSettings");
                 spyAlert = spyOn(App.Data.errors, "alert");
+            });
+            afterEach(function() {
+                App.settings = this.settings;
             });
 
             it('email and phone are not set', function() {
@@ -2451,7 +2457,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 expect(ajax.data.orderInfo.customer).toEqual({
                     tip: 1,
                     type: 2,
-                    first_name: '',
+                    first_name: 'customer name',
                     last_name: '',
                     cardInfo: {
                         firstDigits: '',
@@ -2873,6 +2879,79 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });
                 
             });
+        });
+
+        it('empty_myorder()', function() {
+            spyOn(model, 'remove');
+            spyOn(model.total, 'empty');
+            spyOn(model.checkout, 'set');
+
+            model.empty_myorder();
+
+            expect(model.remove).toHaveBeenCalled();
+            expect(model.total.empty).toHaveBeenCalled();
+            expect(model.checkout.set).toHaveBeenCalledWith('dining_option', 'DINING_OPTION_ONLINE');
+            expect(model.checkout.set).toHaveBeenCalledWith('notes', '');
+        });
+
+        it('removeFreeModifiers()', function() {
+            spyOn(App.Models.Myorder.prototype, 'removeFreeModifiers');
+            model = new App.Collections.Myorders([new App.Models.Myorder(), new App.Models.Myorder()]);
+
+            model.removeFreeModifiers();
+            expect(App.Models.Myorder.prototype.removeFreeModifiers.calls.count()).toBe(2);
+        });
+
+        it('clearData()', function() {
+            spyOn(model, 'empty_myorder');
+            spyOn(model, 'saveOrders');
+            model.clearData();
+
+            expect(model.empty_myorder).toHaveBeenCalled();
+            expect(model.saveOrders).toHaveBeenCalled();
+        });
+
+        describe('restorePaymentResponse(uid)', function() {
+            var getDataSpy ;
+
+            beforeEach(function() {
+                model.paymentResponse = undefined;
+                spyOn(window, 'removeData');
+                getDataSpy = spyOn(window, 'getData');
+            });
+
+            it('called without arguments', function() {
+                expect(model.restorePaymentResponse()).toBeUndefined();
+                expectNegative();
+            });
+
+            it('`uid` is not string', function() {
+                expect(model.restorePaymentResponse(null)).toBeUndefined();
+                expectNegative();
+            });
+
+            it('`uid` is empty string', function() {
+                expect(model.restorePaymentResponse('')).toBeUndefined();
+                expectNegative();
+            });
+
+            it('`uid` is string, `paymentResponse` has not been found in storage', function() {
+                expect(model.restorePaymentResponse('someUid')).toBeUndefined();
+                expect(getDataSpy).toHaveBeenCalledWith('someUid.paymentResponse');
+                expectNegative();
+            });
+
+            it('`uid` is string, `paymentResponse` has been found in storage', function() {
+                getDataSpy.and.returnValue('payment response');
+                expect(model.restorePaymentResponse('someUid')).toBeTruthy();
+                expect(getDataSpy).toHaveBeenCalledWith('someUid.paymentResponse');
+                expect(model.paymentResponse).toBe('payment response');
+            });
+
+            function expectNegative() {
+                expect(model.paymentResponse).toBeUndefined();
+                expect(window.removeData).not.toHaveBeenCalled();
+            }
         });
     });
 
