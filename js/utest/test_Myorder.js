@@ -2881,6 +2881,42 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             });
         });
 
+        it('getOrderSeatCallName()', function() {
+            this.checkout = model.checkout;
+
+            model.checkout = {
+                toJSON: function() {
+                    return {
+                        level: 'level',
+                        section: 'section',
+                        row: 'row',
+                        seat: 'seat'
+                    };
+                }
+            };
+
+            expect(model.getOrderSeatCallName()).toEqual(['Level: level Sect: section Row: row Seat: seat']);
+            expect(model.getOrderSeatCallName('phone')).toEqual(['Level: level Sect: section Row: row Seat: seat', 'phone']);
+
+            model.checkout = this.checkout;
+        });
+
+        it('getOtherDiningOptionCallName()', function() {
+            this.checkout = model.checkout;
+
+            model.checkout = new Backbone.Model({
+                other_dining_options: new Backbone.Collection([
+                    new Backbone.Model({name: 'Option1', value: 'value1'}),
+                    new Backbone.Model({name: 'Option2', value: 'value2'})
+                ])
+            });
+
+            expect(model.getOtherDiningOptionCallName()).toEqual(['Option1: value1 Option2: value2']);
+            expect(model.getOtherDiningOptionCallName('phone')).toEqual(['Option1: value1 Option2: value2', 'phone']);
+
+            model.checkout = this.checkout;
+        });
+
         it('empty_myorder()', function() {
             spyOn(model, 'remove');
             spyOn(model.total, 'empty');
@@ -2911,8 +2947,61 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             expect(model.saveOrders).toHaveBeenCalled();
         });
 
-        describe('restorePaymentResponse(uid)', function() {
-            var getDataSpy ;
+        describe('isShippingOrderType()', function() {
+            beforeEach(function() {
+                this.checkout = model.checkout;
+                model.checkout = new Backbone.Model({
+                    dining_option: 'DINING_OPTION_ONLINE'
+                });
+            });
+
+            afterEach(function() {
+                model.checkout = this.checkout;
+            });
+
+            it('dining option is not shipping', function() {
+                expect(model.isShippingOrderType()).toBe(false);
+            });
+
+            it('dining option is shipping', function() {
+                model.checkout.set('dining_option', 'DINING_OPTION_SHIPPING', {silent: true});
+                expect(model.isShippingOrderType()).toBe(true);
+            });
+        });
+
+        describe('savePaymentResponse()', function() {
+            beforeEach(function() {
+                spyOn(window, 'setData');
+            });
+
+            it('called without arguments', function() {
+                model.savePaymentResponse();
+                expect(window.setData).not.toHaveBeenCalled();
+            });
+
+            it('`uid` is not string or empty string', function() {
+                model.savePaymentResponse(null);
+                expect(window.setData).not.toHaveBeenCalled();
+
+                model.savePaymentResponse('');
+                expect(window.setData).not.toHaveBeenCalled();
+            });
+
+            it('`uid` is string, `paymentResponse` does not exist', function() {
+                this.paymentResponse = undefined;
+                model.savePaymentResponse('someUid');
+                expect(window.setData).not.toHaveBeenCalled();
+            });
+
+            it('`uid` is string, `paymentResponse` exists', function() {
+                model.paymentResponse = 'payment response';
+                model.savePaymentResponse('someUid');
+                expect(window.setData).toHaveBeenCalledWith('someUid.paymentResponse', 'payment response');
+            });
+        });
+
+        describe('restorePaymentResponse()', function() {
+            var getDataSpy;
 
             beforeEach(function() {
                 model.paymentResponse = undefined;
@@ -2953,6 +3042,224 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 expect(window.removeData).not.toHaveBeenCalled();
             }
         });
+
+        describe('setShippingAddress()', function() {
+            var checkout = new Backbone.Model(),
+                diningOption = '';
+
+            beforeEach(function() {
+                this.customer = App.Data.customer;
+                App.Data.customer = new Backbone.Model({
+                    shipping_address: -1,
+                    addresses: ['address 1', 'address 2'],
+                    shipping_selected: -1,
+                    shipping_services: ['shipping service 1', 'shipping service 2'],
+                    deliveryAddressIndex: 0,
+                    shippingAddressIndex: 1
+                });
+                App.Data.customer.defaults = {
+                    shipping_address: -1
+                };
+            });
+
+            afterEach(function() {
+                App.Data.customer = this.customer;
+            })
+
+            it('App.Data.customer does not exist', function() {
+                App.Data.customer = undefined;
+                expect(model.setShippingAddress(checkout, diningOption)).toBeUndefined();
+            });
+
+            it('dining option is delivery', function() {
+                diningOption = 'DINING_OPTION_DELIVERY';
+                expect(App.Data.customer.get('deliveryAddressIndex')).toBe(0);
+                expect(model.setShippingAddress(checkout, diningOption)).toBe(0);
+                expect(App.Data.customer.get('shipping_address')).toBe(0);
+            });
+
+            it('dining option is shipping', function() {
+                diningOption = 'DINING_OPTION_SHIPPING';
+                expect(App.Data.customer.get('shippingAddressIndex')).toBe(1);
+                expect(model.setShippingAddress(checkout, diningOption)).toBe(1);
+                expect(App.Data.customer.get('shipping_address')).toBe(1);
+            });
+
+            it('dining option is not shipping or delivery', function() {
+                diningOption = 'DINING_OPTION_TOGO';
+                expect(model.setShippingAddress(checkout, diningOption)).toBe(-1);
+                expect(App.Data.customer.get('shipping_address')).toBe(-1);
+            });
+        });
+
+        describe('getItemsWithPointsRewardDiscount()', function() {
+            var item1 = new Backbone.Model({name: 'item1'}),
+                item2 = new Backbone.Model({name: 'item2'});
+            item1.get_modelsum = function() {};
+            item1.hasPointValue = function() {};
+            item2.get_modelsum = function() {};
+            item2.hasPointValue = function() {};
+
+            beforeEach(function() {
+                spyOn(App.Collections.Myorders.prototype, 'listenTo');
+                spyOn(item1, 'hasPointValue').and.returnValue(true);
+                spyOn(item2, 'hasPointValue').and.returnValue(true);
+                spyOn(item1, 'get_modelsum').and.returnValue(10);
+                spyOn(item2, 'get_modelsum').and.returnValue(20);
+
+                model = new App.Collections.Myorders([item1, item2]);
+            });
+
+            it('called without arguments', function() {
+                var itemsWithDiscount = model.getItemsWithPointsRewardDiscount();
+                expect(itemsWithDiscount.length).toBe(1);
+                expect(itemsWithDiscount[0].get('name')).toBe('item2');
+                expect(item2.get('reward_discount')).toBe(0);
+                expect(item1.get('reward_discount')).toBeUndefined();
+            });
+
+            it('`discount` is 10, reward discount is applied to item with larger sum', function() {
+                var itemsWithDiscount = model.getItemsWithPointsRewardDiscount(10);
+                expect(itemsWithDiscount.length).toBe(1);
+                expect(itemsWithDiscount[0].get('name')).toBe('item2');
+                expect(item2.get('reward_discount')).toBe(10);
+                expect(item1.get('reward_discount')).toBeUndefined();
+            });
+
+            it('`discount` is 25, reward discount is applied to both items', function() {
+                var itemsWithDiscount = model.getItemsWithPointsRewardDiscount(25);
+                expect(itemsWithDiscount.length).toBe(2);
+                expect(itemsWithDiscount[0].get('name')).toBe('item2');
+                expect(itemsWithDiscount[1].get('name')).toBe('item1');
+                expect(item2.get('reward_discount')).toBe(20);
+                expect(item1.get('reward_discount')).toBe(5);
+            });
+        });
+
+        it('splitAllItemsWithPointValue()', function() {
+            var item1 = new Backbone.Model(),
+                item2 = new Backbone.Model();
+
+            model = new App.Collections.Myorders([item1, item2]);
+            spyOn(model, 'splitItemWithPointValue');
+
+            model.splitAllItemsWithPointValue();
+            expect(model.splitItemWithPointValue.calls.count()).toBe(2);
+            expect(model.splitItemWithPointValue).toHaveBeenCalledWith(item1);
+            expect(model.splitItemWithPointValue).toHaveBeenCalledWith(item2);
+        });
+
+        describe('splitItemWithPointValue()', function() {
+            var item, hasPointSpy;
+
+            beforeEach(function() {
+                this.myorder = App.Data.myorder;
+
+                item = new Backbone.Model({
+                    id_product: 123,
+                    quantity: 5
+                });
+                item.hasPointValue = function() {};
+                hasPointSpy = spyOn(item, 'hasPointValue').and.returnValue(true);
+
+                App.Data.myorder = new Backbone.Collection([item]);
+
+                spyOn(Backbone.Model.prototype, 'set').and.callThrough();
+            });
+
+            afterEach(function() {
+                App.Data.myorder = this.myorder;
+            });
+
+            it('item has no point value', function() {
+                hasPointSpy.and.returnValue(false);
+
+                model.splitItemWithPointValue(item);
+
+                expect(item.get('quantity')).toBe(5);
+            });
+
+            it('item has point value, quantity is 1', function() {
+                item.set('quantity', 1, {silent: true});
+
+                model.splitItemWithPointValue(item);
+
+                expect(item.get('quantity')).toBe(1);
+            });
+
+            it('item has point value, quanity is more than 1, myorder doesn\'t cointain same single quantity item', function() {
+                model.splitItemWithPointValue(item);
+
+                expectSplit();
+                expect(Backbone.Model.prototype.set).toHaveBeenCalledWith('quantity', 1, {silent: false});
+                expect(Backbone.Model.prototype.set).toHaveBeenCalledWith('quantity', 4, {silent: false});
+            });
+
+            it('item has point value, quanity is more than 1, myorder doesn\'t cointain same single quantity item. `silentFlag` is true', function() {
+                model.splitItemWithPointValue(item, true);
+
+                expectSplit();
+                expect(Backbone.Model.prototype.set).toHaveBeenCalledWith('quantity', 1, {silent: true});
+                expect(Backbone.Model.prototype.set).toHaveBeenCalledWith('quantity', 4, {silent: true});
+            });
+
+            function expectSplit() {
+                expect(item.get('quantity')).toBe(4);
+                expect(App.Data.myorder.models.length).toBe(2);
+
+                var singleItem = App.Data.myorder.models[1];
+                expect(singleItem.get('id_product')).toBe(123);
+                expect(singleItem.get('quantity')).toBe(1);
+            }
+        });
+
+        describe('splitItemAfterQuantityUpdate()', function() {
+            var item, discount;
+
+            beforeEach(function() {
+                discount = new Backbone.Model({
+                    name: 'Item Reward'
+                })
+
+                item = new Backbone.Model({
+                    discount: discount
+                });
+
+                spyOn(model, 'splitItemWithPointValue');
+            });
+
+            it('discount name is not `Item Reward`', function() {
+                discount.set('name', 'discount', {silent: true});
+                model.splitItemAfterQuantityUpdate(item, 1, 2);
+
+                expect(model.splitItemWithPointValue).not.toHaveBeenCalled();
+            });
+
+            it('discount name is `Item Reward`, `oldQuantity` is 1, `newQuantity` is 1', function() {
+                model.splitItemAfterQuantityUpdate(item, 1, 1);
+
+                expect(model.splitItemWithPointValue).not.toHaveBeenCalled();
+            });
+
+            it('discount name is `Item Reward`, `oldQuantity` is 2, `newQuantity` is 3', function() {
+                model.splitItemAfterQuantityUpdate(item, 2, 3);
+
+                expect(model.splitItemWithPointValue).not.toHaveBeenCalled();
+            });
+
+            it('discount name is `Item Reward`, `oldQuantity` is 1, `newQuantity` is 2', function() {
+                model.splitItemAfterQuantityUpdate(item, 1, 2);
+
+                expect(model.splitItemWithPointValue).toHaveBeenCalledWith(item, false);
+            });
+
+            it('discount name is `Item Reward`, `oldQuantity` is 1, `newQuantity` is 2, `silentFlag` is true', function() {
+                model.splitItemAfterQuantityUpdate(item, 1, 2, true);
+
+                expect(model.splitItemWithPointValue).toHaveBeenCalledWith(item, true);
+            });
+        });
+
     });
 
 //===============================================================
@@ -2984,7 +3291,6 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             model.set('combo_product_change', '1');
             expect(update_product_price).toHaveBeenCalled();
         });
-
 
         it('has_child_products()', function() {
             var product = new Backbone.Model(),
