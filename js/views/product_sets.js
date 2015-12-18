@@ -140,6 +140,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                             cache_id: self.options.myorder_root.get('id_product')
                         });
                     self.model.trigger("model_changed");
+                    self.options.myorder_root.trigger('combo_product_change');
                 }
             });
         },
