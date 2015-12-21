@@ -418,7 +418,7 @@ define(["backbone", "async"], function(Backbone) {
                             App.Data.is_stanford_mode = false;
                             // then need to check if stanford mode is enabled using get parameter...
                             var app = require('app');
-                            if (app.get['stanford'] == true
+                            if (app.get['stanford'] == "true"
                                 // ...or by using Stanford payment processor
                                 || settings_system.payment_processor.stanford == true)
                             {
