@@ -1887,7 +1887,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     });
                 })
 
-                it('data.status doesn\'t exist', function() {
+                it('data.status doesn\'t exist or empty', function() {
                     data = {};
                     model._get_cart_totals({apply_discount: true});
 
@@ -2749,15 +2749,38 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });               
             });
             
-            it('reward card', function() {
-                rewardsCard = {
-                    number: '123'
-                };
-                spyOn(model.rewardsCard, 'toJSON').and.callFake(function() {
-                    return rewardsCard;
+            describe('rewards card', function() {
+                beforeEach(function() {
+                    spyOn(model.rewardsCard, 'toJSON').and.callFake(function() {
+                        return rewardsCard;
+                    });
                 });
-                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                expect(ajax.data.orderInfo.rewards_card.number).toEqual('123');
+
+                it('`rewardsCard.number` doesn\'t exist', function() {
+                    rewardsCard = {};
+
+                    model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                    expect(ajax.data.orderInfo.rewards_card).toBeUndefined();
+                });
+
+                it('`rewardsCard.number` exists, `rewardsCard.redemption_code doesn\'t exist', function() {
+                    rewardsCard = {
+                        number: '123'
+                    };
+
+                    model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                    expect(ajax.data.orderInfo.rewards_card.number).toEqual('123');
+                });
+
+                it('`rewardsCard.number` and `rewardsCard.redemption_code` exist', function() {
+                    rewardsCard = {
+                        number: '123',
+                        redemption_code: 'code'
+                    };
+
+                    model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                    expect(ajax.data.orderInfo.rewards_card.redemption).toEqual('code');
+                });
             });
             
             describe('ajax success', function() {
@@ -2765,12 +2788,80 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 beforeEach(function() {
                     model.submit_order_and_pay(2);
                 });
-                
+
+                it('status doesn\'t exist or emtpy', function() {
+                    var data = {};
+                    ajax.success(data);
+
+                    expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
+                    expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(MSG.ERROR_INCORRECT_AJAX_DATA)).not.toBe(-1);
+                });
+
                 it('status OK', function() {
                     var data = {status: 'OK'};
                     ajax.success(data);
+
                     expect(model.paymentResponse).toBe(data);
                     expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
+                });
+
+                it('status OK, `validationOnly` is true', function() {
+                    model.submit_order_and_pay(2, true);
+                    var data = {status: 'OK'};
+                    ajax.success(data);
+                    ajax.complete();
+
+                    expect(model.trigger).toHaveBeenCalledWith('paymentResponseValid');
+                });
+
+                it('status OK, data.balances.stanford exists, `payment_type` is 6 (stanford)', function() {
+                    this.stanfordCard = App.Data.stanfordCard;
+                    var updatePlans = jasmine.createSpy();
+                    App.Data.stanfordCard = {
+                        updatePlans: updatePlans,
+                        toJSON: function() {
+                            return {
+                                planId: 1
+                            }
+                        }
+                    };
+
+                    model.submit_order_and_pay(6);
+
+                    var data = {
+                        status: 'OK',
+                        balances: {
+                            stanford: 'stanford balance'
+                        }
+                    };
+                    ajax.success(data);
+
+                    expect(updatePlans).toHaveBeenCalledWith('stanford balance');
+                    expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
+
+                    App.Data.stanfordCard = this.stanfordCard;
+                });
+
+
+                it('status OK, data.balances.rewards exists', function() {
+                    this.rewardsCard = App.Data.myorder.rewardsCard;
+                    var resetDataAfterPayment = jasmine.createSpy();
+                    App.Data.myorder.rewardsCard = {
+                        resetDataAfterPayment: resetDataAfterPayment
+                    };
+
+                    var data = {
+                        status: 'OK',
+                        balances: {
+                            rewards: 'rewards balance'
+                        }
+                    };
+                    ajax.success(data);
+
+                    expect(resetDataAfterPayment).toHaveBeenCalled();
+                    expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
+
+                    App.Data.myorder.rewardsCard = this.rewardsCard;
                 });
                 
                 it('status REDIRECT', function() {
@@ -2784,6 +2875,14 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     ajax.success(data);
                     //expect(model.checkout.set.calls.allArgs()).toEqual([['payment_id', 'id'],['payment_type', 5]]);
                     expect(PaymentProcessor.handleRedirect).toHaveBeenCalled();
+                });
+
+                it('status PAYMENT_INFO_REQUIRED', function() {
+                    spyOn(PaymentProcessor, 'handlePaymentDataRequest');
+                    var data = {status: 'PAYMENT_INFO_REQUIRED'};
+                    ajax.success(data);
+
+                    expect(PaymentProcessor.handlePaymentDataRequest).toHaveBeenCalled();
                 });
                 
                 describe('status INSUFFICIENT_STOCK', function() {
@@ -2859,7 +2958,20 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                         
                     });
                 });
-                
+
+                it('status ASAP_TIME_SLOT_BUSY', function() {
+                    var data = {
+                        status: 'ASAP_TIME_SLOT_BUSY',
+                        responseJSON: [{
+                            asap_pickup_time: '12/21/2015 03:46'
+                        }]
+                    };
+                    ajax.success(data);
+
+                    expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
+                    expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf('Selected time is not available. Next available time')).not.toBe(-1);
+                });
+
                 it('status ORDERS_PICKUPTIME_LIMIT', function() {
                     var data = {status: 'ORDERS_PICKUPTIME_LIMIT'};
                     ajax.success(data);
@@ -2867,18 +2979,62 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });
                 
                 it('status REWARD CARD UNDEFINED', function() {
-                    var data = {status: 'REWARD CARD UNDEFINED'};
+                    var data = {
+                        status: 'REWARD CARD UNDEFINED'
+                    };
                     ajax.success(data);
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                 });
-                
+
+                it('DELIVERY_ADDRESS_ERROR', function() {
+                    var data = {
+                        status: 'DELIVERY_ADDRESS_ERROR',
+                        errorMsg: 'delivery address error'
+                    };
+                    ajax.success(data);
+
+                    expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
+                    expect(App.Data.errors.alert.calls.mostRecent().args[0]).toBe('delivery address error');
+                });
+
+                it('PRODUCTS_NOT_AVAILABLE_FOR_SELECTED_TIME', function() {
+                    var errorMsg = 'some product is not available for selected time';
+                    var data = {
+                        status: 'PRODUCTS_NOT_AVAILABLE_FOR_SELECTED_TIME',
+                        errorMsg: errorMsg,
+                        responseJSON: {
+                            timetables: 'timetables'
+                        }
+                    };
+                    spyOn(window, 'format_timetables');
+                    ajax.success(data);
+
+                    expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
+                    expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(errorMsg)).not.toBe(-1);
+                });
+
                 it('status OTHER', function() {
                     var data = {status: 'OTHER', errorMsg: 'other'};
                     ajax.success(data);
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                 });
-                
+
+                describe('ajax error', function() {
+                    it('general', function() {
+                        ajax.error();
+
+                        expect(model.paymentResponse).toEqual({
+                            status: 'ERROR',
+                            errorMsg: MSG.ERROR_SUBMIT_ORDER
+                        });
+
+                        expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
+                        expect(App.Data.errors.alert.calls.mostRecent().args[0]).toBe(MSG.ERROR_SUBMIT_ORDER);
+                    });
+                });
+
             });
+
         });
 
         it('getOrderSeatCallName()', function() {
