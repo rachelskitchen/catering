@@ -27,10 +27,12 @@ define(["quantity_view"], function(quantity_view) {
         events: {
             'change input': 'change'
         },
-
+        initialize: function() {
+            App.Views.CoreQuantityView.CoreQuantityMainView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.options.model, 'combo_weight_product_change', this.combo_weight_product_change);
+        },
         combobox: null,
-
-        hide_show: function() {
+        hide_show: function(isComboWithWeightProduct) {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.hide_show.apply(this, arguments);
             var select = this.$('select'),
                 product = this.model.get_product(),
@@ -50,7 +52,7 @@ define(["quantity_view"], function(quantity_view) {
             }
             select.append(options);
 
-            if (stock_amount === 1 || product.isParent()) {
+            if (stock_amount === 1 || product.isParent() || isComboWithWeightProduct) {
                 select.addClass('disabled');
                 select.prop('disabled', true);
                 selectWrapper.addClass('disabled');
@@ -70,6 +72,12 @@ define(["quantity_view"], function(quantity_view) {
         },
         change: function(e) {
             this.model.set('quantity', e.target.value * 1);
+        },
+        combo_weight_product_change: function(isComboWithWeightProduct) {
+            if (isComboWithWeightProduct) {
+                this.model.set('quantity', 1);
+            }
+            this.hide_show(isComboWithWeightProduct);
         }
     });
 

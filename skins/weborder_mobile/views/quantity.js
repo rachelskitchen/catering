@@ -33,11 +33,15 @@ define(["quantity_view"], function(quantity_view) {
             'input .quantity_edit_input': 'change_quantity',
             'blur .quantity_edit_input': 'blur_quantity'
         },
-        hide_show: function() {
+        initialize: function() {
+            App.Views.CoreQuantityView.CoreQuantityMainView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.options.model, 'combo_weight_product_change', this.combo_weight_product_change);
+        },
+        hide_show: function(isComboWithWeightProduct) {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.hide_show.apply(this, arguments);
             var product = this.model.get_product(),
                 disallowNegativeInventory = App.Data.settings.get('settings_system').cannot_order_with_empty_inventory;
-            if (product.get('stock_amount') === 1 || product.isParent()) {
+            if (product.get('stock_amount') === 1 || product.isParent() || isComboWithWeightProduct) {
                 this.$('.decrease').addClass('disabled');
                 this.$('.increase').addClass('disabled');
                 this.$('.quantity_edit_input').addClass('disabled').prop('disabled', true);
@@ -83,8 +87,13 @@ define(["quantity_view"], function(quantity_view) {
                 e.target.value = 1;
                 this.model.set('quantity', e.target.value * 1);
             }
+        },
+        combo_weight_product_change: function(isComboWithWeightProduct) {
+            if (isComboWithWeightProduct) {
+                this.model.set('quantity', 1);
+            }
+            this.hide_show(isComboWithWeightProduct);
         }
-
     });
 
     return new (require('factory'))(quantity_view.initViews.bind(quantity_view), function() {
