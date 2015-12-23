@@ -178,6 +178,7 @@ define(["backbone", "factory"], function(Backbone) {
                 templates = page && Array.isArray(settings_skin.routing[page].templates) ? settings_skin.routing[page].templates : [],
                 views = page && Array.isArray(settings_skin.routing[page].views) ? settings_skin.routing[page].views : [],
                 css = page && Array.isArray(settings_skin.routing[page].css) ? settings_skin.routing[page].css : [],
+                externCss = [],
                 cssCore = page && Array.isArray(settings_skin.routing[page].cssCore) ? settings_skin.routing[page].cssCore : [],
                 templatesCore = page && Array.isArray(settings_skin.routing[page].templatesCore) ? settings_skin.routing[page].templatesCore : [],
                 models = page && Array.isArray(settings_skin.routing[page].model) ? settings_skin.routing[page].model : [],
@@ -198,7 +199,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             color_schemes.length > 0 && !this.prepare.initialized && initTheme.call(this);
 
-            var countCSS = css.length + cssCore.length;
+            var countCSS = css.length + cssCore.length + externCss.length;
             if (countCSS) {
                 var loadModelCSS = {
                     count: countCSS,
@@ -226,6 +227,9 @@ define(["backbone", "factory"], function(Backbone) {
             for (i = 0, j = css.length; i < j; i++)
                 this.skinCSS.push(loadCSS(skinPath + '/css/' + css[i], loadModelCSS));
 
+            for (i = 0, j = externCss.length; i < j; i++)
+                this.skinCSS.push(loadCSS(externCss[i], loadModelCSS));
+
             for(i = 0, j = models.length; i < j; i++)
                 js.push(skin + "/models/" + models[i]);
 
@@ -234,6 +238,10 @@ define(["backbone", "factory"], function(Backbone) {
 
             for (i = 0, j = templatesCore.length; i < j; i++)
                 loadTemplate2(null, templatesCore[i], true, loadModelTemplate); // sync load template
+
+            //trace("this.skinCSS length = ", this.skinCSS.length);
+            //trace(css, cssCore, externCss);
+
 
             require(js, function() {
                 // init Views (#18015)
@@ -260,12 +268,25 @@ define(["backbone", "factory"], function(Backbone) {
             });
 
             function initTheme() {
-                var color_scheme = typeof system_settings.color_scheme == 'string' ? system_settings.color_scheme.toLowerCase().replace(/\s/g, '_') : null;
-                if(color_schemes.indexOf(color_scheme) > -1) {
-                    css.push('themes/' + color_scheme + '/colors');
+                var app = require('app'),
+                    local_theme = app.get['local_theme'] == "true" ? true : false;
+                if (App.skin != App.Skins.WEBORDER_MOBILE && App.skin != App.Skins.DIRECTORY_MOBILE) {
+                    local_theme = true;
+                }
+                var server_color_schemes = {};
+                server_color_schemes[ App.Skins.WEBORDER_MOBILE ] = 'weborder-mobile-colors';
+                server_color_schemes[ App.Skins.DIRECTORY_MOBILE ] = 'directory-mobile-colors';
+
+                if (local_theme == true) {
+                    var color_scheme = typeof system_settings.color_scheme == 'string' ? system_settings.color_scheme.toLowerCase().replace(/\s/g, '_') : null;
+                    if (color_schemes.indexOf(color_scheme) > -1) {
+                        css.push('themes/' + color_scheme + '/colors');
+                    } else {
+                        App.Data.log.pushJSError('"' + system_settings.color_scheme + '" color scheme is not available', 'js/router/main.js', '151');
+                        css.push('themes/default/colors');
+                    }
                 } else {
-                    App.Data.log.pushJSError('"' + system_settings.color_scheme + '" color scheme is not available', 'js/router/main.js', '151');
-                    css.push('themes/default/colors');
+                    externCss.push(settings.get('host') + '/weborders/css/' + server_color_schemes[ App.skin ] );
                 }
                 this.prepare.initialized = true;
             }

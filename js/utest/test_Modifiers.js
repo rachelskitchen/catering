@@ -869,7 +869,30 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
                 expect(model.checkForced()).toBe(true);
             });
         });
-        
+
+        describe('checkAmount()', function() {
+            it('maximum_amount is not set for any modifierBlock', function() {
+                model.addJSON(exBlocks2);
+                expect(model.checkAmount()).toBe(true);
+            });
+
+            it('quantity of selected modifiers less than maximum_amount', function() {
+                exBlocks2[0].maximum_amount = 2;
+                exBlocks2[0].maximum_amount = 1;
+                model.addJSON(exBlocks2);
+                expect(model.checkAmount()).toBe(true);
+            });
+
+            it('quantity of selected modifiers more than maximum_amount', function() {
+                exBlocks2[0].maximum_amount = 1;
+                exBlocks2[0].modifiers[0].quantity = 2;
+                model.addJSON(exBlocks2);
+                var result = model.checkAmount();
+                expect(result.length).toBe(1);
+                expect(result[0].id).toBe(1);
+            });
+        });
+
         it('uncheck_special()', function() {
             var arr = [new Backbone.Model({name: 'test1', selected: true}), new Backbone.Model({name: 'test2', selected: true})];
             spyOn(model, 'get_special').and.returnValue(arr);
@@ -892,6 +915,18 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             model.add([{}, {}]);
             spyOn(App.Models.ModifierBlock.prototype, 'modifiers_submit').and.returnValue(['test']);
             expect(model.modifiers_submit()).toEqual(['test', 'test']);
+        });
+
+        it('removeFreeModifiers()', function() {
+            var block1 = new App.Models.ModifierBlock(),
+                block2 = new App.Models.ModifierBlock();
+            spyOn(block1, 'removeFreeModifiers');
+            spyOn(block2, 'removeFreeModifiers');
+
+            model.add([block1, block2]);
+            model.removeFreeModifiers();
+            expect(block1.removeFreeModifiers).toHaveBeenCalled();
+            expect(block2.removeFreeModifiers).toHaveBeenCalled();
         });
     });
     

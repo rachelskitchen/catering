@@ -189,6 +189,166 @@ define([], function() {
                 }
             ]
         },
+        "addJSON_is_combo_true": {
+            "image": "test.png",
+            "created_date": 12,
+            "original_tax": 2,
+            "is_combo": true,
+            "product_sets": [{
+                "name": "Product set 1",
+                "id": 4,
+                "is_combo_saving": false,
+                "order_products": [{
+                    "product": {
+                        "description": null,
+                        "id": 2078,
+                        "id_category": 495,
+                        "images": [],
+                        "is_cold": false,
+                        "name": "Combo item 1",
+                        "price": 10,
+                        "tax": 0,
+                        "sort": 1
+                    },
+                    "modifiers": [],
+                    "id_product": 2078,
+                    "sum": 10,
+                    "quantity": 1,
+                    "weight": 0,
+                    "quantity_prev": 1,
+                    "special": "",
+                    "initial_price": 10,
+                    "discount": {
+                        "id": null,
+                        "name": "default",
+                        "sum": 0,
+                        "taxed": false,
+                        "type": null
+                    },
+                    "stanfordCard": null,
+                    "stanford_card_number": "",
+                    "planId": null,
+                    "isServiceFee": false,
+                    "is_child_product": true,
+                    "selected": true
+                }, {
+                    "product": {
+                        "description": null,
+                        "id": 2079,
+                        "id_category": 495,
+                        "images": [],
+                        "is_cold": false,
+                        "name": "Combo item 2",
+                        "price": 10,
+                        "img": "./skins/weborder/img/",
+                        "tax": 0,
+                        "sort": 2
+                    },
+                    "modifiers": [],
+                    "id_product": 2079,
+                    "sum": 10,
+                    "quantity": 1,
+                    "weight": 0,
+                    "quantity_prev": 1,
+                    "special": "",
+                    "initial_price": 10,
+                    "discount": {
+                        "id": null,
+                        "name": "default",
+                        "sum": 0,
+                        "taxed": false,
+                        "type": null
+                    },
+                    "stanfordCard": null,
+                    "stanford_card_number": "",
+                    "planId": null,
+                    "isServiceFee": false,
+                    "is_child_product": true
+                }],
+                "minimum_amount": 1,
+                "maximum_amount": 1,
+                "sort": 1,
+                "quantity": 1
+            }, {
+                "name": "Product set 2",
+                "id": 5,
+                "is_combo_saving": true,
+                "order_products": [{
+                    "product": {
+                        "description": null,
+                        "id": 1859,
+                        "id_category": 413,
+                        "image": "./skins/weborder/img/none.png",
+                        "images": [],
+                        "is_cold": false,
+                        "name": "Coke",
+                        "price": 5,
+                        "img": "./skins/weborder/img/",
+                        "tax": 0,
+                        "sort": 1
+                    },
+                    "modifiers": [],
+                    "id_product": 1859,
+                    "sum": 5,
+                    "quantity": 1,
+                    "weight": 0,
+                    "quantity_prev": 1,
+                    "special": "",
+                    "initial_price": 5,
+                    "discount": {
+                        "id": null,
+                        "name": "default",
+                        "sum": 0,
+                        "taxed": false,
+                        "type": null
+                    },
+                    "stanfordCard": null,
+                    "stanford_card_number": "",
+                    "planId": null,
+                    "isServiceFee": false,
+                    "is_child_product": true,
+                    "selected": true
+                }, {
+                    "product": {
+                        "description": "",
+                        "id": 1862,
+                        "id_category": 413,
+                        "image": "./skins/weborder/img/none.png",
+                        "images": [],
+                        "is_cold": true,
+                        "name": "Diet Coke",
+                        "price": 5,
+                        "img": "./skins/weborder/img/",
+                        "tax": 0,
+                        "sort": 4
+                    },
+                    "modifiers": [],
+                    "id_product": 1862,
+                    "sum": 5,
+                    "quantity": 1,
+                    "weight": 0,
+                    "quantity_prev": 1,
+                    "special": "",
+                    "initial_price": 5,
+                    "discount": {
+                        "id": null,
+                        "name": "default",
+                        "sum": 0,
+                        "taxed": false,
+                        "type": null
+                    },
+                    "stanfordCard": null,
+                    "stanford_card_number": "",
+                    "planId": null,
+                    "isServiceFee": false,
+                    "is_child_product": true
+                }],
+                "minimum_amount": 1,
+                "maximum_amount": 1,
+                "sort": 2,
+                "quantity": 1
+            }]
+        },
         "get_product_attributes": {
             "attribute_1_selected": 1,
             "attribute_1_enable": true,

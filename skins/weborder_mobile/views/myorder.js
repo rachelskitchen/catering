@@ -78,6 +78,17 @@ define(["myorder_view"], function(myorder_view) {
     });
 
     var MyOrderMatrixComboView = App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView.extend({
+        initialize: function() {
+            App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'combo_product_change', this.check_weight_product);
+            this.check_weight_product();
+            return this;
+        },
+        check_weight_product: function() {
+            var isComboWithWeightProduct = this.model.get('product').get("product_sets").haveWeightProduct();
+            this.options.model.trigger('combo_weight_product_change', isComboWithWeightProduct);
+        },
+
         render: function() {
             App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView.prototype.render.apply(this, arguments);
 
@@ -90,7 +101,8 @@ define(["myorder_view"], function(myorder_view) {
             view = App.Views.GeneratorView.create('Quantity', {
                 el: this.$('.quantity_info'),
                 model: model,
-                mod: mod
+                mod: mod,
+                myorder_root: model
             });
             this.subViews.push(view);
 

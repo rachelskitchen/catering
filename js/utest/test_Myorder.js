@@ -1,4 +1,4 @@
-define(['myorder', 'products'], function() {
+define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'], function(data, productsData) {
             
     describe("App.Models.Myorder", function() {
         var model, change, special;
@@ -186,6 +186,43 @@ define(['myorder', 'products'], function() {
                 expect(model.listenTo.callCount).toBe(count);
             });
 
+            it('product listeners', function() {
+                spyOn(model, 'get_modelsum');
+                spyOn(model, 'get_initial_price');
+                product.get_product = function() {
+                    return {
+                        get: function() {}
+                    }
+                };
+
+                model.set({product: product}, {silent: true});
+                model.set({special: 'test'}, {silent: true});
+                obj = null;
+                model.change();
+
+                model.get('product').trigger('change:attribute_1_selected');
+                expect(model.modifier_listener).toBe(false);
+            });
+
+            it('modifiers listeners', function() {
+                spyOn(model, 'update_prices');
+                spyOn(model, 'update_mdf_sum');
+
+                model.set({product: product}, {silent: true});
+                model.set({special: 'test'}, {silent: true});
+                obj = new Backbone.Model();
+                model.change();
+
+                model.get_modifiers().trigger('modifiers_special');
+                expect(model.change_special).toHaveBeenCalled();
+
+                model.get_modifiers().trigger('modifiers_size', 123);
+                expect(model.get('initial_price')).toBe(123);
+
+                model.get_modifiers().trigger('modifiers_changed');
+                expect(model.update_prices).toHaveBeenCalled();
+                expect(model.update_mdf_sum).toHaveBeenCalled();
+            });
         });
 
         describe('update_mdf_sum(multiplier)', function() {
@@ -962,12 +999,18 @@ define(['myorder', 'products'], function() {
             var result, spyAlert;
 
             beforeEach(function() {
+                this.settings = App.Settings;
+                App.Settings.email = '';
+                App.Settings.phone = '';
                 result = false;
                 spyOn(window, 'getData').and.callFake(function(name) {
                     if (name == 'orders') return {};
                 });
                 spyOn(App.Data.settings, "loadSettings");
                 spyAlert = spyOn(App.Data.errors, "alert");
+            });
+            afterEach(function() {
+                App.settings = this.settings;
             });
 
             it('email and phone are not set', function() {
@@ -1298,11 +1341,12 @@ define(['myorder', 'products'], function() {
             var stored_data;
             var otherItem = new App.Models.Myorder();
             otherItem.addJSON({id_product: 100, product: {name: 'other'}}); 
-            model.add( [otherItem] );
+            model.add([otherItem], {silent: true});
           
             spyOn(model.checkout, 'saveCheckout');
             spyOn(model.total, 'saveTotal');
             spyOn(model.discount, 'saveDiscount');
+            spyOn(model.rewardsCard, 'saveData');
             
             spyOn(window, 'setData').and.callFake(function(key, data) {
                 if (key == 'orders') {
@@ -1313,6 +1357,7 @@ define(['myorder', 'products'], function() {
             model.saveOrders();
             
             expect(model.checkout.saveCheckout).toHaveBeenCalled();
+            expect(model.rewardsCard.saveData).toHaveBeenCalled();
             expect(model.total.saveTotal).toHaveBeenCalled();
             expect(model.discount.saveDiscount).toHaveBeenCalled();
             expect(stored_data.length).toEqual(1);
@@ -1842,7 +1887,7 @@ define(['myorder', 'products'], function() {
                     });
                 })
 
-                it('data.status doesn\'t exist', function() {
+                it('data.status doesn\'t exist or empty', function() {
                     data = {};
                     model._get_cart_totals({apply_discount: true});
 
@@ -2006,6 +2051,124 @@ define(['myorder', 'products'], function() {
             });
         });
 
+        describe('process_cart_totals()', function() {
+            var orders, json,
+            orders_combo = deepClone(data.orders_combo),
+            json_combo = deepClone(data.cart_totals_combo),
+            orders_serviceFee = deepClone(data.oriders_serviceFee),
+            json_serviceFee = deepClone(data.cart_totals_serviceFee);
+
+            beforeEach(function() {
+                spyOn(App.Models.Total.prototype, 'update_grand');
+                spyOn(App.Models.Total.prototype, 'get_tip');
+
+                orders = deepClone(data.orders_product_discount);
+                json = deepClone(data.cart_totals_product_discount);
+            });
+
+            it('got incorrect json', function() {
+                spyOn(model, 'get');
+                model.process_cart_totals(null);
+                expect(model.get).not.toHaveBeenCalled();
+            });
+
+            it('json contains model not presented in collection', function() {
+                spyOn(model, 'get');
+                model.process_cart_totals({
+                    "items": [{
+                        product_sub_id: 99999,
+                        product: 99999
+                    }]
+                });
+                expect(model.get).not.toHaveBeenCalled();
+            });
+
+            it('product.discount', function() {
+                model.add(orders, {silent: true});
+                spyOn(model.models[1].get('discount'), 'zero_discount');
+
+                model.process_cart_totals(json);
+
+                expect(model.models[0].get('discount').get('name')).toBe('test discount');
+                expect(model.models[1].get('discount').zero_discount).toHaveBeenCalled();
+            });
+
+            it('product.combo_items', function() {
+                model.add(orders_combo, {silent: true});
+                var order_product = new App.Models.Product(),
+                    product = new App.Models.Product();
+                order_product.set('product', product, {silent: true});
+
+                model.models[0].get('product').get = jasmine.createSpy().and.returnValue({
+                    find_product: function() {return order_product}
+                });
+                model.models[0].get('product').set = jasmine.createSpy();
+
+                model.process_cart_totals(json_combo);
+
+                expect(product.get('combo_price')).toBe(5);
+                expect(model.models[0].get('product').set).toHaveBeenCalledWith('combo_price', 5);
+            });
+
+            describe('json.service_fees', function() {
+                beforeEach(function() {
+                    spyOn(App.Models.Myorder.prototype, 'isServiceFee');
+                });
+
+                it('is not array', function() {
+                    orders[0].isServiceFee = jasmine.createSpy();
+                    model.add(orders, {silent: true});
+                    json.service_fees = {};
+                    model.process_cart_totals(json);
+
+                    expect(App.Models.Myorder.prototype.isServiceFee).not.toHaveBeenCalled();
+                });
+
+                it('is undefined', function() {
+                    model.add(orders, {silent: true});
+                    json.service_fees = undefined;
+                    model.process_cart_totals(json);
+
+                    expect(App.Models.Myorder.prototype.isServiceFee).toHaveBeenCalled();
+                });
+
+                it('is array. Fee exists in collection', function() {
+                    model.add(orders_serviceFee, {silent: true});
+                    model.process_cart_totals(json_serviceFee);
+
+                    expect(model.models[0].get('product').get('name')).toBe('test fee');
+                    expect(model.models[0].get('product').get('price')).toBe(2);
+                    expect(model.models[0].get('initial_price')).toBe(2);
+                    expect(model.models[0].get('sum')).toBe(2);
+                });
+
+                it('is array. Fee doesn\'t exist in collection', function() {
+                    model.add(orders, {silent: true});
+                    spyOn(model, 'add');
+                    model.process_cart_totals(json_serviceFee);
+
+                    expect(model.add).toHaveBeenCalled();
+                });
+            });
+
+            it('json.order_discount exists', function() {
+                json.order_discount = {
+                    name: 'test'
+                };
+                model.process_cart_totals(json);
+                expect(model.discount.get('name')).toBe('test');
+            });
+
+            it('json.order_discount is null', function() {
+                spyOn(model.discount, 'zero_discount');
+                json.order_discount = null;
+
+                model.process_cart_totals(json);
+
+                expect(model.discount.zero_discount).toHaveBeenCalled();
+            });
+        });
+
         describe('preparePickupTime()', function() {
             var pickup, base, dining_time, checking_work_shop, last_pt, createDate, pickupTimeToServer;
             beforeEach(function() {
@@ -2147,7 +2310,8 @@ define(['myorder', 'products'], function() {
                     seat: '',
                     email: '',
                     payment_id: '',
-                    rewardCard: ''
+                    rewardCard: '',
+                    notes: ''
                 };
                 spyOn(model.checkout, 'toJSON').and.callFake(function() {
                     return checkout;
@@ -2187,7 +2351,9 @@ define(['myorder', 'products'], function() {
                     last_name: '',
                     addresses: [],
                     shipping_address: null,
-                    email: ''
+                    email: '',
+                    shipping_services: [],
+                    shipping_selected: -1
                 };
                 spyOn(App.Data.customer, 'toJSON').and.callFake(function() {
                     return customer;
@@ -2230,7 +2396,8 @@ define(['myorder', 'products'], function() {
                         call_name: "",
                         created_date: 'create date',
                         lastPickupTime: "last pt",
-                        pickup_time: "pickup time to server"
+                        pickup_time: "pickup time to server",
+                        notes: ""
                     },
                     paymentInfo: {
                         tip: 1,
@@ -2255,6 +2422,53 @@ define(['myorder', 'products'], function() {
                 expect(ajax.data.items).toEqual(['modif', 'modif']);
             });
             
+            it('`checkout.last_discount_code` exists', function() {
+                checkout.last_discount_code = 'last discount code';
+                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                expect(ajax.data.discount_code).toBe('last discount code');
+            });
+
+            it('`checkout.dining_option` is `DINING_OPTION_OTHER`, `checkout.notes` is empty string', function() {
+                checkout.dining_option = 'DINING_OPTION_OTHER';
+                spyOn(model, 'getOtherDiningOptionCallName').and.returnValue('call name');
+
+                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                expect(model.getOtherDiningOptionCallName).toHaveBeenCalled();
+                expect(ajax.data.orderInfo.notes).toBe('Delivery Info: call name');
+            });
+
+            it('`checkout.dining_option` is `DINING_OPTION_OTHER`, `checkout.notes` is not empty string', function() {
+                checkout.dining_option = 'DINING_OPTION_OTHER';
+                checkout.notes = 'checkout notes';
+                spyOn(model, 'getOtherDiningOptionCallName').and.returnValue('call name');
+
+                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                expect(model.getOtherDiningOptionCallName).toHaveBeenCalled();
+                expect(ajax.data.orderInfo.notes).toBe('checkout notes\nDelivery Info: call name');
+            });
+
+            it('`checkout.dining_option` is `DINING_OPTION_SHIPPING`', function() {
+                checkout.dining_option = 'DINING_OPTION_SHIPPING';
+                customer.shipping_services = ['shipping service 1', 'shipping service 2'];
+                customer.shipping_selected = 1;
+
+                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                expect(ajax.data.orderInfo.shipping).toBe('shipping service 2');
+                expect(ajax.data.orderInfo.customer).toEqual({
+                    tip: 1,
+                    type: 2,
+                    first_name: 'customer name',
+                    last_name: '',
+                    cardInfo: {
+                        firstDigits: '',
+                        lastDigits: '',
+                        firstName: '',
+                        lastName: '',
+                        address: null
+                    }
+                });
+            });
+
             describe('skin paypal', function() {
                 
                 beforeEach(function() {
@@ -2535,15 +2749,38 @@ define(['myorder', 'products'], function() {
                 });               
             });
             
-            it('reward card', function() {
-                rewardsCard = {
-                    number: '123'
-                };
-                spyOn(model.rewardsCard, 'toJSON').and.callFake(function() {
-                    return rewardsCard;
+            describe('rewards card', function() {
+                beforeEach(function() {
+                    spyOn(model.rewardsCard, 'toJSON').and.callFake(function() {
+                        return rewardsCard;
+                    });
                 });
-                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                expect(ajax.data.orderInfo.rewards_card.number).toEqual('123');
+
+                it('`rewardsCard.number` doesn\'t exist', function() {
+                    rewardsCard = {};
+
+                    model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                    expect(ajax.data.orderInfo.rewards_card).toBeUndefined();
+                });
+
+                it('`rewardsCard.number` exists, `rewardsCard.redemption_code doesn\'t exist', function() {
+                    rewardsCard = {
+                        number: '123'
+                    };
+
+                    model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                    expect(ajax.data.orderInfo.rewards_card.number).toEqual('123');
+                });
+
+                it('`rewardsCard.number` and `rewardsCard.redemption_code` exist', function() {
+                    rewardsCard = {
+                        number: '123',
+                        redemption_code: 'code'
+                    };
+
+                    model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                    expect(ajax.data.orderInfo.rewards_card.redemption).toEqual('code');
+                });
             });
             
             describe('ajax success', function() {
@@ -2551,12 +2788,80 @@ define(['myorder', 'products'], function() {
                 beforeEach(function() {
                     model.submit_order_and_pay(2);
                 });
-                
+
+                it('status doesn\'t exist or emtpy', function() {
+                    var data = {};
+                    ajax.success(data);
+
+                    expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
+                    expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(MSG.ERROR_INCORRECT_AJAX_DATA)).not.toBe(-1);
+                });
+
                 it('status OK', function() {
                     var data = {status: 'OK'};
                     ajax.success(data);
+
                     expect(model.paymentResponse).toBe(data);
                     expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
+                });
+
+                it('status OK, `validationOnly` is true', function() {
+                    model.submit_order_and_pay(2, true);
+                    var data = {status: 'OK'};
+                    ajax.success(data);
+                    ajax.complete();
+
+                    expect(model.trigger).toHaveBeenCalledWith('paymentResponseValid');
+                });
+
+                it('status OK, data.balances.stanford exists, `payment_type` is 6 (stanford)', function() {
+                    this.stanfordCard = App.Data.stanfordCard;
+                    var updatePlans = jasmine.createSpy();
+                    App.Data.stanfordCard = {
+                        updatePlans: updatePlans,
+                        toJSON: function() {
+                            return {
+                                planId: 1
+                            }
+                        }
+                    };
+
+                    model.submit_order_and_pay(6);
+
+                    var data = {
+                        status: 'OK',
+                        balances: {
+                            stanford: 'stanford balance'
+                        }
+                    };
+                    ajax.success(data);
+
+                    expect(updatePlans).toHaveBeenCalledWith('stanford balance');
+                    expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
+
+                    App.Data.stanfordCard = this.stanfordCard;
+                });
+
+
+                it('status OK, data.balances.rewards exists', function() {
+                    this.rewardsCard = App.Data.myorder.rewardsCard;
+                    var resetDataAfterPayment = jasmine.createSpy();
+                    App.Data.myorder.rewardsCard = {
+                        resetDataAfterPayment: resetDataAfterPayment
+                    };
+
+                    var data = {
+                        status: 'OK',
+                        balances: {
+                            rewards: 'rewards balance'
+                        }
+                    };
+                    ajax.success(data);
+
+                    expect(resetDataAfterPayment).toHaveBeenCalled();
+                    expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
+
+                    App.Data.myorder.rewardsCard = this.rewardsCard;
                 });
                 
                 it('status REDIRECT', function() {
@@ -2570,6 +2875,14 @@ define(['myorder', 'products'], function() {
                     ajax.success(data);
                     //expect(model.checkout.set.calls.allArgs()).toEqual([['payment_id', 'id'],['payment_type', 5]]);
                     expect(PaymentProcessor.handleRedirect).toHaveBeenCalled();
+                });
+
+                it('status PAYMENT_INFO_REQUIRED', function() {
+                    spyOn(PaymentProcessor, 'handlePaymentDataRequest');
+                    var data = {status: 'PAYMENT_INFO_REQUIRED'};
+                    ajax.success(data);
+
+                    expect(PaymentProcessor.handlePaymentDataRequest).toHaveBeenCalled();
                 });
                 
                 describe('status INSUFFICIENT_STOCK', function() {
@@ -2645,7 +2958,20 @@ define(['myorder', 'products'], function() {
                         
                     });
                 });
-                
+
+                it('status ASAP_TIME_SLOT_BUSY', function() {
+                    var data = {
+                        status: 'ASAP_TIME_SLOT_BUSY',
+                        responseJSON: [{
+                            asap_pickup_time: '12/21/2015 03:46'
+                        }]
+                    };
+                    ajax.success(data);
+
+                    expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
+                    expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf('Selected time is not available. Next available time')).not.toBe(-1);
+                });
+
                 it('status ORDERS_PICKUPTIME_LIMIT', function() {
                     var data = {status: 'ORDERS_PICKUPTIME_LIMIT'};
                     ajax.success(data);
@@ -2653,19 +2979,443 @@ define(['myorder', 'products'], function() {
                 });
                 
                 it('status REWARD CARD UNDEFINED', function() {
-                    var data = {status: 'REWARD CARD UNDEFINED'};
+                    var data = {
+                        status: 'REWARD CARD UNDEFINED'
+                    };
                     ajax.success(data);
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                 });
-                
+
+                it('DELIVERY_ADDRESS_ERROR', function() {
+                    var data = {
+                        status: 'DELIVERY_ADDRESS_ERROR',
+                        errorMsg: 'delivery address error'
+                    };
+                    ajax.success(data);
+
+                    expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
+                    expect(App.Data.errors.alert.calls.mostRecent().args[0]).toBe('delivery address error');
+                });
+
+                it('PRODUCTS_NOT_AVAILABLE_FOR_SELECTED_TIME', function() {
+                    var errorMsg = 'some product is not available for selected time';
+                    var data = {
+                        status: 'PRODUCTS_NOT_AVAILABLE_FOR_SELECTED_TIME',
+                        errorMsg: errorMsg,
+                        responseJSON: {
+                            timetables: 'timetables'
+                        }
+                    };
+                    spyOn(window, 'format_timetables');
+                    ajax.success(data);
+
+                    expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
+                    expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(errorMsg)).not.toBe(-1);
+                });
+
                 it('status OTHER', function() {
                     var data = {status: 'OTHER', errorMsg: 'other'};
                     ajax.success(data);
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                 });
-                
+
+                describe('ajax error', function() {
+                    it('general', function() {
+                        ajax.error();
+
+                        expect(model.paymentResponse).toEqual({
+                            status: 'ERROR',
+                            errorMsg: MSG.ERROR_SUBMIT_ORDER
+                        });
+
+                        expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
+                        expect(App.Data.errors.alert.calls.mostRecent().args[0]).toBe(MSG.ERROR_SUBMIT_ORDER);
+                    });
+                });
+
+            });
+
+        });
+
+        it('getOrderSeatCallName()', function() {
+            this.checkout = model.checkout;
+
+            model.checkout = {
+                toJSON: function() {
+                    return {
+                        level: 'level',
+                        section: 'section',
+                        row: 'row',
+                        seat: 'seat'
+                    };
+                }
+            };
+
+            expect(model.getOrderSeatCallName()).toEqual(['Level: level Sect: section Row: row Seat: seat']);
+            expect(model.getOrderSeatCallName('phone')).toEqual(['Level: level Sect: section Row: row Seat: seat', 'phone']);
+
+            model.checkout = this.checkout;
+        });
+
+        it('getOtherDiningOptionCallName()', function() {
+            this.checkout = model.checkout;
+
+            model.checkout = new Backbone.Model({
+                other_dining_options: new Backbone.Collection([
+                    new Backbone.Model({name: 'Option1', value: 'value1'}),
+                    new Backbone.Model({name: 'Option2', value: 'value2'})
+                ])
+            });
+
+            expect(model.getOtherDiningOptionCallName()).toEqual(['Option1: value1 Option2: value2']);
+            expect(model.getOtherDiningOptionCallName('phone')).toEqual(['Option1: value1 Option2: value2', 'phone']);
+
+            model.checkout = this.checkout;
+        });
+
+        it('empty_myorder()', function() {
+            spyOn(model, 'remove');
+            spyOn(model.total, 'empty');
+            spyOn(model.checkout, 'set');
+
+            model.empty_myorder();
+
+            expect(model.remove).toHaveBeenCalled();
+            expect(model.total.empty).toHaveBeenCalled();
+            expect(model.checkout.set).toHaveBeenCalledWith('dining_option', 'DINING_OPTION_ONLINE');
+            expect(model.checkout.set).toHaveBeenCalledWith('notes', '');
+        });
+
+        it('removeFreeModifiers()', function() {
+            spyOn(App.Models.Myorder.prototype, 'removeFreeModifiers');
+            model = new App.Collections.Myorders([new App.Models.Myorder(), new App.Models.Myorder()]);
+
+            model.removeFreeModifiers();
+            expect(App.Models.Myorder.prototype.removeFreeModifiers.calls.count()).toBe(2);
+        });
+
+        it('clearData()', function() {
+            spyOn(model, 'empty_myorder');
+            spyOn(model, 'saveOrders');
+            model.clearData();
+
+            expect(model.empty_myorder).toHaveBeenCalled();
+            expect(model.saveOrders).toHaveBeenCalled();
+        });
+
+        describe('isShippingOrderType()', function() {
+            beforeEach(function() {
+                this.checkout = model.checkout;
+                model.checkout = new Backbone.Model({
+                    dining_option: 'DINING_OPTION_ONLINE'
+                });
+            });
+
+            afterEach(function() {
+                model.checkout = this.checkout;
+            });
+
+            it('dining option is not shipping', function() {
+                expect(model.isShippingOrderType()).toBe(false);
+            });
+
+            it('dining option is shipping', function() {
+                model.checkout.set('dining_option', 'DINING_OPTION_SHIPPING', {silent: true});
+                expect(model.isShippingOrderType()).toBe(true);
             });
         });
+
+        describe('savePaymentResponse()', function() {
+            beforeEach(function() {
+                spyOn(window, 'setData');
+            });
+
+            it('called without arguments', function() {
+                model.savePaymentResponse();
+                expect(window.setData).not.toHaveBeenCalled();
+            });
+
+            it('`uid` is not string or empty string', function() {
+                model.savePaymentResponse(null);
+                expect(window.setData).not.toHaveBeenCalled();
+
+                model.savePaymentResponse('');
+                expect(window.setData).not.toHaveBeenCalled();
+            });
+
+            it('`uid` is string, `paymentResponse` does not exist', function() {
+                this.paymentResponse = undefined;
+                model.savePaymentResponse('someUid');
+                expect(window.setData).not.toHaveBeenCalled();
+            });
+
+            it('`uid` is string, `paymentResponse` exists', function() {
+                model.paymentResponse = 'payment response';
+                model.savePaymentResponse('someUid');
+                expect(window.setData).toHaveBeenCalledWith('someUid.paymentResponse', 'payment response');
+            });
+        });
+
+        describe('restorePaymentResponse()', function() {
+            var getDataSpy;
+
+            beforeEach(function() {
+                model.paymentResponse = undefined;
+                spyOn(window, 'removeData');
+                getDataSpy = spyOn(window, 'getData');
+            });
+
+            it('called without arguments', function() {
+                expect(model.restorePaymentResponse()).toBeUndefined();
+                expectNegative();
+            });
+
+            it('`uid` is not string', function() {
+                expect(model.restorePaymentResponse(null)).toBeUndefined();
+                expectNegative();
+            });
+
+            it('`uid` is empty string', function() {
+                expect(model.restorePaymentResponse('')).toBeUndefined();
+                expectNegative();
+            });
+
+            it('`uid` is string, `paymentResponse` has not been found in storage', function() {
+                expect(model.restorePaymentResponse('someUid')).toBeUndefined();
+                expect(getDataSpy).toHaveBeenCalledWith('someUid.paymentResponse');
+                expectNegative();
+            });
+
+            it('`uid` is string, `paymentResponse` has been found in storage', function() {
+                getDataSpy.and.returnValue('payment response');
+                expect(model.restorePaymentResponse('someUid')).toBeTruthy();
+                expect(getDataSpy).toHaveBeenCalledWith('someUid.paymentResponse');
+                expect(model.paymentResponse).toBe('payment response');
+            });
+
+            function expectNegative() {
+                expect(model.paymentResponse).toBeUndefined();
+                expect(window.removeData).not.toHaveBeenCalled();
+            }
+        });
+
+        describe('setShippingAddress()', function() {
+            var checkout = new Backbone.Model(),
+                diningOption = '';
+
+            beforeEach(function() {
+                this.customer = App.Data.customer;
+                App.Data.customer = new Backbone.Model({
+                    shipping_address: -1,
+                    addresses: ['address 1', 'address 2'],
+                    shipping_selected: -1,
+                    shipping_services: ['shipping service 1', 'shipping service 2'],
+                    deliveryAddressIndex: 0,
+                    shippingAddressIndex: 1
+                });
+                App.Data.customer.defaults = {
+                    shipping_address: -1
+                };
+            });
+
+            afterEach(function() {
+                App.Data.customer = this.customer;
+            })
+
+            it('App.Data.customer does not exist', function() {
+                App.Data.customer = undefined;
+                expect(model.setShippingAddress(checkout, diningOption)).toBeUndefined();
+            });
+
+            it('dining option is delivery', function() {
+                diningOption = 'DINING_OPTION_DELIVERY';
+                expect(App.Data.customer.get('deliveryAddressIndex')).toBe(0);
+                expect(model.setShippingAddress(checkout, diningOption)).toBe(0);
+                expect(App.Data.customer.get('shipping_address')).toBe(0);
+            });
+
+            it('dining option is shipping', function() {
+                diningOption = 'DINING_OPTION_SHIPPING';
+                expect(App.Data.customer.get('shippingAddressIndex')).toBe(1);
+                expect(model.setShippingAddress(checkout, diningOption)).toBe(1);
+                expect(App.Data.customer.get('shipping_address')).toBe(1);
+            });
+
+            it('dining option is not shipping or delivery', function() {
+                diningOption = 'DINING_OPTION_TOGO';
+                expect(model.setShippingAddress(checkout, diningOption)).toBe(-1);
+                expect(App.Data.customer.get('shipping_address')).toBe(-1);
+            });
+        });
+
+        describe('getItemsWithPointsRewardDiscount()', function() {
+            var item1 = new Backbone.Model({name: 'item1'}),
+                item2 = new Backbone.Model({name: 'item2'});
+            item1.get_modelsum = function() {};
+            item1.hasPointValue = function() {};
+            item2.get_modelsum = function() {};
+            item2.hasPointValue = function() {};
+
+            beforeEach(function() {
+                spyOn(App.Collections.Myorders.prototype, 'listenTo');
+                spyOn(item1, 'hasPointValue').and.returnValue(true);
+                spyOn(item2, 'hasPointValue').and.returnValue(true);
+                spyOn(item1, 'get_modelsum').and.returnValue(10);
+                spyOn(item2, 'get_modelsum').and.returnValue(20);
+
+                model = new App.Collections.Myorders([item1, item2]);
+            });
+
+            it('called without arguments', function() {
+                var itemsWithDiscount = model.getItemsWithPointsRewardDiscount();
+                expect(itemsWithDiscount.length).toBe(1);
+                expect(itemsWithDiscount[0].get('name')).toBe('item2');
+                expect(item2.get('reward_discount')).toBe(0);
+                expect(item1.get('reward_discount')).toBeUndefined();
+            });
+
+            it('`discount` is 10, reward discount is applied to item with larger sum', function() {
+                var itemsWithDiscount = model.getItemsWithPointsRewardDiscount(10);
+                expect(itemsWithDiscount.length).toBe(1);
+                expect(itemsWithDiscount[0].get('name')).toBe('item2');
+                expect(item2.get('reward_discount')).toBe(10);
+                expect(item1.get('reward_discount')).toBeUndefined();
+            });
+
+            it('`discount` is 25, reward discount is applied to both items', function() {
+                var itemsWithDiscount = model.getItemsWithPointsRewardDiscount(25);
+                expect(itemsWithDiscount.length).toBe(2);
+                expect(itemsWithDiscount[0].get('name')).toBe('item2');
+                expect(itemsWithDiscount[1].get('name')).toBe('item1');
+                expect(item2.get('reward_discount')).toBe(20);
+                expect(item1.get('reward_discount')).toBe(5);
+            });
+        });
+
+        it('splitAllItemsWithPointValue()', function() {
+            var item1 = new Backbone.Model(),
+                item2 = new Backbone.Model();
+
+            model = new App.Collections.Myorders([item1, item2]);
+            spyOn(model, 'splitItemWithPointValue');
+
+            model.splitAllItemsWithPointValue();
+            expect(model.splitItemWithPointValue.calls.count()).toBe(2);
+            expect(model.splitItemWithPointValue).toHaveBeenCalledWith(item1);
+            expect(model.splitItemWithPointValue).toHaveBeenCalledWith(item2);
+        });
+
+        describe('splitItemWithPointValue()', function() {
+            var item, hasPointSpy;
+
+            beforeEach(function() {
+                this.myorder = App.Data.myorder;
+
+                item = new Backbone.Model({
+                    id_product: 123,
+                    quantity: 5
+                });
+                item.hasPointValue = function() {};
+                hasPointSpy = spyOn(item, 'hasPointValue').and.returnValue(true);
+
+                App.Data.myorder = new Backbone.Collection([item]);
+
+                spyOn(Backbone.Model.prototype, 'set').and.callThrough();
+            });
+
+            afterEach(function() {
+                App.Data.myorder = this.myorder;
+            });
+
+            it('item has no point value', function() {
+                hasPointSpy.and.returnValue(false);
+
+                model.splitItemWithPointValue(item);
+
+                expect(item.get('quantity')).toBe(5);
+            });
+
+            it('item has point value, quantity is 1', function() {
+                item.set('quantity', 1, {silent: true});
+
+                model.splitItemWithPointValue(item);
+
+                expect(item.get('quantity')).toBe(1);
+            });
+
+            it('item has point value, quanity is more than 1, myorder doesn\'t cointain same single quantity item', function() {
+                model.splitItemWithPointValue(item);
+
+                expectSplit();
+                expect(Backbone.Model.prototype.set).toHaveBeenCalledWith('quantity', 1, {silent: false});
+                expect(Backbone.Model.prototype.set).toHaveBeenCalledWith('quantity', 4, {silent: false});
+            });
+
+            it('item has point value, quanity is more than 1, myorder doesn\'t cointain same single quantity item. `silentFlag` is true', function() {
+                model.splitItemWithPointValue(item, true);
+
+                expectSplit();
+                expect(Backbone.Model.prototype.set).toHaveBeenCalledWith('quantity', 1, {silent: true});
+                expect(Backbone.Model.prototype.set).toHaveBeenCalledWith('quantity', 4, {silent: true});
+            });
+
+            function expectSplit() {
+                expect(item.get('quantity')).toBe(4);
+                expect(App.Data.myorder.models.length).toBe(2);
+
+                var singleItem = App.Data.myorder.models[1];
+                expect(singleItem.get('id_product')).toBe(123);
+                expect(singleItem.get('quantity')).toBe(1);
+            }
+        });
+
+        describe('splitItemAfterQuantityUpdate()', function() {
+            var item, discount;
+
+            beforeEach(function() {
+                discount = new Backbone.Model({
+                    name: 'Item Reward'
+                })
+
+                item = new Backbone.Model({
+                    discount: discount
+                });
+
+                spyOn(model, 'splitItemWithPointValue');
+            });
+
+            it('discount name is not `Item Reward`', function() {
+                discount.set('name', 'discount', {silent: true});
+                model.splitItemAfterQuantityUpdate(item, 1, 2);
+
+                expect(model.splitItemWithPointValue).not.toHaveBeenCalled();
+            });
+
+            it('discount name is `Item Reward`, `oldQuantity` is 1, `newQuantity` is 1', function() {
+                model.splitItemAfterQuantityUpdate(item, 1, 1);
+
+                expect(model.splitItemWithPointValue).not.toHaveBeenCalled();
+            });
+
+            it('discount name is `Item Reward`, `oldQuantity` is 2, `newQuantity` is 3', function() {
+                model.splitItemAfterQuantityUpdate(item, 2, 3);
+
+                expect(model.splitItemWithPointValue).not.toHaveBeenCalled();
+            });
+
+            it('discount name is `Item Reward`, `oldQuantity` is 1, `newQuantity` is 2', function() {
+                model.splitItemAfterQuantityUpdate(item, 1, 2);
+
+                expect(model.splitItemWithPointValue).toHaveBeenCalledWith(item, false);
+            });
+
+            it('discount name is `Item Reward`, `oldQuantity` is 1, `newQuantity` is 2, `silentFlag` is true', function() {
+                model.splitItemAfterQuantityUpdate(item, 1, 2, true);
+
+                expect(model.splitItemWithPointValue).toHaveBeenCalledWith(item, true);
+            });
+        });
+
     });
 
 //===============================================================
@@ -2681,19 +3431,22 @@ define(['myorder', 'products'], function() {
             expect(App.Models.MyorderCombo).toBeDefined();
         });
 
-/*        it('initialize()', function() {
+        it('initialize()', function() {
             var update_product_price = spyOn(App.Models.MyorderCombo.prototype, 'update_product_price'),
                 update_mdf_sum = spyOn(App.Models.MyorderCombo.prototype, 'update_mdf_sum');
-            spyOn(App.Models.MyorderCombo.prototype, 'change');
 
-            model = new App.Models.Myorder();
+            model = new App.Models.MyorderCombo();
+            var product = {
+                get_modifiers: function() {}
+            };
+            spyOn(product, 'get_modifiers');
+            spyOn(model, 'get').and.returnValue(product);
             model.set('initial_price', '1');
             expect(update_product_price).toHaveBeenCalled();
 
             model.set('combo_product_change', '1');
             expect(update_product_price).toHaveBeenCalled();
-        });*/
-
+        });
 
         it('has_child_products()', function() {
             var product = new Backbone.Model(),
@@ -2727,6 +3480,153 @@ define(['myorder', 'products'], function() {
             product.set('combo_price', 15);
             model.set('product', product, {silent: true});
             expect(model.get_product_price()).toBe(15);
+        });
+
+        describe('update_product_price()', function() {
+            var product, productData, comboInitialPrice, getInitialPriceSpy,
+                orderInitialPrice = 10;
+
+            beforeEach(function() {
+                getInitialPriceSpy = spyOn(model, 'get_initial_price');
+                spyOn(App.Models.Myorder.prototype, 'get_initial_price').and.returnValue(orderInitialPrice);
+
+                product = new App.Models.Product();
+                productData = deepClone(productsData.addJSON_is_combo_true);
+            });
+
+            it('collection has combo_saving products. sum of selected products prices less than combo initial price', function() {
+                comboInitialPrice = 123;
+                getInitialPriceSpy.and.returnValue(comboInitialPrice);
+                product.addJSON(productData);
+                model.set('product', product, {silent: true});
+                expect(model.update_product_price()).toBe(comboInitialPrice);
+                expect(model.get('product').get('combo_price')).toBe(comboInitialPrice);
+            });
+
+            it('collection has combo_saving products. sum of selected products prices more than combo initial price', function() {
+                comboInitialPrice = 0;
+                getInitialPriceSpy.and.returnValue(comboInitialPrice);
+                product.addJSON(productData);
+                model.set('product', product, {silent: true});
+                expect(model.update_product_price()).toBe(orderInitialPrice);
+                expect(model.get('product').get('combo_price')).toBe(orderInitialPrice);
+            });
+
+            it('collection doesn\'t have combo_saving products. sum of selected products prices less than combo initial price', function() {
+                productData.product_sets[0].is_combo_saving = false;
+                productData.product_sets[1].is_combo_saving = false;
+                comboInitialPrice = 123;
+                getInitialPriceSpy.and.returnValue(comboInitialPrice);
+                product.addJSON(productData);
+                model.set('product', product, {silent: true});
+                expect(model.update_product_price()).toBe(orderInitialPrice * 2);
+                expect(model.get('product').get('combo_price')).toBe(orderInitialPrice * 2);
+            });
+
+            it('collection doesn\'t have combo_saving products. sum of selected products prices more than combo initial price', function() {
+                productData.product_sets[0].is_combo_saving = false;
+                productData.product_sets[1].is_combo_saving = false;
+                comboInitialPrice = 0;
+                getInitialPriceSpy.and.returnValue(comboInitialPrice);
+                product.addJSON(productData);
+                model.set('product', product, {silent: true});
+                expect(model.update_product_price()).toBe(orderInitialPrice * 2);
+                expect(model.get('product').get('combo_price')).toBe(orderInitialPrice * 2);
+            });
+        });
+
+        it('update_mdf_sum()', function() {
+            var product = new App.Models.Product(),
+                productData = deepClone(productsData.addJSON_is_combo_true);
+            product.addJSON(productData);
+            model.set({product: product, quantity: 10}, {silent: true});
+
+            var productSets = model.get('product').get('product_sets').get_selected_products();
+            spyOn(model, 'update_product_price');
+            spyOn(productSets.models[0], 'update_prices');
+            spyOn(productSets.models[0], 'update_mdf_sum');
+            spyOn(productSets.models[1], 'update_prices');
+            spyOn(productSets.models[1], 'update_mdf_sum');
+
+            model.update_mdf_sum();
+            expect(model.update_product_price).toHaveBeenCalled();
+            expect(productSets.models[0].update_prices).toHaveBeenCalled();
+            expect(productSets.models[0].update_mdf_sum).toHaveBeenCalledWith(10);
+            expect(productSets.models[1].update_prices).toHaveBeenCalled();
+            expect(productSets.models[1].update_mdf_sum).toHaveBeenCalledWith(10);
+        });
+
+        describe('check_order()', function() {
+            var checkOrderSpy;
+
+            beforeEach(function() {
+                checkOrderSpy = spyOn(App.Models.Myorder.prototype, 'check_order').and.returnValue({status: 'OK'});
+            });
+
+            it('Myorder.check_order().status is not OK', function() {
+                var checkResult = {status: 'error'};
+                checkOrderSpy.and.returnValue(checkResult);
+
+                expect(model.check_order()).toEqual(checkResult);
+            });
+
+            it('combo has no child products', function() {
+                var product = new Backbone.Model({
+                    name: 'test name',
+                    product_sets: []
+                })
+                model.set('product', product, {silent: true});
+
+                var result = model.check_order();
+                expect(result.status).toBe('ERROR');
+                expect(result.errorMsg.indexOf('test name')).not.toBe(-1);
+            });
+
+            it('product_set selected quantity is less than product_set minimum amount', function() {
+                var product = new App.Models.Product(),
+                    productData = deepClone(productsData.addJSON_is_combo_true);
+                product.addJSON(productData);
+                model.set({product: product}, {silent: true});
+
+                var productSets = model.get('product').get('product_sets');
+                productSets.models[0].set('minimum_amount', 3);
+                spyOn(productSets.models[0], 'get_selected_qty').and.returnValue(10);
+
+                var result = model.check_order();
+                expect(result.status).toBe('ERROR');
+                expect(result.errorMsg.indexOf('select exact 3 product')).not.toBe(-1);
+                expect(result.errorMsg.indexOf('Product set 1')).not.toBe(-1);
+            });
+
+            it('product_set selected quantity is more than product_set minimum amount', function() {
+                var product = new App.Models.Product(),
+                    productData = deepClone(productsData.addJSON_is_combo_true);
+                product.addJSON(productData);
+                model.set({product: product}, {silent: true});
+
+                var productSets = model.get('product').get('product_sets');
+                productSets.models[0].set('minimum_amount', 10);
+                spyOn(productSets.models[0], 'get_selected_qty').and.returnValue(1);
+
+                var result = model.check_order();
+                expect(result.status).toBe('ERROR');
+                expect(result.errorMsg.indexOf('select exact 10 product')).not.toBe(-1);
+                expect(result.errorMsg.indexOf('Product set 1')).not.toBe(-1);
+            });
+
+            it('product_set selected quantity is equal to product_set minimum amount', function() {
+                var product = new App.Models.Product(),
+                    productData = deepClone(productsData.addJSON_is_combo_true);
+                product.addJSON(productData);
+                model.set({product: product}, {silent: true});
+
+                var productSets = model.get('product').get('product_sets');
+                productSets.models[0].set('minimum_amount', 10);
+                spyOn(productSets.models[0], 'get_selected_qty').and.returnValue(10);
+
+                var result = model.check_order();
+                expect(result.status).toBe('OK');
+            });
         });
 
     });

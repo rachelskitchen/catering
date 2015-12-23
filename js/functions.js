@@ -361,6 +361,7 @@ function template_helper(name,mod) {
     if ($(id)[0] == undefined) {
         console.error("Can't find the template: " + id);
     }
+    //trace(id);
     return _.template($(id).html());
 }
 /**
@@ -503,10 +504,11 @@ function loadCSS(name, loadModelCSS) {
         };
         var timer = window.setTimeout(error, App.Data.settings.get('timeout'));
 
-        elem.on('load', function() {
+        elem.on('load', function(event) {
             onCSSLoaded(true, resolve);
         });
-        elem.on('error', function() {
+        elem.on('error', function(event) {
+            console.error("Can't load: ", event.target.href);
             onCSSLoaded(true, error);
         });
     }

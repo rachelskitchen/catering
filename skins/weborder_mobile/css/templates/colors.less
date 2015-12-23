@@ -148,7 +148,7 @@ select:-moz-focusring {
 .primary-button:not([disabled]):active,
 #popup_ok[id]:not([disabled]):active,
 .myorderList .combo_products_place .qty {
-    .resolve-background(alternate_text);
+    .resolve-background(@alternate_text);
 }
 
 /* [special_text] Discount text, free modifiers */
@@ -299,21 +299,21 @@ ul.reward-selection > li {
 
 /* icons */
 #header .btn-cart {
-    background-image: data-uri('image/svg+xml;base64', 'img/bag.svg');
+    background-image: data-uri('data:image/svg+xml;base64', 'img/bag.svg');
     background-size: 60%;
     background-repeat: no-repeat;
     background-position: 50%;
 }
 
 .list-title::after {
-    background-image: data-uri('image/svg+xml;base64', 'img/arrow-down.svg');
+    background-image: data-uri('data:image/svg+xml;base64', 'img/arrow-down.svg');
     background-position: 50%;
     background-size: 2.5em 1.33em;
     background-repeat: no-repeat;
 }
 
 .done .thanks {
-    background-image: data-uri('image/svg+xml;base64', 'img/thanks.svg');
+    background-image: data-uri('data:image/svg+xml;base64', 'img/thanks.svg');
     background-size: 20em 20em;
     background-repeat: no-repeat;
     background-position: 50%;

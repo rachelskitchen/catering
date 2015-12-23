@@ -331,7 +331,16 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             return !this.some(function(model) {
                 return model.get_selected_qty() > model.get("minimum_amount") || model.get_selected_qty() < model.get("maximum_amount");
             });
-        }
+        },
+        haveWeightProduct: function() {
+            var selected_products = this.get_selected_products();
+            if (selected_products.length > 0) {
+                return selected_products.find(function(item) {
+                    return item.get('product').get('sold_by_weight'); // Find first weight product from All product sets.
+                }) || false;
+            }
+            return false;
+        },
     });
 
     /**

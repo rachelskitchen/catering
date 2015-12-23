@@ -306,6 +306,8 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         initialize: function() {
             _base.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'combo_product_change', this.update_child_selected);
+            this.listenTo(this.model, 'combo_product_change', this.check_weight_product);
+            this.check_weight_product();
             return this;
         },
         check_model: function() {
@@ -313,6 +315,10 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         },
         view_check_order: function() {
             return this.model.check_order();
+        },
+        check_weight_product: function() {
+            var isComboWithWeightProduct = this.model.get('product').get("product_sets").haveWeightProduct();
+            this.options.model.trigger('combo_weight_product_change', isComboWithWeightProduct);
         }
       });
     }
