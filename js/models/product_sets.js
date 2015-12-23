@@ -20,47 +20,98 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.ProductSet}, {@link App.Collections.ProductSetModels}, {@link App.Collections.ProductSets} constructors.
+ * @module product_sets
+ * @requires module:backbone
+ * @requires module:products
+ * @requires module:collection_sort
+ * @requires module:myorder
+ * @see {@link module:config.paths actual path}
+ */
 define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone) {
     'use strict';
 
-    //  ---- Combo / Upsell products model arhitecture -----
-    //
-    //    App.Data.myorder [* (Collections.Myorder)
-    //                      |
-    //      Models.Myorder  * -- product { is_combo = true (has_upsell: true),
-    //                      |              product_sets [* (Collections.ProductSets) }
-    //                      *]                           |
-    //                                 Models.ProductSet * -- order_products [* (Collections.ProductSetModels)
-    //                                                   |                    |
-    //                                                   *]                   * (Models.Myorder) - {  modifiers,
-    //                                                                        |                       quantity,
-    //                                                                        *]                      product (Models.Product)
-    //                                                                                                selected (true/false)
-    //                                                                                              }
-
     /**
-     * @class
-     * Represents product set model
+    * @class
+    * @classdesc Represents product set of the Combo/Upsell product
+    * ```
+    * Combo / Upsell products model arhitecture:
+    *
+    *    App.Data.myorder [* (Collections.Myorder)
+    *                      |
+    * Models.MyorderCombo  * -- product { is_combo = true (or has_upsell = true),
+    *                      |              product_sets [* (Collections.ProductSets) }
+    *                      *]                           |
+    *                                 Models.ProductSet * -- order_products [* (Collections.ProductSetModels)
+    *                                                   |                    |
+    *                                                   *]                   * (Models.Myorder) - {  modifiers,
+    *                                                                        |                       quantity,
+    *                                                                        *]                      product (Models.Product)
+    *                                                                                                selected (true/false)
+    *                                                                                              }
+    * ```
+    * @alias App.Models.ProductSet
+    * @augments Backbone.Model
+    */
+
+    App.Models.ProductSet = Backbone.Model.extend(
+    /**
+     * @lends App.Models.ProductSet.prototype
      */
-    App.Models.ProductSet = Backbone.Model.extend({
+    {
         /**
-         * @property {object} defaults - literal object containing attributes with default values.
-         *
-         * @property {string} defaults.name - name of the product set.
-         * @default null
-         *
-        */
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum
+         */
         defaults: {
+            /**
+             * The name of a product set
+             * @type {?string}
+             * @default null
+             */
             name: null,
+            /**
+             * id of a product set.
+             * @type {?number}
+             * @default null
+             */
             id: null,
+             /**
+             * is_combo_saving of a product set
+             * @type {number}
+             * @default null
+             */
             is_combo_saving : false,
+             /**
+             * collection of products in a product set
+             * @type {?App.Collections.ProductSetModels}
+             * @default null
+             */
             order_products : null,
+            /**
+             * minimum products quantity that user may select for this product set
+             * @type {number}
+             * @default 1
+             */
             minimum_amount : 1,
+             /**
+             * maximum products quantity that user may select for this product set
+             * @type {number}
+             * @default 1
+             */
             maximum_amount : 1,
+            /**
+             * the array of default product ids which are selected by default for this product set
+             * @type {?Array}
+             * @default null
+             */
             default_products: null
         },
         /**
-         * initialization through a json object, used for restoring from localStorage
+         * Initialization through a json object, internal method used for order restoring from localStorage
+         * @param {Object} data
          */
         addJSON: function(data) {
             var self = this, ext_data, product;
@@ -80,7 +131,8 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             this.set(ext_data);
         },
         /**
-         * initialization through a json object
+         * Initialization through a json object, used after the server is requested for product sets information
+         * @param {Object} data
          */
         addAjaxJSON: function(data) {
             var self = this, ext_data = {}, product;
@@ -117,9 +169,10 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             delete ext_data['products'];
             this.set(ext_data);
         },
-        /*
-        *  get selected modifiers quantity
-        */
+        /**
+         * Get selected products quantity - sum of quantities of each selected product
+         * @return {number} - quantity
+         */
         get_selected_qty: function() {
             var qty = 0;
             var products = this.get("order_products");
@@ -129,13 +182,16 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             return qty;
         },
         /**
-         * clonning product set
+         * Clone product set, deep clonning is used
+         * @return {Object} - new product set object
          */
         clone: function() {
             return this.deepClone();
         },
         /**
-         * get json for cart_totals/create_order_and_pay requests
+         * Get json for cart_totals/create_order_and_pay requests
+         * @param {boolean} for_discount = true when cart totals is used, false - when create_order_and_pay request used
+         * @return {Object} - json
          */
         item_submit: function(for_discount) {
             var json = {
@@ -151,7 +207,8 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             return json;
         },
         /**
-         * get all selected products
+         * Get all selected products
+         * @return {Object} - App.Collections.ProductSetModels collection filtered
          */
         get_selected_products: function() {
             return this.get('order_products').filter(function(model) {
@@ -160,7 +217,21 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
         }
     });
 
-    App.Collections.ProductSetModels = Backbone.Collection.extend({
+   /**
+    * @class
+    * @classdesc Represents a collection of products included into a product set.
+    * @alias App.Collections.ProductSetModels
+    * @augments Backbone.Collection
+    */
+    App.Collections.ProductSetModels = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.ProductSetModels.prototype
+     */
+    {
+        /**
+         * Clone product collection, deep clonning is used
+         * @return {Object} - new collection object
+         */
         clone: function() {
             return this.deepClone();
         }
@@ -168,16 +239,22 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
 
     /**
      * @class
-     * Represents collection of several product sets.
+     * @classdesc Represents collection of several product sets.
+     * @alias App.Collections.ProductSets
+     * @augments Backbone.Collection
      */
-    App.Collections.ProductSets = Backbone.Collection.extend({
+    App.Collections.ProductSets = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.ProductSets.prototype
+     */
+    {
         model: App.Models.ProductSet,
         typeName: "ProductSets",
         /**
          * Get product sets info from server.
          * @param {number} product_id - product id
          * @param {number} combo_type - 'combo' or 'upsell'
-         * @returns {$.Deffered} - deferred object that is resolved when the request is processed.
+         * @returns {Object} - deferred object that is resolved when the request is processed.
          */
         get_product_sets: function(product_id, combo_type) {
             var self = this,
@@ -199,13 +276,14 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                     fetching.resolve();
                 },
                 error: function() {
-                    self.onProductsError();
+                    App.Data.errors.alert(MSG.ERROR_PRODUCTS_LOAD, true);
                 }
             });
             return fetching;
         },
         /**
-         * initialization through a json object
+         * Initialization through a json object, internal method used for order restoring from localStorage
+         * @param {object} data
          */
         addJSON: function(data) {
             var self = this;
@@ -216,20 +294,16 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                 });
         },
         /**
-         * @method
-         * Handles failure response of /product_sets request.
-         */
-        onProductsError: function() {
-            App.Data.errors.alert(MSG.ERROR_PRODUCTS_LOAD, true);
-        },
-        /**
-         * clone product sets
+         * Clone product collection, deep clonning is used
+         * @return {object} - new collection object
          */
         clone: function() {
             return this.deepClone();
         },
         /**
-         * get all selected products and return them as a single collection
+         * Get all selected products.
+         * It searches through all products sets and return selected items as a single collection
+         * @return {object} - App.Collections.ProductSetModels collection
          */
         get_selected_products: function() {
             var array = [];
@@ -239,7 +313,8 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             return new App.Collections.ProductSetModels(array);
         },
         /**
-         * find product in product sets by product id
+         * Find product in product sets by product id
+         * @return {object} - App.Models.Myorder object
          */
         find_product: function(id_product) {
             var product;
@@ -249,7 +324,8 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             return product;
         },
         /*
-        *  check that quantity of product sets items equals to required value
+        *  Check that quantity of all product sets items equals to required values
+        *  @return {boolean} - true/false
         */
         check_selected: function() {
             return !this.some(function(model) {
@@ -258,6 +334,14 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
         }
     });
 
+    /**
+     * Loads product sets for a combo/upsell product.
+     * @static
+     * @alias App.Collections.ProductSets.init
+     * @param {number} product_id - product id.
+     * @param {string} combo_type - 'combo' or 'upsell'.
+     * @returns {Object} Deferred object.
+     */
     App.Collections.ProductSets.init = function(product_id, combo_type) {
         var load = $.Deferred();
 
