@@ -53,7 +53,7 @@ define(["store_info_view"], function(store_info_view) {
                 return desc.replace(/[\n\r]+/g, '</p><p>');
             },
             setURL: function(host, img) {
-                return img ? host.replace(/\/$/, '') + '/' + img.replace(/^\//, '') : '';
+                return img ? addHost(img, host) : '';
             }
         },
         computeds: {
