@@ -859,7 +859,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
                 product_set.get_selected_products().forEach(function(model) {
                     //trace("add product_price : ",  model.get('product').get('name'), model.get_initial_price());
-                    sum  += model.get_initial_price() * model.get('quantity');
+                    sum += model.get_initial_price() * model.get('quantity');
                 });
             });
 
@@ -929,7 +929,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                         return tmpl[0].trim() + ' ' + error_psets.map(function(model) {
                             var exactAmount = model.get('minimum_amount'),
                                 psetName = model.get('name'),
-                                msg = tmpl[1].replace('%d', exactAmount).replace('%s', '&lsquo;' + psetName + '&rsquo;');
+                                msg = tmpl[1].trim().replace('%d', exactAmount).replace('%s', '&lsquo;' + psetName + '&rsquo;');
                             return msg;
                         }).join(', ')
                     }()
@@ -1321,7 +1321,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }, {silent: true});
 
             this.change_only_gift_dining_option();
-            model.update_mdf_sum(countProd);
+            model.update_mdf_sum();
 
             if (model.isRealProduct()) {
                 this.update_cart_totals({update_shipping_options: true});
@@ -1968,8 +1968,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 var myorder_fees = myorder.filter(function(obj){ return obj.isServiceFee(); });
 
                 var diff = myorder_fees.filter(function(obj){
-                           return !_.findWhere(json.service_fees, {id: obj.id});
-                       });
+                        return !_.findWhere(json.service_fees, {id: obj.id});
+                    });
                 //remove all service fees from myorder which aren't present in the responce now
                 myorder.remove(diff);
 
@@ -2134,7 +2134,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
             order_info.notes = checkout.notes;
             if (checkout.dining_option == "DINING_OPTION_OTHER")  {
-                order_info.notes += "\n" + _loc.DELIVERY_INFO + ": " + this.getOtherDiningOptionCallName();
+                order_info.notes.length && (order_info.notes += "\n");
+                order_info.notes += _loc.DELIVERY_INFO + ": " + this.getOtherDiningOptionCallName();
             }
             order_info.asap = checkout.isPickupASAP;
             order_info.discount = this.discount.get("id") ? this.discount.toJSON() : undefined;

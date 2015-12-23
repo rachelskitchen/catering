@@ -834,6 +834,11 @@ define(["main_router"], function(main_router) {
             this.prepare('checkout', function() {
                 var RevelAPI = App.Data.RevelAPI;
 
+                self.listenToOnce(self, 'route', function()
+                {
+                    App.Data.myorder.checkout.trigger('hide:datepicker');
+                });
+
                 if(!App.Data.card)
                     App.Data.card = new App.Models.Card({RevelAPI: RevelAPI});
 
@@ -841,6 +846,9 @@ define(["main_router"], function(main_router) {
                     App.Data.customer =  new App.Models.Customer({RevelAPI: RevelAPI});
                     App.Data.customer.loadAddresses();
                 }
+
+                // Need to specify shipping address (Bug 34676)
+                App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
 
                 App.Data.footer.set({
                     btn_title: _loc.CONTINUE,

@@ -73,7 +73,7 @@ define(['geopoint'], function() {
             expect(geo._deg2rad(120).toFixed(3)).toBe('2.094'); // '120 degrees is 2.094'
         });
         
-        describe("Geopoint Function getDistanceKm / getDistanceMi. Get disatance", function() {
+        describe("Geopoint Function getDistanceKm / getDistanceMi. Get distance", function() {
             
             var geo;
             
@@ -81,47 +81,47 @@ define(['geopoint'], function() {
                 geo = new GeoPoint(55.75, 37.6167);
             });
             
-            it('Get disatance kilometers with one Number argument', function() {
+            it('Get distance kilometers with one Number argument', function() {
                 expect(geo.getDistanceKm(45.35)).toBe(0);
             });
             
-            it('Get disatance kilometers with incorrect arguments type', function() {
+            it('Get distance kilometers with incorrect arguments type', function() {
                 expect(geo.getDistanceKm('59.883', 30.25)).toBe(0);
             });
             
-            it('Get disatance kilometers between Moscow and SPb (633.184 km). Arguments as number', function() {
+            it('Get distance kilometers between Moscow and SPb (633.184 km). Arguments as number', function() {
                 expect(Math.floor(geo.getDistanceKm(59.883, 30.25))).toBe(633);
             });
             
-            it('Get disatance kilometers long. Disatnce between Moscow and SPb is 633.184 km', function() {
+            it('Get distance kilometers long. Distance between Moscow and SPb is 633.184 km', function() {
                 var geo2 = new GeoPoint(59.883, 30.25);
                 expect(Math.floor(geo.getDistanceKm(geo2))).toBe(633);
             });
             
-            it('Get disatance kilometers short. Disatnce between two street in NN', function() {
+            it('Get distance kilometers short. Distance between two street in NN', function() {
                 var geo2 = new GeoPoint(56.326865, 44.00581);
                 geo = new GeoPoint(56.318869, 44.055334);
                 expect(geo.getDistanceKm(geo2).toFixed(2)).toBe('3.18');   
             });
             
-            it('Get disatance miles with one Number argument', function() {
+            it('Get distance miles with one Number argument', function() {
                 expect(geo.getDistanceMi(45.35)).toBe(0, '' );
             });
             
-            it('Get disatance miles with incorrect arguments type', function() {
+            it('Get distance miles with incorrect arguments type', function() {
                 expect(geo.getDistanceMi('59.883', 30.25)).toBe(0, '' );
             });
             
-            it('Get disatance miles between Moscow and SPb (633.184 km). Arguments as number', function() {
+            it('Get distance miles between Moscow and SPb (633.184 km). Arguments as number', function() {
                 expect(Math.floor(geo.getDistanceMi(59.883, 30.25))).toBe(393);
             });
             
-            it('Get disatance miles long. Disatnce between Moscow and SPb is 393 mi', function() {
+            it('Get distance miles long. Distance between Moscow and SPb is 393 mi', function() {
                 var geo2 = new GeoPoint(59.883, 30.25);
                 expect(Math.floor(geo.getDistanceMi(geo2))).toBe(393);
             });
             
-            it('Get disatance miles short. Disatnce between two street in NN', function() {
+            it('Get distance miles short. Distance between two street in NN', function() {
                 var geo2 = new GeoPoint(56.326865, 44.00581);
                 geo = new GeoPoint(56.318869, 44.055334);
                 expect(geo.getDistanceMi(geo2).toFixed(2)).toBe('1.98');            

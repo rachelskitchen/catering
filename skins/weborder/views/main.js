@@ -37,11 +37,11 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
             this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
             this.listenTo(App.Data.search, 'onRestore', function() {
-                this.hide_popup();
+                this.model.get('popup') && this.hide_popup();
                 this.restoreSearchState();
             });
             this.listenTo(App.Data.categories, 'onRestore', function() {
-                this.hide_popup();
+                this.model.get('popup') && this.hide_popup();
                 this.clearSearchLine();
             });
 
@@ -135,7 +135,7 @@ define(["done_view", "generator"], function(done_view) {
             popup.addClass('ui-visible');
         },
         hide_popup: function(event, status) {
-            var callback = this.model.get('popup').action_callback;
+            var callback = _.isObject(this.model.get('popup')) ? this.model.get('popup').action_callback : null;
             this.model.unset('popup');
             callback && callback(status);
         },

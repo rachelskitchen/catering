@@ -107,8 +107,10 @@ define(["backbone"], function(Backbone) {
                     page_title: _loc.PRODUCT_ADDED
                 });
                 window.history.replaceState({}, '', '#modifiers/' + (App.Data.myorder.length - 1));
-                typeof addProductCb == 'function' && addProductCb();
-                def.resolve();
+                setTimeout(function() {
+                    typeof addProductCb == 'function' && addProductCb();
+                    def.resolve();
+                }, 300);  // Fix for #34871, wait while window.history will be updated
             }
         },
         header_check_order: function(orderItem) {

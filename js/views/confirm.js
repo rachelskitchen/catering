@@ -107,6 +107,7 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             '.submit-card': 'toggle: not(card_validated), classes: {disabled: any(not(card_number), not(card_captchaKey), not(card_captchaValue))}',
         },
         events: {
+            'click .btn-submit': '',
             'click .btn-submit.submit-order': 'submit_payment',
             'click .btn-submit.submit-card': 'submit_card'
         },

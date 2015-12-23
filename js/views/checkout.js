@@ -256,7 +256,14 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         name: 'checkout',
         mod: 'pickup',
         initialize: function() {
+            var self = this;
+
             this.listenTo(this.model, 'change:dining_option', this.listenOrderType, this);
+
+            this.listenTo(this.model, 'hide:datepicker', function()
+            {
+                self.picker.hide();
+            }, this);
 
             this.templateData = {
                 isFirefox: /firefox/i.test(navigator.userAgent)
@@ -282,7 +289,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             }
             var field = this.$('#datepicker');
 
-            var picker = new Pikaday({
+            this.picker = new Pikaday({
                 field: field[0],
                 minDate: this.pickupTime[0].date,
                 maxDate: this.pickupTime[this.pickupTime.length - 1].date,

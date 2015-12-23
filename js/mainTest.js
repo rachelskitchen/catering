@@ -35,7 +35,6 @@ require(['app'], function(app) {
 
         // init errors object and check browser version
         var errors = App.Data.errors = new App.Models.Errors();
-        window.alert_message = function(){};
 
         // init settings object
         var settings = App.Data.settings = new App.Models.Settings({
