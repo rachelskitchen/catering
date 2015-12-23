@@ -157,7 +157,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                     sum: order_product.get_modelsum(), // sum with modifiers
                     initial_price: order_product.get_initial_price(),
                     is_child_product: true,
-                    selected: data.default_products.indexOf(p_data.id) != -1
+                    selected: data.default_products.indexOf(p_data.id) != -1 && order_product.check_order().status == 'OK'
                 });
                 order_product.update_prices();
                 order_products.add(order_product);
