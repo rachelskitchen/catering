@@ -899,6 +899,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
     };
 
     function addHost(image, host) {
+        var image = decodeURIComponent(image);
         return /^https?:\/\//.test(image) ? image : host + image.replace(/^([^\/])/, '/$1');
     }
 });
