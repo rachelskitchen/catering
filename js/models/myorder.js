@@ -859,7 +859,16 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
                 product_set.get_selected_products().forEach(function(model) {
                     //trace("add product_price : ",  model.get('product').get('name'), model.get_initial_price());
-                    sum += model.get_initial_price() * model.get('quantity');
+                    var sold_by_weight = model.get("product") ?  model.get("product").get('sold_by_weight') : false,
+                        weight = model.get('weight'),
+                        initial_price = model.get_initial_price();
+
+                    if (sold_by_weight && weight) {
+                        sum += initial_price * weight;
+                    }
+                    else {
+                        sum += initial_price * model.get('quantity');
+                    }
                 });
             });
 
