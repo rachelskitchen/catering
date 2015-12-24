@@ -36,7 +36,7 @@ define(["backbone"], function(Backbone) {
                 settings_system = settings.settings_system;
 
             if(settings_system instanceof Object) {
-                typeof settings_system.logo_img == 'string' && this.set('logo', settings.host + settings_system.logo_img.replace(/^([^\/])/, '/$1'));
+                typeof settings_system.logo_img == 'string' && this.set('logo', addHost(settings_system.logo_img, settings.host));
                 typeof settings_system.business_name == 'string' && this.set('business_name', settings_system.business_name);
             }
         }
