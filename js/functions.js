@@ -1921,3 +1921,11 @@ function reloadPageOnceOnline() {
         window.location.reload();
     }
 }
+
+/**
+ * Add @host to @image URL if it is relative
+ */
+function addHost(image, host) {
+    var image = decodeURIComponent(image);
+    return /^https?:\/\//.test(image) ? image : host + image.replace(/^([^\/])/, '/$1');
+}
