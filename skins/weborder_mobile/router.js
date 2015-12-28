@@ -151,11 +151,7 @@ define(["main_router"], function(main_router) {
 
             // invokes when user chooses the 'Credit Card' payment processor on the #payments screen
             this.listenTo(App.Data.payments, 'payWithCreditCard', function() {
-                if(App.Settings.RevelAPI) {
-                    App.Data.RevelAPI.checkCreditCard();
-                } else {
-                    showDefaultCardView.call(this);
-                }
+                showDefaultCardView.call(this);
             }, this);
 
             this.listenTo(myorder, 'payWithCreditCard', function() {
