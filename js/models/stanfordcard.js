@@ -147,7 +147,12 @@ define(["backbone", "captcha"], function(Backbone) {
             }
             this.set('plans', plans);
             this.listenTo(plans, 'change:selected', this.updatePlanId, this);
-            this.listenTo(this, 'change:validated', this.doNotAskStudentStatus, this);
+
+            if (App.Data.settings.get('settings_system').suppress_student_identifier_popup) {
+                this.doNotAskStudentStatus(this, true);
+            }  else {
+                this.listenTo(this, 'change:validated', this.doNotAskStudentStatus, this);
+            }
         },
         /**
          * @method
