@@ -63,6 +63,9 @@ define(["backbone"], function(Backbone) {
          *
          * @property {boolean} default.enableLink - enable link.
          * @default true.
+         *
+         * @property {boolean} default.hideCart - if `true` a cart icon is hidden.
+         * @default false.
          */
         defaults: {
             page_title: '',
@@ -75,7 +78,8 @@ define(["backbone"], function(Backbone) {
             search: '',
             showSearch: false,
             addProductCb: null,
-            enableLink: true
+            enableLink: true,
+            hideCart: false
         },
         addProduct: function(orderItem) {
             var self = this,
@@ -121,7 +125,7 @@ define(["backbone"], function(Backbone) {
             }
             return orderItem.check_order(opt);
         },
-        updateProduct: function(orderItem, originOrderItem) {
+        updateProduct: function(orderItem) {
             var self = this,
                 check = this.header_check_order(orderItem);
 

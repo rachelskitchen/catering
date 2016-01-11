@@ -622,7 +622,8 @@ define(["main_router"], function(main_router) {
                 header.set({
                     back: back,
                     back_title: _loc.BACK,
-                    cart: cart
+                    cart: cart,
+                    hideCart: true
                 });
 
                 App.Data.mainModel.set({
@@ -691,9 +692,10 @@ define(["main_router"], function(main_router) {
             }
 
             header.set({
-                    back: window.history.back.bind(window.history),
-                    back_title: _loc.BACK
-                });
+                back: window.history.back.bind(window.history),
+                back_title: _loc.BACK,
+                hideCart: false
+            });
 
             App.Data.mainModel.set({
                 header:  _.extend({}, headerModes.ComboProduct, { init_cache_session: false,
