@@ -704,6 +704,9 @@ section.maintenance #header .btn {
     overflow: hidden;
     text-indent: 1000px;
 }
+#cart .order-items .discount_place .cost {
+    float: right;
+}
 .bold {
     font-weight: bold;
 }

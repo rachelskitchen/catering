@@ -542,7 +542,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 });
                 this.subViews.push(view);
                 this.discountItemView = view;
-                this.$('.discount').append(this.discountItemView.el);
+                this.$('.order-discount').append(this.discountItemView.el);
             }
         },
         removeItem: function(model) {
