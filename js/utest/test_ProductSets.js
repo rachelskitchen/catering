@@ -127,7 +127,7 @@ define(['js/utest/data/ProductSets', 'product_sets'], function(data) {
                 });
                 spyOn(App.Models.ProductSet.prototype, 'addAjaxJSON').and.callThrough();
 
-                var result = model.get_product_sets(product_id);
+                var result = model.get_product_sets(product_id, 'combo');
 
                 expect(ajax.data).toEqual({product: product_id});
                 expect(ajax.url).toBe(App.Data.settings.get('host') + '/weborders/product_sets/');
@@ -140,10 +140,10 @@ define(['js/utest/data/ProductSets', 'product_sets'], function(data) {
                 ajaxSpy.and.callFake(function(opts) {
                     opts.error();
                 });
-                spyOn(model, 'onProductsError');
+                spyOn(App.Data.errors, 'alert');
 
                 model.get_product_sets(product_id);
-                expect(model.onProductsError).toHaveBeenCalled();
+                expect(App.Data.errors.alert).toHaveBeenCalled();
             });
         });
 
@@ -154,12 +154,6 @@ define(['js/utest/data/ProductSets', 'product_sets'], function(data) {
             expect(App.Models.ProductSet.prototype.addJSON).toHaveBeenCalled();
             expect(model.models[0].get('name')).toBe('Product set 1');
             expect(model.models[1].get('name')).toBe('Product set 2');
-        });
-
-        it('onProductsError()', function() {
-            spyOn(App.Data.errors, 'alert');
-            model.onProductsError();
-            expect(App.Data.errors.alert).toHaveBeenCalledWith(MSG.ERROR_PRODUCTS_LOAD, true);
         });
 
         it('clone()', function() {
