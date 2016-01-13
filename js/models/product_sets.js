@@ -125,6 +125,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                 var order_product = new App.Models.Myorder();
                 order_product.addJSON(json);
                 order_products.add(order_product);
+                order_product.set('initial_price', order_product.get_initial_price());
             });
             ext_data = _.extend({}, data, ext_data);
             ext_data['order_products'] = order_products;
