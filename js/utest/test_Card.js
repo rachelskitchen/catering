@@ -128,11 +128,10 @@ define(['card'], function() {
                 // valid card number
                 model.set('cardNumber', '5555555555555555');
                 model.set('securityCode', '123');
-                expect(model.check().errorMsg.indexOf(locale.CARD_NUMBER)).toBe(-1);
-                expect(model.check().errorMsg.indexOf(locale.CARD_SECURITY_CODE)).toBe(-1);
+                expect(model.check().errorMsg).toBeUndefined();
 
                 model.set('securityCode', '1234');
-                expect(model.check().errorMsg.indexOf(locale.CARD_SECURITY_CODE)).toBe(-1);
+                expect(model.check().errorMsg).toBeUndefined();
 
                 model.set('securityCode', '12345');
                 expect(model.check().errorMsg.indexOf(locale.CARD_SECURITY_CODE)).not.toBe(-1);
@@ -169,16 +168,30 @@ define(['card'], function() {
                 model.set('cardNumber', '5555555555555555');
                 model.set('securityCode', '444');
 
-                // empty month and year
-                expect(model.check().errorMsg.indexOf(MSG.ERROR_CARD_EXP)).not.toBe(-1);
+                // current month is not January
+                // (card.expMonth is '01', card.expDate is the current year by default)
+                if (new Date().getMonth() > 0) {
+                    // empty month and year
+                    expect(model.check().errorMsg.indexOf(MSG.ERROR_CARD_EXP)).not.toBe(-1);
 
-                // empty year
-                model.set('expMonth', '2');
-                expect(model.check().errorMsg.indexOf(MSG.ERROR_CARD_EXP)).not.toBe(-1);
+                    // empty year
+                    model.set('expMonth', '2');
+                    expect(model.check().errorMsg.indexOf(MSG.ERROR_CARD_EXP)).not.toBe(-1);
 
-                // empty month
-                model.set('expDate', '2000');
-                expect(model.check().errorMsg.indexOf(MSG.ERROR_CARD_EXP)).not.toBe(-1);
+                    // empty month
+                    model.set('expDate', '2000');
+                    expect(model.check().errorMsg.indexOf(MSG.ERROR_CARD_EXP)).not.toBe(-1);
+                }
+
+                // current month is January
+                else {
+                    // empty month and year
+                    expect(model.check().errorMsg).toBeUndefined();
+
+                    // empty year
+                    model.set('expMonth', '2');
+                    expect(model.check().errorMsg).toBeUndefined();
+                }
 
                 // early exp date
                 model.set('expMonth', new Date().getMonth());
