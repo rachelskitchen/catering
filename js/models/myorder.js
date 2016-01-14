@@ -2510,10 +2510,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 return;
             }
 
-            shipping_addresses.DINING_OPTION_DELIVERY = customer.get('deliveryAddressIndex'),
-            shipping_addresses.DINING_OPTION_SHIPPING = customer.get('shippingAddressIndex')
+            shipping_addresses.DINING_OPTION_DELIVERY = customer.get('deliveryAddressIndex');
+            shipping_addresses.DINING_OPTION_SHIPPING = customer.get('shippingAddressIndex');
+            shipping_addresses.DINING_OPTION_CATERING = customer.get('cateringAddressIndex');
 
-            if (value == 'DINING_OPTION_DELIVERY' || value == 'DINING_OPTION_SHIPPING') {
+            if (value == 'DINING_OPTION_DELIVERY' || value == 'DINING_OPTION_SHIPPING' || value === 'DINING_OPTION_CATERING') {
                 customer.set('shipping_address', shipping_addresses[value]);
             } else {
                 customer.set('shipping_address', customer.defaults.shipping_address);

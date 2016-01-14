@@ -50,6 +50,9 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.model.get('dining_option') === 'DINING_OPTION_SHIPPING' &&
                  this.controlAddress(null, 'DINING_OPTION_SHIPPING');
 
+            this.model.get('dining_option') === 'DINING_OPTION_CATERING' &&
+                 this.controlAddress(null, 'DINING_OPTION_CATERING');
+
             this.model.get('dining_option') === 'DINING_OPTION_OTHER' &&
                  this.controlDeliveryOther(null, 'DINING_OPTION_OTHER');
         },
@@ -128,7 +131,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             // remove address if it exists
             address && address.remove();
 
-            if(value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING') {
+            if(value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING' || value === 'DINING_OPTION_CATERING') {
                 address = new App.Views.CheckoutView.CheckoutAddressView({
                     customer: this.customer,
                     checkout: this.model
