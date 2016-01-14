@@ -91,7 +91,7 @@ define(['card'], function() {
             expect(setData).toHaveBeenCalledWith('card', model);
         });
 
-        describe("Functions check", function() {
+        describe("check()", function() {
 
             var payment = {};
 

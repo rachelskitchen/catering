@@ -750,7 +750,8 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     product_name_override: 'name',
                     quantity: 10,
                     product_sub_id: 123,
-                    is_combo: isCombo
+                    is_combo: isCombo,
+                    has_upsell: undefined
                 });
             });
 
