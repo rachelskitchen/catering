@@ -1,6 +1,6 @@
 var tests_list = [
-    '../core/js/utest/test_Card',
     '../core/js/utest/test_Captcha',
+    '../core/js/utest/test_Card',
     '../core/js/utest/test_Categories',
     '../core/js/utest/test_Checkout',
     '../core/js/utest/test_ChildProducts',
@@ -20,8 +20,8 @@ var tests_list = [
     //'../core/js/utest/test_Settings',
     '../core/js/utest/test_StanfordCard',
     '../core/js/utest/test_Tax',
+    '../core/js/utest/test_Timetable'
     '../core/js/utest/test_Tips',
     '../core/js/utest/test_Total',
-    '../core/js/utest/test_TimeFrm',
-    '../core/js/utest/test_Timetable'
+    '../core/js/utest/test_TimeFrm'
 ];

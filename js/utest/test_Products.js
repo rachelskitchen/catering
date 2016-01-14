@@ -1099,7 +1099,7 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
             });
         });
 
-        describe('convertTimetables', function() {
+        describe('convertTimetables()', function() {
             var timetable;
 
             $.ajax({
@@ -1126,6 +1126,26 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
                 model.convertTimetables();
                 expect(window.format_timetables).toHaveBeenCalledWith(timetable);
             });
+        });
+
+        it('isComboBased()', function() {
+            model.set({
+                is_combo: true,
+                has_upsell: false
+            });
+            expect(model.isComboBased()).toBe(true);
+
+            model.set({
+                is_combo: false,
+                has_upsell: true
+            });
+            expect(model.isComboBased()).toBe(true);
+
+            model.set({
+                is_combo: false,
+                has_upsell: false
+            });
+            expect(model.isComboBased()).toBe(false);
         });
     });
 
