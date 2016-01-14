@@ -135,6 +135,17 @@ define(['stanfordcard', 'js/utest/data/StanfordCard'], function(stanfordcard, da
                 expect(plans.at(1).toJSON()).toEqual(plansData[1]);
             });
 
+            it('setting `suppress_student_identifier_popup` is true', function() {
+                var prevValue = App.Data.settings.get('settings_system').suppress_student_identifier_popup;
+                App.Data.settings.get('settings_system').suppress_student_identifier_popup = true;
+
+                spyOn(App.Models.StanfordCard.prototype, 'doNotAskStudentStatus');
+
+                card = new App.Models.StanfordCard();
+                expect(card.doNotAskStudentStatus).toHaveBeenCalledWith(card, true);
+                App.Data.settings.get('settings_system').suppress_student_identifier_popup = prevValue;
+            });
+
             function commonExpectations(plans) {
                 //expect(card.get).toHaveBeenCalledWith('plans');
                 //expect(card.set).toHaveBeenCalledWith('plans', plans);
