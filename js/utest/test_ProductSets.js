@@ -206,6 +206,17 @@ define(['js/utest/data/ProductSets', 'product_sets'], function(data) {
                 expect(model.check_selected()).toBe(false);
             });
         });
+
+        it('haveWeightProduct()', function() {
+            expect(model.haveWeightProduct()).toBe(false);
+
+            model.addJSON(addJson);
+            expect(model.haveWeightProduct()).toBe(false);
+
+            var product1 = model.models[0].get('order_products').models[0].get('product');
+            product1.set('sold_by_weight', true);
+            expect(model.haveWeightProduct()).toBe(true);
+        });
     });
 
     describe('App.Collections.ProductSets.init(product_id)', function() {
