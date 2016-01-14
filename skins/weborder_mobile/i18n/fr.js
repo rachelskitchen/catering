@@ -138,8 +138,6 @@ define([], function() {
         "REVEL_LOYALTY_REWARDS_TEXT1": "Sur l’écran suivant, veuillez compléter le formulaire pour devenir membre du",
         "REVEL_LOYALTY_REWARDS_TEXT2": "Programme de fidélité",
         "REVEL_ENTER_EMAIL_PASSWORD": "Veuillez saisir votre adresse e-mail et votre mot de passe pour afficher vos points de récompense de fidélité.",
-        "REVEL_EMAIL_ADDRESS": "Adresse e-mail",
-        "REVEL_PASSWORD": "Mot de passe",
         "REVEL_PERSONAL_INFO": "Informations personnelles (utilisées pour les points de récompense)",
         "REVEL_FIRST_NAME": "Prénom",
         "REVEL_LAST_NAME": "Nom",

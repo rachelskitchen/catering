@@ -150,8 +150,6 @@
         'REVEL_LOYALTY_REWARDS_TEXT1': 'On the following screen, please fill out the form to become a member of',
         'REVEL_LOYALTY_REWARDS_TEXT2': 'Loyalty Program',
         'REVEL_ENTER_EMAIL_PASSWORD': 'Please enter your email &amp; password to view your Loyalty Reward Points',
-        'REVEL_EMAIL_ADDRESS': 'Email Address',
-        'REVEL_PASSWORD': 'Password',
         'REVEL_PERSONAL_INFO': 'Personal Info (Used for Reward Points)',
         'REVEL_FIRST_NAME': 'First Name',
         'REVEL_LAST_NAME': 'Last Name',

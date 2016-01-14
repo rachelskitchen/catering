@@ -137,8 +137,6 @@ define([], function() {
         "REVEL_LOYALTY_REWARDS_TEXT1": "Täitke järgmisel ekraanil vorm, et saada",
         "REVEL_LOYALTY_REWARDS_TEXT2": "püsikliendiprogrammi liikmeks",
         "REVEL_ENTER_EMAIL_PASSWORD": "Sisestage oma e-posti aadress ja parool, et näha oma püsikliendi preemiapunkte",
-        "REVEL_EMAIL_ADDRESS": "E-posti aadress",
-        "REVEL_PASSWORD": "Parool",
         "REVEL_PERSONAL_INFO": "Isiklik teave (kasutatakse preemiapunktide jaoks)",
         "REVEL_FIRST_NAME": "Eesnimi",
         "REVEL_LAST_NAME": "Perekonnanimi",

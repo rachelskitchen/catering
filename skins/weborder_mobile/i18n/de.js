@@ -137,8 +137,6 @@ define([], function() {
         "REVEL_LOYALTY_REWARDS_TEXT1": "Auf dem nächsten Schirm füllen Sie bitte das Formular aus, um ein Mitglied des",
         "REVEL_LOYALTY_REWARDS_TEXT2": "Treueprogramm",
         "REVEL_ENTER_EMAIL_PASSWORD": "Bitte geben Sie Ihre E-Mail & AMP ein; Kennwort, um Ihre Treueprämienpunkte zu sehen",
-        "REVEL_EMAIL_ADDRESS": "E-Mail-Adresse ",
-        "REVEL_PASSWORD": "Kennwort",
         "REVEL_PERSONAL_INFO": "Persönliche Info (zur Verwendung für Prämienpunkte)",
         "REVEL_FIRST_NAME": "Vorname",
         "REVEL_LAST_NAME": "Zuname",
