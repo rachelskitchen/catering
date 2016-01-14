@@ -559,6 +559,13 @@ define([], function() {
         "DELIVERY_INFO": "Delivery Info",
         "AMOUNT": "Amount",
         "ENTER_CAPTCHA": "Enter Captcha",
-        "NEXT": "Next"
+        "NEXT": "Next",
+        "PROFILE_EMAIL_ADDRESS": "E-posti aadress",
+        "PROFILE_PASSWORD": "Parool",
+        "PROFILE_FORGOT_PASSWORD": "",
+        "PROFILE_LOG_IN": "",
+        "PROFILE_ACCOUNT_QUESTION": "",
+        "PROFILE_ACCOUNT_CREATE": "",
+        "PROFILE_CONTINUE_AS_GUEST": ""
     } // end of locale
 }); // end of module

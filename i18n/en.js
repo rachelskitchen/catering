@@ -535,6 +535,13 @@
         'PAYPAL': 'PayPal',
         'AMOUNT': 'Amount',
         'ENTER_CAPTCHA': 'Enter Captcha',
-        'NEXT': 'Next'
+        'NEXT': 'Next',
+        'PROFILE_EMAIL_ADDRESS': 'Email Address',
+        'PROFILE_PASSWORD': 'Password',
+        'PROFILE_FORGOT_PASSWORD': 'Forgot password?',
+        'PROFILE_LOG_IN': 'Log In',
+        'PROFILE_ACCOUNT_QUESTION': "Don't have an account?",
+        'PROFILE_ACCOUNT_CREATE': "Create One",
+        'PROFILE_CONTINUE_AS_GUEST': "Continue as guest"
     }; // end of locale
 }); // end of module

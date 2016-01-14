@@ -149,8 +149,6 @@
         'REVEL_LOYALTY_REWARDS_TEXT1': 'На следующем экране, пожалуйста, заполните форму, чтобы стать членом',
         'REVEL_LOYALTY_REWARDS_TEXT2': 'Программы Лояльности',
         'REVEL_ENTER_EMAIL_PASSWORD': 'Введите адрес эл. почты и пароль, чтобы увидеть ваши накопленные баллы',
-        'REVEL_EMAIL_ADDRESS': 'Эл. почта',
-        'REVEL_PASSWORD': 'Пароль',
         'REVEL_PERSONAL_INFO': 'Персональная инфо. (для накопления баллов)',
         'REVEL_FIRST_NAME': 'Имя',
         'REVEL_LAST_NAME': 'Фамилия',

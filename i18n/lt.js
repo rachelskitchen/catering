@@ -559,6 +559,13 @@ define([], function() {
         "DELIVERY_INFO": "Delivery Info",
         "AMOUNT": "Amount",
         "ENTER_CAPTCHA": "Enter Captcha",
-        "NEXT": "Next"
+        "NEXT": "Next",
+        "PROFILE_EMAIL_ADDRESS": "El. pašto adresas",
+        "PROFILE_PASSWORD": "Slaptažodis",
+        "PROFILE_FORGOT_PASSWORD": "",
+        "PROFILE_LOG_IN": "",
+        "PROFILE_ACCOUNT_QUESTION": "",
+        "PROFILE_ACCOUNT_CREATE": "",
+        "PROFILE_CONTINUE_AS_GUEST": ""
     } // end of locale
 }); // end of module

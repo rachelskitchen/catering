@@ -524,6 +524,13 @@
         'DELIVERY_TIME': 'Срок доставки',
         'PICKUP_TIME': 'Время получения',
         'DELIVERY_INFO': 'Информация о доставке',
-        'PAYPAL': 'PayPal'
+        'PAYPAL': 'PayPal',
+        'PROFILE_EMAIL_ADDRESS': 'Эл. почта',
+        'PROFILE_PASSWORD': 'Пароль',
+        "PROFILE_FORGOT_PASSWORD": "Забыли пароль?",
+        "PROFILE_LOG_IN": "Войти",
+        "PROFILE_ACCOUNT_QUESTION": "Нет аккаунта?",
+        "PROFILE_ACCOUNT_CREATE": "Создать",
+        "PROFILE_CONTINUE_AS_GUEST": "Продолжить как гость"
     } // end of locale
 }); // end of module

@@ -137,8 +137,6 @@ define([], function() {
         "REVEL_LOYALTY_REWARDS_TEXT1": "Ekrane toliau užpildykite formą norėdami tapti",
         "REVEL_LOYALTY_REWARDS_TEXT2": "lojalumo programos nariu",
         "REVEL_ENTER_EMAIL_PASSWORD": "Įveskite savo el. pašto adresą ir slaptažodį norėdami peržiūrėti savo sukauptus lojalumo taškus",
-        "REVEL_EMAIL_ADDRESS": "El. pašto adresas",
-        "REVEL_PASSWORD": "Slaptažodis",
         "REVEL_PERSONAL_INFO": "Asmeninė informacija (naudojama lojalumo taškams)",
         "REVEL_FIRST_NAME": "Vardas",
         "REVEL_LAST_NAME": "Pavardė",

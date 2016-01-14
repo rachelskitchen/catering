@@ -559,6 +559,13 @@ define([], function() {
         "DELIVERY_INFO": "Informations de livraison",
         "AMOUNT": "Montant",
         "ENTER_CAPTCHA": "Saisir les caractères Captcha",
-        "NEXT": "Suivant"
+        "NEXT": "Suivant",
+        "PROFILE_EMAIL_ADDRESS": "Adresse e-mail",
+        "PROFILE_PASSWORD": "Mot de passe",
+        "PROFILE_FORGOT_PASSWORD": "",
+        "PROFILE_LOG_IN": "",
+        "PROFILE_ACCOUNT_QUESTION": "",
+        "PROFILE_ACCOUNT_CREATE": "",
+        "PROFILE_CONTINUE_AS_GUEST": ""
     } // end of locale
 }); // end of module
