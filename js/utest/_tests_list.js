@@ -10,6 +10,7 @@ var tests_list = [
     '../core/js/utest/test_Errors',
     '../core/js/utest/test_Filters',
     '../core/js/utest/test_Geopoint',
+    '../core/js/utest/test_Giftcard',
     '../core/js/utest/test_Locale',
     '../core/js/utest/test_Modifiers',
     '../core/js/utest/test_Myorder',
