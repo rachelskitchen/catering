@@ -112,6 +112,11 @@
             "templates": ["stanfordcard"],
             "views": ["stanfordcard"],
             "core": ["giftcard", "jquery_numbermask"]
+        },
+        "profile": {
+            "css": ["profile"],
+            "templates": ["profile"],
+            "core": ["profile_view"]
         }
     }
 }

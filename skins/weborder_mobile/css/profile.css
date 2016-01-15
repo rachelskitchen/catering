@@ -1,0 +1,60 @@
+.profile-info {
+    display: block;
+    margin: 1.4em 0;
+}
+
+.profile-form input {
+    width: 98%;
+    margin-bottom: 1.4em;
+}
+
+.forgot-password {
+    margin-bottom: 5.6em;
+}
+
+.profile-btns {
+    position: absolute;
+    bottom: 0;
+    left: 1.8em;
+    right: 1.8em;
+}
+
+.profile-btns .btn {
+    margin-bottom: 1.4em;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.profile-info.account-password {
+    padding: 0 2%;
+    margin-top: 0.5em;
+    margin-bottom: 0.7em;
+}
+
+.profile-complete {
+    display: block;
+    margin-bottom: 1.4em;
+    margin-top: -0.7em;
+}
+
+/* landscape */
+@media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (orientation: landscape) {
+    .forgot-password {
+        margin-bottom: 2.6em;
+    }
+
+    .profile-btns .btn {
+        margin-bottom: 0.6em;
+    }
+}
+
+/* Nexus 7 landscape */
+@media only screen and (min-device-width: 600px) and (max-device-width: 960px) and (orientation: landscape) {
+    .forgot-password {
+        margin-bottom: 2.6em;
+    }
+
+    .profile-btns .btn {
+        margin-bottom: 0.6em;
+    }
+}

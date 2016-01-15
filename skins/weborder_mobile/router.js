@@ -66,6 +66,9 @@ define(["main_router"], function(main_router) {
             // "loyalty": "loyalty",
             "rewards_card_submit": "rewards_card_submit",
             "rewards": "rewards",
+            "login": "login",
+            "signup": "signup",
+            "profile_create": "profile_create",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -1630,6 +1633,82 @@ define(["main_router"], function(main_router) {
                 mainModel.trigger('loadStarted');
                 stanfordCard.getPlans(true).then(mainModel.trigger.bind(mainModel, 'loadCompleted'));
             }
+        },
+        login: function() {
+            this.prepare('profile', function() {
+                App.Data.header.set({
+                    page_title: _loc.WELCOME,
+                    back: null,
+                    back_title: ''
+                });
+
+                var content = [{
+                    modelName: 'Profile',
+                    mod: 'LogIn',
+                    cacheId: true
+                }];
+
+                App.Data.mainModel.set({
+                    header: headerModes.Cart,
+                    footer: footerModes.None,
+                    contentClass: 'primary-bg',
+                    content: content
+                });
+
+                this.change_page();
+            });
+        },
+        signup: function() {
+            this.prepare('profile', function() {
+                App.Data.header.set({
+                    page_title: _loc.PROFILE_SIGN_UP,
+                    back_title: _loc.BACK,
+                    back: window.history.back.bind(window.history),
+                    link: console.log.bind(console, 'Next'),
+                    link_title: _loc.NEXT
+                });
+
+                var content = [{
+                    modelName: 'Profile',
+                    mod: 'SignUp',
+                    cacheId: true
+                }];
+
+                App.Data.mainModel.set({
+                    header: headerModes.Modifiers,
+                    footer: footerModes.None,
+                    contentClass: 'primary-bg',
+                    content: content
+                });
+
+                this.change_page();
+            });
+        },
+        profile_create: function() {
+            this.prepare('profile', function() {
+                App.Data.header.set({
+                    page_title: _loc.PROFILE_CREATE_TITLE,
+                    back_title: _loc.BACK,
+                    back: window.history.back.bind(window.history),
+                    link: console.log.bind(console, 'Next'),
+                    link_title: _loc.CONTINUE
+                });
+
+                var content = [{
+                    modelName: 'Profile',
+                    mod: 'Create',
+                    cacheId: true
+                }];
+
+                App.Data.mainModel.set({
+                    header: headerModes.Modifiers,
+                    footer: footerModes.None,
+                    contentClass: 'primary-bg',
+                    content: content
+                });
+
+                this.change_page();
+            });
         },
         initRevelAPI: function() {
             App.Routers.RevelOrderingRouter.prototype.initRevelAPI.apply(this, arguments);
