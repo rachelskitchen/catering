@@ -1,14 +1,14 @@
-define([], function() {
+define(['js/utest/data/Settings'], function(settings) {
 
     describe('App.Models.Settings', function() {
-        var baseSettings, settings, local = {},
+        var baseSettings, local = {},
             get = function() {
                 return local.settings ? JSON.parse(local.settings) : undefined;
             },
             set = function(e, s) {
                 local.settings = s && s.toJSON && JSON.stringify(s.toJSON()) || e;
                 return true;
-            }, sys, all;
+            }, sys, all, model;
 
             var backupTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
             jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000; //60sec.
@@ -18,20 +18,89 @@ define([], function() {
             spyOn(window, "setData").and.callFake(set);
             spyOn(App.Data.errors, "alert").and.callFake(function() { console.log(arguments); });
 
-
-            if (settings) {
-                all = settings.toJSON();
+            if (!all) {
+                all = deepClone(settings.all);
                 sys = all.settings_system;
-                done();
-            } else {
-                settings = new App.Models.Settings;
-                settings.load().then(function() {
-                    all = settings.toJSON();
-                    sys = all.settings_system;
-                    jasmine.DEFAULT_TIMEOUT_INTERVAL = backupTimeout;
-                    done();
-                });
+                jasmine.DEFAULT_TIMEOUT_INTERVAL = backupTimeout;
             }
+            done();
+        });
+
+        it('Enviroment', function() {
+            expect(App.Models.Settings).toBeDefined();
+        });
+
+        it('initialize()', function() {
+            spyOn(App.Models.Settings.prototype, 'load');
+            spyOn(App.Models.Settings.prototype, 'get_data_warehouse');
+            spyOn(App.Models.Settings.prototype, 'ajaxSetup');
+            model = new App.Models.Settings();
+
+            expect(model.toJSON()).toEqual(settings.defaults_initialized);
+            expect(model.get_data_warehouse).toHaveBeenCalled();
+            expect(model.ajaxSetup).toHaveBeenCalled();
+
+            model.trigger('change:establishment');
+            expect(model.load).toHaveBeenCalled();
+        });
+
+        describe('get_data_warehouse()', function() {
+            var sessionStorageBackup, cookieBackup, cookie_getter;
+
+            beforeEach(function() {
+                sessionStorageBackup = window.sessionStorage;
+                cookie_getter = document.__lookupGetter__ ('cookie');
+            });
+
+            afterEach(function() {
+                window.sessionStorage = sessionStorageBackup;
+                document.__defineGetter__("cookie", cookie_getter);
+            });
+
+            it('sessionStorage', function() {
+                window.sessionStorage = {};
+                expectStorage(1);
+            });
+
+            it('none', function() {
+                delete window.sessionStorage;
+                document.__defineGetter__("cookie", function() { return '';} );
+                expectStorage(0);
+            });
+
+            it('Cookie', function() {
+                delete window.sessionStorage;
+                cookie_getter || (document.__defineGetter__("cookie", function() { return true;} ));
+                expectStorage(2);
+            });
+
+
+            function expectStorage(storage) {
+                model.get_data_warehouse();
+                expect(model.get('storage_data')).toBe(storage);
+            }
+        });
+
+        it('checkIfMobile()', function() {
+            var skinBackup = App.Skin;
+            spyOn(model, 'isMobileVersion').and.returnValue(true);
+
+            App.Skin = App.Skins.WEBORDER;
+            model.checkIfMobile();
+            expect(App.skin).toBe(App.Skins.WEBORDER_MOBILE);
+
+            App.skin == App.Skins.RETAIL;
+            expectations();
+
+            App.skin == App.Skins.RETAIL;
+            expectations();
+
+            function expectations() {
+                model.checkIfMobile();
+                expect(App.skin).toBe(App.Skins.WEBORDER_MOBILE);
+            }
+
+            App.Skin = skinBackup;
         });
 
         describe("Global settings test", function() {
@@ -200,12 +269,16 @@ define([], function() {
                 expect(Array.isArray(sys.editable_dining_options)).toBeTruthy();
             });
 
+            it('Favicon', function() {
+                expect(typeof sys.favicon_image === 'string' || sys.favicon_image === null).toBeTruthy();
+            });
+
             it('Hide image', function() {
                 expect(typeof sys.hide_images).toBe('boolean');
             });
 
             it('Logo', function() {
-                expect(typeof sys.logo === 'string' || sys.logo === null).toBeTruthy();
+                expect(typeof sys.logo_img === 'string' || sys.logo_img === null).toBeTruthy();
             });
 
             it("Delivery", function() {
@@ -251,7 +324,6 @@ define([], function() {
                 expect(typeof(sys.payment_processor.payment_count)).toBe("number");
                 expect(sys.payment_processor.payment_count >= 0).toBeTruthy();
                 expect(typeof(sys.payment_processor.paypal)).toBe("boolean");
-                expect(typeof(sys.payment_processor.paypal_direct_credit_card)).toBe("boolean");
                 expect(typeof(sys.payment_processor.paypal_mobile)).toBe("boolean");
                 expect(typeof(sys.payment_processor.usaepay)).toBe("boolean");
             });
