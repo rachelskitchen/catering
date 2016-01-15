@@ -560,12 +560,22 @@ define([], function() {
         "AMOUNT": "Betrag",
         "ENTER_CAPTCHA": "Captcha eingeben",
         "NEXT": "Weiter",
+        "WELCOME": "",
         "PROFILE_EMAIL_ADDRESS": "E-Mail-Adresse ",
         "PROFILE_PASSWORD": "Kennwort",
         "PROFILE_FORGOT_PASSWORD": "",
         "PROFILE_LOG_IN": "",
-        "PROFILE_ACCOUNT_QUESTION": "",
-        "PROFILE_ACCOUNT_CREATE": "",
-        "PROFILE_CONTINUE_AS_GUEST": ""
+        "PROFILE_CREATE_ACCOUNT": "",
+        "PROFILE_CONTINUE_AS_GUEST": "",
+        "PROFILE_LOG_IN_INFO": "",
+        "PROFILE_SIGN_UP": "",
+        "PROFILE_SIGN_UP_INFO": "",
+        "PROFILE_ACCOUNT_PASSWORD": "",
+        "PROFILE_REENTER_PASSWORD": "",
+        "PROFILE_GREETING": "",
+        "PROFILE_COMPLETE": "",
+        "PROFILE_BIRTHDAY": "",
+        "PROFILE_GENDER": "",
+        "PROFILE_PHONE_PRIVATE": ""
     } // end of locale
 }); // end of module

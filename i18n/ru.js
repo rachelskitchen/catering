@@ -525,12 +525,25 @@
         'PICKUP_TIME': 'Время получения',
         'DELIVERY_INFO': 'Информация о доставке',
         'PAYPAL': 'PayPal',
+        'AMOUNT': 'Сумма',
+        'ENTER_CAPTCHA': 'Введите символы с картинки',
+        'NEXT': 'Далее',
+        'WELCOME': 'Добро пожаловать',
         'PROFILE_EMAIL_ADDRESS': 'Эл. почта',
         'PROFILE_PASSWORD': 'Пароль',
         "PROFILE_FORGOT_PASSWORD": "Забыли пароль?",
         "PROFILE_LOG_IN": "Войти",
-        "PROFILE_ACCOUNT_QUESTION": "Нет аккаунта?",
-        "PROFILE_ACCOUNT_CREATE": "Создать",
-        "PROFILE_CONTINUE_AS_GUEST": "Продолжить как гость"
+        "PROFILE_CREATE_ACCOUNT": "Cоздать аккаунт",
+        "PROFILE_CONTINUE_AS_GUEST": "Продолжить как гость",
+        "PROFILE_LOG_IN_INFO": "Введите email и пароль",
+        "PROFILE_SIGN_UP": "Регистрания",
+        "PROFILE_SIGN_UP_INFO": "Введите Ваши данные",
+        "PROFILE_ACCOUNT_PASSWORD": "Введите пароль",
+        "PROFILE_REENTER_PASSWORD": "Повторите пароль",
+        "PROFILE_GREETING": "Привет",
+        "PROFILE_COMPLETE": "Пожалуйста, заполните Ваш профайл",
+        "PROFILE_BIRTHDAY": "День рождения",
+        "PROFILE_GENDER": "Ваш пол",
+        "PROFILE_PHONE_PRIVATE": "Мы не будем предоставлять Ваш номер какой-либо третьей стороне"
     } // end of locale
 }); // end of module

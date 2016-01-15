@@ -536,12 +536,23 @@
         'AMOUNT': 'Amount',
         'ENTER_CAPTCHA': 'Enter Captcha',
         'NEXT': 'Next',
+        'WELCOME': 'Welcome',
         'PROFILE_EMAIL_ADDRESS': 'Email Address',
         'PROFILE_PASSWORD': 'Password',
-        'PROFILE_FORGOT_PASSWORD': 'Forgot password?',
-        'PROFILE_LOG_IN': 'Log In',
-        'PROFILE_ACCOUNT_QUESTION': "Don't have an account?",
-        'PROFILE_ACCOUNT_CREATE': "Create One",
-        'PROFILE_CONTINUE_AS_GUEST': "Continue as guest"
+        'PROFILE_FORGOT_PASSWORD': "Forgot Password?",
+        'PROFILE_LOG_IN': "Log In",
+        'PROFILE_CREATE_ACCOUNT': "Create an Account",
+        'PROFILE_CONTINUE_AS_GUEST': "Continue as Guest",
+        'PROFILE_LOG_IN_INFO': "Log in using your email address & password",
+        'PROFILE_SIGN_UP': "Sign Up",
+        'PROFILE_SIGN_UP_INFO': "Let us know who you are!",
+        'PROFILE_ACCOUNT_PASSWORD': "Account Password",
+        'PROFILE_REENTER_PASSWORD': "Re-enter Password",
+        'PROFILE_CREATE_TITLE': "Create a Profile",
+        'PROFILE_GREETING': "Hi",
+        'PROFILE_COMPLETE': "Please complete your profile",
+        'PROFILE_BIRTHDAY': "Birthday",
+        'PROFILE_GENDER': "Gender",
+        'PROFILE_PHONE_PRIVATE': "We will not share your phone # with any third parties"
     }; // end of locale
 }); // end of module
