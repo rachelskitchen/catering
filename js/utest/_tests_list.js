@@ -18,6 +18,7 @@ var tests_list = [
     '../core/js/utest/test_Products',
     '../core/js/utest/test_ProductSets',
     '../core/js/utest/test_Rewards',
+    '../core/js/utest/test_Search',
     //'../core/js/utest/test_Settings',
     '../core/js/utest/test_StanfordCard',
     '../core/js/utest/test_Tax',
