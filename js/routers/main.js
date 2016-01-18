@@ -316,10 +316,15 @@ define(["backbone", "factory"], function(Backbone) {
             return load;
         },
         /**
+         * Init App.Data.customer
+         */
+        initCustomer: function() {
+            App.Data.customer = new App.Models.Customer();
+        },
+        /**
          * Init App.Data.customer and restore its state from a storage
          */
         loadCustomer: function() {
-            App.Data.customer = new App.Models.Customer({RevelAPI: App.Data.RevelAPI});
             App.Data.customer.loadCustomer();
             App.Data.customer.loadAddresses();
         },
@@ -856,6 +861,9 @@ define(["backbone", "factory"], function(Backbone) {
     App.Routers.RevelOrderingRouter = App.Routers.MobileRouter.extend({
         triggerInitializedEvent: function() {
             var myorder = App.Data.myorder;
+
+            // init App.Data.customer
+            this.initCustomer();
 
             // Restore App.Data.myorder.paymentResponse if exists in session storage.
             myorder.restorePaymentResponse(this.getUID());

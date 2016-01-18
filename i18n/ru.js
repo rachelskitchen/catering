@@ -544,6 +544,7 @@
         "PROFILE_COMPLETE": "Пожалуйста, заполните Ваш профайл",
         "PROFILE_BIRTHDAY": "День рождения",
         "PROFILE_GENDER": "Ваш пол",
-        "PROFILE_PHONE_PRIVATE": "Мы не будем предоставлять Ваш номер какой-либо третьей стороне"
+        "PROFILE_PHONE_PRIVATE": "Мы не будем предоставлять Ваш номер какой-либо третьей стороне",
+        "PROFILE_PASSWORDS_MISMATCH": "Пароли не совпадают"
     } // end of locale
 }); // end of module

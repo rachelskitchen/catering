@@ -576,6 +576,7 @@ define([], function() {
         "PROFILE_COMPLETE": "",
         "PROFILE_BIRTHDAY": "",
         "PROFILE_GENDER": "",
-        "PROFILE_PHONE_PRIVATE": ""
+        "PROFILE_PHONE_PRIVATE": "",
+        "PROFILE_PASSWORDS_MISMATCH": ""
     } // end of locale
 }); // end of module

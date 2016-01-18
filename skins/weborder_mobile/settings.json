@@ -10,7 +10,7 @@
             "model": ["main", "header", "revel", "payments", "footer"],
             "templates": ["main", "header", "footer", "revel"],
             "views": ["main", "header", "products", "footer"],
-            "core": ["geopoint", "stanfordcard", "giftcard", "revel_view", "revel_api"],
+            "core": ["geopoint", "stanfordcard", "giftcard", "customers", "revel_view", "revel_api"],
             "js" : ["jquery.smartbanner"]
         },
         "index": {
