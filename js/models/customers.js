@@ -123,7 +123,19 @@ define(["backbone", "geopoint"], function(Backbone) {
              * @type {number}
              * @default 1
              */
-            shippingAddressIndex: 1
+            shippingAddressIndex: 1,
+            /**
+             * User's password
+             * @type {string}
+             * @default ""
+             */
+            password: "",
+            /**
+             * User's confirm password
+             * @type {string}
+             * @default ""
+             */
+            confirm_password: ""
         },
         /**
          * Adds validation listeners for `first_name`, `last_name` attributes changes.
@@ -259,7 +271,7 @@ define(["backbone", "geopoint"], function(Backbone) {
             return empty;
         },
         /**
-         * Validates attributes values.
+         * Validates `first_name`, `last_name`, `email`, `phone` attributes values for checkout.
          * @param {string} dining_option - order type selected
          * @returns {Object} One of the following object literals:
          * - If all fine:
@@ -438,6 +450,106 @@ define(["backbone", "geopoint"], function(Backbone) {
             var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING',
                 shipping_address = this.get('shipping_address');
             return (shipping_address == this.get('deliveryAddressIndex') || shipping_address == this.get('shippingAddressIndex')) && isDelivery ? true : false;
+        },
+        /**
+         * Validates `email` and `password` attributes for Log In.
+         * @returns {Object} One of the following object literals:
+         * - If all fine:
+         * ```
+         * {
+         *     status: "OK"
+         * }
+         * ```
+         * - If validation failed:
+         * ```
+         * {
+         *     status: "ERROR_EMPTY_FIELDS",
+         *     errorMsg: <error message>,
+         *     errorList: [] // Array of invalid properties
+         * }
+         * ```
+         */
+        checkLogInData: function() {
+            var err = [];
+
+            !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.CHECKOUT_EMAIL);
+            !this.get('password') && err.push(_loc.CHECKOUT_PHONE);
+
+            if (err.length) {
+                return {
+                    status: "ERROR_EMPTY_FIELDS",
+                    errorMsg: MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, err.join(', ')),
+                    errorList: err
+                };
+            }
+
+            return {
+                status: "OK"
+            };
+        },
+        /**
+         * Validates `first_name`, `last_name`, `email` and `password` attributes for Sign Up.
+         * @returns {Object} One of the following object literals:
+         * - If all fine:
+         * ```
+         * {
+         *     status: "OK"
+         * }
+         * ```
+         * - If validation failed:
+         * ```
+         * {
+         *     status: "ERROR_EMPTY_FIELDS",
+         *     errorMsg: <error message>,
+         *     errorList: [] // Array of invalid properties
+         * }
+         * ```
+         */
+        checkSignUpData: function() {
+            var err = [];
+
+            !this.get('first_name') && err.push(_loc.CHECKOUT_FIRST_NAME);
+            !this.get('last_name') && err.push(_loc.CHECKOUT_LAST_NAME);
+            !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.CHECKOUT_EMAIL);
+            !this.get('password') && err.push(_loc.CHECKOUT_PHONE);
+
+            if (err.length) {
+                return {
+                    status: "ERROR_EMPTY_FIELDS",
+                    errorMsg: MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, err.join(', ')),
+                    errorList: err
+                };
+            }
+
+            return {
+                status: "OK"
+            };
+        },
+        /**
+         * Compares `password`, `confirm_password` attributes.
+         * @returns {Object} One of the following object literals:
+         * - If all fine:
+         * ```
+         * {
+         *     status: "OK"
+         * }
+         * ```
+         * - If validation failed:
+         * ```
+         * {
+         *     status: "ERROR_PASSWORDS_MISMATCH",
+         *     errorMsg: <error message>
+         * }
+         * ```
+         */
+        comparePasswords: function() {
+            var err = {
+                status: "ERROR_PASSWORDS_MISMATCH",
+                errorMsg: _loc.PROFILE_PASSWORDS_MISMATCH,
+            }, ok = {
+                status: "OK"
+            };
+            return this.get('password') != this.get('confirm_password') ? err : ok;
         },
         /**
          * Fill out RevelAPI.attributes.customer and add listeners for further synchronization with RevelAPI.attributes.customer if RevelAPI.isAvailable() returns true.

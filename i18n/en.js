@@ -553,6 +553,7 @@
         'PROFILE_COMPLETE': "Please complete your profile",
         'PROFILE_BIRTHDAY': "Birthday",
         'PROFILE_GENDER': "Gender",
-        'PROFILE_PHONE_PRIVATE': "We will not share your phone # with any third parties"
+        'PROFILE_PHONE_PRIVATE': "We will not share your phone # with any third parties",
+        'PROFILE_PASSWORDS_MISMATCH': "The passwords mismatch"
     }; // end of locale
 }); // end of module
