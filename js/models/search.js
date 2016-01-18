@@ -155,7 +155,7 @@ define(['products'], function() {
             if(cache.length > 0) {
                 this.status = 'searchComplete';
             }
-            this.trigger('onSearchStart', search);
+            this.trigger('onSearchStart');
             if(cache.length > 0) {
                 return this.trigger('onSearchComplete', cache[0]);
             }

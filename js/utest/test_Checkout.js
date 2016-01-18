@@ -117,6 +117,16 @@ define(['checkout'], function() {
         });
 
         describe('isStoreClosed()', function() {
+            var skinBackup;
+
+            beforeEach(function() {
+                skinBackup = App.Skin;
+            });
+
+            afterEach(function() {
+                App.Skin = skinBackup;
+            });
+
             it('skin is retail', function() {
                 App.skin = App.Skins.RETAIL;
                 expect(model.isStoreClosed()).toBe(false);

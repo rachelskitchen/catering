@@ -26,7 +26,23 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
         });
 
         it('Create model', function() {
-            expect(model.toJSON()).toEqual(defInitialized);
+            if (App.skin == App.Skins.RETAIL) {
+                expectationsRetail();
+            }
+            else {
+                expect(model.toJSON()).toEqual(defInitialized);
+            }
+
+            var skinBackup = App.skin;
+            App.skin = App.Skins.RETAIL;
+            model = new App.Models.Product();
+            expectationsRetail();
+            App.skin = skinBackup;
+
+            function expectationsRetail() {
+                var result = Backbone.$.extend(defInitialized, {images: [defInitialized.image]});
+                expect(model.toJSON()).toEqual(result);
+            }
         });
 
         describe('initialize()', function() {
@@ -1099,7 +1115,7 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
             });
         });
 
-        describe('convertTimetables', function() {
+        describe('convertTimetables()', function() {
             var timetable;
 
             $.ajax({
@@ -1126,6 +1142,26 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
                 model.convertTimetables();
                 expect(window.format_timetables).toHaveBeenCalledWith(timetable);
             });
+        });
+
+        it('isComboBased()', function() {
+            model.set({
+                is_combo: true,
+                has_upsell: false
+            });
+            expect(model.isComboBased()).toBe(true);
+
+            model.set({
+                is_combo: false,
+                has_upsell: true
+            });
+            expect(model.isComboBased()).toBe(true);
+
+            model.set({
+                is_combo: false,
+                has_upsell: false
+            });
+            expect(model.isComboBased()).toBe(false);
         });
     });
 
