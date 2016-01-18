@@ -14,6 +14,7 @@ var tests_list = [
     '../core/js/utest/test_Geopoint',
     '../core/js/utest/test_Giftcard',
     '../core/js/utest/test_Locale',
+    '../core/js/utest/test_Log',
     '../core/js/utest/test_Modifiers',
     '../core/js/utest/test_Myorder',
     '../core/js/utest/test_Products',
@@ -24,8 +25,8 @@ var tests_list = [
     '../core/js/utest/test_StanfordCard',
     '../core/js/utest/test_Subcategories',
     '../core/js/utest/test_Tax',
+    '../core/js/utest/test_TimeFrm',
     '../core/js/utest/test_Timetable',
     '../core/js/utest/test_Tips',
-    '../core/js/utest/test_Total',
-    '../core/js/utest/test_TimeFrm'
+    '../core/js/utest/test_Total'
 ];
