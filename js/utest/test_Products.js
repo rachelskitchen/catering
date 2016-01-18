@@ -26,7 +26,23 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
         });
 
         it('Create model', function() {
-            expect(model.toJSON()).toEqual(defInitialized);
+            if (App.skin == App.Skins.RETAIL) {
+                expectationsRetail();
+            }
+            else {
+                expect(model.toJSON()).toEqual(defInitialized);
+            }
+
+            var skinBackup = App.skin;
+            App.skin = App.Skins.RETAIL;
+            model = new App.Models.Product();
+            expectationsRetail();
+            App.skin = skinBackup;
+
+            function expectationsRetail() {
+                var result = Backbone.$.extend(defInitialized, {images: [defInitialized.image]});
+                expect(model.toJSON()).toEqual(result);
+            }
         });
 
         describe('initialize()', function() {

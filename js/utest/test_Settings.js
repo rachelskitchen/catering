@@ -82,11 +82,12 @@ define(['js/utest/data/Settings'], function(settings) {
         });
 
         it('checkIfMobile()', function() {
-            var skinBackup = App.Skin;
+            var skinBackup = App.skin;
+
             spyOn(App.Models.Settings.prototype, 'isMobileVersion').and.returnValue(true);
             model = new App.Models.Settings();
 
-            App.Skin = App.Skins.WEBORDER;
+            App.skin = App.Skins.WEBORDER;
             model.checkIfMobile();
             expect(App.skin).toBe(App.Skins.WEBORDER_MOBILE);
 
@@ -101,7 +102,7 @@ define(['js/utest/data/Settings'], function(settings) {
                 expect(App.skin).toBe(App.Skins.WEBORDER_MOBILE);
             }
 
-            App.Skin = skinBackup;
+            App.skin = skinBackup;
         });
 
         it('get_establishment()', function() {
