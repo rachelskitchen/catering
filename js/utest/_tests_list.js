@@ -1,4 +1,5 @@
 var tests_list = [
+    '../core/js/utest/test_About',
     '../core/js/utest/test_Captcha',
     '../core/js/utest/test_Card',
     '../core/js/utest/test_Categories',
@@ -21,6 +22,7 @@ var tests_list = [
     '../core/js/utest/test_Search',
     '../core/js/utest/test_Settings',
     '../core/js/utest/test_StanfordCard',
+    '../core/js/utest/test_Subcategories',
     '../core/js/utest/test_Tax',
     '../core/js/utest/test_Timetable',
     '../core/js/utest/test_Tips',

@@ -83,7 +83,8 @@ define(['js/utest/data/Settings'], function(settings) {
 
         it('checkIfMobile()', function() {
             var skinBackup = App.Skin;
-            spyOn(model, 'isMobileVersion').and.returnValue(true);
+            spyOn(App.Models.Settings.prototype, 'isMobileVersion').and.returnValue(true);
+            model = new App.Models.Settings();
 
             App.Skin = App.Skins.WEBORDER;
             model.checkIfMobile();
@@ -101,6 +102,68 @@ define(['js/utest/data/Settings'], function(settings) {
             }
 
             App.Skin = skinBackup;
+        });
+
+        it('get_establishment()', function() {
+            var spyGet = spyOn(window, 'parse_get_params');
+
+            spyGet.and.returnValue({establishment: 123});
+            expect(model.get_establishment()).toBe(123);
+
+            spyGet.and.returnValue({rvarEstablishment: '456'});
+            expect(model.get_establishment()).toBe(456);
+        });
+
+        it('get_payment_process()', function() {
+            var spyPaymentConfig = spyOn(PaymentProcessor, 'getConfig');
+
+            expect(model.get_payment_process()).toBeUndefined();
+
+            var config = {newProp: 'new value'},
+                result = Backbone.$.extend(model.get('settings_system').payment_processor, config);
+            spyPaymentConfig.and.returnValue(config);
+            expect(model.get_payment_process()).toEqual(result);
+        });
+
+        describe('get_img_default()', function() {
+            var settings_skin;
+
+            beforeEach(function() {
+                settings_skin = model.get('settings_skin');
+            });
+
+            afterEach(function() {
+                model.set('settings_skin', settings_skin);
+            });
+
+            it('img_default is string', function() {
+                model.set('settings_skin', {img_default: 'default img'});
+                expect(model.get_img_default()).toBe('default img')
+            });
+
+            it('img_default is array', function() {
+                var img = ['1.jpg', '2.jpg'];
+                model.set('settings_skin', {img_default: img});
+                expect(model.get_img_default()).toBe(img[0]);
+            });
+
+            it('img_default is array, `index` is specified', function() {
+                var img = ['1.jpg', '2.jpg'];
+                model.set('settings_skin', {img_default: img});
+                expect(model.get_img_default(1)).toBe(img[1]);
+            });
+        });
+
+        it('setSkinPath()', function() {
+            spyOn(model, 'trigger');
+            model.set('skin', 'weborder');
+            model.setSkinPath();
+            expect(model.get('img_path')).toBe('./skins/weborder/img/');
+            expect(model.get('skinPath')).toBe('./skins/weborder');
+            expect(model.trigger).toHaveBeenCalledWith('changeSkinPath');
+
+            model.setSkinPath(true);
+            expect(model.trigger).not.toHaveBeenCalledWith();
         });
 
         describe("Global settings test", function() {
