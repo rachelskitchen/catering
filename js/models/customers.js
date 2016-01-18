@@ -135,7 +135,43 @@ define(["backbone", "geopoint"], function(Backbone) {
              * @type {string}
              * @default ""
              */
-            confirm_password: ""
+            confirm_password: "",
+            /**
+             * Customer username (email)
+             * @type {string}
+             * @default ""
+             */
+            username: "",
+            /**
+             * Customer's id
+             * @type {?number}
+             * @default null
+             */
+            user_id: null,
+            /**
+             * Session expires in.
+             * @type {?number}
+             * @default null
+             */
+            expires_in: null,
+            /**
+             * Token type. It's used in 'Authorization' HTTP header.
+             * @type {string}
+             * @default ""
+             */
+            token_type: "",
+            /**
+             * Access token.
+             * @type {string}
+             * @default ""
+             */
+            access_token: "",
+            /**
+             * Space separated list of scopes granted to the customer.
+             * @type {string}
+             * @default ""
+             */
+            scope: ""
         },
         /**
          * Adds validation listeners for `first_name`, `last_name` attributes changes.
@@ -550,6 +586,133 @@ define(["backbone", "geopoint"], function(Backbone) {
                 status: "OK"
             };
             return this.get('password') != this.get('confirm_password') ? err : ok;
+        },
+        /**
+         * Gets authorization token of the customer. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/authorization/token/",
+         *     method: "POST",
+         *     data: {
+         *         username: <username>,                                              // username (email)
+         *         scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address", // constant value
+         *         password: <password>,                                              // password
+         *         grant_type: "password"                                             // constant value
+         *     }
+         * }
+         * ```
+         * Server may return following response:
+         * - Successful authorization:
+         * ```
+         * Status: 200
+         * {
+         *     "username": "johndoe@foobar.com",                                    // username
+         *     "user_id": 1,                                                        // user id
+         *     "access_token": "2YotnFZFEjr1zCsicMWpAA",                            // access token
+         *     "token_type": "Bearer",                                              // token type
+         *     "expires_in": 3600,                                                  // expiration time
+         *     "scope": "CUSTOMERS:customers.customer CUSTOMERS:customers.address"  // access scope
+         * }
+         * ```
+         * - Username or password is invalid:
+         * ```
+         * Status: 401
+         * {
+         *     "error_description": "Invalid credentials given.",
+         *     "error": "invalid_grant"
+         * }
+         * ```
+         * The model emits `onInvalidUser` event in this case.
+         *
+         * - User is not activated:
+         * ```
+         * Status: 423
+         * {
+         *     "error": "user_is_not_activated"
+         * }
+         * ```
+         * The model emits `onNotActivatedUser` event in this case.
+         *
+         * - Invalid scope (incorrect scope value):
+         * ```
+         * Status: 401
+         * {
+         *     "error": "invalid_scope"
+         * }
+         * ```
+         * The model emits `onInvalidUser` event in this case.
+         *
+         * - Unsupported grant type:
+         * Status: 400
+         * {
+         *     "error": "unsupported_grant_type"
+         * }
+         * The model emits `onLoginError` event in this case.
+         *
+         * - `grant_type` parameter is missed:
+         * ```
+         * Status: 400
+         * {
+         *     "error_description": "Request is missing grant_type parameter.",
+         *     "error": "invalid_request"
+         * }
+         * ```
+         * The model emits `onLoginError` event in this case.
+         *
+         * - `password` parameter is missed:
+         * ```
+         * Status: 400
+         * {
+         *     "error_description": "Request is missing password parameter.",
+         *     "error": "invalid_request"
+         * }
+         * ```
+         * The model emits `onLoginError` event in this case.
+         *
+         * - `username` parameter is missed:
+         * ```
+         * Status: 400
+         * {
+         *     "error_description": "Request is missing username parameter.",
+         *     "error": "invalid_request"
+         * }
+         * ```
+         * The model emits `onLoginError` event in this case.
+         *
+         * @returns {Object} jqXHR object.
+         */
+        login: function() {
+            var attrs = this.toJSON();
+            return Backbone.$.ajax({
+                url: "https://identity-dev.revelup.com/customers-auth/authorization/token/",
+                method: "POST",
+                context: this,
+                data: {
+                    username: attrs.username,
+                    scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address",
+                    password: attrs.password,
+                    grant_type: "password"
+                },
+                success: function(data) {
+                    this.set(data);
+                },
+                error: function(jqXHR) {
+                    switch(jqXHR.status) {
+                        case 401:
+                            this.trigger('onInvalidUser', getResponse());
+                            break;
+                        case 423:
+                            this.trigger('onNotActivatedUser', getResponse());
+                            break;
+                        default:
+                            this.trigger('onLoginError', getResponse());
+                    }
+
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
+                    }
+                }
+            });
         },
         /**
          * Fill out RevelAPI.attributes.customer and add listeners for further synchronization with RevelAPI.attributes.customer if RevelAPI.isAvailable() returns true.

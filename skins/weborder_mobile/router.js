@@ -1645,6 +1645,8 @@ define(["main_router"], function(main_router) {
                 var content = [{
                     modelName: 'Profile',
                     mod: 'LogIn',
+                    model: App.Data.customer,
+                    loginCb: this.navigate.bind(this, 'index'),
                     cacheId: true
                 }];
 

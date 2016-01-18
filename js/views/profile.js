@@ -32,7 +32,18 @@ define(["factory"], function(Backbone) {
 
     App.Views.CoreProfileView.CoreProfileLogInView = App.Views.FactoryView.extend({
         name: 'profile',
-        mod: 'log_in'
+        mod: 'log_in',
+        bindings: {
+            '.username': 'value: username, events: ["input"]',
+            '.pwd': 'value: password, events: ["input"]',
+            '.login-btn': 'classes: {disabled: any(not(username), not(password))}'
+        },
+        events: {
+            'click .login-btn': 'login'
+        },
+        login: function() {
+            this.model.login().done(this.options.loginCb);
+        }
     });
 
     App.Views.CoreProfileView.CoreProfileCreateView = App.Views.FactoryView.extend({
