@@ -750,7 +750,8 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     product_name_override: 'name',
                     quantity: 10,
                     product_sub_id: 123,
-                    is_combo: isCombo
+                    is_combo: isCombo,
+                    has_upsell: undefined
                 });
             });
 
@@ -759,13 +760,14 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 App.Data.settings.get('settings_system').currency_symbol = '$';
                 App.Data.settings.get("settings_system").scales.default_weighing_unit = 'Lb';
                 App.Data.settings.get("settings_system").scales.label_for_manual_weights = 'MAN';
+                App.Data.settings.get("settings_system").scales.number_of_digits_to_right_of_decimal = 2;
 
                 soldByWeight = true;
                 model.set('weight', 5, {silent: true});
                 result = model.item_submit();
 
                 expect(result.weight).toBe(5);
-                expect(result.product_name_override).toBe('name\n 5 MAN @ $4.00/Lb');
+                expect(result.product_name_override).toBe('name\n 5.00 MAN @ $4.00/Lb');
 
                 App.Data.settings.set('settings_system', prevSettings);
             });
@@ -3510,6 +3512,17 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 model.set('product', product, {silent: true});
                 expect(model.update_product_price()).toBe(orderInitialPrice);
                 expect(model.get('product').get('combo_price')).toBe(orderInitialPrice);
+            });
+
+            it('collection has combo_saving products and weight product. sum of selected products prices more than combo initial price', function() {
+                comboInitialPrice = 5;
+                productData.product_sets[0].order_products[0].product.sold_by_weight = true;
+                productData.product_sets[0].order_products[0].weight = 3;
+                getInitialPriceSpy.and.returnValue(comboInitialPrice);
+                product.addJSON(productData);
+                model.set('product', product, {silent: true});
+                expect(model.update_product_price()).toBe(orderInitialPrice * 3);
+                expect(model.get('product').get('combo_price')).toBe(orderInitialPrice * 3);
             });
 
             it('collection doesn\'t have combo_saving products. sum of selected products prices less than combo initial price', function() {

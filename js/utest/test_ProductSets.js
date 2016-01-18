@@ -15,14 +15,22 @@ define(['js/utest/data/ProductSets', 'product_sets'], function(data) {
         });
 
         it('addJSON()', function() {
-            var product
+            var product1 = addJson.order_products[0].product,
+                product2 = addJson.order_products[1].product;
+
             model.addJSON(addJson);
 
             var modelJson = model.toJSON();
             expect(modelJson.order_products.models[0] instanceof App.Models.Myorder).toBe(true);
             expect(modelJson.order_products.models[1] instanceof App.Models.Myorder).toBe(true);
-            expect(modelJson.order_products.models[0].get('product').toJSON()).toEqual(addJson.order_products[0].product);
-            expect(modelJson.order_products.models[1].get('product').toJSON()).toEqual(addJson.order_products[1].product);
+            if (App.skin == App.Skins.RETAIL) {
+                expect(modelJson.order_products.models[0].get('product').toJSON()).toEqual(Backbone.$.extend(product1, {images: [product1.image]}));
+                expect(modelJson.order_products.models[1].get('product').toJSON()).toEqual(Backbone.$.extend(product2, {images: [product2.image]}));
+            }
+            else {
+                expect(modelJson.order_products.models[0].get('product').toJSON()).toEqual(product1);
+                expect(modelJson.order_products.models[1].get('product').toJSON()).toEqual(product2);
+            }
             expect(modelJson.id).toBe(addJson.id);
             expect(modelJson.name).toBe(addJson.name);
             expect(modelJson.sort).toBe(addJson.sort);
@@ -205,6 +213,17 @@ define(['js/utest/data/ProductSets', 'product_sets'], function(data) {
                 model.models[0].set({minimum_amount: 1, maximum_amount: 10}, {silent: true});
                 expect(model.check_selected()).toBe(false);
             });
+        });
+
+        it('haveWeightProduct()', function() {
+            expect(model.haveWeightProduct()).toBe(false);
+
+            model.addJSON(addJson);
+            expect(model.haveWeightProduct()).toBe(false);
+
+            var product1 = model.models[0].get('order_products').models[0].get('product');
+            product1.set('sold_by_weight', true);
+            expect(model.haveWeightProduct()).toBe(true);
         });
     });
 

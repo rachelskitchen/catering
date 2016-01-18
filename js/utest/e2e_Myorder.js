@@ -1,4 +1,4 @@
-define(['settings', 'products', 'myorder', 'card', 'customers'], function() {
+define(['js/utest/data/Settings', 'settings', 'products', 'myorder', 'card', 'customers'], function(settings) {
     'use strict';
 
     var products, settings, GET_PARAMS, isCreditCardAvailable;
@@ -22,16 +22,6 @@ define(['settings', 'products', 'myorder', 'card', 'customers'], function() {
         async: false,
         success: function(data) {
             products = data;
-        }
-    });
-
-    $.ajax({
-        type: 'GET',
-        url: 'js/utest/data_e2e/Settings.json',
-        dataType: 'json',
-        async: false,
-        success: function(data) {
-            settings = data;
         }
     });
 
