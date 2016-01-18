@@ -3514,6 +3514,17 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 expect(model.get('product').get('combo_price')).toBe(orderInitialPrice);
             });
 
+            it('collection has combo_saving products and weight product. sum of selected products prices more than combo initial price', function() {
+                comboInitialPrice = 5;
+                productData.product_sets[0].order_products[0].product.sold_by_weight = true;
+                productData.product_sets[0].order_products[0].weight = 3;
+                getInitialPriceSpy.and.returnValue(comboInitialPrice);
+                product.addJSON(productData);
+                model.set('product', product, {silent: true});
+                expect(model.update_product_price()).toBe(orderInitialPrice * 3);
+                expect(model.get('product').get('combo_price')).toBe(orderInitialPrice * 3);
+            });
+
             it('collection doesn\'t have combo_saving products. sum of selected products prices less than combo initial price', function() {
                 productData.product_sets[0].is_combo_saving = false;
                 productData.product_sets[1].is_combo_saving = false;
