@@ -30,6 +30,8 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
 
     require(['cssua', 'functions', 'errors', 'tests_list', 'e2e_list', 'settings', 'tax', 'main_router', 'locale'], function() {
         app.get = parse_get_params();
+        // hardcode English locale
+        App.Data.get_parameters = {locale: 'en'};
         // invoke beforeStart onfig
         app.beforeInit();
 
