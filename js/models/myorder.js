@@ -906,10 +906,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 return result;
             }
 
-            if (is_modifiers_only) {
-                return status;
-            }
-
             var psets = [],
                 product_name = this.get('product').get('name'),
                 product_sets = this.get('product').get('product_sets');

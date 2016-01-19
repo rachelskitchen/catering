@@ -1,14 +1,14 @@
-define([], function() {
+define(['js/utest/data/Settings'], function(settings) {
 
     describe('App.Models.Settings', function() {
-        var baseSettings, settings, local = {},
+        var baseSettings, local = {},
             get = function() {
                 return local.settings ? JSON.parse(local.settings) : undefined;
             },
             set = function(e, s) {
                 local.settings = s && s.toJSON && JSON.stringify(s.toJSON()) || e;
                 return true;
-            }, sys, all;
+            }, sys, all, model;
 
             var backupTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
             jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000; //60sec.
@@ -18,20 +18,153 @@ define([], function() {
             spyOn(window, "setData").and.callFake(set);
             spyOn(App.Data.errors, "alert").and.callFake(function() { console.log(arguments); });
 
-
-            if (settings) {
-                all = settings.toJSON();
+            if (!all) {
+                all = deepClone(settings.all);
                 sys = all.settings_system;
-                done();
-            } else {
-                settings = new App.Models.Settings;
-                settings.load().then(function() {
-                    all = settings.toJSON();
-                    sys = all.settings_system;
-                    jasmine.DEFAULT_TIMEOUT_INTERVAL = backupTimeout;
-                    done();
-                });
+                jasmine.DEFAULT_TIMEOUT_INTERVAL = backupTimeout;
             }
+            done();
+        });
+
+        it('Enviroment', function() {
+            expect(App.Models.Settings).toBeDefined();
+        });
+
+        it('initialize()', function() {
+            spyOn(App.Models.Settings.prototype, 'load');
+            spyOn(App.Models.Settings.prototype, 'get_data_warehouse');
+            spyOn(App.Models.Settings.prototype, 'ajaxSetup');
+            model = new App.Models.Settings();
+
+            expect(model.toJSON()).toEqual(settings.defaults_initialized);
+            expect(model.get_data_warehouse).toHaveBeenCalled();
+            expect(model.ajaxSetup).toHaveBeenCalled();
+
+            model.trigger('change:establishment');
+            expect(model.load).toHaveBeenCalled();
+        });
+
+        describe('get_data_warehouse()', function() {
+            var sessionStorageBackup, cookieBackup, cookie_getter;
+
+            beforeEach(function() {
+                sessionStorageBackup = window.sessionStorage;
+                cookie_getter = document.__lookupGetter__ ('cookie');
+            });
+
+            afterEach(function() {
+                window.sessionStorage = sessionStorageBackup;
+                document.__defineGetter__("cookie", cookie_getter);
+            });
+
+            it('sessionStorage', function() {
+                window.sessionStorage = {};
+                expectStorage(1);
+            });
+
+            it('none', function() {
+                delete window.sessionStorage;
+                document.__defineGetter__("cookie", function() { return '';} );
+                expectStorage(0);
+            });
+
+            it('Cookie', function() {
+                delete window.sessionStorage;
+                cookie_getter || (document.__defineGetter__("cookie", function() { return true;} ));
+                expectStorage(2);
+            });
+
+
+            function expectStorage(storage) {
+                model.get_data_warehouse();
+                expect(model.get('storage_data')).toBe(storage);
+            }
+        });
+
+        it('checkIfMobile()', function() {
+            var skinBackup = App.skin;
+
+            spyOn(App.Models.Settings.prototype, 'isMobileVersion').and.returnValue(true);
+            model = new App.Models.Settings();
+
+            App.skin = App.Skins.WEBORDER;
+            model.checkIfMobile();
+            expect(App.skin).toBe(App.Skins.WEBORDER_MOBILE);
+
+            App.skin == App.Skins.RETAIL;
+            expectations();
+
+            App.skin == App.Skins.RETAIL;
+            expectations();
+
+            function expectations() {
+                model.checkIfMobile();
+                expect(App.skin).toBe(App.Skins.WEBORDER_MOBILE);
+            }
+
+            App.skin = skinBackup;
+        });
+
+        it('get_establishment()', function() {
+            var spyGet = spyOn(window, 'parse_get_params');
+
+            spyGet.and.returnValue({establishment: 123});
+            expect(model.get_establishment()).toBe(123);
+
+            spyGet.and.returnValue({rvarEstablishment: '456'});
+            expect(model.get_establishment()).toBe(456);
+        });
+
+        it('get_payment_process()', function() {
+            var spyPaymentConfig = spyOn(PaymentProcessor, 'getConfig');
+
+            expect(model.get_payment_process()).toBeUndefined();
+
+            var config = {newProp: 'new value'},
+                result = Backbone.$.extend(model.get('settings_system').payment_processor, config);
+            spyPaymentConfig.and.returnValue(config);
+            expect(model.get_payment_process()).toEqual(result);
+        });
+
+        describe('get_img_default()', function() {
+            var settings_skin;
+
+            beforeEach(function() {
+                settings_skin = model.get('settings_skin');
+            });
+
+            afterEach(function() {
+                model.set('settings_skin', settings_skin);
+            });
+
+            it('img_default is string', function() {
+                model.set('settings_skin', {img_default: 'default img'});
+                expect(model.get_img_default()).toBe('default img')
+            });
+
+            it('img_default is array', function() {
+                var img = ['1.jpg', '2.jpg'];
+                model.set('settings_skin', {img_default: img});
+                expect(model.get_img_default()).toBe(img[0]);
+            });
+
+            it('img_default is array, `index` is specified', function() {
+                var img = ['1.jpg', '2.jpg'];
+                model.set('settings_skin', {img_default: img});
+                expect(model.get_img_default(1)).toBe(img[1]);
+            });
+        });
+
+        it('setSkinPath()', function() {
+            spyOn(model, 'trigger');
+            model.set('skin', 'weborder');
+            model.setSkinPath();
+            expect(model.get('img_path')).toBe('./skins/weborder/img/');
+            expect(model.get('skinPath')).toBe('./skins/weborder');
+            expect(model.trigger).toHaveBeenCalledWith('changeSkinPath');
+
+            model.setSkinPath(true);
+            expect(model.trigger).not.toHaveBeenCalledWith();
         });
 
         describe("Global settings test", function() {
@@ -200,12 +333,16 @@ define([], function() {
                 expect(Array.isArray(sys.editable_dining_options)).toBeTruthy();
             });
 
+            it('Favicon', function() {
+                expect(typeof sys.favicon_image === 'string' || sys.favicon_image === null).toBeTruthy();
+            });
+
             it('Hide image', function() {
                 expect(typeof sys.hide_images).toBe('boolean');
             });
 
             it('Logo', function() {
-                expect(typeof sys.logo === 'string' || sys.logo === null).toBeTruthy();
+                expect(typeof sys.logo_img === 'string' || sys.logo_img === null).toBeTruthy();
             });
 
             it("Delivery", function() {
@@ -251,7 +388,6 @@ define([], function() {
                 expect(typeof(sys.payment_processor.payment_count)).toBe("number");
                 expect(sys.payment_processor.payment_count >= 0).toBeTruthy();
                 expect(typeof(sys.payment_processor.paypal)).toBe("boolean");
-                expect(typeof(sys.payment_processor.paypal_direct_credit_card)).toBe("boolean");
                 expect(typeof(sys.payment_processor.paypal_mobile)).toBe("boolean");
                 expect(typeof(sys.payment_processor.usaepay)).toBe("boolean");
             });
