@@ -1,10 +1,14 @@
 define(['errors'], function() {
     describe("App.Models.Error", function() {
         
-        var model, def, result;
+        var model, def, result, skin;
         
         beforeEach(function() {
             model = new App.Models.Errors();
+
+            skin = App.Skin;
+            App.skin = App.Skins.WEBORDER;
+
             def = {
                 "message": "No alert message",
                 "reloadPage": false,
@@ -37,6 +41,10 @@ define(['errors'], function() {
             };
             result = deepClone(empty);
             spyOn(model, 'trigger');
+        });
+
+        afterEach(function() {
+            App.skin = skin;
         });
 
         it('Environment', function() {

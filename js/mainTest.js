@@ -1,4 +1,4 @@
-require(['app'], function(app) {
+require(['app', 'utest/data/Settings'], function(app, settings_data) {
 
     app.config.paths['tests_list'] = "../core/js/utest/_tests_list";
     app.config.paths['e2e_list'] = "../core/js/utest/_e2e_list";
@@ -30,6 +30,8 @@ require(['app'], function(app) {
 
     require(['cssua', 'functions', 'errors', 'tests_list', 'e2e_list', 'settings', 'tax', 'main_router', 'locale'], function() {
         app.get = parse_get_params();
+        // hardcode English locale
+        App.Data.get_parameters = {locale: 'en'};
         // invoke beforeStart onfig
         app.beforeInit();
 
@@ -63,16 +65,7 @@ require(['app'], function(app) {
             });
         });
 
-        $.ajax({
-            type: "GET",
-            url: "js/utest/data/Settings.json",
-            dataType: "json",
-            async: false,
-            success: function(data) {
-                settings.set('settings_system', data);
-            }
-        });
-
+        settings.set('settings_system', settings_data.all.settings_system);
 
         if (typeof end2endMode != 'undefined' && end2endMode === true) {
             var srv_name = /^http[s]*:\/\/([^\.\s]+)\./.exec(window.location.origin), hostName;

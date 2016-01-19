@@ -34,7 +34,8 @@ define([], function() {
             "compositeId": null,
             "size_chart" : "",
             "is_combo": false,
-            "combo_price": null
+            "combo_price": null,
+            "has_upsell": false
         },
         "defaults_initialized": {
             "description": null,
@@ -70,7 +71,8 @@ define([], function() {
             "compositeId": null,
             "size_chart" : "",
             "is_combo": false,
-            "combo_price": null
+            "combo_price": null,
+            "has_upsell": false
         },
         "product_with_image": {
             "description": "some product",
@@ -107,7 +109,8 @@ define([], function() {
             "compositeId": '12_1',
             "size_chart" : "",
             "is_combo": false,
-            "combo_price": null
+            "combo_price": null,
+            "has_upsell": false
         },
         "addJSON_without_image": {
             "image": "",

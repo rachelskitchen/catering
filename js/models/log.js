@@ -164,9 +164,8 @@ define(["backbone"], function(Backbone) {
         },
         /**
          * Outputs messages in console. Sends logs to google analytics. Performs these actions with `timeout` delay.
-         * @param {Array} messages - array of messages.
          */
-        sendLog: function(messages) {
+        sendLog: function() {
             var self = this;
             clearTimeout(this.timer);
             this.timer = setTimeout(function() {
@@ -174,7 +173,7 @@ define(["backbone"], function(Backbone) {
                 if(messages.length == 0) return;
                 console.log(messages);
                 var dimensionValue = JSON.stringify(messages);
-                ga('send', 'pageview', {'dimension1': dimensionValue});
+                (typeof ga == 'function') && ga('send', 'pageview', {'dimension1': dimensionValue});
                 self.set('messages', []);
             }, this.get('timeout'));
         },
