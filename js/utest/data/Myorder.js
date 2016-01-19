@@ -440,10 +440,72 @@ define([], function() {
             "is_child_product": false,
             "selected": false,
             "product_sub_id": "c1062"
+        },
+        {
+            "id": 1108,
+            "product": {
+                "name": "test fee",
+                "description": null,
+                "id": null,
+                "id_category": null,
+                "image": "./skins/weborder/img/none.png",
+                "images": [],
+                "is_cold": false,
+                "price": 1,
+                "img": "./skins/weborder/img/",
+                "tax": 0,
+                "sort": null,
+                "course_number": null,
+                "cost": null,
+                "sold_by_weight": false,
+                "uom": "",
+                "attribute_type": 0,
+                "child_products": null,
+                "attribute_1_name": null,
+                "attribute_2_name": null,
+                "attribute_1_enable": false,
+                "attribute_2_enable": false,
+                "attribute_1_selected": null,
+                "attribute_2_selected": null,
+                "is_gift": false,
+                "gift_card_number": null,
+                "checked_gift_cards": {},
+                "stock_amount": 999,
+                "active": true,
+                "created_date": 0,
+                "timetables": null,
+                "compositeId": null,
+                "size_chart": "",
+                "is_combo": false,
+                "combo_price": null,
+                "has_upsell": false
+            },
+            "modifiers": null,
+            "id_product": null,
+            "sum": 1,
+            "quantity": 1,
+            "weight": 0,
+            "quantity_prev": 1,
+            "special": "",
+            "initial_price": 1,
+            "discount": {
+                "id": null,
+                "name": "default",
+                "sum": 0,
+                "taxed": false,
+                "type": null
+            },
+            "stanfordCard": null,
+            "stanford_card_number": "",
+            "planId": null,
+            "isServiceFee": true,
+            "is_child_product": false,
+            "selected": false,
+            "product_sub_id": "c1308"
         }],
 
         "cart_totals_serviceFee": {
-            "final_total": 3.25,
+            "final_total": 2.19,
             "items": [{
                 "product": 528962,
                 "tax_amount": 0.08,
@@ -454,9 +516,9 @@ define([], function() {
                 "tax_rate": 8
             }],
             "service_fees": [{
-                "amount": 2,
-                "tax": 0.2,
-                "id": 1107,
+                "amount": 1,
+                "tax": 0.1,
+                "id": 1108,
                 "name": "test fee"
             }],
             "tax": 0.28,
@@ -467,8 +529,8 @@ define([], function() {
                 "type": 1,
                 "name": "5%discount"
             },
-            "subtotal": 2.95,
-            "surcharge": 0.02
+            "subtotal": 1.95,
+            "surcharge": 0.05
         }
     }
 });
