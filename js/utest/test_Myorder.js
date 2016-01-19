@@ -852,6 +852,29 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             expect(model.isComboProduct()).toBe(true);
         });
 
+        it('isUpsellProduct()', function() {
+            var product = new Backbone.Model();
+            model.set('product', product, {silent: true});
+
+            expect(model.isUpsellProduct()).toBe(false);
+
+            product.set('has_upsell', true);
+            expect(model.isUpsellProduct()).toBe(true);
+        });
+
+        it('isComboBased()', function() {
+            var spyIsComboBased = jasmine.createSpy(),
+                product = {isComboBased: spyIsComboBased};
+
+            model.set('product', product, {silent: true});
+
+            spyIsComboBased.and.returnValue(false);
+            expect(model.isComboBased()).toBe(false);
+
+            spyIsComboBased.and.returnValue(true);
+            expect(model.isComboBased()).toBe(true);
+        });
+
         it('isChildProduct()', function() {
             expect(model.isChildProduct()).toBeFalsy();
 
@@ -2057,7 +2080,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             var orders, json,
             orders_combo = deepClone(data.orders_combo),
             json_combo = deepClone(data.cart_totals_combo),
-            orders_serviceFee = deepClone(data.oriders_serviceFee),
+            orders_serviceFee = deepClone(data.orders_serviceFee),
             json_serviceFee = deepClone(data.cart_totals_serviceFee);
 
             beforeEach(function() {
@@ -2136,15 +2159,27 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                 it('is array. Fee exists in collection', function() {
                     model.add(orders_serviceFee, {silent: true});
+                    model.each(function(order) {
+                        var orderModel = new App.Models.Product(order.get('product'));
+                        order.set('product', orderModel, {silent: true});
+                    });
                     model.process_cart_totals(json_serviceFee);
 
-                    expect(model.models[0].get('product').get('name')).toBe('test fee');
-                    expect(model.models[0].get('product').get('price')).toBe(2);
-                    expect(model.models[0].get('initial_price')).toBe(2);
-                    expect(model.models[0].get('sum')).toBe(2);
+                    expect(model.models[1].get('product').get('name')).toBe('test fee');
+                    expect(model.models[1].get('product').get('price')).toBe(1);
+                    expect(model.models[1].get('initial_price')).toBe(1);
+                    expect(model.models[1].get('sum')).toBe(1);
                 });
 
                 it('is array. Fee doesn\'t exist in collection', function() {
+                    model.add(orders, {silent: true});
+                    spyOn(model, 'add');
+                    model.process_cart_totals(json_serviceFee);
+
+                    expect(model.add).toHaveBeenCalled();
+                });
+
+                it('is array. Fee exists in collection but not in response', function() {
                     model.add(orders, {silent: true});
                     spyOn(model, 'add');
                     model.process_cart_totals(json_serviceFee);
@@ -3033,6 +3068,22 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                         expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                         expect(App.Data.errors.alert.calls.mostRecent().args[0]).toBe(MSG.ERROR_SUBMIT_ORDER);
                     });
+
+                    it('`validationOnly` is true', function() {
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT, true);
+                        ajax.error();
+
+                        expect(model.trigger.calls.mostRecent().args[0]).toBe('paymentFailedValid');
+                    });
+
+                    it('`validationOnly` is false, `capturePhase` is true', function() {
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT, false, true);
+                        ajax.error();
+
+                        expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
+                        expect(model.paymentResponse.status).toBe('error');
+                        expect(model.paymentResponse.capturePhase).toBe(true);
+                    });
                 });
 
             });
@@ -3450,6 +3501,56 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             expect(update_product_price).toHaveBeenCalled();
         });
 
+        describe('add_empty()', function() {
+            var id_category = 10,
+                id_product = 5,
+                dfd = $.Deferred(),
+                obj = {
+                    get_product: function() {}
+                },
+                product = new App.Models.Product();
+
+            dfd.resolve();
+
+            beforeEach(function() {
+                App.Data.products[id_category] = new App.Models.Product({
+                    init: function() {},
+                    get_product: function() {}
+                });
+                App.Data.modifiers[id_product] = new Backbone.Model();
+
+                spyOn(App.Data.products[id_category], 'get').and.returnValue(obj);
+                spyOn(App.Data.products[id_category], 'get_product').and.returnValue(product);
+                spyOn(App.Collections.ModifierBlocks, 'init_quick_modifiers').and.returnValue(dfd);
+                spyOn(App.Collections.Products, 'init').and.returnValue(dfd);
+                spyOn(App.Collections.ProductSets, 'init').and.returnValue(dfd);
+                spyOn(obj, 'get_product').and.returnValue();
+                spyOn($, 'when').and.returnValue(dfd);
+                spyOn(model, 'get_modelsum').and.returnValue(1);
+                spyOn(model, 'get_initial_price').and.returnValue(2);
+                spyOn(model, 'set');
+                spyOn(model, 'update_prices');
+                spyOn(model, 'get').and.returnValue(obj);
+            });
+
+            it('test function calls', function() {
+                model.add_empty(id_product, id_category);
+                expect(App.Collections.Products.init).toHaveBeenCalled(); // init products
+                expect(App.Collections.ModifierBlocks.init_quick_modifiers).toHaveBeenCalled(); // init modifiers
+                expect(App.Data.products[id_category].get_product).toHaveBeenCalledWith(id_product); // get nessesarry product
+                expect(model.set.calls.argsFor(0)[0]).toEqual({
+                    product: product,
+                    id_product : id_product,
+                    modifiers: App.Data.modifiers[id_product]
+                });
+                expect(model.set.calls.argsFor(1)[0]).toEqual({
+                    sum: 1,
+                    initial_price: 2
+                });
+                expect(model.update_prices).toHaveBeenCalled();
+            });
+        });
+
         it('has_child_products()', function() {
             var product = new Backbone.Model(),
                 product_sets = new Backbone.Collection();
@@ -3581,6 +3682,13 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 checkOrderSpy.and.returnValue(checkResult);
 
                 expect(model.check_order()).toEqual(checkResult);
+            });
+
+            it('Myorder.check_order().status is OK, `modifiers_only` option is true', function() {
+                var checkResult = {status: 'OK'};
+                checkOrderSpy.and.returnValue(checkResult);
+
+                expect(model.check_order({modifiers_only: true})).toEqual(checkResult);
             });
 
             it('combo has no child products', function() {
