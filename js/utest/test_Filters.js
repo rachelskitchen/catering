@@ -66,7 +66,7 @@ define(['filters'], function() {
     });
 
     describe('App.Models.FilterItem', function() {
-        var data = {selected: true, value: 1, title: 'test', uid: 'test'},
+        var data = {selected: true, value: 1, title: 'test', uid: 'directory.filterTest'},
             filterItem = new App.Models.FilterItem(data);
 
         it('Environment', function() {
@@ -86,7 +86,7 @@ define(['filters'], function() {
             spyOn(window, 'setData');
             filterItem.set('selected', false);
 
-            expect(window.setData).toHaveBeenCalledWith('filter.test', filterItem, true);
+            expect(window.setData).toHaveBeenCalledWith('filter.directory.filterTest', filterItem, true);
             filterItem.set('selected', true);
         });
 
@@ -100,7 +100,7 @@ define(['filters'], function() {
             filterItem.loadData();
 
             // window.getData()
-            expect(window.getData).toHaveBeenCalledWith('filter.test', true);
+            expect(window.getData).toHaveBeenCalledWith('filter.directory.filterTest', true);
 
             // data exists in storage
             expect(filterItem.get('selected')).toBe(false);
@@ -126,8 +126,8 @@ define(['filters'], function() {
         });
 
         it('setItems(): `items` param isn\'t array, is array', function() {
-            var items = [{title: 'item1', value: 1}, {title: 'item2', value: 2}],
-                filterItems = new App.Collections.FilterItems({title: 'first', value: 3});
+            var items = [{title: 'item1', value: 1, uid: 'directory.online_and_app_orders'}, {title: 'item2', value: 2, uid: 'directory.storeTypes.test2'}],
+                filterItems = new App.Collections.FilterItems({title: 'first', value: 3, uid: 'directory.filterTest3'});
 
             // `items` param is array
             filterItems.setItems(items);

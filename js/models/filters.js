@@ -108,6 +108,11 @@ define(['backbone'], function() {
                 uid = this.get('uid'),
                 set_dir = App.Data.settings.get('settings_directory');
 
+            if (!uid) {
+                console.warn("uid is not set for a filter: ", this.get('title'));
+                return true;
+            }
+
             if (uid.match(/\.storeTypes\./))
                 setting = 'store_type_filter';
             else if (uid.match(/\.sortOptions\./))
@@ -124,7 +129,7 @@ define(['backbone'], function() {
                 setting = 'open_now_filter';
 
             if (!setting) {
-                console.error("Unexpected dismatch for: ", uid);
+                console.warn("Unexpected dismatch for: ", uid);
             }
 
             if (setting && !set_dir[setting])

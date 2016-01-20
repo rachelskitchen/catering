@@ -66,6 +66,8 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
         });
 
         settings.set('settings_system', settings_data.all.settings_system);
+        settings.set('settings_directory', settings_data.all.settings_directory);
+        App.SettingsDirectory = settings.get('settings_directory');
 
         if (typeof end2endMode != 'undefined' && end2endMode === true) {
             var srv_name = /^http[s]*:\/\/([^\.\s]+)\./.exec(window.location.origin), hostName;
@@ -95,7 +97,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
             else {
                 require(['jasmine_blanket'], function(blanket) {
 
-                    blanket.options('debug', true);
+                    blanket.options('debug', false);
                     blanket.options('filter', 'js');
                     blanket.options('antifilter', [ 'js/libs/', 'js/utest/' ]);
                     blanket.options('branchTracking', true);
