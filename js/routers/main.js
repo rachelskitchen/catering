@@ -529,8 +529,7 @@ define(["backbone", "factory"], function(Backbone) {
         navigateDirectory: function() {
             if(App.Data.dirMode) {
                 var navigateToDirectoryConfirmed = function () {
-                    var prefix = App.Data.is_stanford_mode ? ".stanford" : "",
-                        directoryState = getData('directory.state' + prefix),
+                    var directoryState = getData('directory.state'),
                         directoryHash = '';
 
                     if (directoryState instanceof Object && directoryState.hash) {
