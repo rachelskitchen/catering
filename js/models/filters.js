@@ -86,18 +86,51 @@ define(['backbone'], function() {
          * Saves attributes values in a storage. 'filter.%uid%' key is used.
          */
         saveData: function() {
-            var prefix = App.Data.is_stanford_mode ? "stanford." : "";
-            setData('filter.' + prefix + this.get('uid'), this, true);
+            setData('filter.' + this.get('uid'), this, true);
         },
         /**
          * Restores data from a storage. 'filter.%uid%' key is used.
          */
         loadData: function() {
-            var prefix = App.Data.is_stanford_mode ? "stanford." : "";
-            var data = getData('filter.' + prefix + this.get('uid'), true);
+            var data = getData('filter.' + this.get('uid'), true);
             if(data instanceof Object) {
-                this.set(data);
+                if (this.is_filter_available()) {
+                    this.set(data);
+                }
             }
+        },
+        /**
+         * Check if the filter is permited by backend directory settings (https://server.revelup.com/weborders/directory_settings/)
+         * @returns {boolean} true - the filter is available, false - otherwise.
+         */
+        is_filter_available: function() {
+            var setting,
+                uid = this.get('uid'),
+                set_dir = App.Data.settings.get('settings_directory');
+
+            if (uid.match(/\.storeTypes\./))
+                setting = 'store_type_filter';
+            else if (uid.match(/\.sortOptions\./))
+                setting = 'sorting_filter';
+            else if (uid.match(/\.distance\./))
+                setting = 'distance_filter';
+            else if (uid.match(/\.search-by-name\./))
+                setting = 'search_by_name_filter';
+            else if (uid.match(/\.online_and_app_orders\./))
+                setting = 'online_ordering_filter';
+            else if (uid.match(/\.delivery\./))
+                setting = 'delivery_filter';
+            else if (uid.match(/\.open_now\./))
+                setting = 'open_now_filter';
+
+            if (!setting) {
+                console.error("Unexpected dismatch for: ", uid);
+            }
+
+            if (setting && !set_dir[setting])
+                return false
+            else
+                return true
         }
     });
 
@@ -135,7 +168,9 @@ define(['backbone'], function() {
             items.forEach(function(item, index) {
                 var model = this.at(index);
                 if(model) {
-                    model.set(item);
+                    if (model.is_filter_available()) {
+                        model.set(item);
+                    }
                 } else {
                     this.add(item);
                 }
@@ -203,8 +238,8 @@ define(['backbone'], function() {
 
             Array.isArray(filterItems) && filterItemsCollection.setItems(filterItems);
             this.set('filterItems', filterItemsCollection);
-            this.listenTo(filterItemsCollection, 'change:selected', this.onChanged, this);
             this.listenTo(filterItemsCollection, 'change:selected', this.uncheck, this);
+            this.listenTo(filterItemsCollection, 'change:selected', this.onChanged, this);
 
             return Backbone.Model.prototype.initialize.apply(this, arguments);
         },
