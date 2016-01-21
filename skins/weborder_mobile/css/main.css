@@ -453,6 +453,13 @@ select::-ms-expand { /*Removes default IE style*/
     opacity: 0.5;
 }
 
+.border-box {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+}
+
 /*
     Override establishments styles.
     [class] is used to increase priority.

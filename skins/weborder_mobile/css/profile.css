@@ -48,6 +48,76 @@
     margin-top: -1em;
 }
 
+.profile-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: -200;
+}
+
+.profile-menu.shown {
+    z-index: 200;
+}
+
+.profile-menu.shown {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.profile-menu > div {
+    max-width: 45em;
+    width: 70%;
+    height: 100%;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 4em;
+    left: -100%;
+}
+
+.profile-menu.shown > div {
+    left: 0;
+}
+
+.profile-menu .outside-area {
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.profile-menu .close {
+    font-size: 4em;
+    font-weight: bold;
+    position: absolute;
+    top: 0.8em;
+    right: 1em;
+    padding: 5px;
+    margin: -5px;
+}
+
+.profile-menu .title::before {
+    content: "\f0c9";
+    font-family: FontAwesome;
+    padding-right: 1em;
+    font-size: 1em;
+}
+
+.profile-menu .logged-as {
+    display: block;
+    padding: 0.8em;
+    font-style: italic;
+}
+
+.profile-items > li {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    padding: 0.7em 0.5em;
+}
+
 /* landscape */
 @media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (orientation: landscape) {
     .forgot-password {

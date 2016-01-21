@@ -66,6 +66,9 @@ define(["backbone"], function(Backbone) {
          *
          * @property {boolean} default.hideCart - if `true` a cart icon is hidden.
          * @default false.
+         *
+         * @property {boolean} default.showProfileMenu - if `true` profile menu should be shown.
+         * @default false.
          */
         defaults: {
             page_title: '',
@@ -79,7 +82,8 @@ define(["backbone"], function(Backbone) {
             showSearch: false,
             addProductCb: null,
             enableLink: true,
-            hideCart: false
+            hideCart: false,
+            showProfileMenu: false
         },
         addProduct: function(orderItem) {
             var self = this,

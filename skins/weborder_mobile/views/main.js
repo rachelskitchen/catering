@@ -29,6 +29,7 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:content', this.content_change, this);
             this.listenTo(this.model, 'change:header', this.header_change, this);
             this.listenTo(this.model, 'change:footer', this.footer_change, this);
+            this.listenTo(this.model, 'change:profile', this.profile_change, this);
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
             this.listenTo(this.model, 'showRevelPopup', this.showRevelPopup, this);
@@ -85,7 +86,7 @@ define(["done_view", "generator"], function(done_view) {
 
             content.removeClass().addClass(this.model.get('contentClass'));
 
-            while(this.subViews.length > 2) {
+            while(this.subViews.length > 3) {
                 view = this.subViews.pop();
                 if (view.options.cacheId || view.options.cacheIdUniq)
                     view.removeFromDOMTree();
@@ -143,6 +144,11 @@ define(["done_view", "generator"], function(done_view) {
                 this.setContentPadding();
             }
         },
+        profile_change: function() {
+            var data = _.defaults(this.model.get('profile'), this.profile_defaults());
+            this.subViews[2] && this.subViews[2].removeFromDOMTree();
+            this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data);
+        },
         header_defaults: function() {
             return {
                 model: App.Data.header,
@@ -160,6 +166,11 @@ define(["done_view", "generator"], function(done_view) {
         content_defaults : function() {
             return {
                 // className : 'content'
+            };
+        },
+        profile_defaults : function() {
+            return {
+                el: this.$('#aside')
             };
         },
         addContent: function(data, removeClass) {

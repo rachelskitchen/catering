@@ -98,6 +98,19 @@ define(["main_router"], function(main_router) {
                 // redirect to login screen
                 location.hash = "#login";
 
+                // as soon as the route is initialized need to set profile menu
+                this.listenToOnce(this, 'initialized', function() {
+                    App.Data.mainModel.set({
+                        profile: {
+                            modelName: 'Profile',
+                            mod: 'Menu',
+                            model: App.Data.customer,
+                            header: App.Data.header,
+                            cacheId: true
+                        }
+                    });
+                });
+
                 // init RevelAPI
                 this.initRevelAPI();
 

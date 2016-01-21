@@ -560,10 +560,15 @@ define([], function() {
         "ENTER_CAPTCHA": "Enter Captcha",
         "NEXT": "Next",
         "WELCOME": "",
+        "PAYMENTS": "",
+        "SETTINGS": "",
+        "PROFILE": "Profiil",
         "PROFILE_EMAIL_ADDRESS": "E-posti aadress",
         "PROFILE_PASSWORD": "Parool",
         "PROFILE_FORGOT_PASSWORD": "",
         "PROFILE_LOG_IN": "",
+        "PROFILE_LOG_OUT": "",
+        "PROFILE_LOGGED_IN": "",
         "PROFILE_CREATE_ACCOUNT": "",
         "PROFILE_CONTINUE_AS_GUEST": "",
         "PROFILE_LOG_IN_INFO": "",
@@ -579,5 +584,6 @@ define([], function() {
         "PROFILE_PASSWORDS_MISMATCH": "",
         "PROFILE_LOGIN_ERROR": "",
         "PROFILE_USER_EXISTS": "Kasutaja %s on juba olemas",
+        "PROFILE_MORE": ""
     } // end of locale
 }); // end of module

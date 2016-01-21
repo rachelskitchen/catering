@@ -560,10 +560,15 @@ define([], function() {
         "ENTER_CAPTCHA": "Enter Captcha",
         "NEXT": "Next",
         "WELCOME": "",
+        "PAYMENTS": "",
+        "SETTINGS": "",
+        "PROFILE": "Profilis",
         "PROFILE_EMAIL_ADDRESS": "El. pašto adresas",
         "PROFILE_PASSWORD": "Slaptažodis",
         "PROFILE_FORGOT_PASSWORD": "",
         "PROFILE_LOG_IN": "",
+        "PROFILE_LOG_OUT": "",
+        "PROFILE_LOGGED_IN": "",
         "PROFILE_CREATE_ACCOUNT": "",
         "PROFILE_CONTINUE_AS_GUEST": "",
         "PROFILE_LOG_IN_INFO": "",
@@ -578,6 +583,7 @@ define([], function() {
         "PROFILE_PHONE_PRIVATE": "",
         "PROFILE_PASSWORDS_MISMATCH": "",
         "PROFILE_LOGIN_ERROR": "",
-        "PROFILE_USER_EXISTS": "Naudotojas %s jau yra"
+        "PROFILE_USER_EXISTS": "Naudotojas %s jau yra",
+        "PROFILE_MORE": ""
     } // end of locale
 }); // end of module
