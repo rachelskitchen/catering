@@ -95,6 +95,9 @@ define(["main_router"], function(main_router) {
                 var mainModel = App.Data.mainModel = new App.Models.MainModel();
                 var ests = App.Data.establishments;
 
+                // redirect to login screen
+                location.hash = "#login";
+
                 // init RevelAPI
                 this.initRevelAPI();
 
@@ -1646,7 +1649,11 @@ define(["main_router"], function(main_router) {
                     modelName: 'Profile',
                     mod: 'LogIn',
                     model: App.Data.customer,
-                    loginCb: this.navigate.bind(this, 'index'),
+                    showSpinner: App.Data.mainModel.trigger.bind(App.Data.mainModel, 'loadStarted'),
+                    hideSpinner: hideSpinner,
+                    afterLogin: this.navigate.bind(this, 'index', true),
+                    createAccount: this.navigate.bind(this, 'signup', true),
+                    guestCb: this.navigate.bind(this, 'index', true),
                     cacheId: true
                 }];
 
@@ -1659,20 +1666,35 @@ define(["main_router"], function(main_router) {
 
                 this.change_page();
             });
+
+            // If status is 'success' spinner will be hidden on #index screen
+            function hideSpinner(jqXHR, status) {
+                status == 'error' && App.Data.mainModel.trigger('loadCompleted');
+            }
         },
         signup: function() {
             this.prepare('profile', function() {
+                var events = 'change:first_name change:last_name change:email change:password change:confirm_password';
+
                 App.Data.header.set({
                     page_title: _loc.PROFILE_SIGN_UP,
                     back_title: _loc.BACK,
                     back: window.history.back.bind(window.history),
-                    link: console.log.bind(console, 'Next'),
-                    link_title: _loc.NEXT
+                    link: next.bind(this),
+                    link_title: _loc.NEXT,
+                    enableLink: false
                 });
+
+                // listen to any App.Data.customer change
+                // to enable 'Next' link
+                preValidateData();
+                this.listenTo(App.Data.customer, events, preValidateData);
+                this.listenToOnce(this, 'route', this.stopListening.bind(this, App.Data.customer, events, preValidateData));
 
                 var content = [{
                     modelName: 'Profile',
                     mod: 'SignUp',
+                    model: App.Data.customer,
                     cacheId: true
                 }];
 
@@ -1684,6 +1706,25 @@ define(["main_router"], function(main_router) {
                 });
 
                 this.change_page();
+
+                function next() {
+                    var checkAttrs = App.Data.customer.checkSignUpData(),
+                        pwdsCompare = App.Data.customer.comparePasswords();
+                    if (checkAttrs.status != 'OK') {
+                        return App.Data.errors.alert(checkAttrs.errorMsg);
+                    }
+                    if (pwdsCompare.status != 'OK') {
+                        return App.Data.errors.alert(pwdsCompare.errorMsg);
+                    }
+                    this.navigate('profile_create', true);
+                }
+
+                function preValidateData() {
+                    var attrs = App.Data.customer.toJSON(),
+                        valid = attrs.first_name && attrs.last_name && attrs.email && attrs.password
+                            && App.Data.customer.comparePasswords().status == 'OK';
+                    App.Data.header.set('enableLink', valid);
+                }
             });
         },
         profile_create: function() {
@@ -1691,14 +1732,22 @@ define(["main_router"], function(main_router) {
                 App.Data.header.set({
                     page_title: _loc.PROFILE_CREATE_TITLE,
                     back_title: _loc.BACK,
-                    back: window.history.back.bind(window.history),
-                    link: console.log.bind(console, 'Next'),
-                    link_title: _loc.CONTINUE
+                    back: this.navigate.bind(this, 'signup', true),
+                    link: register,
+                    link_title: _loc.CONTINUE,
+                    enableLink: false
                 });
+
+                // listen to App.Data.customer 'change:phone' event
+                // to enable 'continue' link
+                preValidateData();
+                this.listenTo(App.Data.customer, 'change:phone', preValidateData);
+                this.listenToOnce(this, 'route', this.stopListening.bind(this, App.Data.customer, 'change:phone', preValidateData));
 
                 var content = [{
                     modelName: 'Profile',
                     mod: 'Create',
+                    model: App.Data.customer,
                     cacheId: true
                 }];
 
@@ -1710,6 +1759,20 @@ define(["main_router"], function(main_router) {
                 });
 
                 this.change_page();
+
+                function register() {
+                    var customer = App.Data.customer,
+                        check = customer.check();
+                    if (check.status == 'OK') {
+                        customer.signup();
+                    } else {
+                        App.Data.errors.alert(check.errorMsg);
+                    }
+                }
+
+                function preValidateData() {
+                    App.Data.header.set('enableLink', !!App.Data.customer.get('phone'));
+                }
             });
         },
         initRevelAPI: function() {

@@ -441,7 +441,6 @@
             'ERROR_REVEL_EMPTY_NEW_PASSWORD': 'Please enter new password.',
             'ERROR_REVEL_EMPTY_OLD_PASSWORD': 'Please enter old password.',
             'ERROR_REVEL_NOT_MATCH_PASSWORDS': 'New Password & Repeat Password values don\'t match',
-            'ERROR_REVEL_USER_EXISTS': 'User %s already exists.',
             'ERROR_REVEL_UNABLE_TO_PERFORM': 'Unable to perform action. Please ask about this problem at ask.revelsystems.com.',
             'ERROR_REVEL_ATTEMPTS_EXCEEDED': 'Max number of authentication attempts exceeded. Account deleted.',
             'ERROR_REVEL_PASSWORD_UPDATE_FAILED': 'Password update failed. Old password is invalid.',
@@ -554,6 +553,8 @@
         'PROFILE_BIRTHDAY': "Birthday",
         'PROFILE_GENDER': "Gender",
         'PROFILE_PHONE_PRIVATE': "We will not share your phone # with any third parties",
-        'PROFILE_PASSWORDS_MISMATCH': "The passwords mismatch"
+        'PROFILE_PASSWORDS_MISMATCH': "The passwords mismatch",
+        'PROFILE_LOGIN_ERROR': "Email address or password is invalid",
+        'PROFILE_USER_EXISTS': 'User %s already exists'
     }; // end of locale
 }); // end of module

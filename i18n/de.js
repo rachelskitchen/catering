@@ -466,7 +466,6 @@ define([], function() {
             "ERROR_REVEL_EMPTY_NEW_PASSWORD": "Bitten geben Sie das neue Kennwort ein.",
             "ERROR_REVEL_EMPTY_OLD_PASSWORD": "Bitten geben Sie das alte Kennwort ein.",
             "ERROR_REVEL_NOT_MATCH_PASSWORDS": "Neues Kennwort & Wiederholtes Kennwort stimmen nicht überein",
-            "ERROR_REVEL_USER_EXISTS": "Benutzer %s ist bereits vorhanden.",
             "ERROR_REVEL_UNABLE_TO_PERFORM": "Ausführen der Handlung fehlgeschlagen. Bitte fragen Sie nach diesem Problem unter ask.revelsystems.com.",
             "ERROR_REVEL_ATTEMPTS_EXCEEDED": "Maximale Anzahl Authentifizierungsversuche überschritten. Konto gelöscht.",
             "ERROR_REVEL_PASSWORD_UPDATE_FAILED": "Aktualisieren des Kennworts fehlgeschlagen. Altes Kennwort ist ungültig.",
@@ -577,6 +576,8 @@ define([], function() {
         "PROFILE_BIRTHDAY": "",
         "PROFILE_GENDER": "",
         "PROFILE_PHONE_PRIVATE": "",
-        "PROFILE_PASSWORDS_MISMATCH": ""
+        "PROFILE_PASSWORDS_MISMATCH": "",
+        "PROFILE_LOGIN_ERROR": "",
+        "PROFILE_USER_EXISTS": "Benutzer %s ist bereits vorhanden"
     } // end of locale
 }); // end of module

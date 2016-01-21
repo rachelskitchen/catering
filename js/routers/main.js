@@ -320,6 +320,22 @@ define(["backbone", "factory"], function(Backbone) {
          */
         initCustomer: function() {
             App.Data.customer = new App.Models.Customer();
+
+            this.listenTo(App.Data.customer, 'onInvalidUser', function() {
+                App.Data.errors.alert(_loc.PROFILE_LOGIN_ERROR);
+            });
+
+            this.listenTo(App.Data.customer, 'onNotActivatedUser', function() {
+                App.Data.errors.alert('User is not activated');
+            });
+
+            this.listenTo(App.Data.customer, 'onLoginError', function(msg) {
+                _.isObject(msg) && App.Data.errors.alert(msg.error_description || msg.error);
+            });
+
+            this.listenTo(App.Data.customer, 'onUserExists', function(msg) {
+                _.isObject(msg) && App.Data.errors.alert(_loc.PROFILE_USER_EXISTS.replace('%s', App.Data.customer.get('email')));
+            });
         },
         /**
          * Init App.Data.customer and restore its state from a storage

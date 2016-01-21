@@ -466,7 +466,6 @@ define([], function() {
             "ERROR_REVEL_EMPTY_NEW_PASSWORD": "Įveskite naująjį slaptažodį.",
             "ERROR_REVEL_EMPTY_OLD_PASSWORD": "Įveskite senąjį slaptažodį.",
             "ERROR_REVEL_NOT_MATCH_PASSWORDS": "Naujasis slaptažodis ir pakartotas slaptažodis nesutampa.",
-            "ERROR_REVEL_USER_EXISTS": "Naudotojas %s jau yra.",
             "ERROR_REVEL_UNABLE_TO_PERFORM": "Nepavyko atlikti veiksmo.Dėl šios problemos pasitarkite su ask.revelsystems.com komanda.",
             "ERROR_REVEL_ATTEMPTS_EXCEEDED": "Viršytas didžiausias tapatybės nustatymo bandymų skaičius.Paskyra ištrinta.",
             "ERROR_REVEL_PASSWORD_UPDATE_FAILED": "Slaptažodžio atnaujinti nepavyko.Senasis slaptažodis neteisingas.",
@@ -577,6 +576,8 @@ define([], function() {
         "PROFILE_BIRTHDAY": "",
         "PROFILE_GENDER": "",
         "PROFILE_PHONE_PRIVATE": "",
-        "PROFILE_PASSWORDS_MISMATCH": ""
+        "PROFILE_PASSWORDS_MISMATCH": "",
+        "PROFILE_LOGIN_ERROR": "",
+        "PROFILE_USER_EXISTS": "Naudotojas %s jau yra"
     } // end of locale
 }); // end of module
