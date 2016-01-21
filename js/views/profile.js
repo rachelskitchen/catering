@@ -27,28 +27,52 @@ define(["factory"], function(Backbone) {
 
     App.Views.CoreProfileView.CoreProfileSignUpView = App.Views.FactoryView.extend({
         name: 'profile',
-        mod: 'sign_up'
+        mod: 'sign_up',
+        bindings: {
+            '.first-name': 'value: firstLetterToUpperCase(first_name), events:["input"], trackCaretPosition: first_name',
+            '.last-name': 'value: firstLetterToUpperCase(last_name), events:["input"], trackCaretPosition: last_name',
+            '.email': 'value: email, events:["input"]',
+            '.password': 'value: password, events:["input"]',
+            '.password-confirm': 'value: confirm_password, events:["input"]',
+            '.passwords-mismatch': 'toggle: select(all(password, confirm_password), not(equal(password, confirm_password)), false)'
+        }
     });
 
     App.Views.CoreProfileView.CoreProfileLogInView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'log_in',
         bindings: {
-            '.username': 'value: username, events: ["input"]',
+            '.email': 'value: email, events: ["input"]',
             '.pwd': 'value: password, events: ["input"]',
-            '.login-btn': 'classes: {disabled: any(not(username), not(password))}'
+            '.login-btn': 'classes: {disabled: any(not(email), not(password))}'
         },
         events: {
-            'click .login-btn': 'login'
+            'click .login-btn': 'login',
+            'click .create-btn': 'create',
+            'click .guest-btn': 'guest'
         },
         login: function() {
-            this.model.login().done(this.options.loginCb);
+            var showSpinner = typeof this.options.showSpinner == 'function' ? this.options.showSpinner : new Function(),
+                hideSpinner = typeof this.options.hideSpinner == 'function' ? this.options.hideSpinner : new Function(),
+                afterLogin = typeof this.options.afterLogin == 'function' ? this.options.afterLogin : new Function();
+            showSpinner();
+            this.model.login().done(afterLogin).always(hideSpinner);
+        },
+        create: function() {
+            typeof this.options.createAccount == 'function' && this.options.createAccount();
+        },
+        guest: function() {
+            typeof this.options.guestCb == 'function' && this.options.guestCb();
         }
     });
 
     App.Views.CoreProfileView.CoreProfileCreateView = App.Views.FactoryView.extend({
         name: 'profile',
-        mod: 'create'
+        mod: 'create',
+        bindings: {
+            '.name': 'text: format("$1 $2", first_name, last_name)',
+            '.phone': 'value: phone, events: ["input"], restrictInput: "0123456789+", pattern: /^\\+?\\d{0,15}$/'
+        }
     });
 
     App.Views.CoreProfileView.CoreProfileEditView = App.Views.FactoryView.extend({

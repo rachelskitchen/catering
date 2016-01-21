@@ -466,7 +466,6 @@ define([], function() {
             "ERROR_REVEL_EMPTY_NEW_PASSWORD": "Ingrese una nueva contraseña.",
             "ERROR_REVEL_EMPTY_OLD_PASSWORD": "Ingrese la contraseña anterior.",
             "ERROR_REVEL_NOT_MATCH_PASSWORDS": "Los valores de Nueva contraseña y Repita la contraseña no coinciden",
-            "ERROR_REVEL_USER_EXISTS": "El usuario %s ya existe.",
             "ERROR_REVEL_UNABLE_TO_PERFORM": "No puede realizarse la acción. Por favor consulte este problema en ask.revelsystems.com.",
             "ERROR_REVEL_ATTEMPTS_EXCEEDED": "Se excedió. el número máx. de intentos de autenticación. Cuenta eliminada.",
             "ERROR_REVEL_PASSWORD_UPDATE_FAILED": "Error al actualizar la contraseña. La contraseña anterior no es válida.",
@@ -577,6 +576,8 @@ define([], function() {
         "PROFILE_BIRTHDAY": "",
         "PROFILE_GENDER": "",
         "PROFILE_PHONE_PRIVATE": "",
-        "PROFILE_PASSWORDS_MISMATCH": ""
+        "PROFILE_PASSWORDS_MISMATCH": "",
+        "PROFILE_LOGIN_ERROR": "",
+        "PROFILE_USER_EXISTS": "El usuario %s ya existe"
     } // end of locale
 }); // end of module

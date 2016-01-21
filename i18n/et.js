@@ -466,7 +466,6 @@ define([], function() {
             "ERROR_REVEL_EMPTY_NEW_PASSWORD": "Sisestage uus parool.",
             "ERROR_REVEL_EMPTY_OLD_PASSWORD": "Sisestage vana parool.",
             "ERROR_REVEL_NOT_MATCH_PASSWORDS": "Uue parooli ja paroolikorduse väärtused ei ühti",
-            "ERROR_REVEL_USER_EXISTS": "Kasutaja %s on juba olemas.",
             "ERROR_REVEL_UNABLE_TO_PERFORM": "Toimingut ei saa teha. Küsige probleemi kohta teavet veebisaidilt ask.revelsystems.com.",
             "ERROR_REVEL_ATTEMPTS_EXCEEDED": "Maksimaalne arv autentimiskatseid on täis. Konto on kustutatud.",
             "ERROR_REVEL_PASSWORD_UPDATE_FAILED": "Parooli uuendamine nurjus. Vana parool on kehtetu.",
@@ -577,6 +576,8 @@ define([], function() {
         "PROFILE_BIRTHDAY": "",
         "PROFILE_GENDER": "",
         "PROFILE_PHONE_PRIVATE": "",
-        "PROFILE_PASSWORDS_MISMATCH": ""
+        "PROFILE_PASSWORDS_MISMATCH": "",
+        "PROFILE_LOGIN_ERROR": "",
+        "PROFILE_USER_EXISTS": "Kasutaja %s on juba olemas",
     } // end of locale
 }); // end of module

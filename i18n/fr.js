@@ -466,7 +466,6 @@ define([], function() {
             "ERROR_REVEL_EMPTY_NEW_PASSWORD": "Saisir le nouveau mot de passe",
             "ERROR_REVEL_EMPTY_OLD_PASSWORD": "Saisir l’ancien mot de passe",
             "ERROR_REVEL_NOT_MATCH_PASSWORDS": "Le nouveau mot de passe et la confirmation de mot de passe ne correspondent pas.",
-            "ERROR_REVEL_USER_EXISTS": "L’utilisateur %s existe déjà.",
             "ERROR_REVEL_UNABLE_TO_PERFORM": "Impossible de réaliser l’action. Veuillez demander des informations sur ce problème sur ask.revelsystems.com.",
             "ERROR_REVEL_ATTEMPTS_EXCEEDED": "Le nombre maximum de tentatives d’authentification a été dépassé. Compte supprimé",
             "ERROR_REVEL_PASSWORD_UPDATE_FAILED": "Échec de la mise à jour du mot de passe L’ancien mot de passe n’est pas valide.",
@@ -577,6 +576,8 @@ define([], function() {
         "PROFILE_BIRTHDAY": "",
         "PROFILE_GENDER": "",
         "PROFILE_PHONE_PRIVATE": "",
-        "PROFILE_PASSWORDS_MISMATCH": ""
+        "PROFILE_PASSWORDS_MISMATCH": "",
+        "PROFILE_LOGIN_ERROR": "",
+        "PROFILE_USER_EXISTS": "L’utilisateur %s existe déjà"
     } // end of locale
 }); // end of module

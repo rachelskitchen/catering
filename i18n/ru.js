@@ -443,7 +443,6 @@
             'ERROR_REVEL_EMPTY_NEW_PASSWORD': 'Введите новый пароль.',
             'ERROR_REVEL_EMPTY_OLD_PASSWORD': 'Введите старый пароль.',
             'ERROR_REVEL_NOT_MATCH_PASSWORDS': 'Новый пароль и повторный пароль не совпадают',
-            'ERROR_REVEL_USER_EXISTS': 'Пользователь %s уже существует.',
             'ERROR_REVEL_UNABLE_TO_PERFORM': 'Невозможно выполнить действие. Сообщите об этой проблене в ask.revelsystems.com.',
             'ERROR_REVEL_ATTEMPTS_EXCEEDED': 'Максимальное количество попыток аутентификации превышено. Аккаунт удален.',
             'ERROR_REVEL_PASSWORD_UPDATE_FAILED': 'Обновление пароля невозможно. Старый пароль неверен.',
@@ -545,6 +544,8 @@
         "PROFILE_BIRTHDAY": "День рождения",
         "PROFILE_GENDER": "Ваш пол",
         "PROFILE_PHONE_PRIVATE": "Мы не будем предоставлять Ваш номер какой-либо третьей стороне",
-        "PROFILE_PASSWORDS_MISMATCH": "Пароли не совпадают"
+        "PROFILE_PASSWORDS_MISMATCH": "Пароли не совпадают",
+        "PROFILE_LOGIN_ERROR": "Неправильный email или пароль",
+        "PROFILE_USER_EXISTS": "Пользователь %s уже существует"
     } // end of locale
 }); // end of module

@@ -137,13 +137,7 @@ define(["backbone", "geopoint"], function(Backbone) {
              */
             confirm_password: "",
             /**
-             * Customer username (email)
-             * @type {string}
-             * @default ""
-             */
-            username: "",
-            /**
-             * Customer's id
+             * Customer's id.
              * @type {?number}
              * @default null
              */
@@ -488,42 +482,6 @@ define(["backbone", "geopoint"], function(Backbone) {
             return (shipping_address == this.get('deliveryAddressIndex') || shipping_address == this.get('shippingAddressIndex')) && isDelivery ? true : false;
         },
         /**
-         * Validates `email` and `password` attributes for Log In.
-         * @returns {Object} One of the following object literals:
-         * - If all fine:
-         * ```
-         * {
-         *     status: "OK"
-         * }
-         * ```
-         * - If validation failed:
-         * ```
-         * {
-         *     status: "ERROR_EMPTY_FIELDS",
-         *     errorMsg: <error message>,
-         *     errorList: [] // Array of invalid properties
-         * }
-         * ```
-         */
-        checkLogInData: function() {
-            var err = [];
-
-            !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.CHECKOUT_EMAIL);
-            !this.get('password') && err.push(_loc.CHECKOUT_PHONE);
-
-            if (err.length) {
-                return {
-                    status: "ERROR_EMPTY_FIELDS",
-                    errorMsg: MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, err.join(', ')),
-                    errorList: err
-                };
-            }
-
-            return {
-                status: "OK"
-            };
-        },
-        /**
          * Validates `first_name`, `last_name`, `email` and `password` attributes for Sign Up.
          * @returns {Object} One of the following object literals:
          * - If all fine:
@@ -688,13 +646,17 @@ define(["backbone", "geopoint"], function(Backbone) {
                 method: "POST",
                 context: this,
                 data: {
-                    username: attrs.username,
+                    username: attrs.email,
                     scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address",
                     password: attrs.password,
                     grant_type: "password"
                 },
                 success: function(data) {
-                    this.set(data);
+                    // need to reset password and set `email` attribute as username
+                    this.set(_.extend({}, data, {
+                        email: data.username,
+                        password: this.defaults.password
+                    }));
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
@@ -706,6 +668,96 @@ define(["backbone", "geopoint"], function(Backbone) {
                             break;
                         default:
                             this.trigger('onLoginError', getResponse());
+                    }
+
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
+                    }
+                }
+            });
+        },
+        /**
+         * Registers a new customer. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/customers/register-customer/",
+         *     method: "POST",
+         *     contentType: "application/json",
+         *     data: {
+         *         email: <email>,             // email
+         *         password: <password>,       // password
+         *         first_name: <first_name>,   // first name
+         *         last_name: <last_name>,     // last name
+         *         phone_number: <phone>       // phone
+         *     }
+         * }
+         * ```
+         * Server may return following response:
+         * - Successful registration:
+         * ```
+         * Status: 201
+         * {
+         *     "id": 1,                        // customer id
+         *     "email": "johndoe@foobar.com",  // username
+         *     "first_name": "John",           // first name
+         *     "last_name": "Doe",             // last name
+         *     "phone_number": "+123456789",   // phone
+         *     "addresses":[]                  // addresses
+         * }
+         * ```
+         * - Username already exists:
+         * ```
+         * Status: 422
+         * {
+         *     "email": ["This field must be unique."]
+         * }
+         * ```
+         * The model emits `onUserExists` event in this case.
+         *
+         * - 'password' parameter is missed:
+         * ```
+         * Status: 400
+         * {
+         *     "password": ["This field is required."]
+         * }
+         * ```
+         * The model emits `onUserCreateError` event in this case.
+         *
+         * - Invalid scope (incorrect scope value):
+         * ```
+         * Status: 400
+         * {
+         *     "email": ["This field is required."]
+         * }
+         * ```
+         * The model emits `onUserCreateError` event in this case.
+         *
+         * @returns {Object} jqXHR object.
+         */
+        signup: function() {
+            var attrs = this.toJSON();
+            return Backbone.$.ajax({
+                url: "https://identity-dev.revelup.com/customers-auth/customers/register-customer/",
+                method: "POST",
+                context: this,
+                contentType: "application/json",
+                data: JSON.stringify({
+                    email: attrs.email,
+                    password: attrs.password,
+                    first_name: attrs.first_name,
+                    last_name: attrs.last_name,
+                    phone_number: attrs.phone
+                }),
+                success: function(data) {
+                    console.log('SignUp:', data);
+                },
+                error: function(jqXHR) {
+                    switch(jqXHR.status) {
+                        case 422:
+                            this.trigger('onUserExists', getResponse());
+                            break;
+                        default:
+                            this.trigger('onUserCreateError', getResponse());
                     }
 
                     function getResponse() {
