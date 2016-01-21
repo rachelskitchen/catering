@@ -2147,11 +2147,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             var customerData = this.getCustomerData();
             call_name = call_name.concat(customerData.call_name);
-            $.extend(payment_info, customerData.payment_info);
 
+            order_info.customer = {};
             if(checkout.dining_option === 'DINING_OPTION_DELIVERY') {
-                payment_info.address = getAddress();
+                order_info.customer.address = getAddress();
             }
+            $.extend(order_info.customer, customerData.payment_info);
 
             // process payment type
             var pt = PaymentProcessor.processPaymentType(payment_type, myorder);
@@ -2185,7 +2186,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 order_info.shipping = customer.shipping_services[customer.shipping_selected] || undefined;
                 order_info.customer = !order_info.shipping ? undefined : _.extend({
                     address: getAddress()
-                }, order.paymentInfo);
+                }, order_info.customer);
             }
 
             var myorder_json = JSON.stringify(order),
