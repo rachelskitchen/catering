@@ -536,10 +536,15 @@
         'ENTER_CAPTCHA': 'Enter Captcha',
         'NEXT': 'Next',
         'WELCOME': 'Welcome',
+        'PAYMENTS': "Payments",
+        'SETTINGS': "Settings",
+        'PROFILE': "Profile",
         'PROFILE_EMAIL_ADDRESS': 'Email Address',
         'PROFILE_PASSWORD': 'Password',
         'PROFILE_FORGOT_PASSWORD': "Forgot Password?",
         'PROFILE_LOG_IN': "Log In",
+        'PROFILE_LOG_OUT': "Log Out",
+        'PROFILE_LOGGED_IN': "Logged in as %s",
         'PROFILE_CREATE_ACCOUNT': "Create an Account",
         'PROFILE_CONTINUE_AS_GUEST': "Continue as Guest",
         'PROFILE_LOG_IN_INFO': "Log in using your email address & password",
@@ -555,6 +560,7 @@
         'PROFILE_PHONE_PRIVATE': "We will not share your phone # with any third parties",
         'PROFILE_PASSWORDS_MISMATCH': "The passwords mismatch",
         'PROFILE_LOGIN_ERROR': "Email address or password is invalid",
-        'PROFILE_USER_EXISTS': 'User %s already exists'
+        'PROFILE_USER_EXISTS': 'User %s already exists',
+        'PROFILE_MORE': "More"
     }; // end of locale
 }); // end of module

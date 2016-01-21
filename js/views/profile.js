@@ -75,6 +75,22 @@ define(["factory"], function(Backbone) {
         }
     });
 
+    App.Views.CoreProfileView.CoreProfileMenuView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'menu',
+        bindings: {
+            ':el': 'classes: {shown: header_showProfileMenu}',
+            '.login-title': 'toggle: not(access_token)',
+            '.logout-title': 'toggle: access_token',
+            '.logged-as': 'toggle: access_token, html: loggedAs(email)'
+        },
+        bindingFilters: {
+            loggedAs: function(username) {
+                return _loc.PROFILE_LOGGED_IN.replace('%s', username);
+            }
+        }
+    });
+
     App.Views.CoreProfileView.CoreProfileEditView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'edit'
@@ -98,5 +114,6 @@ define(["factory"], function(Backbone) {
         App.Views.ProfileView.ProfileEditView = App.Views.CoreProfileView.CoreProfileEditView;
         App.Views.ProfileView.ProfileSettingsView = App.Views.CoreProfileView.CoreProfileSettingsView;
         App.Views.ProfileView.ProfilePWDResetView = App.Views.CoreProfileView.CoreProfilePWDResetView;
+        App.Views.ProfileView.ProfileMenuView = App.Views.CoreProfileView.CoreProfileMenuView;
     });
 });

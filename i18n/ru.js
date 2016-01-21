@@ -528,10 +528,15 @@
         'ENTER_CAPTCHA': 'Введите символы с картинки',
         'NEXT': 'Далее',
         'WELCOME': 'Добро пожаловать',
+        "PAYMENTS": "Платежи",
+        "SETTINGS": "Настройки",
+        'PROFILE': 'Профиль',
         'PROFILE_EMAIL_ADDRESS': 'Эл. почта',
         'PROFILE_PASSWORD': 'Пароль',
         "PROFILE_FORGOT_PASSWORD": "Забыли пароль?",
         "PROFILE_LOG_IN": "Войти",
+        "PROFILE_LOG_OUT": "Выйти",
+        "PROFILE_LOGGED_IN": "Залогинен как %s",
         "PROFILE_CREATE_ACCOUNT": "Cоздать аккаунт",
         "PROFILE_CONTINUE_AS_GUEST": "Продолжить как гость",
         "PROFILE_LOG_IN_INFO": "Введите email и пароль",
@@ -546,6 +551,7 @@
         "PROFILE_PHONE_PRIVATE": "Мы не будем предоставлять Ваш номер какой-либо третьей стороне",
         "PROFILE_PASSWORDS_MISMATCH": "Пароли не совпадают",
         "PROFILE_LOGIN_ERROR": "Неправильный email или пароль",
-        "PROFILE_USER_EXISTS": "Пользователь %s уже существует"
+        "PROFILE_USER_EXISTS": "Пользователь %s уже существует",
+        "PROFILE_MORE": "Другое"
     } // end of locale
 }); // end of module

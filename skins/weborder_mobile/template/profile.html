@@ -57,3 +57,21 @@
     <div>
     </div>
 </script>
+
+<script type="text/template" id="profile_menu-template">
+    <div class="close outside-area"></div>
+    <div class="fl-left primary-bg border-box animation">
+        <h2 class="title font-size3 primary-text"><%= _lp.PROFILE_MORE %></h2>
+        <div class="close alternate-button">&times;</div>
+        <ul class="profile-items font-size1 primary-text">
+            <li class="profile-link list-separator"><%= _lp.PROFILE %></li>
+            <li class="payments-link list-separator"><%= _lp.PAYMENTS %></li>
+            <li class="settings-link list-separator"><%= _lp.SETTINGS %></li>
+            <li class="login-link list-separator">
+                <span class="login-title"><%= _lp.PROFILE_LOG_IN %></span>
+                <span class="logout-title"><%= _lp.PROFILE_LOG_OUT %></span>
+            </li>
+        </ul>
+        <span class="logged-as primary-text font-size2"></span>
+    </div>
+</script>

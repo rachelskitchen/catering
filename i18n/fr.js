@@ -560,10 +560,15 @@ define([], function() {
         "ENTER_CAPTCHA": "Saisir les caractères Captcha",
         "NEXT": "Suivant",
         "WELCOME": "",
+        "PAYMENTS": "",
+        "SETTINGS": "",
+        "PROFILE": "Profil",
         "PROFILE_EMAIL_ADDRESS": "Adresse e-mail",
         "PROFILE_PASSWORD": "Mot de passe",
         "PROFILE_FORGOT_PASSWORD": "",
         "PROFILE_LOG_IN": "",
+        "PROFILE_LOG_OUT": "",
+        "PROFILE_LOGGED_IN": "",
         "PROFILE_CREATE_ACCOUNT": "",
         "PROFILE_CONTINUE_AS_GUEST": "",
         "PROFILE_LOG_IN_INFO": "",
@@ -578,6 +583,7 @@ define([], function() {
         "PROFILE_PHONE_PRIVATE": "",
         "PROFILE_PASSWORDS_MISMATCH": "",
         "PROFILE_LOGIN_ERROR": "",
-        "PROFILE_USER_EXISTS": "L’utilisateur %s existe déjà"
+        "PROFILE_USER_EXISTS": "L’utilisateur %s existe déjà",
+        "PROFILE_MORE": ""
     } // end of locale
 }); // end of module
