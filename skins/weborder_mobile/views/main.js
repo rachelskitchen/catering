@@ -194,10 +194,10 @@ define(["done_view", "generator"], function(done_view) {
             var isViewCached = !!App.Views.GeneratorView.findViewCached(data.modelName, data, cacheId);
 
             var subView = App.Views.GeneratorView.create(data.modelName, data, cacheId);
-            if(this.subViews.length > 2)
+            if(this.subViews.length > 3)
                 this.subViews.push(subView);
             else
-                this.subViews[2] = subView;
+                this.subViews[3] = subView;
 
             if (isViewCached) {
                 typeof subView.start == 'function' && subView.start();

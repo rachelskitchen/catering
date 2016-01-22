@@ -498,14 +498,17 @@ define(["backbone", "geopoint"], function(Backbone) {
          *     errorList: [] // Array of invalid properties
          * }
          * ```
+         *
+         * @params {boolean} checkPhone - if `true` need to check `phone` attribute.
          */
-        checkSignUpData: function() {
+        checkSignUpData: function(checkPhone) {
             var err = [];
 
-            !this.get('first_name') && err.push(_loc.CHECKOUT_FIRST_NAME);
-            !this.get('last_name') && err.push(_loc.CHECKOUT_LAST_NAME);
-            !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.CHECKOUT_EMAIL);
-            !this.get('password') && err.push(_loc.CHECKOUT_PHONE);
+            !this.get('first_name') && err.push(_loc.PROFILE_FIRST_NAME);
+            !this.get('last_name') && err.push(_loc.PROFILE_LAST_NAME);
+            !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.PROFILE_EMAIL_ADDRESS);
+            !this.get('password') && err.push(_loc.PROFILE_PASSWORD);
+            checkPhone && !this.get('password') && err.push(_loc.PROFILE_PHONE);
 
             if (err.length) {
                 return {

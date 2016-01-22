@@ -584,6 +584,9 @@ define([], function() {
         "PROFILE_PASSWORDS_MISMATCH": "",
         "PROFILE_LOGIN_ERROR": "",
         "PROFILE_USER_EXISTS": "El usuario %s ya existe",
-        "PROFILE_MORE": ""
+        "PROFILE_MORE": "",
+        "PROFILE_FIRST_NAME": "Nombre",
+        "PROFILE_LAST_NAME": "Apellido",
+        "PROFILE_PHONE": "Núm. de teléfono"
     } // end of locale
 }); // end of module

@@ -46,6 +46,9 @@ define(["backbone"], function(Backbone) {
          * @property {Function} default.back - header back button action.
          * @default null.
          *
+         * @property {string} default.back_title - header back button text.
+         * @default ''.
+         *
          * @property {Function} default.cart - header cart button action.
          * @default null.
          *
@@ -76,6 +79,7 @@ define(["backbone"], function(Backbone) {
             link_title: '',
             link: null,
             back: null,
+            back_title: '',
             cart: null,
             cartItemsQuantity: 0,
             search: '',

@@ -910,6 +910,10 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             function fireInitializedEvent() {
+                // Need to redirect on #login screen if the app starts with #index or without hash
+                if (App.Data.settings.isMobileVersion() && ['', '#index'].indexOf(location.hash) > -1) {
+                    window.location.hash = '#login';
+                }
                 // emit 'initialized' event
                 this.trigger('initialized');
                 this.initialized = true;

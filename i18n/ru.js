@@ -552,6 +552,9 @@
         "PROFILE_PASSWORDS_MISMATCH": "Пароли не совпадают",
         "PROFILE_LOGIN_ERROR": "Неправильный email или пароль",
         "PROFILE_USER_EXISTS": "Пользователь %s уже существует",
-        "PROFILE_MORE": "Другое"
+        "PROFILE_MORE": "Другое",
+        "PROFILE_FIRST_NAME": "Имя",
+        "PROFILE_LAST_NAME": "Фамилия",
+        "PROFILE_PHONE": "Телефон"
     } // end of locale
 }); // end of module
