@@ -80,14 +80,45 @@ define(["factory"], function(Backbone) {
         mod: 'menu',
         bindings: {
             ':el': 'classes: {shown: header_showProfileMenu}',
-            '.login-title': 'toggle: not(access_token)',
-            '.logout-title': 'toggle: access_token',
+            '.login-link': 'toggle: not(access_token)',
+            '.logout-link': 'toggle: access_token',
             '.logged-as': 'toggle: access_token, html: loggedAs(email)'
         },
         bindingFilters: {
             loggedAs: function(username) {
                 return _loc.PROFILE_LOGGED_IN.replace('%s', username);
             }
+        },
+        events: {
+            'click .login-link': 'login',
+            'click .logout-link': 'logout',
+            'click .settings-link': 'settings',
+            'click .payments-link': 'payments',
+            'click .profile-link': 'profile',
+            'click .close': 'close'
+        },
+        close: function() {
+            this.options.header.set('showProfileMenu', false);
+        },
+        login: function() {
+            typeof this.options.login_action == 'function' && this.options.login_action();
+            this.close();
+        },
+        logout: function() {
+            this.model.logout();
+            this.close();
+        },
+        settings: function() {
+            typeof this.options.settings_action == 'function' && this.options.settings_action();
+            this.close();
+        },
+        payments: function() {
+            typeof this.options.payments_action == 'function' && this.options.payments_action();
+            this.close();
+        },
+        profile: function() {
+            typeof this.options.profile_action == 'function' && this.options.profile_action();
+            this.close();
         }
     });
 

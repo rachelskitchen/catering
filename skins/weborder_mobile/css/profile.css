@@ -103,7 +103,7 @@
     content: "\f0c9";
     font-family: FontAwesome;
     padding-right: 1em;
-    font-size: 1em;
+    font-size: 1.2em;
 }
 
 .profile-menu .logged-as {
@@ -118,6 +118,15 @@
     padding: 0.7em 0.5em;
 }
 
+.profile-items .login-row {
+    padding: 0;
+}
+
+.profile-items .login-link,
+.profile-items .logout-link {
+    display: block;
+    padding: 0.7em 0.5em;
+}
 /* landscape */
 @media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (orientation: landscape) {
     .forgot-password {

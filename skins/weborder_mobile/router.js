@@ -31,6 +31,7 @@ define(["main_router"], function(main_router) {
     */
     function defaultRouterData() {
         headerModes.Main = {mod: 'Main', className: 'main'};
+        headerModes.WithProfile = {mod: 'WithProfile', className: 'main'};
         headerModes.Modifiers = {mod: 'Modifiers', className: 'modifiers'};
         headerModes.ComboProduct = {mod: 'ComboProduct', className: 'modifiers'};
         headerModes.Cart = {mod: 'Cart'};
@@ -106,7 +107,11 @@ define(["main_router"], function(main_router) {
                             mod: 'Menu',
                             model: App.Data.customer,
                             header: App.Data.header,
-                            cacheId: true
+                            cacheId: true,
+                            login_action: self.navigate.bind(self, 'login', true),
+                            settings_action: new Function,
+                            payments_action: new Function,
+                            profile_action: new Function
                         }
                     });
                 });
@@ -376,7 +381,7 @@ define(["main_router"], function(main_router) {
                 }
 
                 App.Data.mainModel.set({
-                    header: headerModes.Main,
+                    header: headerModes.WithProfile, //headerModes.Main,
                     footer: footerMode,
                     contentClass: '',
                     content: content
