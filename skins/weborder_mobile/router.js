@@ -96,9 +96,6 @@ define(["main_router"], function(main_router) {
                 var mainModel = App.Data.mainModel = new App.Models.MainModel();
                 var ests = App.Data.establishments;
 
-                // redirect to login screen
-                location.hash = "#login";
-
                 // as soon as the route is initialized need to set profile menu
                 this.listenToOnce(this, 'initialized', function() {
                     App.Data.mainModel.set({
@@ -1780,7 +1777,7 @@ define(["main_router"], function(main_router) {
 
                 function register() {
                     var customer = App.Data.customer,
-                        check = customer.check();
+                        check = customer.checkSignUpData(true);
                     if (check.status == 'OK') {
                         customer.signup();
                     } else {

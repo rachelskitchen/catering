@@ -561,6 +561,9 @@
         'PROFILE_PASSWORDS_MISMATCH': "The passwords mismatch",
         'PROFILE_LOGIN_ERROR': "Email address or password is invalid",
         'PROFILE_USER_EXISTS': 'User %s already exists',
-        'PROFILE_MORE': "More"
+        'PROFILE_MORE': "More",
+        "PROFILE_FIRST_NAME": "First Name",
+        "PROFILE_LAST_NAME": "Last Name",
+        "PROFILE_PHONE": "Phone #"
     }; // end of locale
 }); // end of module

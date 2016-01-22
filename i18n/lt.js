@@ -584,6 +584,9 @@ define([], function() {
         "PROFILE_PASSWORDS_MISMATCH": "",
         "PROFILE_LOGIN_ERROR": "",
         "PROFILE_USER_EXISTS": "Naudotojas %s jau yra",
-        "PROFILE_MORE": ""
+        "PROFILE_MORE": "",
+        "PROFILE_FIRST_NAME": "Vardas",
+        "PROFILE_LAST_NAME": "Pavardė",
+        "PROFILE_PHONE": "Telefono nr."
     } // end of locale
 }); // end of module

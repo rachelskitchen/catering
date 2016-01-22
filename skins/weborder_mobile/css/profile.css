@@ -61,10 +61,6 @@
     z-index: 200;
 }
 
-.profile-menu.shown {
-    background-color: rgba(0, 0, 0, 0.3);
-}
-
 .profile-menu > div {
     max-width: 45em;
     width: 70%;

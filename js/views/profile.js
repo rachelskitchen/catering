@@ -82,7 +82,8 @@ define(["factory"], function(Backbone) {
             ':el': 'classes: {shown: header_showProfileMenu}',
             '.login-link': 'toggle: not(access_token)',
             '.logout-link': 'toggle: access_token',
-            '.logged-as': 'toggle: access_token, html: loggedAs(email)'
+            '.logged-as': 'toggle: access_token, html: loggedAs(email)',
+            '.private-btn': 'classes: {"primary-text": access_token, "regular-text": not(access_token), disabled: not(access_token)}'
         },
         bindingFilters: {
             loggedAs: function(username) {
@@ -92,9 +93,9 @@ define(["factory"], function(Backbone) {
         events: {
             'click .login-link': 'login',
             'click .logout-link': 'logout',
-            'click .settings-link': 'settings',
-            'click .payments-link': 'payments',
-            'click .profile-link': 'profile',
+            'click .settings-link:not(.disabled)': 'settings',
+            'click .payments-link:not(.disabled)': 'payments',
+            'click .profile-link:not(.disabled)': 'profile',
             'click .close': 'close'
         },
         close: function() {
