@@ -653,10 +653,15 @@ define(["backbone", "geopoint"], function(Backbone) {
                 },
                 success: function(data) {
                     // need to reset password and set `email` attribute as username
-                    this.set(_.extend({}, data, {
+                    this.set({
                         email: data.username,
+                        user_id: data.user_id,
+                        access_token: data.access_token,
+                        token_type: data.token_type,
+                        expires_in: data.expires_in,
+                        scope: data.scope,
                         password: this.defaults.password
-                    }));
+                    });
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
@@ -675,6 +680,14 @@ define(["backbone", "geopoint"], function(Backbone) {
                     }
                 }
             });
+        },
+        /**
+         * Changes attributes values on default values.
+         */
+        logout: function() {
+            for(var attr in this.defaults) {
+                this.set(attr, this.defaults[attr]);
+            }
         },
         /**
          * Registers a new customer. Sends request with following parameters:
@@ -749,6 +762,10 @@ define(["backbone", "geopoint"], function(Backbone) {
                     phone_number: attrs.phone
                 }),
                 success: function(data) {
+                    this.set({
+                        password: this.defaults.password,
+                        confirm_password: this.defaults.confirm_password
+                    });
                     console.log('SignUp:', data);
                 },
                 error: function(jqXHR) {

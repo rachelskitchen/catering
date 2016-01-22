@@ -243,6 +243,10 @@ ul.reward-selection > li {
 .alternate-button:not([disabled]):active {
   background: #0B1216;
 }
+.profile-menu .close.alternate-button:active {
+    background: transparent;
+    color: inherit;
+}
 /* [toolbar] Toolbar with payment button, footer background */
 .toolbar {
   background: #D0D0D0;
