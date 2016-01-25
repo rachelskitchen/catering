@@ -74,8 +74,8 @@ define(["factory"], function() {
             }();
 
             if (mobile && App.Data.is_stanford_mode) {
-                var params = App.Data.get_parameters;
-                var store_app_id = (mobile == 'ios' ? params.apple_app_id : params.google_app_id);
+                var set_dir = App.SettingsDirectory;
+                var store_app_id = (mobile == 'ios' && set_dir ? set_dir.apple_app_id : set_dir.google_app_id);
 
                 if (store_app_id) {
                     var meta = document.createElement('meta');
