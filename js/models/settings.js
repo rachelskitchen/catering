@@ -498,7 +498,8 @@ define(["backbone", "async"], function(Backbone) {
             var self = this,
             settings = { // Default values:
                 "apple_app_id": null,
-                "google_app_id": null
+                "google_app_id": null,
+                "smart_banner": false
             };
 
             self.loadCustomerSettings = $.Deferred();
