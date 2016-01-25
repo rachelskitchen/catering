@@ -872,7 +872,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 });
             });
 
-            if (combo_saving_products.length && sum < root_price) {
+            if ((combo_saving_products.length || this.isUpsellProduct()) && sum < root_price) {
                 sum = root_price;
             }
 
