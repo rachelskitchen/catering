@@ -47,7 +47,7 @@ define(["backbone", "async"], function(Backbone) {
                 return App.Data.errors.alert(MSG.ERROR_CHROME_CRASH, true); // user notification
 
             // load settings system for directory app, only for maintenance page allow
-            return $.when(self.get_settings_system());
+            return $.when(self.get_settings_system(), self.get_customer_settings());
         },
         defaults: {
             brand: null,
@@ -490,6 +490,40 @@ define(["backbone", "async"], function(Backbone) {
                 }
             });
             return load;
+        },
+        /**
+         * Get customers setting for /core/ skins.
+         */
+        get_customer_settings: function() {
+            var self = this,
+            settings = { // Default values:
+                "apple_app_id": null,
+                "google_app_id": null
+            };
+
+            self.loadCustomerSettings = $.Deferred();
+
+            $.ajax({
+                url: self.get("host") + "/weborders/directory_settings/",
+                dataType: "json",
+                success: function(data) {
+                    if (_.isObject(data)) {
+                        $.extend(true, settings, data);
+                    }
+                    self.set("settings_directory", settings);
+                },
+                error: function() {
+                    self.set({
+                        settings_directory: settings //default used
+                    });
+                    console.error(ERROR.CANT_GET_DIRECTORY_SETTINGS);
+                },
+                complete: function() {
+                    App.SettingsDirectory = self.get("settings_directory");
+                    self.loadCustomerSettings.resolve();
+                }
+            });
+            return self.loadCustomerSettings;
         },
         load_geoloc: function() {
             var set_sys = this.get("settings_system");
