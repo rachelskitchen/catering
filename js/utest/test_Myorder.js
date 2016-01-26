@@ -339,6 +339,43 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             });
         });
 
+        describe('addServiceFee()', function() {
+            var data;
+
+            beforeEach(function() {
+                data = {
+                    product : {
+                        id: null,
+                        name: 'SF Web',
+                        get: function() {},
+                        set: function() {}
+                    },
+                    modifiers : {},
+                    id_product: 1,
+                    quantity: 'quan',
+                    weight: 1,
+                    selected: false,
+                    is_child_product: false,
+                    isServiceFee: true,
+                    sum: 10
+                };
+                spyOn(data.product, 'get').and.callFake(function() {
+                    return data.product;
+                });
+            });
+
+            it('add Service Fee item', function() {
+                model = new App.Collections.Myorders();
+                expect(model.models.length).toBe(0);
+                model.addServiceFee(data);
+                expect(model.models.length).toBe(1);
+                expect(model.models[0].get('product').get('name')).toBe('SF Web');
+                expect(model.models[0].get('product').get('price')).toBe(10);
+                expect(model.models[0].get('initial_price')).toBe(10);
+                expect(model.models[0].get('sum')).toBe(10);
+            });
+        });
+
         describe('addJSON()', function() {
             var data,
                 gift,
@@ -1139,16 +1176,6 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 expect(model.add).not.toHaveBeenCalled();
             });
 
-            it('data with product without id', function() {
-               var data = [
-                   { product: {} },
-                   { product: {} }
-               ];
-
-                model.addJSON(data);
-                expect(model.add).not.toHaveBeenCalled();
-            });
-
             it('data with product with id', function() {
                var data = [
                    { product: {id: 1} }
@@ -1158,6 +1185,31 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 expect(App.Models.Myorder.prototype.addJSON).toHaveBeenCalledWith(data[0]);
                 expect(model.add).toHaveBeenCalled();
                 expect(App.Models.Myorder.prototype.get_initial_price).toHaveBeenCalled();
+            });
+
+            it('data with Service Fee', function() {
+                model = new App.Collections.Myorders();
+                var data = [{
+                        product : {
+                            id: null,
+                            name: 'SF Web',
+                            sum: 10,
+                            get: function() {},
+                            set: function() {}
+                        },
+                        modifiers : {},
+                        id: 1,
+                        id_product: 11,
+                        quantity: 'quan',
+                        weight: 1,
+                        selected: false,
+                        is_child_product: false,
+                        isServiceFee: true
+                    }];
+
+                spyOn(model, 'addServiceFee');
+                model.addJSON(data);
+                expect(model.addServiceFee).toHaveBeenCalledWith(data[0]);
             });
         });
 
