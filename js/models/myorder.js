@@ -1267,8 +1267,20 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     myorder.addJSON(element);
                     self.add(myorder);
                     myorder.set('initial_price', myorder.get_initial_price());
+                } else if (element.isServiceFee) {
+                    self.addServiceFee(element);
                 }
             });
+        },
+        /**
+         * Add new Service Fee item to the collection.
+         * @param {Object} element - JSON representation of the Service Fee item
+         */
+        addServiceFee: function(element) {
+            var fee = new App.Models.ServiceFeeItem({id: element.id});
+            fee.get("product").set({name: element.product.name, price: element.sum});
+            fee.set({initial_price: element.sum, sum: element.sum });
+            this.add(fee);
         },
         /**
          * Deeply clones the collection
@@ -1408,20 +1420,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             if (orders) {
                 this.addJSON(orders);
-            }
-
-            var total  = _.find(orders, function(item) {
-                return item.total instanceof Object;
-            });
-
-            if (total) {
-                total = total["total"];
-                this.total.set({
-                    subtotal: total.subtotal,
-                    tax: total.tax,
-                    surcharge: total.surcharge,
-                    discounts: total.discounts
-                });
             }
 
             this.discount.loadDiscount();
