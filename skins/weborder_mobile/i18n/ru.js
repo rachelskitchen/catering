@@ -241,7 +241,6 @@
         'SEARCH_FIELD_PLACEHOLDER': 'Введите название продукта',
         'CONFIRM_DELIVERY_TIME': 'Срок доставки',
         'CONFIRM_ARRIVAL_TIME': 'Срок прибытия',
-        'CONTINUE': 'Далее',
         'PAY': 'Оплата',
         'PAY_QUESTION': 'Выберите способ оплаты',
         'ORDER_RECEIVED': 'Ваш заказ принят.',

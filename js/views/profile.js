@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["factory"], function(Backbone) {
+define(["factory"], function() {
     'use strict';
 
     App.Views.CoreProfileView = {};
@@ -32,9 +32,17 @@ define(["factory"], function(Backbone) {
             '.first-name': 'value: firstLetterToUpperCase(first_name), events:["input"], trackCaretPosition: first_name',
             '.last-name': 'value: firstLetterToUpperCase(last_name), events:["input"], trackCaretPosition: last_name',
             '.email': 'value: email, events:["input"]',
+            '.phone': 'value: phone, events: ["input"], restrictInput: "0123456789+", pattern: /^\\+?\\d{0,15}$/',
             '.password': 'value: password, events:["input"]',
             '.password-confirm': 'value: confirm_password, events:["input"]',
-            '.passwords-mismatch': 'toggle: select(all(password, confirm_password), not(equal(password, confirm_password)), false)'
+            '.passwords-mismatch': 'toggle: select(all(password, confirm_password), not(equal(password, confirm_password)), false)',
+            '.signup-btn': 'classes: {disabled: any(not(first_name), not(last_name), not(email), not(phone), not(password), not(confirm_password), not(equal(password, confirm_password)))}'
+        },
+        events: {
+            'click .signup-btn': 'signup'
+        },
+        signup: function() {
+            typeof this.options.signupAction == 'function' && this.options.signupAction();
         }
     });
 
@@ -70,8 +78,7 @@ define(["factory"], function(Backbone) {
         name: 'profile',
         mod: 'create',
         bindings: {
-            '.name': 'text: format("$1 $2", first_name, last_name)',
-            '.phone': 'value: phone, events: ["input"], restrictInput: "0123456789+", pattern: /^\\+?\\d{0,15}$/'
+            '.name': 'text: format("$1 $2", first_name, last_name)'
         }
     });
 
@@ -138,6 +145,97 @@ define(["factory"], function(Backbone) {
         mod: 'reset'
     });
 
+    App.Views.CoreProfileView.CoreProfilePanelView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'panel',
+        initialize: function() {
+            // as soon as user gets authorized/logged out/created need to hide panel
+            this.listenTo(this.model, 'change:access_token onUserCreated', this.close.bind(this));
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            ':el': 'classes: {active: any(ui_showSignUp, ui_showLogIn, ui_showMenu)}',
+            '.signup-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showSignUp), "regular-text": ui_showSignUp}',
+            '.login-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showLogIn), "regular-text": ui_showLogIn}',
+            '.close': 'toggle: any(ui_showSignUp, ui_showLogIn, ui_showMenu)',
+            '.sign-up-box': 'toggle: ui_showSignUp',
+            '.log-in-box': 'toggle: ui_showLogIn',
+            '.menu-items': 'toggle: ui_showMenu',
+            '.logged-as': 'text: first_name, toggle: access_token'
+        },
+        events: {
+            'click .signup-link': 'showSignUp',
+            'click .login-link': 'showLogIn',
+            'click .close': 'close',
+            'click .logged-as': 'showMenu'
+        },
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({
+                    showSignUp: false,
+                    showLogIn: false,
+                    showMenu: false
+                });
+            }
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+
+            // LogIn view
+            var loginView = App.Views.GeneratorView.create('Profile', _.extend({}, this.options, {
+                el: this.$('.log-in-box'),
+                mod: 'LogIn',
+                model: this.model
+            }));
+
+            // SignUp view
+            var signupView = App.Views.GeneratorView.create('Profile', _.extend({}, this.options, {
+                el: this.$('.sign-up-box'),
+                mod: 'SignUp',
+                model: this.model
+            }));
+
+            // Menu view
+            var menuView = App.Views.GeneratorView.create('Profile', _.extend({}, this.options, {
+                el: this.$('.menu-items'),
+                mod: 'Menu',
+                header: new Backbone.Model({showProfileMenu: true})
+            }));
+
+            this.subViews.push(loginView, signupView, menuView);
+
+            return this;
+        },
+        showSignUp: function() {
+            this.getBinding('$ui').set({
+                showSignUp: true,
+                showLogIn: false,
+                showMenu: false
+            });
+        },
+        showLogIn: function() {
+            this.getBinding('$ui').set({
+                showSignUp: false,
+                showLogIn: true,
+                showMenu: false
+            });
+        },
+        close: function() {
+            this.getBinding('$ui').set({
+                showSignUp: false,
+                showLogIn: false,
+                showMenu: false
+            });
+        },
+        showMenu: function() {
+            this.getBinding('$ui').set({
+                showSignUp: false,
+                showLogIn: false,
+                showMenu: true
+            });
+        }
+    });
+
     return new (require('factory'))(function() {
         App.Views.ProfileView = {};
         App.Views.ProfileView.ProfileSignUpView = App.Views.CoreProfileView.CoreProfileSignUpView;
@@ -147,5 +245,6 @@ define(["factory"], function(Backbone) {
         App.Views.ProfileView.ProfileSettingsView = App.Views.CoreProfileView.CoreProfileSettingsView;
         App.Views.ProfileView.ProfilePWDResetView = App.Views.CoreProfileView.CoreProfilePWDResetView;
         App.Views.ProfileView.ProfileMenuView = App.Views.CoreProfileView.CoreProfileMenuView;
+        App.Views.ProfileView.ProfilePanelView = App.Views.CoreProfileView.CoreProfilePanelView;
     });
 });

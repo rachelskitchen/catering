@@ -87,6 +87,9 @@ define(["main_router"], function(main_router) {
                 });
                 ests.getModelForView().set('clientName', mainModel.get('clientName'));
 
+                // as soon as the route is initialized need to set profile panel
+                this.listenToOnce(this, 'initialized', this.initProfilePanel.bind(this));
+
                 // init Stanford Card model if it's turned on
                 if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
                     App.Data.stanfordCard = new App.Models.StanfordCard();
@@ -556,10 +559,6 @@ define(["main_router"], function(main_router) {
                     App.Data.giftcard = new App.Models.GiftCard;
                 }
 
-                if (!App.Data.customer) {
-                    App.Data.customer = new App.Models.Customer();
-                }
-
                 var settings = App.Data.settings.get('settings_system');
 
                 // Need to specify shipping address (Bug 34676)
@@ -597,6 +596,7 @@ define(["main_router"], function(main_router) {
             this.prepare('confirm', function() {
                 // if App.Data.customer doesn't exist (success payment -> history.back() to #checkout -> history.forward() to #confirm)
                 // need to init it.
+                // TODO
                 if(!App.Data.customer) {
                     this.loadCustomer();
                 }
@@ -605,6 +605,43 @@ define(["main_router"], function(main_router) {
                 });
                 this.change_page();
             });
+        },
+        initProfilePanel: function() {
+            var mainModel = App.Data.mainModel;
+
+            mainModel.set({
+                profile: {
+                    modelName: 'Profile',
+                    mod: 'Panel',
+                    model: App.Data.customer,
+                    showSpinner: showSpinner,
+                    hideSpinner: hideSpinner,
+                    settings_action: new Function,
+                    payments_action: new Function,
+                    profile_action: new Function,
+                    signupAction: register,
+                    cacheId: true
+                }
+            });
+
+            function register() {
+                var customer = App.Data.customer,
+                    check = customer.checkSignUpData();
+                if (check.status == 'OK') {
+                    showSpinner();
+                    customer.signup().always(hideSpinner);
+                } else {
+                    App.Data.errors.alert(check.errorMsg);
+                }
+            }
+
+            function showSpinner() {
+                mainModel.trigger('loadStarted');
+            }
+
+            function hideSpinner() {
+                mainModel.trigger('loadCompleted');
+            }
         },
         maintenance: function() {
             var settings = App.Data.settings;

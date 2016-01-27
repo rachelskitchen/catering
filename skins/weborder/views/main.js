@@ -31,6 +31,7 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:header', this.header_change, this);
             this.listenTo(this.model, 'change:cart', this.cart_change, this);
             this.listenTo(this.model, 'change:popup', this.popup_change, this);
+            this.listenTo(this.model, 'change:profile', this.profile_change, this);
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
             this.listenTo(this.model, 'change:isShowPromoMessage', this.calculatePromoMessageWidth, this);
@@ -47,7 +48,7 @@ define(["done_view", "generator"], function(done_view) {
 
             this.iOSFeatures();
 
-            this.subViews.length = 3;
+            this.subViews.length = 4;
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
@@ -55,6 +56,7 @@ define(["done_view", "generator"], function(done_view) {
             if (App.Settings.promo_message) this.calculatePromoMessageWidth(); // calculate a promo message width
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.iPad7Feature();
+            this.profile_change();
 
             var spinner = this.$('#main-spinner');
             spinner.spinner();
@@ -72,7 +74,7 @@ define(["done_view", "generator"], function(done_view) {
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
 
-            while (this.subViews.length > 3)
+            while (this.subViews.length > 4)
                 this.subViews.pop().removeFromDOMTree();
 
             if (Array.isArray(data))
@@ -134,6 +136,13 @@ define(["done_view", "generator"], function(done_view) {
 
             popup.addClass('ui-visible');
         },
+        profile_change: function() {
+            var data = _.defaults(this.model.get('profile'), this.profile_defaults()),
+                id = 'profile_' + data.modelName + '_' + data.mod;
+
+            this.subViews[3] && this.subViews[3].removeFromDOMTree();
+            this.subViews[3] = App.Views.GeneratorView.create(data.modelName, data, id);
+        },
         hide_popup: function(event, status) {
             var callback = _.isObject(this.model.get('popup')) ? this.model.get('popup').action_callback : null;
             this.model.unset('popup');
@@ -163,6 +172,11 @@ define(["done_view", "generator"], function(done_view) {
              className: 'popup'
              };*/
         },
+        profile_defaults: function() {
+            return {
+                el: this.$('#profile-panel')
+            };
+        },
         addContent: function(data, removeClass) {
             var id = 'content_' + data.modelName + '_' + data.mod;
             data = _.defaults(data, this.content_defaults());
@@ -171,7 +185,7 @@ define(["done_view", "generator"], function(done_view) {
                 delete data.className;
 
             var subView = App.Views.GeneratorView.create(data.modelName, data, id);
-            this.subViews.push(subView); // subViews length always > 3
+            this.subViews.push(subView); // subViews length always > 4
 
             return subView.el;
         },

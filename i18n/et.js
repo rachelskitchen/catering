@@ -562,6 +562,7 @@ define([], function() {
         "WELCOME": "",
         "PAYMENTS": "",
         "SETTINGS": "",
+        "CONTINUE": "Continue",
         "PROFILE": "Profiil",
         "PROFILE_EMAIL_ADDRESS": "E-posti aadress",
         "PROFILE_PASSWORD": "Parool",
@@ -587,6 +588,7 @@ define([], function() {
         "PROFILE_MORE": "",
         "PROFILE_FIRST_NAME": "Eesnimi",
         "PROFILE_LAST_NAME": "Perekonnanimi",
-        "PROFILE_PHONE": "Telefoninumber"
+        "PROFILE_PHONE": "Telefoninumber",
+        "PROFILE_USER_CREATED": ""
     } // end of locale
 }); // end of module

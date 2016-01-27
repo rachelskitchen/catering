@@ -538,6 +538,7 @@
         'WELCOME': 'Welcome',
         'PAYMENTS': "Payments",
         'SETTINGS': "Settings",
+        'CONTINUE': 'Continue',
         'PROFILE': "Profile",
         'PROFILE_EMAIL_ADDRESS': 'Email Address',
         'PROFILE_PASSWORD': 'Password',
@@ -564,6 +565,7 @@
         'PROFILE_MORE': "More",
         "PROFILE_FIRST_NAME": "First Name",
         "PROFILE_LAST_NAME": "Last Name",
-        "PROFILE_PHONE": "Phone #"
+        "PROFILE_PHONE": "Phone #",
+        "PROFILE_USER_CREATED": "The user has been created. Please check your email and confirm registration."
     }; // end of locale
 }); // end of module

@@ -321,6 +321,10 @@ define(["backbone", "factory"], function(Backbone) {
         initCustomer: function() {
             App.Data.customer = new App.Models.Customer();
 
+            this.listenTo(App.Data.customer, 'onUserCreated', function() {
+                App.Data.errors.alert(_loc.PROFILE_USER_CREATED);
+            });
+
             this.listenTo(App.Data.customer, 'onInvalidUser', function() {
                 App.Data.errors.alert(_loc.PROFILE_LOGIN_ERROR);
             });

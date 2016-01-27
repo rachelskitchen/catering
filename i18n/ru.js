@@ -530,6 +530,7 @@
         'WELCOME': 'Добро пожаловать',
         "PAYMENTS": "Платежи",
         "SETTINGS": "Настройки",
+        'CONTINUE': 'Далее',
         'PROFILE': 'Профиль',
         'PROFILE_EMAIL_ADDRESS': 'Эл. почта',
         'PROFILE_PASSWORD': 'Пароль',
@@ -555,6 +556,7 @@
         "PROFILE_MORE": "Другое",
         "PROFILE_FIRST_NAME": "Имя",
         "PROFILE_LAST_NAME": "Фамилия",
-        "PROFILE_PHONE": "Телефон"
+        "PROFILE_PHONE": "Телефон",
+        "PROFILE_USER_CREATED": "Пользователь создан. Пожалуйста, проверьте вашу почту и подтвердите регистрацию."
     } // end of locale
 }); // end of module

@@ -1689,7 +1689,7 @@ define(["main_router"], function(main_router) {
         },
         signup: function() {
             this.prepare('profile', function() {
-                var events = 'change:first_name change:last_name change:email change:password change:confirm_password';
+                var events = 'change:first_name change:last_name change:email change:phone change:password change:confirm_password';
 
                 App.Data.header.set({
                     page_title: _loc.PROFILE_SIGN_UP,
@@ -1736,7 +1736,7 @@ define(["main_router"], function(main_router) {
 
                 function preValidateData() {
                     var attrs = App.Data.customer.toJSON(),
-                        valid = attrs.first_name && attrs.last_name && attrs.email && attrs.password
+                        valid = attrs.first_name && attrs.last_name && attrs.email && attrs.phone && attrs.password
                             && App.Data.customer.comparePasswords().status == 'OK';
                     App.Data.header.set('enableLink', valid);
                 }
@@ -1744,20 +1744,15 @@ define(["main_router"], function(main_router) {
         },
         profile_create: function() {
             this.prepare('profile', function() {
+                var self = this;
                 App.Data.header.set({
                     page_title: _loc.PROFILE_CREATE_TITLE,
                     back_title: _loc.BACK,
                     back: this.navigate.bind(this, 'signup', true),
                     link: register,
                     link_title: _loc.CONTINUE,
-                    enableLink: false
+                    enableLink: true
                 });
-
-                // listen to App.Data.customer 'change:phone' event
-                // to enable 'continue' link
-                preValidateData();
-                this.listenTo(App.Data.customer, 'change:phone', preValidateData);
-                this.listenToOnce(this, 'route', this.stopListening.bind(this, App.Data.customer, 'change:phone', preValidateData));
 
                 var content = [{
                     modelName: 'Profile',
@@ -1777,16 +1772,15 @@ define(["main_router"], function(main_router) {
 
                 function register() {
                     var customer = App.Data.customer,
-                        check = customer.checkSignUpData(true);
+                        check = customer.checkSignUpData();
                     if (check.status == 'OK') {
-                        customer.signup();
+                        App.Data.mainModel.trigger('loadStarted');
+                        customer.signup()
+                                .done(self.navigate.bind(self, 'login', true))
+                                .always(App.Data.mainModel.trigger.bind(App.Data.mainModel, 'loadCompleted'));
                     } else {
                         App.Data.errors.alert(check.errorMsg);
                     }
-                }
-
-                function preValidateData() {
-                    App.Data.header.set('enableLink', !!App.Data.customer.get('phone'));
                 }
             });
         },

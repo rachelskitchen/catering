@@ -562,6 +562,7 @@ define([], function() {
         "WELCOME": "",
         "PAYMENTS": "",
         "SETTINGS": "",
+        "CONTINUE": "Continue",
         "PROFILE": "Profilis",
         "PROFILE_EMAIL_ADDRESS": "El. pašto adresas",
         "PROFILE_PASSWORD": "Slaptažodis",
@@ -587,6 +588,7 @@ define([], function() {
         "PROFILE_MORE": "",
         "PROFILE_FIRST_NAME": "Vardas",
         "PROFILE_LAST_NAME": "Pavardė",
-        "PROFILE_PHONE": "Telefono nr."
+        "PROFILE_PHONE": "Telefono nr.",
+        "PROFILE_USER_CREATED": ""
     } // end of locale
 }); // end of module

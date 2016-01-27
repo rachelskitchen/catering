@@ -222,7 +222,6 @@ define([], function() {
         "SEARCH_FIELD_PLACEHOLDER": "Saisir le nom du produit",
         "CONFIRM_ARRIVAL_TIME": "Heure d’arrivée",
         "CONFIRM_DELIVERY_TIME": "Heure de livraison",
-        "CONTINUE": "Continuer",
         "PAY": "Payer",
         "PAY_QUESTION": "Comment désirez-vous payer ?",
         "ORDER_RECEIVED": "Votre commande a été reçue.",
