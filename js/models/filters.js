@@ -166,18 +166,21 @@ define(['backbone'], function() {
          * Otherwise, a new item is added to the collection.
          * @param {Array} items - an array of objects each of them has attributes of filter item.
          */
-        setItems: function(items) {
+        setItems: function(items, update_only) {
             if(!Array.isArray(items)) {
                 return;
             }
             items.forEach(function(item, index) {
-                var model = this.at(index);
+                var uid = item instanceof App.Models.FilterItem ? item.get('uid') : item.uid;
+                var model = this.findWhere({uid: uid});
                 if(model) {
                     if (model.is_filter_available()) {
                         model.set(item);
                     }
                 } else {
-                    this.add(item);
+                    if (update_only !== true) {
+                        this.add(item);
+                    }
                 }
             }, this);
         }
@@ -320,13 +323,13 @@ define(['backbone'], function() {
          * Converts `data.filterItems` array to App.Collections.FilterItems instance.
          * @param {Object} data - object literal containing JSON represetation of attributes.
          */
-        setData: function(data) {
+        setData: function(data, update_only) {
             if(!(data instanceof Object)) {
                 return;
             }
             for(var i in data) {
                 if(i == 'filterItems') {
-                    this.get('filterItems').setItems(data[i]);
+                    this.get('filterItems').setItems(data[i], update_only);
                 } else {
                     this.set(i, data[i]);
                 }
@@ -466,16 +469,17 @@ define(['backbone'], function() {
          * Otherwise, a new item is added to the collection.
          * @param {Array} data - an array of objects containing JSON representation of {@link App.Models.Filter} attributes.
          */
-        setData: function(data) {
+        setData: function(data, update_only) {
             if(!Array.isArray(data)) {
                 return;
             }
             data.forEach(function(item, index) {
                 var model = this.at(index);
                 if(model) {
-                    model.setData(item);
+                    model.setData(item, update_only);
                 } else {
-                    this.add(item);
+                    if (update_only !== true)
+                        this.add(item);
                 }
             }, this);
         },
