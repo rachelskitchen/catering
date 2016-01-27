@@ -243,7 +243,6 @@
         'SEARCH_FIELD_PLACEHOLDER': 'Enter product name',
         'CONFIRM_ARRIVAL_TIME': 'Arrival Time',
         'CONFIRM_DELIVERY_TIME': 'Delivery Time',
-        'CONTINUE': 'Continue',
         'PAY': 'Pay',
         'PAY_QUESTION': 'How would you like to pay?',
         'PLACE_ORDER': 'Place Order',

@@ -498,17 +498,15 @@ define(["backbone", "geopoint"], function(Backbone) {
          *     errorList: [] // Array of invalid properties
          * }
          * ```
-         *
-         * @params {boolean} checkPhone - if `true` need to check `phone` attribute.
          */
-        checkSignUpData: function(checkPhone) {
+        checkSignUpData: function() {
             var err = [];
 
             !this.get('first_name') && err.push(_loc.PROFILE_FIRST_NAME);
             !this.get('last_name') && err.push(_loc.PROFILE_LAST_NAME);
             !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.PROFILE_EMAIL_ADDRESS);
+            !this.get('phone') && err.push(_loc.PROFILE_PHONE);
             !this.get('password') && err.push(_loc.PROFILE_PASSWORD);
-            checkPhone && !this.get('password') && err.push(_loc.PROFILE_PHONE);
 
             if (err.length) {
                 return {
@@ -721,6 +719,8 @@ define(["backbone", "geopoint"], function(Backbone) {
          *     "addresses":[]                  // addresses
          * }
          * ```
+         * The model emits `onUserCreated` event in this case.
+         *
          * - Username already exists:
          * ```
          * Status: 422
@@ -769,7 +769,8 @@ define(["backbone", "geopoint"], function(Backbone) {
                         password: this.defaults.password,
                         confirm_password: this.defaults.confirm_password
                     });
-                    console.log('SignUp:', data);
+                    this.logout();
+                    this.trigger('onUserCreated');
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {

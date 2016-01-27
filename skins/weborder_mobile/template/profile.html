@@ -30,6 +30,10 @@
         <li class="required">
             <input type="text" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret input-colors">
         </li>
+        <li class="required">
+            <input type="tel" placeholder="<%= _lp.PROFILE_PHONE %>" class="phone ios-safari-caret input-colors">
+            <span class="phone-privacy regular-text fl-left"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
+        </li>
     </ul>
     <span class="profile-info account-password regular-text font-size3"><%= _lp.PROFILE_ACCOUNT_PASSWORD %></span>
     <ul class="profile-form font-size2 text-center">
@@ -48,12 +52,6 @@
         <%= _lp.PROFILE_GREETING %>, <span class="name"></span>!
     </span>
     <span class="profile-complete text-center font-size3 primary-text"><%= _lp.PROFILE_COMPLETE %></span>
-    <ul class="profile-form font-size2 text-center">
-        <li class="required">
-            <input type="tel" placeholder="<%= _lp.PROFILE_PHONE %>" class="phone ios-safari-caret input-colors">
-            <span class="phone-privacy regular-text fl-left"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
-        </li>
-    </ul>
     <div>
     </div>
 </script>
