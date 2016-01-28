@@ -87,7 +87,7 @@ define(["main_router"], function(main_router) {
                 });
                 ests.getModelForView().set('clientName', mainModel.get('clientName'));
 
-                // as soon as the route is initialized need to set profile panel
+                // Once the route is initialized need to set profile panel
                 this.listenToOnce(this, 'initialized', this.initProfilePanel.bind(this));
 
                 // init Stanford Card model if it's turned on
@@ -606,43 +606,6 @@ define(["main_router"], function(main_router) {
                 this.change_page();
             });
         },
-        initProfilePanel: function() {
-            var mainModel = App.Data.mainModel;
-
-            mainModel.set({
-                profile: {
-                    modelName: 'Profile',
-                    mod: 'Panel',
-                    model: App.Data.customer,
-                    showSpinner: showSpinner,
-                    hideSpinner: hideSpinner,
-                    settings_action: new Function,
-                    payments_action: new Function,
-                    profile_action: new Function,
-                    signupAction: register,
-                    cacheId: true
-                }
-            });
-
-            function register() {
-                var customer = App.Data.customer,
-                    check = customer.checkSignUpData();
-                if (check.status == 'OK') {
-                    showSpinner();
-                    customer.signup().always(hideSpinner);
-                } else {
-                    App.Data.errors.alert(check.errorMsg);
-                }
-            }
-
-            function showSpinner() {
-                mainModel.trigger('loadStarted');
-            }
-
-            function hideSpinner() {
-                mainModel.trigger('loadCompleted');
-            }
-        },
         maintenance: function() {
             var settings = App.Data.settings;
             if (settings.get('isMaintenance')) {
@@ -655,6 +618,9 @@ define(["main_router"], function(main_router) {
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         }
     });
+
+    // extends Router with Desktop mixing
+    _.defaults(Router.prototype, App.Routers.DesktopMixing);
 
     return new main_router(function() {
         defaultRouterData();
