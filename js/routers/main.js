@@ -623,6 +623,47 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
+    // Used for desktop skins: Weborder, Retail, Directory
+    App.Routers.DesktopMixing = {
+        initProfilePanel: function() {
+            var mainModel = App.Data.mainModel;
+
+            mainModel.set({
+                profile: {
+                    modelName: 'Profile',
+                    mod: 'Panel',
+                    model: App.Data.customer,
+                    showSpinner: showSpinner,
+                    hideSpinner: hideSpinner,
+                    settings_action: new Function,
+                    payments_action: new Function,
+                    profile_action: new Function,
+                    signupAction: register,
+                    cacheId: true
+                }
+            });
+
+            function register() {
+                var customer = App.Data.customer,
+                    check = customer.checkSignUpData();
+                if (check.status == 'OK') {
+                    showSpinner();
+                    customer.signup().always(hideSpinner);
+                } else {
+                    App.Data.errors.alert(check.errorMsg);
+                }
+            }
+
+            function showSpinner() {
+                mainModel.trigger('loadStarted');
+            }
+
+            function hideSpinner() {
+                mainModel.trigger('loadCompleted');
+            }
+        }
+    };
+
     App.Routers.MobileRouter = App.Routers.MainRouter.extend({
         change_page: function() {
             App.Routers.MainRouter.prototype.change_page.apply(this, arguments);

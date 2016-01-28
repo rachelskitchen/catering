@@ -58,6 +58,9 @@ section:before {
 .link1, .primary-text {
     color: #900000;
 }
+#profile-panel input:focus {
+    border-color: #900000;
+}
 .powered-by {
     background: url('img/poweredBy.png') no-repeat 0 0 transparent;
 }
