@@ -2486,13 +2486,15 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                         created_date: 'create date',
                         lastPickupTime: "last pt",
                         pickup_time: "pickup time to server",
-                        notes: ""
+                        notes: "",
+                        customer: {
+                            first_name: "",
+                            last_name: ""
+                        }
                     },
                     paymentInfo: {
                         tip: 1,
                         type: 2,
-                        first_name: '',
-                        last_name: '',
                         cardInfo: {
                             firstDigits: '',
                             lastDigits: '',
@@ -2544,18 +2546,9 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                 expect(ajax.data.orderInfo.shipping).toBe('shipping service 2');
                 expect(ajax.data.orderInfo.customer).toEqual({
-                    tip: 1,
-                    type: 2,
-                    first_name: 'customer name',
-                    last_name: '',
-                    cardInfo: {
-                        firstDigits: '',
-                        lastDigits: '',
-                        firstName: '',
-                        lastName: '',
-                        address: null
-                    }
-                });
+                         first_name: 'customer name',
+                         last_name: ''
+                       });
             });
 
             describe('skin paypal', function() {
@@ -2616,8 +2609,8 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     expect(ajax.data.orderInfo.call_name).toBe('');
                     expect(ajax.data.paymentInfo.phone).toBeUndefined();
                     expect(ajax.data.paymentInfo.email).toBeUndefined();
-                    expect(ajax.data.paymentInfo.first_name).toBe('');
-                    expect(ajax.data.paymentInfo.last_name).toBe('');
+                    expect(ajax.data.orderInfo.customer.first_name).toBe('');
+                    expect(ajax.data.orderInfo.customer.last_name).toBe('');
                 });
 
                 it('all field filled', function() {
@@ -2629,10 +2622,10 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                     expect(ajax.data.orderInfo.call_name).toBe('first name    last / pickup time / phone');
-                    expect(ajax.data.paymentInfo.phone).toBe('phone');
-                    expect(ajax.data.paymentInfo.email).toBe('email');
-                    expect(ajax.data.paymentInfo.first_name).toBe('first name');
-                    expect(ajax.data.paymentInfo.last_name).toBe('   last   ');
+                    expect(ajax.data.orderInfo.customer.phone).toBe('phone');
+                    expect(ajax.data.orderInfo.customer.email).toBe('email');
+                    expect(ajax.data.orderInfo.customer.first_name).toBe('first name');
+                    expect(ajax.data.orderInfo.customer.last_name).toBe('   last   ');
                 });
             });
 
@@ -2646,13 +2639,13 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 it('other delivery address', function() {
                     customer.shipping_address = 1;
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                    expect(ajax.data.paymentInfo.address).toBe('2');
+                    expect(ajax.data.orderInfo.customer.address).toBe('2');
                 });
 
                 it('selected first delivery address', function() {
                     customer.shipping_address = 0;
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                    expect(ajax.data.paymentInfo.address).toBe('1');
+                    expect(ajax.data.orderInfo.customer.address).toBe('1');
                 });
             });
 
@@ -2669,19 +2662,18 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 expect(ajax.data.paymentInfo.tabId).toBe('tab');
                 expect(ajax.data.paymentInfo.locationId).toBe('location');
                 expect(ajax.data.paymentInfo.customerId).toBe('customer');
-                expect(ajax.data.paymentInfo.phone).toBe('phone');
+                expect(ajax.data.orderInfo.customer.phone).toBe('phone');
             });
 
             describe('payment type = 2', function() {
 
                 it('default', function() {
-                    customer.first_name = '';
+                    customer.first_name = 'testName';
                     model.submit_order_and_pay(2);
+                    expect(ajax.data.orderInfo.customer.first_name).toBe('testName');
                     expect(ajax.data.paymentInfo).toEqual({
                         tip : 1,
                         type : 2,
-                        first_name : '',
-                        last_name: '',
                         cardInfo : {
                             firstDigits : '',
                             lastDigits : '',
@@ -2783,9 +2775,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     model.submit_order_and_pay(3);
                     expect(ajax.data.paymentInfo).toEqual({
                         tip : 1,
-                        type : 3,
-                        first_name: 'customer name',
-                        last_name: ''
+                        type : 3
                     });
                 });
 
@@ -2799,8 +2789,6 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     expect(ajax.data.paymentInfo).toEqual({
                         tip : 1,
                         type : 3,
-                        first_name: 'customer name',
-                        last_name: '',
                         payer_id : 'id',
                         payment_id : 'payment'
                     });
