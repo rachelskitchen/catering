@@ -45,7 +45,8 @@ define(['backbone', 'factory'], function(Backbone) {
             model.zipcode = address ? address.zipcode : '';
             model.countries = _loc['COUNTRIES'];
 
-            this.model = model;
+            this.model = new Backbone.Model(model);
+            this.prevValues = model;
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.updateAddress();
@@ -81,7 +82,11 @@ define(['backbone', 'factory'], function(Backbone) {
             return customer.addresses[shipping_address] && typeof customer.addresses[shipping_address].street_1 === 'string' ? customer.addresses[shipping_address] : undefined;
         },
         bindings: {
-            'input[name=zipcode]': 'pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
+            'input[name="street_1"]': 'value: firstLetterToUpperCase(street_1), events: ["input"], trackCaretPosition: street_1',
+            'input[name="street_2"]': 'value: firstLetterToUpperCase(street_2), events: ["input"], trackCaretPosition: street_2',
+            'input[name="city"]': 'value: firstLetterToUpperCase(city), events: ["input"], trackCaretPosition: city',
+            'input[name="province"]': 'value: firstLetterToUpperCase(province), events: ["input"], trackCaretPosition: province',
+            'input[name=zipcode]': 'value: zipcode, pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
         },
         computeds: {
             zipcodeValue: {
@@ -102,62 +107,46 @@ define(['backbone', 'factory'], function(Backbone) {
             'change select.country': 'countryChange',
             'change select.states': 'changeState',
             'change .shipping-select': 'changeShipping',
-            'input input[name]': 'input',
             'blur input[name]': 'change',
             'change input[name]': 'change'
         },
-        input: function(event){
-            var name = event.target.name,
-                prev = null;
-            if(event.target.value === prev)
-                return;
-            try {
-                var start = event.target.selectionStart,
-                    end = event.target.selectionEnd,
-                    direction = event.target.selectionDirection;
-            } catch(e) {
-                console.log('There is not selection API');
-            }
-            event.target.value = fistLetterToUpperCase(event.target.value);
-            prev = event.target.value;
-            try {
-                event.target.setSelectionRange(start, end, direction);
-            } catch(e) {}
-        },
         change: function(e) {
-            e.target.value = fistLetterToUpperCase(e.target.value).trim();
-            if (this.model[e.target.name] != e.target.value) {
-                this.model[e.target.name] = e.target.value;
+            e.target.value = e.target.value.trim();
+            if (this.prevValues[e.target.name] != e.target.value) {
+                this.prevValues[e.target.name] = e.target.value;
                 this.updateAddress();
             }
         },
         countryChange: function(e) {
-            this.model.country = e.target.value;
+            var model = this.model.toJSON();
+            model.country = e.target.value;
 
-            if (this.model.country == 'US') {
-                if (typeof this.model.originalState == 'string' && this.model.originalState.length > 0)
-                    this.model.state = this.model.originalState;
+            if (model.country == 'US') {
+                if (typeof model.originalState == 'string' && model.originalState.length > 0)
+                    model.state = model.originalState;
                 else {
-                    this.model.state = this.model.originalState = "CA";
+                    model.state = model.originalState = "CA";
                 }
             }
             else {
-                this.model.state = undefined;
+                model.state = undefined;
             }
 
-            this.model.province = this.model.country == 'CA' ? "" : undefined;
+            model.province = model.country == 'CA' ? "" : undefined;
+
+            this.model.set(model);
             this.render(); // need to hide state if this is neccessary
             this.updateAddress();
         },
         changeState: function(e) {
-            this.model.state = this.model.originalState = e.target.value;
+            this.model.set({'state': e.target.value, 'originalState': e.target.value});
             this.updateAddress();
         },
         updateAddress: function() {
             var customer = this.options.customer,
                 shipping_address = customer.get('shipping_address'),
                 addresses = customer.get('addresses'),
-                model = this.model,
+                model = this.model.toJSON(),
                 address;
 
             // if shipping_address isn't selected take last index
@@ -190,7 +179,7 @@ define(['backbone', 'factory'], function(Backbone) {
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
-            this.model.isShippingServices = this.isShippingServices;
+            this.model.set('isShippingServices', this.isShippingServices);
 
             App.Views.AddressView.prototype.render.apply(this, arguments);
 
@@ -268,7 +257,7 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         updateAddress: function() {
             App.Views.AddressView.prototype.updateAddress.apply(this, arguments);
-            var model = this.model;
+            var model = this.model.toJSON();
             if (this.isShippingServices && model.street_1 && model.city && model.country && model.zipcode
                 && (model.country == 'US' ? model.state : true) && (model.country == 'CA' ? model.province : true)) {
                 // need to reset shipping services before updating them

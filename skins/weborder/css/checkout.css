@@ -342,7 +342,7 @@
 }
 
 /* for tablets */
-@media only screen and (max-device-width: 949px) {
+@media only screen and (max-width: 949px) {
     #content > .checkout label {
         width: 182px !important;
     }
@@ -389,9 +389,9 @@
     }
 }
 
-@media only screen and (max-device-width: 949px) and (orientation: portrait) {
+@media only screen and (max-width: 1083px) {
     #content > .checkout .tipBlock {
-      height: 116px !important;
+      height: 98px !important;
     }
     #cart .checkout .btn.paypal {
         height: 38px !important;

@@ -44,6 +44,9 @@ body {
     font-size: 16px;
     cursor: default;
 }
+body {
+    min-width: 748px;
+}
 #loader {
     z-index: 1001;
 }
@@ -701,6 +704,9 @@ section.maintenance #header .btn {
     overflow: hidden;
     text-indent: 1000px;
 }
+#cart .order-items .discount_place .cost {
+    float: right;
+}
 .bold {
     font-weight: bold;
 }
@@ -760,14 +766,9 @@ section.maintenance #header .btn {
 }
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
-    body {
-        min-width: 748px;
-    }
     .footer_mercury .footer__left {
         max-width: 50%;
     }
-}
-@media only screen and (max-device-width: 949px) {
     #cart .btn {
         font-size: 20px;
     }

@@ -152,7 +152,7 @@ define(["factory"], function() {
             '.btn-link-title': 'text:link_title',
             '.btn-link': 'toggle: link, classes: {disabled: not(enableLink)}',
             '.btn-back-title': 'text: back_title',
-            '.btn-cart': 'toggle: not(link), attr: {"data-count": cartItemsQuantity}, classes: {"qty-visible": cartItemsQuantity}'
+            '.btn-cart': 'toggle: all(not(link), select(hideCart, false, true)), attr: {"data-count": cartItemsQuantity}, classes: {"qty-visible": cartItemsQuantity}'
         },
         events: {
             'click .btn-link': setCallback('link'),
