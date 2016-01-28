@@ -1,6 +1,6 @@
 <script type="text/template" id="myorder_list-template">
     <ul class="myorder"></ul>
-    <ul class="discount"></ul>
+    <ul class="discount order-discount"></ul>
     <ul class="service_fees"></ul>
 </script>
 
@@ -36,7 +36,7 @@
     </ul>
     <% if(is_child_product != true) { %>
     <div class="combo_products_place"></div>
-    <div class="discount_place"></div>
+    <ul class="discount_place"></ul>
     <% } %>
     <% if(id_product !== null && is_child_product != true) { %>
     <div class="btns">
