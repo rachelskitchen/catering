@@ -23,6 +23,13 @@
 define(["factory"], function() {
     'use strict';
 
+    function setCallback(action) {
+        return function() {
+            var cb = this.options[action];
+            typeof cb == 'function' && cb();
+        };
+    }
+
     App.Views.CoreProfileView = {};
 
     App.Views.CoreProfileView.CoreProfileSignUpView = App.Views.FactoryView.extend({
@@ -39,10 +46,7 @@ define(["factory"], function() {
             '.signup-btn': 'classes: {disabled: any(not(first_name), not(last_name), not(email), not(phone), not(password), not(confirm_password), not(equal(password, confirm_password)))}'
         },
         events: {
-            'click .signup-btn': 'signup'
-        },
-        signup: function() {
-            typeof this.options.signupAction == 'function' && this.options.signupAction();
+            'click .signup-btn:not(.disabled)': setCallback('signupAction')
         }
     });
 
@@ -55,22 +59,9 @@ define(["factory"], function() {
             '.login-btn': 'classes: {disabled: any(not(email), not(password))}'
         },
         events: {
-            'click .login-btn': 'login',
-            'click .create-btn': 'create',
-            'click .guest-btn': 'guest'
-        },
-        login: function() {
-            var showSpinner = typeof this.options.showSpinner == 'function' ? this.options.showSpinner : new Function(),
-                hideSpinner = typeof this.options.hideSpinner == 'function' ? this.options.hideSpinner : new Function(),
-                afterLogin = typeof this.options.afterLogin == 'function' ? this.options.afterLogin : new Function();
-            showSpinner();
-            this.model.login().done(afterLogin).always(hideSpinner);
-        },
-        create: function() {
-            typeof this.options.createAccount == 'function' && this.options.createAccount();
-        },
-        guest: function() {
-            typeof this.options.guestCb == 'function' && this.options.guestCb();
+            'click .login-btn:not(.disabled)': setCallback('loginAction'),
+            'click .create-btn': setCallback('createAccount'),
+            'click .guest-btn': setCallback('guestCb')
         }
     });
 
@@ -98,35 +89,12 @@ define(["factory"], function() {
             }
         },
         events: {
-            'click .login-link': 'login',
-            'click .logout-link': 'logout',
-            'click .settings-link:not(.disabled)': 'settings',
-            'click .payments-link:not(.disabled)': 'payments',
-            'click .profile-link:not(.disabled)': 'profile',
-            'click .close': 'close'
-        },
-        close: function() {
-            this.options.header.set('showProfileMenu', false);
-        },
-        login: function() {
-            typeof this.options.login_action == 'function' && this.options.login_action();
-            this.close();
-        },
-        logout: function() {
-            this.model.logout();
-            this.close();
-        },
-        settings: function() {
-            typeof this.options.settings_action == 'function' && this.options.settings_action();
-            this.close();
-        },
-        payments: function() {
-            typeof this.options.payments_action == 'function' && this.options.payments_action();
-            this.close();
-        },
-        profile: function() {
-            typeof this.options.profile_action == 'function' && this.options.profile_action();
-            this.close();
+            'click .login-link': setCallback('login_link'),
+            'click .logout-link': setCallback('logout_link'),
+            'click .settings-link:not(.disabled)': setCallback('settings_link'),
+            'click .payments-link:not(.disabled)': setCallback('payments_link'),
+            'click .profile-link:not(.disabled)': setCallback('profile_link'),
+            'click .close': setCallback('close_link')
         }
     });
 
@@ -149,8 +117,8 @@ define(["factory"], function() {
         name: 'profile',
         mod: 'panel',
         initialize: function() {
-            // as soon as user gets authorized/logged out/created need to hide panel
-            this.listenTo(this.model, 'change:access_token onUserCreated', this.close.bind(this));
+            // once gets authorized/logged out/created need to close panel
+            this.listenTo(this.model, 'change:access_token onUserCreated', controlLinks(false, false, false));
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
@@ -164,10 +132,10 @@ define(["factory"], function() {
             '.logged-as': 'text: first_name, toggle: access_token'
         },
         events: {
-            'click .signup-link': 'showSignUp',
-            'click .login-link': 'showLogIn',
-            'click .close': 'close',
-            'click .logged-as': 'showMenu'
+            'click .signup-link': controlLinks(true, false, false),
+            'click .login-link': controlLinks(false, true, false),
+            'click .logged-as': controlLinks(false, false, true),
+            'click .close': controlLinks(false, false, false)
         },
         bindingSources: {
             ui: function() {
@@ -205,36 +173,18 @@ define(["factory"], function() {
             this.subViews.push(loginView, signupView, menuView);
 
             return this;
-        },
-        showSignUp: function() {
-            this.getBinding('$ui').set({
-                showSignUp: true,
-                showLogIn: false,
-                showMenu: false
-            });
-        },
-        showLogIn: function() {
-            this.getBinding('$ui').set({
-                showSignUp: false,
-                showLogIn: true,
-                showMenu: false
-            });
-        },
-        close: function() {
-            this.getBinding('$ui').set({
-                showSignUp: false,
-                showLogIn: false,
-                showMenu: false
-            });
-        },
-        showMenu: function() {
-            this.getBinding('$ui').set({
-                showSignUp: false,
-                showLogIn: false,
-                showMenu: true
-            });
         }
     });
+
+    function controlLinks(showSignUp, showLogIn, showMenu) {
+        return function() {
+            this.getBinding('$ui').set({
+                showSignUp: showSignUp,
+                showLogIn: showLogIn,
+                showMenu: showMenu
+            });
+        };
+    }
 
     return new (require('factory'))(function() {
         App.Views.ProfileView = {};

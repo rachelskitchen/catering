@@ -32,8 +32,6 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:profile', this.profile_change, this);
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
-            this.listenTo(this.model, 'showRevelPopup', this.showRevelPopup, this);
-            this.listenTo(this.model, 'hideRevelPopup', this.hideRevelPopup, this);
             this.listenToOnce(this.model, 'showSpinnerAndHideContent', this.showSpinnerAndHideContent, this); // show a spinner and hide a content
             this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
             this.listenTo(this.model, 'resizeSection', this.resizeSection, this);
@@ -226,19 +224,6 @@ define(["done_view", "generator"], function(done_view) {
         hideSpinner: function() {
             this.unblurBg();
             this.$('#main-spinner').hide();
-        },
-        showRevelPopup: function(data) {
-            var container = this.$('#revel-popup');
-            container.css({display: 'table'});
-            this.blurBg();
-            this.revelView = App.Views.GeneratorView.create(data.modelName, data, data.cacheId);
-            this.subViews.push(this.revelView);
-            container.append(this.revelView.el);
-        },
-        hideRevelPopup: function() {
-            this.$('#revel-popup').hide();
-            this.unblurBg();
-            this.revelView && this.revelView.removeFromDOMTree();
         },
         blurBg: function() {
             this.$('section, footer, header').addClass('blur');

@@ -110,6 +110,7 @@ define(["main_router"], function(main_router) {
                     this.constructor.prototype.loadOrders.apply(this, arguments);
                     App.Data.filter.loadSort();
                 }
+
 //common
                 this.listenTo(mainModel, 'change:mod', this.createMainView);
 //common
@@ -131,6 +132,9 @@ define(["main_router"], function(main_router) {
                     search: App.Data.search
                 });
                 ests.getModelForView().set('clientName', mainModel.get('clientName'));
+
+                // Once the route is initialized need to set profile panel
+                this.listenToOnce(this, 'initialized', this.initProfilePanel.bind(this));
 
                 // init Stanford Card model if it's turned on
                 if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
@@ -757,6 +761,9 @@ define(["main_router"], function(main_router) {
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         }
     });
+
+    // extends Router with Desktop mixing
+    _.defaults(Router.prototype, App.Routers.DesktopMixing);
 
     function log() {
         // IE 10: console doesn't have debug method

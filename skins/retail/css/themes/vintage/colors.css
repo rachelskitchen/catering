@@ -10,6 +10,9 @@ select {
     color: #352a18;
     background-color: transparent;
 }
+#profile-panel .signup-link {
+    border-right-color: #352a18;
+}
 /* bug #14192 - IE 10: blue highlight displays in drop down in selecting a value in it */
 select:focus::-ms-value {
     background-color: transparent;
@@ -54,7 +57,7 @@ section:before {
     background: #e3d48b;
     box-shadow: 0 1px 1px #f8f8f8 inset, 0 -1px 1px #B5B5B5;
 }
-.link1 {
+.link1, .primary-text {
     color: #2186b1;
 }
 .powered-by {
@@ -334,7 +337,8 @@ aside:after, aside:before {
 #content > .checkout h2 {
     color: #2ba0d6;
 }
-.required:before {
+.required:before,
+.attention-text {
     color: #ff0000;
 }
 #content > .checkout .discount .btn {
