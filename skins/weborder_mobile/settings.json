@@ -6,11 +6,11 @@
     "img_default": "none.png",
     "routing": {
         "main": {
-            "css": [ "main", "header", "footer", "revel", "jquery.smartbanner", "profile"],
-            "model": ["main", "header", "revel", "payments", "footer"],
-            "templates": ["main", "header", "footer", "revel", "profile"],
+            "css": [ "main", "header", "footer", "jquery.smartbanner", "profile"],
+            "model": ["main", "header", "payments", "footer"],
+            "templates": ["main", "header", "footer", "profile"],
             "views": ["main", "header", "products", "footer"],
-            "core": ["geopoint", "stanfordcard", "giftcard", "customers", "revel_view", "revel_api", "profile_view"],
+            "core": ["geopoint", "stanfordcard", "giftcard", "customers", "profile_view"],
             "js" : ["jquery.smartbanner"]
         },
         "index": {

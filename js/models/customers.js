@@ -643,7 +643,7 @@ define(["backbone", "geopoint"], function(Backbone) {
         login: function() {
             var attrs = this.toJSON();
             return Backbone.$.ajax({
-                url: "https://identity-dev.revelup.com/customers-auth/authorization/token/",
+                url: "https://identity-dev.revelup.com/customers-auth/v1/authorization/token/",
                 method: "POST",
                 context: this,
                 data: {
@@ -753,7 +753,7 @@ define(["backbone", "geopoint"], function(Backbone) {
         signup: function() {
             var attrs = this.toJSON();
             return Backbone.$.ajax({
-                url: "https://identity-dev.revelup.com/customers-auth/customers/register-customer/",
+                url: "https://identity-dev.revelup.com/customers-auth/v1/customers/register-customer/",
                 method: "POST",
                 context: this,
                 contentType: "application/json",

@@ -238,7 +238,7 @@ footer {
     left: 0;
     line-height: 62px;
     position: absolute;
-    right: 550px;
+    right: 620px;
     top: 0;
 }
 #header .main div.logo {
@@ -265,7 +265,7 @@ footer {
 #header .main ul.menu {
     min-width: 340px;
     position: absolute;
-    right: 0;
+    right: 70px;
     top: 0;
 }
 #header .main ul.menu li {
@@ -314,7 +314,7 @@ footer {
 }
 #header .main .search {
     position: absolute;
-    right: 360px;
+    right: 430px;
     top: 18px;
     border-width: 1px;
     border-style: solid;
@@ -1140,4 +1140,17 @@ span.cancel-input:before {
 
 .text-center {
     text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.link {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.link:hover, .link:active {
+    text-decoration: none;
 }

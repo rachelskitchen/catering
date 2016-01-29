@@ -626,26 +626,31 @@ define(["backbone", "factory"], function(Backbone) {
     // Used for desktop skins: Weborder, Retail, Directory
     App.Routers.DesktopMixing = {
         initProfilePanel: function() {
-            var mainModel = App.Data.mainModel;
+            var mainModel = App.Data.mainModel,
+                customer = App.Data.customer;
 
             mainModel.set({
                 profile: {
                     modelName: 'Profile',
                     mod: 'Panel',
-                    model: App.Data.customer,
-                    showSpinner: showSpinner,
-                    hideSpinner: hideSpinner,
-                    settings_action: new Function,
-                    payments_action: new Function,
-                    profile_action: new Function,
+                    model: customer,
+                    loginAction: login,
                     signupAction: register,
+                    logout_link: customer.logout.bind(customer),
+                    settings_link: new Function,
+                    payments_link: new Function,
+                    profile_link: new Function,
                     cacheId: true
                 }
             });
 
+            function login() {
+                showSpinner();
+                customer.login().always(hideSpinner);
+            }
+
             function register() {
-                var customer = App.Data.customer,
-                    check = customer.checkSignUpData();
+                var check = customer.checkSignUpData();
                 if (check.status == 'OK') {
                     showSpinner();
                     customer.signup().always(hideSpinner);
@@ -660,6 +665,130 @@ define(["backbone", "factory"], function(Backbone) {
 
             function hideSpinner() {
                 mainModel.trigger('loadCompleted');
+            }
+        }
+    };
+
+    // Used for mobile skins: Weborder Mobile, Directory Mobile
+    App.Routers.MobileMixing = {
+        initProfileMenu: function() {
+            var self = this;
+
+            App.Data.mainModel.set({
+                profile: {
+                    modelName: 'Profile',
+                    mod: 'Menu',
+                    model: App.Data.customer,
+                    header: App.Data.header,
+                    logout_link: logout,
+                    login_link: login,
+                    settings_link: close,
+                    payments_link: close,
+                    profile_link: close,
+                    close_link: close,
+                    cacheId: true
+                }
+            });
+
+            function logout() {
+                App.Data.customer.logout();
+                self.navigate('login', true);
+                close();
+            }
+
+            function login() {
+                self.navigate('login', true);
+                close();
+            }
+
+            function close() {
+                App.Data.header.set('showProfileMenu', false);
+            }
+        },
+        loginContent: function() {
+            var self = this;
+
+            return {
+                modelName: 'Profile',
+                mod: 'LogIn',
+                model: App.Data.customer,
+                loginAction: loginAction,
+                createAccount: this.navigate.bind(this, 'signup', true),
+                guestCb: this.navigate.bind(this, 'index', true),
+                cacheId: true
+            };
+
+            function loginAction() {
+                var mainModel = App.Data.mainModel,
+                    customer = App.Data.customer;
+                mainModel.trigger('loadStarted');
+                customer.login()
+                        .done(self.navigate.bind(self, 'index', true))
+                        .fail(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+            }
+        },
+        signupContent: function() {
+            var events = 'change:first_name change:last_name change:email change:phone change:password change:confirm_password',
+                customer = App.Data.customer
+                self = this;
+
+            // listen to any App.Data.customer change
+            // to enable 'Next' link
+            preValidateData();
+            window.setTimeout(function() {
+                self.listenTo(customer, events, preValidateData);
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, events, preValidateData));
+            }, 0);
+
+            return {
+                modelName: 'Profile',
+                mod: 'SignUp',
+                model: customer,
+                next: next,
+                cacheId: true
+            }
+
+            function next() {
+                var checkAttrs = customer.checkSignUpData(),
+                    pwdsCompare = customer.comparePasswords();
+                if (checkAttrs.status != 'OK') {
+                    return App.Data.errors.alert(checkAttrs.errorMsg);
+                }
+                if (pwdsCompare.status != 'OK') {
+                    return App.Data.errors.alert(pwdsCompare.errorMsg);
+                }
+                self.navigate('profile_create', true);
+            }
+
+            function preValidateData() {
+                var attrs = customer.toJSON(),
+                    valid = attrs.first_name && attrs.last_name && attrs.email && attrs.phone && attrs.password
+                        && customer.comparePasswords().status == 'OK';
+                App.Data.header.set('enableLink', valid);
+            }
+        },
+        profileCreateContent: function() {
+            var customer = App.Data.customer,
+                mainModel = App.Data.mainModel;
+
+            return {
+                modelName: 'Profile',
+                mod: 'Create',
+                model: customer,
+                register: register,
+                cacheId: true
+            };
+
+            function register() {
+                var check = customer.checkSignUpData();
+                if (check.status == 'OK') {
+                    mainModel.trigger('loadStarted');
+                    customer.signup()
+                            .done(self.navigate.bind(self, 'login', true))
+                            .always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                } else {
+                    App.Data.errors.alert(check.errorMsg);
+                }
             }
         }
     };

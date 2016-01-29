@@ -96,28 +96,8 @@ define(["main_router"], function(main_router) {
                 var mainModel = App.Data.mainModel = new App.Models.MainModel();
                 var ests = App.Data.establishments;
 
-                // as soon as the route is initialized need to set profile menu
-                this.listenToOnce(this, 'initialized', function() {
-                    App.Data.mainModel.set({
-                        profile: {
-                            modelName: 'Profile',
-                            mod: 'Menu',
-                            model: App.Data.customer,
-                            header: App.Data.header,
-                            cacheId: true,
-                            login_action: self.navigate.bind(self, 'login', true),
-                            settings_action: new Function,
-                            payments_action: new Function,
-                            profile_action: new Function
-                        }
-                    });
-                });
-
-                // init RevelAPI
-                this.initRevelAPI();
-
-                // only establishment with reward cards option enabled can show RevelAPI buttons
-                App.Settings.RevelAPI = App.Settings.RevelAPI && App.Settings.enable_reward_cards_collecting;
+                // once the route is initialized need to set profile menu
+                this.listenToOnce(this, 'initialized', this.initProfileMenu.bind(this));
 
                 // init payments handlers
                 !App.Data.settings.get('isMaintenance') && this.paymentsHandlers();
@@ -851,18 +831,16 @@ define(["main_router"], function(main_router) {
             });
 
             this.prepare('checkout', function() {
-                var RevelAPI = App.Data.RevelAPI;
-
                 self.listenToOnce(self, 'route', function()
                 {
                     App.Data.myorder.checkout.trigger('hide:datepicker');
                 });
 
                 if(!App.Data.card)
-                    App.Data.card = new App.Models.Card({RevelAPI: RevelAPI});
+                    App.Data.card = new App.Models.Card();
 
                 if(!App.Data.customer) {
-                    App.Data.customer =  new App.Models.Customer({RevelAPI: RevelAPI});
+                    App.Data.customer =  new App.Models.Customer();
                     App.Data.customer.loadAddresses();
                 }
 
@@ -1479,17 +1457,6 @@ define(["main_router"], function(main_router) {
                 this.change_page();
             });
         },
-        profile: function(step) {
-            App.Data.header.set({
-                page_title: _loc['HEADER_PROFILE_PT'],
-                back_title: _loc['HEADER_PROFILE_BT'],
-                back: App.Data.RevelAPI.trigger.bind( App.Data.RevelAPI, 'onProfileCancel')
-            });
-            return App.Routers.RevelOrderingRouter.prototype.profile.call(this, step, headerModes.Profile, footerModes.Profile);
-        },
-        loyalty: function() {
-            return App.Routers.RevelOrderingRouter.prototype.loyalty.call(this, headerModes.Main, footerModes.Loyalty);
-        },
         rewards_card_submit: function() {
             var rewardsCard = App.Data.myorder.rewardsCard;
             this.rewardsPageReferrerHash = this.lastHash;
@@ -1653,167 +1620,70 @@ define(["main_router"], function(main_router) {
             }
         },
         login: function() {
-            this.prepare('profile', function() {
-                App.Data.header.set({
-                    page_title: _loc.WELCOME,
-                    back: null,
-                    back_title: ''
-                });
+            var content = this.loginContent();
 
-                var content = [{
-                    modelName: 'Profile',
-                    mod: 'LogIn',
-                    model: App.Data.customer,
-                    showSpinner: App.Data.mainModel.trigger.bind(App.Data.mainModel, 'loadStarted'),
-                    hideSpinner: hideSpinner,
-                    afterLogin: this.navigate.bind(this, 'index', true),
-                    createAccount: this.navigate.bind(this, 'signup', true),
-                    guestCb: this.navigate.bind(this, 'index', true),
-                    cacheId: true
-                }];
-
-                App.Data.mainModel.set({
-                    header: headerModes.Cart,
-                    footer: footerModes.None,
-                    contentClass: 'primary-bg',
-                    content: content
-                });
-
-                this.change_page();
+            App.Data.header.set({
+                page_title: _loc.WELCOME,
+                back: null,
+                back_title: ''
             });
 
-            // If status is 'success' spinner will be hidden on #index screen
-            function hideSpinner(jqXHR, status) {
-                status == 'error' && App.Data.mainModel.trigger('loadCompleted');
-            }
+            App.Data.mainModel.set({
+                header: headerModes.Cart,
+                footer: footerModes.None,
+                contentClass: 'primary-bg',
+                content: content
+            });
+
+            this.change_page();
         },
         signup: function() {
-            this.prepare('profile', function() {
-                var events = 'change:first_name change:last_name change:email change:phone change:password change:confirm_password';
+            var content = this.signupContent();
 
-                App.Data.header.set({
-                    page_title: _loc.PROFILE_SIGN_UP,
-                    back_title: _loc.BACK,
-                    back: window.history.back.bind(window.history),
-                    link: next.bind(this),
-                    link_title: _loc.NEXT,
-                    enableLink: false
-                });
-
-                // listen to any App.Data.customer change
-                // to enable 'Next' link
-                preValidateData();
-                this.listenTo(App.Data.customer, events, preValidateData);
-                this.listenToOnce(this, 'route', this.stopListening.bind(this, App.Data.customer, events, preValidateData));
-
-                var content = [{
-                    modelName: 'Profile',
-                    mod: 'SignUp',
-                    model: App.Data.customer,
-                    cacheId: true
-                }];
-
-                App.Data.mainModel.set({
-                    header: headerModes.Modifiers,
-                    footer: footerModes.None,
-                    contentClass: 'primary-bg',
-                    content: content
-                });
-
-                this.change_page();
-
-                function next() {
-                    var checkAttrs = App.Data.customer.checkSignUpData(),
-                        pwdsCompare = App.Data.customer.comparePasswords();
-                    if (checkAttrs.status != 'OK') {
-                        return App.Data.errors.alert(checkAttrs.errorMsg);
-                    }
-                    if (pwdsCompare.status != 'OK') {
-                        return App.Data.errors.alert(pwdsCompare.errorMsg);
-                    }
-                    this.navigate('profile_create', true);
-                }
-
-                function preValidateData() {
-                    var attrs = App.Data.customer.toJSON(),
-                        valid = attrs.first_name && attrs.last_name && attrs.email && attrs.phone && attrs.password
-                            && App.Data.customer.comparePasswords().status == 'OK';
-                    App.Data.header.set('enableLink', valid);
-                }
+            App.Data.header.set({
+                page_title: _loc.PROFILE_SIGN_UP,
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history),
+                link: content.next,
+                link_title: _loc.NEXT,
+                enableLink: false
             });
+
+            App.Data.mainModel.set({
+                header: headerModes.Modifiers,
+                footer: footerModes.None,
+                contentClass: 'primary-bg',
+                content: content
+            });
+
+            this.change_page();
         },
         profile_create: function() {
-            this.prepare('profile', function() {
-                var self = this;
-                App.Data.header.set({
-                    page_title: _loc.PROFILE_CREATE_TITLE,
-                    back_title: _loc.BACK,
-                    back: this.navigate.bind(this, 'signup', true),
-                    link: register,
-                    link_title: _loc.CONTINUE,
-                    enableLink: true
-                });
+            var content = this.profileCreateContent();
 
-                var content = [{
-                    modelName: 'Profile',
-                    mod: 'Create',
-                    model: App.Data.customer,
-                    cacheId: true
-                }];
-
-                App.Data.mainModel.set({
-                    header: headerModes.Modifiers,
-                    footer: footerModes.None,
-                    contentClass: 'primary-bg',
-                    content: content
-                });
-
-                this.change_page();
-
-                function register() {
-                    var customer = App.Data.customer,
-                        check = customer.checkSignUpData();
-                    if (check.status == 'OK') {
-                        App.Data.mainModel.trigger('loadStarted');
-                        customer.signup()
-                                .done(self.navigate.bind(self, 'login', true))
-                                .always(App.Data.mainModel.trigger.bind(App.Data.mainModel, 'loadCompleted'));
-                    } else {
-                        App.Data.errors.alert(check.errorMsg);
-                    }
-                }
+            App.Data.header.set({
+                page_title: _loc.PROFILE_CREATE_TITLE,
+                back_title: _loc.BACK,
+                back: this.navigate.bind(this, 'signup', true),
+                link: content.register,
+                link_title: _loc.CONTINUE,
+                enableLink: true
             });
-        },
-        initRevelAPI: function() {
-            App.Routers.RevelOrderingRouter.prototype.initRevelAPI.apply(this, arguments);
 
-            var RevelAPI = App.Data.RevelAPI,
-                appName;
+            App.Data.mainModel.set({
+                header: headerModes.Modifiers,
+                footer: footerModes.None,
+                contentClass: 'primary-bg',
+                content: content
+            });
 
-            if(!App.Data.dirMode) {
-                appName = App.Data.get_parameters.appName ? decodeURIComponent(App.Data.get_parameters.appName) : App.Settings.brand_name;
-                RevelAPI.set({
-                    appName: /\w+'s(\s.*)?$/.test(appName) ? appName : 'the ' + appName,
-                    appPossessiveName: /\w+'s(\s.*)?$/.test(appName) ? appName : appName + "'s",
-                    appShortName: appName,
-                    text1: MSG.BRAND_DIRECTORY_WELCOME_TEXT
-                });
-            }
-
-            if(!RevelAPI.isAvailable()) {
-                return;
-            }
-
-            this.listenTo(RevelAPI, 'onPayWithSavedCreditCard', function() {
-                App.Data.card.set(RevelAPI.get('card').toJSON());
-                App.Data.myorder.trigger('payWithCreditCard');
-            }, this);
-
-            this.listenTo(RevelAPI, 'onPayWithCustomCreditCard', function() {
-                showDefaultCardView.call(this);
-            }, this);
+            this.change_page();
         }
     });
+
+
+    // extends Router with Mobile mixing
+    _.defaults(Router.prototype, App.Routers.MobileMixing);
 
     function showDefaultCardView() {
         var paymentProcessor = App.Data.settings.get_payment_process();

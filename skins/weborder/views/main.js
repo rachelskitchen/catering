@@ -55,8 +55,8 @@ define(["done_view", "generator"], function(done_view) {
         render: function() {
             if (App.Settings.promo_message) this.calculatePromoMessageWidth(); // calculate a promo message width
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            this.iPad7Feature();
             this.profile_change();
+            this.iPad7Feature();
 
             var spinner = this.$('#main-spinner');
             spinner.spinner();
