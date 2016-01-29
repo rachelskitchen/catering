@@ -2158,7 +2158,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             call_name = call_name.concat(customerData.call_name);
 
             order_info.customer = {};
-            if(checkout.dining_option === 'DINING_OPTION_DELIVERY') {
+            if(checkout.dining_option === 'DINING_OPTION_DELIVERY' || checkout.dining_option === 'DINING_OPTION_CATERING') {
                 order_info.customer.address = getAddress();
             }
             $.extend(order_info.customer, customerData.payment_info);
