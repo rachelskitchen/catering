@@ -20,27 +20,46 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+ /**
+  * Contains {@link App.Models.ParentCategory}, {@link App.Collections.SubCategories} constructors.
+  * @module subcategories
+  * @requires module:backbone
+  * @requires module:categories
+  * @requires module:products
+  * @see {@link module:config.paths actual path}
+  */
  define(['categories', 'products'], function() {
     'use strict';
 
     /**
      * @class
-     * Represents parent category.
+     * @classdesc Represents parent category.
+     * @alias App.Models.ParentCategory
+     * @augments Backbone.Model
+     * @example
+     * // create a model
+     * require(['subcategories'], function() {
+     *     var parent = new App.Models.ParentCategory();
+     * });
      */
-    App.Models.ParentCategory = Backbone.Model.extend({
+    App.Models.ParentCategory = Backbone.Model.extend(
+    /**
+     * @lends App.Models.ParentCategory.prototype
+     */
+    {
         /**
          * @property {object} defaults - literal object containing attributes with default values
          *
          * @property {string} defaults.name - parent category name.
          * @default ''.
          *
-         * @property {number} default.sort - sort number.
+         * @property {number} defaults.sort - sort number.
          * @default null.
          *
-         * @property {string} default.ids - comma separted list of subcategories.
+         * @property {string} defaults.ids - comma separted list of subcategories.
          * @default ''.
          *
-         * @property {App.Collections.Categories} default.subs - collection of subcategories.
+         * @property {App.Collections.Categories} defaults.subs - collection of subcategories.
          * @default null.
          */
         defaults: {
@@ -49,6 +68,9 @@
             ids: '',
             subs: null
         },
+        /**
+         * Converts `subs` to instance of {@link App.Collections.Categories}.
+         */
         initialize: function() {
             var self = this;
             var subs = this.get('subs');
@@ -60,10 +82,17 @@
             subs = this.addProducts(subs);
             this.set('subs', new App.Collections.Categories(subs));
         },
+        /**
+         * Adds new model to `subs` collection.
+         * @param {object} data - object or instance of {@link App.Models.Category}
+         */
         addSub: function(data) {
             this.addProducts(data);
             this.get('subs').add(data);
         },
+        /**
+         * Creates new category ('View All'), containing all subcategories, to present all products on one page.
+         */
         addAllSubs: function() {
             var name = this.get('id'),
                 subs = this.get('subs'),
@@ -88,6 +117,10 @@
                 subs.where({active: true}).length == 0 && allSubs.set('active', false);
             }
         },
+        /**
+         * Sets new instance of {@link App.Collections.Products} to `products` attribute of given model/object(s).
+         * @param {array|object|App.Models.Category} subs - can be instance of App.Models.Category / array of models| object / array of objects
+         */
         addProducts: function(subs) {
             if(Array.isArray(subs)) {
                 _.each(subs, addProducts);
@@ -110,7 +143,14 @@
 
     /**
      * @class
-     * Represents collection of parent categories.
+     * @classdesc Represents collection of categories.
+     * @alias App.Collections.SubCategories
+     * @augments Backbone.Model
+     * @example
+     * // create a collection
+     * require(['subcategories'], function() {
+     *     var subs = new App.Collections.SubCategories();
+     * });
      */
     App.Collections.SubCategories = Backbone.Collection.extend({
         /**
@@ -122,8 +162,14 @@
          * @property {string} comparator - attribute that used for sorting.
          */
         comparator: 'sort',
+        /**
+         * Gets all active subcategories of parent category with given id.
+         * @param  {string} id - id of parent category.
+         * @return {array} - list of subcategories or empty array.
+         */
         getSubs: function(id) {
             var parent = this.get(id);
+            debugger;
             if(parent)
                 return parent.get('subs').where({active: true});
             else

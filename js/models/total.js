@@ -20,12 +20,27 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", 'tip', 'delivery'], function(Backbone) {
+ /**
+  * Contains {@link App.Models.Total} constructor.
+  * @module total
+  * @requires module:backbone
+  * @requires module:tip
+  * @requires module:delivery
+  * @see {@link module:config.paths actual path}
+  */
+define(['backbone', 'tip', 'delivery'], function(Backbone) {
     'use strict';
 
     /**
      * @class
-     * Represents cart total model.
+     * @classdesc Represents cart total model.
+     * @alias App.Models.Total
+     * @augments Backbone.Model
+     * @example
+     * // create a total model
+     * require(['total'], function() {
+     *     var total = new App.Models.Total();
+     * });
      */
     App.Models.Total = Backbone.Model.extend({
         /**
@@ -79,7 +94,6 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             grandTotal: 0 //result price of the order
         },
         /**
-         * @method
          * Set values for `tax_country`, `prevailing_surcharge`, `prevailing_tax`, `tip`, `delivery` attributes.
          */
         initialize: function(opts) {
@@ -101,28 +115,24 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             this.set('grandTotal', this.get_grand());
         },
         /**
-         * @method
          * @returns {string} subtotal amount formatted as a string.
          */
         get_subtotal: function() {
             return round_monetary_currency(this.get('subtotal'));
         },
         /**
-         * @method
          * @returns {string} tax amount formatted as a string.
          */
         get_tax: function() { // tax
             return round_monetary_currency(this.get('tax'));
         },
         /**
-         * @method
          * @returns {string} surcharge amount formatted as a string.
          */
         get_surcharge: function() {
             return round_monetary_currency(this.get('surcharge'));
         },
         /**
-         * @method
          * Calculates total amount as `subtotal` + `surcharge` + `tax` for tax excluded countries
          * and as `subtotal` for tax included countries.
          *
@@ -140,21 +150,18 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             return round_monetary_currency(subtotal);
         },
         /**
-         * @method
          * @returns {string} discounts amount formatted as a string.
          */
         get_discounts_str: function() {
             return round_monetary_currency(this.get('discounts'));
         },
         /**
-         * @method
          * @returns {string} tip amount formatted as a string.
          */
         get_tip: function() {
             return round_monetary_currency(this.get('tip').get_tip(this.get_subtotal(), this.get_discounts_str(), App.Data.myorder.get_service_fee_charge()));
         },
         /**
-         * @method
          * Calculates grand total amount as `subtotal` + `surcharge` + `tax` + `tip` for tax excluded countries
          * and as `subtotal` + `tip` for tax included countries.
          *
@@ -168,14 +175,12 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             return round_monetary_currency(grand_total);
         },
         /**
-         * @method
          * @returns {string} delivery charge amount formatted as a string.
          */
         get_delivery_charge: function() {
             return round_monetary_currency(this.get('delivery').getCharge());
         },
         /**
-         * @method
          * Sets delivery charge for total model.
          *
          * @param {number} charge - delivery charge amount.
@@ -184,14 +189,12 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             this.get('delivery').set('charge', charge);
         },
         /**
-         * @method
          * @returns {string} shipping charge amount formatted as a string.
          */
         get_shipping_charge: function() {
             return round_monetary_currency(this.get('shipping') || 0);
         },
         /**
-         * @method
          * @returns {string} remaining delivery amount formatted as a string or `null` if delivery is disabled.
          */
         get_remaining_delivery_amount: function() {
@@ -199,7 +202,6 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             return round_monetary_currency(diff > 0 ? diff : 0);
         },
         /**
-         * @method
          * Clears total model.
          */
         empty: function() {
@@ -211,7 +213,6 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             this.get('tip').empty();
         },
         /**
-         * @method
          * Saves the model in a storage. 'total' key is used.
          */
         saveTotal: function() {
@@ -219,7 +220,6 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             this.get('tip').saveTip();
         },
         /**
-         * @method
          * Restores the model data from a storage. 'total' key is used.
          */
         loadTotal: function() {
@@ -232,7 +232,6 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             this.get('tip').loadTip();
         },
         /**
-         * @method
          * @returns {object} {
          *    final_total:     <get_total()>
          *    surcharge:       <get_surcharge()>
@@ -253,7 +252,6 @@ define(["backbone", 'tip', 'delivery'], function(Backbone) {
             };
         },
         /**
-         * @method
          * Deeply clones the model.
          *
          * @returns {App.Models.Total} a new total model.
