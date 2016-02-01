@@ -631,20 +631,14 @@ span.cancel-input:active:before {
 .color-style1 {
     color: #009ad4;
 }
-.reward-selection li, .stanford-plan {
+.reward-selection__item, .stanford-plan {
     border-color: #2699ca;
 }
-.reward-selection li.active, .stanford-plan.active {
+.reward-selection__item_selected, .stanford-plan.active {
     border-color: #065ca0;
     background-color: rgba(38, 153, 202, 0.2);
 }
-.points-selection .order-item {
-    border-bottom-color: #2699ca;
-}
-.points-selection.active .order-item {
-    border-bottom-color: #065ca0;
-}
-.reward-selection li.active:after, .stanford-plan.active:after {
+.reward-selection__item_selected:after, .stanford-plan.active:after {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSIxOTciIGhlaWdodD0iMTU4IiB4bWw6c3BhY2U9InByZXNlcnZlIj48cG9seWdvbiBmaWxsPSIjZmZmZmZmIiBwb2ludHM9IjE3NCwwIDYxLDExMyAyMiw3NCAwLDk3IDM4LDEzNSA2MSwxNTggMTk3LDIyIi8+PC9zdmc+');
     background-size: 100%;
     background-repeat: no-repeat;

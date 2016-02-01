@@ -2112,13 +2112,14 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             it('rewards card', function() {
                 rewardsCard = new Backbone.Model({
                     number: 123,
-                    redemption_code: 'code'
+                    discounts: [11, 22]
                 });
                 model.rewardsCard = rewardsCard;
 
                 model._get_cart_totals();
                 data = JSON.parse($.ajax.calls.mostRecent().args[0].data);
-                expect(data.orderInfo.rewards_card.redemption).toBe('code');
+                expect(data.orderInfo.rewards_card.number).toBe(123);
+                expect(data.orderInfo.rewards_card.discounts).toEqual([11, 22]);
             });
 
             it('stanford card', function() {
@@ -2840,23 +2841,24 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     expect(ajax.data.orderInfo.rewards_card).toBeUndefined();
                 });
 
-                it('`rewardsCard.number` exists, `rewardsCard.redemption_code doesn\'t exist', function() {
+                it('`rewardsCard.number` exists, `rewardsCard.discounts` is empty array', function() {
                     rewardsCard = {
-                        number: '123'
+                        number: '123',
+                        discounts: []
                     };
 
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                     expect(ajax.data.orderInfo.rewards_card.number).toEqual('123');
                 });
 
-                it('`rewardsCard.number` and `rewardsCard.redemption_code` exist', function() {
+                it('`rewardsCard.number` and `rewardsCard.discounts` is not empty array', function() {
                     rewardsCard = {
                         number: '123',
-                        redemption_code: 'code'
+                        discounts: [11, 22]
                     };
 
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                    expect(ajax.data.orderInfo.rewards_card.redemption).toEqual('code');
+                    expect(ajax.data.orderInfo.rewards_card.discounts).toEqual([11, 22]);
                 });
             });
 
@@ -3346,174 +3348,6 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 diningOption = 'DINING_OPTION_TOGO';
                 expect(model.setShippingAddress(checkout, diningOption)).toBe(-1);
                 expect(App.Data.customer.get('shipping_address')).toBe(-1);
-            });
-        });
-
-        describe('getItemsWithPointsRewardDiscount()', function() {
-            var item1 = new Backbone.Model({name: 'item1'}),
-                item2 = new Backbone.Model({name: 'item2'});
-            item1.get_modelsum = function() {};
-            item1.hasPointValue = function() {};
-            item2.get_modelsum = function() {};
-            item2.hasPointValue = function() {};
-
-            beforeEach(function() {
-                spyOn(App.Collections.Myorders.prototype, 'listenTo');
-                spyOn(item1, 'hasPointValue').and.returnValue(true);
-                spyOn(item2, 'hasPointValue').and.returnValue(true);
-                spyOn(item1, 'get_modelsum').and.returnValue(10);
-                spyOn(item2, 'get_modelsum').and.returnValue(20);
-
-                model = new App.Collections.Myorders([item1, item2]);
-            });
-
-            it('called without arguments', function() {
-                var itemsWithDiscount = model.getItemsWithPointsRewardDiscount();
-                expect(itemsWithDiscount.length).toBe(1);
-                expect(itemsWithDiscount[0].get('name')).toBe('item2');
-                expect(item2.get('reward_discount')).toBe(0);
-                expect(item1.get('reward_discount')).toBeUndefined();
-            });
-
-            it('`discount` is 10, reward discount is applied to item with larger sum', function() {
-                var itemsWithDiscount = model.getItemsWithPointsRewardDiscount(10);
-                expect(itemsWithDiscount.length).toBe(1);
-                expect(itemsWithDiscount[0].get('name')).toBe('item2');
-                expect(item2.get('reward_discount')).toBe(10);
-                expect(item1.get('reward_discount')).toBeUndefined();
-            });
-
-            it('`discount` is 25, reward discount is applied to both items', function() {
-                var itemsWithDiscount = model.getItemsWithPointsRewardDiscount(25);
-                expect(itemsWithDiscount.length).toBe(2);
-                expect(itemsWithDiscount[0].get('name')).toBe('item2');
-                expect(itemsWithDiscount[1].get('name')).toBe('item1');
-                expect(item2.get('reward_discount')).toBe(20);
-                expect(item1.get('reward_discount')).toBe(5);
-            });
-        });
-
-        it('splitAllItemsWithPointValue()', function() {
-            var item1 = new Backbone.Model(),
-                item2 = new Backbone.Model();
-
-            model = new App.Collections.Myorders([item1, item2]);
-            spyOn(model, 'splitItemWithPointValue');
-
-            model.splitAllItemsWithPointValue();
-            expect(model.splitItemWithPointValue.calls.count()).toBe(2);
-            expect(model.splitItemWithPointValue).toHaveBeenCalledWith(item1);
-            expect(model.splitItemWithPointValue).toHaveBeenCalledWith(item2);
-        });
-
-        describe('splitItemWithPointValue()', function() {
-            var item, hasPointSpy;
-
-            beforeEach(function() {
-                this.myorder = App.Data.myorder;
-
-                item = new Backbone.Model({
-                    id_product: 123,
-                    quantity: 5
-                });
-                item.hasPointValue = function() {};
-                hasPointSpy = spyOn(item, 'hasPointValue').and.returnValue(true);
-
-                App.Data.myorder = new Backbone.Collection([item]);
-
-                spyOn(Backbone.Model.prototype, 'set').and.callThrough();
-            });
-
-            afterEach(function() {
-                App.Data.myorder = this.myorder;
-            });
-
-            it('item has no point value', function() {
-                hasPointSpy.and.returnValue(false);
-
-                model.splitItemWithPointValue(item);
-
-                expect(item.get('quantity')).toBe(5);
-            });
-
-            it('item has point value, quantity is 1', function() {
-                item.set('quantity', 1, {silent: true});
-
-                model.splitItemWithPointValue(item);
-
-                expect(item.get('quantity')).toBe(1);
-            });
-
-            it('item has point value, quanity is more than 1, myorder doesn\'t cointain same single quantity item', function() {
-                model.splitItemWithPointValue(item);
-
-                expectSplit();
-                expect(Backbone.Model.prototype.set).toHaveBeenCalledWith('quantity', 1, {silent: false});
-                expect(Backbone.Model.prototype.set).toHaveBeenCalledWith('quantity', 4, {silent: false});
-            });
-
-            it('item has point value, quanity is more than 1, myorder doesn\'t cointain same single quantity item. `silentFlag` is true', function() {
-                model.splitItemWithPointValue(item, true);
-
-                expectSplit();
-                expect(Backbone.Model.prototype.set).toHaveBeenCalledWith('quantity', 1, {silent: true});
-                expect(Backbone.Model.prototype.set).toHaveBeenCalledWith('quantity', 4, {silent: true});
-            });
-
-            function expectSplit() {
-                expect(item.get('quantity')).toBe(4);
-                expect(App.Data.myorder.models.length).toBe(2);
-
-                var singleItem = App.Data.myorder.models[1];
-                expect(singleItem.get('id_product')).toBe(123);
-                expect(singleItem.get('quantity')).toBe(1);
-            }
-        });
-
-        describe('splitItemAfterQuantityUpdate()', function() {
-            var item, discount;
-
-            beforeEach(function() {
-                discount = new Backbone.Model({
-                    name: 'Item Reward'
-                })
-
-                item = new Backbone.Model({
-                    discount: discount
-                });
-
-                spyOn(model, 'splitItemWithPointValue');
-            });
-
-            it('discount name is not `Item Reward`', function() {
-                discount.set('name', 'discount', {silent: true});
-                model.splitItemAfterQuantityUpdate(item, 1, 2);
-
-                expect(model.splitItemWithPointValue).not.toHaveBeenCalled();
-            });
-
-            it('discount name is `Item Reward`, `oldQuantity` is 1, `newQuantity` is 1', function() {
-                model.splitItemAfterQuantityUpdate(item, 1, 1);
-
-                expect(model.splitItemWithPointValue).not.toHaveBeenCalled();
-            });
-
-            it('discount name is `Item Reward`, `oldQuantity` is 2, `newQuantity` is 3', function() {
-                model.splitItemAfterQuantityUpdate(item, 2, 3);
-
-                expect(model.splitItemWithPointValue).not.toHaveBeenCalled();
-            });
-
-            it('discount name is `Item Reward`, `oldQuantity` is 1, `newQuantity` is 2', function() {
-                model.splitItemAfterQuantityUpdate(item, 1, 2);
-
-                expect(model.splitItemWithPointValue).toHaveBeenCalledWith(item, false);
-            });
-
-            it('discount name is `Item Reward`, `oldQuantity` is 1, `newQuantity` is 2, `silentFlag` is true', function() {
-                model.splitItemAfterQuantityUpdate(item, 1, 2, true);
-
-                expect(model.splitItemWithPointValue).toHaveBeenCalledWith(item, true);
             });
         });
 

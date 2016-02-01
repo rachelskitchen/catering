@@ -608,7 +608,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 var str_label_for_manual_weights = label_for_manual_weights ? " " + label_for_manual_weights : "",
                     str_uom = uom ? "/" + uom : "";
 
-                //constuct product_name_override as it's done by POS:
+                //construct product_name_override as it's done by POS:
                 item_obj.product_name_override = product.name + "\n " + item_obj.weight.toFixed(num_digits) + str_label_for_manual_weights + " @ "
                     + currency_symbol + round_monetary_currency(item_obj.price) + str_uom;
             }
@@ -1763,8 +1763,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          *             customer: {                                       // optional, used for Shipping' dining option
          *                 address: <specified shipping address object>  // optional, used for Shipping' dining option
          *             },
-         *             rewards_card: {                    //optional, used for Rewards Card redemption
-         *                 redemption: <redemption code>  //optional, used for Rewards Card redemption
+         *             rewards_card: {                   //optional, used for Rewards Card redemption
+         *                 number: <reward card number>, // optional
+         *                 discounts: <discount ids>     // optional
          *             }
          *         },
          *         discount_code: <discount code>      // optional, used for discount code application
@@ -1832,10 +1833,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 order_info.customer =  {address: shipping_address};
             }
 
-            // add rewards card and redemption code to apply discount
-            if(rewardsCard.number && rewardsCard.redemption_code) {
+            // add rewards card and selected discounts
+            if(rewardsCard.number && rewardsCard.discounts.length) {
                 order_info.rewards_card = {
-                    redemption: rewardsCard.redemption_code
+                    number: rewardsCard.number,
+                    discounts: rewardsCard.discounts
                 };
             }
 
@@ -2032,7 +2034,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          *             discount: <discount data>,
          *             call_name: <call name of customer>,
          *             rewards_card: {                      // optional
-         *                 redemption: <redemption code>,   // optional
+         *                 discounts: <discount ids>,        // optional
          *                 number: <reward card number>     // optional
          *             },
          *             shipping: <specified shipping service> // optional
@@ -2167,10 +2169,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 order.notifications = notifications;
 
             if(rewardsCard.number) {
-                if (rewardsCard.redemption_code) {
+                if (rewardsCard.discounts.length) {
                     // To redeem points card number must be provided in separate request together with captcha
                     order_info.rewards_card = {
-                        redemption: rewardsCard.redemption_code
+                        number: rewardsCard.number,
+                        discounts: rewardsCard.discounts
                     };
                 } else {
                     // Just collect points
@@ -2516,79 +2519,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
 
             return customer.get('shipping_address');
-        },
-        /**
-         * Defines items in which product has point value for rewards points collection.
-         * @param discount - discount which may be applied to items.
-         * @returns {App.Models.Myorder[]} Array of items.
-         */
-        getItemsWithPointsRewardDiscount: function(discount) {
-            var itemsWithDiscount = [];
-
-            discount || (discount = 0);
-
-            this.filter(function(item){
-                return item.hasPointValue();
-            }).sort(function(x, y) {
-                return -1 * (x.get_modelsum() - y.get_modelsum());
-            }).some(function(item) {
-                var oldSum = item.get_modelsum(),
-                    newSum = oldSum - discount;
-                item.set('reward_discount', newSum <= 0 ? oldSum : discount);
-                var virtual_item = item.clone();
-                virtual_item.set('quantity', 1);
-                itemsWithDiscount.push(virtual_item);
-                discount -= oldSum;
-                return discount <= 0;
-            });
-            return itemsWithDiscount;
-        },
-        /**
-         * Applies {@link App.Collections.Myorders#splitItemWithPointValue splitItemWithPointValue()} method to each item.
-         */
-        splitAllItemsWithPointValue: function() {
-            var self = this;
-            this.each(function(item, i) {
-                self.splitItemWithPointValue(item);
-            });
-        },
-        /**
-         * Splits item with point value assigned.
-         * If item with point value has quantity > 1 then need to split it on 2 items:
-         * - 1 item's quantity is reduced by 1.
-         * - 2 item's quantity is 1.
-         * @param {App.Models.Myorder} item - order item.
-         * @param {boolean} [silentFlag] - if it's `true` need to silently update `quantity` attribute.
-         */
-        splitItemWithPointValue: function(item, silentFlag) {
-            silentFlag = !!silentFlag;
-            var quantity = item.get('quantity');
-            if (item.hasPointValue() && quantity > 1) {
-                var hasSameSingleQuantityItem = App.Data.myorder.findWhere({
-                    id_product: item.get("id_product"),
-                    quantity: 1
-                });
-                if (!hasSameSingleQuantityItem) {
-                    var singleItem = item.clone();
-                    singleItem.set('quantity', 1, {silent: silentFlag});
-                    App.Data.myorder.add(singleItem); // Add 1 item
-                    item.set('quantity', quantity - 1, {silent: silentFlag}); // Update quantity with N-1
-                }
-            }
-        },
-        /**
-         * Applies {@link App.Collections.Myorders#splitItemWithPointValue splitItemWithPointValue()} method to `item`
-         * when its `quantity` attribute updates.
-         * @param {App.Models.Myorder} item - order item.
-         * @param {number} oldQuantity - previous `quantity` value.
-         * @param {number} newQuantity - new `quantity` value.
-         * @param {boolean} [silentFlag] - if it's `true` need to silently update `quantity` attribute.
-         */
-        splitItemAfterQuantityUpdate : function(item, oldQuantity, newQuantity, silentFlag) {
-            silentFlag = !!silentFlag;
-            if (item.get('discount').get('name') === 'Item Reward' && oldQuantity == 1 && newQuantity != 1) {
-                this.splitItemWithPointValue(item, silentFlag);
-            }
         }
     });
 

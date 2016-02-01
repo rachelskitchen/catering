@@ -209,7 +209,6 @@ define(["factory"], function() {
 
             this.model.updateProduct(order);
             order.set('discount', originOrder.get('discount').clone(), {silent: true});
-            App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
             originOrder.update(order);
             this.listenTo(order, 'combo_product_change', this.setHeaderToUpdate, this);
         },

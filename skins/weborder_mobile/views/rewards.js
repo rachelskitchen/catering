@@ -28,8 +28,8 @@
 
     RewardsInfoView = CoreRewardsInfoView.extend({
         bindings: _.extend(CoreRewardsInfoView.prototype.bindings, {
-            '.info': 'toggle: select(doNotQualifyRewards, false, true)',
-            '.rewards-available': 'classes: {"no-bottom-padding": select(doNotQualifyRewards, false, true)}'
+            '.info': 'toggle: length(rewards)',
+            '.rewards-available': 'classes: {"no-bottom-padding": length(rewards)}'
         }),
         initialize: function() {
             CoreRewardsInfoView.prototype.initialize.apply(this, arguments);

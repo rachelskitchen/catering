@@ -57,7 +57,7 @@ define(["factory"], function(factory) {
 
     var FooterRewardRedemptionView = FooterMainView.extend({
         bindings: {
-            '.btn': 'text: btn_title, classes: {disabled: not(rewardsCard_redemption_code)}'
+            '.btn': 'text: btn_title, classes: {disabled: select(length(rewardsCard_discounts), false, true)}'
         }
     });
 
