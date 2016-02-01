@@ -1,16 +1,19 @@
-define(['rewards'], function() {
+define(['js/utest/data/Rewards', 'rewards'], function(rewardsData) {
     'use strict';
 
     describe("App.Models.Rewards", function() {
-        var rewards, def;
+        var model, def;
 
         beforeEach(function() {
-            rewards = new App.Models.Rewards();
+            model = new App.Models.Rewards();
             def = {
-                rewards_earned: 0,
-                discount: 0,
-                point_to_next_reward: 0,
-                value: 0,
+                id: null,
+                name: '',
+                amount: 0,
+                is_item_level: false,
+                points: 0,
+                rewards_type: null,
+                type: 0,
                 selected: false
             };
         });
@@ -20,38 +23,71 @@ define(['rewards'], function() {
         });
 
         it('Create model', function() {
-            expect(rewards.toJSON()).toEqual(def);
+            expect(model.toJSON()).toEqual(def);
         });
 
-        it('isAvailable()', function() {
-            rewards.set('rewards_earned', 0.5);
-            expect(rewards.isAvailable()).toBe(false);
-            rewards.set('rewards_earned', 21);
-            expect(rewards.isAvailable()).toBe(true);
+        it('initialize()', function() {
+            model.collection = new Backbone.Collection();
+            spyOn(model.collection, 'trigger');
+            model.trigger('change:selected');
+            expect(model.collection.trigger).toHaveBeenCalledWith('onSelectReward');
+        });
+    });
+
+    describe('App.Collections.Rewards', function() {
+        var collection;
+
+        beforeEach(function() {
+            collection = new App.Collections.Rewards();
         });
 
-        it('isDefault()', function() {
-            expect(rewards.isDefault()).toBe(true);
-            rewards.set('rewards_earned', 1);
-            expect(rewards.isDefault()).toBe(false);
+        it('Enviroment', function() {
+            expect(App.Collections.Rewards).toBeDefined();
+        });
+
+        it('Create collection', function() {
+            collection = new App.Collections.Rewards({id: 1});
+            expect(collection.models[0] instanceof App.Models.Rewards).toBe(true);
+        });
+    });
+
+    describe('App.Models.RewardsBalance', function() {
+        var model, def;
+
+        beforeEach(function() {
+            model = new App.Models.RewardsBalance();
+            def = {
+                points: null,
+                visits: null,
+                purchases: null
+            };
+        });
+
+        it('Enviroment', function() {
+            expect(App.Models.RewardsBalance).toBeDefined();
+        });
+
+        it('Create model', function() {
+            expect(model.toJSON()).toEqual(def);
         });
     });
 
     describe("App.Models.RewardsCard", function() {
-        var rewardsCard, def, visits, purchases, points;
+        var rewardsCard, def, defaults;
 
         beforeEach(function() {
             rewardsCard = new App.Models.RewardsCard();
             def = {
-                purchases: new App.Models.Rewards,
-                visits: new App.Models.Rewards,
-                points: new App.Models.Rewards,
                 number: '',
-                redemption_code: null,
+                rewards: new App.Collections.Rewards,
+                balance: new App.Models.RewardsBalance,
+                discounts: [],
                 captchaImage: '',
                 captchaKey: '',
                 captchaValue: ''
             };
+
+            defaults = deepClone(rewardsData.defaults);
         });
 
         it('Environment', function() {
@@ -60,143 +96,71 @@ define(['rewards'], function() {
 
         it('Create model', function() {
             expect(rewardsCard.get('number')).toEqual(def.number);
-            expect(rewardsCard.get('redemption_code')).toEqual(def.redemption_code);
-            expect(rewardsCard.get('purchases').toJSON()).toEqual(def.purchases.toJSON());
-            expect(rewardsCard.get('visits').toJSON()).toEqual(def.visits.toJSON());
-            expect(rewardsCard.get('points').toJSON()).toEqual(def.points.toJSON());
+            expect(rewardsCard.get('rewards').toJSON()).toEqual(def.rewards.toJSON());
+            expect(rewardsCard.get('balance').toJSON()).toEqual(def.balance.toJSON());
+            expect(rewardsCard.get('discounts')).toEqual(def.discounts);
             expect(rewardsCard.get('captchaImage')).toEqual(def.captchaImage);
             expect(rewardsCard.get('captchaKey')).toEqual(def.captchaKey);
             expect(rewardsCard.get('captchaValue')).toEqual(def.captchaValue);
         });
 
         it('initialize()', function() {
-            var purchases1 = {value: 5},
-                purchases2 = {value: 3},
-                visits1 = {value: 2},
-                visits2 = {value: 4},
-                points1 = {value: 7},
-                points2 = {value: 1};
+            var rewardsSet1 = [{id: 11}, {id: 12}],
+                balanceSet1 = {points: 101, visits: 102, purchases: 103},
+                rewardsSet2 = [{id: 21}, {id: 22}],
+                balanceSet2 = {points: 201, visits: 202, purchases: 203};
 
             // check convertions after inititalization
             rewardsCard = new App.Models.RewardsCard({
-                purchases: purchases1,
-                visits: visits1,
-                points: points1
+                rewards: rewardsSet1,
+                balance: balanceSet1
             });
 
-            var purchases = rewardsCard.get('purchases'),
-                visits = rewardsCard.get('visits'),
-                points = rewardsCard.get('points');
+            var rewards = rewardsCard.get('rewards'),
+                balance = rewardsCard.get('balance');
 
-            expect(purchases instanceof App.Models.Rewards).toBe(true);
-            expect(visits instanceof App.Models.Rewards).toBe(true);
-            expect(points instanceof App.Models.Rewards).toBe(true);
-            expect(purchases.get('value')).toBe(purchases1.value);
-            expect(visits.get('value')).toBe(visits1.value);
-            expect(points.get('value')).toBe(points1.value);
+            expect(rewards instanceof App.Collections.Rewards).toBe(true);
+            expect(balance instanceof App.Models.RewardsBalance).toBe(true);
+            expect(rewards.models[0].get('id')).toBe(rewardsSet1[0].id);
+            expect(rewards.models[1].get('id')).toBe(rewardsSet1[1].id);
+            expect(balance.toJSON()).toEqual(balanceSet1);
 
             // check convertions after assigning data
             rewardsCard.set({
-                purchases: purchases2,
-                visits: visits2,
-                points: points2
+                rewards: rewardsSet2,
+                balance: balanceSet2
             });
 
-            purchases = rewardsCard.get('purchases');
-            visits = rewardsCard.get('visits');
-            points = rewardsCard.get('points');
+            rewards = rewardsCard.get('rewards');
+            balance = rewardsCard.get('balance');
 
-            expect(purchases instanceof App.Models.Rewards).toBe(true);
-            expect(visits instanceof App.Models.Rewards).toBe(true);
-            expect(points instanceof App.Models.Rewards).toBe(true);
-            expect(purchases.get('value')).toBe(purchases2.value);
-            expect(visits.get('value')).toBe(visits2.value);
-            expect(points.get('value')).toBe(points2.value);
+            expect(rewards instanceof App.Collections.Rewards).toBe(true);
+            expect(balance instanceof App.Models.RewardsBalance).toBe(true);
+            expect(rewards.models[0].get('id')).toBe(21);
+            expect(rewards.models[1].get('id')).toBe(22);
+            expect(balance.toJSON()).toEqual(balanceSet2);
         });
 
-        describe('updateRewardsType()', function() {
-            var data, rewardsCard;
+        it('updateSelected()', function() {
+            var discountsData = deepClone(rewardsData.rewards.discounts),
+                rewards = rewardsCard.get('rewards');
+            rewards.set(discountsData);
+            rewards.models[0].set('selected', true);
+            rewards.models[2].set('selected', true);
 
-            beforeEach(function() {
-                data = {
-                    rewards_earned: 2,
-                    discount: 12,
-                    point_to_next_reward: 4,
-                    value: 2
-                };
-                rewardsCard = new App.Models.RewardsCard({
-                    purchases: data,
-                    visits: data,
-                    points: data
-                });
-                spyOn(rewardsCard, 'set');
-            });
+            var discounts = [rewards.models[0].get('id'), rewards.models[2].get('id')];
 
-            it('`rewardType` parameter value isn\'t one of "purchases", "visits", "points"`', function() {
-                rewardsCard.updateRewardsType('dsf', {value:12});
-                expect(rewardsCard.set).not.toHaveBeenCalled();
-            });
-
-            it('`rewardType` parameter value is one of "purchases", "visits", "points"`, `data` isn\'t passed', function() {
-                var json = rewardsCard.toJSON();
-
-                //check purchases
-                rewardsCard.updateRewardsType('purchases');
-                expect(rewardsCard.set).toHaveBeenCalledWith('purchases', json.purchases);
-                expect(rewardsCard.get('purchases').toJSON()).toEqual(json.purchases.toJSON());
-
-                //check visits
-                rewardsCard.updateRewardsType('visits');
-                expect(rewardsCard.set).toHaveBeenCalledWith('visits', json.visits);
-                expect(rewardsCard.get('visits').toJSON()).toEqual(json.visits.toJSON());
-
-                //check visits
-                rewardsCard.updateRewardsType('points');
-                expect(rewardsCard.set).toHaveBeenCalledWith('points', json.points);
-                expect(rewardsCard.get('points').toJSON()).toEqual(json.points.toJSON());
-            });
-
-            it('`rewardType` parameter value is one of "purchases", "visits", "points"`, `data` is simple object', function() {
-                var data = {
-                    rewards_earned: 2,
-                    discount: 12,
-                    point_to_next_reward: 4,
-                    value: 2,
-                    selected: false
-                }
-
-                // check purchases
-                rewardsCard.updateRewardsType('purchases', data);
-                var purchases = rewardsCard.get('purchases');
-
-                expect(purchases instanceof App.Models.Rewards).toBe(true);
-                expect(rewardsCard.set).toHaveBeenCalled();
-                expect(purchases.toJSON()).toEqual(data);
-
-                // check visits
-                rewardsCard.updateRewardsType('visits', data);
-                var visits = rewardsCard.get('visits');
-
-                expect(visits instanceof App.Models.Rewards).toBe(true);
-                expect(rewardsCard.set).toHaveBeenCalled();
-                expect(visits.toJSON()).toEqual(data);
-
-                // check points
-                rewardsCard.updateRewardsType('points', data);
-                var points = rewardsCard.get('points');
-
-                expect(points instanceof App.Models.Rewards).toBe(true);
-                expect(rewardsCard.set).toHaveBeenCalled();
-                expect(points.toJSON()).toEqual(data);
-            });
+            rewardsCard.updateSelected();
+            expect(rewardsCard.get('discounts')).toEqual(discounts);
         });
 
         describe('getRewards()', function() {
-            var data, rewardsCard, number, jqXHR, url, type, dataType, postData, est, captchaKey, captchaValue;
+            var data, rewardsCard, number, jqXHR, url, type, dataType, postData, est, captchaKey, captchaValue,
+                myorder, order;
 
             beforeEach(function() {
                 // URL for reward cards resource
-                url = '/weborders/reward_cards/';
+                url = '/weborders/rewards/';
 
                 // type of request
                 type = 'POST';
@@ -228,26 +192,7 @@ define(['rewards'], function() {
                 };
 
                 // response from server
-                data = [{
-                    points: {
-                        rewards_earned: 4,
-                        discount: 12,
-                        point_to_next_reward: 3,
-                        value: 1
-                    },
-                    visits: {
-                        rewards_earned: 5,
-                        discount: 11,
-                        point_to_next_reward: 32,
-                        value: 12
-                    },
-                    purchases: {
-                        rewards_earned: 2,
-                        discount: 8,
-                        point_to_next_reward: 21,
-                        value: 14
-                    }
-                }];
+                data = deepClone(rewardsData.rewards);
 
                 rewardsCard = new App.Models.RewardsCard({
                     number: number,
@@ -265,6 +210,28 @@ define(['rewards'], function() {
 
                 spyOn(App.Data.settings, 'get').and.returnValue(est);
                 spyOn(rewardsCard, 'trigger');
+
+                myorder = App.Data.myorder;
+                order = {
+                    item_submit: jasmine.createSpy().and.returnValue({product: 123})
+                };
+                App.Data.myorder = [order];
+            });
+
+            afterEach(function() {
+                App.Data.myorder = myorder;
+            });
+
+            it('App.Data.myorder is not empty. Prepare order items for submitting to server', function() {
+                rewardsCard.getRewards();
+                expect(order.item_submit).toHaveBeenCalled();
+            });
+
+            it('App.Data.myorder is empty. Do not send request, show error', function() {
+                App.Data.myorder = [];
+                rewardsCard.getRewards();
+                expect(rewardsCard.trigger).toHaveBeenCalledWith('onRewardsErrors', _loc.REWARDS_EMPTY_CART);
+                expect(Backbone.$.ajax).not.toHaveBeenCalled();
             });
 
             it('`number` isn\'t assigned', function() {
@@ -319,69 +286,28 @@ define(['rewards'], function() {
                 jqXHR.resolve();
                 expectRequestParameters();
                 expect(rewardsCard.trigger).toHaveBeenCalledWith('onRewardsReceived');
-                expect(rewardsCard.get('purchases').toJSON()).toEqual(_.extend(data.data[0].purchases, {selected: false}));
-                expect(rewardsCard.get('visits').toJSON()).toEqual(_.extend(data.data[0].visits, {selected: false}));
-                expect(rewardsCard.get('points').toJSON()).toEqual(_.extend(data.data[0].points, {selected: false}));
+                var rewards = _.map(data.data.discounts, function(reward) {
+                    return _.extend(reward, {selected: false});
+                });
+                expect(rewardsCard.get('rewards').toJSON()).toEqual(rewards);
             });
 
             function expectRequestParameters() {
                 expect(jqXHR.url).toBe(url);
                 expect(jqXHR.type).toBe(type);
                 expect(jqXHR.dataType).toBe(dataType);
-                expect(JSON.parse(jqXHR.data)).toEqual({number: number, establishment: est, captchaKey : captchaKey, captchaValue : captchaValue});
+                expect(JSON.parse(jqXHR.data)).toEqual({
+                    establishmentId: 1,
+                    items: [{product: 123}],
+                    orderInfo: {
+                        rewards_card: {
+                            number: '123456789'
+                        }
+                    },
+                    captchaKey : captchaKey,
+                    captchaValue : captchaValue
+                });
             }
-        });
-
-        describe('selectRewardsType()', function() {
-            beforeEach(function() {
-
-            });
-
-            it('`rewardsType` is invalid', function() {
-                spyOn(rewardsCard, 'set');
-                rewardsCard.selectRewardsType('dfsdf');
-                expect(rewardsCard.set).toHaveBeenCalledWith('redemption_code', rewardsCard.defaults.redemption_code);
-            });
-
-            it('`rewardsType` is valid, `rewards_earned` >= 1', function() {
-                var REDEMPTION_CODES = {
-                    points: 1,
-                    visits: 2,
-                    purchases: 3
-                };
-
-                // check points
-                rewardsCard.get('points').set('rewards_earned', 1);
-                rewardsCard.selectRewardsType('points');
-                expect(rewardsCard.get('redemption_code')).toBe(REDEMPTION_CODES.points);
-
-                // check visits
-                rewardsCard.get('visits').set('rewards_earned', 2);
-                rewardsCard.selectRewardsType('visits');
-                expect(rewardsCard.get('redemption_code')).toBe(REDEMPTION_CODES.visits);
-
-                // check purchases
-                rewardsCard.get('purchases').set('rewards_earned', 3);
-                rewardsCard.selectRewardsType('purchases');
-                expect(rewardsCard.get('redemption_code')).toBe(REDEMPTION_CODES.purchases);
-            });
-
-            it('`rewardsType` is valid, `rewards_earned` < 1', function() {
-                // check points
-                rewardsCard.get('points').set('rewards_earned', 0);
-                rewardsCard.selectRewardsType('points');
-                expect(rewardsCard.get('redemption_code')).toBe(rewardsCard.defaults.redemption_code);
-
-                // check visits
-                rewardsCard.get('visits').set('rewards_earned', 0.5);
-                rewardsCard.selectRewardsType('visits');
-                expect(rewardsCard.get('redemption_code')).toBe(rewardsCard.defaults.redemption_code);
-
-                // check purchases
-                rewardsCard.get('purchases').set('rewards_earned', 0.99);
-                rewardsCard.selectRewardsType('purchases');
-                expect(rewardsCard.get('redemption_code')).toBe(rewardsCard.defaults.redemption_code);
-            });
         });
 
         it('saveData()', function() {
@@ -410,10 +336,9 @@ define(['rewards'], function() {
             it('data exists in storage', function() {
                 var data = {
                     number: '123',
-                    redemption_code: 2,
-                    points: {rewards_earned: 11, discount: 12, point_to_next_reward: 13, value: 14, selected: false},
-                    visits: {rewards_earned: 21, discount: 22, point_to_next_reward: 23, value: 24, selected: true},
-                    purchases: {rewards_earned: 31, discount: 32, point_to_next_reward: 33, value: 34, selected: false},
+                    discounts: [11, 22],
+                    rewards: [_.extend(defaults, {id: 1})],
+                    balance: {points: 100, visits: 200, purchases: 300},
                     captchaKey: 'test',
                     captchaValue: 'test'
                 }
@@ -425,12 +350,11 @@ define(['rewards'], function() {
 
                 expect(window.getData).toHaveBeenCalledWith('rewardsCard');
                 expect(rewardsCard.get('number')).toBe(data.number);
-                expect(rewardsCard.get('redemption_code')).toBe(data.redemption_code);
+                expect(rewardsCard.get('discounts')).toEqual(data.discounts);
+                expect(rewardsCard.get('rewards').toJSON()).toEqual(data.rewards);
+                expect(rewardsCard.get('balance').toJSON()).toEqual(data.balance);
                 expect(rewardsCard.get('captchaKey')).toBe(data.captchaKey);
                 expect(rewardsCard.get('captchaValue')).toBe(data.captchaValue);
-                expect(rewardsCard.get('points').toJSON()).toEqual(data.points);
-                expect(rewardsCard.get('visits').toJSON()).toEqual(data.visits);
-                expect(rewardsCard.get('purchases').toJSON()).toEqual(data.purchases);
             });
 
             it('data doesn\'t exist in storage', function() {
@@ -451,10 +375,9 @@ define(['rewards'], function() {
         it('resetData()', function() {
             var data = {
                 number: '232312',
-                redemption_code: 2,
-                points: {rewards_earned: 11, discount: 12, point_to_next_reward: 13, value: 14, selected: true},
-                visits: {rewards_earned: 21, discount: 22, point_to_next_reward: 23, value: 24, selected: false},
-                purchases: {rewards_earned: 31, discount: 32, point_to_next_reward: 33, value: 34, selected: false},
+                rewards: [_.extend(defaults, {id: 1})],
+                balance: {points: 100, visits: 200, purchases: 300},
+                discounts: [11, 22],
                 captchaKey: 'test',
                 captchaValue: 'test'
             };
@@ -463,26 +386,25 @@ define(['rewards'], function() {
             rewardsCard.set(data);
 
             expect(rewardsCard.get('number')).toBe(data.number);
-            expect(rewardsCard.get('redemption_code')).toBe(data.redemption_code);
+            expect(rewardsCard.get('rewards').toJSON()).toEqual(data.rewards);
+            expect(rewardsCard.get('balance').toJSON()).toEqual(data.balance);
+            expect(rewardsCard.get('discounts')).toEqual(data.discounts);
             expect(rewardsCard.get('captchaValue')).toBe(data.captchaValue);
             expect(rewardsCard.get('captchaKey')).toBe(data.captchaKey);
-            expect(rewardsCard.get('points').toJSON()).toEqual(data.points);
-            expect(rewardsCard.get('visits').toJSON()).toEqual(data.visits);
-            expect(rewardsCard.get('purchases').toJSON()).toEqual(data.purchases);
 
             rewardsCard.resetData();
-
-            expect(rewardsCard.toJSON()).toEqual(rewardsCard.defaults);
-            expect(rewardsCard.trigger).toHaveBeenCalledWith('onResetData');
+            expect(rewardsCard.get('number')).toEqual(rewardsCard.defaults.number);
+            expectReset();
         });
 
         it('resetDataAfterPayment()', function() {
             var data = {
                 number: '232312',
-                redemption_code: 2,
-                points: {rewards_earned: 11, discount: 12, point_to_next_reward: 13, value: 14, selected: true},
-                visits: {rewards_earned: 21, discount: 22, point_to_next_reward: 23, value: 24, selected: false},
-                purchases: {rewards_earned: 31, discount: 32, point_to_next_reward: 33, value: 34, selected: false},
+                rewards: [_.extend(defaults, {id: 1})],
+                balance: {points: 100, visits: 200, purchases: 300},
+                discounts: [11, 22],
+                captchaKey: 'test',
+                captchaValue: 'test'
             };
 
             spyOn(rewardsCard, 'trigger').and.callThrough();
@@ -490,108 +412,15 @@ define(['rewards'], function() {
             rewardsCard.resetDataAfterPayment();
 
             expect(rewardsCard.get('number')).toBe(data.number);
-            expect(rewardsCard.get('redemption_code')).toBe(rewardsCard.defaults.redemption_code);
-            expect(rewardsCard.get('points')).toEqual(rewardsCard.defaults.points);
-            expect(rewardsCard.get('visits')).toEqual(rewardsCard.defaults.visits);
-            expect(rewardsCard.get('purchases')).toEqual(rewardsCard.defaults.purchases);
+            expectReset();
+        });
+
+        function expectReset() {
+            expect(rewardsCard.get('rewards').toJSON()).toEqual([]);
+            expect(rewardsCard.get('balance')).toEqual(rewardsCard.defaults.balance);
+            expect(rewardsCard.get('discounts')).toEqual(rewardsCard.defaults.discounts);
             expect(rewardsCard.trigger).toHaveBeenCalledWith('onResetData');
-        });
+        }
 
-        describe('updateSelected()', function() {
-            it('`key` is invalid', function() {
-                var key = 'test';
-                rewardsCard.updateSelected(key);
-                expect(rewardsCard.get(key)).toBe(undefined);
-            });
-
-            it('`key` is valid, `model` is an instance of App.Models.Rewards', function() {
-                var redemptions = {
-                        points: 1,
-                        visits: 2,
-                        purchases: 3
-                    },
-                    visits = 'visits',
-                    points = 'points',
-                    purchases = 'purchases';
-
-                // points
-                rewardsCard.set('redemption_code', redemptions[points], {silent: true});
-                rewardsCard.updateSelected(points);
-                expect(rewardsCard.get(points).get('selected')).toBe(true);
-
-                rewardsCard.set('redemption_code', redemptions[visits], {silent: true});
-                rewardsCard.updateSelected(points);
-                expect(rewardsCard.get(points).get('selected')).toBe(false);
-
-                rewardsCard.set('redemption_code', redemptions[purchases], {silent: true});
-                rewardsCard.updateSelected(points);
-                expect(rewardsCard.get(points).get('selected')).toBe(false);
-
-                // visits
-                rewardsCard.set('redemption_code', redemptions[visits], {silent: true});
-                rewardsCard.updateSelected(visits);
-                expect(rewardsCard.get(visits).get('selected')).toBe(true);
-
-                rewardsCard.set('redemption_code', redemptions[points], {silent: true});
-                rewardsCard.updateSelected(visits);
-                expect(rewardsCard.get(visits).get('selected')).toBe(false);
-
-                rewardsCard.set('redemption_code', redemptions[purchases], {silent: true});
-                rewardsCard.updateSelected(visits);
-                expect(rewardsCard.get(visits).get('selected')).toBe(false);
-
-                // purchases
-                rewardsCard.set('redemption_code', redemptions[purchases], {silent: true});
-                rewardsCard.updateSelected(purchases);
-                expect(rewardsCard.get(purchases).get('selected')).toBe(true);
-
-                rewardsCard.set('redemption_code', redemptions[points], {silent: true});
-                rewardsCard.updateSelected(purchases);
-                expect(rewardsCard.get(purchases).get('selected')).toBe(false);
-
-                rewardsCard.set('redemption_code', redemptions[visits], {silent: true});
-                rewardsCard.updateSelected(purchases);
-                expect(rewardsCard.get(purchases).get('selected')).toBe(false);
-            });
-
-            it('`key` is valid, `model` is a simple object', function() {
-                var points = 'points',
-                    visits = 'visits',
-                    purchases = 'purchases',
-                    data = {
-                        number: '232312',
-                        redemption_code: 1,
-                        points: {rewards_earned: 11, discount: 12, point_to_next_reward: 13, value: 14, selected: true},
-                        visits: {rewards_earned: 21, discount: 22, point_to_next_reward: 23, value: 24, selected: false},
-                        purchases: {rewards_earned: 31, discount: 32, point_to_next_reward: 33, value: 34, selected: false},
-                        captchaKey: 'test',
-                        captchaValue: 'test'
-                    };
-
-                // `updateSelected()` method will be automatically called after 'change:redemption_code' event.
-                // `points`, `visits`, `purchases` are present as simple objects in `updateSelected()` method
-                // when `data` object is passed to rewardsCard.set().
-
-                // points
-                rewardsCard.set(data);
-                expect(rewardsCard.get(points).get('selected')).toBe(true);
-                expect(rewardsCard.get(visits).get('selected')).toBe(false);
-                expect(rewardsCard.get(purchases).get('selected')).toBe(false);
-
-                // visits
-                data.redemption_code = 2;
-                rewardsCard.set(data);
-                expect(rewardsCard.get(points).get('selected')).toBe(false);
-                expect(rewardsCard.get(visits).get('selected')).toBe(true);
-                expect(rewardsCard.get(purchases).get('selected')).toBe(false);
-
-                // visits
-                data.redemption_code = 3;
-                rewardsCard.set(data);
-                expect(rewardsCard.get(points).get('selected')).toBe(false);
-                expect(rewardsCard.get(visits).get('selected')).toBe(false);
-                expect(rewardsCard.get(purchases).get('selected')).toBe(true);
-            });
-        });
     });
 });

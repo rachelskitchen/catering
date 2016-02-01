@@ -140,7 +140,7 @@ select:-moz-focusring {
 .primary-button,
 #popup_ok[id],
 .alternate-button:not([disabled]):active,
-.reward-selection li.active::after,
+.reward-selection__item_selected::after,
 .stanford-plan.active::after {
     .resolve-color(@alternate_text);
 }
@@ -262,11 +262,11 @@ select:-moz-focusring {
 #popup_cancel[id]:not([disabled]):active,
 .establishments[class] button:not([disabled]):active,
 .payments .payment,
-ul.reward-selection > li {
+.reward-selection__item {
     .resolve-border-color(@primary_button);
 }
 
-.reward-selection li.active, .stanford-plan.active {
+.reward-selection__item_selected, .stanford-plan.active {
     .resolve-background-alpha(@primary_button, 30%);
 }
 
