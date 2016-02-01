@@ -505,7 +505,7 @@ define(["backbone", "async"], function(Backbone) {
             self.loadCustomerSettings = $.Deferred();
 
             $.ajax({
-                url: self.get("host") + "/weborders/directory_settings/",
+                url: self.get("host") + "/weborders/weborder_settings/",
                 dataType: "json",
                 success: function(data) {
                     if (_.isObject(data)) {
