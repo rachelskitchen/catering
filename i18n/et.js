@@ -589,6 +589,12 @@ define([], function() {
         "PROFILE_FIRST_NAME": "Eesnimi",
         "PROFILE_LAST_NAME": "Perekonnanimi",
         "PROFILE_PHONE": "Telefoninumber",
-        "PROFILE_USER_CREATED": ""
+        "PROFILE_USER_CREATED": "",
+        "PROFILE_ADDRESS_LINE1": "Aadressirida 1",
+        "PROFILE_ADDRESS_LINE2": "Aadressirida 2",
+        "PROFILE_CITY": "Linn",
+        "PROFILE_PROVINCE": "Maakond",
+        "PROFILE_ZIP_CODE": "Sihtnumber",
+        "PROFILE_POSTAL_CODE": "Sihtnumber"
     } // end of locale
 }); // end of module

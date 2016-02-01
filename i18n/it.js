@@ -589,6 +589,12 @@ define([], function() {
         "PROFILE_FIRST_NAME": "Nome",
         "PROFILE_LAST_NAME": "Cognome",
         "PROFILE_PHONE": "Telefono #",
-        "PROFILE_USER_CREATED": ""
+        "PROFILE_USER_CREATED": "",
+        "PROFILE_ADDRESS_LINE1": "Indirizzo Riga 1",
+        "PROFILE_ADDRESS_LINE2": "Indirizzo Riga 2",
+        "PROFILE_CITY": "Città",
+        "PROFILE_PROVINCE": "Provincia",
+        "PROFILE_ZIP_CODE": "CAP",
+        "PROFILE_POSTAL_CODE": "CAP"
     } // end of locale
 }); // end of module

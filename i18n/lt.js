@@ -589,6 +589,12 @@ define([], function() {
         "PROFILE_FIRST_NAME": "Vardas",
         "PROFILE_LAST_NAME": "Pavardė",
         "PROFILE_PHONE": "Telefono nr.",
-        "PROFILE_USER_CREATED": ""
+        "PROFILE_USER_CREATED": "",
+        "PROFILE_ADDRESS_LINE1": "1 adreso eilutė",
+        "PROFILE_ADDRESS_LINE2": "2 adreso eilutė",
+        "PROFILE_CITY": "Miestas",
+        "PROFILE_PROVINCE": "Provincija",
+        "PROFILE_ZIP_CODE": "Pašto kodas",
+        "PROFILE_POSTAL_CODE": "Pašto kodas"
     } // end of locale
 }); // end of module

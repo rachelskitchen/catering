@@ -3,7 +3,9 @@
     margin: 1.4em 0;
 }
 
-.profile-form input {
+.profile-form input,
+.profile-form .select-wrapper {
+    display: inline-block;
     width: 98%;
     margin-bottom: 1.4em;
 }

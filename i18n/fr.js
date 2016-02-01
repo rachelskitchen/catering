@@ -589,6 +589,12 @@ define([], function() {
         "PROFILE_FIRST_NAME": "Prénom",
         "PROFILE_LAST_NAME": "Nom",
         "PROFILE_PHONE": "Téléphone #",
-        "PROFILE_USER_CREATED": ""
+        "PROFILE_USER_CREATED": "",
+        "PROFILE_ADDRESS_LINE1": "Adresse 1",
+        "PROFILE_ADDRESS_LINE2": "Adresse 2",
+        "PROFILE_CITY": "Ville",
+        "PROFILE_PROVINCE": "Province",
+        "PROFILE_ZIP_CODE": "Code postal",
+        "PROFILE_POSTAL_CODE": "Code postal"
     } // end of locale
 }); // end of module
