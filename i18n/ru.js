@@ -557,6 +557,12 @@
         "PROFILE_FIRST_NAME": "Имя",
         "PROFILE_LAST_NAME": "Фамилия",
         "PROFILE_PHONE": "Телефон",
-        "PROFILE_USER_CREATED": "Пользователь создан. Пожалуйста, проверьте вашу почту и подтвердите регистрацию."
+        "PROFILE_USER_CREATED": "Пользователь создан. Пожалуйста, проверьте вашу почту и подтвердите регистрацию.",
+        "PROFILE_ADDRESS_LINE1": "Адрес",
+        "PROFILE_ADDRESS_LINE2": "Адрес 2",
+        "PROFILE_CITY": "Город",
+        "PROFILE_PROVINCE": "Провинция",
+        "PROFILE_ZIP_CODE": "Почтовый индекс",
+        "PROFILE_POSTAL_CODE": "Почтовый индекс"
     } // end of locale
 }); // end of module

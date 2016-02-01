@@ -125,6 +125,12 @@ define(["backbone", "geopoint"], function(Backbone) {
              */
             shippingAddressIndex: 1,
             /**
+             * Index of primary address used in "Profile".
+             * @type {?number}
+             * @default null
+             */
+            profileAddressIndex: null,
+            /**
              * User's password
              * @type {string}
              * @default ""
@@ -172,7 +178,6 @@ define(["backbone", "geopoint"], function(Backbone) {
          * Sets indexes of addresses used for "Delivery" and "Shipping" dinign options.
          */
         initialize: function() {
-            this.syncWithRevelAPI();
             this.setAddressesIndexes();
             this.listenTo(this, 'change:first_name', function() {
                 var firstName = this.get('first_name');
@@ -788,59 +793,30 @@ define(["backbone", "geopoint"], function(Backbone) {
             });
         },
         /**
-         * Fill out RevelAPI.attributes.customer and add listeners for further synchronization with RevelAPI.attributes.customer if RevelAPI.isAvailable() returns true.
-         * @ignore
+         * Creates an object containing empty address data (address object template).
+         * @returns {Object}
+         * ```
+         * {
+         *     country: '',
+         *     state: '',
+         *     province: '',
+         *     street_1: '',
+         *     street_2: '',
+         *     city: '',
+         *     zipcode: ''
+         * }
+         * ```
          */
-        syncWithRevelAPI: function() {
-            var RevelAPI = this.get('RevelAPI');
-
-            if(!RevelAPI || !RevelAPI.isAvailable()) {
-                return;
-            }
-
-            var profileCustomer = RevelAPI.get('customer'),
-                profileExists = RevelAPI.get('profileExists'),
-                self = this;
-
-            // if profile doesn't exist we should provide autofill out profile page
-            !profileExists && RevelAPI.listenTo(this, 'change:first_name change:last_name change:phone change:email', updateProfile);
-
-            // when user saves profile above listener should be unbound and checkout page should be updated
-            this.listenTo(RevelAPI, 'onProfileSaved', function() {
-                RevelAPI.stopListening(this);
-                update();
-            }, this);
-
-            // Listen to RevelAPI.attributes.customer changes if user wasn't set any value for one of 'first_name', 'last_name', 'phone', 'email' fields.
-            this.listenTo(profileCustomer, 'change', function() {
-                if(RevelAPI.get('profileExists') && !this.get('first_name') && !this.get('last_name') && !this.get('phone') && !this.get('email')) {
-                    update();
-                }
-            }, this);
-
-            // fill out current model
-            this.set(profileCustomer.toJSON());
-
-            // Fill out RevelAPI.attributes.customer and call RevelAPI.setOriginalProfileData().
-            function updateProfile() {
-                profileCustomer.set(getData(self.toJSON()));
-                RevelAPI.setOriginalProfileData();
-            }
-
-            // Set attributes values as RevelAPI.get('customer').attributes values.
-            function update() {
-                self.set(getData(profileCustomer.toJSON()));
+        getEmptyAddress: function() {
+            return {
+                country: '',
+                state: '', //null,
+                province: '', //null,
+                street_1: '',
+                street_2: '',
+                city: '',
+                zipcode: ''
             };
-
-            function getData(data) {
-                return {
-                    first_name: data.first_name,
-                    last_name: data.last_name,
-                    email: data.email,
-                    phone:data.phone,
-                    addresses: data.addresses
-                };
-            }
         }
     });
 });

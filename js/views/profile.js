@@ -70,6 +70,17 @@ define(["factory"], function() {
         mod: 'create',
         bindings: {
             '.name': 'text: format("$1 $2", first_name, last_name)'
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+
+            this.subViews.push(App.Views.GeneratorView.create('Profile', _.extend({}, this.options, {
+                el: this.$('.address-box'),
+                mod: 'Address',
+                model: new Backbone.Model(this.model.getEmptyAddress())
+            })));
+
+            return this;
         }
     });
 
@@ -95,6 +106,37 @@ define(["factory"], function() {
             'click .payments-link:not(.disabled)': setCallback('payments_link'),
             'click .profile-link:not(.disabled)': setCallback('profile_link'),
             'click .close': setCallback('close_link')
+        }
+    });
+
+    App.Views.CoreProfileView.CoreProfileAddressView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'address',
+        bindings: {
+            '.country': 'value: country, options: parseOptions(_lp_COUNTRIES)',
+            '.state-row': 'toggle: equal(country, "US")',
+            '.state': 'value: state, options: parseOptions(_lp_STATES)',
+            '.street_1': 'value: firstLetterToUpperCase(street_1), events: ["input"], trackCaretPosition: street_1',
+            '.street_2': 'value: firstLetterToUpperCase(street_2), events: ["input"], trackCaretPosition: street_2',
+            '.city': 'value: firstLetterToUpperCase(city), events: ["input"], trackCaretPosition: city',
+            '.province-row': 'toggle: equal(country, "CA")',
+            '.province': 'value: firstLetterToUpperCase(province), events: ["input"], trackCaretPosition: province',
+            '.zipcode': 'value: zipcode, attr: {placeholder: select(equal(country, "US"), _lp_CHECKOUT_ZIP_CODE, _lp_CHECKOUT_POSTAL_CODE)}, pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
+        },
+        bindingFilters: {
+            parseOptions: function(data) {
+                var result = [];
+                if (!_.isObject(data)) {
+                    return result;
+                }
+                for(var i in data) {
+                    result.push({
+                        label: data[i],
+                        value: i
+                    });
+                }
+                return result;
+            }
         }
     });
 
@@ -192,6 +234,7 @@ define(["factory"], function() {
         App.Views.ProfileView.ProfileLogInView = App.Views.CoreProfileView.CoreProfileLogInView;
         App.Views.ProfileView.ProfileCreateView = App.Views.CoreProfileView.CoreProfileCreateView;
         App.Views.ProfileView.ProfileEditView = App.Views.CoreProfileView.CoreProfileEditView;
+        App.Views.ProfileView.ProfileAddressView = App.Views.CoreProfileView.CoreProfileAddressView;
         App.Views.ProfileView.ProfileSettingsView = App.Views.CoreProfileView.CoreProfileSettingsView;
         App.Views.ProfileView.ProfilePWDResetView = App.Views.CoreProfileView.CoreProfilePWDResetView;
         App.Views.ProfileView.ProfileMenuView = App.Views.CoreProfileView.CoreProfileMenuView;

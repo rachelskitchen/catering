@@ -566,6 +566,12 @@
         "PROFILE_FIRST_NAME": "First Name",
         "PROFILE_LAST_NAME": "Last Name",
         "PROFILE_PHONE": "Phone #",
-        "PROFILE_USER_CREATED": "The user has been created. Please check your email and confirm registration."
+        "PROFILE_USER_CREATED": "The user has been created. Please check your email and confirm registration.",
+        "PROFILE_ADDRESS_LINE1": "Address Line 1",
+        "PROFILE_ADDRESS_LINE2": "Address Line 2",
+        "PROFILE_CITY": "City",
+        "PROFILE_PROVINCE": "Province",
+        "PROFILE_ZIP_CODE": "Zip Code",
+        "PROFILE_POSTAL_CODE": "Postal Code"
     }; // end of locale
 }); // end of module
