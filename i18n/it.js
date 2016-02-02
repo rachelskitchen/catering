@@ -563,6 +563,7 @@ define([], function() {
         "PAYMENTS": "",
         "SETTINGS": "",
         "CONTINUE": "Continua",
+        "SAVE": "Salva",
         "PROFILE": "Profilo",
         "PROFILE_EMAIL_ADDRESS": "Indirizzo e-mail",
         "PROFILE_PASSWORD": "Password",
@@ -577,6 +578,8 @@ define([], function() {
         "PROFILE_SIGN_UP_INFO": "",
         "PROFILE_ACCOUNT_PASSWORD": "",
         "PROFILE_REENTER_PASSWORD": "",
+        "PROFILE_CREATE_TITLE": "",
+        "PROFILE_EDIT_TITLE": "",
         "PROFILE_GREETING": "",
         "PROFILE_COMPLETE": "",
         "PROFILE_BIRTHDAY": "",
@@ -595,6 +598,8 @@ define([], function() {
         "PROFILE_CITY": "Città",
         "PROFILE_PROVINCE": "Provincia",
         "PROFILE_ZIP_CODE": "CAP",
-        "PROFILE_POSTAL_CODE": "CAP"
+        "PROFILE_POSTAL_CODE": "CAP",
+        "PROFILE_BASIC_DETAILS": "",
+        "PROFILE_ADDRESS": ""
     } // end of locale
 }); // end of module

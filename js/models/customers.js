@@ -125,6 +125,12 @@ define(["backbone", "geopoint"], function(Backbone) {
              */
             shippingAddressIndex: 1,
             /**
+             * Index of address used for "Catering" dining option.
+             * @type {number}
+             * @default 2
+             */
+            cateringAddressIndex: 2,
+            /**
              * Index of primary address used in "Profile".
              * @type {?number}
              * @default null
@@ -450,14 +456,15 @@ define(["backbone", "geopoint"], function(Backbone) {
         },
         /**
          * Sets indexes for delivery and shipping addresses in `addresses` array.
-         * If initially addresses is empty array deliveryAddressIndex is 0, shippingAddressIndex is 1
+         * If initially addresses is empty array deliveryAddressIndex is 0, shippingAddressIndex is 1, cateringAddressIndex is 2
          */
         setAddressesIndexes: function() {
             var addresses = this.get('addresses');
             if(Array.isArray(addresses)) {
                 this.set({
                     deliveryAddressIndex: addresses.length,
-                    shippingAddressIndex: addresses.length + 1
+                    shippingAddressIndex: addresses.length + 1,
+                    cateringAddressIndex: addresses.length + 2
                 });
             }
 
@@ -482,9 +489,9 @@ define(["backbone", "geopoint"], function(Backbone) {
          * @returns {boolean} true is a new address selected or false if address already exists in DB.
          */
         isNewAddressSelected: function(dining_option) {
-            var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING',
+            var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING' || dining_option === 'DINING_OPTION_CATERING',
                 shipping_address = this.get('shipping_address');
-            return (shipping_address == this.get('deliveryAddressIndex') || shipping_address == this.get('shippingAddressIndex')) && isDelivery ? true : false;
+            return (shipping_address == this.get('deliveryAddressIndex') || shipping_address == this.get('shippingAddressIndex') || shipping_address == this.get('cateringAddressIndex')) && isDelivery ? true : false;
         },
         /**
          * Validates `first_name`, `last_name`, `email` and `password` attributes for Sign Up.

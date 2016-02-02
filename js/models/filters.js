@@ -86,18 +86,56 @@ define(['backbone'], function() {
          * Saves attributes values in a storage. 'filter.%uid%' key is used.
          */
         saveData: function() {
-            var prefix = App.Data.is_stanford_mode ? "stanford." : "";
-            setData('filter.' + prefix + this.get('uid'), this, true);
+            setData('filter.' + this.get('uid'), this, true);
         },
         /**
          * Restores data from a storage. 'filter.%uid%' key is used.
          */
         loadData: function() {
-            var prefix = App.Data.is_stanford_mode ? "stanford." : "";
-            var data = getData('filter.' + prefix + this.get('uid'), true);
+            var data = getData('filter.' + this.get('uid'), true);
             if(data instanceof Object) {
-                this.set(data);
+                if (this.is_filter_available()) {
+                    this.set(data);
+                }
             }
+        },
+        /**
+         * Check if the filter is permited by backend directory settings (https://server.revelup.com/weborders/directory_settings/)
+         * @returns {boolean} true - the filter is available, false - otherwise.
+         */
+        is_filter_available: function() {
+            var setting,
+                uid = this.get('uid'),
+                set_dir = App.Data.settings.get('settings_directory');
+
+            if (!uid) {
+                console.warn("uid is not set for a filter: ", this.get('title'));
+                return true;
+            }
+
+            if (uid.match(/\.storeTypes\./))
+                setting = 'store_type_filter';
+            else if (uid.match(/\.sortOptions\./))
+                setting = 'sorting_filter';
+            else if (uid.match(/\.distance\./))
+                setting = 'distance_filter';
+            else if (uid.match(/\.search-by-name\./))
+                setting = 'search_by_name_filter';
+            else if (uid.match(/\.online_and_app_orders\./))
+                setting = 'online_ordering_filter';
+            else if (uid.match(/\.delivery\./))
+                setting = 'delivery_filter';
+            else if (uid.match(/\.open_now\./))
+                setting = 'open_now_filter';
+
+            if (!setting) {
+                console.warn("Unexpected dismatch for: ", uid);
+            }
+
+            if (setting && !set_dir[setting])
+                return false
+            else
+                return true
         }
     });
 
@@ -128,16 +166,21 @@ define(['backbone'], function() {
          * Otherwise, a new item is added to the collection.
          * @param {Array} items - an array of objects each of them has attributes of filter item.
          */
-        setItems: function(items) {
+        setItems: function(items, update_only) {
             if(!Array.isArray(items)) {
                 return;
             }
             items.forEach(function(item, index) {
-                var model = this.at(index);
+                var uid = item instanceof App.Models.FilterItem ? item.get('uid') : item.uid;
+                var model = this.findWhere({uid: uid});
                 if(model) {
-                    model.set(item);
+                    if (model.is_filter_available()) {
+                        model.set(item);
+                    }
                 } else {
-                    this.add(item);
+                    if (update_only !== true) {
+                        this.add(item);
+                    }
                 }
             }, this);
         }
@@ -203,8 +246,8 @@ define(['backbone'], function() {
 
             Array.isArray(filterItems) && filterItemsCollection.setItems(filterItems);
             this.set('filterItems', filterItemsCollection);
-            this.listenTo(filterItemsCollection, 'change:selected', this.onChanged, this);
             this.listenTo(filterItemsCollection, 'change:selected', this.uncheck, this);
+            this.listenTo(filterItemsCollection, 'change:selected', this.onChanged, this);
 
             return Backbone.Model.prototype.initialize.apply(this, arguments);
         },
@@ -280,13 +323,13 @@ define(['backbone'], function() {
          * Converts `data.filterItems` array to App.Collections.FilterItems instance.
          * @param {Object} data - object literal containing JSON represetation of attributes.
          */
-        setData: function(data) {
+        setData: function(data, update_only) {
             if(!(data instanceof Object)) {
                 return;
             }
             for(var i in data) {
                 if(i == 'filterItems') {
-                    this.get('filterItems').setItems(data[i]);
+                    this.get('filterItems').setItems(data[i], update_only);
                 } else {
                     this.set(i, data[i]);
                 }
@@ -426,16 +469,17 @@ define(['backbone'], function() {
          * Otherwise, a new item is added to the collection.
          * @param {Array} data - an array of objects containing JSON representation of {@link App.Models.Filter} attributes.
          */
-        setData: function(data) {
+        setData: function(data, update_only) {
             if(!Array.isArray(data)) {
                 return;
             }
             data.forEach(function(item, index) {
                 var model = this.at(index);
                 if(model) {
-                    model.setData(item);
+                    model.setData(item, update_only);
                 } else {
-                    this.add(item);
+                    if (update_only !== true)
+                        this.add(item);
                 }
             }, this);
         },

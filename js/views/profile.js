@@ -32,14 +32,21 @@ define(["factory"], function() {
 
     App.Views.CoreProfileView = {};
 
-    App.Views.CoreProfileView.CoreProfileSignUpView = App.Views.FactoryView.extend({
+    App.Views.CoreProfileView.CoreProfileBasicDetailsView = App.Views.FactoryView.extend({
         name: 'profile',
-        mod: 'sign_up',
+        mod: 'basic_details',
         bindings: {
             '.first-name': 'value: firstLetterToUpperCase(first_name), events:["input"], trackCaretPosition: first_name',
             '.last-name': 'value: firstLetterToUpperCase(last_name), events:["input"], trackCaretPosition: last_name',
             '.email': 'value: email, events:["input"]',
-            '.phone': 'value: phone, events: ["input"], restrictInput: "0123456789+", pattern: /^\\+?\\d{0,15}$/',
+            '.phone': 'value: phone, events: ["input"], restrictInput: "0123456789+", pattern: /^\\+?\\d{0,15}$/'
+        }
+    });
+
+    App.Views.CoreProfileView.CoreProfileSignUpView = App.Views.CoreProfileView.CoreProfileBasicDetailsView.extend({
+        name: 'profile',
+        mod: 'sign_up',
+        bindings: {
             '.password': 'value: password, events:["input"]',
             '.password-confirm': 'value: confirm_password, events:["input"]',
             '.passwords-mismatch': 'toggle: select(all(password, confirm_password), not(equal(password, confirm_password)), false)',
@@ -74,11 +81,11 @@ define(["factory"], function() {
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
 
-            this.subViews.push(App.Views.GeneratorView.create('Profile', _.extend({}, this.options, {
+            this.subViews.push(App.Views.GeneratorView.create('Profile', {
                 el: this.$('.address-box'),
                 mod: 'Address',
                 model: new Backbone.Model(this.model.getEmptyAddress())
-            })));
+            }));
 
             return this;
         }
@@ -121,7 +128,7 @@ define(["factory"], function() {
             '.city': 'value: firstLetterToUpperCase(city), events: ["input"], trackCaretPosition: city',
             '.province-row': 'toggle: equal(country, "CA")',
             '.province': 'value: firstLetterToUpperCase(province), events: ["input"], trackCaretPosition: province',
-            '.zipcode': 'value: zipcode, attr: {placeholder: select(equal(country, "US"), _lp_CHECKOUT_ZIP_CODE, _lp_CHECKOUT_POSTAL_CODE)}, pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
+            '.zipcode': 'value: zipcode, attr: {placeholder: select(equal(country, "US"), _lp_PROFILE_ZIP_CODE, _lp_PROFILE_POSTAL_CODE)}, pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
         },
         bindingFilters: {
             parseOptions: function(data) {
@@ -142,7 +149,26 @@ define(["factory"], function() {
 
     App.Views.CoreProfileView.CoreProfileEditView = App.Views.FactoryView.extend({
         name: 'profile',
-        mod: 'edit'
+        mod: 'edit',
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+
+            var basicDetails = App.Views.GeneratorView.create('Profile', {
+                el: this.$('.basic-details-box'),
+                mod: 'BasicDetails',
+                model: this.model
+            });
+
+            var address = App.Views.GeneratorView.create('Profile', {
+                el: this.$('.address-box'),
+                mod: 'Address',
+                model: new Backbone.Model(this.model.getEmptyAddress())
+            });
+
+            this.subViews.push(basicDetails, address);
+
+            return this;
+        }
     });
 
     App.Views.CoreProfileView.CoreProfileSettingsView = App.Views.FactoryView.extend({
@@ -230,6 +256,7 @@ define(["factory"], function() {
 
     return new (require('factory'))(function() {
         App.Views.ProfileView = {};
+        App.Views.ProfileView.ProfileBasicDetailsView = App.Views.CoreProfileView.CoreProfileBasicDetailsView;
         App.Views.ProfileView.ProfileSignUpView = App.Views.CoreProfileView.CoreProfileSignUpView;
         App.Views.ProfileView.ProfileLogInView = App.Views.CoreProfileView.CoreProfileLogInView;
         App.Views.ProfileView.ProfileCreateView = App.Views.CoreProfileView.CoreProfileCreateView;

@@ -23,17 +23,17 @@
         <h3><%= _lp.REWARDS_INFORMATION %></h3>
         <span class='rewards-title'><%= _lp.REWARDS_NUMBER %>:</span>
         <span class="rewards-number"></span>
-        <ul class="collected">
-            <li class="points-collected">
-                <dfn><%= _lp.REWARDS_TOTAL_POINTS %></dfn>
+        <ul class="rewards-total">
+            <li class="rewards-total__item rewards-total__item_points">
+                <div class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_POINTS %></div>
                 <span class='total-points color-style1'></span>
             </li>
-            <li class="visits-collected">
-                <dfn><%= _lp.REWARDS_TOTAL_VISITS %></dfn>
+            <li class="rewards-total__item rewards-total__item_visits">
+                <div class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_VISITS %></div>
                 <span class='total-visits color-style1'></span>
             </li>
-            <li class="purchases-collected">
-                <dfn><%= _lp.REWARDS_TOTAL_PURCHASES %></dfn>
+            <li class="rewards-total__item rewards-total__item_purchases">
+                <div class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_PURCHASES %></div>
                 <span class='total-purchases color-style1'></span>
             </li>
         </ul>
@@ -41,60 +41,24 @@
     <span class="info"><%= _lp.REWARDS_SELECTION_INFO %></span>
     <div class="popup-background">
         <h3 class="rewards-available"><%= _lp.REWARDS_AVAILABLE %></h3>
-        <ul class="reward-selection">
-            <li class="points-selection">
-                <div class="items-with-points"></div>
-                <span class="redemption color-style1 redemption-points">
-                    (<span class="points-redemption"></span>&nbsp;<span class="points-redemption-info"></span>)
-                </span>
-            </li>
-            <li class="visits-selection">
-                <span>
-                    <span class="visits-discount color-style1"></span> <%= _lp.REWARDS_ENTIRE_ORDER_DISCOUNT %>
-                    <span class="redemption color-style1">
-                        (<span class="visits-redemption"></span>&nbsp;<span class="visits-redemption-info"></span>)
-                    </span>
-                </span>
-            </li>
-            <li class="purchases-selection">
-                <span>
-                    <span class="purchases-discount color-style1"></span> <%= _lp.REWARDS_ENTIRE_ORDER_DISCOUNT %>
-                    <span class="redemption color-style1">
-                        (<span class="purchases-redemption"></span>&nbsp;<span class="purchases-redemption-info"></span>)
-                    </span>
-                </span>
-            </li>
-        </ul>
+        <div class="reward-selection-wrapper">
+            <div class="reward-selection-inner">
+                <ul class="reward-selection"></ul>
+            </div>
+        </div>
         <span class="rewards-unavailable"><%= _lp.REWARDS_UNAVAILABLE %></span>
     </div>
     <div class="btn apply-reward"><%= _lp.REWARDS_APPLY %></div>
 </script>
 
-<script type="text/template" id="rewards_points_item-template">
-    <div>
-        <div class="image">
-            <img src=<%= image %> alt="<%= name %> logo<%= id %>" class="logo" data-default-index="1">
+<script type="text/template" id="rewards_item-template">
+    <div class="reward color-style1">
+        <div class="reward__name"></div>
+        <div class="reward__discount">
+            <span class="reward__discount-amount"></span> <span class="reward__discount-text"></span>
         </div>
-        <h4 class="name">
-                <span class="name weight"></span>
-                <span class="name quantity"></span>
-        </h4>
-        <ul class="modifier_place">
-            <li class="weight-info weight"></li>
-            <li class="special">*** <span class="special"></span></li>
-        </ul>
-        <% _.each(attrs, function(attr) { %>
-        <div class="attrs">
-            <span><%= attr.name %></span>:
-            <span><%= attr.value %></span>
+        <div class="reward__redemption">
+            (<span class="reward__redemption-amount"></span>&nbsp;<span class="reward__redemption-text"></span>)
         </div>
-        <% }); %>
-        <span class="price-line">
-            <span class="price"></span>
-            &ndash;
-            <span class="discount-line color-style1">
-                <span class="discount"></span> <%= _lp.REWARDS_OFF %>
-            </span>
-        </span>
     </div>
 </script>

@@ -554,8 +554,7 @@ define(["backbone", "factory"], function(Backbone) {
         navigateDirectory: function() {
             if(App.Data.dirMode) {
                 var navigateToDirectoryConfirmed = function () {
-                    var prefix = App.Data.is_stanford_mode ? ".stanford" : "",
-                        directoryState = getData('directory.state' + prefix),
+                    var directoryState = getData('directory.state'),
                         directoryHash = '';
 
                     if (directoryState instanceof Object && directoryState.hash) {
@@ -684,7 +683,7 @@ define(["backbone", "factory"], function(Backbone) {
                     login_link: login,
                     settings_link: close,
                     payments_link: close,
-                    profile_link: close,
+                    profile_link: profile_edit,
                     close_link: close,
                     cacheId: true
                 }
@@ -698,6 +697,11 @@ define(["backbone", "factory"], function(Backbone) {
 
             function login() {
                 self.navigate('login', true);
+                close();
+            }
+
+            function profile_edit() {
+                self.navigate('profile_edit', true);
                 close();
             }
 
@@ -775,8 +779,7 @@ define(["backbone", "factory"], function(Backbone) {
                 modelName: 'Profile',
                 mod: 'Create',
                 model: customer,
-                register: register,
-                cacheId: true
+                register: register
             };
 
             function register() {
@@ -790,6 +793,33 @@ define(["backbone", "factory"], function(Backbone) {
                     App.Data.errors.alert(check.errorMsg);
                 }
             }
+        },
+        profileEditContent: function() {
+            var customer = App.Data.customer,
+                mainModel = App.Data.mainModel,
+                content = [];
+
+            App.Data.header.set({
+                page_title: _loc.PROFILE_EDIT_TITLE,
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history),
+                link: console.log.bind(console, 'update'),
+                link_title: _loc.SAVE,
+                enableLink: false
+            });
+
+            content.push({
+                modelName: 'Profile',
+                mod: 'BasicDetails',
+                model: customer,
+                className: 'profile-basic-details'
+            }, {
+                modelName: 'Profile',
+                mod: 'Address',
+                model: new Backbone.Model(customer.getEmptyAddress())
+            });
+
+            return content;
         }
     };
 

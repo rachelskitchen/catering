@@ -30,6 +30,8 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
 
     require(['cssua', 'functions', 'errors', 'tests_list', 'e2e_list', 'settings', 'tax', 'main_router', 'locale'], function() {
         app.get = parse_get_params();
+        // hardcode English locale
+        App.Data.get_parameters = {locale: 'en'};
         // invoke beforeStart onfig
         app.beforeInit();
 
@@ -64,6 +66,8 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
         });
 
         settings.set('settings_system', settings_data.all.settings_system);
+        settings.set('settings_directory', settings_data.all.settings_directory);
+        App.SettingsDirectory = settings.get('settings_directory');
 
         if (typeof end2endMode != 'undefined' && end2endMode === true) {
             var srv_name = /^http[s]*:\/\/([^\.\s]+)\./.exec(window.location.origin), hostName;
@@ -93,7 +97,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
             else {
                 require(['jasmine_blanket'], function(blanket) {
 
-                    blanket.options('debug', true);
+                    blanket.options('debug', false);
                     blanket.options('filter', 'js');
                     blanket.options('antifilter', [ 'js/libs/', 'js/utest/' ]);
                     blanket.options('branchTracking', true);

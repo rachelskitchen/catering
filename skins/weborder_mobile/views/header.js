@@ -73,29 +73,26 @@ define(["factory"], function() {
                 }
             }();
 
-            if (mobile && App.Data.is_stanford_mode) {
-                var params = App.Data.get_parameters;
-                var store_app_id = (mobile == 'ios' ? params.apple_app_id : params.google_app_id);
+            var set_dir = App.SettingsDirectory;
+            var store_app_id = (mobile == 'ios' && set_dir ? set_dir.apple_app_id : set_dir.google_app_id);
+            if (set_dir.smart_banner && store_app_id) {
+                var meta = document.createElement('meta');
+                meta.name = APP_STORE_NAME[mobile];
+                meta.content = 'app-id=' + store_app_id;
+                document.querySelector('head').appendChild(meta);
 
-                if (store_app_id) {
-                    var meta = document.createElement('meta');
-                    meta.name = APP_STORE_NAME[mobile];
-                    meta.content = 'app-id=' + store_app_id;
-                    document.querySelector('head').appendChild(meta);
-
-                    $.smartbanner({
-                        daysHidden : 0,
-                        daysReminder : 0,
-                        title : 'Stanford R&DE FOOD ToGo',
-                        author : 'Revel Systems',
-                        icon : 'https://lh3.googleusercontent.com/kj4yHHb6ct6xWUsUPHE38Efh38_1MpIrF3IejoZiI9yLtB4VtrLJ3timHm6EWnfbJSih=w300',
-                        force: mobile,
-                        appendToSelector: '#header',
-                        scale: '1',
-                        onInstall: bannerHideHandler,
-                        onClose: bannerHideHandler
-                    })
-                }
+                $.smartbanner({
+                    daysHidden : 0,
+                    daysReminder : 0,
+                    title : 'Stanford R&DE FOOD ToGo',
+                    author : 'Revel Systems',
+                    icon : 'https://lh3.googleusercontent.com/kj4yHHb6ct6xWUsUPHE38Efh38_1MpIrF3IejoZiI9yLtB4VtrLJ3timHm6EWnfbJSih=w300',
+                    force: mobile,
+                    appendToSelector: '#header',
+                    scale: '1',
+                    onInstall: bannerHideHandler,
+                    onClose: bannerHideHandler
+                })
             }
 
             function bannerHideHandler() {
@@ -223,7 +220,6 @@ define(["factory"], function() {
 
             this.model.updateProduct(order);
             order.set('discount', originOrder.get('discount').clone(), {silent: true});
-            App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
             originOrder.update(order);
             this.listenTo(order, 'combo_product_change', this.setHeaderToUpdate, this);
         },

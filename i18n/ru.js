@@ -531,6 +531,7 @@
         "PAYMENTS": "Платежи",
         "SETTINGS": "Настройки",
         'CONTINUE': 'Далее',
+        "SAVE": "Сохранить",
         'PROFILE': 'Профиль',
         'PROFILE_EMAIL_ADDRESS': 'Эл. почта',
         'PROFILE_PASSWORD': 'Пароль',
@@ -545,6 +546,8 @@
         "PROFILE_SIGN_UP_INFO": "Введите Ваши данные",
         "PROFILE_ACCOUNT_PASSWORD": "Введите пароль",
         "PROFILE_REENTER_PASSWORD": "Повторите пароль",
+        "PROFILE_CREATE_TITLE": "Создать профиль",
+        "PROFILE_EDIT_TITLE": "Редактировать профиль",
         "PROFILE_GREETING": "Привет",
         "PROFILE_COMPLETE": "Пожалуйста, заполните Ваш профайл",
         "PROFILE_BIRTHDAY": "День рождения",
@@ -563,6 +566,8 @@
         "PROFILE_CITY": "Город",
         "PROFILE_PROVINCE": "Провинция",
         "PROFILE_ZIP_CODE": "Почтовый индекс",
-        "PROFILE_POSTAL_CODE": "Почтовый индекс"
+        "PROFILE_POSTAL_CODE": "Почтовый индекс",
+        "PROFILE_BASIC_DETAILS": "Основное",
+        "PROFILE_ADDRESS": "Адрес"
     } // end of locale
 }); // end of module

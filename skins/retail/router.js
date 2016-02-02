@@ -300,14 +300,13 @@ define(["main_router"], function(main_router) {
             // onRedemptionApplied event occurs when 'Apply Reward' btn is clicked
             this.listenTo(App.Data.myorder.rewardsCard, 'onRedemptionApplied', function() {
                 App.Data.mainModel.trigger('loadStarted');
-                App.Data.myorder.splitAllItemsWithPointValue();
                 App.Data.myorder.get_cart_totals().always(function() {
                     App.Data.mainModel.unset('popup');
                     App.Data.mainModel.trigger('loadCompleted');
                 });
             });
 
-            // onRewardsErrors event occurs when /weborders/reward_cards/ request fails
+            // onRewardsErrors event occurs when /weborders/rewards/ request fails
             this.listenTo(App.Data.myorder.rewardsCard, 'onRewardsErrors', function(errorMsg) {
                 App.Data.errors.alert(errorMsg);
                 App.Data.mainModel.trigger('loadCompleted');
@@ -317,7 +316,7 @@ define(["main_router"], function(main_router) {
             this.listenTo(App.Data.myorder.rewardsCard, 'onRewardsReceived', function() {
                 var rewardsCard = App.Data.myorder.rewardsCard;
 
-                if(rewardsCard.get('points').isDefault() && rewardsCard.get('visits').isDefault() && rewardsCard.get('purchases').isDefault()) {
+                if (!rewardsCard.get('rewards').length) {
                     App.Data.errors.alert(MSG.NO_REWARDS_AVAILABLE);
                 } else {
                     App.Data.mainModel.set('popup', {
@@ -326,9 +325,9 @@ define(["main_router"], function(main_router) {
                         model: rewardsCard,
                         className: 'rewards-info',
                         collection: App.Data.myorder,
-                        points: rewardsCard.get('points'),
-                        visits: rewardsCard.get('visits'),
-                        purchases: rewardsCard.get('purchases')
+                        balance: rewardsCard.get('balance'),
+                        rewards: rewardsCard.get('rewards'),
+                        discounts: rewardsCard.get('discounts')
                     });
                 }
 

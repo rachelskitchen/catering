@@ -66,7 +66,7 @@ define(['filters'], function() {
     });
 
     describe('App.Models.FilterItem', function() {
-        var data = {selected: true, value: 1, title: 'test', uid: 'test'},
+        var data = {selected: true, value: 1, title: 'test', uid: 'directory.filterTest'},
             filterItem = new App.Models.FilterItem(data);
 
         it('Environment', function() {
@@ -86,7 +86,7 @@ define(['filters'], function() {
             spyOn(window, 'setData');
             filterItem.set('selected', false);
 
-            expect(window.setData).toHaveBeenCalledWith('filter.test', filterItem, true);
+            expect(window.setData).toHaveBeenCalledWith('filter.directory.filterTest', filterItem, true);
             filterItem.set('selected', true);
         });
 
@@ -100,7 +100,7 @@ define(['filters'], function() {
             filterItem.loadData();
 
             // window.getData()
-            expect(window.getData).toHaveBeenCalledWith('filter.test', true);
+            expect(window.getData).toHaveBeenCalledWith('filter.directory.filterTest', true);
 
             // data exists in storage
             expect(filterItem.get('selected')).toBe(false);
@@ -126,8 +126,8 @@ define(['filters'], function() {
         });
 
         it('setItems(): `items` param isn\'t array, is array', function() {
-            var items = [{title: 'item1', value: 1}, {title: 'item2', value: 2}],
-                filterItems = new App.Collections.FilterItems({title: 'first', value: 3});
+            var items = [{title: 'item1', value: 1, uid: 'directory.online_and_app_orders'}, {title: 'item2', value: 2, uid: 'directory.storeTypes.test2'}],
+                filterItems = new App.Collections.FilterItems({title: 'item1', value: 1, uid: 'directory.online_and_app_orders'});
 
             // `items` param is array
             filterItems.setItems(items);
@@ -303,7 +303,7 @@ define(['filters'], function() {
             filter.setData(data);
 
             expect(filter.set).toHaveBeenCalledWith('title', 'test');
-            expect(filterItems.setItems).toHaveBeenCalledWith(data.filterItems);
+            expect(filterItems.setItems).toHaveBeenCalledWith(data.filterItems, undefined   );
         });
 
         it('getData()', function() {
@@ -313,9 +313,9 @@ define(['filters'], function() {
         });
 
         it('getSelected()', function() {
-            var item1 = new App.Models.FilterItem({selected: false}),
-                item2 = new App.Models.FilterItem({selected: true}),
-                item3 = new App.Models.FilterItem({selected: false}),
+            var item1 = new App.Models.FilterItem({selected: false, uid: '1'}),
+                item2 = new App.Models.FilterItem({selected: true, uid: '2'}),
+                item3 = new App.Models.FilterItem({selected: false, uid: '3'}),
                 filter = new App.Models.Filter({filterItems: [item1, item2, item3]});
 
             expect(filter.getSelected()).toEqual([item2]);
@@ -343,8 +343,9 @@ define(['filters'], function() {
         });
 
         describe('listenToChanges()', function() {
-            var filters = new App.Collections.Filters([{filterItems: [{selected: true}]}]),
+            var filters = new App.Collections.Filters([{filterItems: [{uid: '1'}]}]),
                 filterItem = filters.at(0).get('filterItems').at(0);
+                filterItem.set({selected: true});
 
             beforeEach(function() {
                 spyOn(filters, 'applyFilters');
@@ -444,7 +445,7 @@ console.log('valid', filters.valid, 'invalid', filters.invalid)
         });
 
         it('setData(): `data` param isn\'t array, is array', function() {
-            var data = [{title: 'item1'}, {title: 'item2'}],
+            var data = [{title: 'item1', uid: '1'}, {title: 'item2', uid: '2'}],
                 filters = new App.Collections.Filters({title: 'test'});
 
             spyOn(App.Models.Filter.prototype, 'setData');
@@ -460,7 +461,7 @@ console.log('valid', filters.valid, 'invalid', filters.invalid)
             filters.setData(data);
 
             expect(filters.add).toHaveBeenCalledWith(data[1]);
-            expect(App.Models.Filter.prototype.setData).toHaveBeenCalledWith(data[0]);
+            expect(App.Models.Filter.prototype.setData).toHaveBeenCalledWith(data[0], undefined);
         });
 
         it('getData()', function() {

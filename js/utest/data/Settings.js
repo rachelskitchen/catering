@@ -219,6 +219,23 @@ define([], function() {
                 "dining_options": [0, 1, 2, 7, 3, 4, 6],
                 "geolocation_load": {}
             },
+            "settings_directory": {
+                "delivery_filter":true,
+                "distance_filter":true,
+                "sorting_filter":true,
+                "open_now_filter":true,
+                "store_type_filter":true,
+                "online_ordering_filter":true,
+                "app_data_url": null,
+                "local_data_server": false,
+                "search_by_name_filter": true,
+                "default_location": { lat: 37.77837116836659, lon: -122.41963882471924 },
+                "min_zoom_method": "by_distance_filter",
+                "fit_map_to_stores": false,
+                "mobile_open_link_new_tab": true,
+                "main_header_subtitle": null,
+                "mobile_main_header_title": null
+            },
             "timeout": 60000,
             "x_revel_revision": null,
             "isMaintenance": false,
