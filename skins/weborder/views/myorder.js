@@ -67,7 +67,7 @@ define(["myorder_view"], function(myorder_view) {
             $('#popup').addClass('ui-invisible');
             setTimeout(this.change_height.bind(this, 1), 20);
             this.interval = this.interval || setInterval(this.change_height.bind(this), 500); // check size every 0.5 sec
-            this.$('.modifiers_table_scroll').contentarrow();
+            this.$('.modifiers_table_scroll').contentarrow(undefined, true); // 2nd param is doNotUpdateScrollTop
             this.attributes_update();
             return this;
         },
@@ -112,31 +112,35 @@ define(["myorder_view"], function(myorder_view) {
             }
         },
         change_height: function(e) {
-            var prev_height = this.prev_height || 0,
-                inner_height = $('#popup').outerHeight(),
-                prev_window = this.prev_window || 0,
+            var prev_popup_height = this.prev_popup_height || 0,
+                popup_height = $('#popup').outerHeight(),
+                prev_window_height = this.prev_window_height || 0,
                 window_heigth = $(window).height();
 
-            if (e || prev_height !== inner_height || prev_window !== window_heigth) {
+            if (e || prev_popup_height !== popup_height || prev_window_height !== window_heigth) {
                 var el = this.$('.modifiers_table_scroll'),
-                    wrapper_height,
-
+                    popup_wrapper_height,
                     product = this.$('.product_info').outerHeight(),
                     special = this.$('.instruction_block').outerHeight(),
-                    size = this.$('.quantity_info').outerHeight();
+                    size = this.$('.quantity_info').outerHeight(),
+                    prev_el_scroll = el.get(0).scrollTop;
 
                 el.height('auto');
-                inner_height = $('#popup').outerHeight();
-                wrapper_height = $('.popup_wrapper').height();
+                popup_height = $('#popup').outerHeight();
+                popup_wrapper_height = $('.popup_wrapper').height();
 
-                if (wrapper_height < inner_height) {
-                        var height = wrapper_height - product - special - size - 117;
+                if (popup_wrapper_height < popup_height) {
+                    var height = popup_wrapper_height - product - special - size - 117;
                     el.height(height);
+                    // Bug 37299. Handle scrollTop update here instead of inside $.contentarrow
+                    if (prev_el_scroll > 0) {
+                        el.get(0).scrollTop = prev_el_scroll;
+                    }
                 }
 
-                inner_height = $('#popup').outerHeight();
-                this.prev_height = inner_height;
-                this.prev_window = window_heigth;
+                popup_height = $('#popup').outerHeight();
+                this.prev_popup_height = popup_height;
+                this.prev_window_height = window_heigth;
                 $('#popup').removeClass('ui-invisible');
             }
         },
