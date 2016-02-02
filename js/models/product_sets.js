@@ -273,6 +273,10 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                         var prod_set = new App.Models.ProductSet();
                         prod_set.addAjaxJSON(pset);
                         self.add(prod_set);
+                        if (combo_type == 'upsell') {
+                            self.upcharge_name = data.name;
+                            self.upcharge_price = data.price;
+                        }
                     });
                     fetching.resolve();
                 },

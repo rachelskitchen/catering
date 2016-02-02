@@ -784,6 +784,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
      * @lends App.Models.MyorderCombo.prototype
      */
     {
+        defaults: _.extend({}, App.Models.Myorder.prototype.defaults, {
+            upcharge_price: 0
+        }),
         /**
          * Initializes the model.
          * @override
@@ -800,7 +803,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * @returns {Object} Deferred object that is resolved when product, modifiers and product sets are loaded.
          */
         add_empty: function (id_product, id_category) {
-            var self = this, product,
+            var self = this, product, combo_type,
                 product_load = App.Collections.Products.init(id_category),
                 modifier_load = $.Deferred(),
                 quick_modifier_load = App.Collections.ModifierBlocks.init_quick_modifiers();
@@ -813,10 +816,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 product.set({is_gift: false, // no gifts for combos
                              max_price: 0}, // turn off max price feature for combo
                              {silent: true});
-                var combo_type = product.get('is_combo') ? 'combo' : 'upsell';
+                combo_type = product.get('is_combo') ? 'combo' : 'upsell';
                 return App.Collections.ProductSets.init(id_product, combo_type);
             }).then(function() {
-                product.set("product_sets", App.Data.productSets[id_product]);
+                var slots = App.Data.productSets[id_product];
+                product.set("product_sets", slots);
                 self.set({
                     product: product,
                     id_product: id_product,
@@ -824,7 +828,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 });
                 self.set({
                     sum: self.get_modelsum(), // sum with modifiers
-                    initial_price: self.get_initial_price()
+                    initial_price: self.get_initial_price(),
+                    upcharge_price: combo_type == 'upsell' ? slots.upcharge_price : 0
                 });
                 self.update_prices();
             });
@@ -849,7 +854,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * @returns {number} - the calculated price of combo product.
          */
         update_product_price: function() {
-            var root_price = this.get_initial_price(),
+            var root_price = this.get_initial_price() + parseFloat(this.get('upcharge_price')),
                 sum = 0, combo_saving_products = [];
 
             this.get('product').get('product_sets').each( function(product_set) {

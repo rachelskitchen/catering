@@ -517,7 +517,7 @@ define(["backbone", "async"], function(Backbone) {
                     self.set({
                         settings_directory: settings //default used
                     });
-                    console.error(ERROR.CANT_GET_DIRECTORY_SETTINGS);
+                    console.error(ERROR.CANT_GET_WEBORDER_SETTINGS);
                 },
                 complete: function() {
                     App.SettingsDirectory = self.get("settings_directory");
