@@ -76,7 +76,7 @@ select {
     appearance: none;
     width: 100%;
     height: 100%;
-    padding: 0 25px 0 10px;
+    padding: 0 0 0 0.5em;
     float: left;
 }
 select:focus,
@@ -553,6 +553,28 @@ section.maintenance #header * {
 }
 section.maintenance #header .btn {
     margin: 26.5px auto auto 26.5px;
+}
+section.profile-container {
+    position: static;
+    width: auto;
+    padding: 20px;
+}
+section.profile-container:before {
+    display: none;
+}
+section.profile-container #header {
+    position: static;
+    height: auto;
+}
+section.profile-container #content {
+    position: static;
+    padding: 20px;
+    border-radius: 8px;
+}
+footer.profile-container {
+    position: static;
+    padding: 0 20px;
+    width: auto;
 }
 #main-spinner {
     background-color: rgba(170, 170, 170, 0.8);
@@ -1121,4 +1143,17 @@ span.cancel-input:before {
 
 .fl-left {
     float: left;
+}
+
+#header .back-btn::before {
+    content: '\f104';
+    font-family: FontAwesome;
+    font-size: 24px;
+    color: inherit;
+    vertical-align: middle;
+    padding-right: 5px;
+}
+
+#header .back-btn .label {
+    vertical-align: middle;
 }

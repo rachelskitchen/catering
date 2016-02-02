@@ -41,16 +41,16 @@
     margin-top: 2em;
 }
 
-.rewards-info .collected {
+.rewards-total {
     margin-top: 2em;
 }
 
-.rewards-info .collected > li {
+.rewards-total__item {
     display: inline-block;
     width: 30%;
 }
 
-.rewards-info dfn {
+.rewards-total__item-title {
     display: block;
     font-style: normal;
     width: 4.5em;
@@ -61,7 +61,7 @@
     font-style: italic;
 }
 
-.rewards-info .reward-selection > li {
+.reward-selection__item {
     border-width: 1px;
     border-style: solid;
     padding: 2em 0.2em;
@@ -69,7 +69,7 @@
     position: relative;
 }
 
-.rewards-info .reward-selection > li.active::after {
+.reward-selection__item_selected::after {
     content: '\f00c';
     font-family: "FontAwesome";
     display: block;
@@ -79,7 +79,7 @@
     font-size: 3.5em;
 }
 
-.rewards-info .redemption {
+.reward__redemption {
     display: block;
 }
 

@@ -23,6 +23,79 @@
  define(["factory", "myorder_view"], function(factory) {
     'use strict';
 
+    var RewardsItemView = App.Views.ItemView.extend({
+        name: 'rewards',
+        mod: 'item',
+        el: '<li class="reward-selection__item"></li>',
+        bindings: {
+            ':el': 'classes: {"reward-selection__item_selected": selected}',
+            '.reward__name': 'text: name',
+            '.reward__discount-amount': 'text: discountAmount(amount, type)',
+            '.reward__discount-text': 'text: select(is_item_level, _lp_REWARDS_ITEM_LEVEL_DISCOUNT, _lp_REWARDS_ENTIRE_ORDER_DISCOUNT)',
+            '.reward__redemption-amount': 'text: points',
+            '.reward__redemption-text': 'text: redemptionText(points)'
+        },
+        events: {
+            'click': 'selectReward'
+        },
+        bindingFilters: {
+            /**
+             * Sets text that reflects reward type and amount of points to be redeemed.
+             * 
+             * @param  {string} rewardType - Reward type.
+             * @param  {Number} points - Amount of points.
+             * @returns {string} - 
+             */
+            redemptionText: function(points) {
+                var text = _loc.REWARDS_POINTS_REDEMPTION_AMOUNT,
+                    text1, text2;
+
+                if (Array.isArray(text)) {
+                    text1 = text[0];
+                    text2 = text[1];
+                }
+                else {
+                    text1 = text2 = text;
+                }
+
+                // handle plural
+                return parseInt(points, 10) <= 1 ? text1 : text2;
+            },
+            discountAmount: function(amount, type) {
+                return type ? Number(amount).toFixed(0) + '%' : App.Settings.currency_symbol + round_monetary_currency(amount);
+            }
+        },
+        /**
+         * Toggles selection of clicked reward.
+         * If allow_multiple_reward_redemptions_per_order settings is true:
+         * allow one selected reward of each level (item/order),
+         * else allow only one selected reward.
+         */
+        selectReward: function() {
+            var selected = this.model.get('selected'),
+                allowMultiple = App.Data.settings.get('settings_system').allow_multiple_reward_redemptions_per_order;
+
+            // reward is getting selected
+            if (!selected) {
+                var criteria = {selected: true};
+
+                if (allowMultiple) {
+                    // need  to find selected reward only with the same level
+                    criteria.is_item_level = this.model.get('is_item_level')
+                }
+
+                // find selected reward(s)
+                var selectedModels = this.model.collection.where(criteria);
+                // remove selection
+                selectedModels.length && _.invoke(selectedModels, 'set', {selected: false});
+            } 
+
+            // toggle selection
+            this.model.set('selected', !selected);
+            App.Data.myorder.rewardsCard.trigger('onSelectReward');
+        }
+    });
+
     var RewardsCardView = App.Views.FactoryView.extend({
         name: 'rewards',
         mod: 'card',
@@ -104,185 +177,54 @@
         mod: 'order_application'
     });
 
-    var RewardsPointsItemView = App.Views.MyOrderView.MyOrderItemView.extend({
-        name: 'rewards',
-        mod: 'points_item',
-        className: 'order-item',
-        initialize: function() {
-            // Set current `this` value as `this` value for `this.bindingSources.item` function.
-            // To avoid change of RewardsPointsItemView.prototype.bindingSources.item after first view initialization
-            // need to create own property 'bindingSources' as clone of prototype value.
-            this.bindingSources = _.extend({}, this.bindingSources);
-            this.bindingSources.item = this.bindingSources.item.bind(this);
-            App.Views.MyOrderView.MyOrderItemView.prototype.initialize.apply(this, arguments);
-        },
-        bindings: {
-            '.weight': 'classes: {hide: select(item_sold_by_weight, false, true)}',
-            '.quantity': 'classes: {hide: item_sold_by_weight}',
-            '.weight.name': 'text: format("$1 $2", item_sizeModifier, item_name)',
-            '.quantity.name': 'text: format("$1x $2 $3", item_quantity, item_sizeModifier, item_name)',
-            '.weight-info': 'text: weightPriceFormat(item_weight, item_initial_price)',
-            '.price': 'text: currencyFormat(item_sum)',
-            '.discount': 'text: currencyFormat(reward_discount)',
-            'li.special': 'toggle: item_special',
-            'span.special': 'text: item_special',
-            '.cost': 'toggle: false'
-        },
-        bindingSources: {
-            item: function() {
-                return new Backbone.Model(this.getData());
-            }
-        },
-        updateBingingSource: function() {
-            var item = this.getBinding('$item');
-            item.set(this.getData());
-            item.trigger('update');
-        },
-        update: function() {
-            this.updateBingingSource();
-            App.Views.MyOrderView.MyOrderItemView.prototype.update.apply(this, arguments);
-        }
-    });
-
     var RewardsInfoView = App.Views.FactoryView.extend({
         name: 'rewards',
         mod: 'info',
         bindings: {
             '.rewards-number': 'text: number',
-            '.total-points': 'text: points_value',
-            '.total-visits': 'text: visits_value',
-            '.total-purchases': 'text: currencyFormat(purchases_value)',
-            '.points-discount': 'text: currencyFormat(points_discount)',
-            '.visits-discount': 'text: currencyFormat(visits_discount)',
-            '.purchases-discount': 'text: currencyFormat(purchases_discount)',
-            '.points-selection': 'toggle: isPointsAvailable, classes: {active: points_selected}',
-            '.visits-selection': 'toggle: isVisitsAvailable, classes: {active: visits_selected}',
-            '.purchases-selection': 'toggle: isPurchasesAvailable, classes: {active: purchases_selected}',
-            '.rewards-unavailable': 'toggle: doNotQualifyRewards',
-            '.points-collected': 'classes: {hide: isPointsDefault}',
-            '.visits-collected': 'classes: {hide: isVisitsDefault}',
-            '.purchases-collected': 'classes: {hide: isPurchasesDefault}',
-            '.apply-reward': 'classes: {disabled: select(redemption_code, false, true)}',
-            '.points-redemption': 'text: pointsPerReward(points_value, points_rewards_earned)',
-            '.visits-redemption': 'text: pointsPerReward(visits_value, visits_rewards_earned)',
-            '.purchases-redemption': 'text: pointsPerReward(purchases_value, purchases_rewards_earned)',
-            '.items-with-points': 'collection:$itemsWithPointsRewardDiscount, itemView:"itemWithPointDiscountView"',
-            '.points-redemption-info': 'text: selectText(points_value, points_rewards_earned, _lp_REWARDS_POINTS_REDEMPTION_AMOUNT)',
-            '.visits-redemption-info': 'text: selectText(visits_value, visits_rewards_earned, _lp_REWARDS_VISITS_REDEMPTION_AMOUNT)',
-            '.purchases-redemption-info': 'text: selectText(purchases_value, purchases_rewards_earned, _lp_REWARDS_PURCHASES_REDEMPTION_AMOUNT)',
+            '.total-points': 'text: balance_points',
+            '.total-visits': 'text: balance_visits',
+            '.total-purchases': 'text: currencyFormat(balance_purchases)',
+            '.reward-selection': 'collection: rewards, itemView: "rewardItem"',
+            '.rewards-unavailable': 'toggle: not(length(rewards))',
+            '.rewards-total__item_points': 'classes: {hide: isNull(balance_points)}',
+            '.rewards-total__item_visits': 'classes: {hide: isNull(balance_visits)}',
+            '.rewards-total__item_purchases': 'classes: {hide: isNull(balance_purchases)}',
+            '.apply-reward': 'classes: {disabled: select(length(discounts), false, true)}'
         },
-        events: function() {
-            return {
-                'click .apply-reward': this.apply,
-                'click .points-selection': this.selectRewardType.bind(this, 'points'),
-                'click .visits-selection': this.selectRewardType.bind(this, 'visits'),
-                'click .purchases-selection': this.selectRewardType.bind(this, 'purchases')
-            }
-        },
-        initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'onResetData', this.resetOriginalRedemptionCode, this);
 
-            // update $itemsWithPointsRewardDiscount when items or points discount update
-            this.listenTo(this.collection, 'add remove change', this.updateItemsWithPointsRewardDiscount, this);
-            this.listenTo(this.model.get('points'), 'change:discount', this.updateItemsWithPointsRewardDiscount, this);
+        events: {
+            'click .apply-reward': 'apply'
+        },
 
-            this.updateItemsWithPointsRewardDiscount();
-            this.setOriginalRedemptionCode();
-        },
-        computeds: {
-            isPointsAvailable: {
-                deps: ['points', 'points_rewards_earned', '$itemsWithPointsRewardDiscount'],
-                get: function(points, rewards, items) {
-                    return points.isAvailable() && items.length;
-                }
-            },
-            isVisitsAvailable: {
-                deps: ['visits', 'visits_rewards_earned'],
-                get: function(visits) {
-                    return visits.isAvailable();
-                }
-            },
-            isPurchasesAvailable: {
-                deps: ['purchases', 'purchases_rewards_earned'],
-                get: function(purchases) {
-                    return purchases.isAvailable();
-                }
-            },
-            isPointsDefault: {
-                deps: ['points'],
-                get: function(points) {
-                    return points.isDefault();
-                }
-            },
-            isVisitsDefault: {
-                deps: ['visits'],
-                get: function(visits) {
-                    return visits.isDefault();
-                }
-            },
-            isPurchasesDefault: {
-                deps: ['purchases'],
-                get: function(purchases) {
-                    return purchases.isDefault();
-                }
-            },
-            doNotQualifyRewards: {
-                deps: ['isPointsAvailable', 'isVisitsAvailable', 'isPurchasesAvailable'],
-                get: function(isPointsAvailable, isVisitsAvailable, isPurchasesAvailable) {
-                    return !(isPointsAvailable || isVisitsAvailable || isPurchasesAvailable);
-                }
-            }
-        },
         bindingFilters: {
-            pointsPerReward: function(points, rewards) {
-                return parseInt(points / rewards, 10);
-            },
-            selectText: function(points, rewards, text1, text2) {
-                if(Array.isArray(text1) && typeof text2 == 'undefined') {
-                    text2 = text1[1];
-                    text1 = text1[0];
-                }
-                return parseInt(points / rewards, 10) <= 1 ? text1 : text2;
+            isNull: function(value) {
+                return value === null;
             }
         },
-        bindingSources: {
-            itemsWithPointsRewardDiscount: function() {
-                return new Backbone.Collection();
-            }
+
+        rewardItem: RewardsItemView,
+
+        initialize: function() {
+            var self = this;
+            this.listenTo(this.model, 'onResetData', function() {
+                self.remove();
+            });
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
-        itemWithPointDiscountView: RewardsPointsItemView,
+
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            typeof Backbone.$.fn.contentarrow == 'function' && this.$('.reward-selection').contentarrow();
+        },
+
         remove: function() {
-            !this.removed && this.model.set('redemption_code', this.originalRedemptionCode);
-            this.removed = true;
+            typeof Backbone.$.fn.contentarrow == 'function' && this.$('.reward-selection').contentarrow('destroy');
             App.Views.FactoryView.prototype.remove.apply(this, arguments);
         },
-        apply: function() {
-            this.setOriginalRedemptionCode();
-            this.model.trigger('onRedemptionApplied');
-        },
-        selectRewardType: function(type) {
-            var model = this.model.get(type);
 
-            // If reward type is already selected need to unselect it.
-            // Otherwise it should be selected.
-            if(model && model.get('selected')) {
-                this.model.selectRewardsType(null);
-            } else {
-                this.model.selectRewardsType(type);
-            }
-        },
-        setOriginalRedemptionCode: function() {
-            this.originalRedemptionCode = this.model.get('redemption_code');
-        },
-        resetOriginalRedemptionCode: function() {
-            this.originalRedemptionCode = this.model.defaults.redemption_code;
-        },
-        updateItemsWithPointsRewardDiscount: function() {
-            var items = this.getBinding('$itemsWithPointsRewardDiscount'),
-                discount = this.model.get('points').get('discount');
-            items.reset(this.collection.getItemsWithPointsRewardDiscount(discount));
-            items.trigger('update');
+        apply: function() {
+            this.model.trigger('onRedemptionApplied');
         }
     });
 
@@ -292,6 +234,6 @@
         App.Views.RewardsView.RewardsItemApplicationView = RewardsItemApplicationView;
         App.Views.RewardsView.RewardsOrderApplicationView = RewardsOrderApplicationView;
         App.Views.RewardsView.RewardsInfoView = RewardsInfoView;
-        App.Views.RewardsView.RewardsPointsItemView = RewardsPointsItemView;
+        App.Views.RewardsView.RewardsItemView = RewardsItemView;
     });
 });

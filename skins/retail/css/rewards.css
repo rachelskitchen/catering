@@ -69,19 +69,19 @@
     font-weight: bold;
 }
 
-.collected {
+.rewards-total {
     text-align: center;
     margin-bottom: 12px;
 }
 
-.collected li {
+.rewards-total__item {
     display: inline-block;
     width: 32%;
     word-break: break-word;
     vertical-align: top;
 }
 
-.rewards-info dfn {
+.rewards-total__item-title {
     font-style: normal;
     display: block;
     width: 88px;
@@ -99,21 +99,59 @@
     font-size: 24px;
 }
 
-.reward-selection > li {
-    height: 83px;
+.reward-selection-wrapper {
+    padding-bottom: 10px;
+    position: relative;
+}
+.reward-selection-inner {
+    overflow: hidden;
+}
+.reward-selection {
+    max-height: 210px;
+    margin-right: -100px;
+    padding-right: 100px;
+    overflow-y: auto;
+    text-shadow: none;
+}
+.reward-selection::-webkit-scrollbar {
+    display: none;
+}
+.reward-selection-wrapper .content_arrow.arrow_top {
+    top: -20px;
+}
+.reward-selection-wrapper .content_arrow.arrow_bottom {
+    bottom: -12px;
+}
+.reward-selection-wrapper .content_arrow.arrow_top,
+.reward-selection-wrapper .content_arrow.arrow_bottom {
+    background: transparent;
+    box-shadow: none;
+}
+
+.reward-selection__item {
+    height: 95px;
     border-width: 1px;
     border-style: solid;
     margin: 7px 0;
     text-align: center;
-    font-size: 24px;
     cursor: pointer;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-justify-content: center;
+    justify-content: center;
 }
 
-.reward-selection > li.active {
+.reward-selection__item_selected {
     position: relative;
 }
 
-.reward-selection > li.active:after {
+.reward-selection__item_selected:after {
     content: '';
     display: block;
     width: 30px;
@@ -121,20 +159,6 @@
     position: absolute;
     top: 5px;
     right: 5px;
-}
-
-.reward-selection > li:before {
-    content: '';
-    display: inline-block;
-    height: 100%;
-    width: 0;
-    vertical-align: middle;
-}
-
-.reward-selection > li > span {
-    display: inline-block;
-    vertical-align: middle;
-    max-width: 97%;
 }
 
 .rewards-info .rewards-card-btn {
@@ -150,78 +174,38 @@
     height: 100%;
 }
 
-.rewards-info .redemption {
+.reward__name {
+    font-size: 22px;
+}
+
+.reward__discount {
+    font-size: 20px;
+}
+
+.reward__redemption {
     display: block;
     font-size: 16px;
     text-align: center;
 }
 
-.rewards-info .redemption-points {
-    padding-bottom: 10px;
-}
-
-.rewards-info .reward-selection {
-    text-shadow: none;
-}
-
-.rewards-info .points-selection {
-    text-align: left;
-    height: auto;
-}
-
-.rewards-info .points-selection:before {
-    display: none;
-}
-
-.rewards-info .order-item {
-    display: block;
-    margin: 0 20px;
-    vertical-align: middle;
-    padding: 5px 0;
-}
-
-.rewards-info .order-item {
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-}
-
-.rewards-info .order-item:last-child {
-    border-bottom: none;
-}
-
-.rewards-info .order-item:before {
-    content: '';
-    display: inline-block;
-    height: 83px;
-    width: 0;
-    vertical-align: middle;
-    position: relative;
-    margin-left: -8px;
-}
-
-.rewards-info .order-item > div {
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.rewards-info h4.name {
-    font-size: 18px;
-    margin-right: 20px;
-}
-
-.rewards-info .modifier_place, .rewards-info .price-line, .rewards-info .attrs {
-    display: block;
-    font-size: 14px !important;
-    margin-top: 2px;
-}
-
-.rewards-info .quantity {
-    position: relative;
-    padding: 0;
-}
-
 @media only screen and (max-device-width: 949px) {
-    .rewards-info dfn {
+    .rewards-total__item-title {
         width: 86px !important;
+    }
+}
+
+@media screen and (min-height: 768px) {
+    .reward-selection {
+        max-height: 277px;
+    }
+}
+@media screen and (min-height: 900px) {
+    .reward-selection {
+        max-height: 315px;
+    }
+}
+@media screen and (min-height: 1000px) {
+    .reward-selection {
+        max-height: 420px;
     }
 }

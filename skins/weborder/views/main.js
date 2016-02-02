@@ -372,9 +372,15 @@ define(["done_view", "generator"], function(done_view) {
         }
     });
 
+    var MainProfileView = MainMainView.extend({
+        name: 'main',
+        mod: 'profile'
+    });
+
     return new (require('factory'))(done_view.initViews.bind(done_view), function() {
         App.Views.MainView.MainMainView = MainMainView;
         App.Views.MainView.MainMaintenanceView = MainMaintenanceView;
         App.Views.MainView.MainDoneView = MainDoneView;
+        App.Views.MainView.MainProfileView = MainProfileView;
     });
 });

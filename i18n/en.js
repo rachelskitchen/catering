@@ -539,6 +539,7 @@
         'PAYMENTS': "Payments",
         'SETTINGS': "Settings",
         'CONTINUE': 'Continue',
+        'SAVE': "Save",
         'PROFILE': "Profile",
         'PROFILE_EMAIL_ADDRESS': 'Email Address',
         'PROFILE_PASSWORD': 'Password',
@@ -554,6 +555,7 @@
         'PROFILE_ACCOUNT_PASSWORD': "Account Password",
         'PROFILE_REENTER_PASSWORD': "Re-enter Password",
         'PROFILE_CREATE_TITLE': "Create a Profile",
+        "PROFILE_EDIT_TITLE": "Edit Profile",
         'PROFILE_GREETING': "Hi",
         'PROFILE_COMPLETE': "Please complete your profile",
         'PROFILE_BIRTHDAY': "Birthday",
@@ -572,6 +574,8 @@
         "PROFILE_CITY": "City",
         "PROFILE_PROVINCE": "Province",
         "PROFILE_ZIP_CODE": "Zip Code",
-        "PROFILE_POSTAL_CODE": "Postal Code"
+        "PROFILE_POSTAL_CODE": "Postal Code",
+        "PROFILE_BASIC_DETAILS": "Basic Details",
+        "PROFILE_ADDRESS": "Address"
     }; // end of locale
 }); // end of module

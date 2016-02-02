@@ -68,11 +68,13 @@ define(['js/utest/data/Settings'], function(settings) {
                 expectStorage(0);
             });
 
+            /* this may be browser dependent
             it('Cookie', function() {
                 delete window.sessionStorage;
                 cookie_getter || (document.__defineGetter__("cookie", function() { return true;} ));
                 expectStorage(2);
             });
+            */
 
 
             function expectStorage(storage) {

@@ -20,17 +20,17 @@
     </div>
     <span class='rewards-title font-size3 title-text'><%= _lp.REWARDS_NUMBER %>:</span>
     <span class="rewards-number font-size3 title-text"></span>
-    <ul class="collected text-center title-text">
-        <li class="points-collected">
-            <dfn class="font-size3"><%= _lp.REWARDS_TOTAL_POINTS %></dfn>
+    <ul class="rewards-total text-center title-text">
+        <li class="rewards-total__item rewards-total__item_points">
+            <div class="rewards-total__item-title font-size3"><%= _lp.REWARDS_TOTAL_POINTS %></div>
             <span class='total-points primary-text font-size1'></span>
         </li>
-        <li class="visits-collected">
-            <dfn class="font-size3"><%= _lp.REWARDS_TOTAL_VISITS %></dfn>
+        <li class="rewards-total__item rewards-total__item_visits">
+            <div class="rewards-total__item-title font-size3"><%= _lp.REWARDS_TOTAL_VISITS %></div>
             <span class='total-visits primary-text font-size1'></span>
         </li>
-        <li class="purchases-collected">
-            <dfn class="font-size3"><%= _lp.REWARDS_TOTAL_PURCHASES %></dfn>
+        <li class="rewards-total__item rewards-total__item_purchases">
+            <div class="rewards-total__item-title font-size3"><%= _lp.REWARDS_TOTAL_PURCHASES %></div>
             <span class='total-purchases primary-text font-size1'></span>
         </li>
     </ul>
@@ -38,51 +38,20 @@
         <span class="font-size1"><%= _lp.REWARDS_AVAILABLE %></span>
         <span class="info font-size2 regular-text"><%= _lp.REWARDS_SELECTION_INFO %></span>
     </div>
-    <ul class="reward-selection text-center title-text">
-        <li class="points-selection">
-            <div class="items-with-points"></div>
-            <span class="redemption font-size2 primary-text redemption-points">
-                (<span class="points-redemption"></span>&nbsp;<span class="points-redemption-info"></span>)
-            </span>
-        </li>
-        <li class="visits-selection">
-            <span class="font-size1">
-                <span class="visits-discount primary-text"></span> <%= _lp.REWARDS_ENTIRE_ORDER_DISCOUNT %>
-            </span>
-            <span class="redemption font-size2 primary-text">
-                (<span class="visits-redemption"></span>&nbsp;<span class="visits-redemption-info"></span>)
-            </span>
-        </li>
-        <li class="purchases-selection">
-            <span class="font-size1">
-                <span class="purchases-discount primary-text"></span> <%= _lp.REWARDS_ENTIRE_ORDER_DISCOUNT %>
-            </span>
-            <span class="redemption font-size2 primary-text">
-                (<span class="purchases-redemption"></span>&nbsp;<span class="purchases-redemption-info"></span>)
-            </span>
-        </li>
-    </ul>
+    <ul class="reward-selection text-center title-text"></ul>
     <div class="span-wrapper text-center regular-text">
         <span class="rewards-unavailable font-size2"><%= _lp.REWARDS_UNAVAILABLE %></span>
     </div>
 </script>
 
-<script type="text/template" id="rewards_points_item-template">
-    <div>
-        <h4 class="name font-size1">
-                <span class="name weight"></span>
-                <span class="name quantity"></span>
-        </h4>
-        <ul class="modifier_place font-size2">
-            <li class="weight-info weight"></li>
-            <li class="special">*** <span class="special"></span></li>
-        </ul>
-        <span class="price-line font-size3">
-            <span class="price"></span>
-            &ndash;
-            <span class="discount-line primary-text">
-                <span class="discount"></span> <%= _lp.REWARDS_OFF %>
-            </span>
-        </span>
+<script type="text/template" id="rewards_item-template">
+    <div class="reward color-style1">
+        <div class="reward__name font-size1"></div>
+        <div class="reward__discount font-size1">
+            <span class="reward__discount-amount"></span> <span class="reward__discount-text"></span>
+        </div>
+        <div class="reward__redemption font-size2 primary-text">
+            (<span class="reward__redemption-amount"></span>&nbsp;<span class="reward__redemption-text"></span>)
+        </div>
     </div>
 </script>

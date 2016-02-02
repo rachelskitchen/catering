@@ -120,7 +120,7 @@ select:-moz-focusring {
 .primary-button,
 #popup_ok[id],
 .alternate-button:not([disabled]):active,
-.reward-selection li.active::after,
+.reward-selection__item_selected::after,
 .stanford-plan.active::after {
   color: #FFFFFF;
 }
@@ -232,10 +232,10 @@ select:-moz-focusring {
 #popup_cancel[id]:not([disabled]):active,
 .establishments[class] button:not([disabled]):active,
 .payments .payment,
-ul.reward-selection > li {
+.reward-selection__item {
   border-color: #8C1515;
 }
-.reward-selection li.active,
+.reward-selection__item_selected,
 .stanford-plan.active {
   background: rgba(140, 21, 21, 0.3);
 }

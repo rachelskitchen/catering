@@ -18,6 +18,24 @@
     </div>
 </script>
 
+<script type="text/template" id="profile_basic_details-template">
+    <ul class="profile-form font-size2 text-center">
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.PROFILE_FIRST_NAME %>" class="first-name ios-safari-caret input-colors">
+        </li>
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.PROFILE_LAST_NAME %>" class="last-name ios-safari-caret input-colors">
+        </li>
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret input-colors">
+        </li>
+        <li class="required">
+            <input type="tel" placeholder="<%= _lp.PROFILE_PHONE %>" class="phone ios-safari-caret input-colors">
+            <span class="phone-privacy regular-text fl-left"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
+        </li>
+    </ul>
+</script>
+
 <script type="text/template" id="profile_sign_up-template">
     <span class="profile-info font-size3 text-center primary-text"><%= _lp.PROFILE_SIGN_UP_INFO %></span>
     <ul class="profile-form font-size2 text-center">
@@ -75,29 +93,29 @@
 
 <script type="text/template" id="profile_address-template">
     <ul class="profile-form font-size2 text-center">
-        <li class="required">
-            <div class="select-wrapper input-colors">
-                <select class="country"></select>
-            </div>
-        </li>
-        <li class="required">
+        <li>
             <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE1 %>" class="street_1 ios-safari-caret input-colors">
         </li>
         <li>
             <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE2 %>" class="street_2 ios-safari-caret input-colors">
         </li>
-        <li class="required">
+        <li>
             <input type="text" placeholder="<%= _lp.PROFILE_CITY %>" class="city ios-safari-caret input-colors">
         </li>
-        <li class="state-row required">
+        <li>
+            <div class="select-wrapper input-colors">
+                <select class="country"></select>
+            </div>
+        </li>
+        <li class="state-row">
             <div class="select-wrapper input-colors">
                 <select class="state"></select>
             </div>
         </li>
-        <li class="province-row required">
+        <li class="province-row">
            <input type="text" placeholder="<%= _lp.PROFILE_PROVINCE %>" class="province ios-safari-caret input-colors">
         </li>
-        <li class="required">
+        <li>
             <input type="text" class="zipcode ios-safari-caret input-colors">
         </li>
     </ul>

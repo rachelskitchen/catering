@@ -30,7 +30,7 @@ define(["total_view"], function(total_view) {
             '.have-discount-code': 'html: haveDiscountCode, toggle: all(showDiscountCode, not(showRewards))',
             '.have-rewards': 'html: haveRewards, toggle: all(not(showDiscountCode), showRewards)',
             '.remove-discount-code': 'toggle: checkout_last_discount_code',
-            '.remove-reward-redemption': 'toggle: rewardsCard_redemption_code'
+            '.remove-reward-redemption': 'toggle: length(rewardsCard_discounts)'
 
         }),
         computeds: extendProto('computeds', {
@@ -59,9 +59,9 @@ define(["total_view"], function(total_view) {
                 }
             },
             showRewards: {
-                deps: ['_system_settings_enable_reward_cards_collecting', 'rewardsCard_redemption_code'],
-                get: function(enable_reward_cards_collecting, redemption_code) {
-                    return enable_reward_cards_collecting && !redemption_code;
+                deps: ['_system_settings_enable_reward_cards_collecting', 'rewardsCard_discounts'],
+                get: function(enable_reward_cards_collecting, discount) {
+                    return enable_reward_cards_collecting && !discount.length;
                 }
             }
         }),

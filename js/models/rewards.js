@@ -21,7 +21,7 @@
  */
 
 /**
- * Contains {@link App.Models.Rewards}, {@link App.Models.RewardsCard} constructors.
+ * Contains {@link App.Models.Rewards}, {@link App.Collections.Rewards}, {@link App.Models.RewardsBalance}, {@link App.Models.RewardsCard} constructors.
  * @module rewards
  * @requires module:backbone
  * @requires module:captcha
@@ -30,39 +30,21 @@
 define(['backbone', 'captcha'], function(Backbone) {
     'use strict';
 
-    /**
-     * Redemption codes.
-     * @alias module:rewards~REDEMPTION_CODES
-     * @type {Object}
-     * @enum
-     */
-    var REDEMPTION_CODES = {
-        /**
-         * Redemption code for 'points' rewards.
-         * @type {number}
-         */
+    var REWARD_TYPES = {
+        purchases: 0,
         points: 1,
-        /**
-         * Redemption code for 'visits' rewards.
-         * @type {number}
-         */
-        visits: 2,
-        /**
-         * Redemption code for 'purchasess' rewards.
-         * @type {number}
-         */
-        purchases: 3
+        visits: 2
     };
 
     /**
      * @class
-     * @classdesc Represents a rewards model.
+     * @classdesc Represents a reward model.
      * @alias App.Models.Rewards
      * @augments Backbone.Model
      * @example
-     * // create a rewards model
-     * require(['rewards'], function() {
-     *     var rewards = new App.Models.Rewards();
+     * // create a reward model
+     * require(['reward'], function() {
+     *     var reward = new App.Models.Rewards();
      * });
      */
     App.Models.Rewards = Backbone.Model.extend(
@@ -77,44 +59,122 @@ define(['backbone', 'captcha'], function(Backbone) {
          */
         defaults: {
             /**
-             * Number of rewards earned (points / points per rewards). Only 1 reward may be redeemed per time.
-             * @type {number}
+             * Discount id.
+             * @type {?number}
              */
-            rewards_earned: 0,
+            id: null,
             /**
-             * Discount for 1 reward redemption.
-             * @type {number}
+             * Discount name.
+             * @type {String}
              */
-            discount: 0,
+            name: '',
             /**
-             * Points to next reward earned.
-             * @type {number}
+             * Discount amount.
+             * @type {Number}
              */
-            point_to_next_reward: 0,
+            amount: 0,
             /**
-             * Collected points.
-             * @type {number}
+             * Indicated whether this discount is item level.
+             * @type {Boolean}
              */
-            value: 0,
+            is_item_level: false,
             /**
-             * Rewards is selected or not.
+             * Number of points needed to redeem reward.
+             * @type {Number}
+             */
+            points: 0,
+            /**
+             * Reward type.
+             * Possible values for rewards_type are:
+             *   REWARDS_TYPE_PURCHASES = 0
+             *   REWARDS_TYPE_ITEMS = 1
+             *   REWARDS_TYPE_VISITS = 2
+             * @type {Number}
+             */
+            rewards_type: null,
+            /**
+             * Discount type.
+             *   0 for Amount; 1 for Percent.
+             * @type {Number}
+             */
+            type: 0,
+            /**
+             * Indicates whether the reward is selected.
              * @type {boolean}
              */
             selected: false
         },
         /**
-         * @returns {boolean} `true` if `reward_earned` attribute isn't less than `1`.
+         * Adds listener to track `selected` change and trigger `onSelectReward` event on {@link App.Collections.Rewards}.
          */
-        isAvailable: function() {
-            return this.get('rewards_earned') >= 1;
-        },
+        initialize: function() {
+            this.listenTo(this, 'change:selected', function() {
+                this.collection.trigger('onSelectReward');
+            });
+        }
+    });
+
+    /**
+     * @class
+     * @classdesc Represents a rewards collection.
+     * @alias App.Collections.Rewards
+     * @augments Backbone.Collection
+     * @example
+     * // create a rewards collection
+     * require(['rewards'], function() {
+     *     var rewards = new App.Collection.Rewards();
+     * });
+     */
+    App.Collections.Rewards = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.Rewards.prototype
+     */
+    {
         /**
-         * @returns {boolean} `true` if all attributes have default values.
+         * Item constructor.
+         * @type {App.Models.Rewards}
+         * @default App.Models.Rewards
          */
-        isDefault: function() {
-            return Object.keys(this.defaults).every(function(attr) {
-                return this.defaults[attr] === this.get(attr);
-            }, this);
+        model: App.Models.Rewards
+    });
+
+    /**
+     * @class
+     * @classdesc Represents a rewards balance model.
+     * @alias App.Models.RewardsBalance
+     * @augments Backbone.Model
+     * @example
+     * // create a rewards balance model
+     * require(['reward'], function() {
+     *     var rewardsBalance = new App.Models.RewardsBalance();
+     * });
+     */
+    App.Models.RewardsBalance = Backbone.Model.extend(
+    /**
+     * @lends App.Models.RewardsBalance.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values.
+         * @type {Object}
+         * @enum
+         */
+        defaults: {
+            /**
+             * Points balance.
+             * @type {?Number}
+             */
+            points: null,
+            /**
+             * Visits balance.
+             * @type {?Number}
+             */
+            visits: null,
+            /**
+             * Purchases balance
+             * @type {?Number}
+             */
+            purchases: null
         }
     });
 
@@ -137,61 +197,93 @@ define(['backbone', 'captcha'], function(Backbone) {
         /**
          * Contains attributes with default values. Extends {@link App.Models.Captcha#defaults}.
          * @type {Object}
-         * @property {App.Models.Rewards} purchases - rewards for purchases
-         * @property {App.Models.Rewards} points - point rewards
-         * @property {App.Models.Rewards} visits - rewards for visits
          * @property {string} number - rewards card number
-         * @property {?number} redemption_code - code of selected rewards type ({@link module:rewards~REDEMPTION_CODES REDEMPTION_CODES})
+         * @property {App.Collections.Rewards} rewards - collection of rewards
+         * @property {App.Models.RewardsBalance} balance - model of rewards balances
+         * @property {Array} discounts - ids of selected discounts. Its maximum length is 2.
          */
         defaults: _.extend({}, App.Models.Captcha.prototype.defaults, {
-            purchases: new App.Models.Rewards,
-            points: new App.Models.Rewards,
-            visits: new App.Models.Rewards,
             number: '',
-            redemption_code: null
+            rewards: new App.Collections.Rewards,
+            balance: new App.Models.RewardsBalance,
+            discounts: []
         }),
         /**
-         * Converts 'purchases', 'points', 'visits' attributes to instances of App.Models.Rewards.
+         * Converts `rewards` to instance of {@link App.Collection.Rewards}, `balance` to instance of {@link App.Models.Rewards}.
          */
         initialize: function() {
-            this.updateRewardsType('purchases', this.get('purchases'));
-            this.updateRewardsType('visits', this.get('visits'));
-            this.updateRewardsType('points', this.get('points'));
-            this.listenTo(this, 'change:purchases', this.updateRewardsType.bind(this, 'purchases', undefined));
-            this.listenTo(this, 'change:visits', this.updateRewardsType.bind(this, 'visits', undefined));
-            this.listenTo(this, 'change:points', this.updateRewardsType.bind(this, 'points', undefined));
-            this.listenTo(this, 'change:redemption_code', function(model, value) {
-                Object.keys(REDEMPTION_CODES).forEach(this.updateSelected, this);
-            }, this);
+            this.REWARD_TYPES = REWARD_TYPES;
+            this.updateRewards();
+            this.updateBalance();
+            this.listenTo(this, 'onSelectReward', this.updateSelected);
+            this.listenTo(this, 'change:rewards', this.updateRewards.bind(this, undefined));
+            this.listenTo(this, 'change:balance', this.updateBalance.bind(this, undefined));
         },
         /**
-         * Updates passed `rewardsType`.
-         * @param {string} rewardsType - rewards type (one of 'purchases', 'points', 'visits')
-         * @param {Object} data - data of rewards type (simple object is converted to instance of App.Models.Rewards)
+         * Converts 'rewards' attribute to instance of App.Collections.Rewards.
+         * @param  {object} data - data to set.
          */
-        updateRewardsType: function(rewardsType, data) {
-            if(Object.keys(REDEMPTION_CODES).indexOf(rewardsType) == -1) {
-                return;
+        updateRewards: function(data) {
+            // 'change:rewards' event is triggerred
+            if (typeof data == 'undefined') {
+                data = this.get('rewards');
+                if (Array.isArray(data)) {
+                    data = new App.Collections.Rewards(data);
+                    this.set('rewards', data);
+                }
             }
-            if(typeof data == 'undefined') {
-                data = this.get(rewardsType);
+            // data is array of discounts, received from backend
+            else if (Array.isArray(data)) {
+                this.get('rewards').set(data);
             }
-            if(!(data instanceof App.Models.Rewards)) {
-                data = new App.Models.Rewards(data);
+        },
+        /**
+         * Converts 'balance' attribute to instance of App.Models.RewardsBalance.
+         * @param  {object} data - data to set.
+         */
+        updateBalance: function(data) {
+            if (typeof data == 'undefined') {
+                data = this.get('balance');
             }
-            this.set(rewardsType, data);
-            this.updateSelected(rewardsType);
+            if (!(data instanceof App.Models.RewardsBalance)) {
+                // keys of data object can be strings or numbers
+                (typeof data.points != 'undefined')
+                    || (typeof data[this.REWARD_TYPES.points] != 'undefined' && (data.points = data[this.REWARD_TYPES.points]));
+
+                (typeof data.visits != 'undefined')
+                    || (typeof data[this.REWARD_TYPES.visits] != 'undefined' && (data.visits = data[this.REWARD_TYPES.visits]));
+
+                (typeof data.purchases != 'undefined')
+                    || (typeof data[this.REWARD_TYPES.purchases] !=' undefined' && (data.purchases = data[this.REWARD_TYPES.purchases]));
+
+                data = new App.Models.RewardsBalance({
+                    points: data.points,
+                    visits:  data.visits,
+                    purchases: data.purchases
+                });
+            }
+            this.set('balance', data);
+        },
+        /**
+         * Updates list of selected rewards.
+         */
+        updateSelected: function() {
+            var selectedDiscounts = this.get('rewards').reduce(function(memo, reward) {
+                reward.get('selected') && memo.push(reward.get('id'));
+                return memo;
+            }, []);
+            this.set('discounts', selectedDiscounts);
         },
         /**
          * Receives rewards card data from server. If a request failed restores default rewards types.
          * Used parameters of the request are:
          * ```
          * {
-         *     url: '/weborders/reward_cards/',
+         *     url: '/weborders/rewards/',
          *     type: 'POST',
          *     dataType: 'json',
          *     data: JSON.stringify({
-         *         establishment: <establishment id>,
+         *         establishmentId: <establishment id>,
          *         number: <rewards card number>,
          *         captchaKey: <captcha key>,
          *         captchaValue: <captcha value>
@@ -203,70 +295,83 @@ define(['backbone', 'captcha'], function(Backbone) {
             var number = this.get('number'),
                 captchaKey = this.get('captchaKey'),
                 captchaValue = this.get('captchaValue'),
-                self = this;
+                self = this,
+                items;
 
             // abort execution if card number, captchaKey, captchaValue aren't assigned
             if(!number.length || !captchaKey.length || !captchaValue.length) {
                 return;
             }
 
+            // can not send request to rewards/ with no items
+            if (!App.Data.myorder.length) {
+                this.trigger('onRewardsErrors', _loc.REWARDS_EMPTY_CART);
+                return;
+            }
+
+            // get the order items info for submitting to server
+            items = App.Data.myorder.map(function(order) {
+                return order.item_submit();
+            });
+
             // send request
             Backbone.$.ajax({
-                url: '/weborders/reward_cards/',
+                url: '/weborders/rewards/',
                 type: 'POST',
                 data: JSON.stringify({
-                    establishment: App.Data.settings.get("establishment"),
-                    number: number,
+                    establishmentId: App.Data.settings.get("establishment"),
+                    items: items,
+                    orderInfo: {
+                        rewards_card: {
+                            number: number
+                        }
+                    },
                     captchaKey: captchaKey,
                     captchaValue: captchaValue
                 }),
                 dataType: 'json',
                 success: function(data) {
                     // expect response that may have following formats:
-                    // {status: 'OK', data:[...]} - card number exists
-                    // {status: 'ERROR', data: []} - card number doesn't exist
+                    // {status: 'OK', data: {...}} - card number exists
+                    // card number doesn't exist:
+                    // {status: 'OK', data: null} - 'Create reward card for user' setting is enabled
+                    // OR
+                    // {status: '"REWARD_CARD_NOT_FOUND"', errorsMsg: '...'} - 'Create reward card for user' setting is disabled
                     // {status: 'ERROR', errorMsg: '...'} - invalid captcha
-                    if(data.data) {
+                    if (data.status == 'OK') {
                         data = data.data;
-                        if(Array.isArray(data) && data[0] instanceof Object) {
-                            _.defaults(data[0], self.defaults);
-                            updateRewards(data[0]);
+                        if (data instanceof Object && data.discounts instanceof Object) {
+                            updateData(data);
                         } else {
-                            // restore default rewards types
-                            updateRewards(self.defaults);
+                            // restore default rewards
+                            resetData();
                         }
                         self.trigger('onRewardsReceived');
                     } else {
-                        // restore default rewards types
-                        updateRewards(self.defaults);
+                        // restore default rewards
+                        resetData();
                         self.trigger('onRewardsErrors', data.errorMsg);
                     }
                 }
             });
 
-            function updateRewards(obj) {
-                self.updateRewardsType('purchases', obj.purchases);
-                self.updateRewardsType('visits', obj.visits);
-                self.updateRewardsType('points', obj.points);
+            function updateData(obj) {
+                self.updateRewards(obj.discounts);
+                self.updateBalance(obj.balances);
             }
-        },
-        /**
-         * Sets `redemption_code` attribute according `rewardsType` value.
-         * @param {string} rewardsType - rewards type
-         */
-        selectRewardsType: function(rewardsType) {
-            var reward = this.get(rewardsType),
-                isAvailable = Object.keys(REDEMPTION_CODES).indexOf(rewardsType) > -1 && reward.isAvailable();
-            this.set('redemption_code', isAvailable ? REDEMPTION_CODES[rewardsType] : this.defaults.redemption_code);
+
+            function resetData() {
+                self.set('discounts', self.defaults.discounts);
+                self.get('rewards').reset();
+            }
         },
         /**
          * Saves data in a storage. 'rewardsCard' is used as entry name.
          */
         saveData: function() {
             var data = _.extend(this.toJSON(), {
-                points: this.get('points').toJSON(),
-                visits: this.get('visits').toJSON(),
-                purchases: this.get('purchases').toJSON()
+                rewards: this.get('rewards').toJSON(),
+                balance: this.get('balance').toJSON()
             });
             setData('rewardsCard', data);
         },
@@ -282,7 +387,11 @@ define(['backbone', 'captcha'], function(Backbone) {
          * Resets all attributes to default values.
          */
         resetData: function() {
-            this.set(this.defaults);
+            var defaults = $.extend({}, this.defaults);
+            delete defaults.rewards;
+            this.set(defaults);
+            this.get('rewards').reset(); // clear rewards collection
+            this.get('rewards').trigger('update');
             this.trigger('onResetData');
         },
         /**
@@ -291,25 +400,10 @@ define(['backbone', 'captcha'], function(Backbone) {
         resetDataAfterPayment: function() {
             var defaults = $.extend({}, this.defaults);
             delete defaults.number;
+            delete defaults.rewards;
             this.set(defaults);
+            this.get('rewards').reset(); // clear rewards collection
             this.trigger('onResetData');
-        },
-        /**
-         * Updates `selected` attribute of reward type.
-         * @param {string} key - one of 'points', 'visits', 'purchases' reward types.
-         */
-        updateSelected: function(key) {
-            var redemption = this.get('redemption_code'),
-                model = this.get(key);
-            if(model instanceof App.Models.Rewards) {
-                model.set({selected: getRedemption()});
-            } else if(model instanceof Object) {
-                model.selected = getRedemption();
-            }
-
-            function getRedemption() {
-                return redemption ? REDEMPTION_CODES[key] === redemption : model.defaults.selected
-            }
         }
     });
 });

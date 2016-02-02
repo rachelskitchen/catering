@@ -193,7 +193,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
 
             it("3. 'address' is object, address.addresses is array with items > 1", function() {
-                var arr = [1,2];
+                var arr = [1,2,3];
                 getData.and.returnValue({addresses: arr});
                 model.loadAddresses();
                 expect(window.getData).toHaveBeenCalledWith('address', true);

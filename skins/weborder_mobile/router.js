@@ -70,6 +70,7 @@ define(["main_router"], function(main_router) {
             "login": "login",
             "signup": "signup",
             "profile_create": "profile_create",
+            "profile_edit": "profile_edit",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -263,14 +264,13 @@ define(["main_router"], function(main_router) {
             this.listenTo(App.Data.myorder.rewardsCard, 'onRedemptionApplied', function() {
                 var self = this;
                 App.Data.mainModel.trigger('loadStarted');
-                App.Data.myorder.splitAllItemsWithPointValue();
                 App.Data.myorder.get_cart_totals().always(function() {
                     App.Data.mainModel.trigger('loadCompleted');
                     self.navigate(self.rewardsPageReferrerHash, true);
                 });
             }, this);
 
-            // onRewardsErrors event occurs when /weborders/reward_cards/ request fails
+            // onRewardsErrors event occurs when /weborders/rewards/ request fails
             this.listenTo(App.Data.myorder.rewardsCard, 'onRewardsErrors', function(errorMsg) {
                 App.Data.errors.alert(errorMsg);
                 App.Data.mainModel.trigger('loadCompleted');
@@ -280,7 +280,7 @@ define(["main_router"], function(main_router) {
             this.listenTo(App.Data.myorder.rewardsCard, 'onRewardsReceived', function() {
                 var rewardsCard = App.Data.myorder.rewardsCard;
 
-                if(rewardsCard.get('points').isDefault() && rewardsCard.get('visits').isDefault() && rewardsCard.get('purchases').isDefault()) {
+                if (!rewardsCard.get('rewards').length) {
                     App.Data.errors.alert(MSG.NO_REWARDS_AVAILABLE);
                 } else {
                     this.navigate('rewards', true);
@@ -572,7 +572,6 @@ define(["main_router"], function(main_router) {
                         link: !App.Settings.online_orders ? header.defaults.link : function() {
                             header.updateProduct(order);
                             order.set('discount', originOrder.get('discount').clone(), {silent: true});
-                            App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
                             // originOrderItem.update(orderItem);
                             originOrder = order.clone();
                             isOrderChanged = false;
@@ -672,7 +671,6 @@ define(["main_router"], function(main_router) {
                         link: !App.Settings.online_orders ? header.defaults.link : function() {
                             var status = header.updateProduct(order);
                             order.set('discount', originOrder.get('discount').clone(), {silent: true});
-                            App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
                             self.stopListening(self, 'route', back);
                             originOrder.update(order);
                         }
@@ -1491,6 +1489,9 @@ define(["main_router"], function(main_router) {
                         mod: 'Card',
                         model: rewardsCard,
                         className: 'rewards-info',
+                        balance: rewardsCard.get('balance'),
+                        rewards: rewardsCard.get('rewards'),
+                        discount: rewardsCard.get('discount'),
                         cacheId: true
                     }]
                 });
@@ -1533,9 +1534,9 @@ define(["main_router"], function(main_router) {
                         model: rewardsCard,
                         className: 'rewards-info',
                         collection: App.Data.myorder,
-                        points: rewardsCard.get('points'),
-                        visits: rewardsCard.get('visits'),
-                        purchases: rewardsCard.get('purchases')
+                        balance: rewardsCard.get('balance'),
+                        rewards: rewardsCard.get('rewards'),
+                        discounts: rewardsCard.get('discounts')
                     }]
                 });
 
@@ -1669,6 +1670,18 @@ define(["main_router"], function(main_router) {
                 link_title: _loc.CONTINUE,
                 enableLink: true
             });
+
+            App.Data.mainModel.set({
+                header: headerModes.Modifiers,
+                footer: footerModes.None,
+                contentClass: 'primary-bg',
+                content: content
+            });
+
+            this.change_page();
+        },
+        profile_edit: function() {
+            var content = this.profileEditContent();
 
             App.Data.mainModel.set({
                 header: headerModes.Modifiers,

@@ -20,12 +20,25 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+ /**
+  * Contains {@link App.Models.Tip} constructor.
+  * @module tip
+  * @requires module:backbone
+  * @see {@link module:config.paths actual path}
+  */
 define(["backbone"], function(Backbone) {
     'use strict';
 
     /**
      * @class
-     * Represents tips model.
+     * @classdesc Represents a tips model.
+     * @alias App.Models.Tip
+     * @augments Backbone.Model
+     * @example
+     * // create a tips model
+     * require(['tip'], function() {
+     *     var tips = new App.Models.Tip();
+     * });
      */
     App.Models.Tip = Backbone.Model.extend({
         /**
@@ -64,14 +77,19 @@ define(["backbone"], function(Backbone) {
             tipTotal: 0, // the result tip amount
             subtotal: 0, // last applied subtotal
         },
+        /**
+         * Adds listener to call `update_tip()` on attributes change.
+         */
         initialize: function() {
             this.listenTo(this, "change", this.update_tip, this);
         },
+        /**
+         * Sets new tips value to `tipTotal`.
+         */
         update_tip: function() {
             this.set("tipTotal", this.get_tip(this.get('subtotal'), App.Data.myorder.total.get_discounts_str(), App.Data.myorder.get_service_fee_charge()));
         },
         /**
-         * @method
          * @param {number} subtotal - subtotal amount to calculate percent.
          * @returns {number} tips amount.
          */
@@ -95,21 +113,18 @@ define(["backbone"], function(Backbone) {
             }
         },
         /**
-         * @method
          * Sets default values for all attributes.
          */
         empty: function() {
             this.set(this.defaults);
         },
         /**
-         * @method
          * Saves data to a storage. 'tip' key is used.
          */
         saveTip: function() {
             setData('tip', this);
         },
         /**
-         * @method
          * Restores data from a storage. 'tip' key is used.
          */
         loadTip : function() {
