@@ -2671,6 +2671,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 it('default', function() {
                     customer.first_name = 'testName';
                     model.submit_order_and_pay(2);
+
                     expect(ajax.data.orderInfo.customer.first_name).toBe('testName');
                     expect(ajax.data.paymentInfo).toEqual({
                         tip : 1,
