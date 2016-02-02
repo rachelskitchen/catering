@@ -169,7 +169,6 @@
          */
         getSubs: function(id) {
             var parent = this.get(id);
-            debugger;
             if(parent)
                 return parent.get('subs').where({active: true});
             else
