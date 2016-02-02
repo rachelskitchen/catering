@@ -23,7 +23,7 @@
 (function($) {
     'use strict';
 
-    $.fn.contentarrow = function(opts) {
+    $.fn.contentarrow = function(opts, doNotUpdateScrollTop) {
         this.each(function(i) {
             var parent = $(this),
                 prevHeight = parent.height(),
@@ -62,7 +62,7 @@
                     next.click(); // fix for bug 10295 (it removes :hover state of show element)
                     next.fadeOut(200);
                 }
-                updateScrollTop();
+                !doNotUpdateScrollTop && updateScrollTop();
             }, 200);
 
             var downInterval,
