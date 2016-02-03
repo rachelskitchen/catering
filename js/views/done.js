@@ -55,16 +55,16 @@ define(["backbone", "factory"], function(Backbone) {
                 model.email = App.Data.customer.get('email');
                 model.status = 'success';
 
-                model.reward_points = '';
+                model.reward_items = '';
                 model.reward_visits = '';
                 model.reward_purchases = '';
 
                 var balances = _.isObject(get.balances) ? get.balances : {};
 
                 if(_.isObject(balances.rewards)) {
-                    model.reward_points = typeof balances.rewards.current_points == 'number' ? balances.rewards.current_points : model.reward_points;
-                    model.reward_visits = typeof balances.rewards.points_by_visits == 'number' ? balances.rewards.points_by_visits : model.reward_visits;
-                    model.reward_purchases = typeof balances.rewards.points_by_purchases == 'number' ? balances.rewards.points_by_purchases : model.reward_purchases;
+                    model.reward_purchases = typeof balances.rewards[0] == 'number' ? balances.rewards[0] : model.reward_purchases;
+                    model.reward_items = typeof balances.rewards[1] == 'number' ? balances.rewards[1] : model.reward_items;
+                    model.reward_visits = typeof balances.rewards[2]== 'number' ? balances.rewards[2] : model.reward_visits;
                 }
 
                 model.symbol = App.Data.settings.get('settings_system').currency_symbol;
