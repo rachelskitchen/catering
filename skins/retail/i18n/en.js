@@ -122,9 +122,9 @@
         'STANFORD_STUDENT_INSTRUCTIONS': 'You must bring your Stanford ID when you pick up your order.',
         'REWARDS_INFORMATION': 'Information',
         'REWARDS_NUMBER': 'Rewards #',
-        'REWARDS_TOTAL_POINTS': 'Total Points',
-        'REWARDS_TOTAL_VISITS': 'Total Visits',
-        'REWARDS_TOTAL_PURCHASES': 'Total Purchases',
+        'REWARDS_TOTAL_POINTS': 'Item Points',
+        'REWARDS_TOTAL_VISITS': 'Visit Points',
+        'REWARDS_TOTAL_PURCHASES': 'Purchase Points',
         'REWARDS_SELECTION_INFO': 'Choose a rewards below, or cancel to save your points.',
         'REWARDS_AVAILABLE': 'Available',
         'REWARDS_UNAVAILABLE': 'You do not qualify for a reward at this time.',
@@ -134,14 +134,6 @@
         'REWARDS_POINTS_REDEMPTION_AMOUNT': [
             'Point will be redeemed',
             'Points will be redeemed'
-        ],
-        'REWARDS_VISITS_REDEMPTION_AMOUNT': [
-            'Visit will be redeemed',
-            'Visits will be redeemed'
-        ],
-        'REWARDS_PURCHASES_REDEMPTION_AMOUNT': [
-            'Purchase will be redeemed',
-            'Purchases will be redeemed'
         ],
         'STANFORD_RELOAD_INFO1': "Please specify the Card # and the amount you'd like to add",
         'STANFORD_RELOAD_INFO2': "Please specify the plan you'd like to add value to",

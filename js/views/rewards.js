@@ -168,8 +168,8 @@
             '.purchases-redemption': 'text: pointsPerReward(purchases_value, purchases_rewards_earned)',
             '.items-with-points': 'collection:$itemsWithPointsRewardDiscount, itemView:"itemWithPointDiscountView"',
             '.points-redemption-info': 'text: selectText(points_value, points_rewards_earned, _lp_REWARDS_POINTS_REDEMPTION_AMOUNT)',
-            '.visits-redemption-info': 'text: selectText(visits_value, visits_rewards_earned, _lp_REWARDS_VISITS_REDEMPTION_AMOUNT)',
-            '.purchases-redemption-info': 'text: selectText(purchases_value, purchases_rewards_earned, _lp_REWARDS_PURCHASES_REDEMPTION_AMOUNT)',
+            '.visits-redemption-info': 'text: selectText(visits_value, visits_rewards_earned, _lp_REWARDS_POINTS_REDEMPTION_AMOUNT)',
+            '.purchases-redemption-info': 'text: selectText(purchases_value, purchases_rewards_earned, _lp_REWARDS_POINTS_REDEMPTION_AMOUNT)',
         },
         events: function() {
             return {

@@ -150,9 +150,9 @@
         'STANFORD_STUDENT_INSTRUCTIONS': 'You must bring your Stanford ID when you pick up your order.',
         'REWARDS_INFORMATION': 'Rewards Information',
         'REWARDS_NUMBER': 'Rewards #',
-        'REWARDS_TOTAL_POINTS': 'Total Points',
-        'REWARDS_TOTAL_VISITS': 'Total Visits',
-        'REWARDS_TOTAL_PURCHASES': 'Total Purchases',
+        'REWARDS_TOTAL_POINTS': 'Item Points',
+        'REWARDS_TOTAL_VISITS': 'Visit Points',
+        'REWARDS_TOTAL_PURCHASES': 'Purchase Points',
         'REWARDS_SELECTION_INFO': 'Choose a rewards below, or close this window to save your points.',
         'REWARDS_AVAILABLE': 'Rewards Available',
         'REWARDS_UNAVAILABLE': 'You do not qualify for a reward at this time.',
@@ -162,14 +162,6 @@
         'REWARDS_POINTS_REDEMPTION_AMOUNT': [
             'Point will be redeemed',
             'Points will be redeemed'
-        ],
-        'REWARDS_VISITS_REDEMPTION_AMOUNT': [
-            'Visit will be redeemed',
-            'Visits will be redeemed'
-        ],
-        'REWARDS_PURCHASES_REDEMPTION_AMOUNT': [
-            'Purchase will be redeemed',
-            'Purchases will be redeemed'
         ],
         'SEARCH_ENTER_STRING': 'Search',
         'PRODUCTS_NOT_FOUND': 'No products found',

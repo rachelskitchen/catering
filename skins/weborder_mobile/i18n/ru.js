@@ -223,14 +223,6 @@
             'балл будет потрачен',
             'баллов будет потрачено'
         ],
-        'REWARDS_VISITS_REDEMPTION_AMOUNT': [
-            'посещение будет потрачено',
-            'посещений будет потрачено'
-        ],
-        'REWARDS_PURCHASES_REDEMPTION_AMOUNT': [
-            'покупка будет потрачена',
-            'покупок будут потрачены'
-        ],
         'REWARDS_ENTER_CAPTCHA':           'Введите код с картинки',
         'CONFIRM_SUBMIT':                  'Отправить',
         'SEARCH_ENTER_STRING':             'Поиск',

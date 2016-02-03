@@ -205,14 +205,6 @@ define([], function() {
             "Point will be redeemed",
             "Se canjearán los puntos"
         ],
-        "REWARDS_VISITS_REDEMPTION_AMOUNT": [
-            "Visit will be redeemed",
-            "Se canjearán las visitas"
-        ],
-        "REWARDS_PURCHASES_REDEMPTION_AMOUNT": [
-            "Purchase will be redeemed",
-            "Se canjearán las compras"
-        ],
         "REWARDS_ENTER_CAPTCHA": "Ingrese los caracteres del captcha",
         "CONFIRM_SUBMIT": "Enviar",
         "PRODUCT_ADDED": "Product Added",

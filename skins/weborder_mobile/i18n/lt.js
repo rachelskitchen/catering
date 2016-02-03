@@ -205,14 +205,6 @@ define([], function() {
             "Point will be redeemed",
             "Taškai bus panaudoti"
         ],
-        "REWARDS_VISITS_REDEMPTION_AMOUNT": [
-            "Visit will be redeemed",
-            "Apsilankymai bus panaudoti"
-        ],
-        "REWARDS_PURCHASES_REDEMPTION_AMOUNT": [
-            "Purchase will be redeemed",
-            "Pirkiniai bus panaudoti"
-        ],
         "REWARDS_ENTER_CAPTCHA": "Įveskite „Captcha“ simbolius",
         "CONFIRM_SUBMIT": "Pateikti",
         "PRODUCT_ADDED": "Product Added",
