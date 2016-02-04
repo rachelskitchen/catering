@@ -266,7 +266,6 @@ define(["main_router"], function(main_router) {
             this.listenTo(App.Data.myorder.rewardsCard, 'onRedemptionApplied', function() {
                 var self = this;
                 App.Data.mainModel.trigger('loadStarted');
-                App.Data.myorder.splitAllItemsWithPointValue();
                 App.Data.myorder.get_cart_totals().always(function() {
                     App.Data.mainModel.trigger('loadCompleted');
                     self.navigate(self.rewardsPageReferrerHash, true);
@@ -575,7 +574,6 @@ define(["main_router"], function(main_router) {
                         link: !App.Settings.online_orders ? header.defaults.link : function() {
                             header.updateProduct(order);
                             order.set('discount', originOrder.get('discount').clone(), {silent: true});
-                            App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
                             // originOrderItem.update(orderItem);
                             originOrder = order.clone();
                             isOrderChanged = false;
@@ -675,7 +673,6 @@ define(["main_router"], function(main_router) {
                         link: !App.Settings.online_orders ? header.defaults.link : function() {
                             var status = header.updateProduct(order);
                             order.set('discount', originOrder.get('discount').clone(), {silent: true});
-                            App.Data.myorder.splitItemAfterQuantityUpdate(order, originOrder.get('quantity'), order.get('quantity'), true);
                             self.stopListening(self, 'route', back);
                             originOrder.update(order);
                         }

@@ -287,9 +287,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     } else {
                         collection = self.options.real.collection;
                         self.options.real.update(self.model);
-                        if (collection && collection.splitItemAfterQuantityUpdate) {
-                            collection.splitItemAfterQuantityUpdate(self.model, self.options.real.get('quantity'), self.model.get('quantity'));
-                        }
                     }
                     $('#popup .cancel').trigger('click', ['OK']);
                 }, function(errorMsg) {
