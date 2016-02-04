@@ -109,7 +109,11 @@ define(["myorder_view"], function(myorder_view) {
       })
     };
 
-    var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
+    var MyOrderItemView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemView );
+    var MyOrderItemComboView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemComboView );
+    var MyOrderItemUpsellView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemUpsellView );
+
+    function _MyOrderItemView(_base){ return _base.extend({
         editItem: function(event) {
             event.preventDefault();
             var self = this,
@@ -132,7 +136,8 @@ define(["myorder_view"], function(myorder_view) {
                                                           //the view will be removed from cache after the product is added/updated into the cart.
             });
         }
-    });
+      })
+    }
 
     var MyOrderItemSpecialView = App.Views.FactoryView.extend({
         name: 'myorder',
@@ -150,6 +155,8 @@ define(["myorder_view"], function(myorder_view) {
         App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
         App.Views.MyOrderView.MyOrderMatrixComboView = MyOrderMatrixComboView;
         App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
+        App.Views.MyOrderView.MyOrderItemComboView = MyOrderItemComboView;
+        App.Views.MyOrderView.MyOrderItemUpsellView = MyOrderItemUpsellView;
         App.Views.MyOrderView.MyOrderItemSpecialView = MyOrderItemSpecialView;
     });
 });

@@ -241,6 +241,8 @@
 /* combo products in the cart */
 #popup .order-items .myorder_combo > li {
     height: auto;
+}
+#popup .combo_products_place {
     font-size: 0.9em;
 }
 #popup .order-items .myorder .modifier_place,

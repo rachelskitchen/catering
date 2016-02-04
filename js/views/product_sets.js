@@ -277,7 +277,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         name: 'product_sets',
         mod: 'list',
         initialize: function() {
-            this.model.set('combo_name', this.model.get('product').get('name'));
+            var combo_name = this.model.isUpsellProduct() ? this.model.get('upcharge_name') : this.model.get('product').get('name');
+            this.model.set('combo_name', combo_name);
             App.Views.ListView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
