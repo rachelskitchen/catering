@@ -785,7 +785,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
      */
     {
         defaults: _.extend({}, App.Models.Myorder.prototype.defaults, {
-            upcharge_price: 0
+            upcharge_price: 0,
+            upcharge_name: ''
         }),
         /**
          * Initializes the model.
@@ -829,7 +830,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 self.set({
                     sum: self.get_modelsum(), // sum with modifiers
                     initial_price: self.get_initial_price(),
-                    upcharge_price: combo_type == 'upsell' ? slots.upcharge_price : 0
+                    upcharge_price: combo_type == 'upsell' ? slots.upcharge_price : 0,
+                    upcharge_name: combo_type == 'upsell' ? slots.upcharge_name : ''
                 });
                 self.update_prices();
             });
