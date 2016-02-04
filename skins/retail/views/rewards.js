@@ -23,15 +23,5 @@
  define(["rewards_view"], function(rewards_view) {
     'use strict';
 
-    var CoreRewardsPointsItemView = App.Views.RewardsView.RewardsPointsItemView,
-        RewardsPointsItemView = CoreRewardsPointsItemView.extend({
-            bindings: _.extend(CoreRewardsPointsItemView.prototype.bindings, {
-                '.image': 'toggle: select(_system_settings_hide_images, false, true)',
-                '.attrs': 'classes: {noimage: _system_settings_hide_images}',
-                '.price-line': 'classes: {noimage: _system_settings_hide_images}'
-            })        });
-
-    return new (require('factory'))(rewards_view.initViews.bind(rewards_view), function() {
-        App.Views.RewardsView.RewardsPointsItemView = RewardsPointsItemView;
-    });
+    return new (require('factory'))(rewards_view.initViews.bind(rewards_view), function() {});
 });

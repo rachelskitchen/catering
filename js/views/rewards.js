@@ -104,46 +104,6 @@
         mod: 'order_application'
     });
 
-    var RewardsPointsItemView = App.Views.MyOrderView.MyOrderItemView.extend({
-        name: 'rewards',
-        mod: 'points_item',
-        className: 'order-item',
-        initialize: function() {
-            // Set current `this` value as `this` value for `this.bindingSources.item` function.
-            // To avoid change of RewardsPointsItemView.prototype.bindingSources.item after first view initialization
-            // need to create own property 'bindingSources' as clone of prototype value.
-            this.bindingSources = _.extend({}, this.bindingSources);
-            this.bindingSources.item = this.bindingSources.item.bind(this);
-            App.Views.MyOrderView.MyOrderItemView.prototype.initialize.apply(this, arguments);
-        },
-        bindings: {
-            '.weight': 'classes: {hide: select(item_sold_by_weight, false, true)}',
-            '.quantity': 'classes: {hide: item_sold_by_weight}',
-            '.weight.name': 'text: format("$1 $2", item_sizeModifier, item_name)',
-            '.quantity.name': 'text: format("$1x $2 $3", item_quantity, item_sizeModifier, item_name)',
-            '.weight-info': 'text: weightPriceFormat(item_weight, item_initial_price)',
-            '.price': 'text: currencyFormat(item_sum)',
-            '.discount': 'text: currencyFormat(reward_discount)',
-            'li.special': 'toggle: item_special',
-            'span.special': 'text: item_special',
-            '.cost': 'toggle: false'
-        },
-        bindingSources: {
-            item: function() {
-                return new Backbone.Model(this.getData());
-            }
-        },
-        updateBingingSource: function() {
-            var item = this.getBinding('$item');
-            item.set(this.getData());
-            item.trigger('update');
-        },
-        update: function() {
-            this.updateBingingSource();
-            App.Views.MyOrderView.MyOrderItemView.prototype.update.apply(this, arguments);
-        }
-    });
-
     var RewardsInfoView = App.Views.FactoryView.extend({
         name: 'rewards',
         mod: 'info',
@@ -166,7 +126,6 @@
             '.points-redemption': 'text: pointsPerReward(points_value, points_rewards_earned)',
             '.visits-redemption': 'text: pointsPerReward(visits_value, visits_rewards_earned)',
             '.purchases-redemption': 'text: pointsPerReward(purchases_value, purchases_rewards_earned)',
-            '.items-with-points': 'collection:$itemsWithPointsRewardDiscount, itemView:"itemWithPointDiscountView"',
             '.points-redemption-info': 'text: selectText(points_value, points_rewards_earned, _lp_REWARDS_POINTS_REDEMPTION_AMOUNT)',
             '.visits-redemption-info': 'text: selectText(visits_value, visits_rewards_earned, _lp_REWARDS_POINTS_REDEMPTION_AMOUNT)',
             '.purchases-redemption-info': 'text: selectText(purchases_value, purchases_rewards_earned, _lp_REWARDS_POINTS_REDEMPTION_AMOUNT)',
@@ -183,18 +142,13 @@
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'onResetData', this.resetOriginalRedemptionCode, this);
 
-            // update $itemsWithPointsRewardDiscount when items or points discount update
-            this.listenTo(this.collection, 'add remove change', this.updateItemsWithPointsRewardDiscount, this);
-            this.listenTo(this.model.get('points'), 'change:discount', this.updateItemsWithPointsRewardDiscount, this);
-
-            this.updateItemsWithPointsRewardDiscount();
             this.setOriginalRedemptionCode();
         },
         computeds: {
             isPointsAvailable: {
-                deps: ['points', 'points_rewards_earned', '$itemsWithPointsRewardDiscount'],
-                get: function(points, rewards, items) {
-                    return points.isAvailable() && items.length;
+                deps: ['points', 'points_rewards_earned'],
+                get: function(points, rewards) {
+                    return points.isAvailable();
                 }
             },
             isVisitsAvailable: {
@@ -246,12 +200,6 @@
                 return parseInt(points / rewards, 10) <= 1 ? text1 : text2;
             }
         },
-        bindingSources: {
-            itemsWithPointsRewardDiscount: function() {
-                return new Backbone.Collection();
-            }
-        },
-        itemWithPointDiscountView: RewardsPointsItemView,
         remove: function() {
             !this.removed && this.model.set('redemption_code', this.originalRedemptionCode);
             this.removed = true;
@@ -277,12 +225,6 @@
         },
         resetOriginalRedemptionCode: function() {
             this.originalRedemptionCode = this.model.defaults.redemption_code;
-        },
-        updateItemsWithPointsRewardDiscount: function() {
-            var items = this.getBinding('$itemsWithPointsRewardDiscount'),
-                discount = this.model.get('points').get('discount');
-            items.reset(this.collection.getItemsWithPointsRewardDiscount(discount));
-            items.trigger('update');
         }
     });
 
@@ -292,6 +234,5 @@
         App.Views.RewardsView.RewardsItemApplicationView = RewardsItemApplicationView;
         App.Views.RewardsView.RewardsOrderApplicationView = RewardsOrderApplicationView;
         App.Views.RewardsView.RewardsInfoView = RewardsInfoView;
-        App.Views.RewardsView.RewardsPointsItemView = RewardsPointsItemView;
     });
 });

@@ -164,62 +164,6 @@
     text-shadow: none;
 }
 
-.rewards-info .points-selection {
-    text-align: left;
-    height: auto;
-}
-
-.rewards-info .points-selection:before {
-    display: none;
-}
-
-.rewards-info .order-item {
-    display: block;
-    margin: 0 20px;
-    vertical-align: middle;
-    padding: 5px 0;
-}
-
-.rewards-info .order-item {
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-}
-
-.rewards-info .order-item:last-child {
-    border-bottom: none;
-}
-
-.rewards-info .order-item:before {
-    content: '';
-    display: inline-block;
-    height: 83px;
-    width: 0;
-    vertical-align: middle;
-    position: relative;
-    margin-left: -8px;
-}
-
-.rewards-info .order-item > div {
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.rewards-info h4.name {
-    font-size: 18px;
-    margin-right: 20px;
-}
-
-.rewards-info .modifier_place, .rewards-info .price-line, .rewards-info .attrs {
-    display: block;
-    font-size: 14px !important;
-    margin-top: 2px;
-}
-
-.rewards-info .quantity {
-    position: relative;
-    padding: 0;
-}
-
 @media only screen and (max-device-width: 949px) {
     .rewards-info dfn {
         width: 86px !important;
