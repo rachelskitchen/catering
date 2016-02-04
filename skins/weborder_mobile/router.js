@@ -671,6 +671,7 @@ define(["main_router"], function(main_router) {
                             order.set('discount', originOrder.get('discount').clone(), {silent: true});
                             self.stopListening(self, 'route', back);
                             originOrder.update(order);
+                            combo_order.trigger("change:modifiers");
                         }
                     });
                     self.listenTo(order, 'change', setHeaderToUpdate);
