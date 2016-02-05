@@ -161,6 +161,28 @@ section:before {
 section.maintenance, section.confirm{
     width: 100%;
 }
+section.profile-container {
+    position: static;
+    width: auto;
+    padding: 8px 20px;
+}
+section.profile-container:before {
+    display: none;
+}
+section.profile-container #header {
+    position: static;
+    height: auto;
+}
+section.profile-container #content {
+    position: static;
+    padding: 0;
+    border-radius: 8px;
+}
+footer.profile-container {
+    position: static;
+    padding: 0 20px;
+    width: auto;
+}
 aside {
     width: 0;
     position: absolute;
@@ -1153,4 +1175,36 @@ span.cancel-input:before {
 
 .link:hover, .link:active {
     text-decoration: none;
+}
+
+#header .back-btn {
+    display: inline-block;
+    width: auto;
+    margin-top: 11px;
+    cursor: pointer;
+}
+
+#header .back-btn::before {
+    content: '\f104';
+    font-family: FontAwesome;
+    font-size: 23px;
+    color: inherit;
+    vertical-align: middle;
+    padding-right: 5px;
+}
+
+#header .back-btn .label {
+    font-size: 16px;
+    vertical-align: middle;
+}
+
+#header .title {
+    padding-bottom: 15px;
+    font-size: 22px;
+}
+
+.border-box {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }

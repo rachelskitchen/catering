@@ -48,6 +48,9 @@ select[disabled] {
 #content {
     border-color: #bebebe;
 }
+.profile-container #content {
+    border-color: #ccc;
+}
 section:before {
     border-color: #cdcdcd;
     background: #e3d48b;
@@ -56,7 +59,7 @@ section:before {
 .link1, .primary-text {
     color: #2186b1;
 }
-#profile-panel input:focus {
+.profile-form input:focus {
     border-color: #2186b1;
 }
 .powered-by {

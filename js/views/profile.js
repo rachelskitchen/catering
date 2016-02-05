@@ -84,7 +84,7 @@ define(["factory"], function() {
             this.subViews.push(App.Views.GeneratorView.create('Profile', {
                 el: this.$('.address-box'),
                 mod: 'Address',
-                model: new Backbone.Model(this.model.getEmptyAddress())
+                model: this.options.address
             }));
 
             return this;

@@ -46,6 +46,7 @@ define(["main_router"], function(main_router) {
             "checkout": "checkout",
             "pay": "pay",
             "confirm": "confirm",
+            "profile_edit": "profile_edit",
             "maintenance": "maintenance",
             "*other": "index"
         },
@@ -181,7 +182,8 @@ define(["main_router"], function(main_router) {
         },
         createMainView: function() {
             var data = App.Data.mainModel.toJSON(),
-                mainView = App.Views.GeneratorView.create('Main', data, data.mod === 'Main'),
+                cacheId = data.mod === 'Main' || data.mod === 'Profile' ? data.mod : false,
+                mainView = App.Views.GeneratorView.create('Main', data, cacheId),
                 container = Backbone.$('body > div.main-container');
 
             this.mainView && this.mainView.removeFromDOMTree() || container.empty();
@@ -758,6 +760,10 @@ define(["main_router"], function(main_router) {
             }
             this.change_page();
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
+        },
+        profile_edit: function() {
+            this.setProfileEditContent();
+            this.change_page();
         }
     });
 

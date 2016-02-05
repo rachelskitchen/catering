@@ -32,7 +32,6 @@ define(["main_router"], function(main_router) {
     function defaultRouterData() {
         headers.main = {mod: 'Main', className: 'main'};
         headers.checkout = {mod: 'Checkout', className: 'checkout'};
-        headers.profile = {mod: 'Profile', className: 'profile-container'};
         carts.main = {mod: 'Main', className: 'main'};
         carts.checkout = {mod: 'Checkout', className: 'checkout'};
     }
@@ -140,7 +139,8 @@ define(["main_router"], function(main_router) {
         },
         createMainView: function() {
             var data = App.Data.mainModel.toJSON(),
-                mainView = App.Views.GeneratorView.create('Main', data, data.mod === 'Main'),
+                cacheId = data.mod === 'Main' || data.mod === 'Profile' ? data.mod : false,
+                mainView = App.Views.GeneratorView.create('Main', data, cacheId),
                 container = Backbone.$('body > div.main-container');
 
             this.mainView && this.mainView.removeFromDOMTree() || container.empty();
@@ -619,21 +619,7 @@ define(["main_router"], function(main_router) {
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         },
         profile_edit: function() {
-            App.Data.mainModel.set({
-                mod: 'Profile',
-                className: 'profile-container'
-            });
-
-            App.Data.mainModel.set({
-                header: headers.profile,
-                content: {
-                    modelName: 'Profile',
-                    mod: 'Edit',
-                    model: App.Data.customer,
-                    className: 'profile-edit text-center'
-                }
-            });
-
+            this.setProfileEditContent();
             this.change_page();
         }
     });
