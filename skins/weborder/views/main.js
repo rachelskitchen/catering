@@ -23,7 +23,7 @@
 define(["done_view", "generator"], function(done_view) {
     'use strict';
 
-    var MainMainView = App.Views.FactoryView.extend({
+    var MainMainView = App.Views.CoreMainView.CoreMainSpinnerView.extend({
         name: 'main',
         mod: 'main',
         initialize: function() {
@@ -31,9 +31,7 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:header', this.header_change, this);
             this.listenTo(this.model, 'change:cart', this.cart_change, this);
             this.listenTo(this.model, 'change:popup', this.popup_change, this);
-            this.listenTo(this.model, 'change:profile', this.profile_change, this);
-            this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
-            this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
+            this.listenTo(this.model, 'change:profile_panel', this.profile_change, this);
             this.listenTo(this.model, 'change:isShowPromoMessage', this.calculatePromoMessageWidth, this);
             this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
             this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
@@ -50,11 +48,11 @@ define(["done_view", "generator"], function(done_view) {
 
             this.subViews.length = 4;
 
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            App.Views.CoreMainView.CoreMainSpinnerView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
             if (App.Settings.promo_message) this.calculatePromoMessageWidth(); // calculate a promo message width
-            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            App.Views.CoreMainView.CoreMainSpinnerView.prototype.render.apply(this, arguments);
             this.profile_change();
             this.iPad7Feature();
 
@@ -137,11 +135,16 @@ define(["done_view", "generator"], function(done_view) {
             popup.addClass('ui-visible');
         },
         profile_change: function() {
-            var data = _.defaults(this.model.get('profile'), this.profile_defaults()),
-                id = 'profile_' + data.modelName + '_' + data.mod;
+            var data = _.defaults(this.model.get('profile_panel'), this.profile_defaults());
 
-            this.subViews[3] && this.subViews[3].removeFromDOMTree();
-            this.subViews[3] = App.Views.GeneratorView.create(data.modelName, data, id);
+            if(!data.modelName) {
+                return;
+            }
+
+            // Don't cache profile view.
+            // It can be used in MainProfile with specific el.
+            this.subViews[3] && this.subViews[3].remove();
+            this.subViews[3] = App.Views.GeneratorView.create(data.modelName, data);
         },
         hide_popup: function(event, status) {
             var callback = _.isObject(this.model.get('popup')) ? this.model.get('popup').action_callback : null;
@@ -193,24 +196,9 @@ define(["done_view", "generator"], function(done_view) {
             if (/iPad|iPod|iPhone/.test(window.navigator.userAgent))
                 document.addEventListener('touchstart', new Function, false); // enable css :active pseudo-class for all elements
         },
-        loadCompleted: function() {
-            $(window).trigger('loadCompleted');
-            clearTimeout(this.spinner);
-            delete this.spinner;
-            this.hideSpinner();
-        },
-        loadStarted: function() {
-            this.spinner = setTimeout(this.showSpinner.bind(this), 50);
-        },
-        showSpinner: function() {
-            this.$('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
-        },
-        hideSpinner: function() {
-            this.$('#main-spinner').addClass('ui-visible').removeClass('ui-visible');
-        },
         remove: function() {
             $(window).off('resize', this.resizePromoMessage);
-            App.Views.FactoryView.prototype.remove.apply(this, arguments);
+            App.Views.CoreMainView.CoreMainSpinnerView.prototype.remove.apply(this, arguments);
         },
         /**
          * Calculate a promo message width.
@@ -372,15 +360,9 @@ define(["done_view", "generator"], function(done_view) {
         }
     });
 
-    var MainProfileView = MainMainView.extend({
-        name: 'main',
-        mod: 'profile'
-    });
-
     return new (require('factory'))(done_view.initViews.bind(done_view), function() {
         App.Views.MainView.MainMainView = MainMainView;
         App.Views.MainView.MainMaintenanceView = MainMaintenanceView;
         App.Views.MainView.MainDoneView = MainDoneView;
-        App.Views.MainView.MainProfileView = MainProfileView;
     });
 });

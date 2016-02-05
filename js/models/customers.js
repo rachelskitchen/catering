@@ -30,6 +30,8 @@
 define(["backbone", "geopoint"], function(Backbone) {
     'use strict';
 
+    var SERVER_URL = "https://identity-dev.revelup.com";
+
     /**
      * @class
      * @classdesc Represents a customer model.
@@ -577,17 +579,26 @@ define(["backbone", "geopoint"], function(Backbone) {
          * ```
          * Status: 200
          * {
-         *     "username": "johndoe@foobar.com",                                    // username
-         *     "user_id": 1,                                                        // user id
-         *     "access_token": "2YotnFZFEjr1zCsicMWpAA",                            // access token
-         *     "token_type": "Bearer",                                              // token type
-         *     "expires_in": 3600,                                                  // expiration time
-         *     "scope": "CUSTOMERS:customers.customer CUSTOMERS:customers.address"  // access scope
-         * }
+         *     "token": {
+         *         "username": "johndoe@foobar.com",                                    // username
+         *         "user_id": 1,                                                        // user id
+         *         "access_token": "2YotnFZFEjr1zCsicMWpAA",                            // access token
+         *         "token_type": "Bearer",                                              // token type
+         *         "expires_in": 3600,                                                  // expiration time
+         *         "scope": "CUSTOMERS:customers.customer CUSTOMERS:customers.address"  // access scope
+         *     },
+         *     customer: {
+         *         "email": "johndoe@foobar.com",                                       // email
+         *         "first_name": "John",                                                // first name
+         *         "last_name": "Doe",                                                  // last name
+         *         "id": 1,                                                             // user id
+         *         "phone_number": "+123456789"                                         // phone
+         *         "addresses": [...]                                                   // array of addresses
+         *     }
          * ```
          * - Username or password is invalid:
          * ```
-         * Status: 401
+         * Status: 400
          * {
          *     "error_description": "Invalid credentials given.",
          *     "error": "invalid_grant"
@@ -606,7 +617,7 @@ define(["backbone", "geopoint"], function(Backbone) {
          *
          * - Invalid scope (incorrect scope value):
          * ```
-         * Status: 401
+         * Status: 400
          * {
          *     "error": "invalid_scope"
          * }
@@ -655,7 +666,7 @@ define(["backbone", "geopoint"], function(Backbone) {
         login: function() {
             var attrs = this.toJSON();
             return Backbone.$.ajax({
-                url: "https://identity-dev.revelup.com/customers-auth/v1/authorization/token/",
+                url: SERVER_URL + "/customers-auth/v1/authorization/token-customer/",
                 method: "POST",
                 context: this,
                 data: {
@@ -665,27 +676,41 @@ define(["backbone", "geopoint"], function(Backbone) {
                     grant_type: "password"
                 },
                 success: function(data) {
+                    if(!_.isObject(data.customer) || !_.isObject(data.token)) {
+                        console.error('Incorrect response data format');
+                        return
+                    }
+
                     // need to reset password and set `email` attribute as username
                     this.set({
-                        email: data.username,
-                        user_id: data.user_id,
-                        access_token: data.access_token,
-                        token_type: data.token_type,
-                        expires_in: data.expires_in,
-                        scope: data.scope,
+                        email: data.customer.email,
+                        first_name: data.customer.first_name,
+                        last_name: data.customer.last_name,
+                        phone: data.customer.phone_number,
+                        user_id: data.token.user_id,
+                        access_token: data.token.access_token,
+                        token_type: data.token.token_type,
+                        expires_in: data.token.expires_in,
+                        scope: data.token.scope,
                         password: this.defaults.password
                     });
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
-                        case 401:
-                            this.trigger('onInvalidUser', getResponse());
-                            break;
                         case 423:
                             this.trigger('onNotActivatedUser', getResponse());
                             break;
                         default:
-                            this.trigger('onLoginError', getResponse());
+                            emitDefaultEvent.call(this);
+                    }
+
+                    function emitDefaultEvent() {
+                        var resp = getResponse();
+                        if (resp.error == "invalid_scope" || resp.error == "invalid_grant") {
+                            this.trigger('onInvalidUser', resp);
+                        } else {
+                            this.trigger('onLoginError', resp);
+                        }
                     }
 
                     function getResponse() {
@@ -715,6 +740,7 @@ define(["backbone", "geopoint"], function(Backbone) {
          *         first_name: <first_name>,   // first name
          *         last_name: <last_name>,     // last name
          *         phone_number: <phone>       // phone
+         *         address: <address object>   // address
          *     }
          * }
          * ```
@@ -735,7 +761,7 @@ define(["backbone", "geopoint"], function(Backbone) {
          *
          * - Username already exists:
          * ```
-         * Status: 422
+         * Status: 400
          * {
          *     "email": ["This field must be unique."]
          * }
@@ -760,12 +786,20 @@ define(["backbone", "geopoint"], function(Backbone) {
          * ```
          * The model emits `onUserCreateError` event in this case.
          *
+         * @param {Object} address - an object containing address data
+         *
          * @returns {Object} jqXHR object.
          */
-        signup: function() {
+        signup: function(address) {
             var attrs = this.toJSON();
+
+            if (_.isObject(address)) {
+                address.postal_code = address.zipcode;
+                address.country_code = address.country;
+            }
+
             return Backbone.$.ajax({
-                url: "https://identity-dev.revelup.com/customers-auth/v1/customers/register-customer/",
+                url: SERVER_URL + "/customers-auth/v1/customers/register-customer/",
                 method: "POST",
                 context: this,
                 contentType: "application/json",
@@ -774,7 +808,8 @@ define(["backbone", "geopoint"], function(Backbone) {
                     password: attrs.password,
                     first_name: attrs.first_name,
                     last_name: attrs.last_name,
-                    phone_number: attrs.phone
+                    phone_number: attrs.phone,
+                    address: _.isObject(address) ? address : null
                 }),
                 success: function(data) {
                     this.set({
@@ -785,12 +820,12 @@ define(["backbone", "geopoint"], function(Backbone) {
                     this.trigger('onUserCreated');
                 },
                 error: function(jqXHR) {
-                    switch(jqXHR.status) {
-                        case 422:
-                            this.trigger('onUserExists', getResponse());
-                            break;
-                        default:
-                            this.trigger('onUserCreateError', getResponse());
+                    var resp = getResponse();
+
+                    if (resp.email == "This field must be unique.") {
+                        this.trigger('onUserExists', resp);
+                    } else {
+                        this.trigger('onUserCreateError', resp);
                     }
 
                     function getResponse() {
@@ -824,6 +859,20 @@ define(["backbone", "geopoint"], function(Backbone) {
                 city: '',
                 zipcode: ''
             };
+        },
+        /**
+         * @returns {Object} An object with Authorization HTTP header if the customer has access token.
+         */
+        getAuthorizationHeader: function() {
+            var header = {},
+                token_type = this.get('token_type'),
+                access_token = this.get('access_token');
+
+            if(token_type && access_token) {
+                header.Authorization = token_type + ' ' + access_token;
+            }
+
+            return header;
         }
     });
 });

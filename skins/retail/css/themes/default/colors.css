@@ -52,6 +52,9 @@ select[disabled] {
 #content {
     border-color: #bebebe;
 }
+.profile-container #content {
+    border-color: #ccc;
+}
 section:before {
     border-color: #cdcdcd;
     box-shadow: 0 1px 1px #f8f8f8 inset, 0 -1px 1px #B5B5B5;
@@ -65,6 +68,9 @@ section:before {
 }
 .powered-by {
     background: url('img/poweredBy.png') no-repeat 0 0 transparent;
+}
+.profile-form input:focus {
+    border-color: #2186b1;
 }
 #header .menu li {
     cursor: pointer;

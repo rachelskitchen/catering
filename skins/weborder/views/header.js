@@ -123,17 +123,12 @@ define(["backbone", "factory"], function() {
         }
     });
 
-    var HeaderProfileView = App.Views.FactoryView.extend({
-        name: 'header',
-        mod: 'profile'
-    });
-
     return new (require('factory'))(function() {
         App.Views.HeaderView = {};
         App.Views.HeaderView.HeaderMainView = HeaderMainView;
         App.Views.HeaderView.HeaderCheckoutView = HeaderCheckoutView;
         App.Views.HeaderView.HeaderConfirmationView = HeaderConfirmationView;
         App.Views.HeaderView.HeaderDeliveryView = HeaderDeliveryView;
-        App.Views.HeaderView.HeaderProfileView = HeaderProfileView;
+        // App.Views.HeaderView.HeaderProfileView = HeaderProfileView;
     });
 });

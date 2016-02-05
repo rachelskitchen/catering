@@ -46,6 +46,9 @@ select[disabled] {
 #content {
     border-color: #bebebe;
 }
+.profile-container #content {
+    border-color: #ccc;
+}
 section:before {
     border-color: #bebebe;
     background-image: linear-gradient(bottom, #bfbebe 0%, #d2d1d1 100%);
@@ -58,7 +61,7 @@ section:before {
 .link1, .primary-text {
     color: #2186b1;
 }
-#profile-panel input:focus {
+.profile-form input:focus {
     border-color: #2186b1;
 }
 .powered-by {

@@ -1,12 +1,13 @@
 #profile-panel {
     position: absolute;
     right: 0;
+    top: 0;
     z-index: 200;
 }
 
 #profile-panel.active {
+    position: absolute;
     left: 0;
-    top: 0;
     bottom: 0;
 }
 
@@ -109,8 +110,12 @@
     border-bottom-style: none;
 }
 
+.profile-edit {
+    padding: 15px 0;
+}
+
 .profile-edit .side {
-    width: 45%;
+    width: 50%;
     display: inline-block;
     vertical-align: top;
 }

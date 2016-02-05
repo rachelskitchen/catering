@@ -626,10 +626,11 @@ define(["backbone", "factory"], function(Backbone) {
     App.Routers.DesktopMixing = {
         initProfilePanel: function() {
             var mainModel = App.Data.mainModel,
-                customer = App.Data.customer;
+                customer = App.Data.customer,
+                self = this;
 
             mainModel.set({
-                profile: {
+                profile_panel: {
                     modelName: 'Profile',
                     mod: 'Panel',
                     model: customer,
@@ -638,7 +639,7 @@ define(["backbone", "factory"], function(Backbone) {
                     logout_link: customer.logout.bind(customer),
                     settings_link: new Function,
                     payments_link: new Function,
-                    profile_link: new Function,
+                    profile_link: profileEdit,
                     cacheId: true
                 }
             });
@@ -658,6 +659,10 @@ define(["backbone", "factory"], function(Backbone) {
                 }
             }
 
+            function profileEdit() {
+                self.navigate('profile_edit', true);
+            }
+
             function showSpinner() {
                 mainModel.trigger('loadStarted');
             }
@@ -665,6 +670,20 @@ define(["backbone", "factory"], function(Backbone) {
             function hideSpinner() {
                 mainModel.trigger('loadCompleted');
             }
+        },
+        setProfileEditContent: function() {
+            App.Data.mainModel.set({
+                mod: 'Profile',
+                className: 'profile-container',
+                profile_content: {
+                    modelName: 'Profile',
+                    mod: 'Edit',
+                    model: App.Data.customer,
+                    className: 'profile-edit text-center'
+                }
+            });
+
+            this.change_page();
         }
     };
 
@@ -773,20 +792,22 @@ define(["backbone", "factory"], function(Backbone) {
         },
         profileCreateContent: function() {
             var customer = App.Data.customer,
-                mainModel = App.Data.mainModel;
+                mainModel = App.Data.mainModel,
+                address = new Backbone.Model(customer.getEmptyAddress());
 
             return {
                 modelName: 'Profile',
                 mod: 'Create',
                 model: customer,
-                register: register
+                register: register,
+                address: address
             };
 
             function register() {
                 var check = customer.checkSignUpData();
                 if (check.status == 'OK') {
                     mainModel.trigger('loadStarted');
-                    customer.signup()
+                    customer.signup(address.toJSON())
                             .done(self.navigate.bind(self, 'login', true))
                             .always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                 } else {

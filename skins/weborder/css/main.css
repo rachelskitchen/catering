@@ -557,7 +557,7 @@ section.maintenance #header .btn {
 section.profile-container {
     position: static;
     width: auto;
-    padding: 20px;
+    padding: 8px 20px;
 }
 section.profile-container:before {
     display: none;
@@ -568,7 +568,7 @@ section.profile-container #header {
 }
 section.profile-container #content {
     position: static;
-    padding: 20px;
+    padding: 0;
     border-radius: 8px;
 }
 footer.profile-container {
@@ -1145,15 +1145,38 @@ span.cancel-input:before {
     float: left;
 }
 
+#header .back-btn {
+    display: inline-block;
+    width: auto;
+    cursor: pointer;
+}
+
 #header .back-btn::before {
     content: '\f104';
     font-family: FontAwesome;
-    font-size: 24px;
+    font-size: 22px;
     color: inherit;
     vertical-align: middle;
     padding-right: 5px;
 }
 
 #header .back-btn .label {
+    font-size: 14px;
     vertical-align: middle;
+}
+
+#header .title {
+    padding-bottom: 15px;
+    font-size: 22px;
+}
+
+.fade-out-hover:hover,
+.fade-out-hover:active {
+    opacity: 0.5;
+}
+
+.border-box {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }

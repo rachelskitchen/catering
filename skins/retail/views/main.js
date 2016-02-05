@@ -31,7 +31,7 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:header', this.header_change, this);
             this.listenTo(this.model, 'change:cart', this.cart_change, this);
             this.listenTo(this.model, 'change:popup', this.popup_change, this);
-            this.listenTo(this.model, 'change:profile', this.profile_change, this);
+            this.listenTo(this.model, 'change:profile_panel', this.profile_change, this);
             this.listenTo(this.model, 'loadStarted', this.showSpinner.bind(this, EVENT.NAVIGATE), this);
             this.listenTo(this.model, 'loadCompleted', this.hideSpinner.bind(this, EVENT.NAVIGATE), this);
             this.listenTo(App.Data.search, 'onSearchStart', this.showSpinner.bind(this, EVENT.SEARCH), this);
@@ -122,11 +122,16 @@ define(["done_view", "generator"], function(done_view) {
             value ? popup.addClass('ui-visible') : popup.removeClass('ui-visible');
         },
         profile_change: function() {
-            var data = _.defaults(this.model.get('profile'), this.profile_defaults()),
-                id = 'profile_' + data.modelName + '_' + data.mod;
+            var data = _.defaults(this.model.get('profile_panel'), this.profile_defaults());
 
-            this.subViews[3] && this.subViews[3].removeFromDOMTree();
-            this.subViews[3] = App.Views.GeneratorView.create(data.modelName, data, id);
+            if(!data.modelName) {
+                return;
+            }
+
+            // Don't cache profile view.
+            // It can be used in MainProfile with specific el.
+            this.subViews[3] && this.subViews[3].remove();
+            this.subViews[3] = App.Views.GeneratorView.create(data.modelName, data);
         },
         hide_popup: function() {
             this.model.unset('popup');

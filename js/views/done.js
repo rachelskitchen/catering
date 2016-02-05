@@ -126,8 +126,85 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
+    App.Views.CoreMainView.CoreMainSpinnerView = App.Views.FactoryView.extend({
+        initialize: function() {
+            this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
+            this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        loadCompleted: function() {
+            $(window).trigger('loadCompleted');
+            clearTimeout(this.spinner);
+            delete this.spinner;
+            this.hideSpinner();
+        },
+        loadStarted: function() {
+            this.spinner = setTimeout(this.showSpinner.bind(this), 50);
+        },
+        showSpinner: function() {
+            this.$('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
+        },
+        hideSpinner: function() {
+            this.$('#main-spinner').addClass('ui-visible').removeClass('ui-visible');
+        }
+    });
+
+    App.Views.CoreMainView.CoreMainProfileView = App.Views.CoreMainView.CoreMainSpinnerView.extend({
+        name: 'main',
+        mod: 'profile',
+        events: {
+            'click .back-btn': 'back'
+        },
+        initialize: function() {
+            this.listenTo(this.model, 'change:profile_content', this.renderContent, this);
+            this.listenTo(this.model, 'change:profile_panel', this.renderPanel, this);
+            App.Views.CoreMainView.CoreMainSpinnerView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            App.Views.CoreMainView.CoreMainSpinnerView.prototype.render.apply(this, arguments);
+            this.renderPanel();
+            this.renderContent();
+            return this;
+        },
+        renderPanel: function() {
+            var profile = this.model.get('profile_panel'),
+                profilePanelView;
+
+            if (!_.isObject(profile) || !profile.modelName) {
+                return;
+            }
+
+            profilePanelView = App.Views.GeneratorView.create(profile.modelName, _.extend({}, profile, {
+                el: this.$('#profile-panel')
+            }));
+
+            this.subViews[0] && this.subViews[0].remove();
+            this.subViews[0] = profilePanelView;
+        },
+        renderContent: function() {
+            var content = this.model.get('profile_content'),
+                contentView;
+
+            if (!_.isObject(content) || !content.modelName) {
+                return;
+            }
+
+            contentView = App.Views.GeneratorView.create(content.modelName, content);
+
+            this.subViews[1] && this.subViews[1].removeFromDOMTree();
+            this.subViews[1] = contentView;
+            this.$('#content').append(contentView.el);
+        },
+        back: function() {
+            var cb = this.model.get('backAction');
+            typeof cb == 'function' && cb();
+        }
+    });
+
     return new (require('factory'))(function() {
         App.Views.MainView = {};
         App.Views.MainView.MainDoneView = App.Views.CoreMainView.CoreMainDoneView;
+        App.Views.MainView.MainSpinnerView = App.Views.CoreMainView.CoreMainSpinnerView;
+        App.Views.MainView.MainProfileView = App.Views.CoreMainView.CoreMainProfileView;
     });
 });
