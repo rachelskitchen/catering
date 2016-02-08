@@ -319,26 +319,42 @@ define(["backbone", "factory"], function(Backbone) {
          * Init App.Data.customer
          */
         initCustomer: function() {
-            App.Data.customer = new App.Models.Customer();
+            var customer = App.Data.customer = new App.Models.Customer();
 
-            this.listenTo(App.Data.customer, 'onUserCreated', function() {
+            this.listenTo(customer, 'onUserCreated', function() {
                 App.Data.errors.alert(_loc.PROFILE_USER_CREATED);
             });
 
-            this.listenTo(App.Data.customer, 'onInvalidUser', function() {
+            this.listenTo(customer, 'onInvalidUser', function() {
                 App.Data.errors.alert(_loc.PROFILE_LOGIN_ERROR);
             });
 
-            this.listenTo(App.Data.customer, 'onNotActivatedUser', function() {
-                App.Data.errors.alert('User is not activated');
+            this.listenTo(customer, 'onNotActivatedUser', function() {
+                App.Data.errors.alert(_loc.PROFILE_USER_NOT_ACTIVATED);
             });
 
-            this.listenTo(App.Data.customer, 'onLoginError', function(msg) {
+            this.listenTo(customer, 'onLoginError', function(msg) {
                 _.isObject(msg) && App.Data.errors.alert(msg.error_description || msg.error);
             });
 
-            this.listenTo(App.Data.customer, 'onUserExists', function(msg) {
+            this.listenTo(customer, 'onUserExists', function(msg) {
                 _.isObject(msg) && App.Data.errors.alert(_loc.PROFILE_USER_EXISTS.replace('%s', App.Data.customer.get('email')));
+            });
+
+            this.listenTo(customer, 'onUserSessionExpired', function() {
+                App.Data.errors.alert(_loc.PROFILE_SESSION_EXPIRED);
+            });
+
+            this.listenTo(customer, 'onUserNotFound', function() {
+                App.Data.errors.alert(_loc.PROFILE_USER_NOT_FOUND);
+            });
+
+            this.listenTo(customer, 'onUserAddressNotFound', function() {
+                App.Data.errors.alert(_loc.PROFILE_USER_ADDRESS_NOT_FOUND);
+            });
+
+            this.listenTo(customer, 'onUserValidationError onUserAPIError', function(msg) {
+                _.isObject(msg) && App.Data.errors.alert(JSON.stringify(msg));
             });
         },
         /**
@@ -672,18 +688,75 @@ define(["backbone", "factory"], function(Backbone) {
             }
         },
         setProfileEditContent: function() {
+            var customer = App.Data.customer,
+                address = new Backbone.Model(customer.getProfileAddress() || customer.getEmptyAddress()),
+                updateBasicDetails = false,
+                updateAddress = false,
+                self = this;
+
             App.Data.mainModel.set({
                 mod: 'Profile',
                 className: 'profile-container',
                 profile_content: {
                     modelName: 'Profile',
                     mod: 'Edit',
-                    model: App.Data.customer,
+                    model: customer,
+                    address: address,
+                    updateAction: update,
                     className: 'profile-edit text-center'
                 }
             });
 
-            this.change_page();
+            window.setTimeout(function() {
+                var basicDetailsEvents = 'change:first_name change:last_name change:phone';
+                self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
+                self.listenTo(address, 'change', addressChanged);
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, address, 'change', addressChanged));
+            }, 0);
+
+            function basicDetailsChanged() {
+                updateBasicDetails = true;
+            }
+
+            function addressChanged() {
+                updateAddress = true;
+            }
+
+            function update() {
+                var mainModel = App.Data.mainModel,
+                    _address = address.toJSON(),
+                    requests = updateBasicDetails + updateAddress,
+                    basicXHR, addressXHR;
+
+                // show spinner
+                requests > 0 && mainModel.trigger('loadStarted');
+
+                // update basic details
+                if (updateBasicDetails) {
+                    basicXHR = customer.updateCustomer();
+                    basicXHR.done(function() {
+                        updateBasicDetails = false;
+                    });
+                    basicXHR.always(hideSpinner);
+                }
+
+                // update address
+                if (updateAddress) {
+                    addressXHR = customer.isProfileAddress(_address) ? customer.updateAddress(_address) : customer.createAddress(_address);
+                    addressXHR.done(function() {
+                        updateAddress = false;
+                    });
+                    addressXHR.always(hideSpinner);
+                }
+
+                // hide spinner once all requests are completed
+                function hideSpinner() {
+                    if(--requests <= 0) {
+                        mainModel.trigger('loadCompleted');
+                    }
+                }
+            }
         }
     };
 
@@ -804,11 +877,14 @@ define(["backbone", "factory"], function(Backbone) {
             };
 
             function register() {
-                var check = customer.checkSignUpData();
+                var check = customer.checkSignUpData(),
+                    _address = address.get('country') ? address.toJSON() : undefined; // only filled address can be passed
                 if (check.status == 'OK') {
                     mainModel.trigger('loadStarted');
-                    customer.signup(address.toJSON())
+                    customer.signup(_address)
                             .done(self.navigate.bind(self, 'login', true))
+                            // need to re-create alert due to hash change may close it
+                            .done(App.Data.errors.alert.bind(App.Data.errors, _loc.PROFILE_USER_CREATED, false, undefined, undefined))
                             .always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                 } else {
                     App.Data.errors.alert(check.errorMsg);
@@ -818,13 +894,17 @@ define(["backbone", "factory"], function(Backbone) {
         profileEditContent: function() {
             var customer = App.Data.customer,
                 mainModel = App.Data.mainModel,
-                content = [];
+                address = new Backbone.Model(customer.getProfileAddress() || customer.getEmptyAddress()),
+                content = [],
+                updateBasicDetails = false,
+                updateAddress = false,
+                self = this;
 
             App.Data.header.set({
                 page_title: _loc.PROFILE_EDIT_TITLE,
                 back_title: _loc.BACK,
                 back: window.history.back.bind(window.history),
-                link: console.log.bind(console, 'update'),
+                link: update,
                 link_title: _loc.SAVE,
                 enableLink: false
             });
@@ -837,8 +917,62 @@ define(["backbone", "factory"], function(Backbone) {
             }, {
                 modelName: 'Profile',
                 mod: 'Address',
-                model: new Backbone.Model(customer.getEmptyAddress())
+                model: address
             });
+
+            window.setTimeout(function() {
+                var basicDetailsEvents = 'change:first_name change:last_name change:phone';
+                self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
+                self.listenTo(address, 'change', addressChanged);
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, address, 'change', addressChanged));
+            }, 0);
+
+            function basicDetailsChanged() {
+                updateBasicDetails = true;
+                App.Data.header.set({enableLink: true});
+            }
+
+            function addressChanged() {
+                updateAddress = true;
+                App.Data.header.set({enableLink: true});
+            }
+
+            function update() {
+                var mainModel = App.Data.mainModel,
+                    _address = address.toJSON(),
+                    requests = updateBasicDetails + updateAddress,
+                    basicXHR, addressXHR;
+
+                // show spinner
+                requests > 0 && mainModel.trigger('loadStarted');
+
+                // update basic details
+                if (updateBasicDetails) {
+                    basicXHR = customer.updateCustomer();
+                    basicXHR.done(function() {
+                        updateBasicDetails = false;
+                    });
+                    basicXHR.always(hideSpinner);
+                }
+
+                // update address
+                if (updateAddress) {
+                    addressXHR = customer.isProfileAddress(_address) ? customer.updateAddress(_address) : customer.createAddress(_address);
+                    addressXHR.done(function() {
+                        updateAddress = false;
+                    });
+                    addressXHR.always(hideSpinner);
+                }
+
+                // hide spinner once all requests are completed
+                function hideSpinner() {
+                    if(--requests <= 0) {
+                        App.Data.header.set({enableLink: false});
+                        mainModel.trigger('loadCompleted');
+                    }
+                }
+            }
 
             return content;
         }

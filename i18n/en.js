@@ -576,6 +576,10 @@
         "PROFILE_ZIP_CODE": "Zip Code",
         "PROFILE_POSTAL_CODE": "Postal Code",
         "PROFILE_BASIC_DETAILS": "Basic Details",
-        "PROFILE_ADDRESS": "Address"
+        "PROFILE_ADDRESS": "Address",
+        "PROFILE_USER_NOT_ACTIVATED": "User is not activated",
+        "PROFILE_SESSION_EXPIRED": "Session is expired",
+        "PROFILE_USER_NOT_FOUND": "User not found",
+        "PROFILE_USER_ADDRESS_NOT_FOUND": "Address not found"
     }; // end of locale
 }); // end of module

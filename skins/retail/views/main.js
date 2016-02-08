@@ -23,7 +23,24 @@
 define(["done_view", "generator"], function(done_view) {
     'use strict';
 
-    var MainMainView = App.Views.FactoryView.extend({
+    var SpinnerView = App.Views.FactoryView.extend({
+        createSpinner: function() {
+            this.listenTo(this.model, 'loadStarted', this.showSpinner.bind(this, EVENT.NAVIGATE), this);
+            this.listenTo(this.model, 'loadCompleted', this.hideSpinner.bind(this, EVENT.NAVIGATE), this);
+
+            var spinner = this.$('#main-spinner');
+            spinner.spinner();
+            spinner.css('position', 'fixed');
+        },
+        showSpinner: function(event) {
+            $(window).trigger('showSpinner', {startEvent: event});
+        },
+        hideSpinner: function(event, isLast) {
+            $(window).trigger('hideSpinner', {startEvent: event, isLastEvent: isLast});
+        }
+    });
+
+    var MainMainView = SpinnerView.extend({
         name: 'main',
         mod: 'main',
         initialize: function() {
@@ -32,8 +49,6 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:cart', this.cart_change, this);
             this.listenTo(this.model, 'change:popup', this.popup_change, this);
             this.listenTo(this.model, 'change:profile_panel', this.profile_change, this);
-            this.listenTo(this.model, 'loadStarted', this.showSpinner.bind(this, EVENT.NAVIGATE), this);
-            this.listenTo(this.model, 'loadCompleted', this.hideSpinner.bind(this, EVENT.NAVIGATE), this);
             this.listenTo(App.Data.search, 'onSearchStart', this.showSpinner.bind(this, EVENT.SEARCH), this);
             this.listenTo(App.Data.search, 'onSearchComplete', this.hideSpinner.bind(this, EVENT.SEARCH, true), this);
             this.listenTo(this.model, 'onRoute', this.hide_popup, this);
@@ -44,16 +59,13 @@ define(["done_view", "generator"], function(done_view) {
 
             this.subViews.length = 3;
 
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            SpinnerView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
-            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            SpinnerView.prototype.render.apply(this, arguments);
             this.profile_change();
             this.iPad7Feature();
-
-            var spinner = this.$('#main-spinner');
-            spinner.spinner();
-            spinner.css('position', 'fixed');
+            this.createSpinner();
 
             return this;
         },
@@ -185,12 +197,6 @@ define(["done_view", "generator"], function(done_view) {
             if (/iPad|iPod|iPhone/.test(window.navigator.userAgent))
                 document.addEventListener('touchstart', new Function, false); // enable css :active pseudo-class for all elements
         },
-        showSpinner: function(event) {
-            $(window).trigger('showSpinner', {startEvent: event});
-        },
-        hideSpinner: function(event, isLast) {
-            $(window).trigger('hideSpinner', {startEvent: event, isLastEvent: isLast});
-        },
         /**
          * Show the "Store Choice" block if a brand have several stores.
          */
@@ -289,9 +295,20 @@ define(["done_view", "generator"], function(done_view) {
         }
     });
 
+    var MainProfileView = App.Views.CoreMainView.CoreMainProfileView.extend({
+        render: function() {
+            App.Views.CoreMainView.CoreMainProfileView.prototype.render.apply(this, arguments);
+            SpinnerView.prototype.createSpinner.call(this);
+            return this;
+        }
+    });
+
+    _.defaults(MainProfileView.prototype, SpinnerView.prototype);
+
     return new (require('factory'))(done_view.initViews.bind(done_view), function() {
         App.Views.MainView.MainMainView = MainMainView;
         App.Views.MainView.MainMaintenanceView = MainMaintenanceView;
         App.Views.MainView.MainDoneView = MainDoneView;
+        App.Views.MainView.MainProfileView = MainProfileView;
     });
 });

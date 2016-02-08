@@ -98,7 +98,7 @@ define(["factory"], function() {
             ':el': 'classes: {shown: header_showProfileMenu}',
             '.login-link': 'toggle: not(access_token)',
             '.logout-link': 'toggle: access_token',
-            '.logged-as': 'toggle: access_token, html: loggedAs(email)',
+            '.logged-as': 'toggle: access_token, html: loggedAs(first_name)',
             '.private-btn': 'classes: {"primary-text": access_token, "regular-text": not(access_token), disabled: not(access_token)}'
         },
         bindingFilters: {
@@ -150,6 +150,9 @@ define(["factory"], function() {
     App.Views.CoreProfileView.CoreProfileEditView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'edit',
+        events: {
+            'click .update-btn': setCallback('updateAction')
+        },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
 
@@ -162,7 +165,7 @@ define(["factory"], function() {
             var address = App.Views.GeneratorView.create('Profile', {
                 el: this.$('.address-box'),
                 mod: 'Address',
-                model: new Backbone.Model(this.model.getEmptyAddress())
+                model: this.options.address
             });
 
             this.subViews.push(basicDetails, address);

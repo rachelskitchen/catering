@@ -23,7 +23,33 @@
 define(["done_view", "generator"], function(done_view) {
     'use strict';
 
-    var MainMainView = App.Views.CoreMainView.CoreMainSpinnerView.extend({
+    var SpinnerView = App.Views.FactoryView.extend({
+        createSpinner: function() {
+            this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
+            this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
+
+            var spinner = this.$('#main-spinner');
+            spinner.spinner();
+            spinner.css('position', 'fixed');
+        },
+        loadCompleted: function() {
+            $(window).trigger('loadCompleted');
+            clearTimeout(this.spinner);
+            delete this.spinner;
+            this.hideSpinner();
+        },
+        loadStarted: function() {
+            this.spinner = setTimeout(this.showSpinner.bind(this), 50);
+        },
+        showSpinner: function() {
+            this.$('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
+        },
+        hideSpinner: function() {
+            this.$('#main-spinner').addClass('ui-visible').removeClass('ui-visible');
+        }
+    });
+
+    var MainMainView = SpinnerView.extend({
         name: 'main',
         mod: 'main',
         initialize: function() {
@@ -48,17 +74,14 @@ define(["done_view", "generator"], function(done_view) {
 
             this.subViews.length = 4;
 
-            App.Views.CoreMainView.CoreMainSpinnerView.prototype.initialize.apply(this, arguments);
+            SpinnerView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
             if (App.Settings.promo_message) this.calculatePromoMessageWidth(); // calculate a promo message width
-            App.Views.CoreMainView.CoreMainSpinnerView.prototype.render.apply(this, arguments);
+            SpinnerView.prototype.render.apply(this, arguments);
             this.profile_change();
             this.iPad7Feature();
-
-            var spinner = this.$('#main-spinner');
-            spinner.spinner();
-            spinner.css('position', 'fixed');
+            this.createSpinner();
 
             return this;
         },
@@ -198,7 +221,7 @@ define(["done_view", "generator"], function(done_view) {
         },
         remove: function() {
             $(window).off('resize', this.resizePromoMessage);
-            App.Views.CoreMainView.CoreMainSpinnerView.prototype.remove.apply(this, arguments);
+            SpinnerView.prototype.remove.apply(this, arguments);
         },
         /**
          * Calculate a promo message width.
@@ -360,9 +383,20 @@ define(["done_view", "generator"], function(done_view) {
         }
     });
 
+    var MainProfileView = App.Views.CoreMainView.CoreMainProfileView.extend({
+        render: function() {
+            App.Views.CoreMainView.CoreMainProfileView.prototype.render.apply(this, arguments);
+            SpinnerView.prototype.createSpinner.call(this);
+            return this;
+        }
+    });
+
+    _.defaults(MainProfileView.prototype, SpinnerView.prototype);
+
     return new (require('factory'))(done_view.initViews.bind(done_view), function() {
         App.Views.MainView.MainMainView = MainMainView;
         App.Views.MainView.MainMaintenanceView = MainMaintenanceView;
         App.Views.MainView.MainDoneView = MainDoneView;
+        App.Views.MainView.MainProfileView = MainProfileView;
     });
 });
