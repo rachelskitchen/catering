@@ -269,17 +269,6 @@ define(['js/utest/data/Rewards', 'rewards'], function(rewardsData) {
                 expect(rewardsCard.get('points')).toBe(rewardsCard.defaults.points);
             });
 
-            it('`number`, `captchaKey`, `captchaValue` are assigned, request is successful, empty result (response JSON: {status: "ERROR", data: []})', function() {
-                rewardsCard.getRewards();
-                data = {status: 'ERROR', data: []};
-                jqXHR.resolve();
-                expectRequestParameters();
-                expect(rewardsCard.trigger).toHaveBeenCalledWith('onRewardsReceived');
-                expect(rewardsCard.get('purchases')).toBe(rewardsCard.defaults.purchases);
-                expect(rewardsCard.get('visits')).toBe(rewardsCard.defaults.visits);
-                expect(rewardsCard.get('points')).toBe(rewardsCard.defaults.points);
-            });
-
             it('`number`, `captchaKey`, `captchaValue` are assigned, request is successful, successful result (response JSON: {status: "OK", data:[...]})', function() {
                 rewardsCard.getRewards();
                 data = {status: 'OK', data: data};
@@ -394,6 +383,7 @@ define(['js/utest/data/Rewards', 'rewards'], function(rewardsData) {
 
             rewardsCard.resetData();
             expect(rewardsCard.get('number')).toEqual(rewardsCard.defaults.number);
+            expect(rewardsCard.trigger).toHaveBeenCalledWith('onResetData');
             expectReset();
         });
 
@@ -419,7 +409,6 @@ define(['js/utest/data/Rewards', 'rewards'], function(rewardsData) {
             expect(rewardsCard.get('rewards').toJSON()).toEqual([]);
             expect(rewardsCard.get('balance')).toEqual(rewardsCard.defaults.balance);
             expect(rewardsCard.get('discounts')).toEqual(rewardsCard.defaults.discounts);
-            expect(rewardsCard.trigger).toHaveBeenCalledWith('onResetData');
         }
 
     });
