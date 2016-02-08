@@ -387,7 +387,7 @@ define(['backbone', 'captcha'], function(Backbone) {
             var defaults = $.extend({}, this.defaults);
             delete defaults.rewards;
             this.set(defaults);
-            this.get('rewards').reset(); // clear rewards collection
+            this.get('rewards').reset(); // reset rewards collection
             this.get('rewards').trigger('update');
             this.trigger('onResetData');
         },
@@ -399,8 +399,7 @@ define(['backbone', 'captcha'], function(Backbone) {
             delete defaults.number;
             delete defaults.rewards;
             this.set(defaults);
-            this.get('rewards').reset(); // clear rewards collection
-            this.trigger('onResetData');
+            this.get('rewards').reset(); // reset rewards collection
         }
     });
 });
