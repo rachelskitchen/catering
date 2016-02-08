@@ -1893,8 +1893,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                         reportErrorFrm(MSG.ERROR_GET_DISCOUNTS);
                     }
                 },
-                complete: function() {
-                    myorder.trigger("DiscountsComplete");
+                complete: function(xhr) {
+                    if (xhr.statusText != "abort") {
+                        myorder.trigger("DiscountsComplete");
+                    }
                 }
             });
 
