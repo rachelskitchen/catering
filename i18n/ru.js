@@ -568,6 +568,10 @@
         "PROFILE_ZIP_CODE": "Почтовый индекс",
         "PROFILE_POSTAL_CODE": "Почтовый индекс",
         "PROFILE_BASIC_DETAILS": "Основное",
-        "PROFILE_ADDRESS": "Адрес"
+        "PROFILE_ADDRESS": "Адрес",
+        "PROFILE_USER_NOT_ACTIVATED": "Пользователь не активирован",
+        "PROFILE_SESSION_EXPIRED": "Сессия закончена",
+        "PROFILE_USER_NOT_FOUND": "Пользователь не найден",
+        "PROFILE_USER_ADDRESS_NOT_FOUND": "Адрес не найден"
     } // end of locale
 }); // end of module

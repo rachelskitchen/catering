@@ -137,7 +137,7 @@ define(["backbone", "geopoint"], function(Backbone) {
              * @type {?number}
              * @default null
              */
-            profileAddressIndex: null,
+            profileAddressIndex: 3,
             /**
              * User's password
              * @type {string}
@@ -466,7 +466,8 @@ define(["backbone", "geopoint"], function(Backbone) {
                 this.set({
                     deliveryAddressIndex: addresses.length,
                     shippingAddressIndex: addresses.length + 1,
-                    cateringAddressIndex: addresses.length + 2
+                    cateringAddressIndex: addresses.length + 2,
+                    profileAddressIndex: addresses.length + 3
                 });
             }
 
@@ -564,7 +565,7 @@ define(["backbone", "geopoint"], function(Backbone) {
          * Gets authorization token of the customer. Sends request with following parameters:
          * ```
          * {
-         *     url: "https://identity-dev.revelup.com/customers-auth/authorization/token/",
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/authorization/token/",
          *     method: "POST",
          *     data: {
          *         username: <username>,                                              // username (email)
@@ -681,6 +682,10 @@ define(["backbone", "geopoint"], function(Backbone) {
                         return
                     }
 
+                    // set profile address
+                    var address = data.customer.addresses[0] || this.getEmptyAddress();
+                    this.setProfileAddress(this.convertAddressFromAPIFormat(address));
+
                     // need to reset password and set `email` attribute as username
                     this.set({
                         email: data.customer.email,
@@ -731,7 +736,7 @@ define(["backbone", "geopoint"], function(Backbone) {
          * Registers a new customer. Sends request with following parameters:
          * ```
          * {
-         *     url: "https://identity-dev.revelup.com/customers-auth/customers/register-customer/",
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/register-customer/",
          *     method: "POST",
          *     contentType: "application/json",
          *     data: {
@@ -793,10 +798,7 @@ define(["backbone", "geopoint"], function(Backbone) {
         signup: function(address) {
             var attrs = this.toJSON();
 
-            if (_.isObject(address)) {
-                address.postal_code = address.zipcode;
-                address.country_code = address.country;
-            }
+            address = this.convertAddressToAPIFormat(address);
 
             return Backbone.$.ajax({
                 url: SERVER_URL + "/customers-auth/v1/customers/register-customer/",
@@ -809,7 +811,7 @@ define(["backbone", "geopoint"], function(Backbone) {
                     first_name: attrs.first_name,
                     last_name: attrs.last_name,
                     phone_number: attrs.phone,
-                    address: _.isObject(address) ? address : null
+                    address: _.isObject(address) ? address : undefined
                 }),
                 success: function(data) {
                     this.set({
@@ -822,10 +824,20 @@ define(["backbone", "geopoint"], function(Backbone) {
                 error: function(jqXHR) {
                     var resp = getResponse();
 
-                    if (resp.email == "This field must be unique.") {
-                        this.trigger('onUserExists', resp);
-                    } else {
-                        this.trigger('onUserCreateError', resp);
+                    switch(jqXHR.status) {
+                        case 400:
+                            this.trigger('onUserValidationError', resp);
+                            break;
+                        default:
+                            emitDefaultEvent.call(this);
+                    }
+
+                    function emitDefaultEvent() {
+                        if (resp.email == "This field must be unique.") {
+                            this.trigger('onUserExists', resp);
+                        } else {
+                            this.trigger('onUserCreateError', resp);
+                        }
                     }
 
                     function getResponse() {
@@ -873,6 +885,372 @@ define(["backbone", "geopoint"], function(Backbone) {
             }
 
             return header;
+        },
+        /**
+         * Sets profile address.
+         *
+         * @param {Object} address - address data.
+         */
+        setProfileAddress: function(address) {
+            if(!_.isObject(address)) {
+                return;
+            }
+
+            _.defaults(address, {
+                state: address
+            })
+
+            var addresses = this.get('addresses'),
+                profileAddressIndex = this.get('profileAddressIndex');
+
+            addresses[profileAddressIndex] = address;
+        },
+        /**
+         * @returns {Object} profile address object.
+         */
+        getProfileAddress: function() {
+            var addresses = this.get('addresses'),
+                profileAddressIndex = this.get('profileAddressIndex');
+            return addresses[profileAddressIndex];
+        },
+        /**
+         * Updates the customer. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/customers/<id>/",
+         *     method: "PATCH",
+         *     contentType: "application/json",
+         *     data: {
+         *         email: <email>,             // email
+         *         first_name: <first_name>,   // first name
+         *         last_name: <last_name>,     // last name
+         *         phone_number: <phone>       // phone
+         *     }
+         * }
+         * ```
+         * Server may return the following response:
+         * - Successful update:
+         * ```
+         * Status: 200
+         * {
+         *     "email": "johndoe@foobar.com",  // username
+         *     "first_name": "John",           // first name
+         *     "last_name": "Doe",             // last name
+         *     "phone_number": "+123456789",   // phone
+         * }
+         * ```
+         * The model emits `onUserUpdate` event in this case.
+         *
+         * - Session is already expired or invalid token is used:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * The model emits `onUserSessionExpired` event in this case. Method `.logout()` is automatically called in this case.
+         *
+         * - The customer isn't found:
+         * ```
+         * Status: 404
+         * {
+         *     "detail":"Not found."
+         * }
+         * ```
+         * The model emits `onUserNotFound` event in this case.
+         *
+         * - New data is invalid:
+         * ```
+         * Status: 400
+         * {
+         *     <field name>: <validation error>
+         * }
+         * ```
+         * The model emits `onUserUpdateError` event in this case.
+         *
+         * @returns {Object} jqXHR object.
+         */
+        updateCustomer: function() {
+            var attrs = this.toJSON();
+
+            return Backbone.$.ajax({
+                url: SERVER_URL + "/customers-auth/v1/customers/customers/" + attrs.user_id + "/",
+                method: "PATCH",
+                context: this,
+                contentType: "application/json",
+                headers: this.getAuthorizationHeader(),
+                data: JSON.stringify({
+                    email: attrs.email,
+                    first_name: attrs.first_name,
+                    last_name: attrs.last_name,
+                    phone_number: attrs.phone
+                }),
+                success: this.trigger.bind(this, 'onUserUpdate'),
+                error: function(jqXHR) {
+                    switch(jqXHR.status) {
+                        case 403:
+                            this.trigger('onUserSessionExpired');
+                            this.logout(); // need to reset current account to allow to re-log in
+                            break;
+                        case 404:
+                            this.trigger('onUserNotFound');
+                            break;
+                        case 400:
+                            this.trigger('onUserValidationError', getResponse());
+                            break;
+                        default:
+                            this.trigger('onUserAPIError', getResponse());
+
+                        function getResponse() {
+                            return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
+                        }
+                    }
+                }
+            });
+        },
+        /**
+         * Creates a new address. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/addresses/",
+         *     method: "POST",
+         *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
+         *     data: {
+         *         "is_primary": true,
+         *         "street_1": "170 Columbus Ave",
+         *         "street_2": null,
+         *         "postal_code": "94133",
+         *         "country_code": "US",
+         *         "city": null,
+         *         "region": null
+         *     }
+         * }
+         * ```
+         * Server may return the following response:
+         * - Address is successfully created:
+         * ```
+         * Status: 200
+         * {
+         *     "id":1,
+         *     "customer":1,
+         *     "is_primary": true,
+         *     "street_1": "170 Columbus Ave",
+         *     "street_2": null,
+         *     "postal_code": "94133",
+         *     "country_code": "US",
+         *     "city": null,
+         *     "region": null
+         * }
+         * ```
+         * The model emits `onUserAddressCreated` event in this case.
+         *
+         * - Session is already expired or invalid token is used:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * The model emits `onUserSessionExpired` event in this case. Method `.logout()` is automatically called in this case.
+         *
+         * - Address field is invalid:
+         * ```
+         * Status: 400
+         * {
+         *     <field name>: <validation error>
+         * }
+         * ```
+         * The model emits `onUserValidationError` event in this case.
+         *
+         * @param {Object} address - an object containing address data
+         *
+         * @returns {Object} jqXHR object.
+         */
+        createAddress: function(address) {
+            if (!_.isObject(address)) {
+                return;
+            }
+
+            address = this.convertAddressToAPIFormat(address);
+
+            return Backbone.$.ajax({
+                url: SERVER_URL + "/customers-auth/v1/customers/addresses/",
+                method: "POST",
+                context: this,
+                contentType: "application/json",
+                headers: this.getAuthorizationHeader(),
+                data: JSON.stringify(address),
+                success: this.trigger.bind(this, 'onUserAddressCreated'),
+                error: function(jqXHR) {
+                    switch(jqXHR.status) {
+                        case 403:
+                            this.trigger('onUserSessionExpired');
+                            this.logout(); // need to reset current account to allow to re-log in
+                            break;
+                        case 400:
+                            this.trigger('onUserValidationError', getResponse());
+                            break;
+                        default:
+                            this.trigger('onUserAPIError', getResponse());
+
+                        function getResponse() {
+                            return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
+                        }
+                    }
+                }
+            });
+        },
+        /**
+         * Updates customer's address. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/addresses/<id>/",
+         *     method: "PATCH",
+         *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
+         *     data: {
+         *         "is_primary": true,
+         *         "street_1": "170 Columbus Ave",
+         *         "street_2": null,
+         *         "postal_code": "94133",
+         *         "country_code": "US",
+         *         "city": null,
+         *         "region": null
+         *     }
+         * }
+         * ```
+         * Server may return the following response:
+         * - Address is successfully created:
+         * ```
+         * Status: 200
+         * {
+         *     "id":1,
+         *     "customer":1,
+         *     "is_primary": true,
+         *     "street_1": "170 Columbus Ave",
+         *     "street_2": null,
+         *     "postal_code": "94133",
+         *     "country_code": "US",
+         *     "city": null,
+         *     "region": null
+         * }
+         * ```
+         * The model emits `onUserAddressUpdate` event in this case.
+         *
+         * - Session is already expired or invalid token is used:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * The model emits `onUserSessionExpired` event in this case. Method `.logout()` is automatically called in this case.
+         *
+         * - The address isn't found:
+         * ```
+         * Status: 404
+         * {
+         *     "detail":"Not found."
+         * }
+         * ```
+         * The model emits `onUserAddressNotFound` event in this case.
+         *
+         * - New data is invalid:
+         * ```
+         * Status: 400
+         * {
+         *     <field name>: <validation error>
+         * }
+         * ```
+         * The model emits `onUserValidationError` event in this case.
+         *
+         * @param {Object} address - an object containing address data
+         *
+         * @returns {Object} jqXHR object.
+         */
+        updateAddress: function(address) {
+            if (!_.isObject(address)) {
+                return;
+            }
+
+            address = this.convertAddressToAPIFormat(address);
+
+            return Backbone.$.ajax({
+                url: SERVER_URL + "/customers-auth/v1/customers/addresses/" + address.id + "/",
+                method: "PATCH",
+                context: this,
+                contentType: "application/json",
+                headers: this.getAuthorizationHeader(),
+                data: JSON.stringify(address),
+                success: this.trigger.bind(this, 'onUserAddressUpdate'),
+                error: function(jqXHR) {
+                    switch(jqXHR.status) {
+                        case 403:
+                            this.trigger('onUserSessionExpired');
+                            this.logout(); // need to reset current account to allow to re-log in
+                            break;
+                        case 404:
+                            this.trigger('onUserAddressNotFound');
+                            break;
+                        case 400:
+                            this.trigger('onUserValidationError', getResponse());
+                            break;
+                        default:
+                            this.trigger('onUserAPIError', getResponse());
+
+                        function getResponse() {
+                            return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
+                        }
+                    }
+                }
+            });
+        },
+        /**
+         * Converts address to 'customers/addresses/' API format. Changes `zipcode` property to `postal_code`,
+         * `country` -> `country_code`, `state`/`province` -> `region`.
+         *
+         * @param {Object} address - an object containing address data
+         * @returns {Object} Modified address object.
+         */
+        convertAddressToAPIFormat: function(address) {
+            if(!_.isObject(address)) {
+                return address;
+            }
+
+            address.postal_code = address.zipcode;
+            address.country_code = address.country;
+            address.region = address.country == 'US' ? address.state
+                           : address.country == 'CA' ? address.province
+                           : null;
+
+            return address;
+        },
+        /**
+         * Converts address from 'customers/addresses/' API format. Changes `postal_code` property to `zipcode`,
+         * `country_code` -> `country`, `region` -> `state`/`province`.
+         *
+         * @param {Object} address - an object containing address data
+         * @returns {Object} Modified address object.
+         */
+        convertAddressFromAPIFormat: function(address) {
+            if(!_.isObject(address)) {
+                return address;
+            }
+
+            address.zipcode = address.postal_code;
+            address.country = address.country_code;
+            address.state = address.country == 'US' ? address.region : '';
+            address.province = address.country == 'CA' ? address.region : '';
+
+            return address;
+        },
+        /**
+         * @param {Object} address - an object containing address data
+         * @returns {boolean} `true` if the address has `id`, `customer` properties and `false` otherwise.
+         */
+        isProfileAddress: function(address) {
+            return _.isObject(address) && typeof address.id != 'undefined' && typeof address.customer != 'undefined';
         }
     });
 });

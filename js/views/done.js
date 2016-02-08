@@ -126,30 +126,7 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
-    App.Views.CoreMainView.CoreMainSpinnerView = App.Views.FactoryView.extend({
-        initialize: function() {
-            this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
-            this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-        },
-        loadCompleted: function() {
-            $(window).trigger('loadCompleted');
-            clearTimeout(this.spinner);
-            delete this.spinner;
-            this.hideSpinner();
-        },
-        loadStarted: function() {
-            this.spinner = setTimeout(this.showSpinner.bind(this), 50);
-        },
-        showSpinner: function() {
-            this.$('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
-        },
-        hideSpinner: function() {
-            this.$('#main-spinner').addClass('ui-visible').removeClass('ui-visible');
-        }
-    });
-
-    App.Views.CoreMainView.CoreMainProfileView = App.Views.CoreMainView.CoreMainSpinnerView.extend({
+    App.Views.CoreMainView.CoreMainProfileView = App.Views.FactoryView.extend({
         name: 'main',
         mod: 'profile',
         events: {
@@ -158,10 +135,10 @@ define(["backbone", "factory"], function(Backbone) {
         initialize: function() {
             this.listenTo(this.model, 'change:profile_content', this.renderContent, this);
             this.listenTo(this.model, 'change:profile_panel', this.renderPanel, this);
-            App.Views.CoreMainView.CoreMainSpinnerView.prototype.initialize.apply(this, arguments);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
-            App.Views.CoreMainView.CoreMainSpinnerView.prototype.render.apply(this, arguments);
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.renderPanel();
             this.renderContent();
             return this;
@@ -204,7 +181,6 @@ define(["backbone", "factory"], function(Backbone) {
     return new (require('factory'))(function() {
         App.Views.MainView = {};
         App.Views.MainView.MainDoneView = App.Views.CoreMainView.CoreMainDoneView;
-        App.Views.MainView.MainSpinnerView = App.Views.CoreMainView.CoreMainSpinnerView;
         App.Views.MainView.MainProfileView = App.Views.CoreMainView.CoreMainProfileView;
     });
 });

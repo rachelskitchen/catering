@@ -600,6 +600,10 @@ define([], function() {
         "PROFILE_ZIP_CODE": "Código postal",
         "PROFILE_POSTAL_CODE": "Código postal",
         "PROFILE_BASIC_DETAILS": "",
-        "PROFILE_ADDRESS": ""
+        "PROFILE_ADDRESS": "",
+        "PROFILE_USER_NOT_ACTIVATED": "",
+        "PROFILE_SESSION_EXPIRED": "",
+        "PROFILE_USER_NOT_FOUND": "",
+        "PROFILE_USER_ADDRESS_NOT_FOUND": ""
     } // end of locale
 }); // end of module
