@@ -1946,13 +1946,24 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 expect(data.items.length).toBe(1);
             });
 
-            it('ajax complete', function() {
-                ajaxSpy.and.callFake(function(e) {
-                    e.complete();
-                });
-                model._get_cart_totals();
+            describe('ajax complete', function() {
+                it('request status is `abort`', function() {
+                    ajaxSpy.and.callFake(function(e) {
+                        e.complete({statusText: 'abort'});
+                    });
+                    model._get_cart_totals();
 
-                expect(model.trigger).toHaveBeenCalledWith('DiscountsComplete');
+                    expect(model.trigger).not.toHaveBeenCalled();
+                });
+
+                it('request status is not `abort`', function() {
+                    ajaxSpy.and.callFake(function(e) {
+                        e.complete({statusText: 'success'});
+                    });
+                    model._get_cart_totals();
+
+                    expect(model.trigger).toHaveBeenCalledWith('DiscountsComplete');
+                });
             });
 
             describe('ajax success', function() {
