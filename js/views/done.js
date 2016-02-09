@@ -126,8 +126,61 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
+    App.Views.CoreMainView.CoreMainProfileView = App.Views.FactoryView.extend({
+        name: 'main',
+        mod: 'profile',
+        events: {
+            'click .back-btn': 'back'
+        },
+        initialize: function() {
+            this.listenTo(this.model, 'change:profile_content', this.renderContent, this);
+            this.listenTo(this.model, 'change:profile_panel', this.renderPanel, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.renderPanel();
+            this.renderContent();
+            return this;
+        },
+        renderPanel: function() {
+            var profile = this.model.get('profile_panel'),
+                profilePanelView;
+
+            if (!_.isObject(profile) || !profile.modelName) {
+                return;
+            }
+
+            profilePanelView = App.Views.GeneratorView.create(profile.modelName, _.extend({}, profile, {
+                el: this.$('#profile-panel')
+            }));
+
+            this.subViews[0] && this.subViews[0].remove();
+            this.subViews[0] = profilePanelView;
+        },
+        renderContent: function() {
+            var content = this.model.get('profile_content'),
+                contentView;
+
+            if (!_.isObject(content) || !content.modelName) {
+                return;
+            }
+
+            contentView = App.Views.GeneratorView.create(content.modelName, content);
+
+            this.subViews[1] && this.subViews[1].removeFromDOMTree();
+            this.subViews[1] = contentView;
+            this.$('#content').append(contentView.el);
+        },
+        back: function() {
+            var cb = this.model.get('backAction');
+            typeof cb == 'function' && cb();
+        }
+    });
+
     return new (require('factory'))(function() {
         App.Views.MainView = {};
         App.Views.MainView.MainDoneView = App.Views.CoreMainView.CoreMainDoneView;
+        App.Views.MainView.MainProfileView = App.Views.CoreMainView.CoreMainProfileView;
     });
 });

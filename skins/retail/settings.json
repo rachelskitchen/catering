@@ -6,11 +6,11 @@
     "color_schemes": ["default", "blue_&_white", "vintage"],
     "routing": {
         "main": {
-            "css": ["main", "myorder", "jquery.contentarrow", "products", "quantity", "categories", "jquery.combobox"],
+            "css": ["main", "myorder", "jquery.contentarrow", "products", "quantity", "categories", "jquery.combobox", "profile"],
             "model": ["main", "header", "filter", "categories"],
-            "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "quantity", "categories", "stanfordcard"],
+            "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "quantity", "categories", "stanfordcard", "profile"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "quantity", "categories", "stanfordcard"],
-            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "search", "subcategories", "stanfordcard"],
+            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "search", "subcategories", "stanfordcard", "customers", "profile_view"],
             "js" : ["jquery.contentarrow", "jquery.combobox"]
         },
         "index": {

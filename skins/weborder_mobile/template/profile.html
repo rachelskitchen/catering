@@ -1,0 +1,122 @@
+<script type="text/template" id="profile_log_in-template">
+    <span class="profile-info font-size3 text-center primary-text"><%= _lp.PROFILE_LOG_IN_INFO %></span>
+    <ul class="profile-form font-size2 text-center">
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret input-colors">
+        </li>
+        <li class="required">
+            <input type="password" placeholder="<%= _lp.PROFILE_PASSWORD %>" class="pwd ios-safari-caret input-colors">
+        </li>
+    </ul>
+    <div class="text-right forgot-password">
+        <span class="font-size3 primary-text"><%= _lp.PROFILE_FORGOT_PASSWORD %></span>
+    </div>
+    <div class="login-btn btn primary-button font-size4 text-center"><%= _lp.PROFILE_LOG_IN %></div>
+    <div class="profile-btns text-center">
+        <div class="create-btn btn regular-button font-size4"><%= _lp.PROFILE_CREATE_ACCOUNT %></div>
+        <div class="guest-btn btn regular-button font-size4"><%= _lp.PROFILE_CONTINUE_AS_GUEST %></div>
+    </div>
+</script>
+
+<script type="text/template" id="profile_basic_details-template">
+    <ul class="profile-form font-size2 text-center">
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.PROFILE_FIRST_NAME %>" class="first-name ios-safari-caret input-colors">
+        </li>
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.PROFILE_LAST_NAME %>" class="last-name ios-safari-caret input-colors">
+        </li>
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret input-colors">
+        </li>
+        <li class="required">
+            <input type="tel" placeholder="<%= _lp.PROFILE_PHONE %>" class="phone ios-safari-caret input-colors">
+            <span class="phone-privacy regular-text fl-left"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
+        </li>
+    </ul>
+</script>
+
+<script type="text/template" id="profile_sign_up-template">
+    <span class="profile-info font-size3 text-center primary-text"><%= _lp.PROFILE_SIGN_UP_INFO %></span>
+    <ul class="profile-form font-size2 text-center">
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.PROFILE_FIRST_NAME %>" class="first-name ios-safari-caret input-colors">
+        </li>
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.PROFILE_LAST_NAME %>" class="last-name ios-safari-caret input-colors">
+        </li>
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret input-colors">
+        </li>
+        <li class="required">
+            <input type="tel" placeholder="<%= _lp.PROFILE_PHONE %>" class="phone ios-safari-caret input-colors">
+            <span class="phone-privacy regular-text fl-left"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
+        </li>
+    </ul>
+    <span class="profile-info account-password regular-text font-size3"><%= _lp.PROFILE_ACCOUNT_PASSWORD %></span>
+    <ul class="profile-form font-size2 text-center">
+        <li class="required">
+            <input type="password" placeholder="<%= _lp.PROFILE_PASSWORD %>" class="password ios-safari-caret input-colors">
+        </li>
+        <li class="required">
+            <input type="password" placeholder="<%= _lp.PROFILE_REENTER_PASSWORD %>" class="password-confirm ios-safari-caret input-colors">
+        </li>
+    </ul>
+    <div class="passwords-mismatch font-size3 attention-text"><%= _lp.PROFILE_PASSWORDS_MISMATCH %></div>
+</script>
+
+<script type="text/template" id="profile_create-template">
+    <span class="profile-info font-size3 text-center primary-text">
+        <%= _lp.PROFILE_GREETING %>, <span class="name"></span>!
+    </span>
+    <span class="profile-complete text-center font-size3 primary-text"><%= _lp.PROFILE_COMPLETE %></span>
+    <div class="address-box"></div>
+</script>
+
+<script type="text/template" id="profile_menu-template">
+    <div class="close outside-area"></div>
+    <div class="fl-left primary-bg border-box animation">
+        <h2 class="title font-size3 primary-text"><%= _lp.PROFILE_MORE %></h2>
+        <div class="close alternate-button">&times;</div>
+        <ul class="profile-items font-size1 primary-text">
+            <li class="profile-link private-btn list-separator"><%= _lp.PROFILE %></li>
+            <li class="payments-link private-btn list-separator"><%= _lp.PAYMENTS %></li>
+            <li class="settings-link private-btn list-separator"><%= _lp.SETTINGS %></li>
+            <li class="login-row list-separator">
+                <span class="login-link"><%= _lp.PROFILE_LOG_IN %></span>
+                <span class="logout-link"><%= _lp.PROFILE_LOG_OUT %></span>
+            </li>
+        </ul>
+        <span class="logged-as primary-text font-size2"></span>
+    </div>
+</script>
+
+<script type="text/template" id="profile_address-template">
+    <ul class="profile-form font-size2 text-center">
+        <li>
+            <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE1 %>" class="street_1 ios-safari-caret input-colors">
+        </li>
+        <li>
+            <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE2 %>" class="street_2 ios-safari-caret input-colors">
+        </li>
+        <li>
+            <input type="text" placeholder="<%= _lp.PROFILE_CITY %>" class="city ios-safari-caret input-colors">
+        </li>
+        <li>
+            <div class="select-wrapper input-colors">
+                <select class="country"></select>
+            </div>
+        </li>
+        <li class="state-row">
+            <div class="select-wrapper input-colors">
+                <select class="state"></select>
+            </div>
+        </li>
+        <li class="province-row">
+           <input type="text" placeholder="<%= _lp.PROFILE_PROVINCE %>" class="province ios-safari-caret input-colors">
+        </li>
+        <li>
+            <input type="text" class="zipcode ios-safari-caret input-colors">
+        </li>
+    </ul>
+</script>

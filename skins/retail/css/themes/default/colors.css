@@ -4,6 +4,9 @@ html {
     text-shadow: 1px 1px 2px #fff;
     color: #373b40;
 }
+#profile-panel .signup-link {
+    border-right-color: #373b40;
+}
 textarea, input {
     color: inherit;
 }
@@ -49,6 +52,9 @@ select[disabled] {
 #content {
     border-color: #bebebe;
 }
+.profile-container #content {
+    border-color: #ccc;
+}
 section:before {
     border-color: #cdcdcd;
     box-shadow: 0 1px 1px #f8f8f8 inset, 0 -1px 1px #B5B5B5;
@@ -57,11 +63,14 @@ section:before {
     background: -o-linear-gradient(top, #d0d0d0 0%, #d0d0d0 10%, #c4c4c4 100%);
     background: linear-gradient(to bottom, #d0d0d0 0%, #d0d0d0 10%, #c4c4c4 100%);
 }
-.link1 {
+.link1, .primary-text {
     color: #2186b1;
 }
 .powered-by {
     background: url('img/poweredBy.png') no-repeat 0 0 transparent;
+}
+.profile-form input:focus {
+    border-color: #2186b1;
 }
 #header .menu li {
     cursor: pointer;
@@ -333,7 +342,8 @@ aside:after, aside:before {
 #content > .checkout h2 {
     color: #2ba0d6;
 }
-.required:before {
+.required:before,
+.attention-text {
     color: #ff0000;
 }
 #content > .checkout .discount .btn {

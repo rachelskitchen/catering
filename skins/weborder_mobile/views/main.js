@@ -29,10 +29,9 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:content', this.content_change, this);
             this.listenTo(this.model, 'change:header', this.header_change, this);
             this.listenTo(this.model, 'change:footer', this.footer_change, this);
+            this.listenTo(this.model, 'change:profile', this.profile_change, this);
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
-            this.listenTo(this.model, 'showRevelPopup', this.showRevelPopup, this);
-            this.listenTo(this.model, 'hideRevelPopup', this.hideRevelPopup, this);
             this.listenToOnce(this.model, 'showSpinnerAndHideContent', this.showSpinnerAndHideContent, this); // show a spinner and hide a content
             this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
             this.listenTo(this.model, 'resizeSection', this.resizeSection, this);
@@ -85,7 +84,7 @@ define(["done_view", "generator"], function(done_view) {
 
             content.removeClass().addClass(this.model.get('contentClass'));
 
-            while(this.subViews.length > 2) {
+            while(this.subViews.length > 3) {
                 view = this.subViews.pop();
                 if (view.options.cacheId || view.options.cacheIdUniq)
                     view.removeFromDOMTree();
@@ -143,6 +142,11 @@ define(["done_view", "generator"], function(done_view) {
                 this.setContentPadding();
             }
         },
+        profile_change: function() {
+            var data = _.defaults(this.model.get('profile'), this.profile_defaults());
+            this.subViews[2] && this.subViews[2].removeFromDOMTree();
+            this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data);
+        },
         header_defaults: function() {
             return {
                 model: App.Data.header,
@@ -160,6 +164,11 @@ define(["done_view", "generator"], function(done_view) {
         content_defaults : function() {
             return {
                 // className : 'content'
+            };
+        },
+        profile_defaults : function() {
+            return {
+                el: this.$('#aside')
             };
         },
         addContent: function(data, removeClass) {
@@ -183,10 +192,10 @@ define(["done_view", "generator"], function(done_view) {
             var isViewCached = !!App.Views.GeneratorView.findViewCached(data.modelName, data, cacheId);
 
             var subView = App.Views.GeneratorView.create(data.modelName, data, cacheId);
-            if(this.subViews.length > 2)
+            if(this.subViews.length > 3)
                 this.subViews.push(subView);
             else
-                this.subViews[2] = subView;
+                this.subViews[3] = subView;
 
             if (isViewCached) {
                 typeof subView.start == 'function' && subView.start();
@@ -215,19 +224,6 @@ define(["done_view", "generator"], function(done_view) {
         hideSpinner: function() {
             this.unblurBg();
             this.$('#main-spinner').hide();
-        },
-        showRevelPopup: function(data) {
-            var container = this.$('#revel-popup');
-            container.css({display: 'table'});
-            this.blurBg();
-            this.revelView = App.Views.GeneratorView.create(data.modelName, data, data.cacheId);
-            this.subViews.push(this.revelView);
-            container.append(this.revelView.el);
-        },
-        hideRevelPopup: function() {
-            this.$('#revel-popup').hide();
-            this.unblurBg();
-            this.revelView && this.revelView.removeFromDOMTree();
         },
         blurBg: function() {
             this.$('section, footer, header').addClass('blur');

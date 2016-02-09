@@ -57,13 +57,19 @@ select[disabled] {
 #content {
     border-color: #3289ae;
 }
+.profile-container #content {
+    border-color: #ccc;
+}
 section:before {
     border-color: #d7d7d7;
     background: #2699ca;
     box-shadow: 0 0 7px #34acd7 inset, 0 0 12px #b1ccda;
 }
-.link1 {
+.link1, .primary-text {
     color: #2186b1;
+}
+.profile-form input:focus {
+    border-color: #2186b1;
 }
 .powered-by {
     background: url('img/poweredBy.png') no-repeat 0 0 transparent;
@@ -126,7 +132,7 @@ aside:after, aside:before {
 .btn:active {
     box-shadow: none !important;
 }
-.popup {
+.popup, #profile-panel .close {
     background: rgba(70, 70, 70, .8);
 }
 #popup {
@@ -233,7 +239,8 @@ ul.categories {
 #content > .checkout h2 {
     color: #2ba0d6;
 }
-.required:before {
+.required:before,
+.attention-text {
     color: #ff0000;
 }
 #credit-card .required:before {
@@ -603,4 +610,6 @@ span.cancel-input:active:before {
     color: #6E6E6E;
 }
 /* --- */
-
+.signup-link {
+    border-color: #686868;
+}

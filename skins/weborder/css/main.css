@@ -374,6 +374,9 @@ footer {
     word-break: normal;
     cursor: pointer;
 }
+.link:hover, .link:active {
+    text-decoration: none;
+}
 .link1 {
     margin: 0 20px;
     text-decoration: none;
@@ -550,6 +553,28 @@ section.maintenance #header * {
 }
 section.maintenance #header .btn {
     margin: 26.5px auto auto 26.5px;
+}
+section.profile-container {
+    position: static;
+    width: auto;
+    padding: 8px 20px;
+}
+section.profile-container:before {
+    display: none;
+}
+section.profile-container #header {
+    position: static;
+    height: auto;
+}
+section.profile-container #content {
+    position: static;
+    padding: 0;
+    border-radius: 8px;
+}
+footer.profile-container {
+    position: static;
+    padding: 0 20px;
+    width: auto;
 }
 #main-spinner {
     background-color: rgba(170, 170, 170, 0.8);
@@ -1118,4 +1143,40 @@ span.cancel-input:before {
 
 .fl-left {
     float: left;
+}
+
+#header .back-btn {
+    display: inline-block;
+    width: auto;
+    cursor: pointer;
+}
+
+#header .back-btn::before {
+    content: '\f104';
+    font-family: FontAwesome;
+    font-size: 22px;
+    color: inherit;
+    vertical-align: middle;
+    padding-right: 5px;
+}
+
+#header .back-btn .label {
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+#header .title {
+    padding-bottom: 15px;
+    font-size: 22px;
+}
+
+.fade-out-hover:hover,
+.fade-out-hover:active {
+    opacity: 0.5;
+}
+
+.border-box {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }

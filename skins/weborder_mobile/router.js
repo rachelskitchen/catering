@@ -31,6 +31,7 @@ define(["main_router"], function(main_router) {
     */
     function defaultRouterData() {
         headerModes.Main = {mod: 'Main', className: 'main'};
+        headerModes.WithProfile = {mod: 'WithProfile', className: 'main'};
         headerModes.Modifiers = {mod: 'Modifiers', className: 'modifiers'};
         headerModes.ComboProduct = {mod: 'ComboProduct', className: 'modifiers'};
         headerModes.Cart = {mod: 'Cart'};
@@ -66,6 +67,10 @@ define(["main_router"], function(main_router) {
             // "loyalty": "loyalty",
             "rewards_card_submit": "rewards_card_submit",
             "rewards": "rewards",
+            "login": "login",
+            "signup": "signup",
+            "profile_create": "profile_create",
+            "profile_edit": "profile_edit",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -92,11 +97,8 @@ define(["main_router"], function(main_router) {
                 var mainModel = App.Data.mainModel = new App.Models.MainModel();
                 var ests = App.Data.establishments;
 
-                // init RevelAPI
-                this.initRevelAPI();
-
-                // only establishment with reward cards option enabled can show RevelAPI buttons
-                App.Settings.RevelAPI = App.Settings.RevelAPI && App.Settings.enable_reward_cards_collecting;
+                // once the route is initialized need to set profile menu
+                this.listenToOnce(this, 'initialized', this.initProfileMenu.bind(this));
 
                 // init payments handlers
                 !App.Data.settings.get('isMaintenance') && this.paymentsHandlers();
@@ -356,7 +358,7 @@ define(["main_router"], function(main_router) {
                 }
 
                 App.Data.mainModel.set({
-                    header: headerModes.Main,
+                    header: headerModes.WithProfile, //headerModes.Main,
                     footer: footerMode,
                     contentClass: '',
                     content: content
@@ -829,18 +831,16 @@ define(["main_router"], function(main_router) {
             });
 
             this.prepare('checkout', function() {
-                var RevelAPI = App.Data.RevelAPI;
-
                 self.listenToOnce(self, 'route', function()
                 {
                     App.Data.myorder.checkout.trigger('hide:datepicker');
                 });
 
                 if(!App.Data.card)
-                    App.Data.card = new App.Models.Card({RevelAPI: RevelAPI});
+                    App.Data.card = new App.Models.Card();
 
                 if(!App.Data.customer) {
-                    App.Data.customer =  new App.Models.Customer({RevelAPI: RevelAPI});
+                    App.Data.customer =  new App.Models.Customer();
                     App.Data.customer.loadAddresses();
                 }
 
@@ -1457,17 +1457,6 @@ define(["main_router"], function(main_router) {
                 this.change_page();
             });
         },
-        profile: function(step) {
-            App.Data.header.set({
-                page_title: _loc['HEADER_PROFILE_PT'],
-                back_title: _loc['HEADER_PROFILE_BT'],
-                back: App.Data.RevelAPI.trigger.bind( App.Data.RevelAPI, 'onProfileCancel')
-            });
-            return App.Routers.RevelOrderingRouter.prototype.profile.call(this, step, headerModes.Profile, footerModes.Profile);
-        },
-        loyalty: function() {
-            return App.Routers.RevelOrderingRouter.prototype.loyalty.call(this, headerModes.Main, footerModes.Loyalty);
-        },
         rewards_card_submit: function() {
             var rewardsCard = App.Data.myorder.rewardsCard;
             this.rewardsPageReferrerHash = this.lastHash;
@@ -1633,36 +1622,83 @@ define(["main_router"], function(main_router) {
                 stanfordCard.getPlans(true).then(mainModel.trigger.bind(mainModel, 'loadCompleted'));
             }
         },
-        initRevelAPI: function() {
-            App.Routers.RevelOrderingRouter.prototype.initRevelAPI.apply(this, arguments);
+        login: function() {
+            var content = this.loginContent();
 
-            var RevelAPI = App.Data.RevelAPI,
-                appName;
+            App.Data.header.set({
+                page_title: _loc.WELCOME,
+                back: null,
+                back_title: ''
+            });
 
-            if(!App.Data.dirMode) {
-                appName = App.Data.get_parameters.appName ? decodeURIComponent(App.Data.get_parameters.appName) : App.Settings.brand_name;
-                RevelAPI.set({
-                    appName: /\w+'s(\s.*)?$/.test(appName) ? appName : 'the ' + appName,
-                    appPossessiveName: /\w+'s(\s.*)?$/.test(appName) ? appName : appName + "'s",
-                    appShortName: appName,
-                    text1: MSG.BRAND_DIRECTORY_WELCOME_TEXT
-                });
-            }
+            App.Data.mainModel.set({
+                header: headerModes.Cart,
+                footer: footerModes.None,
+                contentClass: 'primary-bg',
+                content: content
+            });
 
-            if(!RevelAPI.isAvailable()) {
-                return;
-            }
+            this.change_page();
+        },
+        signup: function() {
+            var content = this.signupContent();
 
-            this.listenTo(RevelAPI, 'onPayWithSavedCreditCard', function() {
-                App.Data.card.set(RevelAPI.get('card').toJSON());
-                App.Data.myorder.trigger('payWithCreditCard');
-            }, this);
+            App.Data.header.set({
+                page_title: _loc.PROFILE_SIGN_UP,
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history),
+                link: content.next,
+                link_title: _loc.NEXT,
+                enableLink: false
+            });
 
-            this.listenTo(RevelAPI, 'onPayWithCustomCreditCard', function() {
-                showDefaultCardView.call(this);
-            }, this);
+            App.Data.mainModel.set({
+                header: headerModes.Modifiers,
+                footer: footerModes.None,
+                contentClass: 'primary-bg',
+                content: content
+            });
+
+            this.change_page();
+        },
+        profile_create: function() {
+            var content = this.profileCreateContent();
+
+            App.Data.header.set({
+                page_title: _loc.PROFILE_CREATE_TITLE,
+                back_title: _loc.BACK,
+                back: this.navigate.bind(this, 'signup', true),
+                link: content.register,
+                link_title: _loc.CONTINUE,
+                enableLink: true
+            });
+
+            App.Data.mainModel.set({
+                header: headerModes.Modifiers,
+                footer: footerModes.None,
+                contentClass: 'primary-bg',
+                content: content
+            });
+
+            this.change_page();
+        },
+        profile_edit: function() {
+            var content = this.profileEditContent();
+
+            App.Data.mainModel.set({
+                header: headerModes.Modifiers,
+                footer: footerModes.None,
+                contentClass: 'primary-bg',
+                content: content
+            });
+
+            this.change_page();
         }
     });
+
+
+    // extends Router with Mobile mixing
+    _.defaults(Router.prototype, App.Routers.MobileMixing);
 
     function showDefaultCardView() {
         var paymentProcessor = App.Data.settings.get_payment_process();

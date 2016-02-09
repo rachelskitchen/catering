@@ -46,6 +46,9 @@ define(["backbone"], function(Backbone) {
          * @property {Function} default.back - header back button action.
          * @default null.
          *
+         * @property {string} default.back_title - header back button text.
+         * @default ''.
+         *
          * @property {Function} default.cart - header cart button action.
          * @default null.
          *
@@ -66,6 +69,9 @@ define(["backbone"], function(Backbone) {
          *
          * @property {boolean} default.hideCart - if `true` a cart icon is hidden.
          * @default false.
+         *
+         * @property {boolean} default.showProfileMenu - if `true` profile menu should be shown.
+         * @default false.
          */
         defaults: {
             page_title: '',
@@ -73,13 +79,15 @@ define(["backbone"], function(Backbone) {
             link_title: '',
             link: null,
             back: null,
+            back_title: '',
             cart: null,
             cartItemsQuantity: 0,
             search: '',
             showSearch: false,
             addProductCb: null,
             enableLink: true,
-            hideCart: false
+            hideCart: false,
+            showProfileMenu: false
         },
         addProduct: function(orderItem) {
             var self = this,
