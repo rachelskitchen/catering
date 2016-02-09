@@ -185,6 +185,9 @@ define(["factory"], function() {
             this.setHeaders();
             HeaderModifiersView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'reinit', this.reinit, this);
+            this.listenTo(App.Data.myorder, 'add remove change', function() {
+                this.model.set('cartItemsQuantity', App.Data.myorder.get_only_product_quantity());
+            });
         },
         reinit: function() {
             this.setHeaders();
@@ -220,6 +223,7 @@ define(["factory"], function() {
             if (status) {
                 originOrder.update(order);
                 this.listenTo(order, 'combo_product_change', this.setHeaderToUpdate, this);
+                this.listenTo(order, 'change:quantity', this.setHeaderToUpdate, this);
             }
         },
         setHeaderToAdd: function() {
