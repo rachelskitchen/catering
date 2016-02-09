@@ -1,4 +1,4 @@
-define(['categories'], function() {
+define(['js/utest/data/Categories', 'categories'], function(categories) {
     'use strict';
 
     describe("App.Models.Categories", function() {
@@ -35,23 +35,13 @@ define(['categories'], function() {
 
     describe("App.Collections.Categories", function() {
 
-        var model, categories, success, error, id, arg, host,
+        var model, success, error, id, arg, host,
             ajaxStub = function() {
                 success = arguments[0].successResp;
                 error = arguments[0].error;
                 arg = arguments;
             },
             settings = App.Data.settings;
-
-        $.ajax({
-            type: "GET",
-            url: "js/utest/data/Categories.json",
-            dataType: "json",
-            async: false,
-            success: function(data) {
-                categories = data;
-            }
-        });
 
         beforeEach(function() {
             model = new App.Collections.Categories();

@@ -1,16 +1,4 @@
-define(['timetable'], function() {
-
-    var timetables;
-
-    $.ajax({
-        type: "GET",
-        url: "js/utest/data/Timetable.json",
-        dataType: "json",
-        async: false,
-        success: function(data) {
-            timetables = data;
-        }
-    });
+define(['js/utest/data/Timetable', 'timetable'], function(timetables) {
 
     describe('App.Models.WorkingDay', function() {
         var model, def, set0, set01, set1, set1n, set2, set2n, set3, set4, set4n, defSet1, defSet2, timeSettings, times = [];
