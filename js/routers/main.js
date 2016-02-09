@@ -841,6 +841,7 @@ define(["backbone", "factory"], function(Backbone) {
                 mod: 'SignUp',
                 model: customer,
                 next: next,
+                back: this.navigate.bind(this, 'login', true),
                 cacheId: true
             }
 
@@ -873,7 +874,8 @@ define(["backbone", "factory"], function(Backbone) {
                 mod: 'Create',
                 model: customer,
                 register: register,
-                address: address
+                address: address,
+                back: this.navigate.bind(this, 'signup', true)
             };
 
             function register() {

@@ -1649,10 +1649,9 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.PROFILE_SIGN_UP,
                 back_title: _loc.BACK,
-                back: window.history.back.bind(window.history),
+                back: content.back,
                 link: content.next,
-                link_title: _loc.NEXT,
-                enableLink: false
+                link_title: _loc.NEXT
             });
 
             App.Data.mainModel.set({
@@ -1670,7 +1669,7 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.PROFILE_CREATE_TITLE,
                 back_title: _loc.BACK,
-                back: this.navigate.bind(this, 'signup', true),
+                back: content.back,
                 link: content.register,
                 link_title: _loc.CONTINUE,
                 enableLink: true
