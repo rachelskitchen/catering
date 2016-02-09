@@ -38,7 +38,8 @@
 }
 
 /* [tab] Store details tabs button background */
-.tabs {
+.tabs,
+.myorderList .qty {
     .resolve-background(@tab);
 }
 
@@ -47,7 +48,8 @@
     .resolve-color-alpha(@tab_text, 30%);
 }
 
-.tab-text .active {
+.tab-text .active,
+.myorderList .qty {
     .resolve-color(@tab_text);
 }
 
@@ -104,8 +106,7 @@ select:-moz-focusring {
 .establishments[class] select,
 .establishments[class] button,
 #popup_cancel[id],
-#popup_content[id].info::before,
-.modifier .mdf_split::before {
+#popup_content[id].info::before {
     .resolve-color(@primary_text);
 }
 
@@ -120,19 +121,11 @@ select:-moz-focusring {
     .resolve-border-color(@title_text);
 }
 
-.myorderList .qty {
-    .resolve-background(@title_text);
-}
-
 /* [regular_text] Regular text, custom menu, item price in list */
 .regular-text,
 #googlemaps_popup > div,
 #popup_container[id] {
     .resolve-color(@regular_text);
-}
-
-.modifier .input {
-    .resolve-border-color(@regular_text);
 }
 
 /* [alternate_text] Text color for solid buttons, checkboxes (checkout, subtotal and etc) */
@@ -165,18 +158,12 @@ select:-moz-focusring {
 /* [list_background] cell bg, table bg */
 #section > div,
 .list-bg,
-.modifier .input,
-.combo_item .input {
+.quantity .btn-qty:not([disabled]):active {
     .resolve-background(@list_background);
 }
 
-.modifier .input::before,
-.combo_item .input::before {
-    .resolve-color(@list_background);
-}
-
-.quantity .btn-qty:not([disabled]):active::before,
-.quantity .btn-qty:not([disabled]):active::after {
+.quantity .btn-qty::before,
+.quantity .btn-qty::after {
     .resolve-border-color(@list_background);
 }
 
@@ -192,20 +179,6 @@ select:-moz-focusring {
 /* [list_header_text] Header text color */
 .list-header-text {
     .resolve-color(@list_header_text);
-}
-
-.modifier input:checked + .input,
-.combo_item .input[checked=checked] /* TODO change selector */ {
-    .resolve-background(@list_header_text);
-    .resolve-border-color(@list_header_text);
-}
-
-.quantity .btn-qty {
-    .resolve-border-color(@list_header_text);
-}
-
-.quantity .btn-qty:not([disabled]):active {
-    .resolve-background(@list_header_text);
 }
 
 /* [list_separator] Table cells separator */
@@ -248,7 +221,8 @@ select:-moz-focusring {
 
 /* [primary_button] primary background button */
 .primary-button,
-#popup_ok[id] {
+#popup_ok[id],
+.quantity .btn-qty {
     .resolve-background(@primary_button);
 }
 
@@ -262,12 +236,20 @@ select:-moz-focusring {
 #popup_cancel[id]:not([disabled]):active,
 .establishments[class] button:not([disabled]):active,
 .payments .payment,
-.reward-selection__item {
+.reward-selection__item,
+ul.reward-selection > li,
+.quantity .btn-qty,
+.quantity .btn-qty:not([disabled]):active::before,
+.quantity .btn-qty:not([disabled]):active::after {
     .resolve-border-color(@primary_button);
 }
 
 .reward-selection__item_selected, .stanford-plan.active {
     .resolve-background-alpha(@primary_button, 30%);
+}
+
+.modifier .mdf_split::before {
+    .resolve-color(@primary_button);
 }
 
 /* [regular_button] Reqular button background*/
@@ -299,7 +281,7 @@ select:-moz-focusring {
 
 /* icons */
 #header .btn-cart {
-    background-image: data-uri('data:image/svg+xml;base64', 'img/bag.svg');
+    background-image: data-uri('image/svg+xml;base64', 'img/bag.svg');
     background-size: 60%;
     background-repeat: no-repeat;
     background-position: 50%;
@@ -327,4 +309,32 @@ select:-moz-focusring {
 /** popup alert styles **/
 #popup_alert[id] {
     background: rgba(0,0,0,.7);
+}
+
+/* [checkbox] checked checkbox background */
+.modifier input:checked + .input,
+.combo_item .input[checked=checked] {
+    .resolve-background(@checkbox);
+    .resolve-border-color(@checkbox);
+}
+
+/* [checkbox_mark] jackdaw color in checked checkbox */
+.modifier .input::before,
+.combo_item .input::before {
+    .resolve-color(@checkbox_mark);
+}
+
+/* [checkbox_unchecked] border of unchecked checkbox */
+.modifier .input,
+.combo_item .input {
+    .resolve-border-color(@checkbox_unchecked);
+}
+
+.modifier .input,
+.combo_item .input {
+    background: transparent;
+}
+
+.select-wrapper input {
+    background: transparent;
 }
