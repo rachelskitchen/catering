@@ -101,7 +101,7 @@ define(["main_router"], function(main_router) {
                 // init payments handlers
                 !App.Data.settings.get('isMaintenance') && this.paymentsHandlers();
 
-                this.listenTo(App.Data.myorder, 'add remove', function() {
+                this.listenTo(App.Data.myorder, 'add remove change', function() {
                     App.Data.header.set('cartItemsQuantity', App.Data.myorder.get_only_product_quantity());
                 });
 
