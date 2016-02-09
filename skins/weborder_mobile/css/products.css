@@ -50,6 +50,7 @@
 }
 .product-modifiers .no_combo_link {
     float: right;
+    margin-top: 0.9em;
 }
 .product-modifiers .timetable {
     font-style: italic;

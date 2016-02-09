@@ -187,8 +187,6 @@ define(["factory"], function() {
         back: function() {
             var order = this.options.order,
                 originOrder = this.options.originOrder;
-            if (originOrder)
-                order.update(originOrder);
             this.model.get('back')();
         },
         cart: function() {
@@ -207,10 +205,11 @@ define(["factory"], function() {
             var order = this.options.order,
                 originOrder = this.options.originOrder;
 
-            this.model.updateProduct(order);
-            order.set('discount', originOrder.get('discount').clone(), {silent: true});
-            originOrder.update(order);
-            this.listenTo(order, 'combo_product_change', this.setHeaderToUpdate, this);
+            var status = this.model.updateProduct(order);
+            if (status) {
+                originOrder.update(order);
+                this.listenTo(order, 'combo_product_change', this.setHeaderToUpdate, this);
+            }
         },
         setHeaderToAdd: function() {
             this.model.set({
