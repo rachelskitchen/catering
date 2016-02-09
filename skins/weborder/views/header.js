@@ -129,5 +129,6 @@ define(["backbone", "factory"], function() {
         App.Views.HeaderView.HeaderCheckoutView = HeaderCheckoutView;
         App.Views.HeaderView.HeaderConfirmationView = HeaderConfirmationView;
         App.Views.HeaderView.HeaderDeliveryView = HeaderDeliveryView;
+        // App.Views.HeaderView.HeaderProfileView = HeaderProfileView;
     });
 });

@@ -65,7 +65,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 addr == undefined && (addr = {});
                 if (reverse_addr) {
                     if ((addr.country && reverse_addr.country && addr.country == reverse_addr.country) ||
-                        (!addr.country && reverse_addr.country == App.Settings.address.country)) { //if country was changed that we can't copy address
+                        (!addr.country && reverse_addr.country == App.Settings.address.country)) { //if country was changed then we can't copy address
                         if (!addr.province && !addr.street_1 && !addr.street_2 && !addr.city && !addr.zipcode) { //and we will copy address if all target fields are empty only
                             return _.extend(addr, { state: reverse_addr.state,
                                                     province: reverse_addr.province,

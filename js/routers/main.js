@@ -299,7 +299,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             this.prepare('pay', function() {
                 App.Data.loadFromLocalStorage = true;
-                App.Data.card = new App.Models.Card({RevelAPI: App.Data.RevelAPI});
+                App.Data.card = new App.Models.Card();
                 App.Data.card.loadCard();
                 if(!App.Data.giftcard) {
                     App.Data.giftcard = new App.Models.GiftCard();
@@ -316,10 +316,51 @@ define(["backbone", "factory"], function(Backbone) {
             return load;
         },
         /**
+         * Init App.Data.customer
+         */
+        initCustomer: function() {
+            var customer = App.Data.customer = new App.Models.Customer();
+
+            this.listenTo(customer, 'onUserCreated', function() {
+                App.Data.errors.alert(_loc.PROFILE_USER_CREATED);
+            });
+
+            this.listenTo(customer, 'onInvalidUser', function() {
+                App.Data.errors.alert(_loc.PROFILE_LOGIN_ERROR);
+            });
+
+            this.listenTo(customer, 'onNotActivatedUser', function() {
+                App.Data.errors.alert(_loc.PROFILE_USER_NOT_ACTIVATED);
+            });
+
+            this.listenTo(customer, 'onLoginError', function(msg) {
+                _.isObject(msg) && App.Data.errors.alert(msg.error_description || msg.error);
+            });
+
+            this.listenTo(customer, 'onUserExists', function(msg) {
+                _.isObject(msg) && App.Data.errors.alert(_loc.PROFILE_USER_EXISTS.replace('%s', App.Data.customer.get('email')));
+            });
+
+            this.listenTo(customer, 'onUserSessionExpired', function() {
+                App.Data.errors.alert(_loc.PROFILE_SESSION_EXPIRED);
+            });
+
+            this.listenTo(customer, 'onUserNotFound', function() {
+                App.Data.errors.alert(_loc.PROFILE_USER_NOT_FOUND);
+            });
+
+            this.listenTo(customer, 'onUserAddressNotFound', function() {
+                App.Data.errors.alert(_loc.PROFILE_USER_ADDRESS_NOT_FOUND);
+            });
+
+            this.listenTo(customer, 'onUserValidationError onUserAPIError', function(msg) {
+                _.isObject(msg) && App.Data.errors.alert(JSON.stringify(msg));
+            });
+        },
+        /**
          * Init App.Data.customer and restore its state from a storage
          */
         loadCustomer: function() {
-            App.Data.customer = new App.Models.Customer({RevelAPI: App.Data.RevelAPI});
             App.Data.customer.loadCustomer();
             App.Data.customer.loadAddresses();
         },
@@ -597,6 +638,346 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
+    // Used for desktop skins: Weborder, Retail, Directory
+    App.Routers.DesktopMixing = {
+        initProfilePanel: function() {
+            var mainModel = App.Data.mainModel,
+                customer = App.Data.customer,
+                self = this;
+
+            mainModel.set({
+                profile_panel: {
+                    modelName: 'Profile',
+                    mod: 'Panel',
+                    model: customer,
+                    loginAction: login,
+                    signupAction: register,
+                    logout_link: customer.logout.bind(customer),
+                    settings_link: new Function,
+                    payments_link: new Function,
+                    profile_link: profileEdit,
+                    cacheId: true
+                }
+            });
+
+            function login() {
+                showSpinner();
+                customer.login().always(hideSpinner);
+            }
+
+            function register() {
+                var check = customer.checkSignUpData();
+                if (check.status == 'OK') {
+                    showSpinner();
+                    customer.signup().always(hideSpinner);
+                } else {
+                    App.Data.errors.alert(check.errorMsg);
+                }
+            }
+
+            function profileEdit() {
+                self.navigate('profile_edit', true);
+            }
+
+            function showSpinner() {
+                mainModel.trigger('loadStarted');
+            }
+
+            function hideSpinner() {
+                mainModel.trigger('loadCompleted');
+            }
+        },
+        setProfileEditContent: function() {
+            var customer = App.Data.customer,
+                address = new Backbone.Model(customer.getProfileAddress() || customer.getEmptyAddress()),
+                updateBasicDetails = false,
+                updateAddress = false,
+                self = this;
+
+            App.Data.mainModel.set({
+                mod: 'Profile',
+                className: 'profile-container',
+                profile_content: {
+                    modelName: 'Profile',
+                    mod: 'Edit',
+                    model: customer,
+                    address: address,
+                    updateAction: update,
+                    className: 'profile-edit text-center'
+                }
+            });
+
+            window.setTimeout(function() {
+                var basicDetailsEvents = 'change:first_name change:last_name change:phone';
+                self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
+                self.listenTo(address, 'change', addressChanged);
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, address, 'change', addressChanged));
+            }, 0);
+
+            function basicDetailsChanged() {
+                updateBasicDetails = true;
+            }
+
+            function addressChanged() {
+                updateAddress = true;
+            }
+
+            function update() {
+                var mainModel = App.Data.mainModel,
+                    _address = address.toJSON(),
+                    requests = updateBasicDetails + updateAddress,
+                    basicXHR, addressXHR;
+
+                // show spinner
+                requests > 0 && mainModel.trigger('loadStarted');
+
+                // update basic details
+                if (updateBasicDetails) {
+                    basicXHR = customer.updateCustomer();
+                    basicXHR.done(function() {
+                        updateBasicDetails = false;
+                    });
+                    basicXHR.always(hideSpinner);
+                }
+
+                // update address
+                if (updateAddress) {
+                    addressXHR = customer.isProfileAddress(_address) ? customer.updateAddress(_address) : customer.createAddress(_address);
+                    addressXHR.done(function() {
+                        updateAddress = false;
+                    });
+                    addressXHR.always(hideSpinner);
+                }
+
+                // hide spinner once all requests are completed
+                function hideSpinner() {
+                    if(--requests <= 0) {
+                        mainModel.trigger('loadCompleted');
+                    }
+                }
+            }
+        }
+    };
+
+    // Used for mobile skins: Weborder Mobile, Directory Mobile
+    App.Routers.MobileMixing = {
+        initProfileMenu: function() {
+            var self = this;
+
+            App.Data.mainModel.set({
+                profile: {
+                    modelName: 'Profile',
+                    mod: 'Menu',
+                    model: App.Data.customer,
+                    header: App.Data.header,
+                    logout_link: logout,
+                    login_link: login,
+                    settings_link: close,
+                    payments_link: close,
+                    profile_link: profile_edit,
+                    close_link: close,
+                    cacheId: true
+                }
+            });
+
+            function logout() {
+                App.Data.customer.logout();
+                self.navigate('login', true);
+                close();
+            }
+
+            function login() {
+                self.navigate('login', true);
+                close();
+            }
+
+            function profile_edit() {
+                self.navigate('profile_edit', true);
+                close();
+            }
+
+            function close() {
+                App.Data.header.set('showProfileMenu', false);
+            }
+        },
+        loginContent: function() {
+            var self = this;
+
+            return {
+                modelName: 'Profile',
+                mod: 'LogIn',
+                model: App.Data.customer,
+                loginAction: loginAction,
+                createAccount: this.navigate.bind(this, 'signup', true),
+                guestCb: this.navigate.bind(this, 'index', true),
+                cacheId: true
+            };
+
+            function loginAction() {
+                var mainModel = App.Data.mainModel,
+                    customer = App.Data.customer;
+                mainModel.trigger('loadStarted');
+                customer.login()
+                        .done(self.navigate.bind(self, 'index', true))
+                        .fail(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+            }
+        },
+        signupContent: function() {
+            var events = 'change:first_name change:last_name change:email change:phone change:password change:confirm_password',
+                customer = App.Data.customer
+                self = this;
+
+            // listen to any App.Data.customer change
+            // to enable 'Next' link
+            preValidateData();
+            window.setTimeout(function() {
+                self.listenTo(customer, events, preValidateData);
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, events, preValidateData));
+            }, 0);
+
+            return {
+                modelName: 'Profile',
+                mod: 'SignUp',
+                model: customer,
+                next: next,
+                cacheId: true
+            }
+
+            function next() {
+                var checkAttrs = customer.checkSignUpData(),
+                    pwdsCompare = customer.comparePasswords();
+                if (checkAttrs.status != 'OK') {
+                    return App.Data.errors.alert(checkAttrs.errorMsg);
+                }
+                if (pwdsCompare.status != 'OK') {
+                    return App.Data.errors.alert(pwdsCompare.errorMsg);
+                }
+                self.navigate('profile_create', true);
+            }
+
+            function preValidateData() {
+                var attrs = customer.toJSON(),
+                    valid = attrs.first_name && attrs.last_name && attrs.email && attrs.phone && attrs.password
+                        && customer.comparePasswords().status == 'OK';
+                App.Data.header.set('enableLink', valid);
+            }
+        },
+        profileCreateContent: function() {
+            var customer = App.Data.customer,
+                mainModel = App.Data.mainModel,
+                address = new Backbone.Model(customer.getEmptyAddress());
+
+            return {
+                modelName: 'Profile',
+                mod: 'Create',
+                model: customer,
+                register: register,
+                address: address
+            };
+
+            function register() {
+                var check = customer.checkSignUpData(),
+                    _address = address.get('country') ? address.toJSON() : undefined; // only filled address can be passed
+                if (check.status == 'OK') {
+                    mainModel.trigger('loadStarted');
+                    customer.signup(_address)
+                            .done(self.navigate.bind(self, 'login', true))
+                            // need to re-create alert due to hash change may close it
+                            .done(App.Data.errors.alert.bind(App.Data.errors, _loc.PROFILE_USER_CREATED, false, undefined, undefined))
+                            .always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                } else {
+                    App.Data.errors.alert(check.errorMsg);
+                }
+            }
+        },
+        profileEditContent: function() {
+            var customer = App.Data.customer,
+                mainModel = App.Data.mainModel,
+                address = new Backbone.Model(customer.getProfileAddress() || customer.getEmptyAddress()),
+                content = [],
+                updateBasicDetails = false,
+                updateAddress = false,
+                self = this;
+
+            App.Data.header.set({
+                page_title: _loc.PROFILE_EDIT_TITLE,
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history),
+                link: update,
+                link_title: _loc.SAVE,
+                enableLink: false
+            });
+
+            content.push({
+                modelName: 'Profile',
+                mod: 'BasicDetails',
+                model: customer,
+                className: 'profile-basic-details'
+            }, {
+                modelName: 'Profile',
+                mod: 'Address',
+                model: address
+            });
+
+            window.setTimeout(function() {
+                var basicDetailsEvents = 'change:first_name change:last_name change:phone';
+                self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
+                self.listenTo(address, 'change', addressChanged);
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, address, 'change', addressChanged));
+            }, 0);
+
+            function basicDetailsChanged() {
+                updateBasicDetails = true;
+                App.Data.header.set({enableLink: true});
+            }
+
+            function addressChanged() {
+                updateAddress = true;
+                App.Data.header.set({enableLink: true});
+            }
+
+            function update() {
+                var mainModel = App.Data.mainModel,
+                    _address = address.toJSON(),
+                    requests = updateBasicDetails + updateAddress,
+                    basicXHR, addressXHR;
+
+                // show spinner
+                requests > 0 && mainModel.trigger('loadStarted');
+
+                // update basic details
+                if (updateBasicDetails) {
+                    basicXHR = customer.updateCustomer();
+                    basicXHR.done(function() {
+                        updateBasicDetails = false;
+                    });
+                    basicXHR.always(hideSpinner);
+                }
+
+                // update address
+                if (updateAddress) {
+                    addressXHR = customer.isProfileAddress(_address) ? customer.updateAddress(_address) : customer.createAddress(_address);
+                    addressXHR.done(function() {
+                        updateAddress = false;
+                    });
+                    addressXHR.always(hideSpinner);
+                }
+
+                // hide spinner once all requests are completed
+                function hideSpinner() {
+                    if(--requests <= 0) {
+                        App.Data.header.set({enableLink: false});
+                        mainModel.trigger('loadCompleted');
+                    }
+                }
+            }
+
+            return content;
+        }
+    };
+
     App.Routers.MobileRouter = App.Routers.MainRouter.extend({
         change_page: function() {
             App.Routers.MainRouter.prototype.change_page.apply(this, arguments);
@@ -605,242 +986,6 @@ define(["backbone", "factory"], function(Backbone) {
             }
             if (App.Data.map && location.hash.slice(1) == 'map') { // #19928 to resize the Google Maps
                 App.Data.map.trigger("change_page");
-            }
-        },
-        profile: function(step, header, footer) {
-            step = step <= 2 && step >= 0 ? Math.ceil(step) : 0;
-
-            var RevelAPI = App.Data.RevelAPI,
-                next = this.navigate.bind(this, 'profile/' + (step + 1), true),
-                prev = this.navigate.bind(this, 'profile/' + (step - 1), true),
-                save = RevelAPI.trigger.bind(RevelAPI, 'onProfileSaved'),
-                views;
-
-            views = [{
-                footer: {
-                    next: RevelAPI.processPersonalInfo.bind(RevelAPI, function() {
-                        if(RevelAPI.get('profileExists')) {
-                            RevelAPI.getProfile(next);
-                        } else {
-                            next();
-                        }
-                    }),
-                    prev: null,
-                    save: null},
-                content: {mod: 'ProfilePersonal', cacheId: 'ProfilePersonal', rewardsCard: App.Data.myorder.rewardsCard}
-            }, {
-                footer: {next: RevelAPI.processPaymentInfo.bind(RevelAPI, next, creditCardValidationAlert), prev: prev, save: null},
-                content: {mod: 'ProfilePayment', cacheId: 'ProfilePayment'}
-            }, {
-                footer: {
-                    next: null,
-                    prev: function() {
-                        if(RevelAPI.get('profileExists')) {
-                            RevelAPI.getProfile(prev);
-                        } else {
-                            prev();
-                        }
-                    },
-                    save: RevelAPI.saveProfile.bind(RevelAPI, save)
-                },
-                content: {mod: 'ProfileSecurity', cacheId: 'ProfileSecurity'}
-            }];
-
-            this.prepare('profile', function() {
-                var view = views[step];
-
-                App.Data.header.set('page_title', 'Profile');
-                App.Data.footer.set(view.footer);
-                App.Data.mainModel.set({
-                    header: header,
-                    footer: footer,
-                    content: _.extend({modelName: 'Revel', className: 'revel-profile', model: RevelAPI}, view.content)
-                });
-
-                this.change_page();
-            });
-
-            function creditCardValidationAlert(result) {
-                App.Data.errors.alert(result.errorMsg); // user notification
-            }
-        },
-        loyalty: function(header, footer) {
-            this.prepare('loyalty', function() {
-                var RevelAPI = App.Data.RevelAPI;
-
-                App.Data.header.set('page_title', 'Loyalty');
-                App.Data.mainModel.set({
-                    header: header,
-                    footer: footer,
-                    content: {
-                        modelName: 'Revel',
-                        className: 'revel-loyalty',
-                        model: RevelAPI,
-                        mod: 'Loyalty',
-                        cache_id: 'Loyalty'
-                    }
-                });
-
-                this.change_page();
-            });
-        },
-        initRevelAPI: function() {
-            App.Data.RevelAPI = new App.Models.RevelAPI();
-
-            // temporary App.Data.RevelAPI functionality is disabled
-            return;
-
-            var RevelAPI = App.Data.RevelAPI,
-                mainModel = App.Data.mainModel,
-                checkout = App.Data.myorder.checkout,
-                rewardsCard = App.Data.myorder.rewardsCard,
-                profileCustomer = RevelAPI.get('customer'),
-                profileCancelCallback,
-                profileSaveCallback;
-
-            if(!RevelAPI.isAvailable()) {
-                return;
-            }
-
-            this.once('started', function() {
-                // If rewardsCard is not set yet need set its value from profile.
-                // Reward card may be set by this moment after checkout restoring from localStorage.
-                !rewardsCard.get('number') && updateReward();
-                RevelAPI.run(); // controls of Welcome screen
-            });
-
-            this.listenTo(RevelAPI, 'onWelcomeShow', function() {
-                mainModel.trigger('showRevelPopup', {
-                    modelName: 'Revel',
-                    mod: 'Welcome',
-                    model: RevelAPI,
-                    cacheId: 'RevelWelcomeView'
-                });
-            }, this);
-
-            this.listenTo(RevelAPI, 'onWelcomeReviewed', function() {
-                mainModel.trigger('hideRevelPopup', RevelAPI);
-                RevelAPI.set('firstTime', false);
-            }, this);
-
-
-            this.listenTo(RevelAPI, 'onAuthenticate', function() {
-                mainModel.trigger('showRevelPopup', {
-                    modelName: 'Revel',
-                    mod: 'Authentication',
-                    model: RevelAPI,
-                    cacheId: 'Authentication'
-                });
-            }, this);
-
-            this.listenTo(RevelAPI, 'onProfileCreate', function() {
-                mainModel.trigger('showRevelPopup', {
-                    modelName: 'Revel',
-                    mod: 'ProfileNotification',
-                    model: RevelAPI,
-                    cacheId: 'ProfileNotification'
-                });
-            }, this);
-
-            this.listenTo(RevelAPI, 'onCreditCardNotificationShow', function() {
-                mainModel.trigger('showRevelPopup', {
-                    modelName: 'Revel',
-                    mod: 'CreditCard',
-                    model: RevelAPI,
-                    cacheId: 'RevelCreditCard'
-                });
-            }, this);
-
-            this.listenTo(RevelAPI, 'onProfileShow', function() {
-                profileCancelCallback = this.navigate.bind(this, Backbone.history.fragment, true);
-                this.navigate('profile', true);
-                mainModel.trigger('hideRevelPopup', RevelAPI);
-            }, this);
-
-            this.listenTo(RevelAPI, 'onProfileCancel', function() {
-                typeof profileCancelCallback == 'function' && profileCancelCallback();
-                profileCancelCallback = undefined;
-                profileSaveCallback = undefined;
-                RevelAPI.unset('forceCreditCard');
-                mainModel.trigger('hideRevelPopup', RevelAPI);
-            }, this);
-
-            this.listenTo(RevelAPI, 'onAuthenticationCancel', function() {
-                RevelAPI.unset('forceCreditCard');
-                mainModel.trigger('hideRevelPopup', RevelAPI);
-            }, this);
-
-            this.listenTo(RevelAPI, 'onProfileSaved', function() {
-                typeof profileSaveCallback == 'function' && profileSaveCallback();
-                profileCancelCallback = undefined;
-                profileSaveCallback = undefined;
-                RevelAPI.unset('forceCreditCard');
-            }, this);
-
-            this.listenTo(this, 'navigateToLoyalty', function() {
-                profileSaveCallback = this.navigate.bind(this, 'loyalty', true);
-                RevelAPI.checkProfile(profileSaveCallback);
-            }, this);
-
-            this.listenTo(this, 'navigateToProfile', function() {
-                profileSaveCallback = this.navigate.bind(this, Backbone.history.fragment, true);
-                RevelAPI.checkProfile(RevelAPI.trigger.bind(RevelAPI, 'onProfileShow'));
-            }, this);
-
-            App.Data.header && this.listenTo(App.Data.header, 'onProfileCancel', function() {
-                RevelAPI.trigger('onProfileCancel');
-            });
-
-            this.listenTo(RevelAPI, 'onAuthenticated', function() {
-                mainModel.trigger('hideRevelPopup', RevelAPI);
-            });
-
-            // bind phone changes in profile with reward card in checkout
-            checkout.listenTo(profileCustomer, 'change:phone', function() {
-                !rewardsCard.get('number') && RevelAPI.get('profileExists') && updateReward();
-            });
-
-            // if user saves profile reward card should be overriden excepting use case when profile is updated during payment with credit card
-            this.listenTo(RevelAPI, 'startListeningToCustomer', checkout.listenTo.bind(checkout, RevelAPI, 'onProfileSaved', updateReward));
-            this.listenTo(RevelAPI, 'stopListeningToCustomer', checkout.stopListening.bind(checkout, RevelAPI));
-            RevelAPI.trigger('startListeningToCustomer');
-
-            this.listenTo(RevelAPI, 'onUseSavedCreditCard', function() {
-                var self = this,
-                    success = RevelAPI.saveProfile.bind(RevelAPI, RevelAPI.trigger.bind(RevelAPI, 'onPayWithSavedCreditCard')),
-                    fail = function() {
-                        self.navigate('profile/1', true);
-                        RevelAPI.processPaymentInfo(null, function(result) {
-                            App.Data.errors.alert(result.errorMsg); // user notification
-                        });
-                    };
-
-                profileSaveCallback = RevelAPI.trigger.bind(RevelAPI, 'onPayWithSavedCreditCard');
-                profileCancelCallback = this.navigate.bind(this, Backbone.history.fragment, true);
-                mainModel.trigger('hideRevelPopup', RevelAPI);
-
-                RevelAPI.set('forceCreditCard', true);
-                RevelAPI.set('useAsDefaultCard', true); // need for case when profile doesn't exist
-                RevelAPI.checkProfile(RevelAPI.getProfile.bind(RevelAPI, function() {
-                    RevelAPI.set('useAsDefaultCard', true); // need for case when profile exists and credit card is invalid
-                    RevelAPI.processPaymentInfo(success, fail);
-                }));
-            }, this);
-
-            this.listenTo(RevelAPI, 'onPayWithSavedCreditCard', function() {
-                RevelAPI.set('useAsDefaultCardSession', true);
-                RevelAPI.unset('forceCreditCard');
-            }, this);
-
-            this.listenTo(RevelAPI, 'onPayWithCustomCreditCard', function() {
-                RevelAPI.set('useAsDefaultCardSession', false);
-                mainModel.trigger('hideRevelPopup', RevelAPI);
-            }, this);
-
-            function updateReward() {
-                var phone = profileCustomer.get('phone'),
-                    onlyDigits = phone && phone.match(/\d+/); // parse only digits (number may be +19491112233)
-                Array.isArray(onlyDigits) && onlyDigits[0] && rewardsCard.set('number', onlyDigits[0]);
             }
         }
     });
@@ -855,6 +1000,9 @@ define(["backbone", "factory"], function(Backbone) {
     App.Routers.RevelOrderingRouter = App.Routers.MobileRouter.extend({
         triggerInitializedEvent: function() {
             var myorder = App.Data.myorder;
+
+            // init App.Data.customer
+            this.initCustomer();
 
             // Restore App.Data.myorder.paymentResponse if exists in session storage.
             myorder.restorePaymentResponse(this.getUID());
@@ -885,6 +1033,10 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             function fireInitializedEvent() {
+                // Need to redirect on #login screen if the app starts with #index or without hash
+                if (App.Data.settings.isMobileVersion() && ['', '#index'].indexOf(location.hash) > -1) {
+                    window.location.hash = '#login';
+                }
                 // emit 'initialized' event
                 this.trigger('initialized');
                 this.initialized = true;

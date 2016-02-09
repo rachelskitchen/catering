@@ -46,6 +46,7 @@ define(["main_router"], function(main_router) {
             "pay": "pay",
             "confirm": "confirm",
             "maintenance": "maintenance",
+            "profile_edit": "profile_edit",
             "*other": "index"
         },
         hashForGoogleMaps: ['map', 'checkout'],//for #index we start preload api after main screen reached
@@ -86,6 +87,9 @@ define(["main_router"], function(main_router) {
                     cartCollection: App.Data.myorder
                 });
                 ests.getModelForView().set('clientName', mainModel.get('clientName'));
+
+                // Once the route is initialized need to set profile panel
+                this.listenToOnce(this, 'initialized', this.initProfilePanel.bind(this));
 
                 // init Stanford Card model if it's turned on
                 if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
@@ -135,7 +139,8 @@ define(["main_router"], function(main_router) {
         },
         createMainView: function() {
             var data = App.Data.mainModel.toJSON(),
-                mainView = App.Views.GeneratorView.create('Main', data, data.mod === 'Main'),
+                cacheId = data.mod === 'Main' || data.mod === 'Profile' ? data.mod : false,
+                mainView = App.Views.GeneratorView.create('Main', data, cacheId),
                 container = Backbone.$('body > div.main-container');
 
             this.mainView && this.mainView.removeFromDOMTree() || container.empty();
@@ -555,10 +560,6 @@ define(["main_router"], function(main_router) {
                     App.Data.giftcard = new App.Models.GiftCard;
                 }
 
-                if (!App.Data.customer) {
-                    App.Data.customer = new App.Models.Customer();
-                }
-
                 var settings = App.Data.settings.get('settings_system');
 
                 // Need to specify shipping address (Bug 34676)
@@ -596,6 +597,7 @@ define(["main_router"], function(main_router) {
             this.prepare('confirm', function() {
                 // if App.Data.customer doesn't exist (success payment -> history.back() to #checkout -> history.forward() to #confirm)
                 // need to init it.
+                // TODO
                 if(!App.Data.customer) {
                     this.loadCustomer();
                 }
@@ -615,8 +617,15 @@ define(["main_router"], function(main_router) {
             }
             this.change_page();
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
+        },
+        profile_edit: function() {
+            this.setProfileEditContent();
+            this.change_page();
         }
     });
+
+    // extends Router with Desktop mixing
+    _.defaults(Router.prototype, App.Routers.DesktopMixing);
 
     return new main_router(function() {
         defaultRouterData();

@@ -30,7 +30,8 @@ define(["backbone"], function(Backbone) {
             cart: {},
             img: App.Data.settings.get("img_path"),
             needShowStoreChoice: false,
-            isBlurContent: false
+            isBlurContent: false,
+            backAction: window.history.back.bind(window.history)
         }
     });
 });

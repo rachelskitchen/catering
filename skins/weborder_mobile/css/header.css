@@ -69,10 +69,6 @@
     margin-right: 1em;
 }
 
-/*#header .btn-back.lg {
-    margin-right: 4em;
-}*/
-
 #header .btn-back::before {
     content: '\f104';
     font-family: FontAwesome;
@@ -86,6 +82,23 @@
     font-weight: 200;
     vertical-align: middle;
     padding-left: 0.4em;
+}
+
+#header .btn-profile {
+    display: block;
+    width: 3em;
+    line-height: 7em;
+    margin-right: 1em;
+    margin-left: 1em;
+}
+
+#header .btn-profile::before {
+    content: "\f0c9";
+    font-family: FontAwesome;
+    font-size: 3em;
+    color: inherit;
+    display: block;
+    height: 1em;
 }
 
 #header .btn-search {

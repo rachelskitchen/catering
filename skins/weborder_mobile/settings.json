@@ -6,11 +6,11 @@
     "img_default": "none.png",
     "routing": {
         "main": {
-            "css": [ "main", "header", "footer", "revel", "jquery.smartbanner"],
-            "model": ["main", "header", "revel", "payments", "footer"],
-            "templates": ["main", "header", "footer", "revel"],
+            "css": [ "main", "header", "footer", "jquery.smartbanner", "profile"],
+            "model": ["main", "header", "payments", "footer"],
+            "templates": ["main", "header", "footer", "profile"],
             "views": ["main", "header", "products", "footer"],
-            "core": ["geopoint", "stanfordcard", "giftcard", "revel_view", "revel_api"],
+            "core": ["geopoint", "stanfordcard", "giftcard", "customers", "profile_view"],
             "js" : ["jquery.smartbanner"]
         },
         "index": {
@@ -112,6 +112,7 @@
             "templates": ["stanfordcard"],
             "views": ["stanfordcard"],
             "core": ["giftcard", "jquery_numbermask"]
-        }
+        },
+        "profile": {}
     }
 }

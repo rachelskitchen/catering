@@ -129,7 +129,7 @@ define(["factory"], function() {
             ':el': "attr: {'data-active-tab': tab}",
             '[data-tab="0"]': "classes: {active: equal(0, tab)}",
             '[data-tab="1"]': "classes: {active: equal(1, tab)}",
-            '[data-tab="2"]': "classes: {active: equal(2, tab)}",
+            '[data-tab="2"]': "classes: {active: equal(2, tab)}"
         },
         events: {
             'click li': 'onTab'
@@ -137,6 +137,17 @@ define(["factory"], function() {
         onTab: function(e) {
             var tab = Backbone.$(e.target).data('tab');
             this.model.set('tab', tab);
+        }
+    });
+
+    var HeaderWithProfileView = HeaderMainView.extend({
+        name: 'header',
+        mod: 'with_profile',
+        events: {
+            'click .btn-profile': 'profile'
+        },
+        profile: function() {
+            this.model.set('showProfileMenu', true);
         }
     });
 
@@ -259,6 +270,7 @@ define(["factory"], function() {
     return new (require('factory'))(function() {
         App.Views.HeaderView = {};
         App.Views.HeaderView.HeaderMainView = HeaderMainView;
+        App.Views.HeaderView.HeaderWithProfileView = HeaderWithProfileView;
         App.Views.HeaderView.HeaderTabsView = HeaderTabsView;
         App.Views.HeaderView.HeaderModifiersView = HeaderModifiersView;
         App.Views.HeaderView.HeaderComboProductView = HeaderComboProductView;
