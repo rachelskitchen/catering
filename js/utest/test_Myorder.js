@@ -1455,7 +1455,6 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             spyOn(window, 'getData').and.returnValue(orders);
             spyOn(model, 'empty_myorder');
             spyOn(model, 'addJSON');
-            spyOn(model.total, 'set');
             spyOn(model.discount, 'loadDiscount');
 
             model.loadOrders();
@@ -1465,7 +1464,6 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             expect(model.total.loadTotal).toHaveBeenCalled();
             expect(model.addJSON).toHaveBeenCalledWith(orders);
             expect(model.discount.loadDiscount).toHaveBeenCalled();
-            expect(model.total.set).toHaveBeenCalledWith(orders[0].total);
         });
 
         describe('_check_cart()', function() {
