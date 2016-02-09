@@ -1,12 +1,12 @@
 
-#modifiers_popup .customize.link1 {
+#modifiers_popup .customize {
     text-decoration: underline;
 }
 
 .modifiers_table .combo_item .customize.link1 {
     font-size: 15px;
 }
-#modifiers_popup .product_info .customize.link1 {
+#modifiers_popup .product_info .customize.link {
     font-size: 20px;
     float: right;
     margin-right: 30px;
