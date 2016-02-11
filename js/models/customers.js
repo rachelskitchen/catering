@@ -997,10 +997,10 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                             break;
                         default:
                             this.trigger('onUserAPIError', getResponse());
+                    }
 
-                        function getResponse() {
-                            return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
-                        }
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
                     }
                 }
             });
@@ -1094,10 +1094,10 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                             break;
                         default:
                             this.trigger('onUserAPIError', getResponse());
+                    }
 
-                        function getResponse() {
-                            return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
-                        }
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
                     }
                 }
             });
@@ -1203,10 +1203,9 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                             break;
                         default:
                             this.trigger('onUserAPIError', getResponse());
-
-                        function getResponse() {
-                            return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
-                        }
+                    }
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
                     }
                 }
             });

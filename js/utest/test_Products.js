@@ -1116,17 +1116,7 @@ define(['products', 'js/utest/data/Products'], function(products, data) {
         });
 
         describe('convertTimetables()', function() {
-            var timetable;
-
-            $.ajax({
-                type: "GET",
-                url: "js/utest/data/Timetable.json",
-                dataType: "json",
-                async: false,
-                success: function(data) {
-                    timetable = data.timetable;
-                }
-            });
+            var timetable = require('js/utest/data/Timetable').timetable;
 
             beforeEach(function() {
                 spyOn(window, 'format_timetables');

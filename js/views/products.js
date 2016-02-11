@@ -132,13 +132,13 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             'change .gift_card_number': 'gift_change',
             'change .gift_card_price': 'gift_price_change'
         },
-        render: function() {
+        getData: function() {
             var model = this.product.toJSON(),
                 settings = App.Data.settings;
 
             model.hide_images = settings.get('settings_system').hide_images;
             model.currency_symbol = settings.get('settings_system').currency_symbol;
-            model.price = round_monetary_currency(this.model.get_product_price());
+            model.price = this.getProductPrice();
             model.price_length = model.price.length;
             model.not_size = this.modifiers && this.modifiers.getSizeModel() === undefined;
             model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
@@ -147,6 +147,13 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             if (App.skin == App.Skins.RETAIL && model.images[0] == settings.get_img_default()) {
                 model.images[0] = settings.get_img_default(2); //to load noneMatrix.png
             }
+            return model;
+        },
+        getProductPrice: function() {
+            return round_monetary_currency(this.model.get_product_price());
+        },
+        render: function() {
+            var model = this.getData();
 
             this.gift_price = model.is_gift && model.not_size;
 
@@ -189,7 +196,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         },
         update_price: function() {
             var dt = this.$('dt'),
-                initial_price = round_monetary_currency(this.model.get_product_price());
+                initial_price = this.getProductPrice();
 
             if (dt.length) {
                 dt.prop('className', dt.prop('className').replace(/(\s+)?s\d+(?=\s|$)/, ''));
@@ -229,6 +236,10 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                 return this.model.get_modifiers().length > 0;
             }
         },
+        getProductPrice: function() {
+            var modifiers_price = this.model.get_sum_of_modifiers();
+            return round_monetary_currency(this.model.get_product_price() + modifiers_price);
+        },
         customize: function(event) {
             var self = this;
             var clone = this.model.clone();
@@ -248,6 +259,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                                 mod: 'MatrixCombo',
                                 cache_id: self.model.get('id_product')
                             });
+                        self.update_price();
                     }
                 }
             });

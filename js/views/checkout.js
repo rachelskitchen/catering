@@ -448,7 +448,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         mod: 'pay_button',
         bindings: {
             '.cash > span': 'text: applyCashLabel(checkout_dining_option)',
-            '.btn.place-order': 'classes: {disabled: disableBtn, cash: placeOrder, pay: not(placeOrder)}',
+            '.btn.place-order': 'classes: {disabled: any(shipping_pending, orderItems_pending), cash: placeOrder, pay: not(placeOrder)}',
             '.btn.place-order > span': 'text: payBtnText(orderItems_quantity, total_grandTotal)',
             '.stanford-card': 'classes:{hide: orderItems_hasGiftCard}'
         },
@@ -493,11 +493,13 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 model.listenTo(App.Data.myorder, 'add change remove', function() {
                     model.set('quantity', App.Data.myorder.get_only_product_quantity());
                 });
+                // update_cart_totals is in progress
                 model.listenTo(App.Data.myorder, 'onCartTotalsUpdate', function() {
-                    model.set('pending', true); // update_cart_totals in process
+                    model.set('pending', true);
                 });
+                // update_cart_totals completed
                 model.listenTo(App.Data.myorder, 'DiscountsComplete NoRequestDiscountsComplete', function() {
-                    model.set('pending', false); // update_cart_totals completed
+                    model.set('pending', false);
                 });
 
                 return model;
@@ -517,12 +519,6 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     var placeOrder = !Number(grandTotal) && quantity;
                     this.needPreValidate = placeOrder ? true : this.needPreValidateDefault;
                     return placeOrder;
-                }
-            },
-            disableBtn: {
-                deps: ['shipping_pending', 'orderItems_pending'],
-                get: function(shipping_pending, orderItems_pending) {
-                    return shipping_pending || orderItems_pending;
                 }
             }
         },

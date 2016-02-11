@@ -333,10 +333,7 @@ define(['backbone', 'captcha'], function(Backbone) {
                 success: function(data) {
                     // expect response that may have following formats:
                     // {status: 'OK', data: {...}} - card number exists
-                    // card number doesn't exist:
-                    // {status: 'OK', data: null} - 'Create reward card for user' setting is enabled
-                    // OR
-                    // {status: '"REWARD_CARD_NOT_FOUND"', errorsMsg: '...'} - 'Create reward card for user' setting is disabled
+                    // {status: 'REWARD_CARD_NOT_FOUND', errorsMsg: '...'} - card number doesn't exist
                     // {status: 'ERROR', errorMsg: '...'} - invalid captcha
                     if (data.status == 'OK') {
                         data = data.data;
@@ -390,7 +387,7 @@ define(['backbone', 'captcha'], function(Backbone) {
             var defaults = $.extend({}, this.defaults);
             delete defaults.rewards;
             this.set(defaults);
-            this.get('rewards').reset(); // clear rewards collection
+            this.get('rewards').reset(); // reset rewards collection
             this.get('rewards').trigger('update');
             this.trigger('onResetData');
         },
@@ -402,8 +399,7 @@ define(['backbone', 'captcha'], function(Backbone) {
             delete defaults.number;
             delete defaults.rewards;
             this.set(defaults);
-            this.get('rewards').reset(); // clear rewards collection
-            this.trigger('onResetData');
+            this.get('rewards').reset(); // reset rewards collection
         }
     });
 });

@@ -158,6 +158,8 @@ define(["backbone"], function(Backbone) {
                     cartItemsQuantity: App.Data.myorder.get_only_product_quantity()
                 });
             }
+
+            return check.status === 'OK';
         },
         performSearch: function() {
             var search = this.get('search');

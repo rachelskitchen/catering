@@ -650,7 +650,7 @@ footer.profile-container {
     height: auto;
 }
 /* combo products in the cart */
-#cart .order-items .myorder_combo > li {
+#cart .combo_products_place {
     font-size: 0.9em;
 }
 #cart .order-items .myorder .modifier_place,

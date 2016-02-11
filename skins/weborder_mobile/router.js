@@ -103,7 +103,7 @@ define(["main_router"], function(main_router) {
                 // init payments handlers
                 !App.Data.settings.get('isMaintenance') && this.paymentsHandlers();
 
-                this.listenTo(App.Data.myorder, 'add remove', function() {
+                this.listenTo(App.Data.myorder, 'add remove change', function() {
                     App.Data.header.set('cartItemsQuantity', App.Data.myorder.get_only_product_quantity());
                 });
 
@@ -653,6 +653,7 @@ define(["main_router"], function(main_router) {
                     var cache_id = combo_order.get('id_product');
                     order.update(originOrder);
                     self.stopListening(order, 'change', setHeaderToUpdate);
+                    self.stopListening(self, 'route', back);
                     self.return_to_combo_product(cache_id);
                 }
 
@@ -670,9 +671,11 @@ define(["main_router"], function(main_router) {
                         link_title: _loc.UPDATE,
                         link: !App.Settings.online_orders ? header.defaults.link : function() {
                             var status = header.updateProduct(order);
-                            order.set('discount', originOrder.get('discount').clone(), {silent: true});
-                            self.stopListening(self, 'route', back);
-                            originOrder.update(order);
+                            if (status) {
+                                self.stopListening(self, 'route', back);
+                                originOrder.update(order);
+                                combo_order.trigger("change:modifiers");
+                            }
                         }
                     });
                     self.listenTo(order, 'change', setHeaderToUpdate);
@@ -714,10 +717,9 @@ define(["main_router"], function(main_router) {
         combo_product: function(id_category, id_product) {
             this.prepare('combo_product', function() {
                 var self = this,
-                    header = App.Data.header,
                     isEditMode = !id_product,
                     order = isEditMode ? App.Data.myorder.at(id_category) : new App.Models.MyorderCombo(),
-                    originOrder = null,
+                    orderClone = null,
                     isOrderChanged;
 
                 if(!order)
@@ -725,13 +727,15 @@ define(["main_router"], function(main_router) {
 
                 var cache_id = order.get("id_product") ? order.get("id_product") : id_product;
 
-                header.set({
-                    back: window.history.back.bind(window.history),
-                    back_title: _loc.BACK
-                });
+                var header = new App.Models.HeaderModel({
+                        cart: this.navigate.bind(this, 'cart', true),
+                        addProductCb: this.navigate.bind(this, 'index', true),
+                        back: window.history.back.bind(window.history),
+                        back_title: _loc.BACK
+                    });
 
                 if(isEditMode) {
-                    originOrder = order.clone();
+                    orderClone = order.clone();
                     showProductDetails();
                 } else {
                     order.add_empty(id_product * 1, id_category * 1).then(showProductDetails);
@@ -745,17 +749,18 @@ define(["main_router"], function(main_router) {
                         header: _.extend({}, headerModes.ComboProduct, {
                                                 mode: isEditMode ? 'update' : 'add',
                                                 submode: 'root',
-                                                order: order,
-                                                originOrder: originOrder,
+                                                order: isEditMode ? orderClone : order,
+                                                originOrder: isEditMode ? order : null,
                                                 init_cache_session: true,
-                                                cacheIdUniq: cache_id
+                                                cacheIdUniq: cache_id,
+                                                model: header
                                 }),
                         footer: footerModes.None
                     });
 
                     var content = {
                         modelName: 'MyOrder',
-                        model: order,
+                        model: isEditMode ? orderClone : order,
                         mod: 'MatrixCombo',
                         action: isEditMode ? 'update' : 'add',
                         init_cache_session: true, // 'true' means that the view will be removed from cache before creating a new one.
@@ -1644,10 +1649,9 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.PROFILE_SIGN_UP,
                 back_title: _loc.BACK,
-                back: window.history.back.bind(window.history),
+                back: content.back,
                 link: content.next,
-                link_title: _loc.NEXT,
-                enableLink: false
+                link_title: _loc.NEXT
             });
 
             App.Data.mainModel.set({
@@ -1665,7 +1669,7 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.PROFILE_CREATE_TITLE,
                 back_title: _loc.BACK,
-                back: this.navigate.bind(this, 'signup', true),
+                back: content.back,
                 link: content.register,
                 link_title: _loc.CONTINUE,
                 enableLink: true
