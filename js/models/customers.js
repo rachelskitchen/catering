@@ -1000,10 +1000,10 @@ define(["backbone", "geopoint"], function(Backbone) {
                             break;
                         default:
                             this.trigger('onUserAPIError', getResponse());
+                    }
 
-                        function getResponse() {
-                            return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
-                        }
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
                     }
                 }
             });
@@ -1093,10 +1093,10 @@ define(["backbone", "geopoint"], function(Backbone) {
                             break;
                         default:
                             this.trigger('onUserAPIError', getResponse());
+                    }
 
-                        function getResponse() {
-                            return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
-                        }
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
                     }
                 }
             });
@@ -1198,10 +1198,9 @@ define(["backbone", "geopoint"], function(Backbone) {
                             break;
                         default:
                             this.trigger('onUserAPIError', getResponse());
-
-                        function getResponse() {
-                            return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
-                        }
+                    }
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
                     }
                 }
             });
