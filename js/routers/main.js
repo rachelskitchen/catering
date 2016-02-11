@@ -711,9 +711,15 @@ define(["backbone", "factory"], function(Backbone) {
                 var basicDetailsEvents = 'change:first_name change:last_name change:phone';
                 self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
                 self.listenTo(address, 'change', addressChanged);
+                self.listenTo(customer, 'onCookieChange', updateAddress);
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, address, 'change', addressChanged));
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddress));
             }, 0);
+
+            function updateAddress() {
+                address.set(customer.getProfileAddress());
+            }
 
             function basicDetailsChanged() {
                 updateBasicDetails = true;

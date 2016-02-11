@@ -24,13 +24,18 @@
  * Contains {@link App.Models.Customer} constructors.
  * @module customers
  * @requires module:backbone
+ * @requires module:doc_cookies
+ * @requires module:page_visibility
  * @requires module:geopoint
  * @see {@link module:config.paths actual path}
  */
-define(["backbone", "geopoint"], function(Backbone) {
+define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Backbone, docCookies, page_visibility) {
     'use strict';
 
-    var SERVER_URL = "https://identity-dev.revelup.com";
+    var SERVER_URL = "https://identity-dev.revelup.com",
+        cookieName = "user",
+        cookieDomain = "revelup.com",
+        cookiePath = "/weborder";
 
     /**
      * @class
@@ -186,7 +191,10 @@ define(["backbone", "geopoint"], function(Backbone) {
          * Sets indexes of addresses used for "Delivery" and "Shipping" dinign options.
          */
         initialize: function() {
+            // init addresses indexes
             this.setAddressesIndexes();
+
+            // trim for `first_name`, `last_name`
             this.listenTo(this, 'change:first_name', function() {
                 var firstName = this.get('first_name');
                 (typeof(firstName) == 'string') ?
@@ -199,6 +207,12 @@ define(["backbone", "geopoint"], function(Backbone) {
                     this.set('last_name', Backbone.$.trim(lastName)) :
                     this.set('last_name', this.defaults.last_name);
             }, this);
+
+            // set customer data from cookie
+            this.setCustomerFromCookie();
+
+            // set tracking of cookie change when user leaves/returns to current tab
+            page_visibility.on(this.trackCookieChange.bind(this));
         },
         /**
          * Gets customer name in the format "John M.".
@@ -565,7 +579,7 @@ define(["backbone", "geopoint"], function(Backbone) {
          * Gets authorization token of the customer. Sends request with following parameters:
          * ```
          * {
-         *     url: "https://identity-dev.revelup.com/customers-auth/v1/authorization/token/",
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/authorization/token-customer/",
          *     method: "POST",
          *     data: {
          *         username: <username>,                                              // username (email)
@@ -677,28 +691,8 @@ define(["backbone", "geopoint"], function(Backbone) {
                     grant_type: "password"
                 },
                 success: function(data) {
-                    if(!_.isObject(data.customer) || !_.isObject(data.token)) {
-                        console.error('Incorrect response data format');
-                        return
-                    }
-
-                    // set profile address
-                    var address = data.customer.addresses[0] || this.getEmptyAddress();
-                    this.setProfileAddress(this.convertAddressFromAPIFormat(address));
-
-                    // need to reset password and set `email` attribute as username
-                    this.set({
-                        email: data.customer.email,
-                        first_name: data.customer.first_name,
-                        last_name: data.customer.last_name,
-                        phone: data.customer.phone_number,
-                        user_id: data.token.user_id,
-                        access_token: data.token.access_token,
-                        token_type: data.token.token_type,
-                        expires_in: data.token.expires_in,
-                        scope: data.token.scope,
-                        password: this.defaults.password
-                    });
+                    this.updateCookie(data);
+                    this.setCustomerFromAPI(data);
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
@@ -728,6 +722,8 @@ define(["backbone", "geopoint"], function(Backbone) {
          * Changes attributes values on default values.
          */
         logout: function() {
+            docCookies.removeItem(cookieName, cookiePath, cookieDomain);
+
             for(var attr in this.defaults) {
                 this.set(attr, this.defaults[attr]);
             }
@@ -896,9 +892,7 @@ define(["backbone", "geopoint"], function(Backbone) {
                 return;
             }
 
-            _.defaults(address, {
-                state: address
-            })
+            address = this.convertAddressFromAPIFormat(address);
 
             var addresses = this.get('addresses'),
                 profileAddressIndex = this.get('profileAddressIndex');
@@ -985,7 +979,10 @@ define(["backbone", "geopoint"], function(Backbone) {
                     last_name: attrs.last_name,
                     phone_number: attrs.phone
                 }),
-                success: this.trigger.bind(this, 'onUserUpdate'),
+                success: function(data) {
+                    this.updateCookie(this.getCustomerInAPIFormat());
+                    this.trigger('onUserUpdate');
+                },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
                         case 403:
@@ -1081,7 +1078,11 @@ define(["backbone", "geopoint"], function(Backbone) {
                 contentType: "application/json",
                 headers: this.getAuthorizationHeader(),
                 data: JSON.stringify(address),
-                success: this.trigger.bind(this, 'onUserAddressCreated'),
+                success: function(data) {
+                    this.setProfileAddress(data);
+                    this.updateCookie(this.getCustomerInAPIFormat());
+                    this.trigger('onUserAddressCreated');
+                },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
                         case 403:
@@ -1183,7 +1184,11 @@ define(["backbone", "geopoint"], function(Backbone) {
                 contentType: "application/json",
                 headers: this.getAuthorizationHeader(),
                 data: JSON.stringify(address),
-                success: this.trigger.bind(this, 'onUserAddressUpdate'),
+                success: function(data) {
+                    this.setProfileAddress(data);
+                    this.updateCookie(this.getCustomerInAPIFormat());
+                    this.trigger('onUserAddressUpdate');
+                },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
                         case 403:
@@ -1251,6 +1256,100 @@ define(["backbone", "geopoint"], function(Backbone) {
          */
         isProfileAddress: function(address) {
             return _.isObject(address) && typeof address.id != 'undefined' && typeof address.customer != 'undefined';
+        },
+        /**
+         * Set attributes values.
+         *
+         * @param {Object} data - object corresponding to response of `v1/authorization/token-customer/` {@link App.Models.Customer#login request}
+         */
+        setCustomerFromAPI: function(data) {
+            if(!_.isObject(data.customer) || !_.isObject(data.token)) {
+                console.error('Incorrect `v1/authorization/token-customer/` data format');
+                return;
+            }
+
+            // set profile address
+            var address = data.customer.addresses[0] || this.getEmptyAddress();
+            this.setProfileAddress(this.convertAddressFromAPIFormat(address));
+
+            // need to reset password and set `email` attribute as username
+            this.set({
+                email: data.customer.email,
+                first_name: data.customer.first_name,
+                last_name: data.customer.last_name,
+                phone: data.customer.phone_number,
+                user_id: data.token.user_id,
+                access_token: data.token.access_token,
+                token_type: data.token.token_type,
+                expires_in: data.token.expires_in,
+                scope: data.token.scope,
+                password: this.defaults.password
+            });
+        },
+        /**
+         * Updates cookies with new data.
+         *
+         * @param {Object} data - object corresponding to response of `v1/authorization/token-customer/` {@link App.Models.Customer#login request}
+         */
+        updateCookie: function(data) {
+            if (!_.isObject(data)) {
+                return;
+            }
+
+            docCookies.setItem(cookieName, btoa(JSON.stringify(data)), data.token.expires_in, cookiePath, cookieDomain, true);
+        },
+        /**
+         * Parse cookie and set customer attributes.
+         */
+        setCustomerFromCookie: function() {
+            var data = docCookies.getItem(cookieName);
+
+            if (!data) {
+                return;
+            }
+
+            try {
+                this.setCustomerFromAPI(JSON.parse(atob(data)));
+            } catch(e) {
+                console.error(e);
+            }
+        },
+        /**
+         * @returns {Object} An object corresponding to response of `v1/authorization/token-customer/` {@link App.Models.Customer#login request}.
+         */
+        getCustomerInAPIFormat: function() {
+            var attrs = this.toJSON();
+
+            return {
+                customer: {
+                    email: attrs.email,
+                    first_name: attrs.first_name,
+                    last_name: attrs.last_name,
+                    phone_number: attrs.phone,
+                    addresses: [this.getProfileAddress()]
+                },
+                token: {
+                    user_id: attrs.user_id,
+                    access_token: attrs.access_token,
+                    token_type: attrs.token_type,
+                    expires_in: attrs.expires_in,
+                    scope: attrs.scope
+                }
+            }
+        },
+        /**
+         * Tracks cookie change to apply updates performed in another tab.
+         */
+        trackCookieChange: function() {
+            var currentState = docCookies.getItem(cookieName);
+            // condition may be true
+            // if user returns on tab after profile updating in another tab
+            if(_.isString(this.trackCookieChange.prevState) && _.isString(currentState)
+                && this.trackCookieChange.prevState != currentState) {
+                this.setCustomerFromCookie();
+                this.trigger('onCookieChange');
+            }
+            this.trackCookieChange.prevState = currentState;
         }
     });
 });
