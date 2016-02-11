@@ -1455,7 +1455,6 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             spyOn(window, 'getData').and.returnValue(orders);
             spyOn(model, 'empty_myorder');
             spyOn(model, 'addJSON');
-            spyOn(model.total, 'set');
             spyOn(model.discount, 'loadDiscount');
 
             model.loadOrders();
@@ -1465,7 +1464,6 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             expect(model.total.loadTotal).toHaveBeenCalled();
             expect(model.addJSON).toHaveBeenCalledWith(orders);
             expect(model.discount.loadDiscount).toHaveBeenCalled();
-            expect(model.total.set).toHaveBeenCalledWith(orders[0].total);
         });
 
         describe('_check_cart()', function() {
@@ -1946,13 +1944,24 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 expect(data.items.length).toBe(1);
             });
 
-            it('ajax complete', function() {
-                ajaxSpy.and.callFake(function(e) {
-                    e.complete();
-                });
-                model._get_cart_totals();
+            describe('ajax complete', function() {
+                it('request status is `abort`', function() {
+                    ajaxSpy.and.callFake(function(e) {
+                        e.complete({statusText: 'abort'});
+                    });
+                    model._get_cart_totals();
 
-                expect(model.trigger).toHaveBeenCalledWith('DiscountsComplete');
+                    expect(model.trigger).not.toHaveBeenCalled();
+                });
+
+                it('request status is not `abort`', function() {
+                    ajaxSpy.and.callFake(function(e) {
+                        e.complete({statusText: 'success'});
+                    });
+                    model._get_cart_totals();
+
+                    expect(model.trigger).toHaveBeenCalledWith('DiscountsComplete');
+                });
             });
 
             describe('ajax success', function() {
@@ -2671,6 +2680,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 it('default', function() {
                     customer.first_name = 'testName';
                     model.submit_order_and_pay(2);
+
                     expect(ajax.data.orderInfo.customer.first_name).toBe('testName');
                     expect(ajax.data.paymentInfo).toEqual({
                         tip : 1,

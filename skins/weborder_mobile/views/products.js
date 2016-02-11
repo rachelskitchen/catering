@@ -112,6 +112,13 @@ define(["products_view"], function(products_view) {
             },
             is_no_combo_link: function() {
                 return this.options.action === 'add';
+            },
+            product_price: {
+                deps: ['initial_price', "_product_combo_price", "modifiers"],
+                get: function() {
+                    var modifiers_price = this.model.get_sum_of_modifiers();
+                    return round_monetary_currency(this.model.get_product_price() + modifiers_price);
+                }
             }
         },
         customize: function() {

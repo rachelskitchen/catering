@@ -14,7 +14,7 @@
             <span class="item-sum"><%= currency_symbol %><%= product_sum %></span>
         </span>
         <% if(!sold_by_weight && !is_service_fee) { %>
-            <span class="qty alternate-text font-size2 fl-left"><%= quantity %>x</span>
+            <span class="qty font-size2 fl-left"><%= quantity %>x</span>
         <% } %>
             <span class="product-name name font-size1 title-text"><%= sizeModifier %> <%= name %></span>
     </div>
@@ -40,14 +40,49 @@
         <li class="special">*** <%= special %></li>
         <% } %>
     </ul>
+    <% if(is_child_product != true) { %>
+    <div class="upsell_root_product_place"></div>
     <div class="combo_products_place"></div>
     <ul class="discount_place font-size2 regular-text"></ul>
-    <% if(id_product !== null) { %>
+    <% } %>
+    <% if(id_product !== null && is_child_product != true) { %>
     <div class="btns text-right">
         <span class="edit font-size2 primary-button"> <%= _lp.MYORDER_EDIT %> </span>
         <span class="remove font-size2 alternate-button"> <%= _lp.MYORDER_REMOVE %> </span>
     </div>
     <% } %>
+</script>
+
+<script type="text/template" id="myorder_item_upsell_root-template">
+  <div class="combo_products_place">
+    <ul class="myorder_combo">
+      <li>
+        <div>
+            <span class="cost font-size1 fl-right primary-text">
+                <span class="item-sum"><%= currency_symbol %><%= product_sum %></span>
+            </span>
+            <% if(!sold_by_weight && !is_service_fee) { %>
+                <span class="qty alternate-text font-size2 fl-left"><%= quantity %>x</span>
+            <% } %>
+                <span class="product-name name font-size1 title-text"><%= sizeModifier %> <%= name %></span>
+        </div>
+        <% _.each(attrs, function(attr) { %>
+        <div class="attrs font-size2 regular-text">
+            <span><%= attr.name %></span>:
+            <span><%= attr.value %></span>
+        </div>
+        <% }); %>
+        <ul class="modifier_place font-size2 regular-text">
+            <% if(sold_by_weight) { %>
+            <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
+            <% } %>
+            <% if(special) { %>
+            <li class="special">*** <%= special %></li>
+            <% } %>
+        </ul>
+      </li>
+    </ul>
+  </div>
 </script>
 
 <script type="text/template" id="myorder_modifier-template">

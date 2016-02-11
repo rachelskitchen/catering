@@ -45,42 +45,44 @@ define(["myorder_view"], function(myorder_view) {
             $('#popup').addClass('ui-invisible');
             setTimeout(this.dh_change_height.bind(this, 1), 20);
             this.interval = this.interval || setInterval(this.dh_change_height.bind(this), 500); // check size every 0.5 sec
-            this.$('.modifiers_table_scroll').contentarrow();
+            this.$('.modifiers_table_scroll').contentarrow(undefined, true); // 2nd param is doNotUpdateScrollTop
         },
         events: {
             'change_height .product_instructions': 'dh_change_height' // if special request button pressed
         },
         dh_change_height: function(e) {
-            var prev_height = this.prev_height || 0,
-                inner_height = $('#popup').outerHeight(),
-                prev_window = this.prev_window || 0,
+            var prev_popup_height = this.prev_popup_height || 0,
+                popup_height = $('#popup').outerHeight(),
+                prev_window_height = this.prev_window_height || 0,
                 window_heigth = $(window).height();
             if (this.is_hidden == true ){
                 //don't change size for cached view which was temporary closed
                 return;
             }
-            if (e || prev_height !== inner_height || prev_window !== window_heigth) {
+            if (e || prev_popup_height !== popup_height || prev_window_height !== window_heigth) {
                 var el = this.$('.modifiers_table_scroll'),
-                    wrapper_height,
-
+                    popup_wrapper_height,
                     product = this.$('.product_info').outerHeight(),
                     special = this.$('.instruction_block').outerHeight(),
-                    size = this.$('.quantity_info').outerHeight();
+                    size = this.$('.quantity_info').outerHeight(),
+                    prev_el_scroll = el.get(0).scrollTop;
 
                 el.height('auto');
-                inner_height = $('#popup').outerHeight();
-                wrapper_height = $('.popup_wrapper').height();
-                //trace("dh_, product, special, size: ", product, special, size);
-                //trace("dh_, wh, ih: ", wrapper_height, inner_height);
-                if (wrapper_height < inner_height) {
-                    var height = wrapper_height - product - special - size - 117;
+                popup_height = $('#popup').outerHeight();
+                popup_wrapper_height = $('.popup_wrapper').height();
+
+                if (popup_wrapper_height < popup_height) {
+                    var height = popup_wrapper_height - product - special - size - 117;
                     el.height(height);
+                    // Bug 37299. Handle scrollTop update here instead of inside $.contentarrow
+                    if (prev_el_scroll > 0) {
+                        el.get(0).scrollTop = prev_el_scroll;
+                    }
                 }
 
-                inner_height = $('#popup').outerHeight();
-                this.prev_height = inner_height;
-                this.prev_window = window_heigth;
-                //trace("dh_change_height ==> ", height, inner_height, window_heigth);
+                popup_height = $('#popup').outerHeight();
+                this.prev_popup_height = popup_height;
+                this.prev_window_height = window_heigth;
 
                 $('#popup').removeClass('ui-invisible');
             }
@@ -107,7 +109,11 @@ define(["myorder_view"], function(myorder_view) {
       })
     };
 
-    var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
+    var MyOrderItemView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemView );
+    var MyOrderItemComboView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemComboView );
+    var MyOrderItemUpsellView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemUpsellView );
+
+    function _MyOrderItemView(_base){ return _base.extend({
         editItem: function(event) {
             event.preventDefault();
             var self = this,
@@ -130,7 +136,8 @@ define(["myorder_view"], function(myorder_view) {
                                                           //the view will be removed from cache after the product is added/updated into the cart.
             });
         }
-    });
+      })
+    }
 
     var MyOrderItemSpecialView = App.Views.FactoryView.extend({
         name: 'myorder',
@@ -148,6 +155,8 @@ define(["myorder_view"], function(myorder_view) {
         App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
         App.Views.MyOrderView.MyOrderMatrixComboView = MyOrderMatrixComboView;
         App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
+        App.Views.MyOrderView.MyOrderItemComboView = MyOrderItemComboView;
+        App.Views.MyOrderView.MyOrderItemUpsellView = MyOrderItemUpsellView;
         App.Views.MyOrderView.MyOrderItemSpecialView = MyOrderItemSpecialView;
     });
 });

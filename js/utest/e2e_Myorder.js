@@ -88,7 +88,7 @@ define(['js/utest/data/Settings', 'settings', 'products', 'myorder', 'card', 'cu
                     last_name: 'Reward Card'
                 });
                 myorder.once('paymentResponse', function() {
-                    expect(myorder.paymentResponse.reward_points).toBeGreaterThan(0);
+                    expect(myorder.paymentResponse.reward_items).toBeGreaterThan(0);
                     done();
                 });
                 myorder.once('paymentFailed', function(opts) {

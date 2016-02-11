@@ -50,6 +50,7 @@ var ERROR = {},
 // Should be set before language pack loading
 ERROR.WEBSTORAGES_ARE_DISABLED = 'Web storages are disabled or not supported in your browser';
 ERROR.LOAD_LANGUAGE_PACK = 'Unable to load a language pack. Now the page is reloaded.';
+ERROR.CANT_GET_WEBORDER_SETTINGS = 'Can\'t load weborder settings from a backend server';
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,

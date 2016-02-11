@@ -314,6 +314,10 @@ ul.categories {
     background-position: -91px -26px;
 }
 
+#modifiers_popup .product_info .customize.link1 {
+    color: #fcfcfc;
+}
+
 .quantity_select.select-wrapper {
     box-shadow: 0 3px 3px rgba(0,0,0,0.3);
 }
