@@ -711,14 +711,20 @@ define(["backbone", "factory"], function(Backbone) {
                 var basicDetailsEvents = 'change:first_name change:last_name change:phone';
                 self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
                 self.listenTo(address, 'change', addressChanged);
-                self.listenTo(customer, 'onCookieChange', updateAddress);
+                self.listenTo(customer, 'onCookieChange', updateAddressAttributes);
+                self.listenTo(customer, 'onLogout', logout);
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, address, 'change', addressChanged));
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddress));
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddressAttributes));
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onLogout', logout));
             }, 0);
 
-            function updateAddress() {
+            function updateAddressAttributes() {
                 address.set(customer.getProfileAddress());
+            }
+
+            function logout() {
+                self.navigate('index', true);
             }
 
             function basicDetailsChanged() {
@@ -932,9 +938,15 @@ define(["backbone", "factory"], function(Backbone) {
                 var basicDetailsEvents = 'change:first_name change:last_name change:phone';
                 self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
                 self.listenTo(address, 'change', addressChanged);
+                self.listenTo(customer, 'onCookieChange', updateAddressAttributes);
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, address, 'change', addressChanged));
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddressAttributes));
             }, 0);
+
+            function updateAddressAttributes() {
+                address.set(customer.getProfileAddress());
+            }
 
             function basicDetailsChanged() {
                 updateBasicDetails = true;
@@ -1042,7 +1054,8 @@ define(["backbone", "factory"], function(Backbone) {
 
             function fireInitializedEvent() {
                 // Need to redirect on #login screen if the app starts with #index or without hash
-                if (App.Data.settings.isMobileVersion() && ['', '#index'].indexOf(location.hash) > -1) {
+                if (!App.Data.customer.isAuthorized() && App.Data.settings.isMobileVersion()
+                    && ['', '#index'].indexOf(location.hash) > -1) {
                     window.location.hash = '#login';
                 }
                 // emit 'initialized' event

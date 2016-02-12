@@ -719,7 +719,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             });
         },
         /**
-         * Changes attributes values on default values.
+         * Changes attributes values on default values. Emits `onLogout` event.
          */
         logout: function() {
             docCookies.removeItem(cookieName, cookiePath, cookieDomain);
@@ -727,6 +727,8 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             for(var attr in this.defaults) {
                 this.set(attr, this.defaults[attr]);
             }
+
+            this.trigger('onLogout');
         },
         /**
          * Registers a new customer. Sends request with following parameters:
@@ -1338,17 +1340,25 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
         },
         /**
          * Tracks cookie change to apply updates performed in another tab.
+         * Emits `onCookieChange` event if cookie changed.
          */
         trackCookieChange: function() {
             var currentState = docCookies.getItem(cookieName);
             // condition may be true
             // if user returns on tab after profile updating in another tab
-            if(_.isString(this.trackCookieChange.prevState) && _.isString(currentState)
+            if (_.isString(this.trackCookieChange.prevState) && _.isString(currentState)
                 && this.trackCookieChange.prevState != currentState) {
                 this.setCustomerFromCookie();
                 this.trigger('onCookieChange');
             }
             this.trackCookieChange.prevState = currentState;
+        },
+        /**
+         * @returns {boolean} `true` if user is authorized and `false` otherwise.
+         */
+        isAuthorized: function() {
+            return this.get('access_token') != this.defaults.access_token
+                && this.get('user_id') != this.defaults.user_id;
         }
     });
 });
