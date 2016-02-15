@@ -31,7 +31,6 @@ define(["main_router"], function(main_router) {
     */
     function defaultRouterData() {
         headerModes.Main = {mod: 'Main', className: 'main'};
-        headerModes.WithProfile = {mod: 'WithProfile', className: 'main'};
         headerModes.Modifiers = {mod: 'Modifiers', className: 'modifiers'};
         headerModes.ComboProduct = {mod: 'ComboProduct', className: 'modifiers'};
         headerModes.Cart = {mod: 'Cart'};
@@ -358,7 +357,7 @@ define(["main_router"], function(main_router) {
                 }
 
                 App.Data.mainModel.set({
-                    header: headerModes.WithProfile, //headerModes.Main,
+                    header: headerModes.Main,
                     footer: footerMode,
                     contentClass: '',
                     content: content
