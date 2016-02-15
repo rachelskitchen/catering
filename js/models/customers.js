@@ -1277,6 +1277,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     new_password: attrs.confirm_password
                 }),
                 success: function(data) {
+                    this.resetPasswords();
                     this.trigger('onPasswordChange');
                 },
                 error: function(jqXHR) {

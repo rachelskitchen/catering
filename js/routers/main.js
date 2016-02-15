@@ -697,6 +697,7 @@ define(["backbone", "factory"], function(Backbone) {
                 address = new Backbone.Model(customer.getProfileAddress() || customer.getEmptyAddress()),
                 updateBasicDetails = false,
                 updateAddress = false,
+                updatePassword = false,
                 self = this;
 
             App.Data.mainModel.set({
@@ -713,12 +714,15 @@ define(["backbone", "factory"], function(Backbone) {
             });
 
             window.setTimeout(function() {
-                var basicDetailsEvents = 'change:first_name change:last_name change:phone';
+                var basicDetailsEvents = 'change:first_name change:last_name change:phone',
+                    passwordEvents = 'change:password, change:confirm_password';
                 self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
+                self.listenTo(customer, passwordEvents, accountPasswordChanged);
                 self.listenTo(address, 'change', addressChanged);
                 self.listenTo(customer, 'onCookieChange', updateAddressAttributes);
                 self.listenTo(customer, 'onLogout', logout);
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, passwordEvents, accountPasswordChanged));
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, address, 'change', addressChanged));
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddressAttributes));
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onLogout', logout));
@@ -736,6 +740,10 @@ define(["backbone", "factory"], function(Backbone) {
                 updateBasicDetails = true;
             }
 
+            function accountPasswordChanged() {
+                updatePassword = Boolean(customer.get('password')) && Boolean(customer.get('confirm_password'));
+            }
+
             function addressChanged() {
                 updateAddress = true;
             }
@@ -743,8 +751,8 @@ define(["backbone", "factory"], function(Backbone) {
             function update() {
                 var mainModel = App.Data.mainModel,
                     _address = address.toJSON(),
-                    requests = updateBasicDetails + updateAddress,
-                    basicXHR, addressXHR;
+                    requests = updateBasicDetails + updatePassword + updateAddress,
+                    basicXHR, passwordXHR, addressXHR;
 
                 // show spinner
                 requests > 0 && mainModel.trigger('loadStarted');
@@ -756,6 +764,15 @@ define(["backbone", "factory"], function(Backbone) {
                         updateBasicDetails = false;
                     });
                     basicXHR.always(hideSpinner);
+                }
+
+                // update password
+                if (updatePassword) {
+                    passwordXHR = customer.changePassword();
+                    passwordXHR.done(function() {
+                        updatePassword = false;
+                    });
+                    passwordXHR.always(hideSpinner);
                 }
 
                 // update address
@@ -1025,10 +1042,7 @@ define(["backbone", "factory"], function(Backbone) {
             window.setTimeout(function() {
                 var events = 'change:password change:confirm_password';
                 self.listenTo(customer, events, preValidateData);
-                self.listenToOnce(self, 'route', function() {
-                    customer.resetPasswords();
-                    self.stopListening(customer, events, preValidateData);
-                });
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, events, preValidateData));
             }, 0);
 
             content.push({
