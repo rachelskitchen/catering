@@ -356,6 +356,11 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(customer, 'onUserValidationError onUserAPIError', function(msg) {
                 _.isObject(msg) && App.Data.errors.alert(JSON.stringify(msg));
             });
+
+            this.listenTo(customer, 'onPasswordInvalid', function() {
+                App.Data.errors.alert(_loc.PROFILE_INVALID_PASSWORD);
+            });
+
         },
         /**
          * Init App.Data.customer and restore its state from a storage
@@ -692,6 +697,7 @@ define(["backbone", "factory"], function(Backbone) {
                 address = new Backbone.Model(customer.getProfileAddress() || customer.getEmptyAddress()),
                 updateBasicDetails = false,
                 updateAddress = false,
+                updatePassword = false,
                 self = this;
 
             App.Data.mainModel.set({
@@ -708,12 +714,15 @@ define(["backbone", "factory"], function(Backbone) {
             });
 
             window.setTimeout(function() {
-                var basicDetailsEvents = 'change:first_name change:last_name change:phone';
+                var basicDetailsEvents = 'change:first_name change:last_name change:phone',
+                    passwordEvents = 'change:password, change:confirm_password';
                 self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
+                self.listenTo(customer, passwordEvents, accountPasswordChanged);
                 self.listenTo(address, 'change', addressChanged);
                 self.listenTo(customer, 'onCookieChange', updateAddressAttributes);
                 self.listenTo(customer, 'onLogout', logout);
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, passwordEvents, accountPasswordChanged));
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, address, 'change', addressChanged));
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddressAttributes));
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onLogout', logout));
@@ -731,6 +740,10 @@ define(["backbone", "factory"], function(Backbone) {
                 updateBasicDetails = true;
             }
 
+            function accountPasswordChanged() {
+                updatePassword = Boolean(customer.get('password')) && Boolean(customer.get('confirm_password'));
+            }
+
             function addressChanged() {
                 updateAddress = true;
             }
@@ -738,8 +751,8 @@ define(["backbone", "factory"], function(Backbone) {
             function update() {
                 var mainModel = App.Data.mainModel,
                     _address = address.toJSON(),
-                    requests = updateBasicDetails + updateAddress,
-                    basicXHR, addressXHR;
+                    requests = updateBasicDetails + updatePassword + updateAddress,
+                    basicXHR, passwordXHR, addressXHR;
 
                 // show spinner
                 requests > 0 && mainModel.trigger('loadStarted');
@@ -751,6 +764,15 @@ define(["backbone", "factory"], function(Backbone) {
                         updateBasicDetails = false;
                     });
                     basicXHR.always(hideSpinner);
+                }
+
+                // update password
+                if (updatePassword) {
+                    passwordXHR = customer.changePassword();
+                    passwordXHR.done(function() {
+                        updatePassword = false;
+                    });
+                    passwordXHR.always(hideSpinner);
                 }
 
                 // update address
@@ -785,7 +807,7 @@ define(["backbone", "factory"], function(Backbone) {
                     header: App.Data.header,
                     logout_link: logout,
                     login_link: login,
-                    settings_link: close,
+                    settings_link: profile_settings,
                     payments_link: close,
                     profile_link: profile_edit,
                     close_link: close,
@@ -806,6 +828,11 @@ define(["backbone", "factory"], function(Backbone) {
 
             function profile_edit() {
                 self.navigate('profile_edit', true);
+                close();
+            }
+
+            function profile_settings() {
+                self.navigate('profile_settings', true);
                 close();
             }
 
@@ -995,6 +1022,63 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             return content;
+        },
+        profileSettingsContent: function() {
+            var customer = App.Data.customer,
+                self = this,
+                content = [];
+
+            App.Data.header.set({
+                page_title: _loc.SETTINGS,
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history),
+                link: save,
+                link_title: _loc.SAVE
+            });
+
+            // listen to any App.Data.customer change
+            // to enable 'Save' link
+            preValidateData();
+            window.setTimeout(function() {
+                var events = 'change:password change:confirm_password';
+                self.listenTo(customer, events, preValidateData);
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, events, preValidateData));
+            }, 0);
+
+            content.push({
+                modelName: 'Profile',
+                mod: 'AccountPassword',
+                model: customer,
+                cacheId: true
+            }, {
+                modelName: 'Profile',
+                mod: 'OwnerContacts',
+                className: 'profile-owner-info',
+                cacheId: true
+            });
+
+            return content;
+
+            function preValidateData() {
+                var attrs = customer.toJSON();
+                App.Data.header.set('enableLink', Boolean(attrs.password) && Boolean(attrs.confirm_password));
+            }
+
+            function save() {
+                var mainModel = App.Data.mainModel,
+                    req;
+                if(customer.get('password') && customer.get('confirm_password')) {
+                    mainModel.trigger('loadStarted');
+                    req = customer.changePassword();
+                    req.done(function() {
+                        customer.resetPasswords();
+                        App.Data.errors.alert(_loc.PROFILE_PASSWORD_CHANGED);
+                    });
+                    req.always(function() {
+                        mainModel.trigger('loadCompleted');
+                    });
+                }
+            }
         }
     };
 

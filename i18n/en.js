@@ -580,6 +580,12 @@
         "PROFILE_USER_NOT_ACTIVATED": "User is not activated",
         "PROFILE_SESSION_EXPIRED": "Session is expired",
         "PROFILE_USER_NOT_FOUND": "User not found",
-        "PROFILE_USER_ADDRESS_NOT_FOUND": "Address not found"
+        "PROFILE_USER_ADDRESS_NOT_FOUND": "Address not found",
+        "PROFILE_ENTER_CURRENT_PASSWORD": "Enter current password",
+        "PROFILE_ENTER_NEW_PASSWORD": "Enter new password",
+        "PROFILE_CONTACT": "Contact",
+        "PROFILE_WEBSITE": "Website",
+        "PROFILE_INVALID_PASSWORD": "Invalid password",
+        "PROFILE_PASSWORD_CHANGED": "The password has successfully changed"
     }; // end of locale
 }); // end of module

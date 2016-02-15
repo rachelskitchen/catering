@@ -116,14 +116,15 @@
 
 .profile-edit .side {
     width: 50%;
+    min-height: 320px;
     display: inline-block;
     vertical-align: top;
 }
 
-.profile-edit .right-side {
-    border-left-style: solid;
-    border-left-width: 1px;
-    border-left-color: #ccc;
+.profile-edit .left-side {
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-right-color: #ccc;
 }
 
 .profile-edit .phone-privacy {
@@ -161,6 +162,10 @@
     margin-bottom: 15px;
     font-size: 16px;
     text-decoration: underline;
+}
+
+.profile-edit .basic-details-box {
+    margin-bottom: 15px;
 }
 
 .profile-form > li {

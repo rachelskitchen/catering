@@ -46,7 +46,8 @@ define(['backbone', 'backbone_epoxy', 'backbone_epoxy_handlers', 'backbone_epoxy
             _.extend(this.bindingSources, {
                 _settings: App.Data.settings,
                 _system_settings: new Backbone.Model(App.Settings),
-                _lp: new Backbone.Model(_loc)
+                _lp: new Backbone.Model(_loc),
+                _settings_directory: new Backbone.Model(App.SettingsDirectory)
             }, bindingSources);
 
             // init array of sub views
