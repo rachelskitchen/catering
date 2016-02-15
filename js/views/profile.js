@@ -162,6 +162,12 @@ define(["factory"], function() {
                 model: this.model
             });
 
+            var accountPassword = App.Views.GeneratorView.create('Profile', {
+                el: this.$('.account-password-box'),
+                mod: 'AccountPassword',
+                model: this.model
+            });
+
             var address = App.Views.GeneratorView.create('Profile', {
                 el: this.$('.address-box'),
                 mod: 'Address',
@@ -174,9 +180,13 @@ define(["factory"], function() {
         }
     });
 
-    App.Views.CoreProfileView.CoreProfileSettingsView = App.Views.FactoryView.extend({
+    App.Views.CoreProfileView.CoreProfileAccountPasswordView = App.Views.FactoryView.extend({
         name: 'profile',
-        mod: 'settings'
+        mod: 'account_password',
+        bindings: {
+            '.current-password': 'value: password, events:["input"], pattern: /^.{0,255}$/',
+            '.new-password': 'value: confirm_password, events:["input"], pattern: /^.{0,255}$/'
+        }
     });
 
     App.Views.CoreProfileView.CoreProfilePWDResetView = App.Views.FactoryView.extend({
@@ -247,6 +257,18 @@ define(["factory"], function() {
         }
     });
 
+    App.Views.CoreProfileView.CoreProfileOwnerContactsView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'owner_contacts',
+        bindings: {
+            ':el': 'toggle: any(_settings_directory_owner_contact, _settings_directory_owner_website)',
+            '.contact-info': 'toggle: _settings_directory_owner_contact',
+            '.website-info': 'toggle: _settings_directory_owner_website',
+            '.phone': 'text: _settings_directory_owner_contact, attr: {href: format("tel:$1", _settings_directory_owner_contact)}',
+            '.website': 'text: _settings_directory_owner_website, attr: {href: _settings_directory_owner_website}'
+        }
+    });
+
     function controlLinks(showSignUp, showLogIn, showMenu) {
         return function() {
             this.getBinding('$ui').set({
@@ -265,9 +287,10 @@ define(["factory"], function() {
         App.Views.ProfileView.ProfileCreateView = App.Views.CoreProfileView.CoreProfileCreateView;
         App.Views.ProfileView.ProfileEditView = App.Views.CoreProfileView.CoreProfileEditView;
         App.Views.ProfileView.ProfileAddressView = App.Views.CoreProfileView.CoreProfileAddressView;
-        App.Views.ProfileView.ProfileSettingsView = App.Views.CoreProfileView.CoreProfileSettingsView;
+        App.Views.ProfileView.ProfileAccountPasswordView = App.Views.CoreProfileView.CoreProfileAccountPasswordView;
         App.Views.ProfileView.ProfilePWDResetView = App.Views.CoreProfileView.CoreProfilePWDResetView;
         App.Views.ProfileView.ProfileMenuView = App.Views.CoreProfileView.CoreProfileMenuView;
         App.Views.ProfileView.ProfilePanelView = App.Views.CoreProfileView.CoreProfilePanelView;
+        App.Views.ProfileView.ProfileOwnerContactsView = App.Views.CoreProfileView.CoreProfileOwnerContactsView;
     });
 });

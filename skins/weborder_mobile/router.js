@@ -62,14 +62,13 @@ define(["main_router"], function(main_router) {
             "gallery": "gallery",
             "maintenance": "maintenance",
             "pay": "pay",
-            // "profile(/:step)": "profile",
-            // "loyalty": "loyalty",
             "rewards_card_submit": "rewards_card_submit",
             "rewards": "rewards",
             "login": "login",
             "signup": "signup",
             "profile_create": "profile_create",
             "profile_edit": "profile_edit",
+            "profile_settings": "profile_settings",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -1685,6 +1684,18 @@ define(["main_router"], function(main_router) {
         },
         profile_edit: function() {
             var content = this.profileEditContent();
+
+            App.Data.mainModel.set({
+                header: headerModes.Modifiers,
+                footer: footerModes.None,
+                contentClass: 'primary-bg',
+                content: content
+            });
+
+            this.change_page();
+        },
+        profile_settings: function() {
+            var content = this.profileSettingsContent();
 
             App.Data.mainModel.set({
                 header: headerModes.Modifiers,

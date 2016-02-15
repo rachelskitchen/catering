@@ -61,6 +61,8 @@
     <div class="left-side side text-center border-box fl-left">
         <h2 class="title"><%= _lp.PROFILE_BASIC_DETAILS %></h2>
         <div class="basic-details-box"></div>
+        <h2 class="title"><%= _lp.PROFILE_ACCOUNT_PASSWORD %></h2>
+        <div class="account-password-box"></div>
     </div>
     <div class="right-side side text-center border-box">
         <h2 class="title"><%= _lp.PROFILE_ADDRESS %></h2>
@@ -115,4 +117,26 @@
             <input type="text" class="zipcode ios-safari-caret input-colors">
         </li>
     </ul>
+</script>
+
+<script type="text/template" id="profile_account_password-template">
+    <ul class="profile-form font-size2 text-center">
+        <li class="account-password">
+            <input type="password" placeholder="<%= _lp.PROFILE_ENTER_CURRENT_PASSWORD %>" class="current-password ios-safari-caret input-colors">
+        </li>
+        <li class="account-password">
+            <input type="password" placeholder="<%= _lp.PROFILE_ENTER_NEW_PASSWORD %>" class="new-password ios-safari-caret input-colors">
+        </li>
+    </ul>
+</script>
+
+<script type="text/template" id="profile_owner_contacts-template">
+    <div class="contact-info font-size2 regular-text">
+        <dfn class="contact-title"><%= _lp.PROFILE_CONTACT %>:</dfn>
+        <a href="" class="phone contact-link"></a>
+    </div>
+    <div class="website-info font-size2 regular-text">
+        <dfn class="contact-title"><%= _lp.PROFILE_WEBSITE %>:</dfn>
+        <a href="" target="_blank" class="website contact-link"></a>
+    </div>
 </script>
