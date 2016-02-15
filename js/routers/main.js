@@ -356,6 +356,11 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(customer, 'onUserValidationError onUserAPIError', function(msg) {
                 _.isObject(msg) && App.Data.errors.alert(JSON.stringify(msg));
             });
+
+            this.listenTo(customer, 'onPasswordInvalid', function() {
+                App.Data.errors.alert(_loc.PROFILE_INVALID_PASSWORD);
+            });
+
         },
         /**
          * Init App.Data.customer and restore its state from a storage
@@ -785,7 +790,7 @@ define(["backbone", "factory"], function(Backbone) {
                     header: App.Data.header,
                     logout_link: logout,
                     login_link: login,
-                    settings_link: close,
+                    settings_link: profile_settings,
                     payments_link: close,
                     profile_link: profile_edit,
                     close_link: close,
@@ -806,6 +811,11 @@ define(["backbone", "factory"], function(Backbone) {
 
             function profile_edit() {
                 self.navigate('profile_edit', true);
+                close();
+            }
+
+            function profile_settings() {
+                self.navigate('profile_settings', true);
                 close();
             }
 
@@ -995,6 +1005,66 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             return content;
+        },
+        profileSettingsContent: function() {
+            var customer = App.Data.customer,
+                self = this,
+                content = [];
+
+            App.Data.header.set({
+                page_title: _loc.SETTINGS,
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history),
+                link: save,
+                link_title: _loc.SAVE
+            });
+
+            // listen to any App.Data.customer change
+            // to enable 'Save' link
+            preValidateData();
+            window.setTimeout(function() {
+                var events = 'change:password change:confirm_password';
+                self.listenTo(customer, events, preValidateData);
+                self.listenToOnce(self, 'route', function() {
+                    customer.resetPasswords();
+                    self.stopListening(customer, events, preValidateData);
+                });
+            }, 0);
+
+            content.push({
+                modelName: 'Profile',
+                mod: 'AccountPassword',
+                model: customer,
+                cacheId: true
+            }, {
+                modelName: 'Profile',
+                mod: 'OwnerContacts',
+                className: 'profile-owner-info',
+                cacheId: true
+            });
+
+            return content;
+
+            function preValidateData() {
+                var attrs = customer.toJSON();
+                App.Data.header.set('enableLink', Boolean(attrs.password) && Boolean(attrs.confirm_password));
+            }
+
+            function save() {
+                var mainModel = App.Data.mainModel,
+                    req;
+                if(customer.get('password') && customer.get('confirm_password')) {
+                    mainModel.trigger('loadStarted');
+                    req = customer.changePassword();
+                    req.done(function() {
+                        customer.resetPasswords();
+                        App.Data.errors.alert(_loc.PROFILE_PASSWORD_CHANGED);
+                    });
+                    req.always(function() {
+                        mainModel.trigger('loadCompleted');
+                    });
+                }
+            }
         }
     };
 
