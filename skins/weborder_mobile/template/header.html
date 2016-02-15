@@ -1,4 +1,5 @@
 <script type="text/template" id="header_main-template">
+    <div class="btn-header btn-profile fl-left"></div>
     <div class="btn-header btn-back fl-left"><span class="btn-back-title font-size4"></span></div>
     <div class="btn-header btn-cart fl-right" data-count=""></div>
     <div class="btn-header btn-search fl-right"></div>
@@ -15,19 +16,6 @@
     <li class="" data-tab="0"><span><%= _lp.MENU %></span></li>
     <li class="tab-center" data-tab="1"><span><%= _lp.ABOUT %></span></li>
     <li class="" data-tab="2"><span><%= _lp.LOCATION %></span></li>
-</script>
-
-<script type="text/template" id="header_with_profile-template">
-    <div class="btn-header btn-profile fl-left"></div>
-    <div class="btn-header btn-cart fl-right" data-count=""></div>
-    <div class="btn-header btn-search fl-right"></div>
-    <h1><span class="title font-size1"></span></h1>
-    <div class="search invisible primary-bg text-center" contenteditable="true">
-        <form class="form-search input-control font-size2">
-            <input type="text" class="input-search input-colors" placeholder="<%= _lp.SEARCH_FIELD_PLACEHOLDER %>">
-            <label class="ctrl-wrapper"><input type="button" class="ctrl"></label>
-        </form>
-    </div>
 </script>
 
 <script type="text/template" id="header_modifiers-template">
