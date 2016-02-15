@@ -812,10 +812,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     address: _.isObject(address) ? address : undefined
                 }),
                 success: function(data) {
-                    this.set({
-                        password: this.defaults.password,
-                        confirm_password: this.defaults.confirm_password
-                    });
+                    this.resetPasswords();
                     this.logout();
                     this.trigger('onUserCreated');
                 },
@@ -916,6 +913,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/customers/<id>/",
          *     method: "PATCH",
          *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
          *     data: {
          *         email: <email>,             // email
          *         first_name: <first_name>,   // first name
@@ -962,7 +960,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          *     <field name>: <validation error>
          * }
          * ```
-         * The model emits `onUserUpdateError` event in this case.
+         * The model emits `onUserValidationError` event in this case.
          *
          * @returns {Object} jqXHR object.
          */
@@ -1213,6 +1211,97 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             });
         },
         /**
+         * Changes the customer's password. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/change-password/<id>/",
+         *     method: "POST",
+         *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
+         *     data: {
+         *         "old_password": <current password>,
+         *         "new_password": <new password>
+         *     }
+         * }
+         * ```
+         * Server may return the following response:
+         * - Successful change:
+         * ```
+         * Status: 200
+         * {
+         *     "detail": "ok"
+         * }
+         * ```
+         * The model emits `onPasswordChange` event in this case.
+         *
+         * - Session is already expired or invalid token is used:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * The model emits `onUserSessionExpired` event in this case. Method `.logout()` is automatically called in this case.
+         *
+         * - Invalid current password:
+         * ```
+         * Status: 404
+         * {
+         *     "detail":"Customer object with such password does not exist."
+         * }
+         * ```
+         * The model emits `onPasswordInvalid` event in this case.
+         *
+         * - New data is invalid:
+         * ```
+         * Status: 400
+         * {
+         *     <field name>: <validation error>
+         * }
+         * ```
+         * The model emits `onUserValidationError` event in this case.
+         *
+         * @returns {Object} jqXHR object.
+         */
+        changePassword: function() {
+            var attrs = this.toJSON();
+
+            return Backbone.$.ajax({
+                url: SERVER_URL + "/customers-auth/v1/customers/change-password/" + attrs.user_id + "/",
+                method: "POST",
+                context: this,
+                contentType: "application/json",
+                headers: this.getAuthorizationHeader(),
+                data: JSON.stringify({
+                    old_password: attrs.password,
+                    new_password: attrs.confirm_password
+                }),
+                success: function(data) {
+                    this.trigger('onPasswordChange');
+                },
+                error: function(jqXHR) {
+                    switch(jqXHR.status) {
+                        case 403:
+                            this.trigger('onUserSessionExpired');
+                            this.logout(); // need to reset current account to allow to re-log in
+                            break;
+                        case 404:
+                            this.trigger('onPasswordInvalid');
+                            break;
+                        case 400:
+                            this.trigger('onUserValidationError', getResponse());
+                            break;
+                        default:
+                            this.trigger('onUserAPIError', getResponse());
+                    }
+
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
+                    }
+                }
+            });
+        },
+        /**
          * Converts address to 'customers/addresses/' API format. Changes `zipcode` property to `postal_code`,
          * `country` -> `country_code`, `state`/`province` -> `region`.
          *
@@ -1283,9 +1372,10 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 access_token: data.token.access_token,
                 token_type: data.token.token_type,
                 expires_in: data.token.expires_in,
-                scope: data.token.scope,
-                password: this.defaults.password
+                scope: data.token.scope
             });
+
+            this.resetPasswords();
         },
         /**
          * Updates cookies with new data.
@@ -1359,6 +1449,15 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
         isAuthorized: function() {
             return this.get('access_token') != this.defaults.access_token
                 && this.get('user_id') != this.defaults.user_id;
+        },
+        /**
+         * Sets `password`, `confirm_password` values to default.
+         */
+        resetPasswords: function() {
+            this.set({
+                password: this.defaults.password,
+                confirm_password: this.defaults.confirm_password
+            });
         }
     });
 });
