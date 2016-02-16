@@ -319,7 +319,9 @@ define(["backbone", "factory"], function(Backbone) {
          * Init App.Data.customer
          */
         initCustomer: function() {
-            var customer = App.Data.customer = new App.Models.Customer();
+            var customer = App.Data.customer = new App.Models.Customer({
+                keepCookie: App.SettingsDirectory.remember_me
+            });
 
             this.listenTo(customer, 'onUserCreated', function() {
                 App.Data.errors.alert(_loc.PROFILE_USER_CREATED);
