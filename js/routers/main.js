@@ -361,6 +361,17 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.errors.alert(_loc.PROFILE_INVALID_PASSWORD);
             });
 
+            this.listenTo(customer, 'onPasswordResetError', function() {
+                App.Data.errors.alert(_loc.PROFILE_INVALID_EMAIL);
+            });
+
+            this.listenTo(customer, 'onPasswordResetCustomerError', function() {
+                App.Data.errors.alert(_loc.PROFILE_PASSWORD_RESET_CUSTOMER_INVALID);
+            });
+
+            this.listenTo(customer, 'onPasswordReset', function() {
+                App.Data.errors.alert(_loc.PROFILE_PASSWORD_RESET_SUCCESS);
+            });
         },
         /**
          * Init App.Data.customer and restore its state from a storage
@@ -657,7 +668,8 @@ define(["backbone", "factory"], function(Backbone) {
                     model: customer,
                     loginAction: login,
                     signupAction: register,
-                    logout_link: customer.logout.bind(customer),
+                    resetAction: resetPWD,
+                    logout_link: logout,
                     settings_link: new Function,
                     payments_link: new Function,
                     profile_link: profileEdit,
@@ -667,21 +679,38 @@ define(["backbone", "factory"], function(Backbone) {
 
             function login() {
                 showSpinner();
-                customer.login().always(hideSpinner);
+                customer.login()
+                        .done(customer.trigger.bind(customer, 'hidePanel'))
+                        .always(hideSpinner);
+            }
+
+            function logout() {
+                customer.logout();
+                customer.trigger('hidePanel');
             }
 
             function register() {
                 var check = customer.checkSignUpData();
                 if (check.status == 'OK') {
                     showSpinner();
-                    customer.signup().always(hideSpinner);
+                    customer.signup()
+                            .done(customer.trigger.bind(customer, 'hidePanel'))
+                            .always(hideSpinner);
                 } else {
                     App.Data.errors.alert(check.errorMsg);
                 }
             }
 
+            function resetPWD() {
+                showSpinner();
+                customer.resetPassword()
+                        .done(customer.trigger.bind(customer, 'hidePanel'))
+                        .always(hideSpinner);
+            }
+
             function profileEdit() {
                 self.navigate('profile_edit', true);
+                customer.trigger('hidePanel');
             }
 
             function showSpinner() {
@@ -850,6 +879,7 @@ define(["backbone", "factory"], function(Backbone) {
                 loginAction: loginAction,
                 createAccount: this.navigate.bind(this, 'signup', true),
                 guestCb: this.navigate.bind(this, 'index', true),
+                forgotPasswordAction: this.navigate.bind(this, 'profile_forgot_password', true),
                 cacheId: true
             };
 
@@ -1071,13 +1101,50 @@ define(["backbone", "factory"], function(Backbone) {
                     mainModel.trigger('loadStarted');
                     req = customer.changePassword();
                     req.done(function() {
-                        customer.resetPasswords();
                         App.Data.errors.alert(_loc.PROFILE_PASSWORD_CHANGED);
                     });
                     req.always(function() {
                         mainModel.trigger('loadCompleted');
                     });
                 }
+            }
+        },
+        profileForgotPasswordContent: function() {
+            var customer = App.Data.customer,
+                self = this;
+
+            App.Data.header.set({
+                page_title: _loc.PROFILE_FORGOT_PASSWORD,
+                back_title: _loc.BACK,
+                back: this.navigate.bind(this, 'login', true),
+                link: reset,
+                link_title: _loc.RESET
+            });
+
+            // listen to any App.Data.customer change
+            // to enable 'Reset' link
+            preValidateData();
+            window.setTimeout(function() {
+                self.listenTo(customer, 'change:email', preValidateData);
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'change:email', preValidateData));
+            }, 0);
+
+            return {
+                modelName: 'Profile',
+                mod: 'PWDReset',
+                model: App.Data.customer,
+                cacheId: true
+            };
+
+            function preValidateData() {
+                App.Data.header.set('enableLink', Boolean(customer.get('email')));
+            }
+
+            function reset() {
+                var mainModel = App.Data.mainModel;
+                mainModel.trigger('loadStarted');
+                customer.resetPassword()
+                        .always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
             }
         }
     };

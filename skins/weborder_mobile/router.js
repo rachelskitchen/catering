@@ -69,6 +69,7 @@ define(["main_router"], function(main_router) {
             "profile_create": "profile_create",
             "profile_edit": "profile_edit",
             "profile_settings": "profile_settings",
+            "profile_forgot_password": "profile_forgot_password",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -1696,6 +1697,18 @@ define(["main_router"], function(main_router) {
         },
         profile_settings: function() {
             var content = this.profileSettingsContent();
+
+            App.Data.mainModel.set({
+                header: headerModes.Modifiers,
+                footer: footerModes.None,
+                contentClass: 'primary-bg',
+                content: content
+            });
+
+            this.change_page();
+        },
+        profile_forgot_password: function() {
+            var content = this.profileForgotPasswordContent();
 
             App.Data.mainModel.set({
                 header: headerModes.Modifiers,
