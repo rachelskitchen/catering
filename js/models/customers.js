@@ -812,7 +812,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     address: _.isObject(address) ? address : undefined
                 }),
                 success: function(data) {
-                    this.resetPasswords();
+                    this.clearPasswords();
                     this.logout();
                     this.trigger('onUserCreated');
                 },
@@ -1277,7 +1277,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     new_password: attrs.confirm_password
                 }),
                 success: function(data) {
-                    this.resetPasswords();
+                    this.clearPasswords();
                     this.trigger('onPasswordChange');
                 },
                 error: function(jqXHR) {
@@ -1291,6 +1291,99 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                             break;
                         case 400:
                             this.trigger('onUserValidationError', getResponse());
+                            break;
+                        default:
+                            this.trigger('onUserAPIError', getResponse());
+                    }
+
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
+                    }
+                }
+            });
+        },
+        /**
+         * Resets the customer's password. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/reset-password/",
+         *     method: "POST",
+         *     contentType: "application/json",
+         *     data: {
+         *         "email": <email address>
+         *     }
+         * }
+         * ```
+         * Server may return the following response:
+         * - Successful reset:
+         * ```
+         * Status: 205
+         * {
+         *     "detail":"Email with password reset token has been sent."
+         * }
+         * ```
+         * The model emits `onPasswordReset` event in this case.
+         *
+         * - Email address is empty:
+         * ```
+         * Status: 400
+         * {
+         *     "email":["This field is required."]
+         * }
+         * ```
+         * The model emits `onPasswordResetError` event in this case.
+         *
+         * - Email address is invalid:
+         * ```
+         * Status: 400
+         * {
+         *     "email": "Customer object with such password does not exist."
+         * }
+         * ```
+         * The model emits `onPasswordResetError` event in this case.
+         *
+         * - Email address value is too long:
+         * ```
+         * Status: 400
+         * {
+         *     "email":["Ensure this field has no more than 254 characters."]
+         * }
+         * ```
+         * The model emits `onPasswordResetError` event in this case.
+         *
+         * - Customer with such email address doesn't exist:
+         * ```
+         * Status: 404
+         * {
+         *     "detail":"Customer object does not exist."
+         * }
+         * ```
+         * The model emits `onPasswordResetCustomerError` event in this case.
+         *
+         * @returns {Object} jqXHR object.
+         */
+        resetPassword: function() {
+            return Backbone.$.ajax({
+                url: SERVER_URL + "/customers-auth/v1/customers/reset-password/",
+                method: "POST",
+                context: this,
+                contentType: "application/json",
+                data: JSON.stringify({
+                    email: this.get('email')
+                }),
+                success: function(data) {
+                    this.trigger('onPasswordReset');
+                },
+                error: function(jqXHR) {
+                    switch(jqXHR.status) {
+                        case 205:
+                            this.trigger('onPasswordReset');
+                            break;
+                        case 400:
+                            this.trigger('onPasswordResetError', getResponse());
+                            break;
+                        case 404:
+                            this.trigger('onPasswordResetCustomerError', getResponse());
                             break;
                         default:
                             this.trigger('onUserAPIError', getResponse());
@@ -1376,7 +1469,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 scope: data.token.scope
             });
 
-            this.resetPasswords();
+            this.clearPasswords();
         },
         /**
          * Updates cookies with new data.
@@ -1454,7 +1547,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
         /**
          * Sets `password`, `confirm_password` values to default.
          */
-        resetPasswords: function() {
+        clearPasswords: function() {
             this.set({
                 password: this.defaults.password,
                 confirm_password: this.defaults.confirm_password

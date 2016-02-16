@@ -68,7 +68,8 @@ define(["factory"], function() {
         events: {
             'click .login-btn:not(.disabled)': setCallback('loginAction'),
             'click .create-btn': setCallback('createAccount'),
-            'click .guest-btn': setCallback('guestCb')
+            'click .guest-btn': setCallback('guestCb'),
+            'click .forgot-password': setCallback('forgotPasswordAction')
         }
     });
 
@@ -191,39 +192,47 @@ define(["factory"], function() {
 
     App.Views.CoreProfileView.CoreProfilePWDResetView = App.Views.FactoryView.extend({
         name: 'profile',
-        mod: 'reset'
+        mod: 'reset_password',
+        bindings: {
+            '.email': 'value: email, events: ["input"], pattern: /^.{0,254}$/',
+            '.reset-btn': 'classes: {disabled: not(email)}'
+        },
+        events: {
+            'click .reset-btn': setCallback('resetAction')
+        }
     });
 
     App.Views.CoreProfileView.CoreProfilePanelView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'panel',
         initialize: function() {
-            // once gets authorized/logged out/created need to close panel
-            this.listenTo(this.model, 'change:access_token onUserCreated', controlLinks(false, false, false));
+            this.listenTo(this.model, 'hidePanel', controlLinks(false, false, false, false));
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
-            ':el': 'classes: {active: any(ui_showSignUp, ui_showLogIn, ui_showMenu)}',
+            ':el': 'classes: {active: any(ui_showSignUp, ui_showLogIn, ui_showMenu, ui_showPWDReset)}',
             '.signup-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showSignUp), "regular-text": ui_showSignUp}',
             '.login-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showLogIn), "regular-text": ui_showLogIn}',
-            '.close': 'toggle: any(ui_showSignUp, ui_showLogIn, ui_showMenu)',
+            '.close': 'toggle: any(ui_showSignUp, ui_showLogIn, ui_showMenu, ui_showPWDReset)',
             '.sign-up-box': 'toggle: ui_showSignUp',
             '.log-in-box': 'toggle: ui_showLogIn',
             '.menu-items': 'toggle: ui_showMenu',
-            '.logged-as': 'text: first_name, toggle: access_token'
+            '.logged-as': 'text: first_name, toggle: access_token',
+            '.reset-password-box': 'toggle: ui_showPWDReset'
         },
         events: {
-            'click .signup-link': controlLinks(true, false, false),
-            'click .login-link': controlLinks(false, true, false),
-            'click .logged-as': controlLinks(false, false, true),
-            'click .close': controlLinks(false, false, false)
+            'click .signup-link': controlLinks(true, false, false, false),
+            'click .login-link': controlLinks(false, true, false, false),
+            'click .logged-as': controlLinks(false, false, true, false),
+            'click .close': controlLinks(false, false, false, false)
         },
         bindingSources: {
             ui: function() {
                 return new Backbone.Model({
                     showSignUp: false,
                     showLogIn: false,
-                    showMenu: false
+                    showMenu: false,
+                    showPWDReset: false
                 });
             }
         },
@@ -234,7 +243,8 @@ define(["factory"], function() {
             var loginView = App.Views.GeneratorView.create('Profile', _.extend({}, this.options, {
                 el: this.$('.log-in-box'),
                 mod: 'LogIn',
-                model: this.model
+                model: this.model,
+                forgotPasswordAction: controlLinks(false, false, false, true).bind(this)
             }));
 
             // SignUp view
@@ -251,7 +261,13 @@ define(["factory"], function() {
                 header: new Backbone.Model({showProfileMenu: true})
             }));
 
-            this.subViews.push(loginView, signupView, menuView);
+            var resetPWD = App.Views.GeneratorView.create('Profile', _.extend({}, this.options, {
+                el: this.$('.reset-password-box'),
+                mod: 'PWDReset',
+                resetAction: this.options.resetAction
+            }));
+
+            this.subViews.push(loginView, signupView, menuView, resetPWD);
 
             return this;
         }
@@ -269,12 +285,13 @@ define(["factory"], function() {
         }
     });
 
-    function controlLinks(showSignUp, showLogIn, showMenu) {
+    function controlLinks(showSignUp, showLogIn, showMenu, showPWDReset) {
         return function() {
             this.getBinding('$ui').set({
                 showSignUp: showSignUp,
                 showLogIn: showLogIn,
-                showMenu: showMenu
+                showMenu: showMenu,
+                showPWDReset: showPWDReset
             });
         };
     }

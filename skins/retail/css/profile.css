@@ -76,10 +76,11 @@
 #profile-panel .btn {
     display: inline-block;
     width: 84%;
-    height: 28px;
+    height: auto;
     margin-top: 10px;
     font-size: 14px;
-    line-height: 26px;
+    padding: 6px 0;
+    line-height: normal;
 }
 
 #profile-panel .btn.disabled {
@@ -184,4 +185,9 @@
     border-style: solid;
     border-color: #ccc;
     font-size: 14px;
+}
+
+.reset-password-info {
+    font-size: 14px;
+    padding-bottom: 15px;
 }

@@ -532,6 +532,7 @@
         "SETTINGS": "Настройки",
         'CONTINUE': 'Далее',
         "SAVE": "Сохранить",
+        "RESET": "Сбросить",
         'PROFILE': 'Профиль',
         'PROFILE_EMAIL_ADDRESS': 'Эл. почта',
         'PROFILE_PASSWORD': 'Пароль',
@@ -578,6 +579,10 @@
         "PROFILE_CONTACT": "Контактный телефон",
         "PROFILE_WEBSITE": "Вебсайт",
         "PROFILE_INVALID_PASSWORD": "Неправильный пароль",
-        "PROFILE_PASSWORD_CHANGED": "Пароль успешно обновлен"
+        "PROFILE_PASSWORD_CHANGED": "Пароль успешно обновлен",
+        "PROFILE_PASSWORD_RESET_INFO": "Пожалуйста, введите адрес электронной почты.",
+        "PROFILE_PASSWORD_RESET_CUSTOMER_INVALID": "Пользователя с таким адресом электронной почты не существует",
+        "PROFILE_PASSWORD_RESET_SUCCESS": "Временный пароль отправлен на вашу электронную почту",
+        "PROFILE_INVALID_EMAIL": "Неверный адрес электронной почты"
     } // end of locale
 }); // end of module
