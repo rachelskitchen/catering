@@ -326,7 +326,7 @@
                 load_styles_and_scripts(); // load styles and scripts
                 var myorder = App.Data.myorder = new App.Collections.Myorders;
                 require([settings.get('skin') + '/router'], function(module) {
-                    locale.dfd_load.done(function() {
+                    Backbone.$.when(locale.dfd_load, settings.loadCustomerSettings).then(function() {
                         App.Data.timetables = new App.Models.Timetable;
                         if(module instanceof require('main_router')) {
                             module.initRouter();
