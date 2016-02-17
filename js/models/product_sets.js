@@ -275,7 +275,8 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                         self.add(prod_set);
                         if (combo_type == 'upsell') {
                             self.upcharge_name = data.name;
-                            self.upcharge_price = data.price;
+                            self.upcharge_price = (data.upsell_combo_price && parseFloat(data.upsell_combo_price) > 0) ? data.upsell_combo_price : data.price;
+                            self.upcharge_price = self.upcharge_price ? parseFloat(self.upcharge_price) : 0;
                         }
                     });
                     fetching.resolve();
