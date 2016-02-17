@@ -856,7 +856,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * @returns {number} - the calculated price of combo product.
          */
         update_product_price: function() {
-            var root_price = this.get_initial_price() + parseFloat(this.get('upcharge_price')),
+            var root_price = this.get_initial_price() + this.get('upcharge_price'),
                 sum = 0, combo_saving_products = [];
 
             this.get('product').get('product_sets').each( function(product_set) {
