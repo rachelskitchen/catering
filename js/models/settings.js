@@ -37,7 +37,6 @@ define(["backbone", "async"], function(Backbone) {
         },
         load: function() {
             var self = this;
-
             this.listenToOnce(this, 'change:settings_system', this.get_settings_main, this);
             this.once('changeSkin', this.setSkinPath); // set a skin path
             this.once('changeSkinPath', this.get_settings_for_skin); // get settings from file "settings.json" for current skin
@@ -47,7 +46,10 @@ define(["backbone", "async"], function(Backbone) {
                 return App.Data.errors.alert(MSG.ERROR_CHROME_CRASH, true); // user notification
 
             // load settings system for directory app, only for maintenance page allow
-            return $.when(self.get_settings_system(), self.get_customer_settings());
+            if (window._phantom)
+                return $.Deferred().resolve();
+            else
+                return $.when(self.get_settings_system(), self.get_customer_settings());
         },
         defaults: {
             brand: null,

@@ -22,7 +22,6 @@
 
 define(["backbone", "factory"], function(Backbone) {
     'use strict';
-
     // flag for maintenance mode
     var isMaintenance;
 

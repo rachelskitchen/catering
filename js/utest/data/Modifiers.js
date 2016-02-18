@@ -16,7 +16,7 @@ define([], function() {
         "defaults_initialized": {
             "cost": null,
             "id": null,
-            "img": "./skins/weborder/img/",
+            "img": window._phantom ? "base/skins/weborder/img/" : "./skins/weborder/img/",
             "name": null,
             "price": null,
             "quantity": 1,
@@ -33,7 +33,7 @@ define([], function() {
             "selected": true,
             "sort": 5,
             "cost": null,
-            "img": "./skins/weborder/img/"
+            "img": window._phantom ? "base/skins/weborder/img/" : "./skins/weborder/img/"
         },
         "ex": {
             "id": 1223,
@@ -43,7 +43,7 @@ define([], function() {
             "selected": true,
             "sort": 5,
             "cost": null,
-            "img": "./skins/weborder/img/",
+            "img": window._phantom ? "base/skins/weborder/img/" : "./skins/weborder/img/",
             "quantity": 1,
             "qty_type": 0,
             "description": null
@@ -56,7 +56,7 @@ define([], function() {
             "selected": true,
             "sort": 4,
             "cost": null,
-            "img": "./skins/weborder/img/",
+            "img": window._phantom ? "base/skins/weborder/img/" : "./skins/weborder/img/",
             "quantity": 1,
             "qty_type": 0,
             "description": null
@@ -66,7 +66,7 @@ define([], function() {
             "sort": null,
             "name": "",
             "mod": "",
-            "img": "./skins/weborder/img/",
+            "img": window._phantom ? "base/skins/weborder/img/" : "./skins/weborder/img/",
             "modifier_type": "modifier_multiple",
             "lock_amount": null,
             "lock_enable": false,
@@ -331,6 +331,6 @@ define([], function() {
             "selected": false,
             "sort": 1
         }
-    
+
     };
 });

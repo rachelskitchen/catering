@@ -284,7 +284,7 @@ define(['backbone'], function() {
             };
 
             if(!Array.isArray(items)) {
-                console.log('Unable apply filter "%s": `items` arguments is not array');
+                console.warn('Unable apply filter "%s": `items` arguments is not array');
                 return errorResult;
             }
 

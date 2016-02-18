@@ -33,7 +33,6 @@ define(['js/utest/data/Settings', 'about'], function(settingsData) {
             expect(model.get('content')).toBe(descr);
             expect(model.get('curImageIndex')).toBe(0);
         });
-
-
     });
+
 });

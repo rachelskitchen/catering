@@ -52,8 +52,8 @@ define([], function() {
             "maintenanceMessage": "",
             "version": 1.06,
             "supported_skins": [],
-            "basePath": ".",
-            "coreBasePath": ".",
+            "basePath": window._phantom ? "base" : ".",
+            "coreBasePath": window._phantom ? "base" : ".",
             "hostname": "weborder-dev-branch.revelup.com"
         },
 
@@ -241,11 +241,11 @@ define([], function() {
             "isMaintenance": false,
             "maintenanceMessage": "",
             "version": 1.06,
-            "basePath": ".",
-            "coreBasePath": ".",
+            "basePath": window._phantom ? "base" : ".",
+            "coreBasePath": window._phantom ? "base" : ".",
             "hostname": "weborder-dev-branch.revelup.com",
-            "img_path": "./skins/weborder/img/",
-            "skinPath": "./skins/weborder"
+            "img_path": window._phantom ? "base/skins/weborder/img/" : "./skins/weborder/img/",
+            "skinPath": window._phantom ? "base/skins/weborder" : "./skins/weborder"
         }
     };
 });
