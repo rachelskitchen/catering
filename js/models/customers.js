@@ -589,7 +589,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          *     method: "POST",
          *     data: {
          *         username: <username>,                                              // username (email)
-         *         scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address", // constant value
+         *         scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address CUSTOMERS:customers.usaepaypayment BACKEND:usaepaypayment", // constant value
          *         password: <password>,                                              // password
          *         grant_type: "password"                                             // constant value
          *     }
@@ -692,7 +692,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 context: this,
                 data: {
                     username: attrs.email,
-                    scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address",
+                    scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address CUSTOMERS:customers.usaepaypayment BACKEND:usaepaypayment",
                     password: attrs.password,
                     grant_type: "password"
                 },
