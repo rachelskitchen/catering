@@ -139,22 +139,114 @@ define(['backbone'], function(Backbone) {
          */
         model: App.Models.USAePayPayment,
         /**
+         * Creates listener for `change:selected` event to deselect all payments (radio button behavior).
+         */
+        initialize: function() {
+            this.listenTo(this, 'change:selected', function(model, value) {
+                if(value) {
+                    this.where({selected: true}).forEach(function(payment) {
+                        model != payment && payment.set('selected', false);
+                    });
+                }
+            });
+            Backbone.Collection.prototype.initialize.apply(this, arguments);
+        },
+        /**
+         * Creates a new order via selected payment token. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "/weborders/v1/order-pay-usaepay-token/",
+         *     method: "POST",
+         *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
+         *     data: {...}  // order json
+         * }
+         * ```
+         * If session is already expired or invalid token is used the server returns the following response:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * The model emits `onUserSessionExpired` event in this case. Method `App.Data.custromer.logout()` is automatically called in this case.
          *
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @param {Object} myorder - payload data (order json).
+         * @returns {Object} jqXHR object.
          */
         orderPayUSAePayToken: function(authorizationHeader, myorder) {
-            if(!_.isObject(authorizationHeader) || typeof myorder != 'string') {
+            if(!_.isObject(authorizationHeader) || !_.isObject(myorder)) {
                 return;
             }
-console.log(authorizationHeader);
-            return $.ajax({
+
+            return Backbone.$.ajax({
                 url: "/weborders/v1/order-pay-usaepay-token/",
                 method: "POST",
-                data: myorder,
+                data: JSON.stringify(myorder),
                 headers: authorizationHeader,
                 contentType: "application/json",
-                success: new Function(),
-                error: new Function()
+                success: new Function(),           // to override global ajax success handler
+                error: new Function()              // to override global ajax success handler
             });
+
+            // TODO обработка ошибок
+        },
+        /**
+         * Creates a new payment token. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/payments/usaepay/",
+         *     method: "POST",
+         *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
+         *     data: {
+         *         customer: 1,                   // customer id
+         *         card_type: 0,                  // card type
+         *         last_digits: 1111,             // last four digits of credit card number
+         *         first_name: "John",            // first name of cardholder
+         *         last_name: "Doe",              // last name of cardholder
+         *         token: "abcd-efgh-ijkl-mnop",  // payment token
+         *         instance_name: "qa2",          // instance name
+         *         atlas_id: 1                    // establishment id
+         *     }
+         * }
+         * ```
+         * If session is already expired or invalid token is used the server returns the following response:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * The model emits `onUserSessionExpired` event in this case. Method `App.Data.custromer.logout()` is automatically called in this case.
+         *
+         * @param {string} serverURL - identity server url.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @param {number} cardType - card type.
+         * @returns {Object} jqXHR object.
+         */
+        createPaymentToken: function(serverURL, authorizationHeader, data) {
+            var self = this;
+            return Backbone.$.ajax({
+                url: serverURL + "/customers-auth/v1/customers/payments/usaepay/",
+                method: "POST",
+                data: JSON.stringify(data),
+                headers: authorizationHeader,
+                contentType: "application/json",
+                success: function(data) {
+                    self.add(data).set('selected', true);
+                },
+                error: new Function()              // to override global ajax success handler
+            });
+
+            // TODO обработка ошибок
+        },
+        /**
+         * @returns {App.Models.USAePayPayment} Selected payment.
+         */
+        getSelectedPayment: function() {
+            return this.findWhere({selected: true});
         }
     });
 });

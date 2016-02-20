@@ -1560,6 +1560,59 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 password: this.defaults.password,
                 confirm_password: this.defaults.confirm_password
             });
+        },
+        /**
+         * Creates an order making payment with token (and creates token in USAePay payment processor).
+         * @param {Object} order - order json (see {@link App.Collections.Myorder#submit_order_and_pay})
+         */
+        payWithToken: function(order) {
+            var def = Backbone.$.Deferred(),
+                authorizationHeader = this.getAuthorizationHeader(),
+                payments = new App.Collections.USAePayPayments(),
+                isTokenCreated = _.isObject(order.paymentInfo)
+                                 && order.paymentInfo.token
+                                 && order.paymentInfo.card_type
+                                 && order.paymentInfo.masked_card_number;
+
+            if (isTokenCreated) {
+                // App.Data.settings.get('hostname').replace(/\..*/, '')
+                // App.Data.settings.get('establishment')
+                var data = {
+                    customer: this.get('user_id'),
+                    card_type: 2,
+                    last_digits: order.paymentInfo.masked_card_number.replace(/[^\d]/g, ''),
+                    first_name: "John",
+                    last_name: "Doe",
+                    token: order.paymentInfo.token,
+                    instance_name: App.Data.settings.get('hostname').replace(/\..*/, ''),
+                    atlas_id: App.Data.settings.get('establishment')
+                };
+
+                payments.createPaymentToken(SERVER_URL, authorizationHeader, data)
+                        .done(function() {
+                            var payment = payments.getSelectedPayment();
+                            order.token_id = payment.get('id');
+                            order.vault_id = payment.get('vault_id');
+                            create_order_and_pay();
+                        })
+                        .fail(function() {
+                            def.reject.apply(def, arguments);
+                        })
+            } else {
+                create_order_and_pay();
+            }
+
+            function create_order_and_pay() {
+                payments.orderPayUSAePayToken(authorizationHeader, order)
+                        .done(function() {
+                            def.resolve.apply(def, arguments);
+                        })
+                        .fail(function() {
+                            def.reject.apply(def, arguments);
+                        });
+            }
+
+            return def;
         }
     });
 });
