@@ -1443,8 +1443,16 @@ var USAePayPaymentProcessor = {
     processPayment: function(myorder, payment_info, pay_get_parameter) {
         if (pay_get_parameter) {
             var get_parameters = App.Data.get_parameters;
-            if(pay_get_parameter === 'true') {
-                payment_info.transaction_id = get_parameters.UMrefNum;
+            if (pay_get_parameter === 'true') {
+                if (get_parameters.UMcardRef && get_parameters.UMcardType && get_parameters.UMmaskedCardNum) {
+                    // these parameters exist in token creation request
+                    payment_info.token = get_parameters.UMcardRef;
+                    payment_info.card_type = get_parameters.UMcardType;
+                    payment_info.masked_card_number = get_parameters.UMmaskedCardNum;
+                } else {
+                    // default behavior after payment creation
+                    payment_info.transaction_id = get_parameters.UMrefNum;
+                }
             } else {
                 payment_info.errorMsg = get_parameters.UMerror;
             }

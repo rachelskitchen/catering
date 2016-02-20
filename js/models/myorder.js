@@ -2212,7 +2212,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     error: new Function()    // to override global ajax error handler
                 });
             } else {
-                req = (new App.Collections.USAePayPayments()).orderPayUSAePayToken(App.Data.customer.getAuthorizationHeader(), myorder_json);
+                req = App.Data.customer.payWithToken(order);
             }
 
             // successfull payment handler
