@@ -285,6 +285,17 @@ define(["factory"], function() {
         }
     });
 
+    App.Views.CoreProfileView.CoreProfilePaymentView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'payment',
+        el: 'li'
+    });
+
+    App.Views.CoreProfileView.CoreProfilePaymentsView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'payments'
+    });
+
     function controlLinks(showSignUp, showLogIn, showMenu, showPWDReset) {
         return function() {
             this.getBinding('$ui').set({

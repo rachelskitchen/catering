@@ -1435,7 +1435,7 @@ var NoPaymentPaymentProcessor = {
 
 var USAePayPaymentProcessor = {
     clearQueryString: function(queryString) {
-        return queryString.replace(/&?UM[^=]*=[^&]*/g, '');
+        return queryString.replace(/&?UM[^=]*=[^&]*/g, '').replace(/&?card_type=[^&]*/g, '');
     },
     showCreditCardDialog: function() {
         return true;
@@ -1444,10 +1444,10 @@ var USAePayPaymentProcessor = {
         if (pay_get_parameter) {
             var get_parameters = App.Data.get_parameters;
             if (pay_get_parameter === 'true') {
-                if (get_parameters.UMcardRef && get_parameters.UMcardType && get_parameters.UMmaskedCardNum) {
+                if (get_parameters.UMcardRef && get_parameters.card_type && get_parameters.UMmaskedCardNum) {
                     // these parameters exist in token creation request
                     payment_info.token = get_parameters.UMcardRef;
-                    payment_info.card_type = get_parameters.UMcardType;
+                    payment_info.card_type = parseInt(get_parameters.card_type, 10);
                     payment_info.masked_card_number = get_parameters.UMmaskedCardNum;
                 } else {
                     // default behavior after payment creation
