@@ -219,6 +219,8 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
 
             // set tracking of cookie change when user leaves/returns to current tab
             page_visibility.on(this.trackCookieChange.bind(this));
+
+            this.payments = new App.Collections.USAePayPayments();
         },
         /**
          * Gets customer name in the format "John M.".
@@ -589,7 +591,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          *     method: "POST",
          *     data: {
          *         username: <username>,                                              // username (email)
-         *         scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address CUSTOMERS:customers.usaepaypayment BACKEND:usaepaypayment", // constant value
+         *         scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address CUSTOMERS:customers.usaepaypayment BACKEND:usaepaypayment TOKENS_VAULT:tokens_vault.token", // constant value
          *         password: <password>,                                              // password
          *         grant_type: "password"                                             // constant value
          *     }
@@ -692,7 +694,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 context: this,
                 data: {
                     username: attrs.email,
-                    scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address CUSTOMERS:customers.usaepaypayment BACKEND:usaepaypayment",
+                    scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address CUSTOMERS:customers.usaepaypayment BACKEND:usaepaypayment TOKENS_VAULT:tokens_vault.token",
                     password: attrs.password,
                     grant_type: "password"
                 },
@@ -1568,7 +1570,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
         payWithToken: function(order) {
             var def = Backbone.$.Deferred(),
                 authorizationHeader = this.getAuthorizationHeader(),
-                payments = new App.Collections.USAePayPayments(),
+                payments = this.payments,
                 isTokenCreated = _.isObject(order.paymentInfo)
                                  && order.paymentInfo.token
                                  && order.paymentInfo.card_type
@@ -1613,6 +1615,12 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             }
 
             return def;
+        },
+        /**
+         * Receives payments from server.
+         */
+        getPayments: function() {
+            this.payments.getPayments(SERVER_URL, this.getAuthorizationHeader());
         }
     });
 });

@@ -247,6 +247,44 @@ define(['backbone'], function(Backbone) {
          */
         getSelectedPayment: function() {
             return this.findWhere({selected: true});
+        },
+        /**
+         * Receives payments. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/payments/usaepay/",
+         *     method: "GET",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"}
+         * }
+         * ```
+         * If session is already expired or invalid token is used the server returns the following response:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * The model emits `onUserSessionExpired` event in this case. Method `App.Data.custromer.logout()` is automatically called in this case.
+         *
+         * @param {string} serverURL - identity server url.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @returns {Object} jqXHR object.
+         */
+        getPayments: function(serverURL, authorizationHeader) {
+            var self = this;
+            return Backbone.$.ajax({
+                url: serverURL + "/customers-auth/v1/customers/payments/usaepay/",
+                method: "GET",
+                headers: authorizationHeader,
+                success: function(data) {
+                    if (Array.isArray(data)) {
+                        self.reset(data);
+                    }
+                },
+                error: new Function()              // to override global ajax success handler
+            });
+
+            // TODO обработка ошибок
         }
     });
 });
