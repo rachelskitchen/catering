@@ -1568,20 +1568,19 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * @param {Object} order - order json (see {@link App.Collections.Myorder#submit_order_and_pay})
          */
         payWithToken: function(order) {
-            var def = Backbone.$.Deferred(),
+            var self = this,
+                def = Backbone.$.Deferred(),
                 authorizationHeader = this.getAuthorizationHeader(),
                 payments = this.payments,
                 isTokenCreated = _.isObject(order.paymentInfo)
                                  && order.paymentInfo.token
-                                 && order.paymentInfo.card_type
+                                 && typeof order.paymentInfo.card_type != 'undefined'
                                  && order.paymentInfo.masked_card_number;
 
             if (isTokenCreated) {
-                // App.Data.settings.get('hostname').replace(/\..*/, '')
-                // App.Data.settings.get('establishment')
                 var data = {
                     customer: this.get('user_id'),
-                    card_type: 2,
+                    card_type: order.paymentInfo.card_type,
                     last_digits: order.paymentInfo.masked_card_number.replace(/[^\d]/g, ''),
                     first_name: "John",
                     last_name: "Doe",
@@ -1597,9 +1596,10 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                             order.vault_id = payment.get('vault_id');
                             create_order_and_pay();
                         })
-                        .fail(function() {
+                        .fail(function(jqXHR) {
                             def.reject.apply(def, arguments);
-                        })
+                            ifSessionIsExpired(jqXHR);
+                        });
             } else {
                 create_order_and_pay();
             }
@@ -1609,9 +1609,17 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                         .done(function() {
                             def.resolve.apply(def, arguments);
                         })
-                        .fail(function() {
+                        .fail(function(jqXHR) {
                             def.reject.apply(def, arguments);
+                            ifSessionIsExpired(jqXHR);
                         });
+            }
+
+            function ifSessionIsExpired(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.trigger('onUserSessionExpired');
+                    self.logout(); // need to reset current account to allow to re-log in
+                }
             }
 
             return def;
@@ -1620,7 +1628,13 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * Receives payments from server.
          */
         getPayments: function() {
-            this.payments.getPayments(SERVER_URL, this.getAuthorizationHeader());
+            var self = this;
+            this.payments.getPayments(SERVER_URL, this.getAuthorizationHeader()).fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.trigger('onUserSessionExpired');
+                    self.logout(); // need to reset current account to allow to re-log in
+                }
+            });
         }
     });
 });

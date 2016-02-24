@@ -189,8 +189,6 @@ define(['backbone'], function(Backbone) {
                 success: new Function(),           // to override global ajax success handler
                 error: new Function()              // to override global ajax success handler
             });
-
-            // TODO обработка ошибок
         },
         /**
          * Creates a new payment token. Sends request with following parameters:
@@ -239,8 +237,6 @@ define(['backbone'], function(Backbone) {
                 },
                 error: new Function()              // to override global ajax success handler
             });
-
-            // TODO обработка ошибок
         },
         /**
          * @returns {App.Models.USAePayPayment} Selected payment.
@@ -283,8 +279,6 @@ define(['backbone'], function(Backbone) {
                 },
                 error: new Function()              // to override global ajax success handler
             });
-
-            // TODO обработка ошибок
         }
     });
 });
