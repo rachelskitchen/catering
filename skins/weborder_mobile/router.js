@@ -822,7 +822,8 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.HEADER_CHECKOUT_PT,
                 back_title: _loc.BACK,
-                back: this.navigate.bind(this, 'cart', true)
+                back: this.navigate.bind(this, 'cart', true),
+                promotions: this.navigate.bind(this, 'promotions', true)
             });
 
             App.Data.mainModel.set({
@@ -848,6 +849,13 @@ define(["main_router"], function(main_router) {
 
                 // Need to specify shipping address (Bug 34676)
                 App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+
+                App.SettingsDirectory.promotionsAvailable = true; // DEBUG
+                App.Data.header.set('showPromotionsLink', App.SettingsDirectory.promotionsAvailable);
+                this.listenToOnce(this, 'route', function() {
+                    // reset visibility of Promotions link
+                    App.Data.header.set('showPromotionsLink', App.Data.header.defaults.showPromotionsLink);
+                });
 
                 App.Data.footer.set({
                     btn_title: _loc.CONTINUE,
@@ -943,7 +951,8 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.HEADER_CHECKOUT_PT,
                 back_title: _loc.BACK,
-                back: this.navigate.bind(this, 'checkout', true)
+                back: this.navigate.bind(this, 'checkout', true),
+                promotions: this.navigate.bind(this, 'promotions', true)
             });
 
             App.Data.mainModel.set({
@@ -972,6 +981,13 @@ define(["main_router"], function(main_router) {
                     mod: 'Line',
                     total: myorder.total,
                     cacheId: true
+                });
+
+                App.SettingsDirectory.promotionsAvailable = true; // DEBUG
+                App.Data.header.set('showPromotionsLink', App.SettingsDirectory.promotionsAvailable);
+                this.listenToOnce(this, 'route', function() {
+                    // reset visibility of Promotions link
+                    App.Data.header.set('showPromotionsLink', App.Data.header.defaults.showPromotionsLink);
                 });
 
                 if(!App.Data.card)

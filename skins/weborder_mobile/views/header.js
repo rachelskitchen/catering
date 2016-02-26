@@ -104,9 +104,9 @@ define(["factory"], function() {
             /**
              * Promotions
              */
-            this.model.set('showPromotions', true); // DEBUG
+            this.model.set('showPromotionsLine', true); // DEBUG
             set_dir.promotionsAvailable = true; // DEBUG
-            if (this.model.get('showPromotions') && set_dir.promotionsAvailable) {
+            if (this.model.get('showPromotionsLine') && set_dir.promotionsAvailable) {
                 var promotions = App.Views.GeneratorView.create('Header', {
                     model: this.model,
                     mod: 'Promotions',
@@ -132,7 +132,7 @@ define(["factory"], function() {
                     animationInProgress = true;
                     var st = Backbone.$(this).scrollTop();
                     if (!promotionsVisible && st == 0) {
-                        showPromotions();
+                        showPromotionsLine();
                     }
                     else if (promotionsVisible && st > lastScrollTop){
                         hidePromotions();
@@ -143,7 +143,7 @@ define(["factory"], function() {
                     lastScrollTop = st;
                 });
 
-                function showPromotions() {
+                function showPromotionsLine() {
                     Backbone.$('.all-promotions').fadeIn(animationTime);
                     Backbone.$('#section').animate({
                         'top': Backbone.$('#section').offset().top + promotionsHeight
@@ -323,10 +323,12 @@ define(["factory"], function() {
         bindings: {
            '.title': 'text:page_title',
            '.btn-back': 'toggle: back',
-           '.btn-back-title': 'text: back_title'
+           '.btn-back-title': 'text: back_title',
+           '.btn-promotions': 'toggle: showPromotionsLink'
         },
         events: {
-            'click .btn-back': setCallback('back')
+            'click .btn-back': setCallback('back'),
+            'click .btn-promotions': setCallback('promotions')
         }
     });
 
