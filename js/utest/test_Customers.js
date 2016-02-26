@@ -435,7 +435,14 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 model.set('addresses', customer1.addresses);
 
                 spyOn(model, 'resetShippingServices');
-                spyOn($, 'ajax').and.callThrough();
+
+                if (typeof ajaxMock == 'function')
+                   spyOn($, 'ajax').and.callFake(ajaxMock);
+                else
+                   spyOn($, 'ajax').and.callThrough();
+                if (typeof ajaxMock == 'function') {
+                    ajaxMock.replyData = {"status": "ERROR", "errorMsg": "Packages must weight  more than zero pounds.", "data": []};
+                }
 
                 model.get_shipping_services();
 
@@ -444,7 +451,8 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                     type: "POST",
                     url: App.Data.settings.get("host") + "/weborders/shipping_options/",
                     data: jasmine.any(String),
-                    dataType: 'json'
+                    dataType: "json",
+                    error: jasmine.any(Function)
                 });
             });
         });

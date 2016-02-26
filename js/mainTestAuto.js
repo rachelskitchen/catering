@@ -37,7 +37,7 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
         }
     };
 
-    App.Data.autoTesting = true;
+    App.unitTest = true;
 
     if(!app.REVEL_HOST)
         return alert('REVEL_HOST is undefined. Please assign it in main.js file. (Need add app.REVEL_HOST = <url>;)');
@@ -45,7 +45,6 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
     require(['cssua', 'functions', 'errors', 'backbone_epoxy', 'tests_list', 'e2e_list', 'settings', 'tax', 'locale', 'about'], function() { //, 'e2e_list', 'settings', 'tax', 'main_router', 'locale'
 
         console.log("mainAutoTest: step #2 ==>");
-
         app.get = {}; //parse_get_params();
         // hardcode English locale
         App.Data.get_parameters = {locale: 'en'};
@@ -63,12 +62,12 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
             'img_path' : 'test/path/',
             'settings_skin' : { img_default : 'test/img_default' },
             'establishment' : 14,
-            'host': app.REVEL_HOST //'https://testHost.revelup.com'
+            'host': app.REVEL_HOST
         });
 
         // init Locale object
         var locale = App.Data.locale = new App.Models.Locale;
-        settings.on('change:skin', function() {
+        settings.once('change:skin', function() {
             locale.dfd_load = locale.loadLanguagePack(); // load a language pack from backend
             locale.dfd_load.done(function() {
                 _loc = locale.toJSON();
@@ -98,7 +97,9 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
             });
         }
         else {
+
             App.Data.devMode = true;
+
             console.log("mainAutoTest: step #2, unit test mode");
             if (App.Data.devMode == true) {
                 //starting the tests without code coverage testing:

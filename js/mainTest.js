@@ -17,7 +17,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
     skins.set('PAYPAL', 'paypal', '../dev/skins/paypal'); // set `paypal` skin
     skins.set('MLB', 'mlb', '../dev/skins/mlb'); // set `mlb` skin
     skins.set('DIRECTORY_MOBILE', 'directory_mobile', '../dev/skins/directory_mobile'); // set `directory` skin
-
+App.unitTest = true;
     // set REVEL_HOST
     //app.REVEL_HOST = window.location.origin;
     app.REVEL_HOST = 'https://weborder-dev-branch.revelup.com';
@@ -51,7 +51,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
 
         // init Locale object
         var locale = App.Data.locale = new App.Models.Locale;
-        settings.on('change:skin', function() {
+        settings.once('change:skin', function() {
             locale.dfd_load = locale.loadLanguagePack(); // load a language pack from backend
             locale.dfd_load.done(function() {
                 _loc = locale.toJSON();
