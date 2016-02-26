@@ -675,6 +675,7 @@ define(["backbone", "factory"], function(Backbone) {
                     settings_link: new Function,
                     payments_link: new Function,
                     profile_link: profileEdit,
+                    my_promotions_link: myPromotions,
                     cacheId: true
                 }
             });
@@ -712,6 +713,11 @@ define(["backbone", "factory"], function(Backbone) {
 
             function profileEdit() {
                 self.navigate('profile_edit', true);
+                customer.trigger('hidePanel');
+            }
+
+            function myPromotions() {
+                self.navigate('my_promotions', true);
                 customer.trigger('hidePanel');
             }
 
@@ -841,6 +847,7 @@ define(["backbone", "factory"], function(Backbone) {
                     settings_link: profile_settings,
                     payments_link: close,
                     profile_link: profile_edit,
+                    my_promotions_link: myPromotions,
                     close_link: close,
                     cacheId: true
                 }
@@ -864,6 +871,11 @@ define(["backbone", "factory"], function(Backbone) {
 
             function profile_settings() {
                 self.navigate('profile_settings', true);
+                close();
+            }
+
+            function myPromotions() {
+                self.navigate('my_promotions', true);
                 close();
             }
 

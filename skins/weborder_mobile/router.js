@@ -70,6 +70,8 @@ define(["main_router"], function(main_router) {
             "profile_edit": "profile_edit",
             "profile_settings": "profile_settings",
             "profile_forgot_password": "profile_forgot_password",
+            "promotions": "promotions_list",
+            "my_promotions": "promotions_my",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -1732,6 +1734,16 @@ define(["main_router"], function(main_router) {
                 contentClass: 'primary-bg',
                 content: content
             });
+
+            this.change_page();
+        },
+        promotions_list: function() {
+            // @TODO
+
+            this.change_page();
+        },
+        promotions_my: function() {
+            // @TODO
 
             this.change_page();
         }

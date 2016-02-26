@@ -113,6 +113,7 @@ define(["factory"], function() {
             'click .settings-link:not(.disabled)': setCallback('settings_link'),
             'click .payments-link:not(.disabled)': setCallback('payments_link'),
             'click .profile-link:not(.disabled)': setCallback('profile_link'),
+            'click .my_promotions-link:not(.disabled)': setCallback('my_promotions_link'),
             'click .close': setCallback('close_link')
         }
     });
