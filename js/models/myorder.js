@@ -1721,7 +1721,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          */
         get_cart_totals: function(params) {
             var self = this;
-
             if (this.getDiscountsTimeout) {
                 clearTimeout(this.getDiscountsTimeout);
                 delete this.getDiscountsTimeout;
@@ -1745,7 +1744,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if (this.get_discount_xhr) {
                 this.get_discount_xhr.abort();
             }
-
             this.get_discount_xhr = this._get_cart_totals(params);
             this.get_discount_xhr.always(function() {
                 delete self.pending;

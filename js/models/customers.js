@@ -408,8 +408,10 @@ define(["backbone", "geopoint"], function(Backbone) {
                 type: "POST",
                 url: App.Data.settings.get("host") + "/weborders/shipping_options/",
                 data: data_json,
-                dataType: "json"
+                dataType: "json",
+                error: onError
             });
+
             // process successful response
             jqXHR.done(function(response) {
                 var shipping_options;

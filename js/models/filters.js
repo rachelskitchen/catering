@@ -302,7 +302,7 @@ define(['backbone'], function() {
 
             items.forEach(function(item) {
                 if(!(item instanceof Backbone.Model)) {
-                    return console.error('Item', item, 'is not Backbone model');
+                    return window._phantom ? undefined : console.error('Item', item, 'is not Backbone model');
                 }
                 var valid = selected.some(function(filter) {
                     return compare(item, filter);
