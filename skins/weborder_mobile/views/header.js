@@ -101,6 +101,69 @@ define(["factory"], function() {
                 $('#section').css('top', $('#section').offset().top - $('#smartbanner').height());
             }
 
+            /**
+             * Promotions
+             */
+            this.model.set('showPromotions', true); // DEBUG
+            set_dir.promotionsAvailable = true; // DEBUG
+            if (this.model.get('showPromotions') && set_dir.promotionsAvailable) {
+                var promotions = App.Views.GeneratorView.create('Header', {
+                    model: this.model,
+                    mod: 'Promotions',
+                    className: 'all-promotions'
+                }, 'header_tabs'),
+                    animationTime = 200;
+
+                this.subViews.push(promotions);
+                this.$el.append(promotions.el);
+                var promotionsHeight = 0;
+                setTimeout(function() {
+                    promotionsHeight = Backbone.$('.all-promotions').height();
+                }, 0);
+
+                var promotionsVisible = true,
+                    lastScrollTop = 0,
+                    animationInProgress = false;
+
+                Backbone.$('#section').on('scroll', function() {
+                    if (animationInProgress) {
+                        return;
+                    }
+                    animationInProgress = true;
+                    var st = Backbone.$(this).scrollTop();
+                    if (!promotionsVisible && st == 0) {
+                        showPromotions();
+                    }
+                    else if (promotionsVisible && st > lastScrollTop){
+                        hidePromotions();
+                    }
+                    else {
+                        animationInProgress = false;
+                    }
+                    lastScrollTop = st;
+                });
+
+                function showPromotions() {
+                    Backbone.$('.all-promotions').fadeIn(animationTime);
+                    Backbone.$('#section').animate({
+                        'top': Backbone.$('#section').offset().top + promotionsHeight
+                    }, animationTime, function() {
+                        animationInProgress = false;
+                        promotionsVisible = true;
+                    });
+                }
+
+                function hidePromotions() {
+                    Backbone.$('.all-promotions').fadeOut(animationTime);
+                    Backbone.$('#section').animate({
+                        'top': Backbone.$('#section').offset().top - promotionsHeight
+                    }, animationTime, function() {
+                        animationInProgress = false;
+                        promotionsVisible = false;
+                    });
+                }
+            }
+
             return this;
         },
         search: function(e) {
@@ -142,6 +205,21 @@ define(["factory"], function() {
         onTab: function(e) {
             var tab = Backbone.$(e.target).data('tab');
             this.model.set('tab', tab);
+        }
+    });
+
+    var HeaderPromotionsView = App.Views.FactoryView.extend({
+        name: 'header',
+        mod: 'promotions',
+        tagName: 'div',
+        bindings: {
+            //':el': 'toggle: _settings_directory_promotionsAvailable'
+        },
+        events: {
+            'click': 'goToPromotionsList'
+        },
+        goToPromotionsList: function() {
+            App.Data.router.navigate('promotions', true);
         }
     });
 
@@ -270,6 +348,7 @@ define(["factory"], function() {
         App.Views.HeaderView.HeaderMainView = HeaderMainView;
         App.Views.HeaderView.HeaderTabsView = HeaderTabsView;
         App.Views.HeaderView.HeaderModifiersView = HeaderModifiersView;
+        App.Views.HeaderView.HeaderPromotionsView = HeaderPromotionsView;
         App.Views.HeaderView.HeaderComboProductView = HeaderComboProductView;
         App.Views.HeaderView.HeaderCartView = HeaderCartView;
         App.Views.HeaderView.HeaderMaintenanceView = HeaderMaintenanceView;
