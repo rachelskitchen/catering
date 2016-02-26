@@ -39,6 +39,8 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
 
     App.unitTest = true;
 
+    //testing jenkins auto build
+
     if(!app.REVEL_HOST)
         return alert('REVEL_HOST is undefined. Please assign it in main.js file. (Need add app.REVEL_HOST = <url>;)');
 
