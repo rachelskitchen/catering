@@ -383,7 +383,7 @@ footer {
     margin-left: -20px;
 }
 .footer_mercury .footer__left {
-    max-width: 65%;
+    max-width: 60%;
 }
 .footer_mercury .footer__directory {
     /* if Mercury credit cards are displayed, break directory links into 2 lines on iPad in Portrait mode */
@@ -866,7 +866,7 @@ section.maintenance .back {
         min-width: 748px;
     }
     .footer_mercury .footer__left {
-        max-width: 50%;
+        max-width: 48%;
     }
 }
 @media only screen and (max-device-width: 949px) {

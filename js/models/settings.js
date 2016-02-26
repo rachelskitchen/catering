@@ -502,7 +502,8 @@ define(["backbone", "async"], function(Backbone) {
                 "smart_banner": false,
                 "remember_me": true,
                 "owner_website": "",
-                "owner_contact": ""
+                "owner_contact": "",
+                "saved_credit_cards": true
             };
 
             self.loadCustomerSettings = $.Deferred();

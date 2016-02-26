@@ -509,6 +509,15 @@
             '',
             ''
         ],
+        'CREDIT_CARD_TYPES': {
+            'AMERICANEXPRESS': 'Amex',
+            'DISCOVER': 'Discover',
+            'MASTERCARD': 'Master Card',
+            'VISA': 'Visa',
+            'MAESTRO': 'Maestro',
+            'DINERS': 'Diners Club',
+            'JCB': 'JCB'
+        },
         'TAB_TITLE_ONLINE_ORDERING': 'Online Ordering',
         // page "Total"
         'TOTAL_DISCOUNTS': 'Discounts', // except: Directory, Directory Mobile

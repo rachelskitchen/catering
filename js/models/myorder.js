@@ -2075,8 +2075,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          *                 token: <token>,                         // optional, QuickBooks payment processor
          *                 cardNumber: <card number>,              // optional, Gift Card
          *                 captchaKey: <captcha key>,              // optional, Gift Card
-         *                 captchaValue: <captcha value>           // optional, Gift Card
-         *                 planId: <plan id>                       // optional, Stanford Card
+         *                 captchaValue: <captcha value>,          // optional, Gift Card
+         *                 planId: <plan id>,                      // optional, Stanford Card
+         *                 token_id: <token id>,                   // optional, token id
+         *                 vault_id: <vault id>                    // optional, token's vault id
          *             }
          *         },
          *         notifications: [{
@@ -2202,7 +2204,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             var myorder_json = JSON.stringify(order),
                 successValidation;
 
-            if (validationOnly || !App.Data.customer.isAuthorized()) {
+            if (validationOnly || !App.Data.customer.isAuthorized() || !App.Data.customer.payments) {
                 var req = $.ajax({
                     type: "POST",
                     url: App.Data.settings.get("host") + "/weborders/" + (validationOnly ? "pre_validate/" : "create_order_and_pay_v1/"),
@@ -2212,7 +2214,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     error: new Function()    // to override global ajax error handler
                 });
             } else {
-                req = App.Data.customer.payWithToken(order);
+                req = App.Data.customer.payWithToken(order, card);
             }
 
             // successfull payment handler

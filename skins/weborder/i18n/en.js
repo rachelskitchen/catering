@@ -164,14 +164,6 @@
             'Point will be redeemed',
             'Points will be redeemed'
         ],
-        'REWARDS_VISITS_REDEMPTION_AMOUNT': [
-            'Visit will be redeemed',
-            'Visits will be redeemed'
-        ],
-        'REWARDS_PURCHASES_REDEMPTION_AMOUNT': [
-            'Purchase will be redeemed',
-            'Purchases will be redeemed'
-        ],
         'REWARDS_EMPTY_CART': 'Rewards can not be applied while your cart is empty.',
         'SEARCH_ENTER_STRING': 'Search',
         'PRODUCTS_NOT_FOUND': 'No products found',

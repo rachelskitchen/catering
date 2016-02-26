@@ -219,8 +219,6 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
 
             // set tracking of cookie change when user leaves/returns to current tab
             page_visibility.on(this.trackCookieChange.bind(this));
-
-            this.payments = new App.Collections.USAePayPayments();
         },
         /**
          * Gets customer name in the format "John M.".
@@ -1566,8 +1564,14 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
         /**
          * Creates an order making payment with token (and creates token in USAePay payment processor).
          * @param {Object} order - order json (see {@link App.Collections.Myorder#submit_order_and_pay})
+         * @param {?Object} [card] - CC json (see {@link App.Collections.Myorder#submit_order_and_pay})
+         * @returns {Object|undefined} Deferred object.
          */
-        payWithToken: function(order) {
+        payWithToken: function(order, card) {
+            if (!this.payments) {
+                return console.error("CC payment processor doesn't provide tokenization")
+            }
+
             var self = this,
                 def = Backbone.$.Deferred(),
                 authorizationHeader = this.getAuthorizationHeader(),
@@ -1582,8 +1586,8 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     customer: this.get('user_id'),
                     card_type: order.paymentInfo.card_type,
                     last_digits: order.paymentInfo.masked_card_number.replace(/[^\d]/g, ''),
-                    first_name: "John",
-                    last_name: "Doe",
+                    first_name: _.isObject(card) ? card.firstName : '',
+                    last_name: _.isObject(card) ? card.secondName : '',
                     token: order.paymentInfo.token,
                     instance_name: App.Data.settings.get('hostname').replace(/\..*/, ''),
                     atlas_id: App.Data.settings.get('establishment')
@@ -1591,9 +1595,9 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
 
                 payments.createPaymentToken(SERVER_URL, authorizationHeader, data)
                         .done(function() {
-                            var payment = payments.getSelectedPayment();
-                            order.token_id = payment.get('id');
-                            order.vault_id = payment.get('vault_id');
+                            delete order.paymentInfo.token;
+                            delete order.paymentInfo.card_type;
+                            delete order.paymentInfo.masked_card_number;
                             create_order_and_pay();
                         })
                         .fail(function(jqXHR) {
@@ -1626,15 +1630,42 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
         },
         /**
          * Receives payments from server.
+         * @returns {Object|undefined} jqXHR object.
          */
         getPayments: function() {
-            var self = this;
-            this.payments.getPayments(SERVER_URL, this.getAuthorizationHeader()).fail(function(jqXHR) {
+            if (!this.payments) {
+                return console.error("CC payment processor doesn't provide tokenization")
+            }
+
+            var self = this,
+                req = this.payments.getPayments(SERVER_URL, this.getAuthorizationHeader());
+            req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
                     self.trigger('onUserSessionExpired');
                     self.logout(); // need to reset current account to allow to re-log in
                 }
             });
+            return req;
+        },
+        /**
+         * @returns {boolean} `true` if any payment token is selected for payment.
+         */
+        doPayWithToken: function() {
+            return Boolean(this.isAuthorized() && this.payments && this.payments.getSelectedPayment());
+        },
+        /**
+         * Sets payments tokens collection.
+         */
+        setPayments: function(constr) {
+            if (typeof constr) {
+                /**
+                 * Collection of payments tokens (depends on CC payment processor).
+                 * @alias App.Models.Customer#payments
+                 * @type {Backbone.Collection}
+                 * @default undefined
+                 */
+                this.payments = new constr()//new App.Collections.USAePayPayments();
+            }
         }
     });
 });

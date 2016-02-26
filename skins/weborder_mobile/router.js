@@ -156,13 +156,15 @@ define(["main_router"], function(main_router) {
             }, this);
 
             this.listenTo(myorder, 'payWithCreditCard', function() {
-                var paymentProcessor = App.Data.settings.get_payment_process();
+                var paymentProcessor = App.Data.settings.get_payment_process(),
+                    doPayWithToken = App.Data.customer.doPayWithToken(),
+                    needValidate = !doPayWithToken;
                 myorder.check_order({
-                    order: true,
-                    tip: true,
-                    customer: true,
-                    checkout: true,
-                    card: paymentProcessor.credit_card_dialog
+                    order: needValidate,
+                    tip: needValidate,
+                    customer: needValidate,
+                    checkout: needValidate,
+                    card: doPayWithToken ? false : paymentProcessor.credit_card_dialog
                 }, sendRequest.bind(window, PAYMENT_TYPE.CREDIT));
             });
 
@@ -1093,28 +1095,38 @@ define(["main_router"], function(main_router) {
                     action: App.Data.payments.onPay.bind(App.Data.payments)
                 });
 
+                var content = [{
+                    modelName: 'Payments',
+                    model: App.Data.payments,
+                    checkout: App.Data.myorder.checkout,
+                    mod: 'Main',
+                    collection: App.Data.myorder,
+                    cacheId: true
+                }];
+
+                var customer = App.Data.customer,
+                    payments = customer.payments;
+
+                if (payments) {
+                    content.push({
+                        modelName: 'Profile',
+                        mod: 'Payments',
+                        collection: payments,
+                        model: App.Data.payments,
+                        cacheId: true
+                    });
+                }
+
                 App.Data.mainModel.set({
                     contentClass: '',
-                    content: [
-                        {
-                            modelName: 'Payments',
-                            model: App.Data.payments,
-                            checkout: App.Data.myorder.checkout,
-                            mod: 'Main',
-                            collection: App.Data.myorder,
-                            cacheId: true
-                        },
-                        {
-                            modelName: 'Profile',
-                            mod: 'Payments',
-                            collection: App.Data.customer.payments,
-                            model: App.Data.payments,
-                            cacheId: true
-                        }
-                    ]
+                    content: content
                 });
 
-                this.change_page();
+                if (payments && !payments.length) {
+                    customer.getPayments().always(this.change_page.bind(this));
+                } else {
+                    this.change_page()
+                };
             });
         },
         card: function() {
@@ -1733,8 +1745,9 @@ define(["main_router"], function(main_router) {
     _.defaults(Router.prototype, App.Routers.MobileMixing);
 
     function showDefaultCardView() {
-        var paymentProcessor = App.Data.settings.get_payment_process();
-        if(paymentProcessor.credit_card_dialog) {
+        var paymentProcessor = App.Data.settings.get_payment_process(),
+            customer = App.Data.customer;
+        if(paymentProcessor.credit_card_dialog && !customer.doPayWithToken()) {
             this.navigate('card', true);
         } else {
             App.Data.myorder.trigger('payWithCreditCard');
