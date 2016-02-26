@@ -50,6 +50,12 @@
 .tabs::after {
   background: #199ACD;
 }
+/* [all_promotions_background] "See all promotions for this establishment" link background
+   [all_promotions_color] "See all promotions for this establishment" link color */
+.all-promotions {
+  background: #EAF3F9;
+  color: #373B40;
+}
 /* [input_background] Text fields background */
 .input-colors {
   background: #FFFFFF;

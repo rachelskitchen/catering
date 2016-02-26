@@ -135,6 +135,7 @@
         'PRODUCTS_AVAILABLE': 'Available',
         'PRODUCTS_GIFT_CARD_NUMBER': 'Gift Card Number',
         'PRODUCTS_SIZE_CHART': 'Size Chart',
+        'PROMOTIONS': 'See all promotions for this establishment',
         'QUANTITY_QUANTITY': 'Quantity',
         'QUANTITY_WEIGHT': 'Weight',
         'STORE_INFO_TITLE': 'Store Information',
