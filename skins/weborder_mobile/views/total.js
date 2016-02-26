@@ -71,6 +71,10 @@ define(["total_view"], function(total_view) {
             'click .remove-discount-code': 'removeDiscountCode',
             'click .remove-reward-redemption': 'removeRewardRedemption'
         }),
+        render: function() {
+            this.$el.html(this.template({acceptableCCTypes: ACCEPTABLE_CREDIT_CARD_TYPES}));
+            return this;
+        },
         showDiscountCode: function() {
             var showDiscountCode = this.options.showDiscountCode;
             typeof showDiscountCode == 'function' && showDiscountCode();

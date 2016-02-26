@@ -292,7 +292,13 @@ define(["factory"], function() {
         bindings: {
             ':el': 'classes: {selected: selected}',
             '.card-number': 'text: last_digits',
-            '.card-type': 'text: card_type'
+            '.card-type': 'text: creditCardType(_lp_CREDIT_CARD_TYPES, card_type)'
+        },
+        bindingFilters: {
+            creditCardType: function(types, card_type) {
+                var code = _.invert(ACCEPTABLE_CREDIT_CARD_TYPES)[card_type]
+                return types[code];
+            }
         },
         events: {
             'click': 'select'

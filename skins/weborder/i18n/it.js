@@ -143,14 +143,6 @@ define([], function() {
             "Point will be redeemed",
             "I punti verranno utilizzati"
         ],
-        "REWARDS_VISITS_REDEMPTION_AMOUNT": [
-            "Visit will be redeemed",
-            "Le visite verranno convertite"
-        ],
-        "REWARDS_PURCHASES_REDEMPTION_AMOUNT": [
-            "Purchase will be redeemed",
-            "Gli acquisiti verranno rimborsati"
-        ],
         "STANFORD_RELOAD_INFO1": "Please specify the Card # and the amount you'd like to add",
         "STANFORD_RELOAD_INFO2": "Please specify the plan you'd like to add value to",
         "STANFORD_CARD_NUMBER": "Stanford Card #",

@@ -180,6 +180,14 @@ define(['backbone'], function(Backbone) {
                 return;
             }
 
+            var payment = this.getSelectedPayment(),
+                cardInfo = _.isObject(myorder.paymentInfo) && myorder.paymentInfo.cardInfo;
+
+            if (payment && _.isObject(cardInfo)) {
+                cardInfo.token_id = payment.get('id');
+                cardInfo.vault_id = payment.get('vault_id');
+            }
+
             return Backbone.$.ajax({
                 url: "/weborders/v1/order-pay-usaepay-token/",
                 method: "POST",
@@ -226,6 +234,7 @@ define(['backbone'], function(Backbone) {
          */
         createPaymentToken: function(serverURL, authorizationHeader, data) {
             var self = this;
+
             return Backbone.$.ajax({
                 url: serverURL + "/customers-auth/v1/customers/payments/usaepay/",
                 method: "POST",

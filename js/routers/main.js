@@ -319,9 +319,15 @@ define(["backbone", "factory"], function(Backbone) {
          * Init App.Data.customer
          */
         initCustomer: function() {
-            var customer = App.Data.customer = new App.Models.Customer({
-                keepCookie: App.SettingsDirectory.remember_me
-            });
+            var paymentProcessor = PaymentProcessor.getPaymentProcessor(PAYMENT_TYPE.CREDIT),
+                customer = App.Data.customer = new App.Models.Customer({
+                    keepCookie: App.SettingsDirectory.remember_me
+                });
+
+            // set payments tokens collection
+            if (App.SettingsDirectory.saved_credit_cards && paymentProcessor === USAePayPaymentProcessor) {
+                customer.setPayments(App.Collections.USAePayPayments);
+            }
 
             this.listenTo(customer, 'onUserCreated', function() {
                 App.Data.errors.alert(_loc.PROFILE_USER_CREATED);
