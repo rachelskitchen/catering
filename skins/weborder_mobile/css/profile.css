@@ -124,6 +124,25 @@
     padding: 0;
 }
 
+.profile-items .my_promotions-link {
+    position: relative;
+}
+.my_promotions-link__count {
+    display: inline-block;
+    background: #f12828;
+    border-radius: 100%;
+    color: #FFFFFF;
+    width: 0.7em;
+    height: 0.7em;
+    font-size: 0.5em;
+    padding: 0.5em;
+    margin-left: -2.5em;
+    margin-right: 0.5em;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 0.8em;
+}
+
 .profile-items .login-link,
 .profile-items .logout-link {
     display: block;

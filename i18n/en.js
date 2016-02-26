@@ -537,6 +537,7 @@
         'NEXT': 'Next',
         'WELCOME': 'Welcome',
         'PAYMENTS': "Payments",
+        'MY_PROMOTIONS': 'My Promotions',
         'SETTINGS': "Settings",
         'CONTINUE': 'Continue',
         'SAVE': "Save",
