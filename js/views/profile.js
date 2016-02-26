@@ -288,12 +288,27 @@ define(["factory"], function() {
     App.Views.CoreProfileView.CoreProfilePaymentView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'payment',
-        el: 'li'
+        tagName: 'li',
+        bindings: {
+            ':el': 'classes: {selected: selected}',
+            '.card-number': 'text: last_digits',
+            '.card-type': 'text: card_type'
+        },
+        events: {
+            'click': 'select'
+        },
+        select: function() {
+            this.model.set('selected', !this.model.get('selected'));
+        }
     });
 
     App.Views.CoreProfileView.CoreProfilePaymentsView = App.Views.FactoryView.extend({
         name: 'profile',
-        mod: 'payments'
+        mod: 'payments',
+        bindings: {
+            '.payments-list': 'collection: $collection'
+        },
+        itemView: App.Views.CoreProfileView.CoreProfilePaymentView
     });
 
     function controlLinks(showSignUp, showLogIn, showMenu, showPWDReset) {
@@ -320,5 +335,7 @@ define(["factory"], function() {
         App.Views.ProfileView.ProfileMenuView = App.Views.CoreProfileView.CoreProfileMenuView;
         App.Views.ProfileView.ProfilePanelView = App.Views.CoreProfileView.CoreProfilePanelView;
         App.Views.ProfileView.ProfileOwnerContactsView = App.Views.CoreProfileView.CoreProfileOwnerContactsView;
+        App.Views.ProfileView.ProfilePaymentView = App.Views.CoreProfileView.CoreProfilePaymentView;
+        App.Views.ProfileView.ProfilePaymentsView = App.Views.CoreProfileView.CoreProfilePaymentsView;
     });
 });

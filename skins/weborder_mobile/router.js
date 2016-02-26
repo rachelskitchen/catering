@@ -1103,6 +1103,13 @@ define(["main_router"], function(main_router) {
                             mod: 'Main',
                             collection: App.Data.myorder,
                             cacheId: true
+                        },
+                        {
+                            modelName: 'Profile',
+                            mod: 'Payments',
+                            collection: App.Data.customer.payments,
+                            model: App.Data.payments,
+                            cacheId: true
                         }
                     ]
                 });

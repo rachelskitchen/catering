@@ -152,6 +152,26 @@
     margin: 1.5em 0;
 }
 
+.payments-list {
+    margin: 3em -1.8em 0;
+}
+
+.payment-item {
+    padding: 1em 0;
+    margin-bottom: 2px;
+    position: relative;
+}
+
+.payment-item.selected::after  {
+    content: '\f00c';
+    font-family: "FontAwesome";
+    display: block;
+    position: absolute;
+    top: .2em;
+    right: .4em;
+    font-size: 1.5em;
+}
+
 /* landscape */
 @media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (orientation: landscape) {
     .forgot-password {
