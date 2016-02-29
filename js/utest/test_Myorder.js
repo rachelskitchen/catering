@@ -3446,8 +3446,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             beforeEach(function() {
                 App.Data.products[id_category] = new App.Models.Product({
                     init: function() {},
-                    get_product: function() {},
-                    is_combo: true
+                    get_product: function() {}
                 });
                 App.Data.modifiers[id_product] = new Backbone.Model();
 
