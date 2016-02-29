@@ -24,13 +24,18 @@
  * Contains {@link App.Models.Customer} constructors.
  * @module customers
  * @requires module:backbone
+ * @requires module:doc_cookies
+ * @requires module:page_visibility
  * @requires module:geopoint
  * @see {@link module:config.paths actual path}
  */
-define(["backbone", "geopoint"], function(Backbone) {
+define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Backbone, docCookies, page_visibility) {
     'use strict';
 
-    var SERVER_URL = "https://identity-dev.revelup.com";
+    var SERVER_URL = "https://identity-dev.revelup.com",
+        cookieName = "user",
+        cookieDomain = "revelup.com",
+        cookiePath = "/weborder";
 
     /**
      * @class
@@ -179,14 +184,23 @@ define(["backbone", "geopoint"], function(Backbone) {
              * @type {string}
              * @default ""
              */
-            scope: ""
+            scope: "",
+            /**
+             * If `true` cookie uses max-age property. Otherwise cookie exists within browser session.
+             * @type {boolean}
+             * @default true
+             */
+            keepCookie: true
         },
         /**
          * Adds validation listeners for `first_name`, `last_name` attributes changes.
          * Sets indexes of addresses used for "Delivery" and "Shipping" dinign options.
          */
         initialize: function() {
+            // init addresses indexes
             this.setAddressesIndexes();
+
+            // trim for `first_name`, `last_name`
             this.listenTo(this, 'change:first_name', function() {
                 var firstName = this.get('first_name');
                 (typeof(firstName) == 'string') ?
@@ -199,6 +213,12 @@ define(["backbone", "geopoint"], function(Backbone) {
                     this.set('last_name', Backbone.$.trim(lastName)) :
                     this.set('last_name', this.defaults.last_name);
             }, this);
+
+            // set customer data from cookie
+            this.setCustomerFromCookie();
+
+            // set tracking of cookie change when user leaves/returns to current tab
+            page_visibility.on(this.trackCookieChange.bind(this));
         },
         /**
          * Gets customer name in the format "John M.".
@@ -567,7 +587,7 @@ define(["backbone", "geopoint"], function(Backbone) {
          * Gets authorization token of the customer. Sends request with following parameters:
          * ```
          * {
-         *     url: "https://identity-dev.revelup.com/customers-auth/v1/authorization/token/",
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/authorization/token-customer/",
          *     method: "POST",
          *     data: {
          *         username: <username>,                                              // username (email)
@@ -679,28 +699,8 @@ define(["backbone", "geopoint"], function(Backbone) {
                     grant_type: "password"
                 },
                 success: function(data) {
-                    if(!_.isObject(data.customer) || !_.isObject(data.token)) {
-                        console.error('Incorrect response data format');
-                        return
-                    }
-
-                    // set profile address
-                    var address = data.customer.addresses[0] || this.getEmptyAddress();
-                    this.setProfileAddress(this.convertAddressFromAPIFormat(address));
-
-                    // need to reset password and set `email` attribute as username
-                    this.set({
-                        email: data.customer.email,
-                        first_name: data.customer.first_name,
-                        last_name: data.customer.last_name,
-                        phone: data.customer.phone_number,
-                        user_id: data.token.user_id,
-                        access_token: data.token.access_token,
-                        token_type: data.token.token_type,
-                        expires_in: data.token.expires_in,
-                        scope: data.token.scope,
-                        password: this.defaults.password
-                    });
+                    this.updateCookie(data);
+                    this.setCustomerFromAPI(data);
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
@@ -727,12 +727,16 @@ define(["backbone", "geopoint"], function(Backbone) {
             });
         },
         /**
-         * Changes attributes values on default values.
+         * Changes attributes values on default values. Emits `onLogout` event.
          */
         logout: function() {
+            docCookies.removeItem(cookieName, cookiePath, cookieDomain);
+
             for(var attr in this.defaults) {
                 this.set(attr, this.defaults[attr]);
             }
+
+            this.trigger('onLogout');
         },
         /**
          * Registers a new customer. Sends request with following parameters:
@@ -816,10 +820,7 @@ define(["backbone", "geopoint"], function(Backbone) {
                     address: _.isObject(address) ? address : undefined
                 }),
                 success: function(data) {
-                    this.set({
-                        password: this.defaults.password,
-                        confirm_password: this.defaults.confirm_password
-                    });
+                    this.clearPasswords();
                     this.logout();
                     this.trigger('onUserCreated');
                 },
@@ -898,9 +899,7 @@ define(["backbone", "geopoint"], function(Backbone) {
                 return;
             }
 
-            _.defaults(address, {
-                state: address
-            })
+            address = this.convertAddressFromAPIFormat(address);
 
             var addresses = this.get('addresses'),
                 profileAddressIndex = this.get('profileAddressIndex');
@@ -922,6 +921,7 @@ define(["backbone", "geopoint"], function(Backbone) {
          *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/customers/<id>/",
          *     method: "PATCH",
          *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
          *     data: {
          *         email: <email>,             // email
          *         first_name: <first_name>,   // first name
@@ -968,7 +968,7 @@ define(["backbone", "geopoint"], function(Backbone) {
          *     <field name>: <validation error>
          * }
          * ```
-         * The model emits `onUserUpdateError` event in this case.
+         * The model emits `onUserValidationError` event in this case.
          *
          * @returns {Object} jqXHR object.
          */
@@ -987,7 +987,10 @@ define(["backbone", "geopoint"], function(Backbone) {
                     last_name: attrs.last_name,
                     phone_number: attrs.phone
                 }),
-                success: this.trigger.bind(this, 'onUserUpdate'),
+                success: function(data) {
+                    this.updateCookie(this.getCustomerInAPIFormat());
+                    this.trigger('onUserUpdate');
+                },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
                         case 403:
@@ -1083,7 +1086,11 @@ define(["backbone", "geopoint"], function(Backbone) {
                 contentType: "application/json",
                 headers: this.getAuthorizationHeader(),
                 data: JSON.stringify(address),
-                success: this.trigger.bind(this, 'onUserAddressCreated'),
+                success: function(data) {
+                    this.setProfileAddress(data);
+                    this.updateCookie(this.getCustomerInAPIFormat());
+                    this.trigger('onUserAddressCreated');
+                },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
                         case 403:
@@ -1185,7 +1192,11 @@ define(["backbone", "geopoint"], function(Backbone) {
                 contentType: "application/json",
                 headers: this.getAuthorizationHeader(),
                 data: JSON.stringify(address),
-                success: this.trigger.bind(this, 'onUserAddressUpdate'),
+                success: function(data) {
+                    this.setProfileAddress(data);
+                    this.updateCookie(this.getCustomerInAPIFormat());
+                    this.trigger('onUserAddressUpdate');
+                },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
                         case 403:
@@ -1201,6 +1212,191 @@ define(["backbone", "geopoint"], function(Backbone) {
                         default:
                             this.trigger('onUserAPIError', getResponse());
                     }
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
+                    }
+                }
+            });
+        },
+        /**
+         * Changes the customer's password. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/change-password/<id>/",
+         *     method: "POST",
+         *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
+         *     data: {
+         *         "old_password": <current password>,
+         *         "new_password": <new password>
+         *     }
+         * }
+         * ```
+         * Server may return the following response:
+         * - Successful change:
+         * ```
+         * Status: 200
+         * {
+         *     "detail": "ok"
+         * }
+         * ```
+         * The model emits `onPasswordChange` event in this case.
+         *
+         * - Session is already expired or invalid token is used:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * The model emits `onUserSessionExpired` event in this case. Method `.logout()` is automatically called in this case.
+         *
+         * - Invalid current password:
+         * ```
+         * Status: 404
+         * {
+         *     "detail":"Customer object with such password does not exist."
+         * }
+         * ```
+         * The model emits `onPasswordInvalid` event in this case.
+         *
+         * - New data is invalid:
+         * ```
+         * Status: 400
+         * {
+         *     <field name>: <validation error>
+         * }
+         * ```
+         * The model emits `onUserValidationError` event in this case.
+         *
+         * @returns {Object} jqXHR object.
+         */
+        changePassword: function() {
+            var attrs = this.toJSON();
+
+            return Backbone.$.ajax({
+                url: SERVER_URL + "/customers-auth/v1/customers/change-password/" + attrs.user_id + "/",
+                method: "POST",
+                context: this,
+                contentType: "application/json",
+                headers: this.getAuthorizationHeader(),
+                data: JSON.stringify({
+                    old_password: attrs.password,
+                    new_password: attrs.confirm_password
+                }),
+                success: function(data) {
+                    this.clearPasswords();
+                    this.trigger('onPasswordChange');
+                },
+                error: function(jqXHR) {
+                    switch(jqXHR.status) {
+                        case 403:
+                            this.trigger('onUserSessionExpired');
+                            this.logout(); // need to reset current account to allow to re-log in
+                            break;
+                        case 404:
+                            this.trigger('onPasswordInvalid');
+                            break;
+                        case 400:
+                            this.trigger('onUserValidationError', getResponse());
+                            break;
+                        default:
+                            this.trigger('onUserAPIError', getResponse());
+                    }
+
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
+                    }
+                }
+            });
+        },
+        /**
+         * Resets the customer's password. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/reset-password/",
+         *     method: "POST",
+         *     contentType: "application/json",
+         *     data: {
+         *         "email": <email address>
+         *     }
+         * }
+         * ```
+         * Server may return the following response:
+         * - Successful reset:
+         * ```
+         * Status: 205
+         * {
+         *     "detail":"Email with password reset token has been sent."
+         * }
+         * ```
+         * The model emits `onPasswordReset` event in this case.
+         *
+         * - Email address is empty:
+         * ```
+         * Status: 400
+         * {
+         *     "email":["This field is required."]
+         * }
+         * ```
+         * The model emits `onPasswordResetError` event in this case.
+         *
+         * - Email address is invalid:
+         * ```
+         * Status: 400
+         * {
+         *     "email": "Customer object with such password does not exist."
+         * }
+         * ```
+         * The model emits `onPasswordResetError` event in this case.
+         *
+         * - Email address value is too long:
+         * ```
+         * Status: 400
+         * {
+         *     "email":["Ensure this field has no more than 254 characters."]
+         * }
+         * ```
+         * The model emits `onPasswordResetError` event in this case.
+         *
+         * - Customer with such email address doesn't exist:
+         * ```
+         * Status: 404
+         * {
+         *     "detail":"Customer object does not exist."
+         * }
+         * ```
+         * The model emits `onPasswordResetCustomerError` event in this case.
+         *
+         * @returns {Object} jqXHR object.
+         */
+        resetPassword: function() {
+            return Backbone.$.ajax({
+                url: SERVER_URL + "/customers-auth/v1/customers/reset-password/",
+                method: "POST",
+                context: this,
+                contentType: "application/json",
+                data: JSON.stringify({
+                    email: this.get('email')
+                }),
+                success: function(data) {
+                    this.trigger('onPasswordReset');
+                },
+                error: function(jqXHR) {
+                    switch(jqXHR.status) {
+                        case 205:
+                            this.trigger('onPasswordReset');
+                            break;
+                        case 400:
+                            this.trigger('onPasswordResetError', getResponse());
+                            break;
+                        case 404:
+                            this.trigger('onPasswordResetCustomerError', getResponse());
+                            break;
+                        default:
+                            this.trigger('onUserAPIError', getResponse());
+                    }
+
                     function getResponse() {
                         return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
                     }
@@ -1252,6 +1448,120 @@ define(["backbone", "geopoint"], function(Backbone) {
          */
         isProfileAddress: function(address) {
             return _.isObject(address) && typeof address.id != 'undefined' && typeof address.customer != 'undefined';
+        },
+        /**
+         * Set attributes values.
+         *
+         * @param {Object} data - object corresponding to response of `v1/authorization/token-customer/` {@link App.Models.Customer#login request}
+         */
+        setCustomerFromAPI: function(data) {
+            if(!_.isObject(data.customer) || !_.isObject(data.token)) {
+                console.error('Incorrect `v1/authorization/token-customer/` data format');
+                return;
+            }
+
+            // set profile address
+            var address = data.customer.addresses[0] || this.getEmptyAddress();
+            this.setProfileAddress(this.convertAddressFromAPIFormat(address));
+
+            // need to reset password and set `email` attribute as username
+            this.set({
+                email: data.customer.email,
+                first_name: data.customer.first_name,
+                last_name: data.customer.last_name,
+                phone: data.customer.phone_number,
+                user_id: data.token.user_id,
+                access_token: data.token.access_token,
+                token_type: data.token.token_type,
+                expires_in: data.token.expires_in,
+                scope: data.token.scope
+            });
+
+            this.clearPasswords();
+        },
+        /**
+         * Updates cookies with new data.
+         *
+         * @param {Object} data - object corresponding to response of `v1/authorization/token-customer/` {@link App.Models.Customer#login request}
+         */
+        updateCookie: function(data) {
+            if (!_.isObject(data)) {
+                return;
+            }
+
+            var expires_in = this.get('keepCookie') ? data.token.expires_in : 0;
+
+            docCookies.setItem(cookieName, btoa(JSON.stringify(data)), expires_in, cookiePath, cookieDomain, true);
+        },
+        /**
+         * Parse cookie and set customer attributes.
+         */
+        setCustomerFromCookie: function() {
+            var data = docCookies.getItem(cookieName);
+
+            if (!data) {
+                return;
+            }
+
+            try {
+                this.setCustomerFromAPI(JSON.parse(atob(data)));
+            } catch(e) {
+                console.error(e);
+            }
+        },
+        /**
+         * @returns {Object} An object corresponding to response of `v1/authorization/token-customer/` {@link App.Models.Customer#login request}.
+         */
+        getCustomerInAPIFormat: function() {
+            var attrs = this.toJSON();
+
+            return {
+                customer: {
+                    email: attrs.email,
+                    first_name: attrs.first_name,
+                    last_name: attrs.last_name,
+                    phone_number: attrs.phone,
+                    addresses: [this.getProfileAddress()]
+                },
+                token: {
+                    user_id: attrs.user_id,
+                    access_token: attrs.access_token,
+                    token_type: attrs.token_type,
+                    expires_in: attrs.expires_in,
+                    scope: attrs.scope
+                }
+            }
+        },
+        /**
+         * Tracks cookie change to apply updates performed in another tab.
+         * Emits `onCookieChange` event if cookie changed.
+         */
+        trackCookieChange: function() {
+            var currentState = docCookies.getItem(cookieName);
+            // condition may be true
+            // if user returns on tab after profile updating in another tab
+            if (_.isString(this.trackCookieChange.prevState) && _.isString(currentState)
+                && this.trackCookieChange.prevState != currentState) {
+                this.setCustomerFromCookie();
+                this.trigger('onCookieChange');
+            }
+            this.trackCookieChange.prevState = currentState;
+        },
+        /**
+         * @returns {boolean} `true` if user is authorized and `false` otherwise.
+         */
+        isAuthorized: function() {
+            return this.get('access_token') != this.defaults.access_token
+                && this.get('user_id') != this.defaults.user_id;
+        },
+        /**
+         * Sets `password`, `confirm_password` values to default.
+         */
+        clearPasswords: function() {
+            this.set({
+                password: this.defaults.password,
+                confirm_password: this.defaults.confirm_password
+            });
         }
     });
 });

@@ -395,7 +395,17 @@ define({
          * @type {string}
          * @description The actual path of [profile_view]{@link module:profile_view} module.
          */
-        profile_view: 'js/views/profile'
+        profile_view: 'js/views/profile',
+        /**
+         * @type {string}
+         * @description The actual path of [doc_cookies]{@link module:doc_cookies} module.
+         */
+        doc_cookies: 'js/libs/docCookies',
+        /**
+         * @type {string}
+         * @description The actual path of [page_visibility]{@link module:page_visibility} module.
+         */
+        page_visibility: 'js/common/page_visibility'
     },
     /**
      * A waiting time of a module loading.
@@ -448,7 +458,7 @@ define({
             deps: ["underscore", "jquery", "cssua"]
         },
         "customers": {
-            deps: ["backbone"]
+            deps: ["backbone", "doc_cookies", "page_visibility"]
         },
         "errors" : {
             deps: ["backbone"]
@@ -581,6 +591,12 @@ define({
         },
         'profile_view' : {
             deps: ['factory']
+        },
+        'doc_cookies': {
+            deps: []
+        },
+        'page_visibility': {
+            deps: []
         }
     },
     /**

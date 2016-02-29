@@ -129,6 +129,29 @@
     display: block;
     padding: 0.7em 0.5em;
 }
+
+.profile-owner-info .contact-info,
+.profile-owner-info .website-info {
+    margin-bottom: 0.5em;
+    padding: 0 2%;
+}
+
+.profile-owner-info .contact-title {
+    font-style: normal;
+}
+
+.profile-owner-info .contact-link,
+.profile-owner-info .contact-link:link,
+.profile-owner-info .contact-link:visited,
+.profile-owner-info .contact-link:hover,
+.profile-owner-info .contact-link:active {
+    color: inherit;
+}
+
+.reset-password-info {
+    margin: 1.5em 0;
+}
+
 /* landscape */
 @media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (orientation: landscape) {
     .forgot-password {

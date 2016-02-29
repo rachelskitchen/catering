@@ -532,6 +532,7 @@
         "SETTINGS": "Настройки",
         'CONTINUE': 'Далее',
         "SAVE": "Сохранить",
+        "RESET": "Сбросить",
         'PROFILE': 'Профиль',
         'PROFILE_EMAIL_ADDRESS': 'Эл. почта',
         'PROFILE_PASSWORD': 'Пароль',
@@ -572,6 +573,16 @@
         "PROFILE_USER_NOT_ACTIVATED": "Пользователь не активирован",
         "PROFILE_SESSION_EXPIRED": "Сессия закончена",
         "PROFILE_USER_NOT_FOUND": "Пользователь не найден",
-        "PROFILE_USER_ADDRESS_NOT_FOUND": "Адрес не найден"
+        "PROFILE_USER_ADDRESS_NOT_FOUND": "Адрес не найден",
+        "PROFILE_ENTER_CURRENT_PASSWORD": "Введите текущий пароль",
+        "PROFILE_ENTER_NEW_PASSWORD": "Введите новый пароль",
+        "PROFILE_CONTACT": "Контактный телефон",
+        "PROFILE_WEBSITE": "Вебсайт",
+        "PROFILE_INVALID_PASSWORD": "Неправильный пароль",
+        "PROFILE_PASSWORD_CHANGED": "Пароль успешно обновлен",
+        "PROFILE_PASSWORD_RESET_INFO": "Пожалуйста, введите адрес электронной почты.",
+        "PROFILE_PASSWORD_RESET_CUSTOMER_INVALID": "Пользователя с таким адресом электронной почты не существует",
+        "PROFILE_PASSWORD_RESET_SUCCESS": "Временный пароль отправлен на вашу электронную почту",
+        "PROFILE_INVALID_EMAIL": "Неверный адрес электронной почты"
     } // end of locale
 }); // end of module

@@ -96,6 +96,16 @@ var EVENT = {
 
 var MILLISECONDS_A_DAY = 86400000;//24*60*60*1000
 
+var ACCEPTABLE_CREDIT_CARD_TYPES = {
+    AMERICANEXPRESS: 0,
+    DISCOVER: 1,
+    MASTERCARD: 2,
+    VISA: 3,
+    MAESTRO: 10,
+    DINERS: 12,
+    JCB: 13
+};
+
 /**
 *  format message by formatting string and params.
 *  example: msgFrm("Message text param1 = %s, param2 = %s", 10, 20) returns the string "Message text param1 = 10, param2 = 20"

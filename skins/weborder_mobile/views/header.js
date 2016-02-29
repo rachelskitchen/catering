@@ -35,7 +35,8 @@ define(["factory"], function() {
         mod: 'main',
         bindings: {
            '.title': 'text:page_title',
-           '.btn-back': 'toggle: back',
+           '.btn-back': 'toggle: all(back, not(strictEqual(tab, 0)))',
+           '.btn-profile': 'toggle: strictEqual(tab, 0)',
            '.btn-back-title': 'text: back_title',
            '.btn-cart': 'toggle: cartItemsQuantity, classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}',
            '.btn-search': 'classes: {active: showSearch}',
@@ -51,7 +52,8 @@ define(["factory"], function() {
             'touchstart .btn-search': 'stopPropagation',
             'click .ctrl': 'search2',
             'submit .form-search': 'performSearch',
-            'onOutsideTouch .search': 'onOutsideTouch' // to hide keyboard and caret
+            'onOutsideTouch .search': 'onOutsideTouch', // to hide keyboard and caret
+            'click .btn-profile': 'profile'
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -118,6 +120,9 @@ define(["factory"], function() {
         },
         onOutsideTouch: function() {
             this.$('.input-search').blur();
+        },
+        profile: function() {
+            this.model.set('showProfileMenu', true);
         }
     });
 
@@ -137,17 +142,6 @@ define(["factory"], function() {
         onTab: function(e) {
             var tab = Backbone.$(e.target).data('tab');
             this.model.set('tab', tab);
-        }
-    });
-
-    var HeaderWithProfileView = HeaderMainView.extend({
-        name: 'header',
-        mod: 'with_profile',
-        events: {
-            'click .btn-profile': 'profile'
-        },
-        profile: function() {
-            this.model.set('showProfileMenu', true);
         }
     });
 
@@ -274,7 +268,6 @@ define(["factory"], function() {
     return new (require('factory'))(function() {
         App.Views.HeaderView = {};
         App.Views.HeaderView.HeaderMainView = HeaderMainView;
-        App.Views.HeaderView.HeaderWithProfileView = HeaderWithProfileView;
         App.Views.HeaderView.HeaderTabsView = HeaderTabsView;
         App.Views.HeaderView.HeaderModifiersView = HeaderModifiersView;
         App.Views.HeaderView.HeaderComboProductView = HeaderComboProductView;

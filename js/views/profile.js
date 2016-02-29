@@ -68,7 +68,8 @@ define(["factory"], function() {
         events: {
             'click .login-btn:not(.disabled)': setCallback('loginAction'),
             'click .create-btn': setCallback('createAccount'),
-            'click .guest-btn': setCallback('guestCb')
+            'click .guest-btn': setCallback('guestCb'),
+            'click .forgot-password': setCallback('forgotPasswordAction')
         }
     });
 
@@ -162,6 +163,12 @@ define(["factory"], function() {
                 model: this.model
             });
 
+            var accountPassword = App.Views.GeneratorView.create('Profile', {
+                el: this.$('.account-password-box'),
+                mod: 'AccountPassword',
+                model: this.model
+            });
+
             var address = App.Views.GeneratorView.create('Profile', {
                 el: this.$('.address-box'),
                 mod: 'Address',
@@ -174,46 +181,58 @@ define(["factory"], function() {
         }
     });
 
-    App.Views.CoreProfileView.CoreProfileSettingsView = App.Views.FactoryView.extend({
+    App.Views.CoreProfileView.CoreProfileAccountPasswordView = App.Views.FactoryView.extend({
         name: 'profile',
-        mod: 'settings'
+        mod: 'account_password',
+        bindings: {
+            '.current-password': 'value: password, events:["input"], pattern: /^.{0,255}$/',
+            '.new-password': 'value: confirm_password, events:["input"], pattern: /^.{0,255}$/'
+        }
     });
 
     App.Views.CoreProfileView.CoreProfilePWDResetView = App.Views.FactoryView.extend({
         name: 'profile',
-        mod: 'reset'
+        mod: 'reset_password',
+        bindings: {
+            '.email': 'value: email, events: ["input"], pattern: /^.{0,254}$/',
+            '.reset-btn': 'classes: {disabled: not(email)}'
+        },
+        events: {
+            'click .reset-btn': setCallback('resetAction')
+        }
     });
 
     App.Views.CoreProfileView.CoreProfilePanelView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'panel',
         initialize: function() {
-            // once gets authorized/logged out/created need to close panel
-            this.listenTo(this.model, 'change:access_token onUserCreated', controlLinks(false, false, false));
+            this.listenTo(this.model, 'hidePanel', controlLinks(false, false, false, false));
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
-            ':el': 'classes: {active: any(ui_showSignUp, ui_showLogIn, ui_showMenu)}',
+            ':el': 'classes: {active: any(ui_showSignUp, ui_showLogIn, ui_showMenu, ui_showPWDReset)}',
             '.signup-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showSignUp), "regular-text": ui_showSignUp}',
             '.login-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showLogIn), "regular-text": ui_showLogIn}',
-            '.close': 'toggle: any(ui_showSignUp, ui_showLogIn, ui_showMenu)',
+            '.close': 'toggle: any(ui_showSignUp, ui_showLogIn, ui_showMenu, ui_showPWDReset)',
             '.sign-up-box': 'toggle: ui_showSignUp',
             '.log-in-box': 'toggle: ui_showLogIn',
             '.menu-items': 'toggle: ui_showMenu',
-            '.logged-as': 'text: first_name, toggle: access_token'
+            '.logged-as': 'text: first_name, toggle: access_token',
+            '.reset-password-box': 'toggle: ui_showPWDReset'
         },
         events: {
-            'click .signup-link': controlLinks(true, false, false),
-            'click .login-link': controlLinks(false, true, false),
-            'click .logged-as': controlLinks(false, false, true),
-            'click .close': controlLinks(false, false, false)
+            'click .signup-link': controlLinks(true, false, false, false),
+            'click .login-link': controlLinks(false, true, false, false),
+            'click .logged-as': controlLinks(false, false, true, false),
+            'click .close': controlLinks(false, false, false, false)
         },
         bindingSources: {
             ui: function() {
                 return new Backbone.Model({
                     showSignUp: false,
                     showLogIn: false,
-                    showMenu: false
+                    showMenu: false,
+                    showPWDReset: false
                 });
             }
         },
@@ -224,7 +243,8 @@ define(["factory"], function() {
             var loginView = App.Views.GeneratorView.create('Profile', _.extend({}, this.options, {
                 el: this.$('.log-in-box'),
                 mod: 'LogIn',
-                model: this.model
+                model: this.model,
+                forgotPasswordAction: controlLinks(false, false, false, true).bind(this)
             }));
 
             // SignUp view
@@ -241,18 +261,37 @@ define(["factory"], function() {
                 header: new Backbone.Model({showProfileMenu: true})
             }));
 
-            this.subViews.push(loginView, signupView, menuView);
+            var resetPWD = App.Views.GeneratorView.create('Profile', _.extend({}, this.options, {
+                el: this.$('.reset-password-box'),
+                mod: 'PWDReset',
+                resetAction: this.options.resetAction
+            }));
+
+            this.subViews.push(loginView, signupView, menuView, resetPWD);
 
             return this;
         }
     });
 
-    function controlLinks(showSignUp, showLogIn, showMenu) {
+    App.Views.CoreProfileView.CoreProfileOwnerContactsView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'owner_contacts',
+        bindings: {
+            ':el': 'toggle: any(_settings_directory_owner_contact, _settings_directory_owner_website)',
+            '.contact-info': 'toggle: _settings_directory_owner_contact',
+            '.website-info': 'toggle: _settings_directory_owner_website',
+            '.phone': 'text: _settings_directory_owner_contact, attr: {href: format("tel:$1", _settings_directory_owner_contact)}',
+            '.website': 'text: _settings_directory_owner_website, attr: {href: _settings_directory_owner_website}'
+        }
+    });
+
+    function controlLinks(showSignUp, showLogIn, showMenu, showPWDReset) {
         return function() {
             this.getBinding('$ui').set({
                 showSignUp: showSignUp,
                 showLogIn: showLogIn,
-                showMenu: showMenu
+                showMenu: showMenu,
+                showPWDReset: showPWDReset
             });
         };
     }
@@ -265,9 +304,10 @@ define(["factory"], function() {
         App.Views.ProfileView.ProfileCreateView = App.Views.CoreProfileView.CoreProfileCreateView;
         App.Views.ProfileView.ProfileEditView = App.Views.CoreProfileView.CoreProfileEditView;
         App.Views.ProfileView.ProfileAddressView = App.Views.CoreProfileView.CoreProfileAddressView;
-        App.Views.ProfileView.ProfileSettingsView = App.Views.CoreProfileView.CoreProfileSettingsView;
+        App.Views.ProfileView.ProfileAccountPasswordView = App.Views.CoreProfileView.CoreProfileAccountPasswordView;
         App.Views.ProfileView.ProfilePWDResetView = App.Views.CoreProfileView.CoreProfilePWDResetView;
         App.Views.ProfileView.ProfileMenuView = App.Views.CoreProfileView.CoreProfileMenuView;
         App.Views.ProfileView.ProfilePanelView = App.Views.CoreProfileView.CoreProfilePanelView;
+        App.Views.ProfileView.ProfileOwnerContactsView = App.Views.CoreProfileView.CoreProfileOwnerContactsView;
     });
 });
