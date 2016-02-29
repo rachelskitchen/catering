@@ -68,14 +68,14 @@ define(['establishments'], function() {
                     model.checkGETParameters(555);
 
                    expectStatusCode(3);
-                   expect(model.trigger).toHaveBeenCalledWith('changeEstablishment', 555); 
+                   expect(model.trigger).toHaveBeenCalledWith('changeEstablishment', 555);
                 });
 
                 it('changes establishment to default value (`establishment` is not set, `brand` GET parameters does not exist', function() {
                     model.checkGETParameters();
 
                     expectStatusCode(3);
-                    expect(model.trigger).toHaveBeenCalledWith('changeEstablishment', 1); 
+                    expect(model.trigger).toHaveBeenCalledWith('changeEstablishment', 1);
                 });
 
                 it('`brand` GET parameter has negative value', function() {
@@ -95,7 +95,7 @@ define(['establishments'], function() {
 
                         expectMetaBrand();
                         expectStatusCode(3);
-                        expect(model.trigger).toHaveBeenCalledWith('changeEstablishment', 111); 
+                        expect(model.trigger).toHaveBeenCalledWith('changeEstablishment', 111);
                     });
 
                     it('brand has more than 1 establishment', function() {
@@ -138,7 +138,7 @@ define(['establishments'], function() {
             it('success', function() {
                 ajaxSpy.and.callFake(function(opts) {
                     ajaxOpts = opts;
-                    opts.success({
+                    opts.success([{
                         brand_name: 'brand name',
                         estabs: [
                             {
@@ -148,7 +148,7 @@ define(['establishments'], function() {
                                 id: 2
                             }
                         ]
-                    });
+                    }]);
                     opts.complete();
                 });
 

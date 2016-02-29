@@ -44,6 +44,9 @@ requirejs.config({
     callback: function() {
         console.log("require callback =>");
         var self = this;
+        for (var file in window.__karma__.files) { //(optional) it's work arround for an ERROR: 'There is no timestamp for base/js/...filename.js'
+            window.__karma__.files[file.replace(/^\//, '')] = window.__karma__.files[file];
+        }
         $(window).on("StartTesting", function() {
             console.log("All tests loaded!!! starting karma...");
             window.__karma__.start.apply(self, arguments);
