@@ -646,8 +646,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 switch (product.name) {
                     case MSG.AUTOAPPLY_FEE_ITEM:
                         return 'AutoApply Fee';
-                    default:
-                        trace("Product name '" + product.name + "' should be overridden");
+                    default: {
+                        //trace("Product name '" + product.name + "' is not overridden");
+                    }
                 }
             }
             return product.name;
