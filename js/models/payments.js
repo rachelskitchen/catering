@@ -82,12 +82,6 @@ define(['backbone'], function(Backbone) {
              */
             last_name: '',
             /**
-             * Payment token.
-             * @type {string}
-             * @default ''
-             */
-            token: '',
-            /**
              * Payment vault id.
              * @type {?number}
              * @default null
@@ -113,6 +107,15 @@ define(['backbone'], function(Backbone) {
              * @default false
              */
             selected: false
+        },
+        removePayment: function(token_id, serverURL, authorizationHeader) {
+            return Backbone.$.ajax({
+                url: serverURL + "/customers-auth/v1/customers/payments/usaepay/" + this.get('id') + "/",
+                method: "DELETE",
+                headers: authorizationHeader,
+                success: new Function(),        // to override global ajax success handler
+                error: new Function()           // to override global ajax error handler
+            });
         }
     });
 
@@ -195,7 +198,7 @@ define(['backbone'], function(Backbone) {
                 headers: authorizationHeader,
                 contentType: "application/json",
                 success: new Function(),           // to override global ajax success handler
-                error: new Function()              // to override global ajax success handler
+                error: new Function()              // to override global ajax error handler
             });
         },
         /**
@@ -244,7 +247,7 @@ define(['backbone'], function(Backbone) {
                 success: function(data) {
                     self.add(data).set('selected', true);
                 },
-                error: new Function()              // to override global ajax success handler
+                error: new Function()              // to override global ajax error handler
             });
         },
         /**
@@ -286,8 +289,15 @@ define(['backbone'], function(Backbone) {
                         self.reset(data);
                     }
                 },
-                error: new Function()              // to override global ajax success handler
+                error: new Function()              // to override global ajax error handler
             });
+        },
+        /**
+         * TODO
+         */
+        removePayment: function(token_id, serverURL, authorizationHeader) {
+            var token = this.get(token_id);
+            return token && token.removePayment(serverURL, authorizationHeader);
         }
     });
 });

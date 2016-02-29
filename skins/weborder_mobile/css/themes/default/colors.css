@@ -168,6 +168,10 @@ select:-moz-focusring {
 .list > li::after {
   color: #CECECE;
 }
+/* [list_subheader] credit cards edition */
+.list-subheader {
+  background: #E4E4E4;
+}
 /* [header] Customize screen product description text background */
 .header {
   background: #1B8DBD;

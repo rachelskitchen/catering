@@ -583,6 +583,8 @@
         "PROFILE_PASSWORD_RESET_INFO": "Пожалуйста, введите адрес электронной почты.",
         "PROFILE_PASSWORD_RESET_CUSTOMER_INVALID": "Пользователя с таким адресом электронной почты не существует",
         "PROFILE_PASSWORD_RESET_SUCCESS": "Временный пароль отправлен на вашу электронную почту",
-        "PROFILE_INVALID_EMAIL": "Неверный адрес электронной почты"
+        "PROFILE_INVALID_EMAIL": "Неверный адрес электронной почты",
+        "PROFILE_ADD_CREDIT_CARD": "Добавить кред. карту",
+        "PROFILE_CREDIT_CARDS": "Кредитные карты"
     } // end of locale
 }); // end of module

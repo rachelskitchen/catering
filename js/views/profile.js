@@ -285,9 +285,9 @@ define(["factory"], function() {
         }
     });
 
-    App.Views.CoreProfileView.CoreProfilePaymentView = App.Views.FactoryView.extend({
+    App.Views.CoreProfileView.CoreProfilePaymentSelectionView = App.Views.FactoryView.extend({
         name: 'profile',
-        mod: 'payment',
+        mod: 'payment_selection',
         tagName: 'li',
         bindings: {
             ':el': 'classes: {selected: selected}',
@@ -295,26 +295,55 @@ define(["factory"], function() {
             '.card-type': 'text: creditCardType(_lp_CREDIT_CARD_TYPES, card_type)'
         },
         bindingFilters: {
-            creditCardType: function(types, card_type) {
-                var code = _.invert(ACCEPTABLE_CREDIT_CARD_TYPES)[card_type]
-                return types[code];
-            }
+            creditCardType: creditCardType
         },
         events: {
             'click': 'select'
         },
         select: function() {
-            this.model.set('selected', !this.model.get('selected'));
+            var isSelect = !this.model.get('selected');
+            isSelect && this.model.set('selected', isSelect);
         }
     });
 
-    App.Views.CoreProfileView.CoreProfilePaymentsView = App.Views.FactoryView.extend({
+    App.Views.CoreProfileView.CoreProfilePaymentsSelectionView = App.Views.FactoryView.extend({
         name: 'profile',
-        mod: 'payments',
+        mod: 'payments_selection',
         bindings: {
             '.payments-list': 'collection: $collection'
         },
-        itemView: App.Views.CoreProfileView.CoreProfilePaymentView
+        itemView: App.Views.CoreProfileView.CoreProfilePaymentSelectionView,
+        events: {
+            'click .add-cc': setCallback('addCreditCard')
+        }
+    });
+
+    App.Views.CoreProfileView.CoreProfilePaymentEditionView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'payment_edition',
+        tagName: 'li',
+        bindings: {
+            '.card-number': 'text: last_digits',
+            '.card-type': 'text: creditCardType(_lp_CREDIT_CARD_TYPES, card_type)'
+        },
+        bindingFilters: {
+            creditCardType: creditCardType
+        },
+        events: {
+            'click .remove-btn': ''
+        },
+        remove: function() {
+            console.log('remove');
+        }
+    });
+
+    App.Views.CoreProfileView.CoreProfilePaymentsEditionView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'payments_edition',
+        bindings: {
+            '.payments-list': 'collection: $collection'
+        },
+        itemView: App.Views.CoreProfileView.CoreProfilePaymentEditionView
     });
 
     function controlLinks(showSignUp, showLogIn, showMenu, showPWDReset) {
@@ -326,6 +355,11 @@ define(["factory"], function() {
                 showPWDReset: showPWDReset
             });
         };
+    }
+
+    function creditCardType(types, card_type) {
+        var code = _.invert(ACCEPTABLE_CREDIT_CARD_TYPES)[card_type]
+        return types[code];
     }
 
     return new (require('factory'))(function() {
@@ -341,7 +375,9 @@ define(["factory"], function() {
         App.Views.ProfileView.ProfileMenuView = App.Views.CoreProfileView.CoreProfileMenuView;
         App.Views.ProfileView.ProfilePanelView = App.Views.CoreProfileView.CoreProfilePanelView;
         App.Views.ProfileView.ProfileOwnerContactsView = App.Views.CoreProfileView.CoreProfileOwnerContactsView;
-        App.Views.ProfileView.ProfilePaymentView = App.Views.CoreProfileView.CoreProfilePaymentView;
-        App.Views.ProfileView.ProfilePaymentsView = App.Views.CoreProfileView.CoreProfilePaymentsView;
+        App.Views.ProfileView.ProfilePaymentSelectionView = App.Views.CoreProfileView.CoreProfilePaymentSelectionView;
+        App.Views.ProfileView.ProfilePaymentsSelectionView = App.Views.CoreProfileView.CoreProfilePaymentsSelectionView;
+        App.Views.ProfileView.ProfilePaymentEditionView = App.Views.CoreProfileView.CoreProfilePaymentEditionView;
+        App.Views.ProfileView.ProfilePaymentsEditionView = App.Views.CoreProfileView.CoreProfilePaymentsEditionView;
     });
 });
