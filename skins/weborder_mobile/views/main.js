@@ -152,10 +152,9 @@ define(["done_view", "generator"], function(done_view) {
             this.subViews[3] && this.subViews[3].removeFromDOMTree();
             var data = _.defaults(this.model.get('promotions'), this.promotions_defaults());
             if (data) {
-                var $section = this.$('#section');
                 this.subViews[3] && this.subViews[3].removeFromDOMTree();
                 this.subViews[3] = App.Views.GeneratorView.create(data.modelName, data);
-                $section.prepend(this.subViews[3].el);
+                this.$('#section__inner').prepend(this.subViews[3].el);
                 this.setContentPadding();
             }
         },
