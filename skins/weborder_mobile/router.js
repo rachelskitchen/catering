@@ -343,6 +343,27 @@ define(["main_router"], function(main_router) {
                     tab: 0
                 });
 
+                /**
+                 * Promotions
+                 */
+                var promotions,
+                    set_dir = App.SettingsDirectory;
+                set_dir.promotionsAvailable = true; // DEBUG
+                if (set_dir.promotionsAvailable) {
+                    promotions = App.Views.GeneratorView.create('Promotions', {
+                        model: new Backbone.Model(),
+                        mod: 'TopLine',
+                        cacheId: true,
+                        className: 'all-promotions'
+                    }, 'promotions_line');
+
+                    this.listenToOnce(this, 'route', function(route, params) {
+                        if (route != 'products') {
+                            App.Data.mainModel.set('promotions', null);
+                        }
+                    });
+                }
+
                 var content = [{
                     modelName: 'Categories',
                     collection: App.Data.parentCategories,
@@ -361,6 +382,7 @@ define(["main_router"], function(main_router) {
                 App.Data.mainModel.set({
                     header: headerModes.Main,
                     footer: footerMode,
+                    promotions: promotions,
                     contentClass: '',
                     content: content
                 });
@@ -441,9 +463,31 @@ define(["main_router"], function(main_router) {
                     back_title: _loc.BACK
                 });
 
+                /**
+                 * Promotions
+                 */
+                var promotions,
+                    set_dir = App.SettingsDirectory;
+                set_dir.promotionsAvailable = true; // DEBUG
+                if (set_dir.promotionsAvailable) {
+                    promotions = App.Views.GeneratorView.create('Promotions', {
+                        model: new Backbone.Model(),
+                        mod: 'TopLine',
+                        cacheId: true,
+                        className: 'all-promotions'
+                    }, 'promotions_line');
+
+                    this.listenToOnce(this, 'route', function(route, params) {
+                        if (route != 'index') {
+                            App.Data.mainModel.set('promotions', null);
+                        }
+                    });
+                }
+
                 App.Data.mainModel.set({
                     header: headerModes.Main,
-                    footer: footerModes.None
+                    footer: footerModes.None,
+                    promotions: promotions
                 });
 
                 // load categories and products

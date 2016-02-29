@@ -134,7 +134,7 @@ select:-moz-focusring {
   color: #E73939;
 }
 /* [list_background] cell bg, table bg */
-#section > div,
+#content,
 .list-bg,
 .quantity .btn-qty:not([disabled]):active {
   background: #FFFFFF;

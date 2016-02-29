@@ -20,17 +20,26 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone"], function(Backbone) {
+define(["factory"], function() {
     'use strict';
 
-    App.Models.MainModel = Backbone.Model.extend({
-        defaults: {
-            header: {},
-            promotions: {},
-            content: {},
-            footer: {},
-            img: App.Data.settings.get("img_path"),
-            isBlurContent: false
+    var PromotionsTopLineView = App.Views.FactoryView.extend({
+        name: 'promotions',
+        mod: 'TopLine',
+        tagName: 'div',
+        bindings: {
+            //':el': 'toggle: _settings_directory_promotionsAvailable'
+        },
+        events: {
+            'click': 'goToPromotionsList'
+        },
+        goToPromotionsList: function() {
+            App.Data.router.navigate('promotions', true);
         }
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.PromotionsView = {};
+        App.Views.PromotionsView.PromotionsTopLineView = PromotionsTopLineView;
     });
 });

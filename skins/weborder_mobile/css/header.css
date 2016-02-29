@@ -187,29 +187,6 @@
     pointer-events: none;
 }
 
-.all-promotions {
-    background: #EAF3F9;
-    color: #373B40;
-    margin: 0 -1.4em;
-    padding: 2em 0;
-    text-align: center;
-}
-.all-promotions__text {
-    padding-right: 2.5em;
-    position: relative;
-}
-.all-promotions__text:after {
-    display: block;
-    content: "";
-    position: absolute;
-    top: -0.5em;
-    right: 0;
-    width: 2em;
-    height: 2em;
-    background: url(../img/promotion.svg) center no-repeat;
-    background-size: 2em 2em;
-}
-
 .main {
     position: relative;
 }

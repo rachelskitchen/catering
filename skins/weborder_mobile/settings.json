@@ -14,15 +14,15 @@
             "js" : ["jquery.smartbanner"]
         },
         "index": {
-            "css": ["categories", "promo_message"],
-            "views": ["categories", "promo_message"],
-            "templates": ["categories", "promo_message"],
+            "css": ["categories", "promo_message", "promotions"],
+            "views": ["categories", "promo_message", "promotions"],
+            "templates": ["categories", "promo_message", "promotions"],
             "core": ["categories", "products", "subcategories"]
         },
         "products": {
-            "css": ["categories", "products"],
-            "views": ["categories"],
-            "templates": ["products", "categories"],
+            "css": ["categories", "products", "promotions"],
+            "views": ["categories", "promotions"],
+            "templates": ["products", "categories", "promotions"],
             "core": ["categories", "products", "subcategories"]
         },
         "modifiers": {
