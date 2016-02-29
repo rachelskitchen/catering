@@ -3436,8 +3436,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 id_product = 5,
                 dfd = $.Deferred(),
                 obj = {
-                    get_product: function() {},
-                    is_combo: true
+                    get_product: function() {}
                 },
                 product = new App.Models.Product({is_combo: true});
 
