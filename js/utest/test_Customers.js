@@ -167,11 +167,18 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
         describe("loadAddresses()", function() {
             var values = [null, undefined, 12, NaN, Infinity, '12', '', 0, 1.223],
-                getData;
+                getData, appCache;
 
             beforeEach(function() {
+                //trace("loadAddresses: before each ...", App);
                 getData = spyOn(window, 'getData');
                 spyOn(model, 'set');
+                appCache = App;
+            });
+
+            afterEach(function(){
+                //trace("after cache ...", appCache)
+                App = appCache;
             });
 
             it("1. 'address' isn't object", function() {
@@ -201,45 +208,46 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
 
             it("4. 'address' is object, address.addresses is array with one item, App.skin == App.Skins.RETAIL", function() {
-                var arr = [1]
-                    appCache = App;
+                var arr = [1];
                 App = {skin: true, Skins: {RETAIL: true}};
                 getData.and.returnValue({addresses: arr});
                 model.loadAddresses();
                 expect(window.getData).toHaveBeenCalledWith('address', true);
                 expect(model.set).toHaveBeenCalledWith('addresses', arr);
-                App = appCache;
             });
 
 
             it("5. 'address' is object, address.addresses is array with one item, App.skin != App.Skins.RETAIL, data.addresses[0].country == App.Settings.address.country", function() {
-                var arr = [{country: true}]
-                    appCache = App;
+                var arr = [{country: true}];
                 App = {skin: true, Skins: {RETAIL: false}, Settings: {address: {country: true}}};
                 getData.and.returnValue({addresses: arr});
                 model.loadAddresses();
                 expect(window.getData).toHaveBeenCalledWith('address', true);
                 expect(model.set).toHaveBeenCalledWith('addresses', arr);
-                App = appCache;
             });
 
             it("6. 'address' is object, address.addresses is array with one item, App.skin != App.Skins.RETAIL, data.addresses[0].country != App.Settings.address.country", function() {
-                var arr = [{country: true}],
-                    appCache = App;
+                var arr = [{country: true}];
                 App = {skin: true, Skins: {RETAIL: false}, Settings: {address: {country: false}}};
                 getData.and.returnValue({addresses: arr});
                 model.loadAddresses();
                 expect(window.getData).toHaveBeenCalledWith('address', true);
                 expect(model.set).toHaveBeenCalledWith('addresses', []);
-                App = appCache;
             });
         });
 
         describe("address_str()", function() {
-            var get;
+            var get, appCache;
 
             beforeEach(function() {
                 get = spyOn(model, 'get');
+                //trace("address_str: before each ...", App);
+                appCache = App;
+            });
+
+            afterEach(function(){
+                //trace("after cache ...", appCache);
+                App = appCache;
             });
 
             it("1. 'addresses' isn't array", function() {
@@ -282,13 +290,12 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                     city: 'city',
                     state: 'state',
                     zipcode: 'zipcode'
-                }, appCache = App;
+                };
 
                 App = {Settings: {address: {state: true}}};
 
                 get.and.returnValue([values]);
                 expect(model.address_str()).toEqual(Object.keys(values).join(', '));
-                App = appCache;
             });
 
             it("7. App.Settings.address.state isn't present", function() {
@@ -298,13 +305,12 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                     city: 'city',
                     state: 'state',
                     zipcode: 'zipcode'
-                }, appCache = App, keys = Object.keys(values);
+                }, keys = Object.keys(values);
 
                 App = {Settings: {address: {state: true}}};
                 keys.splice(3, 0);
                 get.and.returnValue([values]);
                 expect(model.address_str()).toEqual(keys.join(', '));
-                App = appCache;
             });
         });
 
