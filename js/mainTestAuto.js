@@ -100,7 +100,7 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
         }
         else {
 
-            App.Data.devMode = true;
+            //App.Data.devMode = true;
 
             console.log("mainAutoTest: step #2, unit test mode");
             if (App.Data.devMode == true) {
@@ -122,13 +122,21 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
                     blanket.options('branchTracking', true);
 
                     var jasmineEnv = jasmine.getEnv();
-                    jasmineEnv.addReporter(new jasmine.BlanketReporter());
+                    var reporter = new jasmine.BlanketReporter();
+                    jasmineEnv.addReporter(reporter);
                     jasmineEnv.updateInterval = 1000;
+
+                    reporter.jasmineDone = function() {
+                       jasmine.BlanketReporter.prototype.jasmineDone.apply(this,arguments);
+                       var cover = _blanket.getCovarageTotals()
+                       console.log( "Total covarage: " + ((cover.numberOfFilesCovered * 100) / cover.totalSmts).toFixed(2) + "%" );
+                    }
 
                     $(document).ready(function() {
                         locale.dfd_load.done(function() {
                             require(tests_list, function(spec) {
-                                window.onload();
+                                console.log("mainAutoTest: step #4, Blanket mode, tests loaded");
+                                $(window).trigger("StartTesting");
                             });
                         });
                     });
