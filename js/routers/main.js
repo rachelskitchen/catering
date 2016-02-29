@@ -845,7 +845,7 @@ define(["backbone", "factory"], function(Backbone) {
                     logout_link: logout,
                     login_link: login,
                     settings_link: profile_settings,
-                    payments_link: close,
+                    payments_link: profile_payments,
                     profile_link: profile_edit,
                     close_link: close,
                     cacheId: true
@@ -870,6 +870,11 @@ define(["backbone", "factory"], function(Backbone) {
 
             function profile_settings() {
                 self.navigate('profile_settings', true);
+                close();
+            }
+
+            function profile_payments() {
+                self.navigate('profile_payments', true);
                 close();
             }
 

@@ -600,6 +600,8 @@
         "PROFILE_PASSWORD_RESET_INFO": "Enter your email address and we'll help you reset your password",
         "PROFILE_PASSWORD_RESET_CUSTOMER_INVALID": "Customer with such email address doesn't exist",
         "PROFILE_PASSWORD_RESET_SUCCESS": "The password has been sent. Please check email for your new password.",
-        "PROFILE_INVALID_EMAIL": "Email address is invalid"
+        "PROFILE_INVALID_EMAIL": "Email address is invalid",
+        "PROFILE_ADD_CREDIT_CARD": "Add Credit Card",
+        "PROFILE_CREDIT_CARDS": "Credit Cards"
     }; // end of locale
 }); // end of module

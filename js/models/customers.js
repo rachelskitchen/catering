@@ -699,6 +699,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 success: function(data) {
                     this.updateCookie(data);
                     this.setCustomerFromAPI(data);
+                    this.initPayments();
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
@@ -734,6 +735,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 this.set(attr, this.defaults[attr]);
             }
 
+            this.removePayments();
             this.trigger('onLogout');
         },
         /**
@@ -1593,17 +1595,19 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     atlas_id: App.Data.settings.get('establishment')
                 };
 
-                payments.createPaymentToken(SERVER_URL, authorizationHeader, data)
-                        .done(function() {
-                            delete order.paymentInfo.token;
-                            delete order.paymentInfo.card_type;
-                            delete order.paymentInfo.masked_card_number;
-                            create_order_and_pay();
-                        })
-                        .fail(function(jqXHR) {
-                            def.reject.apply(def, arguments);
-                            ifSessionIsExpired(jqXHR);
-                        });
+                this.paymentsRequest.always(function() {
+                    payments.createPaymentToken(SERVER_URL, authorizationHeader, data)
+                            .done(function() {
+                                delete order.paymentInfo.token;
+                                delete order.paymentInfo.card_type;
+                                delete order.paymentInfo.masked_card_number;
+                                create_order_and_pay();
+                            })
+                            .fail(function(jqXHR) {
+                                def.reject.apply(def, arguments);
+                                ifSessionIsExpired(jqXHR);
+                            });
+                });
             } else {
                 create_order_and_pay();
             }
@@ -1645,6 +1649,15 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     self.logout(); // need to reset current account to allow to re-log in
                 }
             });
+
+            /**
+             * Payments request.
+             * @alias App.Models.Customer#paymentsRequest
+             * @type {Backbone.$.Deferred}
+             * @default undefined
+             */
+            this.paymentsRequest = req;
+
             return req;
         },
         /**
@@ -1657,15 +1670,42 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * Sets payments tokens collection.
          */
         setPayments: function(constr) {
-            if (typeof constr) {
-                /**
-                 * Collection of payments tokens (depends on CC payment processor).
-                 * @alias App.Models.Customer#payments
-                 * @type {Backbone.Collection}
-                 * @default undefined
-                 */
-                this.payments = new constr()//new App.Collections.USAePayPayments();
+            this._setPayments = function() {
+                if (typeof constr) {
+                    /**
+                     * Collection of payments tokens (depends on CC payment processor).
+                     * @alias App.Models.Customer#payments
+                     * @type {Backbone.Collection}
+                     * @default undefined
+                     */
+                    this.payments = new constr()//new App.Collections.USAePayPayments();
+                }
             }
+            this.isAuthorized() && this.initPayments();
+        },
+        /**
+         * Sets payments collection and receives data.
+         */
+        initPayments: function() {
+            this._setPayments();
+            this.payments && this.getPayments();
+        },
+        /**
+         * Aborts payments request and deletes {@link App.Models.Customer#payments payments},
+         * {@link App.Models.Customer#paymentsRequest paymentsRequest} properties.
+         */
+        removePayments: function() {
+            this.paymentsRequest && this.paymentsRequest.abort();
+            delete this.paymentsRequest;
+            delete this.payments;
+        },
+        /**
+         * Removes payment token.
+         * @param {number} token_id - token id.
+         * @return {Object} jqXHR object.
+         */
+        removePayment: function(token_id) {
+            return this.payments.removePayment(token_id, SERVER_URL, this.getAuthorizationHeader());
         }
     });
 });

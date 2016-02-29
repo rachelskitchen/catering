@@ -70,6 +70,7 @@ define(["main_router"], function(main_router) {
             "profile_edit": "profile_edit",
             "profile_settings": "profile_settings",
             "profile_forgot_password": "profile_forgot_password",
+            "profile_payments": "profile_payments",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -1105,15 +1106,19 @@ define(["main_router"], function(main_router) {
                 }];
 
                 var customer = App.Data.customer,
-                    payments = customer.payments;
+                    payments = customer.payments,
+                    isAuthorized;
 
                 if (payments) {
+                    // do not cache it
+                    // App.Data.customer.payments can change after logout/login
                     content.push({
                         modelName: 'Profile',
-                        mod: 'Payments',
+                        mod: 'PaymentsSelection',
                         collection: payments,
                         model: App.Data.payments,
-                        cacheId: true
+                        addCreditCard: addCreditCard,
+                        className: 'text-center'
                     });
                 }
 
@@ -1122,11 +1127,18 @@ define(["main_router"], function(main_router) {
                     content: content
                 });
 
-                if (payments && !payments.length) {
-                    customer.getPayments().always(this.change_page.bind(this));
+                if (payments) {
+                    customer.paymentsRequest.always(this.change_page.bind(this));
                 } else {
                     this.change_page()
                 };
+
+                function addCreditCard() {
+                    payments && payments.where({selected: true}).forEach(function(payment) {
+                        payment.set('selected', false);
+                    });
+                    App.Data.payments.trigger('payWithCreditCard');
+                }
             });
         },
         card: function() {
@@ -1734,6 +1746,27 @@ define(["main_router"], function(main_router) {
                 footer: footerModes.None,
                 contentClass: 'primary-bg',
                 content: content
+            });
+
+            this.change_page();
+        },
+        profile_payments: function() {
+            if (!App.Data.customer.payments) {
+                return;
+            }
+
+            App.Data.mainModel.set({
+                header: headerModes.Modifiers,
+                footer: footerModes.None,
+                contentClass: '',
+                content: {
+                    modelName: 'Profile',
+                    mod: 'PaymentsEdition',
+                    collection: App.Data.customer.payments,
+                    model: App.Data.customer,
+                    className: 'profile-payments-edition text-center',
+                    cacheId: true
+                }
             });
 
             this.change_page();

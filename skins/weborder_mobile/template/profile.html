@@ -153,10 +153,24 @@
     </ul>
 </script>
 
-<script type="text/template" id="profile_payment-template">
+<script type="text/template" id="profile_payment_selection-template">
     <span class="card-type"></span> &mdash; ****<span class="card-number"></span>
 </script>
 
-<script type="text/template" id="profile_payments-template">
-    <ul class="payments-list text-center"></ul>
+<script type="text/template" id="profile_payments_selection-template">
+    <ul class="payments-list"></ul>
+    <div class="add-cc payment-item primary-text font-size3">+ Add Credit Card</div>
+</script>
+
+<script type="text/template" id="profile_payment_edition-template">
+    <span class="card-type"></span> &mdash; ****<span class="card-number"></span>
+    <div class="remove-btn"></div>
+</script>
+
+<script type="text/template" id="profile_payments_edition-template">
+    <div class="credit-cards primary-text text-center primary-bg">
+        <span class="font-size1"><%= _lp.PROFILE_CREDIT_CARDS %></span>
+    </div>
+    <ul class="payments-list"></ul>
+    <div class="add-cc payment-item primary-text font-size3">+ <%= _lp.PROFILE_ADD_CREDIT_CARD %></div>
 </script>
