@@ -151,12 +151,12 @@ h1, h2, h3 {
     -webkit-overflow-scrolling: touch; /* set native iOS scrolling */
 }
 
-#section > div {
+#content {
     padding: 0 1.8em;
     min-height: 100%;
 }
 
-#section > div > * {
+#content > * {
     display: inline-block;
     width: 100%;
 }

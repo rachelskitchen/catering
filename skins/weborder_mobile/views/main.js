@@ -29,6 +29,7 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:content', this.content_change, this);
             this.listenTo(this.model, 'change:header', this.header_change, this);
             this.listenTo(this.model, 'change:footer', this.footer_change, this);
+            this.listenTo(this.model, 'change:promotions', this.promotions_change, this);
             this.listenTo(this.model, 'change:profile', this.profile_change, this);
             this.listenTo(this.model, 'loadStarted', this.loadStarted, this);
             this.listenTo(this.model, 'loadCompleted', this.loadCompleted, this);
@@ -78,13 +79,13 @@ define(["done_view", "generator"], function(done_view) {
         },
         content_change: function() {
             var view,
-                content = this.$('#section > div').eq(0),//Backbone.$('<div></div>'),
+                content = this.$('#content'),
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
 
             content.removeClass().addClass(this.model.get('contentClass'));
 
-            while(this.subViews.length > 3) {
+            while(this.subViews.length > 4) {
                 view = this.subViews.pop();
                 if (view.options.cacheId || view.options.cacheIdUniq)
                     view.removeFromDOMTree();
@@ -147,6 +148,17 @@ define(["done_view", "generator"], function(done_view) {
             this.subViews[2] && this.subViews[2].removeFromDOMTree();
             this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data);
         },
+        promotions_change: function() {
+            this.subViews[3] && this.subViews[3].removeFromDOMTree();
+            var data = _.defaults(this.model.get('promotions'), this.promotions_defaults());
+            if (data) {
+                var $section = this.$('#section');
+                this.subViews[3] && this.subViews[3].removeFromDOMTree();
+                this.subViews[3] = App.Views.GeneratorView.create(data.modelName, data);
+                $section.prepend(this.subViews[3].el);
+                this.setContentPadding();
+            }
+        },
         header_defaults: function() {
             return {
                 model: App.Data.header,
@@ -170,6 +182,11 @@ define(["done_view", "generator"], function(done_view) {
             return {
                 el: this.$('#aside')
             };
+        },
+        promotions_defaults: function() {
+            return {
+                modelName: 'Promotions'
+            }
         },
         addContent: function(data, removeClass) {
             var id = 'content_' + data.modelName + '_' + data.mod;
