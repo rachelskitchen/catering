@@ -1497,7 +1497,13 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * Parse cookie and set customer attributes.
          */
         setCustomerFromCookie: function() {
-            var data = docCookies.getItem(cookieName);
+            var data;
+
+            try {
+                data = docCookies.getItem(cookieName);
+            } catch(e) {
+                console.error(e);
+            }
 
             if (!data) {
                 return;
