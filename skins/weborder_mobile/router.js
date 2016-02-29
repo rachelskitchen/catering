@@ -31,7 +31,6 @@ define(["main_router"], function(main_router) {
     */
     function defaultRouterData() {
         headerModes.Main = {mod: 'Main', className: 'main'};
-        headerModes.WithProfile = {mod: 'WithProfile', className: 'main'};
         headerModes.Modifiers = {mod: 'Modifiers', className: 'modifiers'};
         headerModes.ComboProduct = {mod: 'ComboProduct', className: 'modifiers'};
         headerModes.Cart = {mod: 'Cart'};
@@ -63,14 +62,14 @@ define(["main_router"], function(main_router) {
             "gallery": "gallery",
             "maintenance": "maintenance",
             "pay": "pay",
-            // "profile(/:step)": "profile",
-            // "loyalty": "loyalty",
             "rewards_card_submit": "rewards_card_submit",
             "rewards": "rewards",
             "login": "login",
             "signup": "signup",
             "profile_create": "profile_create",
             "profile_edit": "profile_edit",
+            "profile_settings": "profile_settings",
+            "profile_forgot_password": "profile_forgot_password",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -358,7 +357,7 @@ define(["main_router"], function(main_router) {
                 }
 
                 App.Data.mainModel.set({
-                    header: headerModes.WithProfile, //headerModes.Main,
+                    header: headerModes.Main,
                     footer: footerMode,
                     contentClass: '',
                     content: content
@@ -1649,10 +1648,9 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.PROFILE_SIGN_UP,
                 back_title: _loc.BACK,
-                back: window.history.back.bind(window.history),
+                back: content.back,
                 link: content.next,
-                link_title: _loc.NEXT,
-                enableLink: false
+                link_title: _loc.NEXT
             });
 
             App.Data.mainModel.set({
@@ -1670,7 +1668,7 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.PROFILE_CREATE_TITLE,
                 back_title: _loc.BACK,
-                back: this.navigate.bind(this, 'signup', true),
+                back: content.back,
                 link: content.register,
                 link_title: _loc.CONTINUE,
                 enableLink: true
@@ -1687,6 +1685,30 @@ define(["main_router"], function(main_router) {
         },
         profile_edit: function() {
             var content = this.profileEditContent();
+
+            App.Data.mainModel.set({
+                header: headerModes.Modifiers,
+                footer: footerModes.None,
+                contentClass: 'primary-bg',
+                content: content
+            });
+
+            this.change_page();
+        },
+        profile_settings: function() {
+            var content = this.profileSettingsContent();
+
+            App.Data.mainModel.set({
+                header: headerModes.Modifiers,
+                footer: footerModes.None,
+                contentClass: 'primary-bg',
+                content: content
+            });
+
+            this.change_page();
+        },
+        profile_forgot_password: function() {
+            var content = this.profileForgotPasswordContent();
 
             App.Data.mainModel.set({
                 header: headerModes.Modifiers,

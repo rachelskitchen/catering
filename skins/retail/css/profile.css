@@ -76,10 +76,11 @@
 #profile-panel .btn {
     display: inline-block;
     width: 84%;
-    height: 28px;
+    height: auto;
     margin-top: 10px;
     font-size: 14px;
-    line-height: 26px;
+    padding: 6px 0;
+    line-height: normal;
 }
 
 #profile-panel .btn.disabled {
@@ -115,14 +116,15 @@
 
 .profile-edit .side {
     width: 50%;
+    min-height: 320px;
     display: inline-block;
     vertical-align: top;
 }
 
-.profile-edit .right-side {
-    border-left-style: solid;
-    border-left-width: 1px;
-    border-left-color: #ccc;
+.profile-edit .left-side {
+    border-right-style: solid;
+    border-right-width: 1px;
+    border-right-color: #ccc;
 }
 
 .profile-edit .phone-privacy {
@@ -162,6 +164,10 @@
     text-decoration: underline;
 }
 
+.profile-edit .basic-details-box {
+    margin-bottom: 15px;
+}
+
 .profile-form > li {
     margin-bottom: 10px;
 }
@@ -179,4 +185,9 @@
     border-style: solid;
     border-color: #ccc;
     font-size: 14px;
+}
+
+.reset-password-info {
+    font-size: 14px;
+    padding-bottom: 15px;
 }

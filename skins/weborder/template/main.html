@@ -8,7 +8,7 @@
         <div id="content"></div>
     </section>
     <aside id='cart' class='main_el'> </aside>
-    <footer class='main_el<% if(_settings.payment_processor.mercury) { %> footer_mercury<% } %>'>
+    <footer class='main_el<% if(_settings.payment_processor.credit_card_button && Array.isArray(_settings.online_credit_card_types)) { %> footer_mercury<% } %>'>
         <div class="footer__left">
             <div class="footer__left-inner">
                 <span class="footer__line current_establishment store_choice">
@@ -26,26 +26,43 @@
             </div>
         </div>
         <div class="footer__right">
-            <% if(_settings.payment_processor.mercury) { %>
+            <% if (_settings.payment_processor.credit_card_button && Array.isArray(_settings.online_credit_card_types)) { %>
             <ul class="mercury-accepted-credit-cards">
+                <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.VISA.toString()) > -1) { %>
                 <li class="card-logo">
                     <img class="imgCardLogo" src="img/visa.png">
                 </li>
+                <% } %>
+                <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.MASTERCARD.toString()) > -1) { %>
                 <li class="card-logo">
                     <img class="imgCardLogo" src="img/mastercard.png">
                 </li>
+                <% } %>
+                <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.MAESTRO.toString()) > -1) { %>
+                <li class="card-logo">
+                    <img class="imgCardLogo" src="img/maestro.png">
+                </li>
+                <% } %>
+                <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.AMERICANEXPRESS.toString()) > -1) { %>
                 <li class="card-logo">
                     <img class="imgCardLogo" src="img/amex.png">
                 </li>
+                <% } %>
+                <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.DISCOVER.toString()) > -1) { %>
                 <li class="card-logo">
                     <img class="imgCardLogo" src="img/discover.png">
                 </li>
+                <% } %>
+                <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.DINERS.toString()) > -1) { %>
                 <li class="card-logo">
                     <img class="imgCardLogo" src="img/dinersclub.png">
                 </li>
+                <% } %>
+                <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.JCB.toString()) > -1) { %>
                 <li class="card-logo">
                     <img class="imgCardLogo" src="img/jcb.png">
                 </li>
+                <% } %>
             </ul>
             <% } %>
             <a class="powered-by" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
@@ -177,26 +194,43 @@
     <footer>
         <a class="powered-by" target="_blank" href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"> </a>
     </footer>
-    <% if(_settings.payment_processor.mercury) { %>
+    <% if (_settings.payment_processor.credit_card_button && Array.isArray(_settings.online_credit_card_types)) { %>
     <ul class="mercury-accepted-credit-cards">
+        <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.VISA.toString()) > -1) { %>
         <li class="card-logo">
             <img class="imgCardLogo" src="img/visa.png">
         </li>
+        <% } %>
+        <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.MASTERCARD.toString()) > -1) { %>
         <li class="card-logo">
             <img class="imgCardLogo" src="img/mastercard.png">
         </li>
+        <% } %>
+        <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.MAESTRO.toString()) > -1) { %>
+        <li class="card-logo">
+            <img class="imgCardLogo" src="img/maestro.png">
+        </li>
+        <% } %>
+        <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.AMERICANEXPRESS.toString()) > -1) { %>
         <li class="card-logo">
             <img class="imgCardLogo" src="img/amex.png">
         </li>
+        <% } %>
+        <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.DISCOVER.toString()) > -1) { %>
         <li class="card-logo">
             <img class="imgCardLogo" src="img/discover.png">
         </li>
+        <% } %>
+        <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.DINERS.toString()) > -1) { %>
         <li class="card-logo">
             <img class="imgCardLogo" src="img/dinersclub.png">
         </li>
+        <% } %>
+        <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.JCB.toString()) > -1) { %>
         <li class="card-logo">
             <img class="imgCardLogo" src="img/jcb.png">
         </li>
+        <% } %>
     </ul>
     <% } %>
 </script>

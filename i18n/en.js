@@ -540,6 +540,7 @@
         'SETTINGS': "Settings",
         'CONTINUE': 'Continue',
         'SAVE': "Save",
+        "RESET": "Reset",
         'PROFILE': "Profile",
         'PROFILE_EMAIL_ADDRESS': 'Email Address',
         'PROFILE_PASSWORD': 'Password',
@@ -580,6 +581,16 @@
         "PROFILE_USER_NOT_ACTIVATED": "User is not activated",
         "PROFILE_SESSION_EXPIRED": "Session is expired",
         "PROFILE_USER_NOT_FOUND": "User not found",
-        "PROFILE_USER_ADDRESS_NOT_FOUND": "Address not found"
+        "PROFILE_USER_ADDRESS_NOT_FOUND": "Address not found",
+        "PROFILE_ENTER_CURRENT_PASSWORD": "Enter current password",
+        "PROFILE_ENTER_NEW_PASSWORD": "Enter new password",
+        "PROFILE_CONTACT": "Contact",
+        "PROFILE_WEBSITE": "Website",
+        "PROFILE_INVALID_PASSWORD": "Invalid password",
+        "PROFILE_PASSWORD_CHANGED": "The password has successfully changed",
+        "PROFILE_PASSWORD_RESET_INFO": "Enter your email address and we'll help you reset your password",
+        "PROFILE_PASSWORD_RESET_CUSTOMER_INVALID": "Customer with such email address doesn't exist",
+        "PROFILE_PASSWORD_RESET_SUCCESS": "The password has been sent. Please check email for your new password.",
+        "PROFILE_INVALID_EMAIL": "Email address is invalid"
     }; // end of locale
 }); // end of module

@@ -120,3 +120,35 @@
         </li>
     </ul>
 </script>
+
+<script type="text/template" id="profile_account_password-template">
+    <span class="profile-info account-password regular-text font-size3"><%= _lp.PROFILE_ACCOUNT_PASSWORD %></span>
+    <ul class="profile-form font-size2 text-center">
+        <li class="required">
+            <input type="password" placeholder="<%= _lp.PROFILE_ENTER_CURRENT_PASSWORD %>" class="current-password ios-safari-caret input-colors">
+        </li>
+        <li class="required">
+            <input type="password" placeholder="<%= _lp.PROFILE_ENTER_NEW_PASSWORD %>" class="new-password ios-safari-caret input-colors">
+        </li>
+    </ul>
+</script>
+
+<script type="text/template" id="profile_owner_contacts-template">
+    <div class="contact-info font-size2 regular-text">
+        <dfn class="contact-title"><%= _lp.PROFILE_CONTACT %>:</dfn>
+        <a href="" class="phone contact-link"></a>
+    </div>
+    <div class="website-info font-size2 regular-text">
+        <dfn class="contact-title"><%= _lp.PROFILE_WEBSITE %>:</dfn>
+        <a href="" target="_blank" class="website contact-link"></a>
+    </div>
+</script>
+
+<script type="text/template" id="profile_reset_password-template">
+    <div class="reset-password-info font-size2 regular-text"><%= _lp.PROFILE_PASSWORD_RESET_INFO %></div>
+    <ul class="profile-form font-size2 text-center">
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret input-colors">
+        </li>
+    </ul>
+</script>

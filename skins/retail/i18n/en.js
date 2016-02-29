@@ -136,14 +136,6 @@
             'Point will be redeemed',
             'Points will be redeemed'
         ],
-        'REWARDS_VISITS_REDEMPTION_AMOUNT': [
-            'Visit will be redeemed',
-            'Visits will be redeemed'
-        ],
-        'REWARDS_PURCHASES_REDEMPTION_AMOUNT': [
-            'Purchase will be redeemed',
-            'Purchases will be redeemed'
-        ],
         'REWARDS_EMPTY_CART': 'Rewards can not be applied while your cart is empty.',
         'STANFORD_RELOAD_INFO1': "Please specify the Card # and the amount you'd like to add",
         'STANFORD_RELOAD_INFO2': "Please specify the plan you'd like to add value to",
