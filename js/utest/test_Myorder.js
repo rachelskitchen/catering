@@ -3438,7 +3438,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 obj = {
                     get_product: function() {}
                 },
-                product = new App.Models.Product({is_combo: false});
+                product = new App.Models.Product({is_combo: true});
 
             dfd.resolve();
 
