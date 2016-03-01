@@ -33,6 +33,7 @@ define(["main_router"], function(main_router) {
         headerModes.Main = {mod: 'Main', className: 'main'};
         headerModes.Modifiers = {mod: 'Modifiers', className: 'modifiers'};
         headerModes.ComboProduct = {mod: 'ComboProduct', className: 'modifiers'};
+        headerModes.Promotion = {mod: 'Promotion'},
         headerModes.Cart = {mod: 'Cart'};
         headerModes.None = null;
         footerModes.Main = {mod: 'Main'};
@@ -72,6 +73,7 @@ define(["main_router"], function(main_router) {
             "profile_forgot_password": "profile_forgot_password",
             "promotions": "promotions_list",
             "my_promotions": "promotions_my",
+            "promotion/:id_promotion": "promotion",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -1790,6 +1792,36 @@ define(["main_router"], function(main_router) {
             // @TODO
 
             this.change_page();
+        },
+        promotion: function(id_promotion) {
+            var self = this,
+                content = '';
+
+            this.prepare('promotion', function() {
+                App.Data.header.set({
+                    page_title: _loc.HEADER_PROMOTION_PT,
+                    back_title: _loc.BACK,
+                    back: content.back,
+                    link: content.register,
+                    link_title: _loc.CONTINUE,
+                    enableLink: true
+                });
+
+                content = {
+                    modelName: 'Promotions',
+                    mod: 'Item',
+                    model: new Backbone.Model({discountTitle: '10% Off All Sandwiches', discountCode: '1234567890', discountImg: ''}),
+                    cacheId: true
+                };
+
+                App.Data.mainModel.set({
+                    header: headerModes.Promotion,
+                    footer: footerModes.None,
+                    content: content
+                });
+
+                self.change_page();
+            });
         }
     });
 

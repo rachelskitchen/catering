@@ -1,3 +1,11 @@
 <script type="text/template" id="promotions_TopLine-template">
     <span class="all-promotions__text"><%= _lp.PROMOTIONS_ALL %></span>
 </script>
+
+<script type="text/template" id="promotions_item-template">
+    <div class="promotion-details__title font-size1"><span class="promotion-details__title-text"></span></div>
+    <div class="promotion-details__discount font-size1">
+        <span><%= _lp.PROMOTION_DISCOUNT_CODE %>: </span><span class="promotion-details__discount-code"></span>
+    </div>
+    <div class="promotion-details__barcode"><img src="<%= discountImg %>" alt="Discount Barcode" class="promotion-details__barcode-img"></div>
+</script>

@@ -113,6 +113,11 @@
             "views": ["stanfordcard"],
             "core": ["giftcard", "jquery_numbermask"]
         },
-        "profile": {}
+        "profile": {},
+        "promotion": {
+            "css": ["promotions"],
+            "views": ["promotions"],
+            "templates": ["promotions"]
+        }
     }
 }

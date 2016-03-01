@@ -20,16 +20,13 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["factory"], function() {
+define(['factory'], function() {
     'use strict';
 
     var PromotionsTopLineView = App.Views.FactoryView.extend({
         name: 'promotions',
         mod: 'TopLine',
         tagName: 'div',
-        bindings: {
-            //':el': 'toggle: _settings_directory_promotionsAvailable'
-        },
         events: {
             'click': 'goToPromotionsList'
         },
@@ -38,8 +35,21 @@ define(["factory"], function() {
         }
     });
 
+    var PromotionsItemView = App.Views.FactoryView.extend({
+        name: 'promotions',
+        mod: 'item',
+        tagName: 'div',
+        className: 'promotion-details',
+        bindings: {
+            '.promotion-details__title-text': 'text: discountTitle',
+            '.promotion-details__discount-code': 'text: discountCode'
+        }
+    });
+
     return new (require('factory'))(function() {
+    //return new (require('factory'))(modifiers_view.initViews.bind(modifiers_view), function() {
         App.Views.PromotionsView = {};
+        App.Views.PromotionsView.PromotionsItemView = PromotionsItemView;
         App.Views.PromotionsView.PromotionsTopLineView = PromotionsTopLineView;
     });
 });
