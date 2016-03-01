@@ -1,6 +1,15 @@
-.all-promotions {
+.promotions-title {
     background: #EAF3F9;
     color: #373B40;
+    font-weight: 300;
+    padding: 0.5em 1.8em;
+    margin: 0 -1.8em;
+    clear: both;
+}
+
+/* All Promitions link */
+.all-promotions {
+    margin: 0;
     padding: 3em 0;
     text-align: center;
 }
@@ -21,11 +30,44 @@
     background-size: 1.7em 1.7em;
 }
 
+/* Promotions List */
+.promotions-list li {
+    padding-right: 0;
+}
+.promotions-list li:after {
+    display: none;
+    content: "";
+}
+.promotion div {
+    display: block !important;
+}
+.promotion {
+    clear: both;
+}
+.promotion__add {
+    font-weight: 300;
+}
+.promotion__add.added {
+    color: #13B21A;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+.promotion__add.added:after {
+    content: "";
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    margin-left: 0.2em;
+    background: url(../img/check.svg) no-repeat;
+    background-size: 1.5em 1.5em;
+}
+
+/* Promotion Details */
 .promotion-details {
     text-align: center;
 }
 .promotion-details__title {
-    background: #EAF3F9;
     padding: 0.5em 0;
-    margin: 0 -1.8em 5em -1.8em;
+    margin-bottom: 5em;
 }

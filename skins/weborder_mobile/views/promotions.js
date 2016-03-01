@@ -26,7 +26,6 @@ define(['factory'], function() {
     var PromotionsTopLineView = App.Views.FactoryView.extend({
         name: 'promotions',
         mod: 'TopLine',
-        tagName: 'div',
         events: {
             'click': 'goToPromotionsList'
         },
@@ -35,11 +34,44 @@ define(['factory'], function() {
         }
     });
 
+    var PromotionsListItemView = App.Views.FactoryView.extend({
+        name: 'promotions',
+        mod: 'ListItem',
+        tagName: 'li',
+        bindings: {
+            '.promotion__name': 'text: name',
+            '.promotion__info': 'text: select(available, _loc.PROMOTION_SEE_INFO, info)',
+            '.promotion__add': 'text: select(selected, _loc.PROMOTION_ADDED, _loc.PROMOTION_ADD_TO_ORDER), classes: {added: selected}',
+        },
+        events: {
+            'click .promotion__add': 'add'
+        },
+        add: function() {
+            this.model.set('selected', !this.model.get('selected'));
+        }
+    });
+
+    var PromotionsListView = App.Views.FactoryView.extend({
+        name: 'promotions',
+        mod: 'list',
+        initialize: function() {
+            // need to add model.available and model.other to bindingSource to provide handlers for 'reset', 'add', 'remove' events.
+            this.bindingSources = _.extend({}, this.bindingSources, {
+                _available: this.model.get('available'),
+                _other: this.model.get('other')
+            });
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            '.promotions-available': 'collection: $_available',
+            '.promotions-other': 'collection: $_other'
+        },
+        itemView: PromotionsListItemView
+    });
+
     var PromotionsItemView = App.Views.FactoryView.extend({
         name: 'promotions',
         mod: 'item',
-        tagName: 'div',
-        className: 'promotion-details',
         bindings: {
             '.promotion-details__title-text': 'text: discountTitle',
             '.promotion-details__discount-code': 'text: discountCode'
@@ -47,8 +79,9 @@ define(['factory'], function() {
     });
 
     return new (require('factory'))(function() {
-    //return new (require('factory'))(modifiers_view.initViews.bind(modifiers_view), function() {
         App.Views.PromotionsView = {};
+        App.Views.PromotionsView.PromotionsListView = PromotionsListView;
+        App.Views.PromotionsView.PromotionsListItemView = PromotionsListItemView;
         App.Views.PromotionsView.PromotionsItemView = PromotionsItemView;
         App.Views.PromotionsView.PromotionsTopLineView = PromotionsTopLineView;
     });
