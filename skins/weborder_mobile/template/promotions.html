@@ -1,11 +1,34 @@
 <script type="text/template" id="promotions_TopLine-template">
-    <span class="all-promotions__text"><%= _lp.PROMOTIONS_ALL %></span>
+    <div class="all-promotions promotions-title">
+        <span class="all-promotions__text"><%= _lp.PROMOTIONS_ALL %></span>
+    </div>
+</script>
+
+<script type="text/template" id="promotions_list-template">
+    <div class="promotions-title"><span class="promotions-list__title primary-text font-size1"><%= _lp.PROMOTIONS_AVAILABLE %></span></div>
+    <ul class="promotions-available promotions-list list"></ul>
+    <div class="promotions-title"><span class="promotions-list__title primary-text font-size1"><%= _lp.PROMOTIONS_OTHER %></span></div>
+    <ul class="promotions-other promotions-list list"></ul>
+</script>
+
+<script type="text/template" id="promotions_ListItem-template">
+    <div class="promotion">
+        <div class="fl-left">
+            <div class="promotion__name font-size1"></div>
+            <div class="promotion__info font-size2"></div>
+        </div>
+        <div class="fl-right">
+            <div class="promotion__add primary-text font-size1"></div>
+        </div>
+    </div>
 </script>
 
 <script type="text/template" id="promotions_item-template">
-    <div class="promotion-details__title font-size1"><span class="promotion-details__title-text"></span></div>
-    <div class="promotion-details__discount font-size1">
-        <span><%= _lp.PROMOTION_DISCOUNT_CODE %>: </span><span class="promotion-details__discount-code"></span>
+    <div class="promotion-details">
+        <div class="promotion-details__title promotions-title font-size1"><span class="promotion-details__title-text"></span></div>
+        <div class="promotion-details__discount font-size1">
+            <span><%= _lp.PROMOTION_DISCOUNT_CODE %>: </span><span class="promotion-details__discount-code"></span>
+        </div>
+        <div class="promotion-details__barcode"><img src="<%= discountImg %>" alt="Discount Barcode" class="promotion-details__barcode-img"></div>
     </div>
-    <div class="promotion-details__barcode"><img src="<%= discountImg %>" alt="Discount Barcode" class="promotion-details__barcode-img"></div>
 </script>

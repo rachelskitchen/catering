@@ -114,6 +114,11 @@
             "core": ["giftcard", "jquery_numbermask"]
         },
         "profile": {},
+        "promotions_list": {
+            "css": ["promotions"],
+            "views": ["promotions"],
+            "templates": ["promotions"]
+        },
         "promotion": {
             "css": ["promotions"],
             "views": ["promotions"],

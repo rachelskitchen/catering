@@ -33,7 +33,7 @@ define(["main_router"], function(main_router) {
         headerModes.Main = {mod: 'Main', className: 'main'};
         headerModes.Modifiers = {mod: 'Modifiers', className: 'modifiers'};
         headerModes.ComboProduct = {mod: 'ComboProduct', className: 'modifiers'};
-        headerModes.Promotion = {mod: 'Promotion'},
+        headerModes.Promotions = {mod: 'Promotions'},
         headerModes.Cart = {mod: 'Cart'};
         headerModes.None = null;
         footerModes.Main = {mod: 'Main'};
@@ -355,8 +355,7 @@ define(["main_router"], function(main_router) {
                     promotions = App.Views.GeneratorView.create('Promotions', {
                         model: new Backbone.Model(),
                         mod: 'TopLine',
-                        cacheId: true,
-                        className: 'all-promotions'
+                        cacheId: true
                     }, 'promotions_line');
 
                     this.listenToOnce(this, 'route', function(route, params) {
@@ -475,8 +474,7 @@ define(["main_router"], function(main_router) {
                     promotions = App.Views.GeneratorView.create('Promotions', {
                         model: new Backbone.Model(),
                         mod: 'TopLine',
-                        cacheId: true,
-                        className: 'all-promotions'
+                        cacheId: true
                     }, 'promotions_line');
 
                     this.listenToOnce(this, 'route', function(route, params) {
@@ -1784,9 +1782,68 @@ define(["main_router"], function(main_router) {
             this.change_page();
         },
         promotions_list: function() {
-            // @TODO
+            var self = this,
+                content = {
+                    modelName: 'Promotions',
+                    mod: 'List',
+                    model: new Backbone.Model({
+                        available: new Backbone.Collection([
+                            {
+                                name: '10% Off All Sandwiches',
+                                info: 'Add $10.00 to use this coupon',
+                                available: true,
+                                selected: false
+                            },
+                            {
+                                name: '20% Off All Drinks',
+                                info: 'Add $20.00 to use this coupon',
+                                available: true,
+                                selected: true
+                            }
+                        ]),
+                        other: new Backbone.Collection([
+                            {
+                                name: 'Special Coupon',
+                                info: 'Add $10.00 to use this coupon',
+                                available: false,
+                                selected: false
+                            },
+                            {
+                                name: 'Special Coupon',
+                                info: 'Add $10.00 to use this coupon',
+                                available: false,
+                                selected: false
+                            }
+                        ]),
+                    }),
+                    cacheId: true
+                };
 
-            this.change_page();
+            this.prepare('promotions_list', function() {
+                App.Data.header.set({
+                    page_title: _loc.HEADER_PROMOTIONS_PT,
+                    back_title: _loc.BACK,
+                    back: window.history.back.bind(window.history),
+                    cart: cart,
+                    hideCart: App.Data.myorder.get_only_product_quantity() < 1
+                });
+
+                App.Data.mainModel.set({
+                    header: headerModes.Promotions,
+                    footer: footerModes.None,
+                    content: content
+                });
+
+                self.change_page();
+
+                function cart() {
+                    if (App.Data.myorder.get_only_product_quantity() > 0) {
+                        self.stopListening(order, 'change', setHeaderToUpdate);
+                        header.set('cart', self.navigate.bind(self, 'cart', true), {silent: true});
+                        self.navigate('cart', true);
+                    }
+                }
+            });
         },
         promotions_my: function() {
             // @TODO
@@ -1795,18 +1852,6 @@ define(["main_router"], function(main_router) {
         },
         promotion: function(id_promotion) {
             var self = this,
-                content = '';
-
-            this.prepare('promotion', function() {
-                App.Data.header.set({
-                    page_title: _loc.HEADER_PROMOTION_PT,
-                    back_title: _loc.BACK,
-                    back: content.back,
-                    link: content.register,
-                    link_title: _loc.CONTINUE,
-                    enableLink: true
-                });
-
                 content = {
                     modelName: 'Promotions',
                     mod: 'Item',
@@ -1814,8 +1859,16 @@ define(["main_router"], function(main_router) {
                     cacheId: true
                 };
 
+            this.prepare('promotion', function() {
+                App.Data.header.set({
+                    page_title: _loc.HEADER_PROMOTION_PT,
+                    back_title: _loc.BACK,
+                    back: window.history.back.bind(window.history),
+                    hideCart: true
+                });
+
                 App.Data.mainModel.set({
-                    header: headerModes.Promotion,
+                    header: headerModes.Promotions,
                     footer: footerModes.None,
                     content: content
                 });
