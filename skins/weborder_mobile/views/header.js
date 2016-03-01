@@ -239,6 +239,25 @@ define(["factory"], function() {
         }
     });
 
+    var HeaderPromotionView = App.Views.FactoryView.extend({
+        name: 'header',
+        mod: 'promotion',
+        tagName: 'div',
+        bindings: {
+            '.title': 'text:page_title',
+            '.btn-link-title': 'text:link_title',
+            '.btn-link': 'toggle: link, classes: {disabled: not(enableLink)}',
+            '.btn-back-title': 'text: back_title'
+        },
+        events: {
+            'click .btn-link': setCallback('link'),
+            'click .btn-back': setCallback('back')
+        },
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        }
+    });
+
     var HeaderCartView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'cart',
@@ -274,6 +293,7 @@ define(["factory"], function() {
         App.Views.HeaderView.HeaderModifiersView = HeaderModifiersView;
         App.Views.HeaderView.HeaderComboProductView = HeaderComboProductView;
         App.Views.HeaderView.HeaderCartView = HeaderCartView;
+        App.Views.HeaderView.HeaderPromotionView = HeaderPromotionView;
         App.Views.HeaderView.HeaderMaintenanceView = HeaderMaintenanceView;
         App.Views.HeaderView.HeaderEmptyView = HeaderEmptyView;
     });
