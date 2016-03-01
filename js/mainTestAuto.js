@@ -57,6 +57,12 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
         var errors = App.Data.errors = new App.Models.Errors();
 
         // init settings object
+        App.Models.Settings.prototype.get_settings_system = function() {
+            return $.Deferred().resolve();
+        }
+        App.Models.Settings.prototype.get_customer_settings = function() {
+            return $.Deferred().resolve();
+        }
         var settings = App.Data.settings = new App.Models.Settings({
             supported_skins: app.skins.available
         });
@@ -102,13 +108,12 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
 
             //App.Data.devMode = true;
 
-            console.log("mainAutoTest: step #2, unit test mode");
             if (App.Data.devMode == true) {
                 //starting the tests without code coverage testing:
                 locale.dfd_load.done(function() {
                     console.log("mainAutoTest: step #3, locale loaded");
                     requirejs(tests_list, function() {
-                        console.log("mainAutoTest: step #4, pre-tests loaded");
+                        console.log("mainAutoTest: step #4, dev mode, tests loaded");
                         $(window).trigger("StartTesting");
                     });
                 });
@@ -129,13 +134,13 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
                     reporter.jasmineDone = function() {
                        jasmine.BlanketReporter.prototype.jasmineDone.apply(this,arguments);
                        var cover = _blanket.getCovarageTotals()
-                       console.log( "Total covarage: " + ((cover.numberOfFilesCovered * 100) / cover.totalSmts).toFixed(2) + "%" );
+                       console.log( "Total coverage: " + ((cover.numberOfFilesCovered * 100) / cover.totalSmts).toFixed(2) + "%" );
                     }
 
                     $(document).ready(function() {
                         locale.dfd_load.done(function() {
                             require(tests_list, function(spec) {
-                                console.log("mainAutoTest: step #4, Blanket mode, tests loaded");
+                                console.log("mainAutoTest: step #3, Blanket mode, tests loaded");
                                 $(window).trigger("StartTesting");
                             });
                         });

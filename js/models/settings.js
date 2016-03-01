@@ -45,11 +45,7 @@ define(["backbone", "async"], function(Backbone) {
             if(/Chrome\/34\.0\.1847\.(131|137)/i.test(window.navigator.userAgent))
                 return App.Data.errors.alert(MSG.ERROR_CHROME_CRASH, true); // user notification
 
-            // load settings system for directory app, only for maintenance page allow
-            if (window._phantom)
-                return $.Deferred().resolve();
-            else
-                return $.when(self.get_settings_system(), self.get_customer_settings());
+            return $.when(self.get_settings_system(), self.get_customer_settings());
         },
         defaults: {
             brand: null,

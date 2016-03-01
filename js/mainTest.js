@@ -39,6 +39,12 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
         var errors = App.Data.errors = new App.Models.Errors();
 
         // init settings object
+        App.Models.Settings.prototype.get_settings_system = function() {
+            return $.Deferred().resolve();
+        }
+        App.Models.Settings.prototype.get_customer_settings = function() {
+            return $.Deferred().resolve();
+        }
         var settings = App.Data.settings = new App.Models.Settings({
             supported_skins: app.skins.available
         });
@@ -110,7 +116,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
                     reporter.jasmineDone = function() {
                        jasmine.BlanketReporter.prototype.jasmineDone.apply(this,arguments);
                        var cover = _blanket.getCovarageTotals()
-                       console.log( "Total covarage: " + ((cover.numberOfFilesCovered * 100) / cover.totalSmts).toFixed(2) + "%" );
+                       console.log( "Total coverage: " + ((cover.numberOfFilesCovered * 100) / cover.totalSmts).toFixed(2) + "%" );
                     }
 
                     $(document).ready(function() {
