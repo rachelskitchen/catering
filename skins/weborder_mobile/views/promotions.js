@@ -40,15 +40,33 @@ define(['factory'], function() {
         tagName: 'li',
         bindings: {
             '.promotion__name': 'text: name',
-            '.promotion__info': 'text: select(available, _loc.PROMOTION_SEE_INFO, info)',
+            '.promotion__description': 'text: select(available, _loc.PROMOTION_SEE_INFO, info)',
             '.promotion__add': 'text: select(selected, _loc.PROMOTION_ADDED, _loc.PROMOTION_ADD_TO_ORDER), classes: {added: selected}',
         },
         events: {
+            'click': 'seeInfo',
             'click .promotion__add': 'add'
         },
-        add: function() {
+        /**
+         * Applies discount to the order.
+         */
+        add: function(e) {
+            e.stopPropagation();
             this.model.set('selected', !this.model.get('selected'));
+        },
+        /**
+         * Navigates to promotion details screen.
+         */
+        seeInfo: function() {
+            App.Data.router.navigate('promotion/' + this.model.get('discountId'), true);
         }
+    });
+
+    var PromotionsMyItemView = PromotionsListItemView.extend({
+        mode: 'MyItem',
+        bindings: _.extend({}, PromotionsListItemView.prototype.bindings, {
+            '.promotion__reusable': 'text: select(multiple, _loc.PROMOTION_MULTIPLE_USE, _loc.PROMOTION_SINGLE_USE)'
+        })
     });
 
     var PromotionsListView = App.Views.FactoryView.extend({
@@ -69,6 +87,22 @@ define(['factory'], function() {
         itemView: PromotionsListItemView
     });
 
+    var PromotionsMyView = App.Views.FactoryView.extend({
+        name: 'promotions',
+        mod: 'my',
+        initialize: function() {
+            // need to add model.available and model.other to bindingSource to provide handlers for 'reset', 'add', 'remove' events.
+            this.bindingSources = _.extend({}, this.bindingSources, {
+                _available: this.model.get('available')
+            });
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            '.promotions-available': 'collection: $_available'
+        },
+        itemView: PromotionsMyItemView
+    });
+
     var PromotionsItemView = App.Views.FactoryView.extend({
         name: 'promotions',
         mod: 'item',
@@ -82,6 +116,7 @@ define(['factory'], function() {
         App.Views.PromotionsView = {};
         App.Views.PromotionsView.PromotionsListView = PromotionsListView;
         App.Views.PromotionsView.PromotionsListItemView = PromotionsListItemView;
+        App.Views.PromotionsView.PromotionsMyView = PromotionsMyView;
         App.Views.PromotionsView.PromotionsItemView = PromotionsItemView;
         App.Views.PromotionsView.PromotionsTopLineView = PromotionsTopLineView;
     });
