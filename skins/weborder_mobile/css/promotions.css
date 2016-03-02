@@ -34,6 +34,9 @@
 .promotions-list li {
     padding-right: 0;
 }
+.promotions-list > li * {
+    pointer-events: initial;
+}
 .promotions-list li:after {
     display: none;
     content: "";
