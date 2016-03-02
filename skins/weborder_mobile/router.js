@@ -1789,12 +1789,14 @@ define(["main_router"], function(main_router) {
                     model: new Backbone.Model({
                         available: new Backbone.Collection([
                             {
+                                discountId: '1',
                                 name: '10% Off All Sandwiches',
                                 info: 'Add $10.00 to use this coupon',
                                 available: true,
                                 selected: false
                             },
                             {
+                                discountId: '2',
                                 name: '20% Off All Drinks',
                                 info: 'Add $20.00 to use this coupon',
                                 available: true,
@@ -1803,12 +1805,14 @@ define(["main_router"], function(main_router) {
                         ]),
                         other: new Backbone.Collection([
                             {
+                                discountId: '3',
                                 name: 'Special Coupon',
                                 info: 'Add $10.00 to use this coupon',
                                 available: false,
                                 selected: false
                             },
                             {
+                                discountId: '4',
                                 name: 'Special Coupon',
                                 info: 'Add $10.00 to use this coupon',
                                 available: false,
@@ -1819,9 +1823,9 @@ define(["main_router"], function(main_router) {
                     cacheId: true
                 };
 
-            this.prepare('promotions_list', function() {
+            this.prepare('promotions', function() {
                 App.Data.header.set({
-                    page_title: _loc.HEADER_PROMOTIONS_PT,
+                    page_title: _loc.HEADER_PROMOTIONS_LIST_PT,
                     back_title: _loc.BACK,
                     back: window.history.back.bind(window.history),
                     cart: cart,
@@ -1846,9 +1850,49 @@ define(["main_router"], function(main_router) {
             });
         },
         promotions_my: function() {
-            // @TODO
+            var self = this,
+                content = {
+                    modelName: 'Promotions',
+                    mod: 'My',
+                    model: new Backbone.Model({
+                        available: new Backbone.Collection([
+                            {
+                                discountId: '1',
+                                name: 'Brother Badys BBQ',
+                                info: '10% Off All Sandwiches',
+                                available: true,
+                                multiple: false,
+                                selected: false
+                            },
+                            {
+                                discountId: '2',
+                                name: 'Smoothie Queen',
+                                info: '20% Off All Drinks',
+                                available: true,
+                                multiple: true,
+                                selected: true
+                            }
+                        ])
+                    }),
+                    cacheId: true
+                };
 
-            this.change_page();
+            this.prepare('promotions', function() {
+                App.Data.header.set({
+                    page_title: _loc.HEADER_PROMOTIONS_MY_PT,
+                    back_title: _loc.BACK,
+                    back: window.history.back.bind(window.history),
+                    hideCart: true
+                });
+
+                App.Data.mainModel.set({
+                    header: headerModes.Promotions,
+                    footer: footerModes.None,
+                    content: content
+                });
+
+                self.change_page();
+            });
         },
         promotion: function(id_promotion) {
             var self = this,
@@ -1859,7 +1903,7 @@ define(["main_router"], function(main_router) {
                     cacheId: true
                 };
 
-            this.prepare('promotion', function() {
+            this.prepare('promotions', function() {
                 App.Data.header.set({
                     page_title: _loc.HEADER_PROMOTION_PT,
                     back_title: _loc.BACK,
