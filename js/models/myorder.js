@@ -868,7 +868,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     //trace("add product_price : ",  model.get('product').get('name'), model.get_initial_price());
                     var sold_by_weight = model.get("product") ?  model.get("product").get('sold_by_weight') : false,
                         weight = model.get('weight'),
-                        initial_price = model.get_initial_price();
+                        initial_price = model.get("upcharge_price") ? model.get("upcharge_price") : model.get_initial_price();
 
                     if (sold_by_weight && weight) {
                         sum += initial_price * weight;
@@ -879,8 +879,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 });
             });
 
-            if ((combo_saving_products.length || this.isUpsellProduct()) && sum < root_price) {
+            if (combo_saving_products.length && this.isComboProduct() && sum < root_price) {
                 sum = root_price;
+            } else if (this.isUpsellProduct()) {
+                sum += root_price;
             }
 
             this.get('product').set("combo_price", sum);
