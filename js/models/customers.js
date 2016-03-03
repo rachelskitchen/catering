@@ -1643,6 +1643,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
 
             var self = this,
                 req = this.payments.getPayments(SERVER_URL, this.getAuthorizationHeader());
+
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
                     self.trigger('onUserSessionExpired');
@@ -1687,7 +1688,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * Sets payments collection and receives data.
          */
         initPayments: function() {
-            this._setPayments();
+            typeof this._setPayments == 'function' && this._setPayments();
             this.payments && this.getPayments();
         },
         /**
@@ -1705,7 +1706,21 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * @return {Object} jqXHR object.
          */
         removePayment: function(token_id) {
-            return this.payments.removePayment(token_id, SERVER_URL, this.getAuthorizationHeader());
+            var req = this.payments.removePayment(token_id, SERVER_URL, this.getAuthorizationHeader()),
+                self = this;
+
+            if (req) {
+                req.fail(function(jqXHR) {
+                    if (jqXHR.status == 403) {
+                        self.trigger('onUserSessionExpired');
+                        self.logout(); // need to reset current account to allow to re-log in
+                    } else if (jqXHR.status == 404) {
+                        self.trigger('onTokenNotFound');
+                    }
+                });
+            }
+
+            return req;
         }
     });
 });

@@ -37,6 +37,19 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             }, this);
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+
+            // show payments
+            this.options.payments && this.options.payments.length && this.showPayments();
+        },
+        bindings: {
+            '#credit-card': 'toggle: not(ui_showPayments)',
+            '.payments': 'toggle: ui_showPayments',
+            '.payments-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_CREDIT_CARD, _lp_PAYMENTS)'
+        },
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({showPayments: false});
+            }
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -50,10 +63,21 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
                 model: this.options.card
             }));
 
+            if (this.options.payments) {
+                this.subViews.push(App.Views.GeneratorView.create('Profile', {
+                    el: this.$('.payments'),
+                    mod: 'PaymentsSelection',
+                    collection: this.options.payments
+                }));
+                this.$('.payments-control').show();
+                this.options.payments.selectFirstItem();
+            }
+
             this.addCart();
         },
         events: {
             'click .btn-submit': 'submit_payment',
+            'click .payments-btn': 'showPayments',
             'keydown .btn-submit': function(e) {
                 if (this.pressedButtonIsEnter(e)) {
                     this.submit_payment();
@@ -65,7 +89,7 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             saveAllData();
 
             self.collection.check_order({
-                card: self.options.submode == 'Credit',
+                card: self.options.submode == 'Credit' && !App.Data.customer.doPayWithToken(),
                 giftcard: self.options.submode == 'Gift',
                 order: true,
                 tip: true,
@@ -90,6 +114,10 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
                 model: this.collection.total,
                 collection: this.collection
             }));
+        },
+        showPayments: function() {
+            var $ui = this.getBinding('$ui');
+            $ui.set('showPayments', !$ui.get('showPayments'));
         }
     });
 

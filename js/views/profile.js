@@ -100,7 +100,8 @@ define(["factory"], function() {
             '.login-link': 'toggle: not(access_token)',
             '.logout-link': 'toggle: access_token',
             '.logged-as': 'toggle: access_token, html: loggedAs(first_name)',
-            '.private-btn': 'classes: {"primary-text": access_token, "regular-text": not(access_token), disabled: not(access_token)}'
+            '.private-btn': 'classes: {"primary-text": access_token, "regular-text": not(access_token), disabled: not(access_token)}',
+            '.payments-link': 'toggle: _settings_directory_saved_credit_cards'
         },
         bindingFilters: {
             loggedAs: function(username) {
@@ -330,10 +331,10 @@ define(["factory"], function() {
             creditCardType: creditCardType
         },
         events: {
-            'click .remove-btn': ''
+            'click .remove-btn': 'removeToken'
         },
-        remove: function() {
-            console.log('remove');
+        removeToken: function() {
+            this.options.collectionView.options.removeToken(this.model.get('id'));
         }
     });
 
@@ -344,6 +345,28 @@ define(["factory"], function() {
             '.payments-list': 'collection: $collection'
         },
         itemView: App.Views.CoreProfileView.CoreProfilePaymentEditionView
+    });
+
+    App.Views.CoreProfileView.CoreProfilePaymentsView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'payments',
+        // events: {
+        //     'click .update-btn': setCallback('updateAction')
+        // },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+
+            var paymentsEdition = App.Views.GeneratorView.create('Profile', {
+                el: this.$('.payments-box'),
+                mod: 'PaymentsEdition',
+                collection: this.collection,
+                removeToken: this.options.removeToken
+            });
+
+            this.subViews.push(paymentsEdition);
+
+            return this;
+        }
     });
 
     function controlLinks(showSignUp, showLogIn, showMenu, showPWDReset) {
@@ -379,5 +402,6 @@ define(["factory"], function() {
         App.Views.ProfileView.ProfilePaymentsSelectionView = App.Views.CoreProfileView.CoreProfilePaymentsSelectionView;
         App.Views.ProfileView.ProfilePaymentEditionView = App.Views.CoreProfileView.CoreProfilePaymentEditionView;
         App.Views.ProfileView.ProfilePaymentsEditionView = App.Views.CoreProfileView.CoreProfilePaymentsEditionView;
+        App.Views.ProfileView.ProfilePaymentsView = App.Views.CoreProfileView.CoreProfilePaymentsView;
     });
 });

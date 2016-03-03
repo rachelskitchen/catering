@@ -589,7 +589,7 @@
         "PROFILE_ADDRESS": "Address",
         "PROFILE_USER_NOT_ACTIVATED": "User is not activated",
         "PROFILE_SESSION_EXPIRED": "Session is expired",
-        "PROFILE_USER_NOT_FOUND": "User not found",
+        "PROFILE_USER_NOT_FOUND": "User is not found",
         "PROFILE_USER_ADDRESS_NOT_FOUND": "Address not found",
         "PROFILE_ENTER_CURRENT_PASSWORD": "Enter current password",
         "PROFILE_ENTER_NEW_PASSWORD": "Enter new password",
@@ -602,6 +602,7 @@
         "PROFILE_PASSWORD_RESET_SUCCESS": "The password has been sent. Please check email for your new password.",
         "PROFILE_INVALID_EMAIL": "Email address is invalid",
         "PROFILE_ADD_CREDIT_CARD": "Add Credit Card",
-        "PROFILE_CREDIT_CARDS": "Credit Cards"
+        "PROFILE_CREDIT_CARDS": "Credit Cards",
+        "PROFILE_PAYMENT_TOKEN_NOT_FOUND": "Payment token is not found"
     }; // end of locale
 }); // end of module

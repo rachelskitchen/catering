@@ -2204,7 +2204,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             var myorder_json = JSON.stringify(order),
                 successValidation;
 
-            if (validationOnly || !App.Data.customer.isAuthorized() || !App.Data.customer.payments) {
+            if (validationOnly || !App.Data.customer.doPayWithToken()) {
                 var req = $.ajax({
                     type: "POST",
                     url: App.Data.settings.get("host") + "/weborders/" + (validationOnly ? "pre_validate/" : "create_order_and_pay_v1/"),

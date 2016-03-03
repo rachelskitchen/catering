@@ -646,6 +646,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     className: 'confirmPayCard',
                     timetable: App.Data.timetables,
                     card: App.Data.card,
+                    payments: App.Data.customer.payments,
                     two_columns_view: true
                 });
             }
