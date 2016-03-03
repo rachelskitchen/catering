@@ -35,8 +35,8 @@ define(["factory"], function() {
         mod: 'main',
         bindings: {
            '.title': 'text:page_title',
-           '.btn-back': 'toggle: all(back, not(strictEqual(tab, 0)))',
-           '.btn-profile': 'toggle: strictEqual(tab, 0)',
+           '.btn-back': 'toggle: all(back, not(showMenuBtn))',
+           '.btn-profile': 'toggle: showMenuBtn',
            '.btn-back-title': 'text: back_title',
            '.btn-cart': 'toggle: cartItemsQuantity, classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}',
            '.btn-search': 'classes: {active: showSearch}',

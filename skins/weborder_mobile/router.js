@@ -338,7 +338,12 @@ define(["main_router"], function(main_router) {
                     page_title: App.Settings.business_name || '',
                     back: App.Data.dirMode ? this.navigateDirectory.bind(this) : null,
                     back_title: App.Data.dirMode ? _loc.BACK : '',
+                    showMenuBtn: true,
                     tab: 0
+                });
+
+                this.listenToOnce(this, 'route', function() {
+                    App.Data.header.set('showMenuBtn',  false);
                 });
 
                 var content = [{
