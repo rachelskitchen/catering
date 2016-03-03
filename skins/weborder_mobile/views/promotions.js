@@ -40,12 +40,13 @@ define(['factory'], function() {
         tagName: 'li',
         bindings: {
             '.promotion__name': 'text: name',
-            '.promotion__description': 'text: select(available, _loc.PROMOTION_SEE_INFO, info)',
-            '.promotion__add': 'text: select(selected, _loc.PROMOTION_ADDED, _loc.PROMOTION_ADD_TO_ORDER), classes: {added: selected}',
+            '.promotion__link': 'toggle: available',
+            '.promotion__description': 'toggle: not(available), text: info',
+            '.promotion__add': 'text: select(selected, _loc.PROMOTION_ADDED, _loc.PROMOTION_ADD), classes: {added: selected, disabled: not(available)}',
         },
         events: {
-            'click': 'seeInfo',
-            'click .promotion__add': 'add'
+            'click .promotion__link': 'seeInfo',
+            'click .promotion__add:not(.disabled)': 'add'
         },
         /**
          * Applies discount to the order.
@@ -65,6 +66,7 @@ define(['factory'], function() {
     var PromotionsMyItemView = PromotionsListItemView.extend({
         mode: 'MyItem',
         bindings: _.extend({}, PromotionsListItemView.prototype.bindings, {
+            '.promotion__add': 'text: select(selected, _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {added: selected, disabled: not(available)}',
             '.promotion__reusable': 'text: select(multiple, _loc.PROMOTION_MULTIPLE_USE, _loc.PROMOTION_SINGLE_USE)'
         })
     });
