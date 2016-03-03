@@ -106,9 +106,61 @@ define(['backbone'], function(Backbone) {
              * @type {boolean}
              * @default false
              */
-            selected: false
+            selected: false,
+            /**
+             * Payment token is primary or not.
+             * @type {boolean}
+             * @default false
+             */
+            is_primary: false,
+            /**
+             * Usage frequency. 0 - one time, 1 - recurring.
+             * @type {?number}
+             * @default null
+             */
+            frequency: null
         },
-        removePayment: function(token_id, serverURL, authorizationHeader) {
+        /**
+         * Makes the payment token is selected if `is_primary` attribute is `true`.
+         */
+        initialize: function() {
+            this.get('is_primary') && this.set('selected', true);
+            Backbone.Model.prototype.initialize.apply(this, arguments);
+        },
+        /**
+         * Removes payment token. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "/weborders/v1/order-pay-usaepay-token/",
+         *     method: "POST",
+         *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
+         *     data: {...}  // order json
+         * }
+         * ```
+         * - If session is already expired or invalid token is used the server returns the following response:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * `App.Data.customer` emits `onUserSessionExpired` event in this case. Method `App.Data.custromer.logout()` is automatically called in this case.
+         *
+         * - If token isn't found.
+         * ```
+         * Status: 404
+         * {
+         *     "detail":"Not found."
+         * }
+         * ```
+         * `App.Data.customer` emits `onTokenNotFound` event in this case.
+         *
+         * @param {string} serverURL - identity server url.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @returns {Object} jqXHR object.
+         */
+        removePayment: function(serverURL, authorizationHeader) {
             return Backbone.$.ajax({
                 url: serverURL + "/customers-auth/v1/customers/payments/usaepay/" + this.get('id') + "/",
                 method: "DELETE",
@@ -148,7 +200,7 @@ define(['backbone'], function(Backbone) {
             this.listenTo(this, 'change:selected', function(model, value) {
                 if(value) {
                     this.where({selected: true}).forEach(function(payment) {
-                        model != payment && payment.set('selected', false);
+                        model != payment && payment.set({selected: false});
                     });
                 }
             });
@@ -158,11 +210,14 @@ define(['backbone'], function(Backbone) {
          * Creates a new order via selected payment token. Sends request with following parameters:
          * ```
          * {
-         *     url: "/weborders/v1/order-pay-usaepay-token/",
+         *     url: "/weborders/v1/order-pay-token/",
          *     method: "POST",
          *     contentType: "application/json",
          *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
-         *     data: {...}  // order json
+         *     data: {
+         *         payment_processor: 'usaepaypayment'
+         *         ...
+         *     }  // order json
          * }
          * ```
          * If session is already expired or invalid token is used the server returns the following response:
@@ -191,8 +246,10 @@ define(['backbone'], function(Backbone) {
                 cardInfo.vault_id = payment.get('vault_id');
             }
 
+            myorder.payment_processor = 'usaepaypayment';
+
             return Backbone.$.ajax({
-                url: "/weborders/v1/order-pay-usaepay-token/",
+                url: "/weborders/v1/order-pay-token/",
                 method: "POST",
                 data: JSON.stringify(myorder),
                 headers: authorizationHeader,
@@ -245,6 +302,9 @@ define(['backbone'], function(Backbone) {
                 headers: authorizationHeader,
                 contentType: "application/json",
                 success: function(data) {
+                    self.where({is_primary: true}).forEach(function(payment) {
+                        payment.set('is_primary', false);
+                    });
                     self.add(data).set('selected', true);
                 },
                 error: new Function()              // to override global ajax error handler
@@ -293,11 +353,30 @@ define(['backbone'], function(Backbone) {
             });
         },
         /**
-         * TODO
+         * Removes payment token.
+         * @param {number} token_id - token id
+         * @param {string} serverURL - identity server url.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @returns {Object} jqXHR object.
          */
         removePayment: function(token_id, serverURL, authorizationHeader) {
-            var token = this.get(token_id);
-            return token && token.removePayment(serverURL, authorizationHeader);
+            var token = this.get(token_id),
+                req = token && token.removePayment(serverURL, authorizationHeader),
+                self = this;
+
+            if (req) {
+                req.done(function() {
+                    self.remove(token);
+                });
+            }
+
+            return req;
+        },
+        /**
+         * Selects first item if no one payment token is selected.
+         */
+        selectFirstItem: function() {
+            !this.findWhere({selected: true}) && this.length && this.at(0).set('selected', true);
         }
     });
 });

@@ -189,7 +189,8 @@
     content: '\f0d7';
     font-family: "FontAwesome";
     font-size: 2.5em;
-    padding-left: 0.4em;
+    display: inline-block;
+    width: 1em;
 }
 
 .credit-cards.collapsed::after {

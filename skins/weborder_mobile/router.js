@@ -158,13 +158,12 @@ define(["main_router"], function(main_router) {
 
             this.listenTo(myorder, 'payWithCreditCard', function() {
                 var paymentProcessor = App.Data.settings.get_payment_process(),
-                    doPayWithToken = App.Data.customer.doPayWithToken(),
-                    needValidate = !doPayWithToken;
+                    doPayWithToken = App.Data.customer.doPayWithToken();
                 myorder.check_order({
-                    order: needValidate,
-                    tip: needValidate,
-                    customer: needValidate,
-                    checkout: needValidate,
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
                     card: doPayWithToken ? false : paymentProcessor.credit_card_dialog
                 }, sendRequest.bind(window, PAYMENT_TYPE.CREDIT));
             });
@@ -1128,7 +1127,8 @@ define(["main_router"], function(main_router) {
                 });
 
                 if (payments) {
-                    customer.paymentsRequest.always(this.change_page.bind(this));
+                    customer.paymentsRequest.done(payments.selectFirstItem.bind(payments))
+                                            .always(this.change_page.bind(this));
                 } else {
                     this.change_page()
                 };
@@ -1751,25 +1751,23 @@ define(["main_router"], function(main_router) {
             this.change_page();
         },
         profile_payments: function() {
-            if (!App.Data.customer.payments) {
-                return;
+            var customer = App.Data.customer,
+                content;
+
+            if (!customer.payments || !customer.paymentsRequest) {
+                return this.navigate('index', true);
             }
+
+            content = this.profilePaymentsContent();
 
             App.Data.mainModel.set({
                 header: headerModes.Modifiers,
                 footer: footerModes.None,
                 contentClass: '',
-                content: {
-                    modelName: 'Profile',
-                    mod: 'PaymentsEdition',
-                    collection: App.Data.customer.payments,
-                    model: App.Data.customer,
-                    className: 'profile-payments-edition text-center',
-                    cacheId: true
-                }
+                content: content
             });
 
-            this.change_page();
+            customer.paymentsRequest.always(this.change_page.bind(this));
         }
     });
 
