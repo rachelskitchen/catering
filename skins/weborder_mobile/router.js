@@ -1842,8 +1842,7 @@ define(["main_router"], function(main_router) {
 
                 function cart() {
                     if (App.Data.myorder.get_only_product_quantity() > 0) {
-                        self.stopListening(order, 'change', setHeaderToUpdate);
-                        header.set('cart', self.navigate.bind(self, 'cart', true), {silent: true});
+                        App.Data.header.set('cart', self.navigate.bind(self, 'cart', true), {silent: true});
                         self.navigate('cart', true);
                     }
                 }

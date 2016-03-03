@@ -15,9 +15,10 @@
     <div class="promotion">
         <div class="fl-left">
             <div class="promotion__name font-size1"></div>
-            <div class="promotion__info font-size2">
-                <div class="promotion__description"></div>
-                <div class="promotion__reusable"></div>
+            <div class="promotion__info">
+                <div class="promotion__link primary-text"><%= _lp.PROMOTION_SEE_INFO %></div>
+                <div class="promotion__description font-size2"></div>
+                <div class="promotion__reusable font-size2"></div>
             </div>
         </div>
         <div class="fl-right">
@@ -27,7 +28,10 @@
 </script>
 
 <script type="text/template" id="promotions_my-template">
-    <div class="promotions-title"><span class="promotions-list__title primary-text font-size1"><%= _lp.PROMOTIONS_AVAILABLE %></span></div>
+    <div class="promotions-title">
+        <div class="promotions-list__title primary-text font-size1"><%= _lp.PROMOTIONS_AVAILABLE %></div>
+        <div class="promotions-list__title-description font-size2"><%= _lp.PROMOTIONS_AVAILABLE_DESC %></div>
+    </div>
     <ul class="promotions-available promotions-list list"></ul>
 </script>
 
