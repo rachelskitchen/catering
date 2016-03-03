@@ -899,8 +899,7 @@ define(["main_router"], function(main_router) {
                 App.SettingsDirectory.promotionsAvailable = true; // DEBUG
                 App.Data.header.set('showPromotionsLink', App.SettingsDirectory.promotionsAvailable);
                 this.listenToOnce(this, 'route', function() {
-                    // reset visibility of Promotions link
-                    App.Data.header.set('showPromotionsLink', App.Data.header.defaults.showPromotionsLink);
+                    App.Data.header.set('showPromotionsLink', false); // hide Promotions link
                 });
 
                 App.Data.footer.set({
@@ -1032,8 +1031,7 @@ define(["main_router"], function(main_router) {
                 App.SettingsDirectory.promotionsAvailable = true; // DEBUG
                 App.Data.header.set('showPromotionsLink', App.SettingsDirectory.promotionsAvailable);
                 this.listenToOnce(this, 'route', function() {
-                    // reset visibility of Promotions link
-                    App.Data.header.set('showPromotionsLink', App.Data.header.defaults.showPromotionsLink);
+                    App.Data.header.set('showPromotionsLink', false); // hide Promotions link
                 });
 
                 if(!App.Data.card)
