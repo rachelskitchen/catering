@@ -1326,6 +1326,7 @@ var PaymentProcessor = {
     },
     getCreditCardPaymentProcessor: function() {
         var payment_processor = null;
+
         var payment = App.Settings.payment_processor;
         if (payment.usaepay) {
             payment_processor = USAePayPaymentProcessor;
@@ -1343,6 +1344,8 @@ var PaymentProcessor = {
             payment_processor = FreedomPayPaymentProcessor;
         } else if (payment.cresecure) {
             payment_processor = CRESecurePaymentProcessor;
+        } else if (payment.braintree) {
+            payment_processor = BraintreePaymentProcessor;
         }
         return payment_processor;
     },
@@ -1460,6 +1463,31 @@ var USAePayPaymentProcessor = {
             }
         }
         return payment_info;
+    }
+};
+
+var BraintreePaymentProcessor = {
+    clearQueryString: function(queryString) {
+debugger
+        return queryString.replace(/&?UM[^=]*=[^&]*/g, '');
+    },
+    showCreditCardDialog: function() {
+        return false;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+debugger
+        if (pay_get_parameter) {
+            var get_parameters = App.Data.get_parameters;
+            if(pay_get_parameter === 'true') {
+                payment_info.transaction_id = get_parameters.UMrefNum;
+            } else {
+                payment_info.errorMsg = get_parameters.UMerror;
+            }
+        }
+        return payment_info;
+    },
+    handlePaymentDataRequest: function(myorder, data) {
+
     }
 };
 
