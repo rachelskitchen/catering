@@ -17,13 +17,13 @@
             "css": ["categories", "promo_message", "promotions"],
             "views": ["categories", "promo_message", "promotions"],
             "templates": ["categories", "promo_message", "promotions"],
-            "core": ["categories", "products", "subcategories"]
+            "core": ["categories", "products", "subcategories", "promotions_view"]
         },
         "products": {
             "css": ["categories", "products", "promotions"],
             "views": ["categories", "promotions"],
             "templates": ["products", "categories", "promotions"],
-            "core": ["categories", "products", "subcategories"]
+            "core": ["categories", "products", "subcategories", "promotions_view"]
         },
         "modifiers": {
             "css": ["modifiers", "products", "quantity", "instructions", "myorder", "stanfordcard", "card"],

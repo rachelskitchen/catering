@@ -20,106 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(['factory'], function() {
+define(['promotions_view'], function(promotions_view) {
     'use strict';
 
-    var PromotionsTopLineView = App.Views.FactoryView.extend({
-        name: 'promotions',
-        mod: 'TopLine',
-        events: {
-            'click': 'goToPromotionsList'
-        },
-        goToPromotionsList: function() {
-            App.Data.router.navigate('promotions', true);
-        }
-    });
+    return new (require('factory'))(promotions_view.initViews.bind(promotions_view), function() {
 
-    var PromotionsListItemView = App.Views.FactoryView.extend({
-        name: 'promotions',
-        mod: 'ListItem',
-        tagName: 'li',
-        bindings: {
-            '.promotion__name': 'text: name',
-            '.promotion__link': 'toggle: available',
-            '.promotion__description': 'toggle: not(available), text: info',
-            '.promotion__add': 'text: select(selected, _loc.PROMOTION_ADDED, _loc.PROMOTION_ADD), classes: {added: selected, disabled: not(available)}',
-        },
-        events: {
-            'click .promotion__link': 'seeInfo',
-            'click .promotion__add:not(.disabled)': 'add'
-        },
-        /**
-         * Applies discount to the order.
-         */
-        add: function(e) {
-            e.stopPropagation();
-            this.model.set('selected', !this.model.get('selected'));
-        },
-        /**
-         * Navigates to promotion details screen.
-         */
-        seeInfo: function() {
-            App.Data.router.navigate('promotion/' + this.model.get('discountId'), true);
-        }
-    });
-
-    var PromotionsMyItemView = PromotionsListItemView.extend({
-        mode: 'MyItem',
-        bindings: _.extend({}, PromotionsListItemView.prototype.bindings, {
-            '.promotion__add': 'text: select(selected, _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {added: selected, disabled: not(available)}',
-            '.promotion__reusable': 'text: select(multiple, _loc.PROMOTION_MULTIPLE_USE, _loc.PROMOTION_SINGLE_USE)'
-        })
-    });
-
-    var PromotionsListView = App.Views.FactoryView.extend({
-        name: 'promotions',
-        mod: 'list',
-        initialize: function() {
-            // need to add model.available and model.other to bindingSource to provide handlers for 'reset', 'add', 'remove' events.
-            this.bindingSources = _.extend({}, this.bindingSources, {
-                _available: this.model.get('available'),
-                _other: this.model.get('other')
-            });
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-        },
-        bindings: {
-            '.promotions-available': 'collection: $_available',
-            '.promotions-other': 'collection: $_other'
-        },
-        itemView: PromotionsListItemView
-    });
-
-    var PromotionsMyView = App.Views.FactoryView.extend({
-        name: 'promotions',
-        mod: 'my',
-        initialize: function() {
-            // need to add model.available and model.other to bindingSource to provide handlers for 'reset', 'add', 'remove' events.
-            this.bindingSources = _.extend({}, this.bindingSources, {
-                _available: this.model.get('available')
-            });
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-        },
-        bindings: {
-            '.promotions-available': 'collection: $_available'
-        },
-        itemView: PromotionsMyItemView
-    });
-
-    var PromotionsItemView = App.Views.FactoryView.extend({
-        name: 'promotions',
-        mod: 'item',
-        bindings: {
-            '.promotion-details__title-text': 'text: discountTitle',
-            '.promotion-details__discount-code': 'text: discountCode'
-        }
-    });
-
-    return new (require('factory'))(function() {
-        App.Views.PromotionsView = {};
-        App.Views.PromotionsView.PromotionsListView = PromotionsListView;
-        App.Views.PromotionsView.PromotionsListItemView = PromotionsListItemView;
-        App.Views.PromotionsView.PromotionsMyView = PromotionsMyView;
-        App.Views.PromotionsView.PromotionsItemView = PromotionsItemView;
-        App.Views.PromotionsView.PromotionsTopLineView = PromotionsTopLineView;
     });
 });
