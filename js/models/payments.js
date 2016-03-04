@@ -31,18 +31,18 @@ define(['backbone'], function(Backbone) {
 
     /**
      * @class
-     * @classdesc Represents USAePay payment.
-     * @alias App.Models.USAePayPayment
+     * @classdesc Represents payment token.
+     * @alias App.Models.PaymentToken
      * @augments Backbone.Model
      * @example
      * // create an order item
      * require(['payments'], function() {
-     *     var payment = new App.Models.USAePayPayment();
+     *     var payment = new App.Models.PaymentToken();
      * });
      */
-    App.Models.USAePayPayment = Backbone.Model.extend(
+    App.Models.PaymentToken = Backbone.Model.extend(
     /**
-     * @lends App.Models.USAePayPayment.prototype
+     * @lends App.Models.PaymentToken.prototype
      */
     {
         /**
@@ -58,7 +58,8 @@ define(['backbone'], function(Backbone) {
              */
             customer: null,
             /**
-             * Card type. 0 - 'AMEX', 1 - 'Discover', 2 - 'MASTERCARD', 3 - 'VISA'
+             * Card type. 0 - 'AMEX', 1 - 'Discover', 2 - 'MASTERCARD', 3 - 'VISA',
+             * 10 - 'MAESTRO', 12 - 'DINERS', 13 - 'JCB'.
              * @type {number}
              * @default null
              */
@@ -114,7 +115,7 @@ define(['backbone'], function(Backbone) {
              */
             is_primary: false,
             /**
-             * Usage frequency. 0 - one time, 1 - recurring.
+             * Usage frequency. 0 - one time, 1 - recurring. Used in Mercury payment processor.
              * @type {?number}
              * @default null
              */
@@ -128,10 +129,16 @@ define(['backbone'], function(Backbone) {
             Backbone.Model.prototype.initialize.apply(this, arguments);
         },
         /**
+         * Payment token type.
+         * @type {string}
+         * @default ''
+         */
+        type: '',
+        /**
          * Removes payment token. Sends request with following parameters:
          * ```
          * {
-         *     url: "/weborders/v1/order-pay-usaepay-token/",
+         *     url: <serverURL> + "/customers-auth/v1/customers/payments/<payment type>/<payment id>/",
          *     method: "POST",
          *     contentType: "application/json",
          *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
@@ -162,7 +169,7 @@ define(['backbone'], function(Backbone) {
          */
         removePayment: function(serverURL, authorizationHeader) {
             return Backbone.$.ajax({
-                url: serverURL + "/customers-auth/v1/customers/payments/usaepay/" + this.get('id') + "/",
+                url: serverURL + "/customers-auth/v1/customers/payments/" + this.type + "/" + this.get('id') + "/",
                 method: "DELETE",
                 headers: authorizationHeader,
                 success: new Function(),        // to override global ajax success handler
@@ -173,26 +180,26 @@ define(['backbone'], function(Backbone) {
 
     /**
      * @class
-     * @classdesc Represents collections of USAePay payments.
-     * @alias App.Collections.USAePayPayments
+     * @classdesc Represents collections of payment tokens.
+     * @alias App.Collections.PaymentTokens
      * @augments Backbone.Collection
      * @example
      * // create an order item
      * require(['payments'], function() {
-     *     var payments = new App.Collections.USAePayPayments();
+     *     var payments = new App.Collections.PaymentTokens();
      * });
      */
-    App.Collections.USAePayPayments = Backbone.Collection.extend(
+    App.Collections.PaymentTokens = Backbone.Collection.extend(
     /**
-     * @lends App.Collections.USAePayPayments.prototype
+     * @lends App.Collections.PaymentTokens.prototype
      */
     {
         /**
-         * Item constructor.
-         * @type {Function}
-         * @default App.Models.USAePayPayment
+         * Server URL.
+         * @type {string}
+         * @default ''
          */
-        model: App.Models.USAePayPayment,
+        serverURL: '',
         /**
          * Creates listener for `change:selected` event to deselect all payments (radio button behavior).
          */
@@ -215,7 +222,7 @@ define(['backbone'], function(Backbone) {
          *     contentType: "application/json",
          *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
          *     data: {
-         *         payment_processor: 'usaepaypayment'
+         *         payment_processor: <paymentProcessor>
          *         ...
          *     }  // order json
          * }
@@ -230,28 +237,28 @@ define(['backbone'], function(Backbone) {
          * The model emits `onUserSessionExpired` event in this case. Method `App.Data.custromer.logout()` is automatically called in this case.
          *
          * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
-         * @param {Object} myorder - payload data (order json).
+         * @param {Object} order - payload data (order json).
          * @returns {Object} jqXHR object.
          */
-        orderPayUSAePayToken: function(authorizationHeader, myorder) {
-            if(!_.isObject(authorizationHeader) || !_.isObject(myorder)) {
+        orderPayWithToken: function(authorizationHeader, order) {
+            if(!_.isObject(authorizationHeader) || !_.isObject(order)) {
                 return;
             }
 
             var payment = this.getSelectedPayment(),
-                cardInfo = _.isObject(myorder.paymentInfo) && myorder.paymentInfo.cardInfo;
+                cardInfo = _.isObject(order.paymentInfo) && order.paymentInfo.cardInfo;
 
             if (payment && _.isObject(cardInfo)) {
                 cardInfo.token_id = payment.get('id');
                 cardInfo.vault_id = payment.get('vault_id');
             }
 
-            myorder.payment_processor = 'usaepaypayment';
+            order.payment_processor = this.paymentProcessor;
 
             return Backbone.$.ajax({
                 url: "/weborders/v1/order-pay-token/",
                 method: "POST",
-                data: JSON.stringify(myorder),
+                data: JSON.stringify(order),
                 headers: authorizationHeader,
                 contentType: "application/json",
                 success: new Function(),           // to override global ajax success handler
@@ -262,7 +269,7 @@ define(['backbone'], function(Backbone) {
          * Creates a new payment token. Sends request with following parameters:
          * ```
          * {
-         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/payments/usaepay/",
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/payments/<type>/",
          *     method: "POST",
          *     contentType: "application/json",
          *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
@@ -287,16 +294,15 @@ define(['backbone'], function(Backbone) {
          * ```
          * The model emits `onUserSessionExpired` event in this case. Method `App.Data.custromer.logout()` is automatically called in this case.
          *
-         * @param {string} serverURL - identity server url.
          * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
          * @param {number} cardType - card type.
          * @returns {Object} jqXHR object.
          */
-        createPaymentToken: function(serverURL, authorizationHeader, data) {
+        createPaymentToken: function(authorizationHeader, data) {
             var self = this;
 
             return Backbone.$.ajax({
-                url: serverURL + "/customers-auth/v1/customers/payments/usaepay/",
+                url: this.serverURL + "/customers-auth/v1/customers/payments/" + this.type + "/",
                 method: "POST",
                 data: JSON.stringify(data),
                 headers: authorizationHeader,
@@ -311,7 +317,7 @@ define(['backbone'], function(Backbone) {
             });
         },
         /**
-         * @returns {App.Models.USAePayPayment} Selected payment.
+         * @returns {App.Models.PaymentToken} Selected payment.
          */
         getSelectedPayment: function() {
             return this.findWhere({selected: true});
@@ -320,7 +326,7 @@ define(['backbone'], function(Backbone) {
          * Receives payments. Sends request with following parameters:
          * ```
          * {
-         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/payments/usaepay/",
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/payments/<type>/",
          *     method: "GET",
          *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"}
          * }
@@ -334,14 +340,13 @@ define(['backbone'], function(Backbone) {
          * ```
          * The model emits `onUserSessionExpired` event in this case. Method `App.Data.custromer.logout()` is automatically called in this case.
          *
-         * @param {string} serverURL - identity server url.
          * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
          * @returns {Object} jqXHR object.
          */
-        getPayments: function(serverURL, authorizationHeader) {
+        getPayments: function(authorizationHeader) {
             var self = this;
             return Backbone.$.ajax({
-                url: serverURL + "/customers-auth/v1/customers/payments/usaepay/",
+                url: this.serverURL + "/customers-auth/v1/customers/payments/" + this.type + "/",
                 method: "GET",
                 headers: authorizationHeader,
                 success: function(data) {
@@ -355,13 +360,12 @@ define(['backbone'], function(Backbone) {
         /**
          * Removes payment token.
          * @param {number} token_id - token id
-         * @param {string} serverURL - identity server url.
          * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
          * @returns {Object} jqXHR object.
          */
-        removePayment: function(token_id, serverURL, authorizationHeader) {
+        removePayment: function(token_id, authorizationHeader) {
             var token = this.get(token_id),
-                req = token && token.removePayment(serverURL, authorizationHeader),
+                req = token && token.removePayment(this.serverURL, authorizationHeader),
                 self = this;
 
             if (req) {
@@ -378,5 +382,168 @@ define(['backbone'], function(Backbone) {
         selectFirstItem: function() {
             !this.findWhere({selected: true}) && this.length && this.at(0).set('selected', true);
         }
+    });
+
+    /**
+     * @class
+     * @classdesc Represents USAePay payment token.
+     * @alias App.Models.USAePayPayment
+     * @augments App.Models.PaymentToken
+     * @example
+     * // create an order item
+     * require(['payments'], function() {
+     *     var payment = new App.Models.USAePayPayment();
+     * });
+     */
+    App.Models.USAePayPayment = App.Models.PaymentToken.extend(
+    /**
+     * @lends App.Models.USAePayPayment.prototype
+     */
+    {
+        type: 'usaepay'
+    });
+
+    /**
+     * @class
+     * @classdesc Represents collections of USAePay payments.
+     * @alias App.Collections.PaymentTokens
+     * @augments Backbone.Collection
+     * @example
+     * // create an order item
+     * require(['payments'], function() {
+     *     var payments = new App.Collections.USAePayPayments();
+     * });
+     */
+    App.Collections.USAePayPayments = App.Collections.PaymentTokens.extend(
+    /**
+     * @lends App.Collections.USAePayPayments.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default App.Models.USAePayPayment
+         */
+        model: App.Models.USAePayPayment,
+        /**
+         * Payment processor.
+         * @type {string}
+         * @default 'usaepaypayment'
+         */
+        paymentProcessor: 'usaepaypayment',
+        /**
+         * Payment token type.
+         * @type {string}
+         * @default 'usaepay'
+         */
+        type: 'usaepay',
+        /**
+         * Creates an order making payment with token and creates token in USAePay payment processor.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @param {Object} order - order json (see {@link App.Collections.Myorder#submit_order_and_pay})
+         * @param {number} user_id - user id
+         * @param {?Object} [card] - CC json (see {@link App.Collections.Myorder#submit_order_and_pay})
+         * @returns {Object|undefined} Deferred object.
+         */
+        orderPayWithToken: function(authorizationHeader, order, user_id, card) {
+            if(!_.isObject(authorizationHeader) || !_.isObject(order) || !_.isNumber(user_id)) {
+                return;
+            }
+
+            var self = this,
+                def = Backbone.$.Deferred(),
+                isTokenCreated = _.isObject(order.paymentInfo)
+                                 && order.paymentInfo.token
+                                 && typeof order.paymentInfo.card_type != 'undefined'
+                                 && order.paymentInfo.masked_card_number;
+
+            if (isTokenCreated) {
+                var data = {
+                    customer: user_id,
+                    card_type: order.paymentInfo.card_type,
+                    last_digits: order.paymentInfo.masked_card_number.replace(/[^\d]/g, ''),
+                    first_name: _.isObject(card) ? card.firstName : '',
+                    last_name: _.isObject(card) ? card.secondName : '',
+                    token: order.paymentInfo.token,
+                    instance_name: App.Data.settings.get('hostname').replace(/\..*/, ''),
+                    atlas_id: App.Data.settings.get('establishment')
+                };
+
+                this.createPaymentToken(authorizationHeader, data)
+                    .done(function() {
+                        delete order.paymentInfo.token;
+                        delete order.paymentInfo.card_type;
+                        delete order.paymentInfo.masked_card_number;
+                        create_order_and_pay();
+                    })
+                    .fail(def.reject.bind(def));
+            } else {
+                create_order_and_pay();
+            }
+
+            function create_order_and_pay() {
+                App.Collections.PaymentTokens.prototype.orderPayWithToken.call(self, authorizationHeader, order)
+                    .done(def.resolve.bind(def))
+                    .fail(def.reject.bind(def));
+            }
+
+            return def;
+        }
+    });
+
+    /**
+     * @class
+     * @classdesc Represents Mercury payment token. Token can be used one time.
+     * Need to update `id` and `vault_id` after each payment.
+     * @alias App.Models.MercuryPayment
+     * @augments App.Models.PaymentToken
+     * @example
+     * // create an order item
+     * require(['payments'], function() {
+     *     var payment = new App.Models.MercuryPayment();
+     * });
+     */
+    App.Models.MercuryPayment = App.Models.PaymentToken.extend(
+    /**
+     * @lends App.Models.MercuryPayment.prototype
+     */
+    {
+        type: 'mercurypay'
+    });
+
+    /**
+     * @class
+     * @classdesc Represents collections of Mercury payments.
+     * @alias App.Collections.PaymentTokens
+     * @augments Backbone.Collection
+     * @example
+     * // create an order item
+     * require(['payments'], function() {
+     *     var payments = new App.Collections.USAePayPayments();
+     * });
+     */
+    App.Collections.MercuryPayments = App.Collections.PaymentTokens.extend(
+    /**
+     * @lends App.Collections.MercuryPayments.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default App.Models.MercuryPayment
+         */
+        model: App.Models.MercuryPayment,
+        /**
+         * Payment processor.
+         * @type {string}
+         * @default 'mercurypaypayment'
+         */
+        paymentProcessor: 'mercurypaypayment',
+        /**
+         * Payment token type.
+         * @type {string}
+         * @default 'mercurypay'
+         */
+        type: 'mercurypay'
     });
 });
