@@ -126,6 +126,20 @@ define(["main_router"], function(main_router) {
 
                 // run history tracking
                 this.triggerInitializedEvent();
+
+                /**
+                 * Promotions
+                 */
+                var set_dir = App.SettingsDirectory;
+                set_dir.promotionsAvailable = true; // DEBUG
+                if (set_dir.promotionsAvailable) {
+                    this.promotions = {
+                        modelName: 'Promotions',
+                        model: new Backbone.Model(),
+                        mod: 'TopLine',
+                        cacheId: true
+                    };
+                }
             });
 
             var checkout = App.Data.myorder.checkout;
@@ -345,26 +359,6 @@ define(["main_router"], function(main_router) {
                     tab: 0
                 });
 
-                /**
-                 * Promotions
-                 */
-                var promotions,
-                    set_dir = App.SettingsDirectory;
-                set_dir.promotionsAvailable = true; // DEBUG
-                if (set_dir.promotionsAvailable) {
-                    promotions = App.Views.GeneratorView.create('Promotions', {
-                        model: new Backbone.Model(),
-                        mod: 'TopLine',
-                        cacheId: true
-                    }, 'promotions_line');
-
-                    this.listenToOnce(this, 'route', function(route, params) {
-                        if (route != 'products') {
-                            App.Data.mainModel.set('promotions', null);
-                        }
-                    });
-                }
-
                 var content = [{
                     modelName: 'Categories',
                     collection: App.Data.parentCategories,
@@ -372,6 +366,8 @@ define(["main_router"], function(main_router) {
                     cacheId: true,
                     className: 'content_scrollable'
                 }];
+
+                content.unshift(this.promotions);
 
                 var footerMode;
                 if (App.Settings.promo_message) {
@@ -383,7 +379,6 @@ define(["main_router"], function(main_router) {
                 App.Data.mainModel.set({
                     header: headerModes.Main,
                     footer: footerMode,
-                    promotions: promotions,
                     contentClass: '',
                     content: content
                 });
@@ -464,36 +459,16 @@ define(["main_router"], function(main_router) {
                     back_title: _loc.BACK
                 });
 
-                /**
-                 * Promotions
-                 */
-                var promotions,
-                    set_dir = App.SettingsDirectory;
-                set_dir.promotionsAvailable = true; // DEBUG
-                if (set_dir.promotionsAvailable) {
-                    promotions = App.Views.GeneratorView.create('Promotions', {
-                        model: new Backbone.Model(),
-                        mod: 'TopLine',
-                        cacheId: true
-                    }, 'promotions_line');
-
-                    this.listenToOnce(this, 'route', function(route, params) {
-                        if (route != 'index') {
-                            App.Data.mainModel.set('promotions', null);
-                        }
-                    });
-                }
-
                 App.Data.mainModel.set({
                     header: headerModes.Main,
-                    footer: footerModes.None,
-                    promotions: promotions
+                    footer: footerModes.None
                 });
 
                 // load categories and products
                 $.when(this.initCategories(), App.Collections.Products.get_slice_products(_ids)).then(function() {
                     var parentCategory = App.Data.parentCategories.findWhere({ids: ids}),
-                        subs;
+                        subs,
+                        content;
 
                     if(parentCategory) {
                         subs = parentCategory.get('subs');
@@ -508,15 +483,19 @@ define(["main_router"], function(main_router) {
 
                     fetched[ids] = true;
 
+                    content = [{
+                        modelName: 'Categories',
+                        model: parentCategory,
+                        mod: 'Main',
+                        cacheId: true,
+                        cacheIdUniq: ids
+                    }];
+
+                    content.unshift(self.promotions);
+
                     App.Data.mainModel.set({
                         contentClass: '',
-                        content: {
-                            modelName: 'Categories',
-                            model: parentCategory,
-                            mod: 'Main',
-                            cacheId: true,
-                            cacheIdUniq: ids
-                        }
+                        content: content
                     });
 
                     self.change_page();
