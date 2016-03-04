@@ -1564,7 +1564,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             });
         },
         /**
-         * Creates an order making payment with token (and creates token in USAePay payment processor).
+         * Creates an order making payment with token.
          * @param {Object} order - order json (see {@link App.Collections.Myorder#submit_order_and_pay})
          * @param {?Object} [card] - CC json (see {@link App.Collections.Myorder#submit_order_and_pay})
          * @returns {Object|undefined} Deferred object.
@@ -1574,54 +1574,18 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 return console.error("CC payment processor doesn't provide tokenization")
             }
 
-            var self = this,
-                def = Backbone.$.Deferred(),
-                authorizationHeader = this.getAuthorizationHeader(),
+            var def = Backbone.$.Deferred(),
                 payments = this.payments,
-                isTokenCreated = _.isObject(order.paymentInfo)
-                                 && order.paymentInfo.token
-                                 && typeof order.paymentInfo.card_type != 'undefined'
-                                 && order.paymentInfo.masked_card_number;
+                self = this;
 
-            if (isTokenCreated) {
-                var data = {
-                    customer: this.get('user_id'),
-                    card_type: order.paymentInfo.card_type,
-                    last_digits: order.paymentInfo.masked_card_number.replace(/[^\d]/g, ''),
-                    first_name: _.isObject(card) ? card.firstName : '',
-                    last_name: _.isObject(card) ? card.secondName : '',
-                    token: order.paymentInfo.token,
-                    instance_name: App.Data.settings.get('hostname').replace(/\..*/, ''),
-                    atlas_id: App.Data.settings.get('establishment')
-                };
-
-                this.paymentsRequest.always(function() {
-                    payments.createPaymentToken(SERVER_URL, authorizationHeader, data)
-                            .done(function() {
-                                delete order.paymentInfo.token;
-                                delete order.paymentInfo.card_type;
-                                delete order.paymentInfo.masked_card_number;
-                                create_order_and_pay();
-                            })
-                            .fail(function(jqXHR) {
-                                def.reject.apply(def, arguments);
-                                ifSessionIsExpired(jqXHR);
-                            });
-                });
-            } else {
-                create_order_and_pay();
-            }
-
-            function create_order_and_pay() {
-                payments.orderPayUSAePayToken(authorizationHeader, order)
-                        .done(function() {
-                            def.resolve.apply(def, arguments);
-                        })
+            this.paymentsRequest && this.paymentsRequest.always(function() {
+                payments.orderPayWithToken(self.getAuthorizationHeader(), order, self.get('user_id'), card)
+                        .done(def.resolve.bind(def))
                         .fail(function(jqXHR) {
                             def.reject.apply(def, arguments);
                             ifSessionIsExpired(jqXHR);
                         });
-            }
+            });
 
             function ifSessionIsExpired(jqXHR) {
                 if (jqXHR.status == 403) {
@@ -1642,7 +1606,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             }
 
             var self = this,
-                req = this.payments.getPayments(SERVER_URL, this.getAuthorizationHeader());
+                req = this.payments.getPayments(this.getAuthorizationHeader());
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
@@ -1680,6 +1644,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                      * @default undefined
                      */
                     this.payments = new constr()//new App.Collections.USAePayPayments();
+                    this.payments.serverURL = SERVER_URL;
                 }
             }
             this.isAuthorized() && this.initPayments();
@@ -1706,7 +1671,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * @return {Object} jqXHR object.
          */
         removePayment: function(token_id) {
-            var req = this.payments.removePayment(token_id, SERVER_URL, this.getAuthorizationHeader()),
+            var req = this.payments.removePayment(token_id, this.getAuthorizationHeader()),
                 self = this;
 
             if (req) {
