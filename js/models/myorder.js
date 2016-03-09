@@ -859,6 +859,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             var root_price = this.get_initial_price() + this.get('upcharge_price'),
                 sum = 0, combo_saving_products = [];
 
+            var prices = [this.get_initial_price(), this.get('upcharge_price')];
+
             this.get('product').get('product_sets').each( function(product_set) {
                 if ( product_set.get('is_combo_saving') ) {
                     combo_saving_products.push( product_set );
@@ -866,23 +868,31 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
                 product_set.get_selected_products().forEach(function(model) {
                     //trace("add product_price : ",  model.get('product').get('name'), model.get_initial_price());
-                    var sold_by_weight = model.get("product") ?  model.get("product").get('sold_by_weight') : false,
+                    var product = model.get("product"),
+                        sold_by_weight = product ?  product.get('sold_by_weight') : false,
                         weight = model.get('weight'),
-                        initial_price = model.get("upcharge_price") ? model.get("upcharge_price") : model.get_initial_price();
+                        initial_price = product.get("upcharge_price") ? product.get("upcharge_price") : model.get_initial_price();
 
                     if (sold_by_weight && weight) {
                         sum += initial_price * weight;
+                        prices.push(initial_price * weight);
                     }
                     else {
                         sum += initial_price * model.get('quantity');
+                        prices.push(initial_price * model.get('quantity'));
                     }
                 });
             });
 
             if (combo_saving_products.length && this.isComboProduct() && sum < root_price) {
                 sum = root_price;
+                prices.push("< root_price");
             } else if (this.isUpsellProduct()) {
                 sum += root_price;
+            }
+
+            if (App.Data.devMode) {
+                trace("combo/upsell price = ", prices.join(" + "), "=", sum);
             }
 
             this.get('product').set("combo_price", sum);
