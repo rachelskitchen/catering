@@ -589,7 +589,13 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          *     method: "POST",
          *     data: {
          *         username: <username>,                                              // username (email)
-         *         scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address CUSTOMERS:customers.usaepaypayment BACKEND:usaepaypayment TOKENS_VAULT:tokens_vault.token", // constant value
+         *         scope: "CUSTOMERS:customers.customer ->
+         *                 CUSTOMERS:customers.address ->
+         *                 CUSTOMERS:customers.usaepaypayment ->
+         *                 BACKEND:usaepaypayment ->
+         *                 TOKENS_VAULT:tokens_vault.token ->
+         *                 CUSTOMERS:customers.mercurypaypayment ->
+         *                 BACKEND:mercurypaypayment",                                // constant value
          *         password: <password>,                                              // password
          *         grant_type: "password"                                             // constant value
          *     }
@@ -685,14 +691,23 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * @returns {Object} jqXHR object.
          */
         login: function() {
-            var attrs = this.toJSON();
+            var attrs = this.toJSON(),
+                scope = [
+                    "CUSTOMERS:customers.customer",
+                    "CUSTOMERS:customers.address",
+                    "CUSTOMERS:customers.usaepaypayment",
+                    "BACKEND:usaepaypayment",
+                    "TOKENS_VAULT:tokens_vault.token",
+                    "CUSTOMERS:customers.mercurypaypayment",
+                    "BACKEND:mercurypaypayment"
+                ];
             return Backbone.$.ajax({
                 url: SERVER_URL + "/customers-auth/v1/authorization/token-customer/",
                 method: "POST",
                 context: this,
                 data: {
                     username: attrs.email,
-                    scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address CUSTOMERS:customers.usaepaypayment BACKEND:usaepaypayment TOKENS_VAULT:tokens_vault.token",
+                    scope: scope.join(' '),
                     password: attrs.password,
                     grant_type: "password"
                 },
