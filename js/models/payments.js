@@ -248,12 +248,13 @@ define(['backbone'], function(Backbone) {
             var payment = this.getSelectedPayment(),
                 cardInfo = _.isObject(order.paymentInfo) && order.paymentInfo.cardInfo;
 
-            if (payment && _.isObject(cardInfo)) {
-                cardInfo.token_id = payment.get('id');
-                cardInfo.vault_id = payment.get('vault_id');
+            if (_.isObject(cardInfo)) {
+                if (payment) {
+                    cardInfo.token_id = payment.get('id');
+                    cardInfo.vault_id = payment.get('vault_id');
+                }
+                cardInfo.payment_processor = this.paymentProcessor;
             }
-
-            order.payment_processor = this.paymentProcessor;
 
             return Backbone.$.ajax({
                 url: "/weborders/v1/order-pay-token/",
@@ -544,6 +545,21 @@ define(['backbone'], function(Backbone) {
          * @type {string}
          * @default 'mercurypay'
          */
-        type: 'mercurypay'
+        type: 'mercurypay',
+        /**
+         * After placing order need to add created token to collection.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @param {Object} order - order json (see {@link App.Collections.Myorder#submit_order_and_pay})
+         * @returns {Object} Result of App.Collections.PaymentTokens#orderPayWithToken.
+         */
+        orderPayWithToken: function() {
+            var req = App.Collections.PaymentTokens.prototype.orderPayWithToken.apply(this, arguments);
+
+            req.done(function(jqXHR) {
+                console.log('parse token');
+            });
+
+            return req;
+        }
     });
 });

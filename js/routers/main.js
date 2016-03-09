@@ -327,6 +327,8 @@ define(["backbone", "factory"], function(Backbone) {
             // set payments tokens collection
             if (App.SettingsDirectory.saved_credit_cards && paymentProcessor === USAePayPaymentProcessor) {
                 customer.setPayments(App.Collections.USAePayPayments);
+            } else if (App.SettingsDirectory.saved_credit_cards && paymentProcessor === MercuryPaymentProcessor) {
+                customer.setPayments(App.Collections.MercuryPayments);
             } else {
                 App.SettingsDirectory.saved_credit_cards = false;
             }
