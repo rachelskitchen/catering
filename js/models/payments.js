@@ -565,10 +565,18 @@ define(['backbone'], function(Backbone) {
          * @returns {Object} Result of App.Collections.PaymentTokens#orderPayWithToken.
          */
         orderPayWithToken: function() {
-            var req = App.Collections.PaymentTokens.prototype.orderPayWithToken.apply(this, arguments);
+            var req = App.Collections.PaymentTokens.prototype.orderPayWithToken.apply(this, arguments),
+                payment = !this.ignoreSelectedToken ? this.getSelectedPayment() : null,
+                self = this;
 
-            req.done(function(jqXHR) {
-                console.log('parse token');
+            req.done(function(res) {
+                if (_.isObject(res) && _.isObject(res.data) && _.isObject(res.data.token)) {
+                    if (payment) {
+                        self.add(res.data.token);     // add new token
+                    } else {
+                        payment.set(res.data.token);  // update selected token with new 'id' and token_id parameters
+                    }
+                }
             });
 
             return req;
@@ -635,10 +643,13 @@ define(['backbone'], function(Backbone) {
          * @returns {Object} Result of App.Collections.PaymentTokens#orderPayWithToken.
          */
         orderPayWithToken: function() {
-            var req = App.Collections.PaymentTokens.prototype.orderPayWithToken.apply(this, arguments);
+            var req = App.Collections.PaymentTokens.prototype.orderPayWithToken.apply(this, arguments),
+                self = this;
 
-            req.done(function(jqXHR) {
-                console.log('parse token');
+            req.done(function(res) {
+                if (_.isObject(res) && _.isObject(res.data) && _.isObject(res.data.token)) {
+                    self.add(res.data.token);
+                }
             });
 
             return req;
