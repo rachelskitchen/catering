@@ -2173,6 +2173,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 return reportPaymentError(payment_info.errorMsg);
             }
 
+            if (card.nonce) {
+                payment_info.cardInfo.nonce = card.nonce;
+            }
+
             var notifications = this.getNotifications();
             order_info.call_name = call_name.join(' / ');
             if(notifications)
@@ -2303,6 +2307,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 complete: function(xhr, result) {
                     payment_type === PAYMENT_TYPE.PAYPAL_MOBILE && $.mobile.loading("hide");
                     delete myorder.paymentInProgress;
+                    App.Data.card.unset('nonce');
                     successValidation && successValidation.resolve();
                 }
             });

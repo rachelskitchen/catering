@@ -1468,26 +1468,43 @@ var USAePayPaymentProcessor = {
 
 var BraintreePaymentProcessor = {
     clearQueryString: function(queryString) {
-debugger
-        return queryString.replace(/&?UM[^=]*=[^&]*/g, '');
+        return queryString;//.replace(/&?UM[^=]*=[^&]*/g, '');
     },
     showCreditCardDialog: function() {
-        return false;
+        return true;
     },
     processPayment: function(myorder, payment_info, pay_get_parameter) {
-debugger
-        if (pay_get_parameter) {
-            var get_parameters = App.Data.get_parameters;
-            if(pay_get_parameter === 'true') {
-                payment_info.transaction_id = get_parameters.UMrefNum;
-            } else {
-                payment_info.errorMsg = get_parameters.UMerror;
-            }
-        }
         return payment_info;
     },
     handlePaymentDataRequest: function(myorder, data) {
-
+        require(["braintree"], function(braintree) {
+            var card = App.Data.card;
+            var client = new braintree.api.Client({clientToken: data.data.app_token});
+            client.tokenizeCard({
+                number: card.get("cardNumber"),
+                cardholderName: card.get("firstName") + " " + card.get("lastName"),
+                // expirationMonth and expirationYear
+                expirationMonth: card.get("expMonth"),
+                expirationYear: card.get("expDate"),
+                // CVV if required
+                cvv: card.get("securityCode"),
+                // Address if AVS is on
+                // billingAddress: {
+                //    postalCode: "94107"
+                // }
+            }, function (err, nonce) {
+                var errorMsg;
+                // Send nonce to your server
+                if (!err) {
+                    App.Data.card.set('nonce', nonce);
+                    myorder.submit_order_and_pay(PAYMENT_TYPE.CREDIT, false, myorder.paymentResponse.capturePhase);
+                } else {
+                    errorMsg = MSG.ERROR_OCCURRED + ' ' + MSG.ERROR_DURING_TOKENIZATION;
+                    myorder.paymentResponse = {status: 'error', errorMsg: errorMsg};
+                    myorder.trigger('paymentResponse');
+                }
+            });
+        });
     }
 };
 
