@@ -588,16 +588,10 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          *     url: "https://identity-dev.revelup.com/customers-auth/v1/authorization/token-customer/",
          *     method: "POST",
          *     data: {
-         *         username: <username>,                                              // username (email)
-         *         scope: "CUSTOMERS:customers.customer ->
-         *                 CUSTOMERS:customers.address ->
-         *                 CUSTOMERS:customers.usaepaypayment ->
-         *                 BACKEND:usaepaypayment ->
-         *                 TOKENS_VAULT:tokens_vault.token ->
-         *                 CUSTOMERS:customers.mercurypaypayment ->
-         *                 BACKEND:mercurypaypayment",                                // constant value
-         *         password: <password>,                                              // password
-         *         grant_type: "password"                                             // constant value
+         *         username: <username>,                  // username (email)
+         *         scope: "*",                            // constant value
+         *         password: <password>,                  // password
+         *         grant_type: "password"                 // constant value
          *     }
          * }
          * ```
@@ -691,23 +685,14 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * @returns {Object} jqXHR object.
          */
         login: function() {
-            var attrs = this.toJSON(),
-                scope = [
-                    "CUSTOMERS:customers.customer",
-                    "CUSTOMERS:customers.address",
-                    "CUSTOMERS:customers.usaepaypayment",
-                    "BACKEND:usaepaypayment",
-                    "TOKENS_VAULT:tokens_vault.token",
-                    "CUSTOMERS:customers.mercurypaypayment",
-                    "BACKEND:mercurypaypayment"
-                ];
+            var attrs = this.toJSON();
             return Backbone.$.ajax({
                 url: SERVER_URL + "/customers-auth/v1/authorization/token-customer/",
                 method: "POST",
                 context: this,
                 data: {
                     username: attrs.email,
-                    scope: scope.join(' '),
+                    scope: '*',
                     password: attrs.password,
                     grant_type: "password"
                 },
@@ -1661,7 +1646,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     this.payments = new constr()//new App.Collections.USAePayPayments();
                     this.payments.serverURL = SERVER_URL;
                 }
-            }
+            };
             this.isAuthorized() && this.initPayments();
         },
         /**

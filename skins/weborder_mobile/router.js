@@ -157,8 +157,9 @@ define(["main_router"], function(main_router) {
             }, this);
 
             this.listenTo(myorder, 'payWithCreditCard', function() {
-                var paymentProcessor = App.Data.settings.get_payment_process(),
-                    doPayWithToken = App.Data.customer.doPayWithToken();
+                var customer = App.Data.customer,
+                    paymentProcessor = App.Data.settings.get_payment_process(),
+                    doPayWithToken = customer.doPayWithToken();
                 myorder.check_order({
                     order: true,
                     tip: true,
@@ -1127,16 +1128,17 @@ define(["main_router"], function(main_router) {
                 });
 
                 if (payments) {
-                    customer.paymentsRequest.done(payments.selectFirstItem.bind(payments))
-                                            .always(this.change_page.bind(this));
+                    customer.paymentsRequest.done(function() {
+                        payments.selectFirstItem();
+                        payments.ignoreSelectedToken = false;
+                    });
+                    customer.paymentsRequest.always(this.change_page.bind(this));
                 } else {
                     this.change_page()
                 };
 
                 function addCreditCard() {
-                    payments && payments.where({selected: true}).forEach(function(payment) {
-                        payment.set('selected', false);
-                    });
+                    payments && (payments.ignoreSelectedToken = true);
                     App.Data.payments.trigger('payWithCreditCard');
                 }
             });
@@ -1777,8 +1779,9 @@ define(["main_router"], function(main_router) {
 
     function showDefaultCardView() {
         var paymentProcessor = App.Data.settings.get_payment_process(),
-            customer = App.Data.customer;
-        if(paymentProcessor.credit_card_dialog && !customer.doPayWithToken()) {
+            customer = App.Data.customer,
+            showCCForm = customer.payments ? (!customer.doPayWithToken() || customer.payments.ignoreSelectedToken) : true;
+        if(paymentProcessor.credit_card_dialog && showCCForm) {
             this.navigate('card', true);
         } else {
             App.Data.myorder.trigger('payWithCreditCard');
