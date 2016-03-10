@@ -544,7 +544,7 @@
         "PROFILE_CREATE_ACCOUNT": "Cоздать аккаунт",
         "PROFILE_CONTINUE_AS_GUEST": "Продолжить как гость",
         "PROFILE_LOG_IN_INFO": "Введите email и пароль",
-        "PROFILE_SIGN_UP": "Регистрания",
+        "PROFILE_SIGN_UP": "Регистрация",
         "PROFILE_SIGN_UP_INFO": "Введите Ваши данные",
         "PROFILE_ACCOUNT_PASSWORD": "Введите пароль",
         "PROFILE_REENTER_PASSWORD": "Повторите пароль",
