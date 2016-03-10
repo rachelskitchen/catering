@@ -119,7 +119,13 @@ define(['backbone'], function(Backbone) {
              * @type {?number}
              * @default null
              */
-            frequency: null
+            frequency: null,
+            /**
+             * Token expiration time.
+             * @type {string}
+             * @default ''
+             */
+            token_expiration: ''
         },
         /**
          * Makes the payment token is selected if `is_primary` attribute is `true`.
@@ -201,6 +207,12 @@ define(['backbone'], function(Backbone) {
          */
         serverURL: '',
         /**
+         * If value is `true` selected token is ignored in {@link App.Collections.PaymentTokens#orderPayWithToken} method.
+         * @type {boolean}
+         * @default false
+         */
+        ignoreSelectedToken: false,
+        /**
          * Creates listener for `change:selected` event to deselect all payments (radio button behavior).
          */
         initialize: function() {
@@ -245,7 +257,7 @@ define(['backbone'], function(Backbone) {
                 return;
             }
 
-            var payment = this.getSelectedPayment(),
+            var payment = !this.ignoreSelectedToken ? this.getSelectedPayment() : null,
                 cardInfo = _.isObject(order.paymentInfo) && order.paymentInfo.cardInfo;
 
             if (_.isObject(cardInfo)) {
@@ -263,57 +275,6 @@ define(['backbone'], function(Backbone) {
                 headers: authorizationHeader,
                 contentType: "application/json",
                 success: new Function(),           // to override global ajax success handler
-                error: new Function()              // to override global ajax error handler
-            });
-        },
-        /**
-         * Creates a new payment token. Sends request with following parameters:
-         * ```
-         * {
-         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/payments/<type>/",
-         *     method: "POST",
-         *     contentType: "application/json",
-         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
-         *     data: {
-         *         customer: 1,                   // customer id
-         *         card_type: 0,                  // card type
-         *         last_digits: 1111,             // last four digits of credit card number
-         *         first_name: "John",            // first name of cardholder
-         *         last_name: "Doe",              // last name of cardholder
-         *         token: "abcd-efgh-ijkl-mnop",  // payment token
-         *         instance_name: "qa2",          // instance name
-         *         atlas_id: 1                    // establishment id
-         *     }
-         * }
-         * ```
-         * If session is already expired or invalid token is used the server returns the following response:
-         * ```
-         * Status: 403
-         * {
-         *     "detail":"Authentication credentials were not provided."
-         * }
-         * ```
-         * The model emits `onUserSessionExpired` event in this case. Method `App.Data.custromer.logout()` is automatically called in this case.
-         *
-         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
-         * @param {number} cardType - card type.
-         * @returns {Object} jqXHR object.
-         */
-        createPaymentToken: function(authorizationHeader, data) {
-            var self = this;
-
-            return Backbone.$.ajax({
-                url: this.serverURL + "/customers-auth/v1/customers/payments/" + this.type + "/",
-                method: "POST",
-                data: JSON.stringify(data),
-                headers: authorizationHeader,
-                contentType: "application/json",
-                success: function(data) {
-                    self.where({is_primary: true}).forEach(function(payment) {
-                        payment.set('is_primary', false);
-                    });
-                    self.add(data).set('selected', true);
-                },
                 error: new Function()              // to override global ajax error handler
             });
         },
@@ -489,6 +450,57 @@ define(['backbone'], function(Backbone) {
             }
 
             return def;
+        },
+        /**
+         * Creates a new payment token. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/payments/<type>/",
+         *     method: "POST",
+         *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
+         *     data: {
+         *         customer: 1,                   // customer id
+         *         card_type: 0,                  // card type
+         *         last_digits: 1111,             // last four digits of credit card number
+         *         first_name: "John",            // first name of cardholder
+         *         last_name: "Doe",              // last name of cardholder
+         *         token: "abcd-efgh-ijkl-mnop",  // payment token
+         *         instance_name: "qa2",          // instance name
+         *         atlas_id: 1                    // establishment id
+         *     }
+         * }
+         * ```
+         * If session is already expired or invalid token is used the server returns the following response:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * The model emits `onUserSessionExpired` event in this case. Method `App.Data.custromer.logout()` is automatically called in this case.
+         *
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @param {number} cardType - card type.
+         * @returns {Object} jqXHR object.
+         */
+        createPaymentToken: function(authorizationHeader, data) {
+            var self = this;
+
+            return Backbone.$.ajax({
+                url: this.serverURL + "/customers-auth/v1/customers/payments/" + this.type + "/",
+                method: "POST",
+                data: JSON.stringify(data),
+                headers: authorizationHeader,
+                contentType: "application/json",
+                success: function(data) {
+                    self.where({is_primary: true}).forEach(function(payment) {
+                        payment.set('is_primary', false);
+                    });
+                    self.add(data).set('selected', true);
+                },
+                error: new Function()              // to override global ajax error handler
+            });
         }
     });
 
@@ -546,6 +558,76 @@ define(['backbone'], function(Backbone) {
          * @default 'mercurypay'
          */
         type: 'mercurypay',
+        /**
+         * After placing order need to add created token to collection.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @param {Object} order - order json (see {@link App.Collections.Myorder#submit_order_and_pay})
+         * @returns {Object} Result of App.Collections.PaymentTokens#orderPayWithToken.
+         */
+        orderPayWithToken: function() {
+            var req = App.Collections.PaymentTokens.prototype.orderPayWithToken.apply(this, arguments);
+
+            req.done(function(jqXHR) {
+                console.log('parse token');
+            });
+
+            return req;
+        }
+    });
+
+    /**
+     * @class
+     * @classdesc Represents Freedom payment token. Token can be expired.
+     * @alias App.Models.FreedomPayment
+     * @augments App.Models.PaymentToken
+     * @example
+     * // create an order item
+     * require(['payments'], function() {
+     *     var payment = new App.Models.FreedomPayment();
+     * });
+     */
+    App.Models.FreedomPayment = App.Models.PaymentToken.extend(
+    /**
+     * @lends App.Models.FreedomPayment.prototype
+     */
+    {
+        type: 'freedompay'
+    });
+
+    /**
+     * @class
+     * @classdesc Represents collections of Freedom payments.
+     * @alias App.Collections.PaymentTokens
+     * @augments Backbone.Collection
+     * @example
+     * // create an order item
+     * require(['payments'], function() {
+     *     var payments = new App.Collections.FreedomPayments();
+     * });
+     */
+    App.Collections.FreedomPayments = App.Collections.PaymentTokens.extend(
+    /**
+     * @lends App.Collections.FreedomPayments.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default App.Models.FreedomPayment
+         */
+        model: App.Models.FreedomPayment,
+        /**
+         * Payment processor.
+         * @type {string}
+         * @default 'freedompaypayment'
+         */
+        paymentProcessor: 'freedompaypayment',
+        /**
+         * Payment token type.
+         * @type {string}
+         * @default 'freedompay'
+         */
+        type: 'freedompay',
         /**
          * After placing order need to add created token to collection.
          * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
