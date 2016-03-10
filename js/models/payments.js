@@ -569,12 +569,12 @@ define(['backbone'], function(Backbone) {
                 payment = !this.ignoreSelectedToken ? this.getSelectedPayment() : null,
                 self = this;
 
-            req.done(function(res) {
-                if (_.isObject(res) && _.isObject(res.data) && _.isObject(res.data.token)) {
+            req.done(function(data) {
+                if (_.isObject(data) && _.isObject(data.token)) {
                     if (payment) {
-                        self.add(res.data.token);     // add new token
+                        self.add(data.token);     // add new token
                     } else {
-                        payment.set(res.data.token);  // update selected token with new 'id' and token_id parameters
+                        payment.set(data.token);  // update selected token with new 'id' and token_id parameters
                     }
                 }
             });
@@ -646,9 +646,9 @@ define(['backbone'], function(Backbone) {
             var req = App.Collections.PaymentTokens.prototype.orderPayWithToken.apply(this, arguments),
                 self = this;
 
-            req.done(function(res) {
-                if (_.isObject(res) && _.isObject(res.data) && _.isObject(res.data.token)) {
-                    self.add(res.data.token);
+            req.done(function(data) {
+                if (_.isObject(data) && _.isObject(data.token)) {
+                    self.add(data.token);
                 }
             });
 
