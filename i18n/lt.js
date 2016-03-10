@@ -353,6 +353,7 @@ define([], function() {
             "CO": "Koloradas",
             "CT": "Konektikutas",
             "DE": "Delaveras",
+            "DC": "Kolumbijos apygarda",
             "FL": "Florida",
             "GA": "Gruzija",
             "HI": "Havajai",
