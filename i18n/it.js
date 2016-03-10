@@ -353,6 +353,7 @@ define([], function() {
             "CO": "Colorado",
             "CT": "Connecticut",
             "DE": "Delaware",
+            "DC": "Distretto di Columbia",
             "FL": "Florida",
             "GA": "Georgia",
             "HI": "Hawaii",
