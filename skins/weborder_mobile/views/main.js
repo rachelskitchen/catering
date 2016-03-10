@@ -83,7 +83,7 @@ define(["done_view", "generator"], function(done_view) {
                 content_defaults = this.content_defaults();
 
             content.removeClass().addClass(this.model.get('contentClass'));
-debugger;
+
             while(this.subViews.length > 3) {
                 view = this.subViews.pop();
                 if (view.options.cacheId || view.options.cacheIdUniq)
