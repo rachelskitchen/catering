@@ -78,7 +78,7 @@
 .collected li {
     display: inline-block;
     width: 32%;
-    word-break: break-word;
+    word-wrap: break-word;
     vertical-align: top;
 }
 

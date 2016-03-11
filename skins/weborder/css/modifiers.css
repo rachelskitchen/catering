@@ -107,7 +107,8 @@
     display: inline-block;
     float: left;
     width: 120px;
-    word-break: break-word;
+    word-break: normal;
+    word-wrap: break-word;
 }
 
 .modifiers_table .modifier input {
@@ -214,7 +215,7 @@
         width: 190px;
     }
     .modifiers_table .modifier .title {
-        width: 90px;
+        width: 100px;
     }
     .mdf_quantity select {
         width: 55px;
@@ -230,9 +231,6 @@
     }
     .modifiers_table .modifier label {
         width: 195px;
-    }
-    .modifiers_table .modifier .title {
-        width: 100px;
     }
 }
 
