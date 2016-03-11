@@ -1477,7 +1477,8 @@ var BraintreePaymentProcessor = {
         return payment_info;
     },
     handlePaymentDataRequest: function(myorder, data) {
-        require(["braintree"], function(braintree) {
+        var js = "js/libs/braintree.js"; //it's to exclude braintree.js from minimized main.js file (made by build.js procedure).
+        require([js], function(braintree) {
             var card = App.Data.card;
             var client = new braintree.api.Client({clientToken: data.data.app_token});
             client.tokenizeCard({
