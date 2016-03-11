@@ -44,11 +44,14 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
         bindings: {
             '#credit-card': 'toggle: not(ui_showPayments)',
             '.payments': 'toggle: ui_showPayments',
-            '.payments-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_CREDIT_CARD, _lp_PAYMENTS)'
+            '.payments-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_CREDIT_CARD, _lp_PAYMENTS), toggle: ui_showPaymentsBtn'
         },
         bindingSources: {
             ui: function() {
-                return new Backbone.Model({showPayments: false});
+                return new Backbone.Model({
+                    showPayments: false,
+                    showPaymentsBtn: false
+                });
             }
         },
         render: function() {
@@ -77,14 +80,14 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
         },
         events: {
             'click .btn-submit': 'submit_payment',
-            'click .payments-btn': 'showPayments',
+            'click .payments-btn': 'addCreditCard',
             'keydown .btn-submit': function(e) {
                 if (this.pressedButtonIsEnter(e)) {
                     this.submit_payment();
                 }
             }
         },
-        submit_payment: function() {
+        submit_payment: function(cb) {
             var self = this;
             saveAllData();
 
@@ -96,6 +99,7 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
                 customer: true,
                 checkout: true
             }, function() {
+                typeof cb == 'function' && cb();
                 self.collection.create_order_and_pay(self.options.submode == 'Gift' ? PAYMENT_TYPE.GIFT : PAYMENT_TYPE.CREDIT);
                 !self.canceled && self.collection.trigger('showSpinner');
             });
@@ -116,8 +120,28 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             }));
         },
         showPayments: function() {
-            var $ui = this.getBinding('$ui');
-            $ui.set('showPayments', !$ui.get('showPayments'));
+            var $ui = this.getBinding('$ui'),
+                value = !$ui.get('showPayments'),
+                payments = this.options.payments;
+            $ui.set({
+                showPayments: value,
+                showPaymentsBtn: Boolean(payments.length)
+            });
+            if (value) {
+                payments.ignoreSelectedToken = false;
+            } else {
+                payments.ignoreSelectedToken = true;
+            }
+        },
+        addCreditCard: function() {
+            var self = this;
+            if (this.options.isOnlyTokensDialog) {
+                this.submit_payment(function() {
+                    self.options.payments.ignoreSelectedToken = true;
+                });
+            } else {
+                this.showPayments();
+            }
         }
     });
 

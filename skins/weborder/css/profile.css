@@ -242,13 +242,3 @@
     top: 5px;
     right: 5px;
 }
-
-.payments-list > li.selected::after {
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHdpZHRoPSIxOTciIGhlaWdodD0iMTU4IiB4bWw6c3BhY2U9InByZXNlcnZlIj48cG9seWdvbiBmaWxsPSIjZmZmZmZmIiBwb2ludHM9IjE3NCwwIDYxLDExMyAyMiw3NCAwLDk3IDM4LDEzNSA2MSwxNTggMTk3LDIyIi8+PC9zdmc+');
-    background-size: 100%;
-    background-repeat: no-repeat;
-}
-
-.payments-list > li.selected {
-    background-color: rgba(255, 255, 255, 0.2);
-}

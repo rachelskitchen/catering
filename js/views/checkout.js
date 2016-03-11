@@ -608,11 +608,14 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             });
         },
         credit_card: function() {
-            var self = this;
+            var self = this,
+                payments = App.Data.customer.payments,
+                noTokens = payments ? !payments.length : true;
+
             $('#popup .cancel').trigger('click');
 
             var payment = App.Data.settings.get_payment_process();
-            if (!payment.credit_card_dialog) {
+            if (!payment.credit_card_dialog && noTokens) {
                 App.Data.myorder.check_order({
                     order: true,
                     tip: true,
@@ -646,7 +649,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     className: 'confirmPayCard',
                     timetable: App.Data.timetables,
                     card: App.Data.card,
-                    payments: App.Data.customer.payments,
+                    payments: payments,
+                    isOnlyTokensDialog: !payment.credit_card_dialog,
                     two_columns_view: true
                 });
             }
