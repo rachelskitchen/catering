@@ -1326,6 +1326,7 @@ var PaymentProcessor = {
     },
     getCreditCardPaymentProcessor: function() {
         var payment_processor = null;
+
         var payment = App.Settings.payment_processor;
         if (payment.usaepay) {
             payment_processor = USAePayPaymentProcessor;
@@ -1343,6 +1344,8 @@ var PaymentProcessor = {
             payment_processor = FreedomPayPaymentProcessor;
         } else if (payment.cresecure) {
             payment_processor = CRESecurePaymentProcessor;
+        } else if (payment.braintree) {
+            payment_processor = BraintreePaymentProcessor;
         }
         return payment_processor;
     },
@@ -1460,6 +1463,49 @@ var USAePayPaymentProcessor = {
             }
         }
         return payment_info;
+    }
+};
+
+var BraintreePaymentProcessor = {
+    clearQueryString: function(queryString) {
+        return queryString;//.replace(/&?UM[^=]*=[^&]*/g, '');
+    },
+    showCreditCardDialog: function() {
+        return true;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        return payment_info;
+    },
+    handlePaymentDataRequest: function(myorder, data) {
+        var js = "js/libs/braintree.js"; //it's to exclude braintree.js from minimized main.js file (made by build.js procedure).
+        require([js], function(braintree) {
+            var card = App.Data.card;
+            var client = new braintree.api.Client({clientToken: data.data.app_token});
+            client.tokenizeCard({
+                number: card.get("cardNumber"),
+                cardholderName: card.get("firstName") + " " + card.get("lastName"),
+                // expirationMonth and expirationYear
+                expirationMonth: card.get("expMonth"),
+                expirationYear: card.get("expDate"),
+                // CVV if required
+                cvv: card.get("securityCode"),
+                // Address if AVS is on
+                // billingAddress: {
+                //    postalCode: "94107"
+                // }
+            }, function (err, nonce) {
+                var errorMsg;
+                // Send nonce to your server
+                if (!err) {
+                    App.Data.card.set('nonce', nonce);
+                    myorder.submit_order_and_pay(PAYMENT_TYPE.CREDIT, false, myorder.paymentResponse.capturePhase);
+                } else {
+                    errorMsg = MSG.ERROR_OCCURRED + ' ' + MSG.ERROR_DURING_TOKENIZATION;
+                    myorder.paymentResponse = {status: 'error', errorMsg: errorMsg};
+                    myorder.trigger('paymentResponse');
+                }
+            });
+        });
     }
 };
 
