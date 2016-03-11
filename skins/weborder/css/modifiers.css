@@ -106,36 +106,34 @@
     line-height: 1.4em;
     display: inline-block;
     float: left;
-    width: 90px;
-    word-break: break-word;
+    width: 120px;
 }
 
 .modifiers_table .modifier span.title {
     line-height: 1.4em;
     display: inline-block;
     float: left;
-    width: 68px;
-    word-break: break-word;
+    max-width: 100%;
+    word-break: normal;
+    word-wrap: break-word;
 }
 
 .modifiers_table .modifier span.info {
     position: relative; /* need for Tooltip */
     display: inline-block;
-    float: left;
     height: 1.4em;
     line-height: 1.4em;
 }
 
 .modifiers_table .modifier span.info::before {
-    float: left;
     line-height: 1.4em;
     content: '\f05a';
     font-family: "FontAwesome";
     font-size: 1em;
     display: inline-block;
     pointer-events: auto;
-    cursor:pointer;
-    padding: 0 0.2em;
+    cursor: pointer;
+    padding-left: 1px;
 }
 
 .modifiers_table .modifier input {
@@ -284,8 +282,8 @@ span.tooltip:before {
     .modifiers_table .modifier label {
         width: 190px;
     }
-    .modifiers_table .modifier .title_wrapper {
-        width: 90px;
+    .modifiers_table .modifier span.title_wrapper {
+        width: 100px;
     }
     .modifiers_table .modifier .mdf_quantity select {
         width: 55px;
@@ -301,10 +299,6 @@ span.tooltip:before {
     }
     .modifiers_table .modifier label {
         width: 195px;
-    }
-
-    .modifiers_table .modifier .title_wrapper {
-        width: 100px;
     }
 }
 

@@ -45,7 +45,8 @@
 
 .modifiers_table .combo_item .title {
     line-height: 1.4em;
-    word-break: break-word;
+    word-break: normal;
+    word-wrap: break-word;
 }
 
 .modifiers_table .combo_item .mdf_quantity {
