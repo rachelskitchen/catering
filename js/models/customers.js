@@ -590,10 +590,10 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          *     url: "https://identity-dev.revelup.com/customers-auth/v1/authorization/token-customer/",
          *     method: "POST",
          *     data: {
-         *         username: <username>,                                              // username (email)
-         *         scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address", // constant value
-         *         password: <password>,                                              // password
-         *         grant_type: "password"                                             // constant value
+         *         username: <username>,                  // username (email)
+         *         scope: "*",                            // constant value
+         *         password: <password>,                  // password
+         *         grant_type: "password"                 // constant value
          *     }
          * }
          * ```
@@ -694,13 +694,14 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 context: this,
                 data: {
                     username: attrs.email,
-                    scope: "CUSTOMERS:customers.customer CUSTOMERS:customers.address",
+                    scope: '*',
                     password: attrs.password,
                     grant_type: "password"
                 },
                 success: function(data) {
                     this.updateCookie(data);
                     this.setCustomerFromAPI(data);
+                    this.initPayments();
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
@@ -736,6 +737,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 this.set(attr, this.defaults[attr]);
             }
 
+            this.removePayments();
             this.trigger('onLogout');
         },
         /**
@@ -1568,6 +1570,130 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 password: this.defaults.password,
                 confirm_password: this.defaults.confirm_password
             });
+        },
+        /**
+         * Creates an order making payment with token.
+         * @param {Object} order - order json (see {@link App.Collections.Myorder#submit_order_and_pay})
+         * @param {?Object} [card] - CC json (see {@link App.Collections.Myorder#submit_order_and_pay})
+         * @returns {Object|undefined} Deferred object.
+         */
+        payWithToken: function(order, card) {
+            if (!this.payments) {
+                return console.error("CC payment processor doesn't provide tokenization")
+            }
+
+            var def = Backbone.$.Deferred(),
+                payments = this.payments,
+                self = this;
+
+            this.paymentsRequest && this.paymentsRequest.always(function() {
+                payments.orderPayWithToken(self.getAuthorizationHeader(), order, self.get('user_id'), card)
+                        .done(def.resolve.bind(def))
+                        .fail(function(jqXHR) {
+                            def.reject.apply(def, arguments);
+                            ifSessionIsExpired(jqXHR);
+                        });
+            });
+
+            function ifSessionIsExpired(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.trigger('onUserSessionExpired');
+                    self.logout(); // need to reset current account to allow to re-log in
+                }
+            }
+
+            return def;
+        },
+        /**
+         * Receives payments from server.
+         * @returns {Object|undefined} jqXHR object.
+         */
+        getPayments: function() {
+            if (!this.payments) {
+                return console.error("CC payment processor doesn't provide tokenization")
+            }
+
+            var self = this,
+                req = this.payments.getPayments(this.getAuthorizationHeader());
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.trigger('onUserSessionExpired');
+                    self.logout(); // need to reset current account to allow to re-log in
+                }
+            });
+
+            /**
+             * Payments request.
+             * @alias App.Models.Customer#paymentsRequest
+             * @type {Backbone.$.Deferred}
+             * @default undefined
+             */
+            this.paymentsRequest = req;
+
+            return req;
+        },
+        /**
+         * @returns {boolean} `true` if any payment token is selected for payment.
+         */
+        doPayWithToken: function() {
+            return Boolean(this.isAuthorized() && this.payments && this.payments.getSelectedPayment());
+        },
+        /**
+         * Sets payments tokens collection.
+         */
+        setPayments: function(constr) {
+            this._setPayments = function() {
+                if (typeof constr) {
+                    /**
+                     * Collection of payments tokens (depends on CC payment processor).
+                     * @alias App.Models.Customer#payments
+                     * @type {Backbone.Collection}
+                     * @default undefined
+                     */
+                    this.payments = new constr()//new App.Collections.USAePayPayments();
+                    this.payments.serverURL = SERVER_URL;
+                }
+            };
+            this.isAuthorized() && this.initPayments();
+        },
+        /**
+         * Sets payments collection and receives data.
+         */
+        initPayments: function() {
+            typeof this._setPayments == 'function' && this._setPayments();
+            this.payments && this.getPayments();
+        },
+        /**
+         * Aborts payments request and deletes {@link App.Models.Customer#payments payments},
+         * {@link App.Models.Customer#paymentsRequest paymentsRequest} properties.
+         */
+        removePayments: function() {
+            this.paymentsRequest && this.paymentsRequest.abort();
+            delete this.paymentsRequest;
+            delete this.payments;
+        },
+        /**
+         * Removes payment token.
+         * @param {number} token_id - token id.
+         * @return {Object} jqXHR object.
+         */
+        removePayment: function(token_id) {
+            var req = this.payments.removePayment(token_id, this.getAuthorizationHeader()),
+                self = this;
+
+            if (req) {
+                req.fail(function(jqXHR) {
+                    if (jqXHR.status == 403) {
+                        self.trigger('onUserSessionExpired');
+                        self.logout(); // need to reset current account to allow to re-log in
+                    } else if (jqXHR.status == 404) {
+                        self.trigger('onTokenNotFound');
+                    }
+                });
+            }
+
+            return req;
         }
     });
 });
