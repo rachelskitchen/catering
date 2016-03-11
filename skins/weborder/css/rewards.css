@@ -78,7 +78,6 @@
 .rewards-total__item {
     display: inline-block;
     width: 32%;
-    word-break: break-word;
     vertical-align: top;
 }
 
