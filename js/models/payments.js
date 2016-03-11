@@ -572,9 +572,9 @@ define(['backbone'], function(Backbone) {
             req.done(function(data) {
                 if (_.isObject(data) && _.isObject(data.token)) {
                     if (payment) {
-                        self.add(data.token);     // add new token
-                    } else {
                         payment.set(data.token);  // update selected token with new 'id' and token_id parameters
+                    } else {
+                        self.add(data.token);     // add new token
                     }
                 }
             });
