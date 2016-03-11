@@ -2458,7 +2458,8 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                 this.card = App.Data.card;
                 App.Data.card = {
-                    toJSON: function() {}
+                    toJSON: function() {},
+                    unset: function() {}
                 };
                 card = {
                     firstName: '',
