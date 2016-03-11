@@ -405,12 +405,7 @@ define({
          * @type {string}
          * @description The actual path of [page_visibility]{@link module:page_visibility} module.
          */
-        page_visibility: 'js/common/page_visibility',
-        /**
-         * @type {string}
-         * @description The actual path of [braintree]{@link module:braintree} module.
-         */
-        braintree: "js/libs/braintree"
+        page_visibility: 'js/common/page_visibility'
     },
     /**
      * A waiting time of a module loading.
