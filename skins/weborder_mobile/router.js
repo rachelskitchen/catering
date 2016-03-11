@@ -70,6 +70,7 @@ define(["main_router"], function(main_router) {
             "profile_edit": "profile_edit",
             "profile_settings": "profile_settings",
             "profile_forgot_password": "profile_forgot_password",
+            "profile_payments": "profile_payments",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -156,13 +157,15 @@ define(["main_router"], function(main_router) {
             }, this);
 
             this.listenTo(myorder, 'payWithCreditCard', function() {
-                var paymentProcessor = App.Data.settings.get_payment_process();
+                var customer = App.Data.customer,
+                    paymentProcessor = App.Data.settings.get_payment_process(),
+                    doPayWithToken = customer.doPayWithToken();
                 myorder.check_order({
                     order: true,
                     tip: true,
                     customer: true,
                     checkout: true,
-                    card: paymentProcessor.credit_card_dialog
+                    card: doPayWithToken ? false : paymentProcessor.credit_card_dialog
                 }, sendRequest.bind(window, PAYMENT_TYPE.CREDIT));
             });
 
@@ -1098,21 +1101,51 @@ define(["main_router"], function(main_router) {
                     action: App.Data.payments.onPay.bind(App.Data.payments)
                 });
 
+                var content = [{
+                    modelName: 'Payments',
+                    model: App.Data.payments,
+                    checkout: App.Data.myorder.checkout,
+                    mod: 'Main',
+                    collection: App.Data.myorder,
+                    cacheId: true
+                }];
+
+                var customer = App.Data.customer,
+                    payments = customer.payments,
+                    isAuthorized;
+
+                if (payments) {
+                    // do not cache it
+                    // App.Data.customer.payments can change after logout/login
+                    content.push({
+                        modelName: 'Profile',
+                        mod: 'PaymentsSelection',
+                        collection: payments,
+                        model: App.Data.payments,
+                        addCreditCard: addCreditCard,
+                        className: 'text-center'
+                    });
+                }
+
                 App.Data.mainModel.set({
                     contentClass: '',
-                    content: [
-                        {
-                            modelName: 'Payments',
-                            model: App.Data.payments,
-                            checkout: App.Data.myorder.checkout,
-                            mod: 'Main',
-                            collection: App.Data.myorder,
-                            cacheId: true
-                        }
-                    ]
+                    content: content
                 });
 
-                this.change_page();
+                if (payments) {
+                    customer.paymentsRequest.done(function() {
+                        payments.selectFirstItem();
+                        payments.ignoreSelectedToken = false;
+                    });
+                    customer.paymentsRequest.always(this.change_page.bind(this));
+                } else {
+                    this.change_page()
+                };
+
+                function addCreditCard() {
+                    payments && (payments.ignoreSelectedToken = true);
+                    App.Data.payments.trigger('payWithCreditCard');
+                }
             });
         },
         card: function() {
@@ -1723,6 +1756,25 @@ define(["main_router"], function(main_router) {
             });
 
             this.change_page();
+        },
+        profile_payments: function() {
+            var customer = App.Data.customer,
+                content;
+
+            if (!customer.payments || !customer.paymentsRequest) {
+                return this.navigate('index', true);
+            }
+
+            content = this.profilePaymentsContent();
+
+            App.Data.mainModel.set({
+                header: headerModes.Modifiers,
+                footer: footerModes.None,
+                contentClass: '',
+                content: content
+            });
+
+            customer.paymentsRequest.always(this.change_page.bind(this));
         }
     });
 
@@ -1731,8 +1783,10 @@ define(["main_router"], function(main_router) {
     _.defaults(Router.prototype, App.Routers.MobileMixing);
 
     function showDefaultCardView() {
-        var paymentProcessor = App.Data.settings.get_payment_process();
-        if(paymentProcessor.credit_card_dialog) {
+        var paymentProcessor = App.Data.settings.get_payment_process(),
+            customer = App.Data.customer,
+            showCCForm = customer.payments ? (!customer.doPayWithToken() || customer.payments.ignoreSelectedToken) : true;
+        if(paymentProcessor.credit_card_dialog && showCCForm) {
             this.navigate('card', true);
         } else {
             App.Data.myorder.trigger('payWithCreditCard');
