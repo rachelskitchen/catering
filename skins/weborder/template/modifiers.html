@@ -7,10 +7,12 @@
             <span class="special_button"> <span class="clip"> <%= _lp.MODIFIERS_BUTTON_ADD %> </span> </span>
         <% } %>
         <span class="title_wrapper">
-            <span class="title <% if(isSpecial) { %>special<% } %>"><%= name %></span>
-            <% if (!isInventoryMatrix && description) { %>
-            <span class="info"><span class="tooltip transparent"><%= description %></span></span>
-            <% } %>
+            <span class="title <% if(isSpecial) { %>special<% } %>">
+                <%= name %>
+                <% if (!isInventoryMatrix && description) { %>
+                <span class="info"><span class="tooltip transparent"><%= description %></span></span>
+                <% } %>
+            </span>
         </span>
         <% if(isSize) { %>
             <span class="cost">
