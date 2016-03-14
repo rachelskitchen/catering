@@ -224,7 +224,7 @@ define([], function() {
             "LB": "Lebanon",
             "LS": "Lesoto",
             "LR": "Liberia",
-            "LY": "Giamahiria araba libica",
+            "LY": "Libia",
             "LI": "Liechtenstein",
             "LT": "Lituania",
             "LU": "Lussemburgo",
