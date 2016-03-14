@@ -25,8 +25,7 @@
         <dt class="hide"> <%= _lp.PRODUCTS_PRICE %> </dt>
         <dd class='cost_block'>
             <div class='cost'>
-                <span class="currency_symbol"><%= currency_symbol %></span>
-                <span class="price"><%= price %></span>
+                <span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
             </div>
             <% if(sold_by_weight && uom) { %>
             <div class="uom">/ <%= uom %></div>
@@ -51,8 +50,7 @@
                         <input type="text" id="price" name="gift_card_price" value='<%= price %>' class="gift_card_price price" />
                     </div>
                 <% } else { %>
-                    <span class="currency_symbol"><%= currency_symbol %></span>
-                    <span class="price"><%= price %></span>
+                    <span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
                 <% } %>
                 <% if(sold_by_weight && uom) { %>
                 <span class="uom">/ <%= uom %></span>
