@@ -38,12 +38,12 @@ define(['backbone', 'factory'], function(Backbone) {
             model.state = model.country == 'US' ? (address ? address.state : defaultAddress.state) : null;
             model.province = model.country == 'CA' ? (address ? address.province : '') : null;
             model.originalState = model.state;
-            model.states = _loc['STATES'];
+            model.states = sort_i18nObject(_loc['STATES']);
+            model.countries = sort_i18nObject(_loc['COUNTRIES']);
             model.street_1 = address ? address.street_1 : '';
             model.street_2 = address ? address.street_2 : '';
             model.city = address ? address.city : '';
             model.zipcode = address ? address.zipcode : '';
-            model.countries = _loc['COUNTRIES'];
 
             this.model = new Backbone.Model(model);
             this.prevValues = model;

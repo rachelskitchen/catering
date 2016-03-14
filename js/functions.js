@@ -1994,3 +1994,18 @@ function addHost(image, host) {
     var image = decodeURIComponent(image);
     return /^https?:\/\//.test(image) ? image : host + image.replace(/^([^\/])/, '/$1');
 }
+
+/**
+ * Sorts given i18n object alpabetically by value.
+ * @param  {Object} obj - i18n object in the following format: {'key1': 'ghi', 'key2': 'abc', 'key3': 'def'}.
+ * @returns {Object} Sorted object, e.g. {'key1': 'abc', 'key2': 'def', 'key3': 'ghi'}
+ */
+function sort_i18nObject(obj) {
+    var arr = _.pairs(obj),
+        sortedArr = typeof String.prototype.localeCompare == 'function' ? arr.sort(localeComparer) : _.sortBy(arr, '1');
+    return _.object(sortedArr);
+
+    function localeComparer(a, b) {
+        return a[1].localeCompare(b[1]);
+    }
+}
