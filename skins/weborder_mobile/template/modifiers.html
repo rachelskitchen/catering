@@ -4,14 +4,12 @@
         <div class="modifier__controls fl-right">
             <% if(isSize) { %>
                 <span class="cost fl-right special-text">
-                    <span class="currency_symbol"><%= currency_symbol %></span>
-                    <span class="price"><%= price %></span>
+                    <span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
                 </span>
             <% } else if(!isSpecial && !isInventoryMatrix) { %>
                 <span class="cost fl-right special-text">
                     <span class="plus">+</span>
-                    <span class="currency_symbol"><%= currency_symbol %></span>
-                    <span class="price special-text"><%= price %></span>
+                    <span class="currency_symbol"><%= currency_symbol %></span><span class="price special-text"><%= price %></span>
                 </span>
             <% } %>
             <span class="free fl-right special-text"><span class="value"></span></span>

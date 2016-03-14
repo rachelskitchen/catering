@@ -137,18 +137,14 @@
 
 <script type="text/template" id="myorder_product_discount-template">
     <span class="cost fl-right">
-        <span class="plus">-</span>
-        <span class="currency_symbol"><%= currency_symbol %></span>
-        <span class="price"><%= discount_sum %></span>
+        <span class="currency_symbol">−<%= currency_symbol %></span><span class="price"><%= discount_sum %></span>
     </span>
     <span class="name"><%= discount_name %></span>
 </script>
 
 <script type="text/template" id="myorder_discount-template">
     <span class="cost font-size1 primary-text fl-right">
-        <span class="plus">-</span>
-        <span class="currency_symbol"><%= currency_symbol %></span>
-        <span class="price"><%= discount_sum %></span>
+        <span class="currency_symbol">−<%= currency_symbol %></span><span class="price"><%= discount_sum %></span>
     </span>
     <span class="name product-name font-size1 title-text"><%= discount_name %></span>
 </script>
