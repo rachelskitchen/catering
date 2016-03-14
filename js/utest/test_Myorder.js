@@ -2562,6 +2562,13 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 expect(ajax.data.items).toEqual(['modif', 'modif']);
             });
 
+            it('send "nonce" to backend', function() {
+                card.nonce = "12345";
+                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                expect(ajax.data.paymentInfo.cardInfo.nonce).toEqual(card.nonce);
+                delete card.nonce;
+            });
+
             it('`checkout.last_discount_code` exists', function() {
                 checkout.last_discount_code = 'last discount code';
                 model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
