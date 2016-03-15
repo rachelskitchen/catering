@@ -197,6 +197,7 @@
 }
 
 .profile-form .required::before {
+    position: absolute;
     left: 0px;
     top: -4px;
 }

@@ -187,7 +187,8 @@ define(["factory"], function() {
         mod: 'account_password',
         bindings: {
             '.current-password': 'value: password, events:["input"], pattern: /^.{0,255}$/',
-            '.new-password': 'value: confirm_password, events:["input"], pattern: /^.{0,255}$/'
+            '.new-password': 'value: confirm_password, events:["input"], pattern: /^.{0,255}$/',
+            '.account-password': 'classes: {required: any(password, confirm_password)}'
         }
     });
 
