@@ -1,11 +1,16 @@
-require(['app', 'utest/data/Settings'], function(app, settings_data) {
+require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
+    console.log("mainAutoTest: step #1 ==>");
+   // set config for require
+    app.config.baseUrl =  "base/";
 
-    app.config.paths['tests_list'] = "../core/js/utest/_tests_list";
-    app.config.paths['e2e_list'] = "../core/js/utest/_e2e_list";
-    app.config.paths['blanket'] = "../core/js/utest/jasmine/lib/jasmine2/blanket";
-    app.config.paths['jasmine_blanket'] = "../core/js/utest/jasmine/lib/jasmine2/jasmine-blanket";
+    app.config.paths['tests_list'] = "js/utest/_tests_list";
+    app.config.paths['e2e_list'] = "js/utest/_e2e_list";
+    app.config.paths['blanket'] = "js/utest/jasmine/lib/jasmine2/blanket";
+    app.config.paths['jasmine_blanket'] = "js/utest/jasmine/lib/jasmine2/jasmine-blanket";
 
     app.config.shim['jasmine_blanket'] = {deps: ['blanket'],  exports: 'blanket'};
+
+    require.config(app.config);
 
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000; //30sec.
 
@@ -17,19 +22,27 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
     skins.set('PAYPAL', 'paypal', '../dev/skins/paypal'); // set `paypal` skin
     skins.set('MLB', 'mlb', '../dev/skins/mlb'); // set `mlb` skin
     skins.set('DIRECTORY_MOBILE', 'directory_mobile', '../dev/skins/directory_mobile'); // set `directory` skin
-    App.unitTest = true;
+
     // set REVEL_HOST
     //app.REVEL_HOST = window.location.origin;
     app.REVEL_HOST = 'https://weborder-dev-branch.revelup.com';
 
-    if(!app.REVEL_HOST)
-        return alert('REVEL_HOST is undefined. Please assign it in main.js file. (Need add app.REVEL_HOST = <url>;)');
+    app.instances = {
+        "https://rde.revelup.com": {
+            skin: skins['DIRECTORY'],
+            brand: '1',
+            stanford: 'true',
+            apple_app_id: '689035572',
+            google_app_id: 'com.revelsystems.html5client.foodtogo'
+        }
+    };
 
-    // set config for require
-    require.config(app.config);
+    App.unitTest = true;
 
-    require(['cssua', 'functions', 'errors', 'tests_list', 'e2e_list', 'settings', 'tax', 'main_router', 'locale'], function() {
-        app.get = parse_get_params();
+    require(['cssua', 'functions', 'errors', 'backbone_epoxy', 'tests_list', 'e2e_list', 'settings', 'tax', 'locale', 'about'], function() { //, 'e2e_list', 'settings', 'tax', 'main_router', 'locale'
+
+        console.log("mainAutoTest: step #2 ==>");
+        app.get = {}; //parse_get_params();
         // hardcode English locale
         App.Data.get_parameters = {locale: 'en'};
         // invoke beforeStart onfig
@@ -52,7 +65,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
             'img_path' : 'test/path/',
             'settings_skin' : { img_default : 'test/img_default' },
             'establishment' : 14,
-            'host': app.REVEL_HOST //'https://testHost.revelup.com'
+            'host': app.REVEL_HOST
         });
 
         // init Locale object
@@ -73,31 +86,31 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
 
         settings.set('settings_system', settings_data.all.settings_system);
         settings.set('settings_directory', settings_data.all.settings_directory);
+        App.Settings = settings.get('settings_system');
         App.SettingsDirectory = settings.get('settings_directory');
 
         if (typeof end2endMode != 'undefined' && end2endMode === true) {
-            var srv_name = /^http[s]*:\/\/([^\.\s]+)\./.exec(window.location.origin), hostName;
-           // if (srv_name[1] == "localhost")
-                hostName = 'https://weborder-dev-branch.revelup.com';
-           // else
-           //     hostName = window.location.origin;
-
+            var srv_name = /^http[s]*:\/\/([^\.\s]+)\./.exec(window.location.origin);
             settings.set({
                 establishment: 18,
-                host: hostName
-                //host: 'https://weborder-dev-branch.revelup.com'
+                host: 'https://weborder-dev-branch.revelup.com'
             });
-
             require(e2e_tests_list, function() {
                 $(window).trigger('load');
             });
         }
         else {
 
+            //App.Data.devMode = true;
+
             if (App.Data.devMode == true) {
                 //starting the tests without code coverage testing:
-                require(tests_list, function() {
-                    $(window).trigger('load');
+                locale.dfd_load.done(function() {
+                    console.log("mainAutoTest: step #3, locale loaded");
+                    requirejs(tests_list, function() {
+                        console.log("mainAutoTest: step #4, dev mode, tests loaded");
+                        $(window).trigger("StartTesting");
+                    });
                 });
             }
             else {
@@ -122,7 +135,8 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
                     $(document).ready(function() {
                         locale.dfd_load.done(function() {
                             require(tests_list, function(spec) {
-                                window.onload();
+                                console.log("mainAutoTest: step #3, Blanket mode, tests loaded");
+                                $(window).trigger("StartTesting");
                             });
                         });
                     });
@@ -130,5 +144,4 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
             }
         }
     });
-
 });

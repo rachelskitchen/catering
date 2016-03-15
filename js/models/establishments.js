@@ -214,6 +214,7 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                 },
                 dataType: 'json',
                 success: function(data) {
+                    data = data[0]; // weborder/locations/ returns array (Bug 38889)
                     self.meta('brandName', data.brand_name); // get or set meta data of collection
                     self.add(data.estabs);
                 },

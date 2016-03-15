@@ -284,7 +284,7 @@ define(['backbone'], function() {
             };
 
             if(!Array.isArray(items)) {
-                console.log('Unable apply filter "%s": `items` arguments is not array');
+                console.warn('Unable apply filter "%s": `items` arguments is not array');
                 return errorResult;
             }
 
@@ -302,7 +302,7 @@ define(['backbone'], function() {
 
             items.forEach(function(item) {
                 if(!(item instanceof Backbone.Model)) {
-                    return console.error('Item', item, 'is not Backbone model');
+                    return App.unitTest ? undefined : console.error('Item', item, 'is not Backbone model');
                 }
                 var valid = selected.some(function(filter) {
                     return compare(item, filter);

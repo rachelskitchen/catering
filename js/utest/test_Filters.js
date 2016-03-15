@@ -401,7 +401,7 @@ define(['filters'], function() {
 
                 filters.invalid = items;
                 filters.applyFilters(); // result filters.valid == [item4], filters.invalid == [item1, item2, item3]
-console.log('valid', filters.valid, 'invalid', filters.invalid)
+                //console.log('valid', filters.valid, 'invalid', filters.invalid)
                 expect(filters.valid).toEqual([item4]);
                 expect(filters.invalid.indexOf(item1)).toBeGreaterThan(-1);
                 expect(filters.invalid.indexOf(item2)).toBeGreaterThan(-1);

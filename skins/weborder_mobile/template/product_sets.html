@@ -2,8 +2,7 @@
     <div class="modifier__inner s<%= slength %> <% if(!_settings.online_orders) {print('no-controls');} %> font-size3 regular-text">
         <div class="modifier__controls fl-right">
             <span class="cost fl-right special-text">
-                <span class="plus">+</span>
-                <span class="price"><%= price %></span>
+                <span class="plus">+</span><span class="price"><%= price %></span>
             </span>
             <% if (!sold_by_weight && !is_gift) { %>
             <label class="mdf_quantity select-wrapper fl-right input-colors" style="display:none;"><select></select></label>

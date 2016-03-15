@@ -22,7 +22,6 @@
 
 define(["backbone", "factory"], function(Backbone) {
     'use strict';
-
     // flag for maintenance mode
     var isMaintenance;
 
@@ -319,9 +318,21 @@ define(["backbone", "factory"], function(Backbone) {
          * Init App.Data.customer
          */
         initCustomer: function() {
-            var customer = App.Data.customer = new App.Models.Customer({
-                keepCookie: App.SettingsDirectory.remember_me
-            });
+            var paymentProcessor = PaymentProcessor.getPaymentProcessor(PAYMENT_TYPE.CREDIT),
+                customer = App.Data.customer = new App.Models.Customer({
+                    keepCookie: App.SettingsDirectory.remember_me
+                });
+
+            // set payments tokens collection
+            if (App.SettingsDirectory.saved_credit_cards && paymentProcessor === USAePayPaymentProcessor) {
+                customer.setPayments(App.Collections.USAePayPayments);
+            } else if (App.SettingsDirectory.saved_credit_cards && paymentProcessor === MercuryPaymentProcessor) {
+                customer.setPayments(App.Collections.MercuryPayments);
+            } else if (App.SettingsDirectory.saved_credit_cards && paymentProcessor === FreedomPayPaymentProcessor) {
+                customer.setPayments(App.Collections.FreedomPayments);
+            } else {
+                App.SettingsDirectory.saved_credit_cards = false;
+            }
 
             this.listenTo(customer, 'onUserCreated', function() {
                 App.Data.errors.alert(_loc.PROFILE_USER_CREATED);
@@ -373,6 +384,10 @@ define(["backbone", "factory"], function(Backbone) {
 
             this.listenTo(customer, 'onPasswordReset', function() {
                 App.Data.errors.alert(_loc.PROFILE_PASSWORD_RESET_SUCCESS);
+            });
+
+            this.listenTo(customer, 'onTokenNotFound', function() {
+                App.Data.errors.alert(_loc.PROFILE_PAYMENT_TOKEN_NOT_FOUND);
             });
         },
         /**
@@ -673,7 +688,7 @@ define(["backbone", "factory"], function(Backbone) {
                     resetAction: resetPWD,
                     logout_link: logout,
                     settings_link: new Function,
-                    payments_link: new Function,
+                    payments_link: profilePayments,
                     profile_link: profileEdit,
                     my_promotions_link: myPromotions,
                     cacheId: true
@@ -718,6 +733,10 @@ define(["backbone", "factory"], function(Backbone) {
 
             function myPromotions() {
                 self.navigate('my_promotions', true);
+            }
+
+            function profilePayments() {
+                self.navigate('profile_payments', true);
                 customer.trigger('hidePanel');
             }
 
@@ -828,6 +847,30 @@ define(["backbone", "factory"], function(Backbone) {
                     }
                 }
             }
+        },
+        setProfilePaymentsContent: function() {
+            var customer = App.Data.customer;
+
+            App.Data.mainModel.set({
+                mod: 'Profile',
+                className: 'profile-container',
+                profile_content: {
+                    modelName: 'Profile',
+                    mod: 'Payments',
+                    collection: customer.payments,
+                    removeToken: removeToken,
+                    className: 'profile-edit text-center'
+                }
+            });
+
+            function removeToken(token_id) {
+                var req = customer.removePayment(token_id),
+                    mainModel = App.Data.mainModel;
+                if (req) {
+                    mainModel.trigger('loadStarted');
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                }
+            }
         }
     };
 
@@ -845,7 +888,7 @@ define(["backbone", "factory"], function(Backbone) {
                     logout_link: logout,
                     login_link: login,
                     settings_link: profile_settings,
-                    payments_link: close,
+                    payments_link: profile_payments,
                     profile_link: profile_edit,
                     my_promotions_link: myPromotions,
                     close_link: close,
@@ -876,6 +919,11 @@ define(["backbone", "factory"], function(Backbone) {
 
             function myPromotions() {
                 self.navigate('my_promotions', true);
+                close();
+            }
+
+            function profile_payments() {
+                self.navigate('profile_payments', true);
                 close();
             }
 
@@ -1159,6 +1207,37 @@ define(["backbone", "factory"], function(Backbone) {
                 mainModel.trigger('loadStarted');
                 customer.resetPassword()
                         .always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+            }
+        },
+        profilePaymentsContent: function() {
+            var customer = App.Data.customer;
+
+            var content = {
+                modelName: 'Profile',
+                mod: 'PaymentsEdition',
+                collection: customer.payments,
+                removeToken: removeToken,
+                className: 'profile-payments-edition text-center',
+                cacheId: true
+            };
+
+            App.Data.header.set({
+                page_title: _loc.PAYMENTS,
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history),
+                link: new Function(),
+                link_title: ''
+            });
+
+            return content;
+
+            function removeToken(token_id) {
+                var req = customer.removePayment(token_id),
+                    mainModel = App.Data.mainModel;
+                if (req) {
+                    mainModel.trigger('loadStarted');
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                }
             }
         }
     };

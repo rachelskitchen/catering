@@ -37,6 +37,22 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             }, this);
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+
+            // show payments
+            this.options.payments && this.options.payments.length && this.showPayments();
+        },
+        bindings: {
+            '#credit-card': 'toggle: not(ui_showPayments)',
+            '.payments': 'toggle: ui_showPayments',
+            '.payments-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_CREDIT_CARD, _lp_PAYMENTS), toggle: ui_showPaymentsBtn'
+        },
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({
+                    showPayments: false,
+                    showPaymentsBtn: false
+                });
+            }
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -50,28 +66,40 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
                 model: this.options.card
             }));
 
+            if (this.options.payments) {
+                this.subViews.push(App.Views.GeneratorView.create('Profile', {
+                    el: this.$('.payments'),
+                    mod: 'PaymentsSelection',
+                    collection: this.options.payments
+                }));
+                this.$('.payments-control').show();
+                this.options.payments.selectFirstItem();
+            }
+
             this.addCart();
         },
         events: {
             'click .btn-submit': 'submit_payment',
+            'click .payments-btn': 'addCreditCard',
             'keydown .btn-submit': function(e) {
                 if (this.pressedButtonIsEnter(e)) {
                     this.submit_payment();
                 }
             }
         },
-        submit_payment: function() {
+        submit_payment: function(cb) {
             var self = this;
             saveAllData();
 
             self.collection.check_order({
-                card: self.options.submode == 'Credit',
+                card: self.options.submode == 'Credit' && !App.Data.customer.doPayWithToken(),
                 giftcard: self.options.submode == 'Gift',
                 order: true,
                 tip: true,
                 customer: true,
                 checkout: true
             }, function() {
+                typeof cb == 'function' && cb();
                 self.collection.create_order_and_pay(self.options.submode == 'Gift' ? PAYMENT_TYPE.GIFT : PAYMENT_TYPE.CREDIT);
                 !self.canceled && self.collection.trigger('showSpinner');
             });
@@ -90,6 +118,30 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
                 model: this.collection.total,
                 collection: this.collection
             }));
+        },
+        showPayments: function() {
+            var $ui = this.getBinding('$ui'),
+                value = !$ui.get('showPayments'),
+                payments = this.options.payments;
+            $ui.set({
+                showPayments: value,
+                showPaymentsBtn: Boolean(payments.length)
+            });
+            if (value) {
+                payments.ignoreSelectedToken = false;
+            } else {
+                payments.ignoreSelectedToken = true;
+            }
+        },
+        addCreditCard: function() {
+            var self = this;
+            if (this.options.isOnlyTokensDialog) {
+                this.submit_payment(function() {
+                    self.options.payments.ignoreSelectedToken = true;
+                });
+            } else {
+                this.showPayments();
+            }
         }
     });
 

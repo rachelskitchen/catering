@@ -47,6 +47,7 @@ define(["main_router"], function(main_router) {
             "pay": "pay",
             "confirm": "confirm",
             "profile_edit": "profile_edit",
+            "profile_payments": "profile_payments",
             "maintenance": "maintenance",
             "*other": "index"
         },
@@ -765,6 +766,14 @@ define(["main_router"], function(main_router) {
         profile_edit: function() {
             this.setProfileEditContent();
             this.change_page();
+        },
+        profile_payments: function() {
+            var customer = App.Data.customer;
+            if (!customer.payments || !customer.paymentsRequest) {
+                return this.navigate('index', true);
+            }
+            this.setProfilePaymentsContent();
+            customer.paymentsRequest.always(this.change_page.bind(this));
         }
     });
 

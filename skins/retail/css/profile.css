@@ -168,6 +168,28 @@
     margin-bottom: 15px;
 }
 
+.profile-edit .remove-btn::after {
+    content: '\f057';
+    font-size: 18px;
+    font-family: "FontAwesome";
+    display: block;
+    width: 1em;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    margin-top: -8px;
+    opacity: 0.5;
+}
+
+.profile-edit .payments-list {
+    font-size: 14px;
+    width: 300px;
+}
+
+.profile-edit .payments-list > li {
+    text-align: left;
+}
+
 .profile-form > li {
     margin-bottom: 10px;
 }
@@ -190,4 +212,31 @@
 .reset-password-info {
     font-size: 14px;
     padding-bottom: 15px;
+}
+
+.payments-list {
+    display: inline-block;
+    width: 95%;
+    vertical-align: middle;
+}
+
+.payments-list > li {
+    border-color: #fff;
+    border-style: solid;
+    border-width: 1px;
+    margin: 5px 10px;
+    padding: 7px 0;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.payments-list > li.selected::after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
 }

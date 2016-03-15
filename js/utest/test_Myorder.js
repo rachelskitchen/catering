@@ -1007,6 +1007,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
     });
 
 
+
 //////////////////////////////////////////////////////////////////////////////
 
 
@@ -1827,6 +1828,14 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             describe('check pass mlb skin, only gift, order seat', function() {
                 beforeEach(function() {
                     model.checkout.set('pickupTS', undefined);
+                    if (typeof ajaxMock == 'function')
+                       spyOn($, 'ajax').and.callFake(ajaxMock);
+                    else
+                       spyOn($, 'ajax').and.callThrough();
+                    if (typeof ajaxMock == 'function') {
+                        ajaxMock.replyData = {  data: {},
+                                        status: "OK" };
+                    }
                 });
 
                 it('change skin', function() {
@@ -1856,6 +1865,10 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             var getQtySpy, get_discount_xhr;
 
             beforeEach(function() {
+                if (typeof ajaxMock == 'function')
+                   spyOn($, 'ajax').and.callFake(ajaxMock);
+                else
+                   spyOn($, 'ajax').and.callThrough();
                 get_discount_xhr = Backbone.$.ajax();
                 spyOn(model, '_get_cart_totals').and.returnValue(get_discount_xhr);
                 getQtySpy = spyOn(model, 'get_only_product_quantity').and.returnValue(2);
@@ -1868,6 +1881,10 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             it('`getDiscountsTimeout` exists', function() {
                 spyOn(window, 'clearTimeout');
                 model.getDiscountsTimeout = 1;
+                if (typeof ajaxMock == 'function') {
+                    ajaxMock.replyData = {  errorMsg: "'NoneType' object has no attribute 'id'",
+                                        status: "ERROR" };
+                }
                 model.get_cart_totals();
                 expect(model.getDiscountsTimeout).toBeUndefined();
                 expect(window.clearTimeout).toHaveBeenCalledWith(1);
@@ -1876,7 +1893,6 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             it('get_only_product_quantity() < 1', function() {
                 getQtySpy.and.returnValue(0);
                 spyOn(model.total, 'set');
-
                 model.get_cart_totals();
                 expect(model.total.set).toHaveBeenCalled();
             });
@@ -1908,7 +1924,10 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             var data, checkout, rewardsCard, ajaxSpy;
 
             beforeEach(function() {
-                ajaxSpy = spyOn($, 'ajax').and.callThrough();
+                if (typeof ajaxMock == 'function')
+                   ajaxSpy = spyOn($, 'ajax').and.callFake(ajaxMock);
+                else
+                   ajaxSpy = spyOn($, 'ajax').and.callThrough();
                 spyOn(model, 'preparePickupTime');
                 spyOn(model, 'trigger');
             });
@@ -1927,6 +1946,10 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     fee
                 ], {silent: true});
 
+                if (typeof ajaxMock == 'function') {
+                    ajaxMock.replyData = {  errorMsg: "'NoneType' object has no attribute 'id'",
+                                        status: "ERROR" };
+                }
                 model._get_cart_totals();
                 expect(model.preparePickupTime).toHaveBeenCalled();
 
@@ -2059,6 +2082,9 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });
                 model.checkout = checkout;
 
+                if (typeof ajaxMock == 'function') {
+                    ajaxMock.replyData = {"status": "DISCOUNT_CODE_NOT_FOUND"}
+                }
                 model._get_cart_totals({apply_discount: true});
                 data = JSON.parse($.ajax.calls.mostRecent().args[0].data);
 
@@ -2070,7 +2096,9 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     last_discount_code: 'test'
                 });
                 model.checkout = checkout;
-
+                if (typeof ajaxMock == 'function') {
+                    ajaxMock.replyData = {"status": "DISCOUNT_CODE_NOT_FOUND"}
+                }
                 model._get_cart_totals({apply_discount: false});
                 data = JSON.parse($.ajax.calls.mostRecent().args[0].data);
 
@@ -2104,6 +2132,10 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     }));
                 });
 
+                if (typeof ajaxMock == 'function') {
+                    ajaxMock.replyData = {"status": "ERROR", "errorMsg": "'unicode' object has no attribute 'get'"};
+                }
+
                 model._get_cart_totals({update_shipping_options: true});
                 data = JSON.parse($.ajax.calls.mostRecent().args[0].data);
                 expect(data.orderInfo.shipping).toBe('shipping service');
@@ -2125,6 +2157,9 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });
                 model.rewardsCard = rewardsCard;
 
+                if (typeof ajaxMock == 'function') {
+                    ajaxMock.replyData = {"status": "ERROR", "errorMsg": "list index out of range"};
+                }
                 model._get_cart_totals();
                 data = JSON.parse($.ajax.calls.mostRecent().args[0].data);
                 expect(data.orderInfo.rewards_card.number).toBe(123);
@@ -2132,6 +2167,9 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             });
 
             it('stanford card', function() {
+                if (typeof ajaxMock == 'function') {
+                    ajaxMock.replyData = {"status": "ERROR", "errorMsg": "list index out of range"};
+                }
                 model._get_cart_totals({type: PAYMENT_TYPE.STANFORD, planId: 'plan id'});
                 data = JSON.parse($.ajax.calls.mostRecent().args[0].data);
                 expect(data.paymentInfo.cardInfo.planId).toBe('plan id');
@@ -2420,7 +2458,8 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                 this.card = App.Data.card;
                 App.Data.card = {
-                    toJSON: function() {}
+                    toJSON: function() {},
+                    unset: function() {}
                 };
                 card = {
                     firstName: '',
@@ -2521,6 +2560,13 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 model.add([{}, {}], {silent: true});
                 model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                 expect(ajax.data.items).toEqual(['modif', 'modif']);
+            });
+
+            it('send "nonce" to backend', function() {
+                card.nonce = "12345";
+                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                expect(ajax.data.paymentInfo.cardInfo.nonce).toEqual(card.nonce);
+                delete card.nonce;
             });
 
             it('`checkout.last_discount_code` exists', function() {
@@ -3400,7 +3446,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 obj = {
                     get_product: function() {}
                 },
-                product = new App.Models.Product();
+                product = new App.Models.Product({is_combo: true});
 
             dfd.resolve();
 
@@ -3437,7 +3483,9 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });
                 expect(model.set.calls.argsFor(1)[0]).toEqual({
                     sum: 1,
-                    initial_price: 2
+                    initial_price: 2,
+                    upcharge_price : 0,
+                    upcharge_name : ''
                 });
                 expect(model.update_prices).toHaveBeenCalled();
             });

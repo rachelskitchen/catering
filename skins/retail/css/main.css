@@ -501,10 +501,6 @@ footer {
     font-size: 14px;
     font-weight: 700;
 }
-#cart .main .total {
-    position: relative;
-    left: -4px;
-}
 #cart > div.checkout {
     position: absolute;
     top: 13px;
@@ -787,9 +783,6 @@ section.maintenance .back {
 .rewards-info .order-item .attrs, .rewards-info .order-item .price-line {
     font-size: 12px;
     margin-left: 75px;
-}
-.order-items .currency_symbol {
-    margin-right: -3px;
 }
 #cart .order-items .btns {
     width: 56px;

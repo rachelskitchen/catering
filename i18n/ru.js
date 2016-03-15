@@ -197,7 +197,7 @@
             'LB': 'Ливан',
             'LS': 'Лесото',
             'LR': 'Либерия',
-            'LY': 'Libyan Arab Jamahiriya', // ???
+            'LY': 'Ливия',
             'LI': 'Лихтенштейн',
             'LT': 'Литва',
             'LU': 'Люксембург',
@@ -327,6 +327,7 @@
             'CO': 'Колорадо',
             'CT': 'Коннектикут',
             'DE': 'Делавэр',
+            'DC': 'Округ Колумбия',
             'FL': 'Флорида',
             'GA': 'Джорджия‎',
             'HI': 'Гавайи',
@@ -543,7 +544,7 @@
         "PROFILE_CREATE_ACCOUNT": "Cоздать аккаунт",
         "PROFILE_CONTINUE_AS_GUEST": "Продолжить как гость",
         "PROFILE_LOG_IN_INFO": "Введите email и пароль",
-        "PROFILE_SIGN_UP": "Регистрания",
+        "PROFILE_SIGN_UP": "Регистрация",
         "PROFILE_SIGN_UP_INFO": "Введите Ваши данные",
         "PROFILE_ACCOUNT_PASSWORD": "Введите пароль",
         "PROFILE_REENTER_PASSWORD": "Повторите пароль",
@@ -583,6 +584,8 @@
         "PROFILE_PASSWORD_RESET_INFO": "Пожалуйста, введите адрес электронной почты.",
         "PROFILE_PASSWORD_RESET_CUSTOMER_INVALID": "Пользователя с таким адресом электронной почты не существует",
         "PROFILE_PASSWORD_RESET_SUCCESS": "Временный пароль отправлен на вашу электронную почту",
-        "PROFILE_INVALID_EMAIL": "Неверный адрес электронной почты"
+        "PROFILE_INVALID_EMAIL": "Неверный адрес электронной почты",
+        "PROFILE_ADD_CREDIT_CARD": "Добавить кред. карту",
+        "PROFILE_CREDIT_CARDS": "Кредитные карты"
     } // end of locale
 }); // end of module

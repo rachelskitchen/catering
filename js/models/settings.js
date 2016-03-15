@@ -37,7 +37,6 @@ define(["backbone", "async"], function(Backbone) {
         },
         load: function() {
             var self = this;
-
             this.listenToOnce(this, 'change:settings_system', this.get_settings_main, this);
             this.once('changeSkin', this.setSkinPath); // set a skin path
             this.once('changeSkinPath', this.get_settings_for_skin); // get settings from file "settings.json" for current skin
@@ -46,7 +45,6 @@ define(["backbone", "async"], function(Backbone) {
             if(/Chrome\/34\.0\.1847\.(131|137)/i.test(window.navigator.userAgent))
                 return App.Data.errors.alert(MSG.ERROR_CHROME_CRASH, true); // user notification
 
-            // load settings system for directory app, only for maintenance page allow
             return $.when(self.get_settings_system(), self.get_customer_settings());
         },
         defaults: {
@@ -502,7 +500,8 @@ define(["backbone", "async"], function(Backbone) {
                 "smart_banner": false,
                 "remember_me": true,
                 "owner_website": "",
-                "owner_contact": ""
+                "owner_contact": "",
+                "saved_credit_cards": true
             };
 
             self.loadCustomerSettings = $.Deferred();
