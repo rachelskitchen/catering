@@ -1687,7 +1687,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
 
                 this.checkout.set({
-                    'pickupTime': isASAP ? 'ASAP (' + pickupToString(pickup) + ')' : pickupToString(pickup),
+                    'pickupTime': isASAP ? (_loc.TIME_PREFIXES.ASAP + ' (' + pickupToString(pickup) + ')') : pickupToString(pickup),
                     'createDate': format_date_1(Date.now()),
                     'pickupTimeToServer': pickup ? format_date_1(pickup.getTime() - App.Settings.server_time) : undefined,
                     'lastPickupTime': lastPickupTime
