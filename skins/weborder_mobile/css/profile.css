@@ -171,6 +171,63 @@
     margin: 1.5em 0;
 }
 
+.payments-list {
+    margin: 3em -1.8em 0;
+}
+
+.profile-payments-edition .payments-list {
+    margin-top: 2px;
+}
+
+.payment-item {
+    padding: 1em 0;
+    margin-bottom: 2px;
+    position: relative;
+}
+
+.payment-item.selected::after  {
+    content: '\f00c';
+    font-family: "FontAwesome";
+    display: block;
+    position: absolute;
+    top: .6em;
+    right: .4em;
+    font-size: 1.4em;
+}
+
+.payment-item.add-cc {
+    display: inline-block;
+}
+
+.credit-cards {
+    margin: 0 -1.8em;
+    padding: 3em 0;
+}
+
+.credit-cards::after {
+    content: '\f0d7';
+    font-family: "FontAwesome";
+    font-size: 2.5em;
+    display: inline-block;
+    width: 1em;
+}
+
+.credit-cards.collapsed::after {
+    content: '\f0da';
+}
+
+.profile-payments-edition .remove-btn::after {
+    content: '\f057';
+    font-size: 1.5em;
+    font-family: "FontAwesome";
+    display: block;
+    width: 1em;
+    position: absolute;
+    top: 50%;
+    right: 0.5em;
+    margin-top: -0.45em;
+}
+
 /* landscape */
 @media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (orientation: landscape) {
     .forgot-password {

@@ -56,7 +56,7 @@ define(['backbone'], function(Backbone) {
                 images.unshift(App.Settings.logo_img);
             }
             images = images.map(function(src) {
-                var img = $('<img src="' + addHost(src, host) +'">');
+                var img = $('<img src="' + (App.unitTest ? src : addHost(src, host)) +'">');
                 return loadSpinner(img, true);
             });
             this.set('images', images);

@@ -646,8 +646,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 switch (product.name) {
                     case MSG.AUTOAPPLY_FEE_ITEM:
                         return 'AutoApply Fee';
-                    default:
-                        trace("Product name '" + product.name + "' should be overridden");
+                    default: {
+                        //trace("Product name '" + product.name + "' is not overridden");
+                    }
                 }
             }
             return product.name;
@@ -859,6 +860,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             var root_price = this.get_initial_price() + this.get('upcharge_price'),
                 sum = 0, combo_saving_products = [];
 
+            var prices = [this.get_initial_price(), this.get('upcharge_price')];
+
             this.get('product').get('product_sets').each( function(product_set) {
                 if ( product_set.get('is_combo_saving') ) {
                     combo_saving_products.push( product_set );
@@ -866,21 +869,31 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
                 product_set.get_selected_products().forEach(function(model) {
                     //trace("add product_price : ",  model.get('product').get('name'), model.get_initial_price());
-                    var sold_by_weight = model.get("product") ?  model.get("product").get('sold_by_weight') : false,
+                    var product = model.get("product"),
+                        sold_by_weight = product ?  product.get('sold_by_weight') : false,
                         weight = model.get('weight'),
-                        initial_price = model.get_initial_price();
+                        initial_price = product.get("upcharge_price") ? product.get("upcharge_price") : model.get_initial_price();
 
                     if (sold_by_weight && weight) {
                         sum += initial_price * weight;
+                        prices.push(initial_price * weight);
                     }
                     else {
                         sum += initial_price * model.get('quantity');
+                        prices.push(initial_price * model.get('quantity'));
                     }
                 });
             });
 
-            if ((combo_saving_products.length || this.isUpsellProduct()) && sum < root_price) {
+            if (combo_saving_products.length && this.isComboProduct() && sum < root_price) {
                 sum = root_price;
+                prices.push("< root_price");
+            } else if (this.isUpsellProduct()) {
+                sum += root_price;
+            }
+
+            if (App.Data.devMode) {
+                trace("combo/upsell price = ", prices.join(" + "), "=", sum);
             }
 
             this.get('product').set("combo_price", sum);
@@ -1721,7 +1734,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          */
         get_cart_totals: function(params) {
             var self = this;
-
             if (this.getDiscountsTimeout) {
                 clearTimeout(this.getDiscountsTimeout);
                 delete this.getDiscountsTimeout;
@@ -1745,7 +1757,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if (this.get_discount_xhr) {
                 this.get_discount_xhr.abort();
             }
-
             this.get_discount_xhr = this._get_cart_totals(params);
             this.get_discount_xhr.always(function() {
                 delete self.pending;
@@ -2075,8 +2086,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          *                 token: <token>,                         // optional, QuickBooks payment processor
          *                 cardNumber: <card number>,              // optional, Gift Card
          *                 captchaKey: <captcha key>,              // optional, Gift Card
-         *                 captchaValue: <captcha value>           // optional, Gift Card
-         *                 planId: <plan id>                       // optional, Stanford Card
+         *                 captchaValue: <captcha value>,          // optional, Gift Card
+         *                 planId: <plan id>,                      // optional, Stanford Card
+         *                 token_id: <token id>,                   // optional, token id
+         *                 vault_id: <vault id>                    // optional, token's vault id
          *             }
          *         },
          *         notifications: [{
@@ -2172,6 +2185,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 return reportPaymentError(payment_info.errorMsg);
             }
 
+            if (card.nonce) {
+                payment_info.cardInfo.nonce = card.nonce;
+            }
+
             var notifications = this.getNotifications();
             order_info.call_name = call_name.join(' / ');
             if(notifications)
@@ -2201,109 +2218,121 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             var myorder_json = JSON.stringify(order),
                 successValidation;
-            $.ajax({
-                type: "POST",
-                url: App.Data.settings.get("host") + "/weborders/" + (validationOnly ? "pre_validate/" : "create_order_and_pay_v1/"),
-                data: myorder_json,
-                dataType: "json",
-                success: function(data) {
-                    if (!data || !data.status) {
-                        reportErrorFrm(MSG.ERROR_OCCURRED + ' ' + MSG.ERROR_INCORRECT_AJAX_DATA);
-                        return;
-                    }
-                    myorder.paymentResponse = data instanceof Object ? _.extend(data, {paymentType: payment_type}) : {};
-                    myorder.paymentResponse.capturePhase = capturePhase;
 
-                    switch(data.status) {
-                        case "OK":
-                            if (validationOnly) {
-                                successValidation = Backbone.$.Deferred();
-                                successValidation.then(myorder.trigger.bind(myorder, 'paymentResponseValid'));
-                            } else {
-                                if (data.balances && data.balances.stanford) {
-                                    App.Data.stanfordCard && payment_type === PAYMENT_TYPE.STANFORD && App.Data.stanfordCard.updatePlans(data.balances.stanford);
-                                }
-                                if (data.balances && data.balances.rewards) {
-                                    App.Data.myorder.rewardsCard && App.Data.myorder.rewardsCard.resetDataAfterPayment();
-                                }
-                                myorder.trigger('paymentResponse');
-                            }
+            if (validationOnly || !App.Data.customer.isAuthorized() || !App.Data.customer.payments) {
+                var req = $.ajax({
+                    type: "POST",
+                    url: App.Data.settings.get("host") + "/weborders/" + (validationOnly ? "pre_validate/" : "create_order_and_pay_v1/"),
+                    data: myorder_json,
+                    dataType: "json",
+                    success: new Function(), // to override global ajax success handler
+                    error: new Function()    // to override global ajax error handler
+                });
+            } else {
+                req = App.Data.customer.payWithToken(order, card);
+            }
 
-                            break;
-                        case "REDIRECT": // need to complete payment on external site
-                            PaymentProcessor.handleRedirect(payment_type, myorder, data);
-                            break;
-                        case "PAYMENT_INFO_REQUIRED": //need to make ajax call payment gateway
-                            PaymentProcessor.handlePaymentDataRequest(payment_type, myorder, data);
-                            break;
-                        case "INSUFFICIENT_STOCK":
-                            var message = '<span style="color: red;"> <b>' + MSG.ERROR_INSUFFICIENT_STOCK + '</b> </span> <br />';
-                            var groupedByIdResponseJSON = _.chain(data.responseJSON).indexBy("id").values().value();
-                            for (var i = 0, j = groupedByIdResponseJSON.length; i < j; i++) {
-                                var current_element = data.responseJSON[i],
-                                    order = myorder.where({id_product: current_element.id}),
-                                    product = order[0].get_product(),
-                                    name_product = product.get("name"),
-                                    stock_amount = current_element.stock_amount,
-                                    initial_product = App.Data.products[product.get('id_category')].get_product(current_element.id);
-
-                                if (stock_amount === 0) {
-                                    myorder.remove(order);
-                                    initial_product.set('active', false);
-                                } else {
-                                    initial_product.set('stock_amount', current_element.stock_amount);
-                                }
-                                message += "<b>" + name_product + "</b>: requested - " + current_element.requested + ", stock amount - " + current_element.stock_amount + ". <br />";
-                            }
-
-                            data.errorMsg = message;
-                            reportError(data.errorMsg);
-                            break;
-                        case "ASAP_TIME_SLOT_BUSY":
-                            var asap_pickup_time = new Date(data.responseJSON.asap_pickup_time);
-                            asap_pickup_time = '' + new TimeFrm(asap_pickup_time.getHours(), asap_pickup_time.getMinutes());
-                            data.errorMsg = msgFrm(MSG.ERROR_ASAP_TIME_SLOT_BUSY, asap_pickup_time);
-                            reportErrorFrm(data.errorMsg);
-                            break;
-                        case "ORDERS_PICKUPTIME_LIMIT":
-                            data.errorMsg = MSG.ERROR_ORDERS_PICKUPTIME_LIMIT;
-                            reportErrorFrm(data.errorMsg);
-                            break;
-                        case "REWARD CARD UNDEFINED":
-                            reportErrorFrm(MSG.REWARD_CARD_UNDEFINED);
-                            break;
-                        case "DELIVERY_ADDRESS_ERROR":
-                            reportErrorFrm(data.errorMsg);
-                            break;
-                        case "PRODUCTS_NOT_AVAILABLE_FOR_SELECTED_TIME":
-                            reportErrorFrm(data.errorMsg + " " + MSG.PRODUCTS_VALID_TIME + "<br/>" + format_timetables(data.responseJSON["timetables"], ",<br/>"));
-                            break;
-                        default:
-                            data.errorMsg = MSG.ERROR_OCCURRED + ' ' + data.errorMsg;
-                            reportErrorFrm(data.errorMsg);
-                    }//end of switch
-                },
-                error: function(xhr) {
-                    var errorMsg = '';
-                    if ('onLine' in window.navigator && !window.navigator.onLine && capturePhase) {
-                        // network connection is lost after return from payment processor
-                        errorMsg = MSG.ERROR_SUBMIT_ORDER_DISCONNECT;
-                        myorder.disconnected = true;
-                    }
-                    else {
-                        errorMsg = MSG.ERROR_SUBMIT_ORDER;
-                    }
-                    myorder.paymentResponse = {
-                        status: 'ERROR',
-                        errorMsg: errorMsg
-                    };
-                    reportErrorFrm(errorMsg);
-                },
-                complete: function(xhr, result) {
-                    payment_type === PAYMENT_TYPE.PAYPAL_MOBILE && $.mobile.loading("hide");
-                    delete myorder.paymentInProgress;
-                    successValidation && successValidation.resolve();
+            // successfull payment handler
+            req.done(function(data) {
+                if (!data || !data.status) {
+                    reportErrorFrm(MSG.ERROR_OCCURRED + ' ' + MSG.ERROR_INCORRECT_AJAX_DATA);
+                    return;
                 }
+                myorder.paymentResponse = data instanceof Object ? _.extend(data, {paymentType: payment_type}) : {};
+                myorder.paymentResponse.capturePhase = capturePhase;
+
+                switch(data.status) {
+                    case "OK":
+                        if (validationOnly) {
+                            successValidation = Backbone.$.Deferred();
+                            successValidation.then(myorder.trigger.bind(myorder, 'paymentResponseValid'));
+                        } else {
+                            if (data.balances && data.balances.stanford) {
+                                App.Data.stanfordCard && payment_type === PAYMENT_TYPE.STANFORD && App.Data.stanfordCard.updatePlans(data.balances.stanford);
+                            }
+                            if (data.balances && data.balances.rewards) {
+                                App.Data.myorder.rewardsCard && App.Data.myorder.rewardsCard.resetDataAfterPayment();
+                            }
+                            myorder.trigger('paymentResponse');
+                        }
+
+                        break;
+                    case "REDIRECT": // need to complete payment on external site
+                        PaymentProcessor.handleRedirect(payment_type, myorder, data);
+                        break;
+                    case "PAYMENT_INFO_REQUIRED": //need to make ajax call payment gateway
+                        PaymentProcessor.handlePaymentDataRequest(payment_type, myorder, data);
+                        break;
+                    case "INSUFFICIENT_STOCK":
+                        var message = '<span style="color: red;"> <b>' + MSG.ERROR_INSUFFICIENT_STOCK + '</b> </span> <br />';
+                        var groupedByIdResponseJSON = _.chain(data.responseJSON).indexBy("id").values().value();
+                        for (var i = 0, j = groupedByIdResponseJSON.length; i < j; i++) {
+                            var current_element = data.responseJSON[i],
+                                order = myorder.where({id_product: current_element.id}),
+                                product = order[0].get_product(),
+                                name_product = product.get("name"),
+                                stock_amount = current_element.stock_amount,
+                                initial_product = App.Data.products[product.get('id_category')].get_product(current_element.id);
+
+                            if (stock_amount === 0) {
+                                myorder.remove(order);
+                                initial_product.set('active', false);
+                            } else {
+                                initial_product.set('stock_amount', current_element.stock_amount);
+                            }
+                            message += "<b>" + name_product + "</b>: requested - " + current_element.requested + ", stock amount - " + current_element.stock_amount + ". <br />";
+                        }
+                        data.errorMsg = message;
+                        reportError(data.errorMsg);
+                        break;
+                    case "ASAP_TIME_SLOT_BUSY":
+                        var asap_pickup_time = new Date(data.responseJSON.asap_pickup_time);
+                        asap_pickup_time = '' + new TimeFrm(asap_pickup_time.getHours(), asap_pickup_time.getMinutes());
+                        data.errorMsg = msgFrm(MSG.ERROR_ASAP_TIME_SLOT_BUSY, asap_pickup_time);
+                        reportErrorFrm(data.errorMsg);
+                        break;
+                    case "ORDERS_PICKUPTIME_LIMIT":
+                        data.errorMsg = MSG.ERROR_ORDERS_PICKUPTIME_LIMIT;
+                        reportErrorFrm(data.errorMsg);
+                        break;
+                    case "REWARD CARD UNDEFINED":
+                        reportErrorFrm(MSG.REWARD_CARD_UNDEFINED);
+                        break;
+                    case "DELIVERY_ADDRESS_ERROR":
+                        reportErrorFrm(data.errorMsg);
+                        break;
+                    case "PRODUCTS_NOT_AVAILABLE_FOR_SELECTED_TIME":
+                        reportErrorFrm(data.errorMsg + " " + MSG.PRODUCTS_VALID_TIME + "<br/>" + format_timetables(data.responseJSON["timetables"], ",<br/>"));
+                        break;
+                    default:
+                        data.errorMsg = MSG.ERROR_OCCURRED + ' ' + data.errorMsg;
+                        reportErrorFrm(data.errorMsg);
+                }//end of switch
+            });
+
+            // failure payment handler
+            req.fail(function(xhr) {
+                var errorMsg = '';
+                if ('onLine' in window.navigator && !window.navigator.onLine && capturePhase) {
+                    // network connection is lost after return from payment processor
+                    errorMsg = MSG.ERROR_SUBMIT_ORDER_DISCONNECT;
+                    myorder.disconnected = true;
+                }
+                else {
+                    errorMsg = MSG.ERROR_SUBMIT_ORDER;
+                }
+                myorder.paymentResponse = {
+                    status: 'ERROR',
+                    errorMsg: errorMsg
+                };
+                reportErrorFrm(errorMsg);
+            });
+
+            req.always(function(xhr, result) {
+                payment_type === PAYMENT_TYPE.PAYPAL_MOBILE && $.mobile.loading("hide");
+                delete myorder.paymentInProgress;
+                App.Data.card.unset('nonce');
+                successValidation && successValidation.resolve();
             });
 
             function reportErrorFrm(message) {

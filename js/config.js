@@ -410,7 +410,12 @@ define({
          * @type {string}
          * @description The actual path of [page_visibility]{@link module:page_visibility} module.
          */
-        page_visibility: 'js/common/page_visibility'
+        page_visibility: 'js/common/page_visibility',
+        /**
+         * @type {string}
+         * @description The actual path of [payments]{@link module:payments} module.
+         */
+        payments: 'js/models/payments'
     },
     /**
      * A waiting time of a module loading.
@@ -605,6 +610,9 @@ define({
         },
         'page_visibility': {
             deps: []
+        },
+        'payments': {
+            deps: ['backbone']
         }
     },
     /**

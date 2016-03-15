@@ -44,17 +44,27 @@ define(['js/utest/data/Settings'], function(settings) {
             expect(model.load).toHaveBeenCalled();
         });
 
+    if (!window._phantom) {
         describe('get_data_warehouse()', function() {
             var sessionStorageBackup, cookieBackup, cookie_getter;
+            var __defineGetter__ = document.__defineGetter__;
 
             beforeEach(function() {
                 sessionStorageBackup = window.sessionStorage;
                 cookie_getter = document.__lookupGetter__ ('cookie');
+                console.log("cookie descriptor = ", Object.getOwnPropertyDescriptor(document, 'cookie') );
+                Object.defineProperty(document, 'cookie', {
+                    configurable:true
+                });
             });
 
             afterEach(function() {
                 window.sessionStorage = sessionStorageBackup;
-                document.__defineGetter__("cookie", cookie_getter);
+                __defineGetter__("cookie", cookie_getter);
+                /*Object.defineProperty(document, 'cookie', {
+                    get: cookie_getter
+                });*/
+                //console.log("cookie descriptor#2 = ", Object.getOwnPropertyDescriptor(document, 'cookie') );
             });
 
             it('sessionStorage', function() {
@@ -64,7 +74,12 @@ define(['js/utest/data/Settings'], function(settings) {
 
             it('none', function() {
                 delete window.sessionStorage;
-                document.__defineGetter__("cookie", function() { return '';} );
+                __defineGetter__("cookie", function() { return '';} );
+                /*Object.defineProperty(document, 'cookie', {
+                        get: function() {
+                           return '';
+                        }
+                    });*/
                 expectStorage(0);
             });
 
@@ -76,12 +91,12 @@ define(['js/utest/data/Settings'], function(settings) {
             });
             */
 
-
             function expectStorage(storage) {
                 model.get_data_warehouse();
                 expect(model.get('storage_data')).toBe(storage);
             }
         });
+    }
 
         it('checkIfMobile()', function() {
             var skinBackup = App.skin;
@@ -161,8 +176,9 @@ define(['js/utest/data/Settings'], function(settings) {
             spyOn(model, 'trigger');
             model.set('skin', 'weborder');
             model.setSkinPath();
-            expect(model.get('img_path')).toBe('./skins/weborder/img/');
-            expect(model.get('skinPath')).toBe('./skins/weborder');
+
+            expect(model.get('img_path')).toBe(window._phantom ? 'base/skins/weborder/img/' : './skins/weborder/img/');
+            expect(model.get('skinPath')).toBe(window._phantom ? 'base/skins/weborder' : './skins/weborder');
             expect(model.trigger).toHaveBeenCalledWith('changeSkinPath');
 
             model.setSkinPath(true);
@@ -307,7 +323,7 @@ define(['js/utest/data/Settings'], function(settings) {
             it("Date format", function() {
                 expect(sys.date_format).toBeDefined();
             });
-            
+
             it("Default dining option", function() {
                 expect(typeof(sys.default_dining_option)).toBe("string");
             });

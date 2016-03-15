@@ -1,4 +1,4 @@
-define(['products', 'js/utest/data/Products'], function(products, data) {
+define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable'], function(products, data) {
     'use strict';
 
     describe("App.Models.Product", function() {

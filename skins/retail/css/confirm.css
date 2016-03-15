@@ -6,19 +6,48 @@
 .confirmPayCard .panel {
     border: 0px;
     border-radius: 10px;
-    height: 570px;
+    height: 600px;
     padding-top: 10px;
     padding-bottom: 10px;
+    position: relative;
 }
 .confirmPayCard .left-panel-wrap {
     display: table-cell;
     vertical-align: top;
     width: 500px;
 }
-.confirmPayCard .left-panel {
+.confirmPayCard #credit-card {
     margin-top: 150px;
 }
-.confirmPayCard.stanford-card .left-panel {
+.confirmPayCard .payments {
+    height: 530px;
+    overflow: auto;
+    text-align: center;
+}
+.confirmPayCard .payments::before {
+    content: '';
+    display: inline-block;
+    width: 0px;
+    height: 100%;
+    vertical-align: middle;
+}
+.confirmPayCard .payments-control {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+.confirmPayCard .payments-btn {
+    display: inline-block;
+    min-width: 268px;
+    padding: 0px 15px;
+    margin: 10px;
+    font-weight: bold;
+    font-size: 22px;
+}
+.confirmPayCard.stanford-card #credit-card {
     margin-top: 0;
 }
 .confirmPayCard .right-panel-wrap {
@@ -29,7 +58,6 @@
 }
 .confirmPayCard .right-panel {
     margin-left: 12px;
-    position: relative;
 }
 .confirmPayCard .btn-submit {
     padding: 0px 15px;
@@ -52,8 +80,8 @@
     font-weight: bold;
     text-align: center;
     margin: 8px 0;
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 .confirmPayCard.stanford-card .card_title {
     margin-top: 8px;

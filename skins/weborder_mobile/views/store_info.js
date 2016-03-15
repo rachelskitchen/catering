@@ -45,6 +45,7 @@ define(["store_info_view"], function(store_info_view) {
             '.delivery-time': 'text: delivery_time'
         },
         events: {
+            'click .address-link': 'onAddressClick',
             'click .change-store': 'change_establishment',
             'click img': 'onLogoClick'
         },
@@ -102,6 +103,9 @@ define(["store_info_view"], function(store_info_view) {
         },
         onLogoClick: function() {
             App.Data.router.navigate('gallery', true);
+        },
+        onAddressClick: function() {
+            App.Data.router.navigate('location', true);
         }
     });
 

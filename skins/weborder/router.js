@@ -49,6 +49,7 @@ define(["main_router"], function(main_router) {
             "profile_edit": "profile_edit",
             "promotions": "promotions_list",
             "my_promotions": "promotions_my",
+            "profile_payments": "profile_payments",
             "*other": "index"
         },
         hashForGoogleMaps: ['map', 'checkout'],//for #index we start preload api after main screen reached
@@ -634,6 +635,14 @@ define(["main_router"], function(main_router) {
             // @TODO
 
             this.change_page();
+        },
+        profile_payments: function() {
+            var customer = App.Data.customer;
+            if (!customer.payments || !customer.paymentsRequest) {
+                return this.navigate('index', true);
+            }
+            this.setProfilePaymentsContent();
+            customer.paymentsRequest.always(this.change_page.bind(this));
         }
     });
 

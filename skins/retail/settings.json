@@ -10,7 +10,7 @@
             "model": ["main", "header", "filter", "categories"],
             "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "quantity", "categories", "stanfordcard", "profile"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "quantity", "categories", "stanfordcard"],
-            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "search", "subcategories", "stanfordcard", "customers", "profile_view"],
+            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "search", "subcategories", "stanfordcard", "customers", "profile_view", "payments"],
             "js" : ["jquery.contentarrow", "jquery.combobox"]
         },
         "index": {

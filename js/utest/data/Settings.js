@@ -52,8 +52,8 @@ define([], function() {
             "maintenanceMessage": "",
             "version": 1.06,
             "supported_skins": [],
-            "basePath": ".",
-            "coreBasePath": ".",
+            "basePath": window._phantom ? "base" : ".",
+            "coreBasePath": window._phantom ? "base" : ".",
             "hostname": "weborder-dev-branch.revelup.com"
         },
 
@@ -180,7 +180,7 @@ define([], function() {
                 "delivery_charge": 2,
                 "online_order_start_time_offset": 30,
                 "about_description": "Kinematics is the study of classical mechanics which describes the motion of points, bodies (objects) and systems of bodies (groups of objects) without consideration of the causes of motion.[1][2][3] The term is the English version of A.M. Ampère's cinématique,[4] which he constructed from the Greek κίνημα kinema \"movement, motion\", derived from κινεῖν kinein \"to move\".[5][6]\r\n\r\nThe study of kinematics is often referred to as the geometry of motion.[7] (See analytical dynamics for more detail on usage.)",
-                "about_images": ["https%3A//revelup-images-test.s3.amazonaws.com/weborder-dev-branch/3f9c290a-5229-4d2f-ade7-433783335f9e.png", "https%3A//revelup-images-test.s3.amazonaws.com/weborder-dev-branch/b81723c1-93d1-4bce-b425-caa0042395e7.png"],
+                "about_images": [(window._phantom ? "base/" : "") + "js/utest/data/test_picture2.png", (window._phantom ? "base/" : "") + "js/utest/data/test_picture3.png"],
                 "timetables": [],
                 "delivery_for_online_orders": true,
                 "delivery_post_code_lookup": [false, "603163"],
@@ -203,7 +203,7 @@ define([], function() {
                 "time_format": "24 hour",
                 "online_orders": false,
                 "delivery_cold_untaxed": false,
-                "logo_img": "https%3A//revelup-images-test.s3.amazonaws.com/weborder-dev-branch/132c9071-00d3-4301-b8a8-321cebbd6154.jpg",
+                "logo_img": (window._phantom ? "base/" : "") + "js/utest/data/test_picture1.png",
                 "max_delivery_distance": 1,
                 "online_order_date_range": 100,
                 "accept_tips_online": true,
@@ -241,11 +241,11 @@ define([], function() {
             "isMaintenance": false,
             "maintenanceMessage": "",
             "version": 1.06,
-            "basePath": ".",
-            "coreBasePath": ".",
+            "basePath": window._phantom ? "base" : ".",
+            "coreBasePath": window._phantom ? "base" : ".",
             "hostname": "weborder-dev-branch.revelup.com",
-            "img_path": "./skins/weborder/img/",
-            "skinPath": "./skins/weborder"
+            "img_path": window._phantom ? "base/skins/weborder/img/" : "./skins/weborder/img/",
+            "skinPath": window._phantom ? "base/skins/weborder" : "./skins/weborder"
         }
     };
 });

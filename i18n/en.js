@@ -195,7 +195,7 @@
             'LB': 'Lebanon',
             'LS': 'Lesotho',
             'LR': 'Liberia',
-            'LY': 'Libyan Arab Jamahiriya',
+            'LY': 'Libya',
             'LI': 'Liechtenstein',
             'LT': 'Lithuania',
             'LU': 'Luxembourg',
@@ -324,6 +324,7 @@
             'CO': 'Colorado',
             'CT': 'Connecticut',
             'DE': 'Delaware',
+            'DC': 'District of Columbia',
             'FL': 'Florida',
             'GA': 'Georgia',
             'HI': 'Hawaii',
@@ -509,6 +510,15 @@
             '',
             ''
         ],
+        'CREDIT_CARD_TYPES': {
+            'AMERICANEXPRESS': 'Amex',
+            'DISCOVER': 'Discover',
+            'MASTERCARD': 'Master Card',
+            'VISA': 'Visa',
+            'MAESTRO': 'Maestro',
+            'DINERS': 'Diners Club',
+            'JCB': 'JCB'
+        },
         'TAB_TITLE_ONLINE_ORDERING': 'Online Ordering',
         // page "Total"
         'TOTAL_DISCOUNTS': 'Discounts', // except: Directory, Directory Mobile
@@ -581,7 +591,7 @@
         "PROFILE_ADDRESS": "Address",
         "PROFILE_USER_NOT_ACTIVATED": "User is not activated",
         "PROFILE_SESSION_EXPIRED": "Session is expired",
-        "PROFILE_USER_NOT_FOUND": "User not found",
+        "PROFILE_USER_NOT_FOUND": "User is not found",
         "PROFILE_USER_ADDRESS_NOT_FOUND": "Address not found",
         "PROFILE_ENTER_CURRENT_PASSWORD": "Enter current password",
         "PROFILE_ENTER_NEW_PASSWORD": "Enter new password",
@@ -592,6 +602,9 @@
         "PROFILE_PASSWORD_RESET_INFO": "Enter your email address and we'll help you reset your password",
         "PROFILE_PASSWORD_RESET_CUSTOMER_INVALID": "Customer with such email address doesn't exist",
         "PROFILE_PASSWORD_RESET_SUCCESS": "The password has been sent. Please check email for your new password.",
-        "PROFILE_INVALID_EMAIL": "Email address is invalid"
+        "PROFILE_INVALID_EMAIL": "Email address is invalid",
+        "PROFILE_ADD_CREDIT_CARD": "Add Credit Card",
+        "PROFILE_CREDIT_CARDS": "Credit Cards",
+        "PROFILE_PAYMENT_TOKEN_NOT_FOUND": "Payment token is not found"
     }; // end of locale
 }); // end of module
