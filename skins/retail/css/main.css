@@ -501,10 +501,6 @@ footer {
     font-size: 14px;
     font-weight: 700;
 }
-#cart .main .total {
-    position: relative;
-    left: -4px;
-}
 #cart > div.checkout {
     position: absolute;
     top: 13px;
@@ -697,8 +693,9 @@ section.maintenance .back {
 }
 #cart .total_block .title {
     display: inline-block;
-    max-width: 290px;
     vertical-align: top;
+    width: 80%;
+    float: left;
 }
 #cart .total_block .cost {
     letter-spacing: -3px;
@@ -788,9 +785,6 @@ section.maintenance .back {
     font-size: 12px;
     margin-left: 75px;
 }
-.order-items .currency_symbol {
-    margin-right: -3px;
-}
 #cart .order-items .btns {
     width: 56px;
     position: absolute;
@@ -868,10 +862,11 @@ section.maintenance .back {
     .footer_mercury .footer__left {
         max-width: 48%;
     }
-}
-@media only screen and (max-device-width: 949px) {
     #cart .btn {
         font-size: 24px;
+    }
+    #cart .total_block .title {
+        width: auto;
     }
 }
 @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {

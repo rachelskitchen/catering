@@ -84,9 +84,8 @@
     text-align: right;
 }
 .product_table .product .cost .currency_symbol {
-    margin-right: -6px;
     font-weight: bold;
-    padding-right: 2px;
+    padding-right: 1px;
 }
 .product_table .product .cost .price {
     font-weight: normal;
@@ -292,9 +291,6 @@
 #modifiers_popup .product .cost,
 #modifiers_popup .product .price {
     font-weight: inherit;
-}
-#modifiers_popup .product .currency_symbol {
-    margin-right: -5px;
 }
 #modifiers_popup .product .timetables {
     font-style: italic;

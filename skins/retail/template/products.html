@@ -12,8 +12,7 @@
         <dt class="name"><%= name %></dt>
         <dd class='cost_block'>
             <div class='cost'>
-                <span class="currency_symbol"><%= currency_symbol %></span>
-                <span class="price"><%= price %></span>
+                <span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
                 <% if(sold_by_weight && uom) { %>
                 <span class="uom">/ <%= uom %></span>
                 <% } %>
@@ -32,8 +31,7 @@
         <dt class='name'>
             <%= name %>
             <span class="cost">
-                <span class="currency_symbol"><%= currency_symbol %></span>
-                <span class="price"><%= price %></span>
+                <span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
                 <% if(sold_by_weight && uom) { %>
                 <span class="uom">/ <%= uom %></span>
                 <% } %>

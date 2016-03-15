@@ -45,11 +45,6 @@
     right: 0;
 }
 
-.done .currency_symbol {
-    position: relative;
-    right: -0.2em;
-}
-
 .done .btn {
     display: inline-block;
     border-width: 1px;
