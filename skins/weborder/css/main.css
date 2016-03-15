@@ -621,9 +621,8 @@ footer.profile-container {
 }
 #cart .total_block .title {
     display: inline-block;
+    max-width: 70%;
     vertical-align: top;
-    float: left;
-    width: 70%;
 }
 #cart .total_block .cost {
     letter-spacing: -3px;
@@ -797,9 +796,6 @@ footer.profile-container {
     }
     #cart .btn {
         font-size: 20px;
-    }
-    #cart .total_block .title {
-        width: auto;
     }
 }
 @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {

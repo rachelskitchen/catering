@@ -693,9 +693,8 @@ section.maintenance .back {
 }
 #cart .total_block .title {
     display: inline-block;
+    max-width: 290px;
     vertical-align: top;
-    width: 80%;
-    float: left;
 }
 #cart .total_block .cost {
     letter-spacing: -3px;
@@ -862,11 +861,10 @@ section.maintenance .back {
     .footer_mercury .footer__left {
         max-width: 48%;
     }
+}
+@media only screen and (max-device-width: 949px) {
     #cart .btn {
         font-size: 24px;
-    }
-    #cart .total_block .title {
-        width: auto;
     }
 }
 @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {

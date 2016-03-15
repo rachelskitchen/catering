@@ -240,8 +240,8 @@
 }
 #popup .total_block .title {
     display: inline-block;
-    width: 75%;
-    float: left;
+    max-width: 280px;
+    vertical-align: top;
 }
 #popup .total_block .cost {
     letter-spacing: -3px;
