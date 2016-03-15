@@ -2,8 +2,7 @@
     <li>
         <span class="title"> <%= _lp.TOTAL_SUBTOTAL %>: </span>
         <span class="cost">
-            <span class="currency_symbol"><%= _settings.currency_symbol %></span>
-            <span class="total"></span>
+            <span class="currency_symbol"><%= _settings.currency_symbol %></span><span class="total"></span>
         </span>
     </li>
 </script>
@@ -12,43 +11,37 @@
     <li class="total_discounts">
         <span class="title"> <%= _lp.TOTAL_DISCOUNTS %>: </span>
         <span class="cost">
-            <span class="currency_symbol"><%= _settings.currency_symbol %></span>
-            <span class="discount"></span>
+            <span class="currency_symbol">&minus;<%= _settings.currency_symbol %></span><span class="discount"></span>
         </span>
     </li>
     <li class="shipping_charge_item">
         <span class="title"> <%= _lp.TOTAL_SHIPPING %>: </span>
         <span class="cost">
-            <span class="currency_symbol"><%= _settings.currency_symbol %></span>
-            <span class="shipping_charge"></span>
+            <span class="currency_symbol"><%= _settings.currency_symbol %></span><span class="shipping_charge"></span>
         </span>
     </li>
     <li class="shipping_discount_item">
         <span class="title"> <%= _lp.TOTAL_SHIPPING_DISCOUNT %>: </span>
         <span class="cost">
-            <span class="currency_symbol">-<%= _settings.currency_symbol %></span>
-            <span class="shipping_discount"></span>
+            <span class="currency_symbol">-<%= _settings.currency_symbol %></span><span class="shipping_discount"></span>
         </span>
     </li>
     <li>
         <span class="title"> <%= _lp.TOTAL_SUBTOTAL %>: </span>
         <span class="cost">
-            <span class="currency_symbol"><%= _settings.currency_symbol %></span>
-            <span class="subtotal"></span>
+            <span class="currency_symbol"><%= _settings.currency_symbol %></span><span class="subtotal"></span>
         </span>
     </li>
     <li class="surcharge_item">
         <span class="title"> <%= _lp.TOTAL_SURCHARGE %>: </span>
         <span class="cost">
-            <span class="currency_symbol"><%= _settings.currency_symbol %></span>
-            <span class="surcharge"></span>
+            <span class="currency_symbol"><%= _settings.currency_symbol %></span><span class="surcharge"></span>
         </span>
     </li>
     <li>
         <span class="title"> <%= _lp.TOTAL_TAX %>: </span>
         <span class="cost">
-            <span class="currency_symbol"><%= _settings.currency_symbol %></span>
-            <span class="tax"></span>
+            <span class="currency_symbol"><%= _settings.currency_symbol %></span><span class="tax"></span>
         </span>
 
     </li>
@@ -56,16 +49,14 @@
     <li>
         <span class="title"> <%= _lp.TOTAL_TIP %>: </span>
         <span class="cost">
-            <span class="currency_symbol"><%= _settings.currency_symbol %></span>
-            <span class="tip"></span>
+            <span class="currency_symbol"><%= _settings.currency_symbol %></span><span class="tip"></span>
         </span>
     </li>
 <% } %>
     <li>
         <span class="title bold"> <%= _lp.TOTAL_GRAND_TOTAL %>: </span>
         <span class="cost">
-            <span class="currency_symbol bold"><%= _settings.currency_symbol %></span>
-            <span class="grandtotal bold"></span>
+            <span class="currency_symbol bold"><%= _settings.currency_symbol %></span><span class="grandtotal bold"></span>
         </span>
     </li>
 </script>

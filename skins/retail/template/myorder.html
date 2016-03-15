@@ -57,8 +57,7 @@
         <span><%= discount_name %>:</span>
     </div>
     <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
-        <span class="currency_symbol">-<%= currency_symbol %></span>
-        <span><%= discount_sum %></span>
+        <span class="currency_symbol">&minus;<%= currency_symbol %></span><span><%= discount_sum %></span>
     </div>
 </script>
 
@@ -67,8 +66,7 @@
         <span class="name discount"><%= discount_name %></span>
     </div>
     <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
-        <span class="currency_symbol">-<%= currency_symbol %></span>
-        <span><%= discount_sum %></span>
+        <span class="currency_symbol">&minus;<%= currency_symbol %></span><span><%= discount_sum %></span>
     </div>
 </script>
 

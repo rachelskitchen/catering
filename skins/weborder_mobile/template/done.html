@@ -36,8 +36,7 @@
         <dd class="text-left">
             <strong>
                 <% if(stanfordCard.type == 'D') { %>
-                <span class="currency_symbol"><%= symbol %></span>
-                <span class="price"><%= stanfordCard.balance %></span>
+                <span class="currency_symbol"><%= symbol %></span><span class="price"><%= stanfordCard.balance %></span>
                 <% } else if(stanfordCard.balance == 1) { %>
                 <span class="price"><%= stanfordCard.balance %></span>
                 <span><%= _lp.DONE_STANFORD_CARD_BALANCE_MEAL %></span>
@@ -52,8 +51,7 @@
         <dt class="text-right"><%= _lp.DONE_AMOUNT_CHARGED %></dt>
         <dd class="text-left">
             <strong>
-                <span class="currency_symbol"><%= symbol %></span>
-                <span class="price"><%= total %></span>
+                <span class="currency_symbol"><%= symbol %></span><span class="price"><%= total %></span>
             </strong>
         </dd>
     </dl>
