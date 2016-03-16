@@ -84,8 +84,8 @@ define(['factory'], function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
-            '.promotions-available': 'collection: $_available',
-            '.promotions-other': 'collection: $_other'
+            '.promotions-available': 'collection: available',
+            '.promotions-other': 'collection: other'
         },
         itemView: App.Views.CorePromotionsView.CorePromotionsListItemView
     });
@@ -101,7 +101,7 @@ define(['factory'], function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
-            '.promotions-available': 'collection: $_available'
+            '.promotions-available': 'collection: available'
         },
         itemView: App.Views.CorePromotionsView.CorePromotionsMyItemView
     });
