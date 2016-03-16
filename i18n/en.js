@@ -412,6 +412,7 @@
             'ERROR_MODIFIERS_LOAD': 'Unable to get the list modifiers of product from backend. Now the page is reloaded.',
             'ERROR_RECENT_LOAD': 'Unable to get a list of recent orders.',
             'ERROR_PRODUCTS_LOAD': 'Unable to get the list products of menu from backend. Now the page is reloaded.',
+            'ERROR_PROMOTIONS_LOAD': 'Unable to get the promotions list from backend. Now the page is reloaded.',
             'ERROR_STORES_LOAD': 'Unable to get the list of stores.',
             'DELIVERY_ITEM': 'Delivery Charge',
             'BAG_CHARGE_ITEM': 'Bag Charge',
