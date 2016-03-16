@@ -330,6 +330,8 @@ define(["backbone", "factory"], function(Backbone) {
                 customer.setPayments(App.Collections.MercuryPayments);
             } else if (App.SettingsDirectory.saved_credit_cards && paymentProcessor === FreedomPayPaymentProcessor) {
                 customer.setPayments(App.Collections.FreedomPayments);
+            } else if (App.SettingsDirectory.saved_credit_cards && paymentProcessor === BraintreePaymentProcessor) {
+                customer.setPayments(App.Collections.BraintreePayments);
             } else {
                 App.SettingsDirectory.saved_credit_cards = false;
             }
