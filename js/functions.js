@@ -1476,7 +1476,7 @@ var USAePayPaymentProcessor = {
 
 var BraintreePaymentProcessor = {
     clearQueryString: function(queryString) {
-        return queryString;//.replace(/&?UM[^=]*=[^&]*/g, '');
+        return queryString;
     },
     showCreditCardDialog: function() {
         return true;
