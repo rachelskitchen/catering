@@ -21,7 +21,6 @@ define([], function() {
             "expires_in": null,
             "token_type": "",
             "access_token": "",
-            "scope": "",
             "keepCookie": true
         },
         "customer1": {

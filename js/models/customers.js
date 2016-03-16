@@ -180,12 +180,6 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
              */
             access_token: "",
             /**
-             * Space separated list of scopes granted to the customer.
-             * @type {string}
-             * @default ""
-             */
-            scope: "",
-            /**
              * If `true` cookie uses max-age property. Otherwise cookie exists within browser session.
              * @type {boolean}
              * @default true
@@ -699,6 +693,11 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     grant_type: "password"
                 },
                 success: function(data) {
+                    try {
+                        delete data.customer.payments;
+                        delete data.token.scope;
+                    } catch(e) {}
+
                     this.updateCookie(data);
                     this.setCustomerFromAPI(data);
                     this.initPayments();
@@ -1470,8 +1469,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 user_id: data.token.user_id,
                 access_token: data.token.access_token,
                 token_type: data.token.token_type,
-                expires_in: data.token.expires_in,
-                scope: data.token.scope
+                expires_in: data.token.expires_in
             });
 
             this.clearPasswords();
@@ -1507,7 +1505,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             }
 
             try {
-                this.setCustomerFromAPI(JSON.parse(atob(data)));
+                this.setCustomerFromAPI(JSON.parse(decodeURIComponent(atob(data))));
             } catch(e) {
                 console.error(e);
             }
@@ -1530,8 +1528,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     user_id: attrs.user_id,
                     access_token: attrs.access_token,
                     token_type: attrs.token_type,
-                    expires_in: attrs.expires_in,
-                    scope: attrs.scope
+                    expires_in: attrs.expires_in
                 }
             }
         },
