@@ -1798,6 +1798,17 @@ define(["main_router"], function(main_router) {
         },
         promotions_list: function() {
             var self = this,
+                content;
+
+            this.prepare('promotions', function() {
+                App.Data.header.set({
+                    page_title: _loc.HEADER_PROMOTIONS_LIST_PT,
+                    back_title: _loc.BACK,
+                    back: window.history.back.bind(window.history),
+                    cart: cart,
+                    hideCart: App.Data.myorder.get_only_product_quantity() < 1
+                });
+
                 content = {
                     modelName: 'Promotions',
                     mod: 'List',
@@ -1835,17 +1846,9 @@ define(["main_router"], function(main_router) {
                             }
                         ]),
                     }),
+                    model: new App.Models.Promotions(),
                     cacheId: true
                 };
-
-            this.prepare('promotions', function() {
-                App.Data.header.set({
-                    page_title: _loc.HEADER_PROMOTIONS_LIST_PT,
-                    back_title: _loc.BACK,
-                    back: window.history.back.bind(window.history),
-                    cart: cart,
-                    hideCart: App.Data.myorder.get_only_product_quantity() < 1
-                });
 
                 App.Data.mainModel.set({
                     header: headerModes.Promotions,

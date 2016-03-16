@@ -398,6 +398,11 @@ define({
         profile_view: 'js/views/profile',
         /**
          * @type {string}
+         * @description The actual path of [promotions]{@link module:promotions} module.
+         */
+        promotions: 'js/models/promotions',
+        /**
+         * @type {string}
          * @description The actual path of [promotions_view]{@link module:promotions_view} module.
          */
         promotions_view: 'js/views/promotions',
