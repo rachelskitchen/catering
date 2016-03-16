@@ -29,6 +29,7 @@ define([], function() {
         "CHECKOUT_PROVINCE": "Provincija",
         "CHECKOUT_ZIP_CODE": "Pašto kodas",
         "CHECKOUT_POSTAL_CODE": "Pašto kodas",
+        "CHECKOUT_STATE": "Valstija",
         "DONE_THANK_YOU": "Ačiū!",
         "DONE_ORDER_ID": "Užsakymo kodas",
         "DONE_DELIVERY_INFO": "Pristatymo informacija",

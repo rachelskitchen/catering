@@ -222,7 +222,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
         },
         /**
          * Gets customer name in the format "John M.".
-         * @returns {string} Concatenation of `first_name` attribute value, `last_name` first letter and '.' sign.
+         * @returns {string} Concatenation of `first_name` attribute value, `last_name` first letter and '.' symbol.
          */
         get_customer_name : function() {
             var first_name = this.get('first_name'),
@@ -314,7 +314,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 req = {
                     street_1: _loc.CHECKOUT_ADDRESS_LINE1,
                     city: _loc.CHECKOUT_CITY,
-                    state: _loc.CARD_STATE,
+                    state: _loc.CHECKOUT_STATE,
                     province: _loc.CHECKOUT_PROVINCE,
                     zipcode: _loc.CHECKOUT_ZIP_CODE
                 };
@@ -424,9 +424,9 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 return response.data;
             };
 
-            jqXHR = jqXHR || $.ajax({
+            jqXHR = jqXHR || Backbone.$.ajax({
                 type: "POST",
-                url: App.Data.settings.get("host") + "/weborders/shipping_options/",
+                url: "/weborders/shipping_options/",
                 data: data_json,
                 dataType: "json",
                 error: onError
@@ -446,7 +446,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 }
             });
             // process failure response
-            jqXHR.error(onError);
+            jqXHR.fail(onError);
 
             function onError(xhr) {
                 if (xhr.statusText != "abort") {
@@ -774,7 +774,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          *
          * - Username already exists:
          * ```
-         * Status: 400
+         * Status: 422
          * {
          *     "email": ["This field must be unique."]
          * }
@@ -833,16 +833,11 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                         case 400:
                             this.trigger('onUserValidationError', resp);
                             break;
-                        default:
-                            emitDefaultEvent.call(this);
-                    }
-
-                    function emitDefaultEvent() {
-                        if (resp.email == "This field must be unique.") {
+                        case 422:
                             this.trigger('onUserExists', resp);
-                        } else {
+                            break;
+                        default:
                             this.trigger('onUserCreateError', resp);
-                        }
                     }
 
                     function getResponse() {
