@@ -29,6 +29,7 @@
         'CHECKOUT_PROVINCE': 'Province',
         'CHECKOUT_ZIP_CODE': 'Zip Code',
         'CHECKOUT_POSTAL_CODE': 'Postal Code',
+        'CHECKOUT_STATE': 'State',
         'DONE_THANK_YOU': 'Thank You',
         'DONE_ORDER_ID': 'Order ID',
         'DONE_DELIVERY_INFO': 'Delivery Info',

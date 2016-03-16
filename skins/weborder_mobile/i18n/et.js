@@ -29,6 +29,7 @@ define([], function() {
         "CHECKOUT_PROVINCE": "Maakond",
         "CHECKOUT_ZIP_CODE": "Sihtnumber",
         "CHECKOUT_POSTAL_CODE": "Sihtnumber",
+        "CHECKOUT_STATE": "Osariik",
         "DONE_THANK_YOU": "Täname!",
         "DONE_ORDER_ID": "Tellimuse ID",
         "DONE_DELIVERY_INFO": "Kohaletoimetamisteave",

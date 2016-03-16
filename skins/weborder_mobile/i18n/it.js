@@ -29,6 +29,7 @@ define([], function() {
         "CHECKOUT_PROVINCE": "Provincia",
         "CHECKOUT_ZIP_CODE": "CAP",
         "CHECKOUT_POSTAL_CODE": "CAP",
+        "CHECKOUT_STATE": "Stato",
         "DONE_THANK_YOU": "Grazie",
         "DONE_ORDER_ID": "ID dell’ordine",
         "DONE_DELIVERY_INFO": "Informazioni sulla consegna",
