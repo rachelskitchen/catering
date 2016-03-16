@@ -63,20 +63,20 @@
 .promotion__description {
     color: #13B21A;
 }
-.promotion__add {
+.promotion__apply {
     font-weight: 300;
     position: absolute;
     right: 0;
     top: 50%;
     transform: translateY(-50%);
 }
-.promotion__add.added {
+.promotion__apply.added {
     color: #13B21A;
     display: flex !important;
     align-items: center;
     justify-content: center;
 }
-.promotion__add.added:after {
+.promotion__apply.added:after {
     content: "";
     display: inline-block;
     width: 1.5em;

@@ -43,18 +43,18 @@ define(['factory'], function() {
             '.promotion__name': 'text: name',
             '.promotion__link': 'toggle: available',
             '.promotion__description': 'toggle: not(available), text: info',
-            '.promotion__add': 'text: select(selected, _loc.PROMOTION_ADDED, _loc.PROMOTION_ADD), classes: {added: selected, disabled: not(available)}',
+            '.promotion__apply': 'text: select(is_applied, _loc.PROMOTION_ADDED, _loc.PROMOTION_ADD), classes: {added: is_applied, disabled: not(available)}',
         },
         events: {
             'click .promotion__link': 'seeInfo',
-            'click .promotion__add:not(.disabled)': 'add'
+            'click .promotion__apply:not(.disabled)': 'apply'
         },
         /**
          * Applies discount to the order.
          */
-        add: function(e) {
+        apply: function(e) {
             e.stopPropagation();
-            this.model.set('selected', !this.model.get('selected'));
+            this.model.set('is_applied', !this.model.get('is_applied'));
         },
         /**
          * Navigates to promotion details screen.
@@ -67,7 +67,7 @@ define(['factory'], function() {
     App.Views.CorePromotionsView.CorePromotionsMyItemView = App.Views.CorePromotionsView.CorePromotionsListItemView.extend({
         mode: 'MyItem',
         bindings: _.extend({}, App.Views.CorePromotionsView.CorePromotionsListItemView.prototype.bindings, {
-            '.promotion__add': 'text: select(selected, _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {added: selected, disabled: not(available)}',
+            '.promotion__apply': 'text: select(is_applied, _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {added: is_applied, disabled: not(available)}',
             '.promotion__reusable': 'text: select(multiple, _loc.PROMOTION_MULTIPLE_USE, _loc.PROMOTION_SINGLE_USE)'
         })
     });
