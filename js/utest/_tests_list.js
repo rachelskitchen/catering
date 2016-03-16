@@ -19,6 +19,7 @@ var tests_list = [
     'test_Myorder',
     'test_Products',
     'test_ProductSets',
+    'test_Promotions',
     'test_Rewards',
     'test_Search',
     'test_Settings',

@@ -1801,6 +1801,8 @@ define(["main_router"], function(main_router) {
                 content;
 
             this.prepare('promotions', function() {
+                var promotions = new App.Collections.Promotions();
+
                 App.Data.header.set({
                     page_title: _loc.HEADER_PROMOTIONS_LIST_PT,
                     back_title: _loc.BACK,
@@ -1846,7 +1848,9 @@ define(["main_router"], function(main_router) {
                             }
                         ]),
                     }),
-                    model: new App.Models.Promotions(),
+                    model: new Backbone.Model({
+                        promotions: promotions
+                    }),
                     cacheId: true
                 };
 

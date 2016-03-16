@@ -41,9 +41,9 @@ define(['factory'], function() {
         tagName: 'li',
         bindings: {
             '.promotion__name': 'text: name',
-            '.promotion__link': 'toggle: available',
-            '.promotion__description': 'toggle: not(available), text: info',
-            '.promotion__apply': 'text: select(is_applied, _loc.PROMOTION_ADDED, _loc.PROMOTION_ADD), classes: {added: is_applied, disabled: not(available)}',
+            '.promotion__link': 'toggle: is_applicable',
+            '.promotion__description': 'toggle: not(is_applicable)', // , text: info
+            '.promotion__apply': 'text: select(is_applied, _loc.PROMOTION_ADDED, _loc.PROMOTION_ADD), classes: {added: is_applied, disabled: not(is_applicable)}',
         },
         events: {
             'click .promotion__link': 'seeInfo',
@@ -67,7 +67,7 @@ define(['factory'], function() {
     App.Views.CorePromotionsView.CorePromotionsMyItemView = App.Views.CorePromotionsView.CorePromotionsListItemView.extend({
         mode: 'MyItem',
         bindings: _.extend({}, App.Views.CorePromotionsView.CorePromotionsListItemView.prototype.bindings, {
-            '.promotion__apply': 'text: select(is_applied, _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {added: is_applied, disabled: not(available)}',
+            '.promotion__apply': 'text: select(is_applied, _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {added: is_applied, disabled: not(is_applicable)}',
             '.promotion__reusable': 'text: select(multiple, _loc.PROMOTION_MULTIPLE_USE, _loc.PROMOTION_SINGLE_USE)'
         })
     });
@@ -76,16 +76,20 @@ define(['factory'], function() {
         name: 'promotions',
         mod: 'list',
         initialize: function() {
-            // need to add model.available and model.other to bindingSource to provide handlers for 'reset', 'add', 'remove' events.
+            var promotions = this.model.get('promotions');
+            this.listenTo(promotions, 'promotionsLoaded', function() {
+                this.getBinding('$_available').set(promotions.where({'is_applicable': true}));
+                this.getBinding('$_other').set(promotions.where({'is_applicable': false}));
+            });
             this.bindingSources = _.extend({}, this.bindingSources, {
-                _available: this.model.get('available'),
-                _other: this.model.get('other')
+                _available: new Backbone.Collection(),
+                _other: new Backbone.Collection()
             });
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
-            '.promotions-available': 'collection: available',
-            '.promotions-other': 'collection: other'
+            '.promotions-available': 'collection: $_available',
+            '.promotions-other': 'collection: $_other'
         },
         itemView: App.Views.CorePromotionsView.CorePromotionsListItemView
     });
@@ -94,14 +98,14 @@ define(['factory'], function() {
         name: 'promotions',
         mod: 'my',
         initialize: function() {
-            // need to add model.available and model.other to bindingSource to provide handlers for 'reset', 'add', 'remove' events.
+            var promotions = this.model.get('promotions');
             this.bindingSources = _.extend({}, this.bindingSources, {
-                _available: this.model.get('available')
+                _available: promotions.where({'is_applicable': true})
             });
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
-            '.promotions-available': 'collection: available'
+            '.promotions-available': 'collection: $_available'
         },
         itemView: App.Views.CorePromotionsView.CorePromotionsMyItemView
     });
