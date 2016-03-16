@@ -56,17 +56,17 @@ define(['backbone', 'collection_sort'], function(Backbone) {
              * Campaign name.
              * @type {?string}
              */
-            name: null,
+            name: '',
             /**
              * Campaign code.
              * @type {?string}
              */
-            code: null,
+            code: '',
             /**
              * Campaign barcode.
              * @type {?string}
              */
-            barcode: null,
+            barcode: '',
             /**
              * Indicates whether the promotion is applicable.
              * @type {boolean}
@@ -82,22 +82,30 @@ define(['backbone', 'collection_sort'], function(Backbone) {
          * Adds listener to track `is_applied` change and trigger `onApplyPromotion` event on {@link App.Models.Promotions.avaiable}.
          */
         initialize: function() {
-            var self = this;
+            var self = this,
+                myorder = App.Data.myorder,
+                checkout = myorder.checkout;
 
             this.listenTo(this, 'change:is_applied', function() {
-                // unselect previously selected promotion
-                this.collection.filter(function(promotion) {
-                    return promotion.cid != self.cid && promotion.get('is_applied');
-                }).set('is_applied', false);
+                // promotion is seleted
+                if (this.get('is_applied')) {
+                    this.collection.trigger('onPromotionApply', this);
 
-                this.collection.trigger('onPromotionApply');
-
-                if (!/^[\d\w]{1,200}$/.test(this.get('code')) ) {
-                    App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
-                    return;
+                    if (!/^[\d\w]{1,200}$/.test(this.get('code')) ) {
+                        App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
+                        return;
+                    }
+                    checkout.set('discount_code', this.get('code'));
+                    myorder.get_cart_totals({apply_discount: true});
                 }
-                App.Data.myorder.checkout.set('discount_code', this.get('code'));
-                App.Data.myorder.get_cart_totals({apply_discount: true});
+                // promotion is unselected
+                else {
+                    checkout.set({
+                        last_discount_code: '',
+                        discount_code: ''
+                    });
+                    myorder.get_cart_totals();
+                }
             });
         }
     });
@@ -106,42 +114,39 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         model: App.Models.Promotion,
     });
 
-    var promotionsAvailableColleciton = promotionsCollection.extend({
-        initialize: function() {
-            this.listenTo(this, 'onPromotionApply', function() {
-                this.where({'is_applied'})
-            });
-        }
-    });
-
     /**
      * @class
-     * @classdesc Represents a promotion model.
-     * @alias App.Models.Promotions
-     * @augments Backbone.Model
+     * @classdesc Represents a promotions collection.
+     * @alias App.Collections.Promotions
+     * @augments Backbone.Collection
      * @example
      * require(['promotions'], function() {
-     *     var promotions = new App.Models.Promotions();
+     *     var promotions = new App.collections.Promotions();
      * });
      */
-    App.Models.Promotions = Backbone.Model.extend(
+    App.Collections.Promotions = Backbone.Collection.extend(
     /**
      * @lends App.Models.Promotion.prototype
      */
     {
         /**
-         * Contains attributes with default values.
-         * @type {object}
-         * @enum
+         * Item constructor.
+         * @type {Function}
+         * @default App.Models.Promotion
          */
-        defaults: {
-            available: new promotionsCollection,
-            other: new promotionsCollection
-        },
+        model: App.Models.Promotion,
         /**
          * Loads the promotions list.
          */
         initialize: function() {
+            this.listenTo(this, 'onPromotionApply', function(appliedPromotion) {
+                // unselect previously selected promotion
+                var applied = this.filter(function(promotion) {
+                    return promotion.cid != appliedPromotion.cid && promotion.get('is_applied');
+                });
+                applied.length && _.invoke(applied, 'set', 'is_applied', false);
+            });
+
             this.getPromotions();
         },
         getPromotions: function() {
@@ -155,17 +160,13 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                     establishmentId: App.Data.settings.get('establishment')
                 }),
                 dataType: 'json',
-                success: function(data) {
-                    if (Array.isArray(data)) {
-                        data.forEach(function(promotion, index) {
-                            if (promotion.is_applicable) {
-                                self.available.add(promotion);
-                            }
-                            else {
-                                self.other.add(promotion);
-                            }
+                success: function(response) {
+                    if (response.status === 'OK') {
+                        response.data.forEach(function(promotion, index) {
+                            self.add(promotion);
                         });
                         fetching.resolve();
+                        self.trigger('promotionsLoaded');
                     }
                 },
                 error: function() {
