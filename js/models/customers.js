@@ -1493,7 +1493,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
 
             var expires_in = this.get('keepCookie') ? data.token.expires_in : 0;
 
-            docCookies.setItem(cookieName, btoa(JSON.stringify(data)), expires_in, cookiePath, cookieDomain, true);
+            docCookies.setItem(cookieName, encodeStr(JSON.stringify(data)), expires_in, cookiePath, cookieDomain, true);
         },
         /**
          * Parse cookie and set customer attributes.
