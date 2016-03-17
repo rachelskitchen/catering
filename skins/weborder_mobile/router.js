@@ -1801,7 +1801,7 @@ define(["main_router"], function(main_router) {
                 content;
 
             this.prepare('promotions', function() {
-                var promotions = new App.Collections.Promotions();
+                var promotions = App.Data.promotions || new App.Collections.Promotions();
 
                 App.Data.header.set({
                     page_title: _loc.HEADER_PROMOTIONS_LIST_PT,
@@ -1814,40 +1814,6 @@ define(["main_router"], function(main_router) {
                 content = {
                     modelName: 'Promotions',
                     mod: 'List',
-                    model: new Backbone.Model({
-                        available: new Backbone.Collection([
-                            {
-                                discountId: '1',
-                                name: '10% Off All Sandwiches',
-                                info: 'Add $10.00 to use this coupon',
-                                available: true,
-                                selected: false
-                            },
-                            {
-                                discountId: '2',
-                                name: '20% Off All Drinks',
-                                info: 'Add $20.00 to use this coupon',
-                                available: true,
-                                selected: true
-                            }
-                        ]),
-                        other: new Backbone.Collection([
-                            {
-                                discountId: '3',
-                                name: 'Special Coupon',
-                                info: 'Add $10.00 to use this coupon',
-                                available: false,
-                                selected: false
-                            },
-                            {
-                                discountId: '4',
-                                name: 'Special Coupon',
-                                info: 'Add $10.00 to use this coupon',
-                                available: false,
-                                selected: false
-                            }
-                        ]),
-                    }),
                     model: new Backbone.Model({
                         promotions: promotions
                     }),

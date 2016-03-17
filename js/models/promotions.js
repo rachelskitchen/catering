@@ -95,7 +95,7 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                         App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
                         return;
                     }
-                    checkout.set('discount_code', this.get('code'));
+                    checkout.set('last_discount_code', this.get('code'));
                     myorder.get_cart_totals({apply_discount: true});
                 }
                 // promotion is unselected
@@ -166,6 +166,7 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                             self.add(promotion);
                         });
                         fetching.resolve();
+                        App.Data.promotions = self;
                         self.trigger('promotionsLoaded');
                     }
                 },
