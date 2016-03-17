@@ -1486,7 +1486,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
 
             var expires_in = this.get('keepCookie') ? data.token.expires_in : 0;
 
-            docCookies.setItem(cookieName, encodeStr(JSON.stringify(data)), expires_in, cookiePath, cookieDomain, true);
+            docCookies.setItem(cookieName, utf8_to_b64(JSON.stringify(data)), expires_in, cookiePath, cookieDomain, true);
         },
         /**
          * Parse cookie and set customer attributes.
@@ -1505,7 +1505,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             }
 
             try {
-                this.setCustomerFromAPI(JSON.parse(decodeURIComponent(atob(data))));
+                this.setCustomerFromAPI(JSON.parse(b64_to_utf8(data)));
             } catch(e) {
                 console.error(e);
             }
