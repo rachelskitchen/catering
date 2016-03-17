@@ -124,7 +124,8 @@ define(["products_view"], function() {
 
             App.Data.myorder.check_order({
                 order: true,
-                first_page: true
+                first_page: true,
+                skipDeliveryAmount: true
             }, function() {
                 self.collection.trigger('onCheckoutClick');
             });
