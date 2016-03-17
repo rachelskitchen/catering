@@ -105,6 +105,26 @@ define(["backbone", "captcha"], function(Backbone) {
                     status: "OK"
                 };
             };
+        },
+        /**
+         * Links the gift card to customer.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @returns {Object} jqXHR object
+         */
+        linkToCustomer: function(authorizationHeader) {
+            var cardNumber = this.get('cardNumber');
+
+            if(!_.isObject(authorizationHeader) && !cardNumber) {
+                return;
+            }
+
+            return Backbone.$.ajax({
+                url: "/weborders/v1/giftcard/" + cardNumber + "/link/",
+                method: "POST",
+                headers: authorizationHeader,
+                success: new Function(),        // to override global ajax success handler
+                error: new Function()
+            });
         }
     });
 });

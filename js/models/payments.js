@@ -174,6 +174,10 @@ define(['backbone'], function(Backbone) {
          * @returns {Object} jqXHR object.
          */
         removePayment: function(serverURL, authorizationHeader) {
+            if(!_.isObject(authorizationHeader)) {
+                return;
+            }
+
             return Backbone.$.ajax({
                 url: serverURL + "/customers-auth/v1/customers/payments/" + this.type + "/" + this.get('id') + "/",
                 method: "DELETE",
