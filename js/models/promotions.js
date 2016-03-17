@@ -83,8 +83,11 @@ define(['backbone', 'collection_sort'], function(Backbone) {
          */
         initialize: function() {
             var self = this,
+                code = this.get('code'),
                 myorder = App.Data.myorder,
                 checkout = myorder.checkout;
+
+            code && this.set('barcode', App.Data.settings.get('host') + '/weborders/barcode/' + code);
 
             this.listenTo(this, 'change:is_applied', function() {
                 // promotion is seleted
@@ -110,10 +113,6 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         }
     });
 
-    var promotionsCollection = Backbone.Collection.extend({
-        model: App.Models.Promotion,
-    });
-
     /**
      * @class
      * @classdesc Represents a promotions collection.
@@ -135,10 +134,12 @@ define(['backbone', 'collection_sort'], function(Backbone) {
          * @default App.Models.Promotion
          */
         model: App.Models.Promotion,
-        /**
-         * Loads the promotions list.
-         */
+
         initialize: function() {
+            this.listenTo(App.Data.myorder, 'add change remove', function() {
+                this.needToUpdate = true;
+            });
+
             this.listenTo(this, 'onPromotionApply', function(appliedPromotion) {
                 // unselect previously selected promotion
                 var applied = this.filter(function(promotion) {
@@ -146,18 +147,32 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                 });
                 applied.length && _.invoke(applied, 'set', 'is_applied', false);
             });
-
-            this.getPromotions();
         },
+        update: function() {
+            return this.getPromotions();
+        },
+        /**
+         * Loads the promotions list from backend.
+         */
         getPromotions: function() {
             var self = this,
+                items = [],
                 fetching = Backbone.$.Deferred(); // pointer that all data is loaded
+
+            this.reset();
+            App.Data.promotions = undefined;
+
+            // get the order items for submitting to server
+            items = App.Data.myorder.map(function(order) {
+                return order.item_submit();
+            });
 
             Backbone.$.ajax({
                 url: '/weborders/campaigns/',
                 type: 'POST',
                 data: JSON.stringify({
-                    establishmentId: App.Data.settings.get('establishment')
+                    establishmentId: App.Data.settings.get('establishment'),
+                    items: items
                 }),
                 dataType: 'json',
                 success: function(response) {
@@ -165,17 +180,37 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                         response.data.forEach(function(promotion, index) {
                             self.add(promotion);
                         });
-                        fetching.resolve();
                         App.Data.promotions = self;
+                        fetching.resolve();
                         self.trigger('promotionsLoaded');
                     }
                 },
                 error: function() {
-                    return App.Data.errors.alert(MSG.ERROR_PROMOTIONS_LOAD, true);
+                    App.Data.errors.alert(MSG.ERROR_PROMOTIONS_LOAD, true);
                 }
             });
+            this.needToUpdate = false;
             return fetching;
         }
     });
+
+    /**
+     * Loads the promotions list.
+     * @static
+     * @alias App.Collections.Promotions.init
+     * @returns {Object} Deferred object.
+     */
+    App.Collections.Promotions.init = function() {
+        var fetching = Backbone.$.Deferred();
+
+        if (App.Data.promotions === undefined ) {
+            App.Data.promotions = new App.Collections.Promotions;
+            fetching = App.Data.promotions.getPromotions();
+        } else {
+            fetching.resolve();
+        }
+
+        return fetching;
+    };
 
 });

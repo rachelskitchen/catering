@@ -1798,35 +1798,48 @@ define(["main_router"], function(main_router) {
         },
         promotions_list: function() {
             var self = this,
+                fetching = Backbone.$.Deferred(),
+                promotions,
                 content;
 
             this.prepare('promotions', function() {
-                var promotions = App.Data.promotions || new App.Collections.Promotions();
+                if (App.Data.promotions) {
+                    fetching.resolve();
+                }
+                else {
+                    fetching = App.Collections.Promotions.init();
+                }
+                fetching.done(function() {
+                    promotions = App.Data.promotions;
 
-                App.Data.header.set({
-                    page_title: _loc.HEADER_PROMOTIONS_LIST_PT,
-                    back_title: _loc.BACK,
-                    back: window.history.back.bind(window.history),
-                    cart: cart,
-                    hideCart: App.Data.myorder.get_only_product_quantity() < 1
+                    promotions.needToUpdate && promotions.update();
+
+                    App.Data.header.set({
+                        page_title: _loc.HEADER_PROMOTIONS_LIST_PT,
+                        back_title: _loc.BACK,
+                        back: window.history.back.bind(window.history),
+                        cart: cart,
+                        hideCart: App.Data.myorder.get_only_product_quantity() < 1
+                    });
+
+                    content = {
+                        modelName: 'Promotions',
+                        mod: 'List',
+                        model: new Backbone.Model({
+                            promotions: promotions
+                        }),
+                        cacheId: true
+                    };
+
+                    App.Data.mainModel.set({
+                        header: headerModes.Promotions,
+                        footer: footerModes.None,
+                        content: content
+                    });
+
+                    self.change_page();
                 });
 
-                content = {
-                    modelName: 'Promotions',
-                    mod: 'List',
-                    model: new Backbone.Model({
-                        promotions: promotions
-                    }),
-                    cacheId: true
-                };
-
-                App.Data.mainModel.set({
-                    header: headerModes.Promotions,
-                    footer: footerModes.None,
-                    content: content
-                });
-
-                self.change_page();
 
                 function cart() {
                     if (App.Data.myorder.get_only_product_quantity() > 0) {
@@ -1836,75 +1849,48 @@ define(["main_router"], function(main_router) {
                 }
             });
         },
-        promotions_my: function() {
+        promotions_my: new Function,
+        promotion: function(code) {
             var self = this,
-                content = {
-                    modelName: 'Promotions',
-                    mod: 'My',
-                    model: new Backbone.Model({
-                        available: new Backbone.Collection([
-                            {
-                                discountId: '1',
-                                name: 'Brother Badys BBQ',
-                                info: '10% Off All Sandwiches',
-                                available: true,
-                                multiple: false,
-                                selected: false
-                            },
-                            {
-                                discountId: '2',
-                                name: 'Smoothie Queen',
-                                info: '20% Off All Drinks',
-                                available: true,
-                                multiple: true,
-                                selected: true
-                            }
-                        ])
-                    }),
-                    cacheId: true
-                };
+                fetching = Backbone.$.Deferred(),
+                promotions,
+                model,
+                content;
 
             this.prepare('promotions', function() {
-                App.Data.header.set({
-                    page_title: _loc.HEADER_PROMOTIONS_MY_PT,
-                    back_title: _loc.BACK,
-                    back: window.history.back.bind(window.history),
-                    hideCart: true
+                if (App.Data.promotions) {
+                    fetching.resolve();
+                }
+                else {
+                    fetching = App.Collections.Promotions.init();
+                }
+                fetching.always(function() {
+                    promotions = App.Data.promotions;
+
+                    promotions.needToUpdate && promotions.update();
+                    model = promotions.findWhere({'code': code});
+                    content = {
+                        modelName: 'Promotions',
+                        mod: 'Item',
+                        model: model,
+                        cacheId: true
+                    };
+
+                    App.Data.header.set({
+                        page_title: _loc.HEADER_PROMOTION_PT,
+                        back_title: _loc.BACK,
+                        back: window.history.back.bind(window.history),
+                        hideCart: true
+                    });
+
+                    App.Data.mainModel.set({
+                        header: headerModes.Promotions,
+                        footer: footerModes.None,
+                        content: content
+                    });
+
+                    self.change_page();
                 });
-
-                App.Data.mainModel.set({
-                    header: headerModes.Promotions,
-                    footer: footerModes.None,
-                    content: content
-                });
-
-                self.change_page();
-            });
-        },
-        promotion: function(id_promotion) {
-            var self = this,
-                content = {
-                    modelName: 'Promotions',
-                    mod: 'Item',
-                    model: new Backbone.Model({discountTitle: '10% Off All Sandwiches', discountCode: '1234567890', discountImg: ''}),
-                    cacheId: true
-                };
-
-            this.prepare('promotions', function() {
-                App.Data.header.set({
-                    page_title: _loc.HEADER_PROMOTION_PT,
-                    back_title: _loc.BACK,
-                    back: window.history.back.bind(window.history),
-                    hideCart: true
-                });
-
-                App.Data.mainModel.set({
-                    header: headerModes.Promotions,
-                    footer: footerModes.None,
-                    content: content
-                });
-
-                self.change_page();
             });
         },
         profile_payments: function() {
