@@ -847,11 +847,25 @@ function loadSpinner(logo, anim_params, cb) {
 }
 
 function makeImageName(image) {
-	return encodeStr(image.attr('src') + image.attr('alt'));
+	return utf8_to_b64(image.attr('src') + image.attr('alt'));
 }
 
-function encodeStr(str) {
-    return btoa(encodeURIComponent(str));
+/**
+ * Creates base-64 encoded ASCII string from a Unicode string.
+ * @param   {string} str - String to encode.
+ * @returns {string} Encoded string.
+ */
+function utf8_to_b64(str) {
+    return btoa(encodeURIComponent(str)); // encodeURIComponent is used to avoid raising InvalidCharacterError exception
+}
+
+/**
+ * Decodes a string which has been encoded using base-64 encoding.
+ * @param   {string} str - String to decode.
+ * @returns {string} Decoded string.
+ */
+function b64_to_utf8(str) {
+    return decodeURIComponent(atob(str));
 }
 
 /**
@@ -1476,7 +1490,7 @@ var USAePayPaymentProcessor = {
 
 var BraintreePaymentProcessor = {
     clearQueryString: function(queryString) {
-        return queryString;//.replace(/&?UM[^=]*=[^&]*/g, '');
+        return queryString;
     },
     showCreditCardDialog: function() {
         return true;

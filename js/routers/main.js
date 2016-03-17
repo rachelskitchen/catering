@@ -330,6 +330,8 @@ define(["backbone", "factory"], function(Backbone) {
                 customer.setPayments(App.Collections.MercuryPayments);
             } else if (App.SettingsDirectory.saved_credit_cards && paymentProcessor === FreedomPayPaymentProcessor) {
                 customer.setPayments(App.Collections.FreedomPayments);
+            } else if (App.SettingsDirectory.saved_credit_cards && paymentProcessor === BraintreePaymentProcessor) {
+                customer.setPayments(App.Collections.BraintreePayments);
             } else {
                 App.SettingsDirectory.saved_credit_cards = false;
             }
@@ -770,7 +772,7 @@ define(["backbone", "factory"], function(Backbone) {
             });
 
             window.setTimeout(function() {
-                var basicDetailsEvents = 'change:first_name change:last_name change:phone',
+                var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email',
                     passwordEvents = 'change:password, change:confirm_password';
                 self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
                 self.listenTo(customer, passwordEvents, accountPasswordChanged);
@@ -808,18 +810,33 @@ define(["backbone", "factory"], function(Backbone) {
                 var mainModel = App.Data.mainModel,
                     _address = address.toJSON(),
                     requests = updateBasicDetails + updatePassword + updateAddress,
-                    basicXHR, passwordXHR, addressXHR;
+                    basicXHR, passwordXHR, addressXHR, check_customer, errorFields = [],
+                    error = App.Data.errors.alert.bind(App.Data.errors);
 
                 // show spinner
                 requests > 0 && mainModel.trigger('loadStarted');
 
                 // update basic details
                 if (updateBasicDetails) {
-                    basicXHR = customer.updateCustomer();
-                    basicXHR.done(function() {
-                        updateBasicDetails = false;
-                    });
-                    basicXHR.always(hideSpinner);
+                    check_customer = customer.check();
+                    if (check_customer.status === 'OK') {
+                        basicXHR = customer.updateCustomer();
+                        basicXHR.done(function() {
+                            updateBasicDetails = false;
+                        });
+                        basicXHR.always(hideSpinner);
+                    }
+                    else if (check_customer.status === 'ERROR_EMPTY_FIELDS') {
+                        if (App.Skins.WEBORDER == App.skin || App.Skins.WEBORDER_MOBILE == App.skin) {
+                            errorFields.splice.apply(errorFields, [0, 0].concat(check_customer.errorList));
+                        } else {
+                            errorFields = errorFields.concat(check_customer.errorList);
+                        }
+                    }
+                    if (errorFields.length) {
+                        error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, errorFields.join(', '))); // user notification
+                        hideSpinner();
+                    }
                 }
 
                 // update password
@@ -1054,7 +1071,7 @@ define(["backbone", "factory"], function(Backbone) {
             });
 
             window.setTimeout(function() {
-                var basicDetailsEvents = 'change:first_name change:last_name change:phone';
+                var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email';
                 self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
                 self.listenTo(address, 'change', addressChanged);
                 self.listenTo(customer, 'onCookieChange', updateAddressAttributes);
