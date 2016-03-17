@@ -50,17 +50,17 @@ define(['factory'], function() {
             'click .promotion__apply:not(.disabled)': 'apply'
         },
         /**
-         * Applies discount to the order.
+         * Marks the selected promotion as applied.
          */
         apply: function(e) {
             e.stopPropagation();
             this.model.set('is_applied', !this.model.get('is_applied'));
         },
         /**
-         * Navigates to promotion details screen.
+         * Navigates to Promotion Details screen.
          */
         seeInfo: function() {
-            App.Data.router.navigate('promotion/' + this.model.get('discountId'), true);
+            App.Data.router.navigate('promotion/' + this.model.get('code'), true);
         }
     });
 
@@ -89,7 +89,9 @@ define(['factory'], function() {
         },
         bindings: {
             '.promotions-available': 'collection: $_available',
-            '.promotions-other': 'collection: $_other'
+            '.promotions-other': 'collection: $_other',
+            '.promotions-title_other': 'toggle: length($_available)',
+            '.promotions-title_other': 'toggle: length($_other)'
         },
         itemView: App.Views.CorePromotionsView.CorePromotionsListItemView
     });
@@ -114,8 +116,9 @@ define(['factory'], function() {
         name: 'promotions',
         mod: 'item',
         bindings: {
-            '.promotion-details__title-text': 'text: discountTitle',
-            '.promotion-details__discount-code': 'text: discountCode'
+            '.promotion-details__title-text': 'text: name',
+            '.promotion-details__discount-code': 'text: code',
+            '.promotion-details__barcode-img': 'attr: {src: barcode}'
         }
     });
 
