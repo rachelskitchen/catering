@@ -150,6 +150,7 @@
         'PROMOTIONS_ALL': 'See all promotions for this establishment',
         'PROMOTIONS_AVAILABLE': 'Available Promotions',
         'PROMOTIONS_AVAILABLE_DESC': 'Selected promotions will be applied to your next order',
+        'PROMOTIONS_AVAILABLE_NO': 'Your order doesn\'t qualify to apply any promotions.',
         'PROMOTIONS_OTHER': 'Other Promotions',
         'PROMOTION_DISCOUNT_CODE': 'Discount Code',
         'QUANTITY_QUANTITY': 'Quantity',

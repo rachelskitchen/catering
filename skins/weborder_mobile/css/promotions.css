@@ -47,6 +47,9 @@
 .promotions-list__title-description {
     padding: 0.3em 0;
 }
+.promotions-available__text {
+    padding: 0.5em 0;
+}
 
 .promotion {
     clear: both;

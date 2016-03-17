@@ -85,7 +85,8 @@ define(['backbone', 'collection_sort'], function(Backbone) {
             var self = this,
                 code = this.get('code'),
                 myorder = App.Data.myorder,
-                checkout = myorder.checkout;
+                checkout = myorder.checkout,
+                apply_discount = true;
 
             code && this.set('barcode', App.Data.settings.get('host') + '/weborders/barcode/' + code);
 
@@ -98,8 +99,15 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                         App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
                         return;
                     }
-                    checkout.set('last_discount_code', this.get('code'));
-                    myorder.get_cart_totals({apply_discount: true});
+
+                    if (App.Data.myorder.get_only_product_quantity()) {
+                        checkout.set({discount_code: code});
+                        myorder.get_cart_totals({apply_discount: true});
+                    }
+                    else {
+                        checkout.set({last_discount_code: code});
+                    }
+
                 }
                 // promotion is unselected
                 else {
@@ -136,6 +144,7 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         model: App.Models.Promotion,
 
         initialize: function() {
+            this.needToUpdate = false;
             this.listenTo(App.Data.myorder, 'add change remove', function() {
                 this.needToUpdate = true;
             });
@@ -152,15 +161,35 @@ define(['backbone', 'collection_sort'], function(Backbone) {
             return this.getPromotions();
         },
         /**
+         * Initialization through a json object, used after the server is requested for promotions list.
+         * @param {Object} data
+         */
+        addAjaxJson: function(promotions) {
+            if (!Array.isArray(promotions)) return;
+            var self = this,
+                duplicate;
+
+            promotions.forEach(function(model, index) {
+                if (!(model instanceof Object)) return;
+                duplicate = self.find(function(_model) {
+                    var code = model instanceof Backbone.Model ? model.get('code') : model.code;
+                    return code === _model.get('code');
+                });
+                if (duplicate) {
+                    duplicate.set(model);
+                }
+                else {
+                    self.add(model);
+                }
+            });
+        },
+        /**
          * Loads the promotions list from backend.
          */
         getPromotions: function() {
             var self = this,
                 items = [],
                 fetching = Backbone.$.Deferred(); // pointer that all data is loaded
-
-            this.reset();
-            App.Data.promotions = undefined;
 
             // get the order items for submitting to server
             items = App.Data.myorder.map(function(order) {
@@ -177,10 +206,10 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                 dataType: 'json',
                 success: function(response) {
                     if (response.status === 'OK') {
-                        response.data.forEach(function(promotion, index) {
-                            self.add(promotion);
-                        });
-                        App.Data.promotions = self;
+                        self.addAjaxJson(response.data);
+                        // response.data.forEach(function(promotion, index) {
+                        //     self.add(promotion);
+                        // });
                         fetching.resolve();
                         self.trigger('promotionsLoaded');
                     }
