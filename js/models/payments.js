@@ -368,8 +368,8 @@ define(['backbone'], function(Backbone) {
     /**
      * @class
      * @classdesc Represents collections of USAePay payments.
-     * @alias App.Collections.PaymentTokens
-     * @augments Backbone.Collection
+     * @alias App.Collections.USAePayPayments
+     * @augments App.Collections.PaymentTokens
      * @example
      * // create an order item
      * require(['payments'], function() {
@@ -527,8 +527,8 @@ define(['backbone'], function(Backbone) {
     /**
      * @class
      * @classdesc Represents collections of Mercury payments.
-     * @alias App.Collections.PaymentTokens
-     * @augments Backbone.Collection
+     * @alias App.Collections.MercuryPayments
+     * @augments App.Collections.PaymentTokens
      * @example
      * // create an order item
      * require(['payments'], function() {
@@ -605,8 +605,8 @@ define(['backbone'], function(Backbone) {
     /**
      * @class
      * @classdesc Represents collections of Freedom payments.
-     * @alias App.Collections.PaymentTokens
-     * @augments Backbone.Collection
+     * @alias App.Collections.FreedomPayments
+     * @augments App.Collections.PaymentTokens
      * @example
      * // create an order item
      * require(['payments'], function() {
@@ -636,6 +636,79 @@ define(['backbone'], function(Backbone) {
          * @default 'freedompay'
          */
         type: 'freedompay',
+        /**
+         * After placing order need to add created token to collection.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @param {Object} order - order json (see {@link App.Collections.Myorder#submit_order_and_pay})
+         * @returns {Object} Result of App.Collections.PaymentTokens#orderPayWithToken.
+         */
+        orderPayWithToken: function() {
+            var req = App.Collections.PaymentTokens.prototype.orderPayWithToken.apply(this, arguments),
+                self = this;
+
+            req.done(function(data) {
+                if (_.isObject(data) && _.isObject(data.token)) {
+                    self.add(data.token);
+                }
+            });
+
+            return req;
+        }
+    });
+
+    /**
+     * @class
+     * @classdesc Represents Braintree payment token.
+     * @alias App.Models.BraintreePayment
+     * @augments App.Models.PaymentToken
+     * @example
+     * // create an order item
+     * require(['payments'], function() {
+     *     var payment = new App.Models.BraintreePayment();
+     * });
+     */
+    App.Models.BraintreePayment = App.Models.PaymentToken.extend(
+    /**
+     * @lends App.Models.BraintreePayment.prototype
+     */
+    {
+        type: 'braintree'
+    });
+
+    /**
+     * @class
+     * @classdesc Represents collections of Braintree payments.
+     * @alias App.Collections.BraintreeTokens
+     * @augments App.Collections.PaymentTokens
+     * @example
+     * // create an order item
+     * require(['payments'], function() {
+     *     var payments = new App.Collections.BraintreePayments();
+     * });
+     */
+    App.Collections.BraintreePayments = App.Collections.PaymentTokens.extend(
+    /**
+     * @lends App.Collections.BraintreePayments.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default App.Models.BraintreePayment
+         */
+        model: App.Models.BraintreePayment,
+        /**
+         * Payment processor.
+         * @type {string}
+         * @default 'braintreepayment'
+         */
+        paymentProcessor: 'braintreepayment',
+        /**
+         * Payment token type.
+         * @type {string}
+         * @default 'braintree'
+         */
+        type: 'braintree',
         /**
          * After placing order need to add created token to collection.
          * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call

@@ -180,12 +180,6 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
              */
             access_token: "",
             /**
-             * Space separated list of scopes granted to the customer.
-             * @type {string}
-             * @default ""
-             */
-            scope: "",
-            /**
              * If `true` cookie uses max-age property. Otherwise cookie exists within browser session.
              * @type {boolean}
              * @default true
@@ -222,7 +216,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
         },
         /**
          * Gets customer name in the format "John M.".
-         * @returns {string} Concatenation of `first_name` attribute value, `last_name` first letter and '.' sign.
+         * @returns {string} Concatenation of `first_name` attribute value, `last_name` first letter and '.' symbol.
          */
         get_customer_name : function() {
             var first_name = this.get('first_name'),
@@ -314,7 +308,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 req = {
                     street_1: _loc.CHECKOUT_ADDRESS_LINE1,
                     city: _loc.CHECKOUT_CITY,
-                    state: _loc.CARD_STATE,
+                    state: _loc.CHECKOUT_STATE,
                     province: _loc.CHECKOUT_PROVINCE,
                     zipcode: _loc.CHECKOUT_ZIP_CODE
                 };
@@ -424,9 +418,9 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 return response.data;
             };
 
-            jqXHR = jqXHR || $.ajax({
+            jqXHR = jqXHR || Backbone.$.ajax({
                 type: "POST",
-                url: App.Data.settings.get("host") + "/weborders/shipping_options/",
+                url: "/weborders/shipping_options/",
                 data: data_json,
                 dataType: "json",
                 error: onError
@@ -446,7 +440,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 }
             });
             // process failure response
-            jqXHR.error(onError);
+            jqXHR.fail(onError);
 
             function onError(xhr) {
                 if (xhr.statusText != "abort") {
@@ -699,6 +693,11 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     grant_type: "password"
                 },
                 success: function(data) {
+                    try {
+                        delete data.customer.payments;
+                        delete data.token.scope;
+                    } catch(e) {}
+
                     this.updateCookie(data);
                     this.setCustomerFromAPI(data);
                     this.initPayments();
@@ -774,7 +773,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          *
          * - Username already exists:
          * ```
-         * Status: 400
+         * Status: 422
          * {
          *     "email": ["This field must be unique."]
          * }
@@ -833,16 +832,11 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                         case 400:
                             this.trigger('onUserValidationError', resp);
                             break;
-                        default:
-                            emitDefaultEvent.call(this);
-                    }
-
-                    function emitDefaultEvent() {
-                        if (resp.email == "This field must be unique.") {
+                        case 422:
                             this.trigger('onUserExists', resp);
-                        } else {
+                            break;
+                        default:
                             this.trigger('onUserCreateError', resp);
-                        }
                     }
 
                     function getResponse() {
@@ -1475,8 +1469,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 user_id: data.token.user_id,
                 access_token: data.token.access_token,
                 token_type: data.token.token_type,
-                expires_in: data.token.expires_in,
-                scope: data.token.scope
+                expires_in: data.token.expires_in
             });
 
             this.clearPasswords();
@@ -1493,7 +1486,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
 
             var expires_in = this.get('keepCookie') ? data.token.expires_in : 0;
 
-            docCookies.setItem(cookieName, btoa(JSON.stringify(data)), expires_in, cookiePath, cookieDomain, true);
+            docCookies.setItem(cookieName, utf8_to_b64(JSON.stringify(data)), expires_in, cookiePath, cookieDomain, true);
         },
         /**
          * Parse cookie and set customer attributes.
@@ -1512,7 +1505,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             }
 
             try {
-                this.setCustomerFromAPI(JSON.parse(atob(data)));
+                this.setCustomerFromAPI(JSON.parse(b64_to_utf8(data)));
             } catch(e) {
                 console.error(e);
             }
@@ -1535,8 +1528,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     user_id: attrs.user_id,
                     access_token: attrs.access_token,
                     token_type: attrs.token_type,
-                    expires_in: attrs.expires_in,
-                    scope: attrs.scope
+                    expires_in: attrs.expires_in
                 }
             }
         },

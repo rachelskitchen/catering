@@ -29,6 +29,7 @@ define([], function() {
         "CHECKOUT_PROVINCE": "Provinz",
         "CHECKOUT_ZIP_CODE": "Postleitzahl",
         "CHECKOUT_POSTAL_CODE": "Postleitzahl",
+        "CHECKOUT_STATE": "Bundesstaat",
         "DONE_THANK_YOU": "Vielen Dank",
         "DONE_ORDER_ID": "Bestell-ID",
         "DONE_DELIVERY_INFO": "Lieferinfo",
