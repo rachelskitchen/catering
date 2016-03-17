@@ -88,10 +88,10 @@ define(['factory'], function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
-            '.promotions-available': 'collection: $_available',
-            '.promotions-other': 'collection: $_other',
-            '.promotions-title_other': 'toggle: length($_available)',
-            '.promotions-title_other': 'toggle: length($_other)'
+            '.promotions-other': 'toggle: length($_other)',
+            '.promotions-available__text': 'toggle: not(length($_available))',
+            '.promotions-available__list': 'collection: $_available',
+            '.promotions-other__list': 'collection: $_other'
         },
         itemView: App.Views.CorePromotionsView.CorePromotionsListItemView
     });
