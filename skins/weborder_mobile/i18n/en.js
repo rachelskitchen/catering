@@ -139,8 +139,6 @@
         'PRODUCTS_AVAILABLE': 'Available',
         'PRODUCTS_GIFT_CARD_NUMBER': 'Gift Card Number',
         'PRODUCTS_SIZE_CHART': 'Size Chart',
-        'PROMOTION_ADD': 'Add to Order',
-        'PROMOTION_ADDED': 'Added',
         'PROMOTION_APPLY': 'Apply to Order',
         'PROMOTION_APPLIED': 'Applied',
         'PROMOTION_SEE_INFO': 'See Code Info',

@@ -135,8 +135,6 @@
         'PRODUCTS_AMOUNT': 'Сумма',
         'PRODUCTS_AVAILABLE': 'В наличии',
         'PRODUCTS_GIFT_CARD_NUMBER': '№ подарочной карты',
-        'PROMOTION_ADD': 'Добавить к заказу',
-        'PROMOTION_ADDED': 'Добавлено',
         'PROMOTION_APPLY': 'Применить к заказу',
         'PROMOTION_APPLIED': 'Применено',
         'PROMOTION_SEE_INFO': 'Посмотреть код на скидку',
