@@ -2,7 +2,7 @@
     background: #EAF3F9;
     color: #373B40;
     font-weight: 300;
-    padding: 1em 1.8em;
+    padding: 2em 1.8em;
     margin: 0 -1.8em;
     clear: both;
 }
@@ -94,8 +94,8 @@
     text-align: center;
 }
 .promotion-details__title {
-    padding: 0.5em 0;
-    margin-bottom: 5em;
+    padding: 2em 0;
+    margin-bottom: 15em;
 }
 .promotion-details__barcode {
     margin-top: 1em;
