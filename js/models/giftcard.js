@@ -120,8 +120,11 @@ define(["backbone", "captcha"], function(Backbone) {
 
             return Backbone.$.ajax({
                 url: "/weborders/v1/giftcard/" + cardNumber + "/link/",
-                method: "POST",
+                method: "GET",
                 headers: authorizationHeader,
+                data: {
+                    establishment_id: App.Data.settings.get('establishment')
+                },
                 success: new Function(),        // to override global ajax success handler
                 error: new Function()
             });
