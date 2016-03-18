@@ -114,7 +114,7 @@ define(["backbone", "captcha"], function(Backbone) {
         linkToCustomer: function(authorizationHeader) {
             var cardNumber = this.get('cardNumber');
 
-            if(!_.isObject(authorizationHeader) && !cardNumber) {
+            if(!_.isObject(authorizationHeader) || !cardNumber) {
                 return;
             }
 
