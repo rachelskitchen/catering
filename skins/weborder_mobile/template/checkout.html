@@ -4,16 +4,16 @@
     </div>
     <ul class="contact-info block font-size2 text-center <% if(isFirefox) { %>firefox<% } %>">
         <li class="required">
-            <input type="text" placeholder="<%= _lp.CHECKOUT_FIRST_NAME %>" class="firstName ios-safari-caret input-colors" value="<%= firstName %>">
+            <input type="text" placeholder="<%= _lp.PROFILE_FIRST_NAME %>" class="firstName ios-safari-caret input-colors" value="<%= firstName %>">
         </li>
         <li class="required">
-            <input type="text" placeholder="<%= _lp.CHECKOUT_LAST_NAME %>" class="lastName ios-safari-caret input-colors" value="<%= lastName %>">
+            <input type="text" placeholder="<%= _lp.PROFILE_LAST_NAME %>" class="lastName ios-safari-caret input-colors" value="<%= lastName %>">
         </li>
         <li class="required">
-            <input type="text" placeholder="<%= _lp.CHECKOUT_EMAIL %>" class="email ios-safari-caret input-colors" value="<%= email %>" autocapitalize="none">
+            <input type="text" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret input-colors" value="<%= email %>" autocapitalize="none">
         </li>
         <li class="required">
-            <input type="tel" placeholder="<%= _lp.CHECKOUT_PHONE %>" class="phone ios-safari-caret input-colors" value="<%= phone %>" min="0">
+            <input type="tel" placeholder="<%= _lp.PROFILE_PHONE %>" class="phone ios-safari-caret input-colors" value="<%= phone %>" min="0">
         </li>
         <li class="delivery_address">
         </li>
@@ -101,13 +101,13 @@
         </li>
         <% } %>
         <li class="required">
-            <input type="text" placeholder="<%= _lp.CHECKOUT_ADDRESS_LINE1 %>" name="street_1" value="<%= street_1 %>" class="ios-safari-caret input-colors">
+            <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE1 %>" name="street_1" value="<%= street_1 %>" class="ios-safari-caret input-colors">
         </li>
         <li>
-            <input type="text" placeholder="<%= _lp.CHECKOUT_ADDRESS_LINE2 %>" name="street_2" value="<%= street_2 %>" class="ios-safari-caret input-colors">
+            <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE2 %>" name="street_2" value="<%= street_2 %>" class="ios-safari-caret input-colors">
         </li>
         <li class="required">
-            <input type="text" placeholder="<%= _lp.CHECKOUT_CITY %>" name="city" value="<%= city %>" class="ios-safari-caret input-colors">
+            <input type="text" placeholder="<%= _lp.PROFILE_CITY %>" name="city" value="<%= city %>" class="ios-safari-caret input-colors">
         </li>
         <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
         <li>
@@ -122,11 +122,11 @@
         <% } %>
         <% if(typeof province == 'string') { %>
         <li class="required province">
-           <input type="text" placeholder="<%= _lp.CHECKOUT_PROVINCE %>" name="province" value="<%= province %>" class="ios-safari-caret input-colors">
+           <input type="text" placeholder="<%= _lp.PROFILE_PROVINCE %>" name="province" value="<%= province %>" class="ios-safari-caret input-colors">
        </li>
         <% } %>
         <li class="required">
-            <input type="text" placeholder="<% if(country == 'US') {print(_lp.CHECKOUT_ZIP_CODE);} else {print(_lp.CHECKOUT_POSTAL_CODE);} %>" name="zipcode" value="<%= zipcode %>" class="ios-safari-caret input-colors">
+            <input type="text" placeholder="<% if(country == 'US') {print(_lp.PROFILE_ZIP_CODE);} else {print(_lp.PROFILE_POSTAL_CODE);} %>" name="zipcode" value="<%= zipcode %>" class="ios-safari-caret input-colors">
         </li>
         <% if(isShippingServices) { %>
         <li>
