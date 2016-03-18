@@ -306,11 +306,11 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 empty = [],
                 address = this.get('addresses'),
                 req = {
-                    street_1: _loc.CHECKOUT_ADDRESS_LINE1,
-                    city: _loc.CHECKOUT_CITY,
-                    state: _loc.CHECKOUT_STATE,
-                    province: _loc.CHECKOUT_PROVINCE,
-                    zipcode: _loc.CHECKOUT_ZIP_CODE
+                    street_1: _loc.PROFILE_ADDRESS_LINE1,
+                    city: _loc.PROFILE_CITY,
+                    state: _loc.PROFILE_STATE,
+                    province: _loc.PROFILE_PROVINCE,
+                    zipcode: _loc.PROFILE_ZIP_CODE
                 };
 
             address = address[address.length -1];
@@ -349,10 +349,10 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
         check: function(dining_option) {
             var err = [];
 
-            !this.get('first_name') && err.push(_loc.CHECKOUT_FIRST_NAME);
-            !this.get('last_name') && err.push(_loc.CHECKOUT_LAST_NAME);
-            !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.CHECKOUT_EMAIL);
-            !this.get('phone') && err.push(_loc.CHECKOUT_PHONE);
+            !this.get('first_name') && err.push(_loc.PROFILE_FIRST_NAME);
+            !this.get('last_name') && err.push(_loc.PROFILE_LAST_NAME);
+            !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.PROFILE_EMAIL_ADDRESS);
+            !this.get('phone') && err.push(_loc.PROFILE_PHONE);
 
             if(this.isNewAddressSelected(dining_option)) {
                 err = err.concat(this._check_delivery_fields());

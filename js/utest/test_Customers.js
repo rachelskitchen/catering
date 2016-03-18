@@ -419,44 +419,44 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
 
             it("`first_name` is empty", function() {
-                expect(model.check().errorMsg.indexOf(_loc.CHECKOUT_FIRST_NAME)).not.toBe(-1);
+                expect(model.check().errorMsg.indexOf(_loc.PROFILE_FIRST_NAME)).not.toBe(-1);
             });
 
             it("`first_name` isn't empty", function() {
                 model.set('first_name', 'test name');
-                expect(model.check().errorMsg.indexOf(_loc.CHECKOUT_FIRST_NAME)).toBe(-1);
+                expect(model.check().errorMsg.indexOf(_loc.PROFILE_FIRST_NAME)).toBe(-1);
             });
 
             it("`last_name` is empty", function() {
-                expect(model.check().errorMsg.indexOf(_loc.CHECKOUT_LAST_NAME)).not.toBe(-1);
+                expect(model.check().errorMsg.indexOf(_loc.PROFILE_LAST_NAME)).not.toBe(-1);
             });
 
             it("`last_name` isn't empty", function() {
                 model.set('last_name', 'test name');
-                expect(model.check().errorMsg.indexOf(_loc.CHECKOUT_LAST_NAME)).toBe(-1);
+                expect(model.check().errorMsg.indexOf(_loc.PROFILE_LAST_NAME)).toBe(-1);
             });
 
             it("`email` is empty", function() {
-                expect(model.check().errorMsg.indexOf(_loc.CHECKOUT_EMAIL)).not.toBe(-1);
+                expect(model.check().errorMsg.indexOf(_loc.PROFILE_EMAIL_ADDRESS)).not.toBe(-1);
             });
 
             it("`email` is invalid", function() {
                 model.set('email', 'test');
-                expect(model.check().errorMsg.indexOf(_loc.CHECKOUT_EMAIL)).not.toBe(-1);
+                expect(model.check().errorMsg.indexOf(_loc.PROFILE_EMAIL_ADDRESS)).not.toBe(-1);
             });
 
             it("`email` is valid", function() {
                 model.set('email', 'test@revelsystems.com');
-                expect(model.check().errorMsg.indexOf(_loc.CHECKOUT_EMAIL)).toBe(-1);
+                expect(model.check().errorMsg.indexOf(_loc.PROFILE_EMAIL_ADDRESS)).toBe(-1);
             });
 
             it("`phone` is empty", function() {
-                expect(model.check().errorMsg.indexOf(_loc.CHECKOUT_PHONE)).not.toBe(-1);
+                expect(model.check().errorMsg.indexOf(_loc.PROFILE_PHONE)).not.toBe(-1);
             });
 
             it("`phone` isn't empty", function() {
                 model.set('phone', '8236487234');
-                expect(model.check().errorMsg.indexOf(_loc.CHECKOUT_PHONE)).toBe(-1);
+                expect(model.check().errorMsg.indexOf(_loc.PROFILE_PHONE)).toBe(-1);
             });
 
             it("need to check address fields", function() {
