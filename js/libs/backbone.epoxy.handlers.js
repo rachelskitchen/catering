@@ -302,6 +302,7 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         },
         // restore correct caret position after el.value update
         set: function($el, value) {
+            if (!value) value = '';
             var valueLength = value.toString().length,
                 prevLength = this.prevValue.toString().length,
                 range = Math.abs(this.startPos - this.endPos),
