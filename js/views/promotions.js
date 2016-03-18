@@ -66,13 +66,6 @@ define(['factory'], function() {
         }
     });
 
-    App.Views.CorePromotionsView.CorePromotionsMyItemView = App.Views.CorePromotionsView.CorePromotionsListItemView.extend({
-        mode: 'MyItem',
-        bindings: _.extend({}, App.Views.CorePromotionsView.CorePromotionsListItemView.prototype.bindings, {
-            '.promotion__reusable': 'text: select(multiple, _loc.PROMOTION_MULTIPLE_USE, _loc.PROMOTION_SINGLE_USE)'
-        })
-    });
-
     App.Views.CorePromotionsView.CorePromotionsListView = App.Views.FactoryView.extend({
         name: 'promotions',
         mod: 'list',
@@ -100,22 +93,6 @@ define(['factory'], function() {
         }
     });
 
-    App.Views.CorePromotionsView.CorePromotionsMyView = App.Views.FactoryView.extend({
-        name: 'promotions',
-        mod: 'my',
-        itemView: App.Views.CorePromotionsView.CorePromotionsMyItemView,
-        initialize: function() {
-            var promotions = this.model.get('promotions');
-            this.bindingSources = _.extend({}, this.bindingSources, {
-                _available: promotions.where({'is_applicable': true})
-            });
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-        },
-        bindings: {
-            '.promotions-available': 'collection: $_available'
-        }
-    });
-
     App.Views.CorePromotionsView.CorePromotionsItemView = App.Views.FactoryView.extend({
         name: 'promotions',
         mod: 'item',
@@ -130,7 +107,6 @@ define(['factory'], function() {
         App.Views.PromotionsView = {};
         App.Views.PromotionsView.PromotionsListView = App.Views.CorePromotionsView.CorePromotionsListView;
         App.Views.PromotionsView.PromotionsListItemView = App.Views.CorePromotionsView.CorePromotionsListItemView;
-        App.Views.PromotionsView.PromotionsMyView = App.Views.CorePromotionsView.CorePromotionsMyView;
         App.Views.PromotionsView.PromotionsItemView = App.Views.CorePromotionsView.CorePromotionsItemView;
         App.Views.PromotionsView.PromotionsTopLineView = App.Views.CorePromotionsView.CorePromotionsTopLineView;
     });
