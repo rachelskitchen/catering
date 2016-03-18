@@ -43,7 +43,7 @@ define(['factory'], function() {
             '.promotion__name': 'text: name',
             '.promotion__link': 'toggle: is_applicable',
             '.promotion__description': 'toggle: not(is_applicable)', // , text: info
-            '.promotion__apply': 'text: select(is_applied, _loc.PROMOTION_ADDED, _loc.PROMOTION_ADD), classes: {added: is_applied, disabled: not(is_applicable)}',
+            '.promotion__apply': 'text: select(is_applied, _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {added: is_applied, disabled: not(is_applicable)}',
         },
         events: {
             'click .promotion__link': 'seeInfo',
@@ -67,7 +67,6 @@ define(['factory'], function() {
     App.Views.CorePromotionsView.CorePromotionsMyItemView = App.Views.CorePromotionsView.CorePromotionsListItemView.extend({
         mode: 'MyItem',
         bindings: _.extend({}, App.Views.CorePromotionsView.CorePromotionsListItemView.prototype.bindings, {
-            '.promotion__apply': 'text: select(is_applied, _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {added: is_applied, disabled: not(is_applicable)}',
             '.promotion__reusable': 'text: select(multiple, _loc.PROMOTION_MULTIPLE_USE, _loc.PROMOTION_SINGLE_USE)'
         })
     });
