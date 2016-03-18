@@ -40,14 +40,16 @@ define(['factory'], function() {
         mod: 'ListItem',
         tagName: 'li',
         bindings: {
+            '.promotion': 'classes: {disabled: not(is_applicable)}',
             '.promotion__name': 'text: name',
-            '.promotion__link': 'toggle: is_applicable',
+            //'.promotion__link': 'toggle: is_applicable',
             '.promotion__description': 'toggle: not(is_applicable)', // , text: info
-            '.promotion__apply': 'text: select(is_applied, _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {added: is_applied, disabled: not(is_applicable)}',
+            '.promotion__apply': 'text: select(is_applied, _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {added: is_applied}',
         },
         events: {
             'click .promotion__link': 'seeInfo',
-            'click .promotion__apply:not(.disabled)': 'apply'
+            //'click .promotion.disabled .promotion__name': 'seeInfo',
+            'click .promotion:not(.disabled) .promotion__apply': 'apply'
         },
         /**
          * Marks the selected promotion as applied.
@@ -60,7 +62,7 @@ define(['factory'], function() {
          * Navigates to Promotion Details screen.
          */
         seeInfo: function() {
-            App.Data.router.navigate('promotion/' + this.model.get('code'), true);
+            App.Data.router.navigate('promotion/' + this.model.get('id'), true);
         }
     });
 
@@ -74,17 +76,16 @@ define(['factory'], function() {
     App.Views.CorePromotionsView.CorePromotionsListView = App.Views.FactoryView.extend({
         name: 'promotions',
         mod: 'list',
+        itemView: App.Views.CorePromotionsView.CorePromotionsListItemView,
         initialize: function() {
             var promotions = this.model.get('promotions');
-            this.listenTo(promotions, 'promotionsLoaded', function() {
-                this.getBinding('$_available').set(promotions.where({'is_applicable': true}));
-                this.getBinding('$_other').set(promotions.where({'is_applicable': false}));
-            });
+            this.listenTo(promotions, 'promotionsLoaded', this.updateBindings);
             this.bindingSources = _.extend({}, this.bindingSources, {
                 _available: new Backbone.Collection(),
                 _other: new Backbone.Collection()
             });
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.updateBindings();
         },
         bindings: {
             '.promotions-other': 'toggle: length($_other)',
@@ -92,12 +93,17 @@ define(['factory'], function() {
             '.promotions-available__list': 'collection: $_available',
             '.promotions-other__list': 'collection: $_other'
         },
-        itemView: App.Views.CorePromotionsView.CorePromotionsListItemView
+        updateBindings: function() {
+            var promotions = this.model.get('promotions');
+            this.getBinding('$_available').set(promotions.where({'is_applicable': true}));
+            this.getBinding('$_other').set(promotions.where({'is_applicable': false}));
+        }
     });
 
     App.Views.CorePromotionsView.CorePromotionsMyView = App.Views.FactoryView.extend({
         name: 'promotions',
         mod: 'my',
+        itemView: App.Views.CorePromotionsView.CorePromotionsMyItemView,
         initialize: function() {
             var promotions = this.model.get('promotions');
             this.bindingSources = _.extend({}, this.bindingSources, {
@@ -107,8 +113,7 @@ define(['factory'], function() {
         },
         bindings: {
             '.promotions-available': 'collection: $_available'
-        },
-        itemView: App.Views.CorePromotionsView.CorePromotionsMyItemView
+        }
     });
 
     App.Views.CorePromotionsView.CorePromotionsItemView = App.Views.FactoryView.extend({

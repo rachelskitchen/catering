@@ -73,7 +73,7 @@ define(["main_router"], function(main_router) {
             "profile_forgot_password": "profile_forgot_password",
             "promotions": "promotions_list",
             "my_promotions": "promotions_my",
-            "promotion/:id_promotion": "promotion",
+            "promotion/:id_promotion": "promotion_details",
             "profile_payments": "profile_payments",
             "*other": "index"
         },
@@ -1850,12 +1850,14 @@ define(["main_router"], function(main_router) {
             });
         },
         promotions_my: new Function,
-        promotion: function(code) {
+        promotion_details: function(id) {
             var self = this,
                 fetching = Backbone.$.Deferred(),
                 promotions,
                 model,
                 content;
+
+            id = Number(id);
 
             this.prepare('promotions', function() {
                 if (App.Data.promotions) {
@@ -1868,12 +1870,13 @@ define(["main_router"], function(main_router) {
                     promotions = App.Data.promotions;
 
                     promotions.needToUpdate && promotions.update();
-                    model = promotions.findWhere({'code': code});
+                    model = promotions.findWhere({id: id});
                     content = {
                         modelName: 'Promotions',
                         mod: 'Item',
                         model: model,
-                        cacheId: true
+                        cacheId: true,
+                        init_cache_session: true // 'true' means that the view will be removed from cache before creating a new one.
                     };
 
                     App.Data.header.set({

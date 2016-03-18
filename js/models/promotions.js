@@ -53,18 +53,23 @@ define(['backbone', 'collection_sort'], function(Backbone) {
          */
         defaults: {
             /**
-             * Campaign name.
+             * Campaign id.
              * @type {?string}
+             */
+            id: null,
+            /**
+             * Campaign name.
+             * @type {string}
              */
             name: '',
             /**
              * Campaign code.
-             * @type {?string}
+             * @type {string}
              */
             code: '',
             /**
              * Campaign barcode.
-             * @type {?string}
+             * @type {string}
              */
             barcode: '',
             /**
@@ -167,19 +172,19 @@ define(['backbone', 'collection_sort'], function(Backbone) {
         addAjaxJson: function(promotions) {
             if (!Array.isArray(promotions)) return;
             var self = this,
-                duplicate;
+                modelToUpdate;
 
-            promotions.forEach(function(model, index) {
-                if (!(model instanceof Object)) return;
-                duplicate = self.find(function(_model) {
-                    var code = model instanceof Backbone.Model ? model.get('code') : model.code;
-                    return code === _model.get('code');
+            promotions.forEach(function(promotion, index) {
+                if (!(promotion instanceof Object)) return;
+                modelToUpdate = self.find(function(model) {
+                    var id = promotion instanceof Backbone.Model ? promotion.get('id') : promotion.id;
+                    return id === model.get('id');
                 });
-                if (duplicate) {
-                    duplicate.set(model);
+                if (modelToUpdate) {
+                    modelToUpdate.set(promotion);
                 }
                 else {
-                    self.add(model);
+                    self.add(promotion);
                 }
             });
         },
@@ -207,9 +212,6 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                 success: function(response) {
                     if (response.status === 'OK') {
                         self.addAjaxJson(response.data);
-                        // response.data.forEach(function(promotion, index) {
-                        //     self.add(promotion);
-                        // });
                         fetching.resolve();
                         self.trigger('promotionsLoaded');
                     }
