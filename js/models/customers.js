@@ -730,6 +730,8 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * Changes attributes values on default values. Emits `onLogout` event.
          */
         logout: function() {
+            this.defaults.addresses = [];
+
             docCookies.removeItem(cookieName, cookiePath, cookieDomain);
 
             for(var attr in this.defaults) {

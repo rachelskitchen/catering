@@ -2,10 +2,20 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
     describe("App.Models.Customer", function() {
 
-        var model, def, customer1;
+        var model, def, customer1,
+            dontSetCustomerFromCookie = true;
 
         beforeEach(function() {
+            // set spyOn for setCustomerFromCookie() to avoid customer restoring from cookie
+            var setCustomerFromCookie = App.Models.Customer.prototype.setCustomerFromCookie;
+            spyOn(App.Models.Customer.prototype, 'setCustomerFromCookie').and.callFake(function() {
+                // if (!dontSetCustomerFromCookie) {
+                //     return setCustomerFromCookie.apply(model, arguments);
+                // }
+            });
+
             model = new App.Models.Customer();
+
             def = deepClone(data.defaults);
             customer1 = deepClone(data.customer1);
         });
@@ -39,7 +49,6 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             var page_visibility = require('page_visibility');
             spyOn(model, 'setAddressesIndexes');
             spyOn(model, 'listenTo');
-            spyOn(model, 'setCustomerFromCookie');
             spyOn(page_visibility, 'on');
 
             model.initialize();
@@ -1195,12 +1204,15 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 access_token: '13123213'
             });
 
+            model.get('addresses').push({city: 'SF'});
+
             model.logout();
 
             expect(docCookies.removeItem).toHaveBeenCalledWith('user', '/weborder', 'revelup.com');
             expect(model.removePayments).toHaveBeenCalled();
             expect(model.trigger).toHaveBeenCalledWith('onLogout');
             expect(model.toJSON()).toEqual(model.defaults);
+            expect(model.defaults.addresses).toEqual([]);
         });
 
         describe("signup()", function() {
@@ -1466,7 +1478,8 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 last_name = 'Last Name',
                 phone = '12321383232',
                 user_id = 7,
-                dataInAPIFormat = 123;
+                dataInAPIFormat = 123,
+                headers = {Authorization: "Bearer Tch5zvK5tSL1AjWIO3YU4NXeMENG6J1UNdxv3D2gJKUrIGWpHzcNnf7qdQ9s"};
 
             beforeEach(function() {
                 originalEmail = model.get('email');
@@ -1492,7 +1505,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 });
 
                 spyOn(model, 'getCustomerInAPIFormat').and.returnValue(dataInAPIFormat);
-                spyOn(model, 'getAuthorizationHeader');
+                spyOn(model, 'getAuthorizationHeader').and.returnValue(headers);
                 spyOn(model, 'updateCookie');
                 spyOn(model, 'logout');
                 spyOn(model, 'trigger');
@@ -1515,6 +1528,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(ajaxOpts.contentType).toBe('application/json');
                 expect(typeof ajaxOpts.data).toBe('string');
                 expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(ajaxOpts.headers).toEqual(headers);
                 expect(data).toEqual({
                     email: email,
                     first_name: first_name,
@@ -1530,6 +1544,116 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(model.getCustomerInAPIFormat).toHaveBeenCalled();
                 expect(model.updateCookie).toHaveBeenCalledWith(dataInAPIFormat);
                 expect(model.trigger).toHaveBeenCalledWith('onUserUpdate');
+            });
+
+            it("failure response, `jqXHR.responseJSON` isn't object", function() {
+                model.updateCustomer().reject({
+                    status: 400
+                });
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserValidationError', {});
+            });
+
+            it("failure response, `jqXHR.responseJSON` is object", function() {
+                var responseJSON = {a: 1};
+
+                model.updateCustomer().reject({
+                    status: 400,
+                    responseJSON: responseJSON
+                });
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserValidationError', responseJSON);
+            });
+
+            it("failure response, `jqXHR.status` is 403", function() {
+                model.updateCustomer().reject({
+                    status: 403
+                });
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserSessionExpired');
+                expect(model.logout).toHaveBeenCalled();
+            });
+
+            it("failure response, `jqXHR.status` is 404", function() {
+                model.updateCustomer().reject({
+                    status: 404
+                });
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserNotFound');
+            });
+
+            it("failure response, `jqXHR.status` is 400", function() {
+                var responseJSON = {a: 1};
+
+                model.updateCustomer().reject({
+                    status: 400,
+                    responseJSON: responseJSON
+                });
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserValidationError', responseJSON);
+            });
+
+            it("failure response, `jqXHR.status` is neither 403 nor 404 nor 400", function() {
+                var responseJSON = {a: 1};
+
+                model.updateCustomer().reject({
+                    status: 401,
+                    responseJSON: responseJSON
+                });
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserAPIError', responseJSON);
+            });
+        });
+
+        describe("createAddress()", function() {
+            var ajaxMock, ajaxOpts, address,
+                dataInAPIFormat = 123,
+                headers = {Authorization: "Bearer Tch5zvK5tSL1AjWIO3YU4NXeMENG6J1UNdxv3D2gJKUrIGWpHzcNnf7qdQ9s"};
+
+            beforeEach(function() {
+                address = {city: 'SF'};
+
+                spyOn(Backbone.$, 'ajax').and.callFake(function() {
+                    ajaxMock = Backbone.$.Deferred();
+                    ajaxOpts = arguments[0];
+                    ajaxMock.done(ajaxOpts.success.bind(model));
+                    ajaxMock.fail(ajaxOpts.error.bind(model));
+                    return ajaxMock;
+                });
+
+                spyOn(model, 'convertAddressToAPIFormat').and.callFake(function() {
+                    return address;
+                });
+                spyOn(model, 'getCustomerInAPIFormat').and.returnValue(dataInAPIFormat);
+                spyOn(model, 'getAuthorizationHeader').and.returnValue(headers);
+                spyOn(model, 'setProfileAddress');
+                spyOn(model, 'updateCookie');
+                spyOn(model, 'logout');
+                spyOn(model, 'trigger');
+            });
+
+            function commonExpectations() {
+                var data = JSON.parse(ajaxOpts.data);
+                expect(ajaxOpts.url.indexOf('/customers-auth/v1/customers/addresses/')).not.toBe(-1);
+                expect(ajaxOpts.method).toBe('POST');
+                expect(ajaxOpts.contentType).toBe('application/json');
+                expect(typeof ajaxOpts.data).toBe('string');
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(ajaxOpts.headers).toEqual(headers);
+                expect(ajaxOpts.data).toEqual(JSON.stringify(address));
+            }
+
+            it("`address` param isn't object", function() {
+                model.createAddress();
+
+                expect(model.convertAddressToAPIFormat).not.toHaveBeenCalled();
+                expect(Backbone.$.ajax).not.toHaveBeenCalled();
             });
         });
     });
