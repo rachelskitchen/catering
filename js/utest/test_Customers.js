@@ -1094,12 +1094,20 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             }
 
             it("successful log in", function() {
-                var data = {a:1};
+                var data = {
+                    a:1,
+                    customer: {payments: [1, 2, 3]},
+                    token: {scope: "*"}
+                }, _data = deepClone(data);
+
                 ajaxMock.resolve(data);
 
+                delete _data.customer.payments;
+                delete _data.token.scope;
+
                 commonExpectations();
-                expect(model.updateCookie).toHaveBeenCalledWith(data);
-                expect(model.setCustomerFromAPI).toHaveBeenCalledWith(data);
+                expect(model.updateCookie).toHaveBeenCalledWith(_data);
+                expect(model.setCustomerFromAPI).toHaveBeenCalledWith(_data);
                 expect(model.initPayments).toHaveBeenCalled();
             });
 
@@ -1448,6 +1456,81 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             model.setProfileAddress(address);
 
             expect(model.getProfileAddress()).toBe(address);
+        });
+
+        describe("updateCustomer()", function() {
+            var originalEmail, originalFirstName, originalLastName,
+                originalPhone, originalUserId, ajaxMock, ajaxOpts,
+                email = 'test@revelsystems.com',
+                first_name = 'First Name',
+                last_name = 'Last Name',
+                phone = '12321383232',
+                user_id = 7,
+                dataInAPIFormat = 123;
+
+            beforeEach(function() {
+                originalEmail = model.get('email');
+                originalFirstName = model.get('first_name');
+                originalLastName = model.get('last_name');
+                originalPhone = model.get('phone');
+                originalUserId = model.get('user_id');
+
+                model.set({
+                    user_id: user_id,
+                    email: email,
+                    first_name: first_name,
+                    last_name: last_name,
+                    phone: phone
+                });
+
+                spyOn(Backbone.$, 'ajax').and.callFake(function() {
+                    ajaxMock = Backbone.$.Deferred();
+                    ajaxOpts = arguments[0];
+                    ajaxMock.done(ajaxOpts.success.bind(model));
+                    ajaxMock.fail(ajaxOpts.error.bind(model));
+                    return ajaxMock;
+                });
+
+                spyOn(model, 'getCustomerInAPIFormat').and.returnValue(dataInAPIFormat);
+                spyOn(model, 'getAuthorizationHeader');
+                spyOn(model, 'updateCookie');
+                spyOn(model, 'logout');
+                spyOn(model, 'trigger');
+            });
+
+            afterEach(function() {
+                model.set({
+                    user_id: originalUserId,
+                    email: originalEmail,
+                    first_name: originalFirstName,
+                    last_name: originalLastName,
+                    phone: originalPhone
+                });
+            });
+
+            function commonExpectations() {
+                var data = JSON.parse(ajaxOpts.data);
+                expect(ajaxOpts.url.indexOf('/customers-auth/v1/customers/customers/' + user_id + '/')).not.toBe(-1);
+                expect(ajaxOpts.method).toBe('PATCH');
+                expect(ajaxOpts.contentType).toBe('application/json');
+                expect(typeof ajaxOpts.data).toBe('string');
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(data).toEqual({
+                    email: email,
+                    first_name: first_name,
+                    last_name: last_name,
+                    phone_number: phone
+                });
+            }
+
+            it("successful response", function() {
+                model.updateCustomer().resolve();
+
+                commonExpectations();
+                expect(model.getCustomerInAPIFormat).toHaveBeenCalled();
+                expect(model.updateCookie).toHaveBeenCalledWith(dataInAPIFormat);
+                expect(model.trigger).toHaveBeenCalledWith('onUserUpdate');
+            });
         });
     });
 });
