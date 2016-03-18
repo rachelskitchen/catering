@@ -1087,18 +1087,33 @@ define(["backbone", "factory"], function(Backbone) {
                 var mainModel = App.Data.mainModel,
                     _address = address.toJSON(),
                     requests = updateBasicDetails + updateAddress,
-                    basicXHR, addressXHR;
+                    basicXHR, addressXHR, check_customer, errorFields = [],
+                    error = App.Data.errors.alert.bind(App.Data.errors);
 
                 // show spinner
                 requests > 0 && mainModel.trigger('loadStarted');
 
                 // update basic details
                 if (updateBasicDetails) {
-                    basicXHR = customer.updateCustomer();
-                    basicXHR.done(function() {
-                        updateBasicDetails = false;
-                    });
-                    basicXHR.always(hideSpinner);
+                    check_customer = customer.check();
+                    if (check_customer.status === 'OK') {
+                        basicXHR = customer.updateCustomer();
+                        basicXHR.done(function() {
+                            updateBasicDetails = false;
+                        });
+                        basicXHR.always(hideSpinner);
+                    }
+                    else if (check_customer.status === 'ERROR_EMPTY_FIELDS') {
+                        if (App.Skins.WEBORDER == App.skin || App.Skins.WEBORDER_MOBILE == App.skin) {
+                            errorFields.splice.apply(errorFields, [0, 0].concat(check_customer.errorList));
+                        } else {
+                            errorFields = errorFields.concat(check_customer.errorList);
+                        }
+                    }
+                    if (errorFields.length) {
+                        error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, errorFields.join(', '))); // user notification
+                        hideSpinner();
+                    }
                 }
 
                 // update address
