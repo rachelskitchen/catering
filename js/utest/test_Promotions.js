@@ -38,7 +38,7 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
         var collection;
 
         beforeEach(function() {
-            collection = new App.Collections.Rewards();
+            collection = new App.Collections.Promotions();
         });
 
         it('Environment', function() {
@@ -50,11 +50,52 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
             expect(collection.models[0] instanceof App.Models.Promotion).toBe(true);
         });
 
-        it('initialize()', function() {
-            App.Data.myorder = new Backbone.Model();
-            collection = new App.Collections.Rewards();
-            App.Data.myorder.trigger('add');
-            expect(collection.needToUpdate).toBe(true);
+        describe('initialize()', function() {
+            it('`needToUpdate` must be true after order update', function() {
+                App.Data.myorder = new Backbone.Model();
+                collection = new App.Collections.Promotions();
+                expect(collection.needToUpdate).toBe(false);
+
+                App.Data.myorder.trigger('add');
+                expect(collection.needToUpdate).toBe(true);
+                collection.needToUpdate = false;
+
+                App.Data.myorder.trigger('change');
+                expect(collection.needToUpdate).toBe(true);
+                collection.needToUpdate = false;
+
+                App.Data.myorder.trigger('remove');
+                expect(collection.needToUpdate).toBe(true);
+                collection.needToUpdate = false;
+            });
+
+            describe('`onPromotionApply` event', function() {
+                beforeEach(function() {
+                    App.Models.Promotion.prototype.listenTo = jasmine.createSpy();
+                    collection = new App.Collections.Promotions();
+                });
+
+                it('some promotion is applied, another promotion gets applied', function() {
+                    collection.add(promotionsData.campaigns);
+                    collection.models[0].set('is_applied', true);
+                    collection.models[1].set('is_applied', true);
+                    collection.trigger('onPromotionApply', collection.models[1]);
+                    expect(collection.models[1].get('is_applied')).toBe(true);
+                    expect(collection.models[0].get('is_applied')).toBe(false);
+                });
+            });
+        });
+
+        describe('addAjaxJson(promotions)', function() {
+            it('`promotions` is not array', function() {
+                var result = collection.addAjaxJson('not array');
+                expect(collection.length).toBe(0);
+                expect(result).toBeUndefined();
+            });
+
+            it('`promotions` is array', function() {
+                
+            });
         });
 
     });
