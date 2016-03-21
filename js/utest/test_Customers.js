@@ -1655,6 +1655,488 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(model.convertAddressToAPIFormat).not.toHaveBeenCalled();
                 expect(Backbone.$.ajax).not.toHaveBeenCalled();
             });
+
+            it("`address` param is object", function() {
+                model.createAddress(address).resolve();
+                commonExpectations();
+            });
+
+            it("successful response", function() {
+                var data = 123;
+                model.createAddress(address).resolve(data);
+
+                commonExpectations();
+                expect(model.setProfileAddress).toHaveBeenCalledWith(data);
+                expect(model.getCustomerInAPIFormat).toHaveBeenCalled();
+                expect(model.updateCookie).toHaveBeenCalledWith(dataInAPIFormat);
+                expect(model.trigger).toHaveBeenCalledWith('onUserAddressCreated');
+            });
+
+            it("failure response, `jqXHR.responseJSON` isn't object", function() {
+                model.createAddress(address).reject({});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserAPIError', {});
+            });
+
+            it("failure response, `jqXHR.responseJSON` is object", function() {
+                var responseJSON = {a: 1};
+                model.createAddress(address).reject({responseJSON: responseJSON});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserAPIError', responseJSON);
+            });
+
+            it("failure response, `jqXHR.status` is 403", function() {
+                model.createAddress(address).reject({status: 403});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserSessionExpired');
+                expect(model.logout).toHaveBeenCalled();
+            });
+
+            it("failure response, `jqXHR.status` is 400", function() {
+                var responseJSON = {a: 1};
+                model.createAddress(address).reject({
+                    status: 400,
+                    responseJSON: responseJSON
+                });
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserValidationError', responseJSON);
+            });
+
+            it("failure response, `jqXHR.status` is neither 400 nor 403", function() {
+                var responseJSON = {a: 1};
+                model.createAddress(address).reject({
+                    status: 404,
+                    responseJSON: responseJSON
+                });
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserAPIError', responseJSON);
+            });
+        });
+
+        describe("updateAddress()", function() {
+            var ajaxMock, ajaxOpts, address,
+                dataInAPIFormat = 123,
+                headers = {Authorization: "Bearer Tch5zvK5tSL1AjWIO3YU4NXeMENG6J1UNdxv3D2gJKUrIGWpHzcNnf7qdQ9s"};
+
+            beforeEach(function() {
+                address = {id: 12, city: 'SF'};
+
+                spyOn(Backbone.$, 'ajax').and.callFake(function() {
+                    ajaxMock = Backbone.$.Deferred();
+                    ajaxOpts = arguments[0];
+                    ajaxMock.done(ajaxOpts.success.bind(model));
+                    ajaxMock.fail(ajaxOpts.error.bind(model));
+                    return ajaxMock;
+                });
+
+                spyOn(model, 'convertAddressToAPIFormat').and.callFake(function() {
+                    return address;
+                });
+                spyOn(model, 'getCustomerInAPIFormat').and.returnValue(dataInAPIFormat);
+                spyOn(model, 'getAuthorizationHeader').and.returnValue(headers);
+                spyOn(model, 'setProfileAddress');
+                spyOn(model, 'updateCookie');
+                spyOn(model, 'logout');
+                spyOn(model, 'trigger');
+            });
+
+            function commonExpectations() {
+                expect(ajaxOpts.url.indexOf('/customers-auth/v1/customers/addresses/' + address.id + '/')).not.toBe(-1);
+                expect(ajaxOpts.method).toBe('PATCH');
+                expect(ajaxOpts.contentType).toBe('application/json');
+                expect(typeof ajaxOpts.data).toBe('string');
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(ajaxOpts.headers).toEqual(headers);
+                expect(ajaxOpts.data).toEqual(JSON.stringify(address));
+            }
+
+            it("`address` param isn't object", function() {
+                model.updateAddress();
+
+                expect(model.convertAddressToAPIFormat).not.toHaveBeenCalled();
+                expect(Backbone.$.ajax).not.toHaveBeenCalled();
+            });
+
+            it("`address` param is object", function() {
+                model.updateAddress(address).resolve();
+                commonExpectations();
+            });
+
+            it("successful response", function() {
+                var data = 123;
+                model.updateAddress(address).resolve(data);
+
+                commonExpectations();
+                expect(model.setProfileAddress).toHaveBeenCalledWith(data);
+                expect(model.getCustomerInAPIFormat).toHaveBeenCalled();
+                expect(model.updateCookie).toHaveBeenCalledWith(dataInAPIFormat);
+                expect(model.trigger).toHaveBeenCalledWith('onUserAddressUpdate');
+            });
+
+            it("failure response, `jqXHR.responseJSON` isn't object", function() {
+                model.updateAddress(address).reject({});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserAPIError', {});
+            });
+
+            it("failure response, `jqXHR.responseJSON` is object", function() {
+                var responseJSON = {a: 1};
+                model.updateAddress(address).reject({responseJSON: responseJSON});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserAPIError', responseJSON);
+            });
+
+            it("failure response, `jqXHR.status` is 403", function() {
+                model.updateAddress(address).reject({status: 403});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserSessionExpired');
+                expect(model.logout).toHaveBeenCalled();
+            });
+
+            it("failure response, `jqXHR.status` is 404", function() {
+                model.updateAddress(address).reject({status: 404});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserAddressNotFound');
+            });
+
+            it("failure response, `jqXHR.status` is 400", function() {
+                var responseJSON = {a: 1};
+                model.updateAddress(address).reject({
+                    status: 400,
+                    responseJSON: responseJSON
+                });
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserValidationError', responseJSON);
+            });
+
+            it("failure response, `jqXHR.status` is neither 403 nor 404 nor 400", function() {
+                var responseJSON = {a: 1};
+                model.updateAddress(address).reject({
+                    status: 401,
+                    responseJSON: responseJSON
+                });
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserAPIError', responseJSON);
+            });
+        });
+
+        describe("changePassword()", function() {
+            var originalUserId, originalPassword, originalConfirmPassword, ajaxMock, ajaxOpts,
+                headers = {Authorization: "Bearer Tch5zvK5tSL1AjWIO3YU4NXeMENG6J1UNdxv3D2gJKUrIGWpHzcNnf7qdQ9s"},
+                user_id = 12,
+                old_password = '123',
+                new_password = '321';
+
+            beforeEach(function() {
+                originalUserId = model.get('user_id');
+                originalPassword = model.get('password');
+                originalConfirmPassword = model.get('confirm_password');
+
+                model.set({
+                    user_id: user_id,
+                    password: old_password,
+                    confirm_password: new_password
+                });
+
+                spyOn(Backbone.$, 'ajax').and.callFake(function() {
+                    ajaxMock = Backbone.$.Deferred();
+                    ajaxOpts = arguments[0];
+                    ajaxMock.done(ajaxOpts.success.bind(model));
+                    ajaxMock.fail(ajaxOpts.error.bind(model));
+                    return ajaxMock;
+                });
+
+                spyOn(model, 'getAuthorizationHeader').and.returnValue(headers);
+                spyOn(model, 'clearPasswords');
+                spyOn(model, 'logout');
+                spyOn(model, 'trigger');
+            });
+
+            afterEach(function() {
+                model.set({
+                    user_id: originalUserId,
+                    password: originalPassword,
+                    confirm_password: originalConfirmPassword
+                });
+            });
+
+            function commonExpectations() {
+                expect(ajaxOpts.url.indexOf('/customers-auth/v1/customers/change-password/' + user_id + '/')).not.toBe(-1);
+                expect(ajaxOpts.method).toBe('POST');
+                expect(ajaxOpts.contentType).toBe('application/json');
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(ajaxOpts.headers).toEqual(headers);
+                expect(ajaxOpts.data).toEqual(JSON.stringify({
+                    old_password: old_password,
+                    new_password: new_password
+                }));
+            }
+
+            it("successful response", function() {
+                model.changePassword().resolve();
+
+                commonExpectations();
+                expect(model.clearPasswords).toHaveBeenCalled();
+                expect(model.trigger).toHaveBeenCalledWith('onPasswordChange');
+            });
+
+            it("failure response, `jqXHR.responseJSON` isn't object", function() {
+                model.changePassword().reject({});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserAPIError', {});
+            });
+
+            it("failure response, `jqXHR.responseJSON` is object", function() {
+                var responseJSON = {a: 123};
+                model.changePassword().reject({responseJSON: responseJSON});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserAPIError', responseJSON);
+            });
+
+            it("failure response, `jqXHR.status` is 403", function() {
+                model.changePassword().reject({status: 403});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserSessionExpired');
+                expect(model.logout).toHaveBeenCalled();
+            });
+
+            it("failure response, `jqXHR.status` is 404", function() {
+                model.changePassword().reject({status: 404});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onPasswordInvalid');
+            });
+
+            it("failure response, `jqXHR.status` is 400", function() {
+                var responseJSON = {a: 123};
+                model.changePassword().reject({
+                    status: 400,
+                    responseJSON: responseJSON
+                });
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserValidationError', responseJSON);
+            });
+
+            it("failure response, `jqXHR.status` is neither 403 nor 404 nor 400", function() {
+                var responseJSON = {a: 123};
+                model.changePassword().reject({responseJSON: responseJSON});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserAPIError', responseJSON);
+            });
+        });
+
+        describe("resetPassword()", function() {
+            var originalEmail, ajaxMock, ajaxOpts,
+                email = 'test@revelsystems.com';
+
+            beforeEach(function() {
+                originalEmail = model.get('email');
+
+                model.set({
+                    email: email
+                });
+
+                spyOn(Backbone.$, 'ajax').and.callFake(function() {
+                    ajaxMock = Backbone.$.Deferred();
+                    ajaxOpts = arguments[0];
+                    ajaxMock.done(ajaxOpts.success.bind(model));
+                    ajaxMock.fail(ajaxOpts.error.bind(model));
+                    return ajaxMock;
+                });
+
+                spyOn(model, 'trigger');
+            });
+
+            afterEach(function() {
+                model.set({
+                    email: originalEmail
+                });
+            });
+
+            function commonExpectations() {
+                expect(ajaxOpts.url.indexOf('/customers-auth/v1/customers/reset-password/')).not.toBe(-1);
+                expect(ajaxOpts.method).toBe('POST');
+                expect(ajaxOpts.contentType).toBe('application/json');
+                expect(ajaxOpts.data).toEqual(JSON.stringify({
+                    email: email
+                }));
+            }
+
+            it("successful response", function() {
+                model.resetPassword().resolve();
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onPasswordReset');
+            });
+
+            it("failure response, `jqXHR.responseJSON` isn't object", function() {
+                model.resetPassword().reject({});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserAPIError', {});
+            });
+
+            it("failure response, `jqXHR.responseJSON` is object", function() {
+                var responseJSON = {a: 123};
+                model.resetPassword().reject({responseJSON: responseJSON});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserAPIError', responseJSON);
+            });
+
+            it("failure response, `jqXHR.status` is 205", function() {
+                model.resetPassword().reject({status: 205});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onPasswordReset');
+            });
+
+            it("failure response, `jqXHR.status` is 400", function() {
+                var responseJSON = {a: 123};
+                model.resetPassword().reject({
+                    status: 400,
+                    responseJSON: responseJSON
+                });
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onPasswordResetError', responseJSON);
+            });
+
+            it("failure response, `jqXHR.status` is 404", function() {
+                var responseJSON = {a: 123};
+                model.resetPassword().reject({
+                    status: 404,
+                    responseJSON: responseJSON
+                });
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onPasswordResetCustomerError', responseJSON);
+            });
+
+            it("failure response, `jqXHR.status` is neither 205 nor 404 nor 400", function() {
+                var responseJSON = {a: 123};
+                model.resetPassword().reject({responseJSON: responseJSON});
+
+                commonExpectations();
+                expect(model.trigger).toHaveBeenCalledWith('onUserAPIError', responseJSON);
+            });
+        });
+
+        describe("convertAddressToAPIFormat()", function() {
+            var address;
+
+            beforeEach(function() {
+                address = {
+                    city: "SF",
+                    zipcode: "94133",
+                    country: "RU"
+                };
+            });
+
+            it("`address` param isn't object", function() {
+                var primitives = ['asd', 12, null, undefined, true];
+
+                primitives.forEach(function(value) {
+                    expect(model.convertAddressToAPIFormat(value)).toBe(value);
+                });
+            });
+
+            it("`address` param is object, `address.country` is neither 'US' nor 'CA'", function() {
+                expect(model.convertAddressToAPIFormat(address)).toEqual(_.extend(address, {
+                    postal_code: address.zipcode,
+                    country_code: address.country,
+                    region: null
+                }));
+            });
+
+            it("`address` param is object, `address.country` is 'US'", function() {
+                address.country = 'US';
+                address.state = 'CA';
+
+                expect(model.convertAddressToAPIFormat(address)).toEqual(_.extend(address, {
+                    postal_code: address.zipcode,
+                    country_code: address.country,
+                    region: address.state
+                }));
+            });
+
+            it("`address` param is object, `address.country` is 'CA'", function() {
+                address.country = 'CA';
+                address.province = 'ON';
+
+                expect(model.convertAddressToAPIFormat(address)).toEqual(_.extend(address, {
+                    postal_code: address.zipcode,
+                    country_code: address.country,
+                    region: address.province
+                }));
+            });
+        });
+
+        describe("convertAddressFromAPIFormat()", function() {
+            var address;
+
+            beforeEach(function() {
+                address = {
+                    city: "SF",
+                    postal_code: "94133",
+                    country_code: "RU"
+                };
+            });
+
+            it("`address` param isn't object", function() {
+                var primitives = ['asd', 12, null, undefined, true];
+
+                primitives.forEach(function(value) {
+                    expect(model.convertAddressFromAPIFormat(value)).toBe(value);
+                });
+            });
+
+            it("`address` param is object, `address.country` is neither 'US' nor 'CA'", function() {
+                expect(model.convertAddressFromAPIFormat(address)).toEqual(_.extend(address, {
+                    zipcode: address.postal_code,
+                    country: address.country_code,
+                    state: '',
+                    province: ''
+                }));
+            });
+
+            it("`address` param is object, `address.country` is 'US'", function() {
+                address.region = 'CA';
+
+                expect(model.convertAddressFromAPIFormat(address)).toEqual(_.extend(address, {
+                    zipcode: address.postal_code,
+                    country: address.country_code,
+                    state: address.region,
+                    province: ''
+                }));
+            });
+
+            it("`address` param is object, `address.country` is 'CA'", function() {
+                address.region = 'ON';
+
+                expect(model.convertAddressFromAPIFormat(address)).toEqual(_.extend(address, {
+                    zipcode: address.postal_code,
+                    country: address.country_code,
+                    state: '',
+                    province: address.region
+                }));
+            });
         });
     });
 });

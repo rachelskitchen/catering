@@ -121,7 +121,9 @@ define(["backbone", "captcha"], function(Backbone) {
             return Backbone.$.ajax({
                 url: "/weborders/v1/giftcard/" + cardNumber + "/link/",
                 method: "GET",
-                headers: authorizationHeader,
+                headers: _.extend({
+                    WEBORDER_API_KEY: '29312ad1-6ee4-43a6-a63f-0b814acc876f'
+                }, authorizationHeader),
                 data: {
                     establishment_id: App.Data.settings.get('establishment')
                 },
