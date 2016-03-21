@@ -177,8 +177,10 @@ define(['backbone', 'collection_sort'], function(Backbone) {
             promotions.forEach(function(promotion, index) {
                 if (!(promotion instanceof Object)) return;
                 modelToUpdate = self.find(function(model) {
-                    var id = promotion instanceof Backbone.Model ? promotion.get('id') : promotion.id;
-                    return id === model.get('id');
+                    if (promotion instanceof Backbone.Model) {
+                        promotion = promotion.toJSON();
+                    }
+                    return promotion.id === model.get('id') && !_.isEqual(model.toJSON(), promotion);
                 });
                 if (modelToUpdate) {
                     modelToUpdate.set(promotion);

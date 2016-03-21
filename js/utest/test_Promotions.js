@@ -94,7 +94,30 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
             });
 
             it('`promotions` is array', function() {
-                
+                var data = deepClone(promotionsData.campaigns);
+                collection.addAjaxJson(data);
+                expect(collection.length).toBe(promotionsData.campaigns.length);
+
+                var model0 = collection.models[0].toJSON(),
+                    model1Cid = collection.models[1].cid;
+                data[1].is_applicable = false;
+                collection.addAjaxJson(data);
+                // model0 was not changed
+                expect(model0).toEqual(collection.models[0].toJSON());
+                // model1.is_applicable was changed
+                expect(collection.models[1].cid).toBe(model1Cid);
+                expect(collection.models[1].get('is_applicable')).toBe(false);
+            });
+
+            it('getPromotions()', function() {
+                App.Models.Myorder.prototype.item_submit = jasmine.createSpy();
+                var model1 = new App.Models.Myorder(),
+                    model2 = new App.Models.Myorder();
+                App.Data.myorder = new Backbone.Collection([model1, model2]);
+
+                collection.getPromotions();
+                expect(model1.item_submit).toHaveBeenCalled();
+                expect(model2.item_submit).toHaveBeenCalled();
             });
         });
 

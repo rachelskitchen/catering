@@ -1802,6 +1802,11 @@ define(["main_router"], function(main_router) {
                 promotions,
                 content;
 
+            App.Data.mainModel.set({
+                header: headerModes.Promotions,
+                footer: footerModes.None
+            });
+
             this.prepare('promotions', function() {
                 if (App.Data.promotions) {
                     fetching.resolve();
@@ -1832,8 +1837,6 @@ define(["main_router"], function(main_router) {
                     };
 
                     App.Data.mainModel.set({
-                        header: headerModes.Promotions,
-                        footer: footerModes.None,
                         content: content
                     });
 

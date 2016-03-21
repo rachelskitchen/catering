@@ -99,7 +99,7 @@ define(['factory'], function() {
         bindings: {
             '.promotion-details__title-text': 'text: name',
             '.promotion-details__discount-code': 'text: code',
-            '.promotion-details__barcode-img': 'attr: {src: barcode}'
+            '.promotion-details__barcode-img': 'loadSpinner: barcode',
         }
     });
 
