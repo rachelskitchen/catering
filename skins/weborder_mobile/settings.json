@@ -10,7 +10,7 @@
             "model": ["main", "header", "payments", "footer"],
             "templates": ["main", "header", "footer", "profile"],
             "views": ["main", "header", "products", "footer", "profile"],
-            "core": ["geopoint", "stanfordcard", "giftcard", "customers", "payments"],
+            "core": ["geopoint", "stanfordcard", "giftcard", "customers", "payments", "giftcard"],
             "js" : ["jquery.smartbanner"]
         },
         "index": {
