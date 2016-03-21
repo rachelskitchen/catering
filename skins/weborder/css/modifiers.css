@@ -107,6 +107,8 @@
     float: left;
     line-height: 1.4em;
     width: 120px;
+    word-break: normal;
+    word-wrap: break-word;
 }
 
 .modifiers_table .modifier span.title {
@@ -114,8 +116,6 @@
     float: left;
     line-height: 1.4em;
     max-width: 100%;
-    word-break: normal;
-    word-wrap: break-word;
 }
 /* Fix for IE and FF. Bug 39378, 34207 */
 html:not(.ua-webkit) .modifiers_table .modifier span.title {
@@ -249,7 +249,6 @@ span.tooltip {
     -webkit-transition: opacity .2s ease-out;
     -o-transition: opacity .2s ease-out;
     transition: opacity .2s ease-out;
-    word-break: break-word;
 }
 
 span.tooltip:before {
