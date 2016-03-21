@@ -17,7 +17,6 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
         });
 
         it('change:is_applied event', function() {
-            debugger;
             model.collection = new Backbone.Collection();
             spyOn(model.collection, 'trigger');
             App.Data.myorder.checkout = new Backbone.Model();
@@ -109,18 +108,98 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
                 expect(collection.models[1].get('is_applicable')).toBe(false);
             });
 
-            it('getPromotions()', function() {
-                App.Models.Myorder.prototype.item_submit = jasmine.createSpy();
-                var model1 = new App.Models.Myorder(),
-                    model2 = new App.Models.Myorder();
-                App.Data.myorder = new Backbone.Collection([model1, model2]);
+            describe('getPromotions()', function() {
+                var data, rewardsCard, number, jqXHR, url, type, dataType, est,
+                    myorder, order, fetching;
 
-                collection.getPromotions();
-                expect(model1.item_submit).toHaveBeenCalled();
-                expect(model2.item_submit).toHaveBeenCalled();
+                beforeEach(function() {
+                    // URL for reward cards resource
+                    url = '/weborders/campaigns/';
+                    // type of request
+                    type = 'POST';
+                    // expected data type
+                    dataType = 'json';
+                    // jqXHR simulator
+                    jqXHR = $.Deferred();
+                    // establishment
+                    est = 1;
+                    // getPromotions() returns deferred object
+                    fetching = $.Deferred();
+
+                    data = deepClone(promotionsData.campaigns);
+
+                    spyOn(Backbone.$, 'ajax').and.callFake(function(opts) {
+                        jqXHR = _.extend(jqXHR, opts);
+                        jqXHR.done(function() {
+                            opts.success(data);
+                        });
+                        jqXHR.fail(function() {
+                            opts.error();
+                        });
+                        return jqXHR;
+                    });
+
+                    spyOn(App.Data.settings, 'get').and.returnValue(est);
+
+                    myorder = App.Data.myorder;
+                    order = {
+                        item_submit: jasmine.createSpy().and.returnValue({product: 123})
+                    };
+                    App.Data.myorder = [order];
+
+                    spyOn(App.Data.errors, 'alert');
+                    spyOn(collection, 'addAjaxJson');
+                    spyOn(collection, 'trigger');
+                });
+
+                afterEach(function() {
+                    App.Data.myorder = myorder;
+                });
+
+                it('preparation of `items` request parameter', function() {
+                    collection.getPromotions();
+                    expect(order.item_submit).toHaveBeenCalled();
+                });
+
+                it('ajax success', function() {
+                    data = {status: 'OK', data: data};
+                    fetching = collection.getPromotions();
+                    jqXHR.resolve();
+                    expect(App.Data.errors.alert).not.toHaveBeenCalled();
+                    expect(collection.addAjaxJson).toHaveBeenCalledWith(data.data);
+                    expect(collection.trigger).toHaveBeenCalledWith('promotionsLoaded');
+                    expect(fetching.state()).toBe('resolved');
+                });
+
+                it('ajax error', function() {
+                    collection.getPromotions();
+                    jqXHR.reject();
+                    expect(App.Data.errors.alert).toHaveBeenCalledWith(MSG.ERROR_PROMOTIONS_LOAD, true);
+                });
+
+                function expectRequestParameters() {
+                    expect(jqXHR.url).toBe(url);
+                    expect(jqXHR.type).toBe(type);
+                    expect(jqXHR.dataType).toBe(dataType);
+                    expect(JSON.parse(jqXHR.data)).toEqual({
+                        establishmentId: 1,
+                        items: [{product: 123}],
+                        orderInfo: {
+                            rewards_card: {
+                                number: '123456789'
+                            }
+                        },
+                        captchaKey : captchaKey,
+                        captchaValue : captchaValue
+                    });
+                }
             });
-        });
 
+            describe('init()', function() {
+
+            });
+
+        });
     });
 
 });

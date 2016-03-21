@@ -155,7 +155,7 @@ define(['js/utest/data/Rewards', 'rewards'], function(rewardsData) {
         });
 
         describe('getRewards()', function() {
-            var data, rewardsCard, number, jqXHR, url, type, dataType, postData, est, captchaKey, captchaValue,
+            var data, rewardsCard, number, jqXHR, url, type, dataType, est, captchaKey, captchaValue,
                 myorder, order;
 
             beforeEach(function() {
@@ -182,14 +182,6 @@ define(['js/utest/data/Rewards', 'rewards'], function(rewardsData) {
 
                 // captchaValue
                 captchaValue = 'captcha-test-key';
-
-                // data passed to server to get rewards card
-                postData = {
-                    establishment: est,
-                    number: number,
-                    captchaKey: captchaKey,
-                    captchaValue: captchaValue
-                };
 
                 // response from server
                 data = deepClone(rewardsData.rewards);
