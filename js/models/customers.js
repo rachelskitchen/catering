@@ -701,6 +701,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     this.updateCookie(data);
                     this.setCustomerFromAPI(data);
                     this.initPayments();
+                    this.initGiftCards();
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
@@ -739,6 +740,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             }
 
             this.removePayments();
+            this.removeGiftCards();
             this.trigger('onLogout');
         },
         /**
@@ -1635,17 +1637,18 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
         },
         /**
          * Sets payments tokens collection.
+         * @param {Function} constr - payments collection constructor
          */
         setPayments: function(constr) {
             this._setPayments = function() {
-                if (typeof constr) {
+                if (typeof constr == 'function') {
                     /**
                      * Collection of payments tokens (depends on CC payment processor).
                      * @alias App.Models.Customer#payments
                      * @type {Backbone.Collection}
                      * @default undefined
                      */
-                    this.payments = new constr()//new App.Collections.USAePayPayments();
+                    this.payments = new constr();
                     this.payments.serverURL = SERVER_URL;
                 }
             };
@@ -1686,6 +1689,113 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     }
                 });
             }
+
+            return req;
+        },
+        /**
+         * Sets gift cards collection.
+         * @param {Function} constr - gift cards collection constructor
+         */
+        setGiftCards: function(constr) {
+            this._setGiftCards = function() {
+                if (typeof constr == 'function') {
+                    /**
+                     * Collection of gift cards.
+                     * @alias App.Models.Customer#giftCards
+                     * @type {Backbone.Collection}
+                     * @default undefined
+                     */
+                    this.giftCards = new constr();
+                }
+            };
+            this.isAuthorized() && this.initGiftCards();
+        },
+        /**
+         * Sets gift cards collection and receives data.
+         */
+        initGiftCards: function() {
+            typeof this._setGiftCards == 'function' && this._setGiftCards();
+            this.giftCards && this.getGiftCards();
+        },
+        /**
+         * Aborts gift cards request and deletes {@link App.Models.Customer#giftCards giftCards},
+         * {@link App.Models.Customer#giftCardsRequest giftCardsRequest} properties.
+         */
+        removeGiftCards: function() {
+            this.giftCardsRequest && this.giftCardsRequest.abort();
+            delete this.giftCardsRequest;
+            delete this.giftCards;
+        },
+        /**
+         * Receives gift cards from server.
+         * @returns {Object|undefined} jqXHR object.
+         */
+        getGiftCards: function() {
+            if (!this.giftCards) {
+                return console.error("Saved gift cards are disabled");
+            }
+
+            var self = this,
+                req = this.giftCards.getCards(this.getAuthorizationHeader());
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.trigger('onUserSessionExpired');
+                    self.logout(); // need to reset current account to allow to re-log in
+                }
+            });
+
+            /**
+             * Gift cards request.
+             * @alias App.Models.Customer#giftCardsRequest
+             * @type {Backbone.$.Deferred}
+             * @default undefined
+             */
+            this.giftCardsRequest = req;
+
+            return req;
+        },
+        /**
+         * Links gift card with the customer.
+         * @param {App.Models.GiftCard} giftCard - gift card model
+         * @returns {Object|undefined} jqXHR object.
+         */
+        linkGiftCard: function(giftCard) {
+            if (!_.isObject(giftCard) || typeof giftCard.linkToCustomer != 'function') {
+                return;
+            }
+
+            var req = giftCard.linkToCustomer(this.getAuthorizationHeader()),
+                self = this;
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.trigger('onUserSessionExpired');
+                    self.logout(); // need to reset current account to allow to re-log in
+                }
+            });
+
+            return req;
+        },
+        /**
+         * Unlinks gift card with the customer.
+         * @param {App.Models.GiftCard} giftCard - gift card model
+         * @returns {Object|undefined} jqXHR object.
+         */
+        unlinkGiftCard: function(giftCard) {
+            if (!_.isObject(giftCard) || typeof giftCard.unlinkToCustomer != 'function') {
+                return;
+            }
+
+            var req = giftCard.unlinkToCustomer(this.getAuthorizationHeader()),
+                self = this;
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.trigger('onUserSessionExpired');
+                    self.logout(); // need to reset current account to allow to re-log in
+                }
+            });
 
             return req;
         }

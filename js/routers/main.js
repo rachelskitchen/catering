@@ -336,6 +336,11 @@ define(["backbone", "factory"], function(Backbone) {
                 App.SettingsDirectory.saved_credit_cards = false;
             }
 
+            // set gift cards
+            if (App.SettingsDirectory.saved_gift_cards) {
+                customer.setGiftCards(App.Collections.GiftCards);
+            }
+
             this.listenTo(customer, 'onUserCreated', function() {
                 App.Data.errors.alert(_loc.PROFILE_USER_CREATED);
             });

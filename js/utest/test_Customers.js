@@ -1079,6 +1079,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 spyOn(model, 'updateCookie');
                 spyOn(model, 'setCustomerFromAPI');
                 spyOn(model, 'initPayments');
+                spyOn(model, 'initGiftCards');
                 spyOn(model, 'trigger');
 
                 model.login();
@@ -1118,6 +1119,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(model.updateCookie).toHaveBeenCalledWith(_data);
                 expect(model.setCustomerFromAPI).toHaveBeenCalledWith(_data);
                 expect(model.initPayments).toHaveBeenCalled();
+                expect(model.initGiftCards).toHaveBeenCalled();
             });
 
             it("failure log in, `jqXHR.responseJSON` isn't object", function() {
@@ -1194,6 +1196,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
             spyOn(docCookies, 'removeItem');
             spyOn(model, 'removePayments');
+            spyOn(model, 'removeGiftCards');
             spyOn(model, 'trigger');
 
             model.set({
@@ -1210,6 +1213,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
             expect(docCookies.removeItem).toHaveBeenCalledWith('user', '/weborder', 'revelup.com');
             expect(model.removePayments).toHaveBeenCalled();
+            expect(model.removeGiftCards).toHaveBeenCalled();
             expect(model.trigger).toHaveBeenCalledWith('onLogout');
             expect(model.toJSON()).toEqual(model.defaults);
             expect(model.defaults.addresses).toEqual([]);

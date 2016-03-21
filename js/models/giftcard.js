@@ -51,11 +51,13 @@ define(["backbone", "captcha"], function(Backbone) {
          * @type {object}
          * @property {string} cardNumber='' - gift card number
          * @property {string} storageKey='giftcard' - key in a storage
+         * @property {string} remainingBalance=null - remaining balance on the card
          */
         defaults: _.extend({}, App.Models.Captcha.prototype.defaults,
         {
             cardNumber: '',
-            storageKey: 'giftcard'
+            storageKey: 'giftcard',
+            remainingBalance: null
         }),
         /**
          * Saves attributes values in a storage (detected automatic).
@@ -107,28 +109,207 @@ define(["backbone", "captcha"], function(Backbone) {
             };
         },
         /**
-         * Links the gift card to customer.
+         * Links the gift card to customer. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "/weborders/v1/giftcard/<cardNumber>/link/",
+         *     method: "GET",
+         *     headers: {Authorization: "Bearer XXX"},
+         *     data: {
+         *         captchaValue: <captcha value>,
+         *         captchaKey: <captcha key>
+         *     }
+         * }
+         * ```
+         * There are available following responses:
+         * - Successful link:
+         * ```
+         * Status code 200
+         * {
+         *     status: "OK",
+         *     data: {remaining_balance: 123, number: '12345'}
+         * }
+         * ```
+         *
+         * - Invalid captcha
+         * ```
+         * Status code 200
+         * {
+         *     status: "ERROR",
+         *     errorMsg: "Invalid captcha or api credentials"
+         * }
+         * ```
+         *
+         * - Gift card isn't found
+         * ```
+         * Status code 200
+         * {
+         *     status: "ERROR",
+         *     errorMsg: "Not found"
+         * }
+         * ```
+         *
+         * - Authorization header isn't valid:
+         * ```
+         * Status code 403
+         * ```
+         *
          * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
-         * @returns {Object} jqXHR object
+         * @returns {Object} jqXHR object.
          */
         linkToCustomer: function(authorizationHeader) {
-            var cardNumber = this.get('cardNumber');
+            var cardNumber = this.get('cardNumber'),
+                captchaValue = this.get('captchaValue'),
+                captchaKey = this.get('captchaKey'),
+                self = this;
 
-            if(!_.isObject(authorizationHeader) || !cardNumber) {
+            if(!_.isObject(authorizationHeader) || !cardNumber || !captchaValue || !captchaKey) {
                 return;
             }
 
             return Backbone.$.ajax({
                 url: "/weborders/v1/giftcard/" + cardNumber + "/link/",
                 method: "GET",
-                headers: _.extend({
-                    WEBORDER_API_KEY: '29312ad1-6ee4-43a6-a63f-0b814acc876f'
-                }, authorizationHeader),
+                headers: authorizationHeader,
                 data: {
-                    establishment_id: App.Data.settings.get('establishment')
+                    captchaValue: captchaValue,
+                    captchaKey: captchaKey
                 },
-                success: new Function(),        // to override global ajax success handler
-                error: new Function()
+                success: function(data) {
+                    if (!_.isObject(data)) {
+                        return;
+                    }
+
+                    switch(data.status) {
+                        case "OK":
+                            self.set('remainingBalance', data.data.remaining_balance);
+                            break;
+                        default:
+                            self.trigger('onLinkError', data.errorMsg || 'Gift Card error');
+                    }
+                },
+                error: new Function()           // to override global ajax error handler
+            });
+        },
+        /**
+         * Unlinks the gift card to customer. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "/weborders/v1/giftcard/<cardNumber>/unlink/",
+         *     method: "GET",
+         *     headers: {Authorization: "Bearer XXX"}
+         * }
+         * ```
+         * There are available following responses:
+         * - Successful link:
+         * ```
+         * Status code 200
+         * {
+         *     status: "OK"
+         * }
+         * ```
+         *
+         * - Authorization header is invalid:
+         * ```
+         * Status code 403
+         * ```
+         *
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @returns {Object} jqXHR object.
+         */
+        unlinkToCustomer: function(authorizationHeader) {
+            var cardNumber = this.get('cardNumber'),
+                self = this;
+
+            if(!_.isObject(authorizationHeader) || !cardNumber) {
+                return;
+            }
+
+            return Backbone.$.ajax({
+                url: "/weborders/v1/giftcard/" + cardNumber + "/unlink/",
+                method: "GET",
+                headers: authorizationHeader,
+                success: function(data) {
+                    if (data.status == 'OK' && self.collection) {
+                        self.collection.remove(self);
+                    }
+                },
+                error: new Function()           // to override global ajax error handler
+            });
+        }
+    });
+
+    /**
+     * @class
+     * @classdesc Represents collection of gift cards.
+     * @alias App.Collections.GiftCards
+     * @augments Backbone.Collection
+     * @example
+     * // create a gift card model
+     * require(['giftcard'], function() {
+     *     var giftcards = new App.Collections.GiftCards([{cardNumber: '777'}, {cardNumber: '555'}]);
+     * });
+     */
+    App.Collections.GiftCards = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.GiftCards.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default App.Models.GiftCard
+         */
+        model: App.Models.GiftCard,
+        /**
+         * Receives gift cards from server. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "/weborders/v1/giftcard/",
+         *     method: "GET",
+         *     headers: {Authorization: "Bearer XXX"}
+         * }
+         * ```
+         * There are available following responses:
+         * - Successful link:
+         * ```
+         * Status code 200
+         * {
+         *     status: "OK"
+         *     data: []
+         * }
+         * ```
+         *
+         * - Authorization header is invalid:
+         * ```
+         * Status code 403
+         * ```
+         *
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @returns {Object} jqXHR object.
+         */
+        getCards: function(authorizationHeader) {
+            var self = this;
+
+            if (!_.isObject(authorizationHeader)) {
+                return;
+            }
+
+            return Backbone.$.ajax({
+                url: "/weborders/v1/giftcard/",
+                method: "GET",
+                headers: authorizationHeader,
+                success: function(data) {
+                    if (data.status == "OK" && Array.isArray(data.data)) {
+                        self.reset(data.data.map(function(giftCard) {
+                            return {
+                                cardNumber: giftCard.number,
+                                remainingBalance: giftCard.remaining_balance
+                            };
+                        }));
+                    }
+                },
+                error: new Function()           // to override global ajax error handler
             });
         }
     });
