@@ -2192,23 +2192,27 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 payment_info.cardInfo.encrypted_customer_input = card.encrypted_customer_input;
             }
 
+
             var profile_address,
                 paymentProcessor = PaymentProcessor.getPaymentProcessor(payment_type),
                 use_profile_address = App.Data.card.get("use_profile_address");
-            if (use_profile_address) {
-                profile_address = App.Data.customer.getProfileAddress();
-            } else {
-                profile_address = App.Data.card.get("billing_address").toJSON();
-            }
 
-            if (paymentProcessor == GlobalCollectPaymentProcessor && profile_address) {
-                payment_info.cardInfo.address = {
-                    street_1: profile_address.street_1,
-                    city: profile_address.city,
-                    state: profile_address.state,
-                    zipcode: profile_address.zipcode,
-                    country: profile_address.country_code
-                };
+            if (PaymentProcessor.isBillingAddressCard()) {
+                if (use_profile_address) {
+                    profile_address = App.Data.customer.getProfileAddress();
+                } else {
+                    profile_address = App.Data.card.get("billing_address").toJSON();
+                }
+
+                if (paymentProcessor == GlobalCollectPaymentProcessor && profile_address) {
+                    payment_info.cardInfo.address = {
+                        street_1: profile_address.street_1,
+                        city: profile_address.city,
+                        state: profile_address.state,
+                        zipcode: profile_address.zipcode,
+                        country: profile_address.country_code
+                    };
+                }
             }
 
             var notifications = this.getNotifications();
