@@ -4,7 +4,6 @@ define([], function() {
             "id": null,
             "name": "",
             "code": "",
-            "barcode": "",
             "is_applicable": false,
             "is_applied": false
         },
