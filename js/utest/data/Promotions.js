@@ -1,6 +1,7 @@
 define([], function() {
     return {
         "promotion_defaults": {
+            "id": null,
             "name": "",
             "code": "",
             "barcode": "",

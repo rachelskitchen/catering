@@ -90,7 +90,7 @@ define(['backbone', 'collection_sort'], function(Backbone) {
             var self = this,
                 code = this.get('code'),
                 myorder = App.Data.myorder,
-                checkout = myorder.checkout,
+                checkout = App.Data.myorder.checkout,
                 apply_discount = true;
 
             code && this.set('barcode', App.Data.settings.get('host') + '/weborders/barcode/' + code);
@@ -99,11 +99,6 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                 // promotion is seleted
                 if (this.get('is_applied')) {
                     this.collection.trigger('onPromotionApply', this);
-
-                    if (!/^[\d\w]{1,200}$/.test(this.get('code')) ) {
-                        App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE);
-                        return;
-                    }
 
                     if (App.Data.myorder.get_only_product_quantity()) {
                         checkout.set({discount_code: code});
@@ -147,13 +142,18 @@ define(['backbone', 'collection_sort'], function(Backbone) {
          * @default App.Models.Promotion
          */
         model: App.Models.Promotion,
-
+        /**
+         * [initialize description]
+         * @returns {[type]} [description]
+         */
         initialize: function() {
             this.needToUpdate = false;
+            // set `needToUpdate` flag to true once order gets changed
             this.listenTo(App.Data.myorder, 'add change remove', function() {
                 this.needToUpdate = true;
             });
 
+            // assume that only 1 promotion can be applied
             this.listenTo(this, 'onPromotionApply', function(appliedPromotion) {
                 // unselect previously selected promotion
                 var applied = this.filter(function(promotion) {
@@ -162,6 +162,10 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                 applied.length && _.invoke(applied, 'set', 'is_applied', false);
             });
         },
+        /**
+         * Updates the promotions list.
+         * @returns {Object} Deferred object.
+         */
         update: function() {
             return this.getPromotions();
         },
@@ -175,13 +179,22 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                 modelToUpdate;
 
             promotions.forEach(function(promotion, index) {
-                if (!(promotion instanceof Object)) return;
+                if (!(promotion instanceof Object)) {
+                    return;
+                }
+                if (promotion instanceof Backbone.Model) {
+                    promotion = promotion.toJSON();
+                }
+
+                // wrong code format
+                if (!/^[\d\w]{1,200}$/.test(promotion.code)) {
+                    return;
+                }
+
                 modelToUpdate = self.find(function(model) {
-                    if (promotion instanceof Backbone.Model) {
-                        promotion = promotion.toJSON();
-                    }
                     return promotion.id === model.get('id') && !_.isEqual(model.toJSON(), promotion);
                 });
+
                 if (modelToUpdate) {
                     modelToUpdate.set(promotion);
                 }
@@ -236,7 +249,7 @@ define(['backbone', 'collection_sort'], function(Backbone) {
     App.Collections.Promotions.init = function() {
         var fetching = Backbone.$.Deferred();
 
-        if (App.Data.promotions === undefined ) {
+        if (App.Data.promotions === undefined) {
             App.Data.promotions = new App.Collections.Promotions;
             fetching = App.Data.promotions.getPromotions();
         } else {
