@@ -125,11 +125,11 @@ define(["backbone"], function(Backbone) {
         initialize: function() {
             if (PaymentProcessor.isBillingAddressCard())
                 this.set("billing_address", new Backbone.Model({
-                    city: "",
-                    street_1: "",
-                    state: "",
-                    zip: "",
-                    country: ""
+                    city: null,
+                    street_1: null,
+                    state: null,
+                    zipcode: null,
+                    country_code: null
                 }));
         },
         /**

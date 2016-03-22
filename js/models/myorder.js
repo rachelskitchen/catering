@@ -2198,7 +2198,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if (use_profile_address) {
                 profile_address = App.Data.customer.getProfileAddress();
             } else {
-                profile_address = App.Data.card.get("billing_address");
+                profile_address = App.Data.card.get("billing_address").toJSON();
             }
 
             if (paymentProcessor == GlobalCollectPaymentProcessor && profile_address) {

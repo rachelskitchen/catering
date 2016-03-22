@@ -18,6 +18,12 @@
     position: relative;
     margin-bottom: 5px;
 }
+.card-block.no_top_margin > div,
+.card-block.no_top_address .address > div {
+    position: relative;
+    margin-bottom: 2px;
+}
+
 #billing-address .inactive
 {
     opacity: 0.5;
@@ -37,6 +43,7 @@
 }
 .card-block .address .select-wrapper {
     width: 200px;
+    height: 24px;
 }
 .card-block div.select {
     position: relative;
