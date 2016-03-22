@@ -93,6 +93,22 @@ define(["backbone", "factory"], function(Backbone) {
     App.Views.CoreCardView.CoreCardBillingAddressView = App.Views.FactoryView.extend({
         name: 'card',
         mod: 'billing_address',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.update_use_profile_address(this.model.get('use_profile_address'));
+
+            var model = this.options.customer.toJSON(),
+                        defaultAddress = App.Settings.address,
+                        address = this.options.customer.getCheckoutAddress();
+            var country = address && address.country ? address.country : defaultAddress.country;
+            var state = country == 'US' ? (model.address ? address.state : defaultAddress.state) : null;
+            if (!this.model.get('country_code')) {
+                this.options.address.set('country_code', country);
+            }
+            if (!this.model.get('state')) {
+                this.options.address.set('state', state);
+            }
+        },
         events: {
             'click #use_profile_address': 'change',
         },
@@ -102,16 +118,18 @@ define(["backbone", "factory"], function(Backbone) {
             ".checkbox":"classes:{checked:use_profile_address,unchecked:not(use_profile_address)}",
             ".address input":"attr:{disabled:select(use_profile_address,'disabled',false)}",
             ".address":"classes:{inactive:use_profile_address}",
+            ".address select":"attr:{disabled:select(use_profile_address,'disabled',false)}",
             ".address select.states": "value: state, options: states",
+            ".address select.countries": "value: country_code, options: countries",
             ".address .city": "value: address_city",
             ".address .street_1": "value: address_street_1",
-            ".address .zip": "value: address_zip"
+            ".address .zipcode": "value: address_zipcode"
         },
         computeds: {
             use_profile_address_title: {
                 deps: [],
                 get: function() {
-                    var customer = App.Data.customer;
+                    var customer = this.options.customer;
                     var addr = customer.getProfileAddress();
                     if (!customer.isAuthorized() || !addr) {
                         return "";
@@ -133,7 +151,6 @@ define(["backbone", "factory"], function(Backbone) {
             },
             states: function() {
                 return sort_i18nObject(_loc['STATES']);
-                //model.countries = sort_i18nObject(_loc['COUNTRIES']);
             },
             state: {
                 deps: ["address_state"],
@@ -142,20 +159,33 @@ define(["backbone", "factory"], function(Backbone) {
                     this.options.address.set('state', key);
                 },
                 get: function() {
-                    var model = App.Data.customer.toJSON(),
-                        defaultAddress = App.Settings.address,
-                        address = App.Views.AddressView.prototype.getAddress.apply(this);
-                    model.country = address && address.country ? address.country : defaultAddress.country;
-                    var state = model.country == 'US' ? (model.address ? address.state : defaultAddress.state) : null;
+                    var state = this.options.address.get("state");
                     return state ? _loc['STATES'][state] : null;
                 }
-            }
+            },
+            countries: function() {
+                return sort_i18nObject(_loc['COUNTRIES']);
+            },
+            country_code: {
+                deps: ["address_country_code"],
+                set: function(country) {
+                    var key = _.findKey(_loc['COUNTRIES'], function(value) { return value == country; } );
+                    this.options.address.set('country_code', key);
+                },
+                get: function() {
+                    var country_code = this.options.address.get("country_code");
+                    return country_code ? _loc['COUNTRIES'][country_code] : null;
+                }
+            },
         },
         change: function(event){
             event.stopImmediatePropagation();
             event.preventDefault();
             var el = this.$(".checkbox"),
                 checked = el.attr('checked') == "checked" ? false : true;
+            this.update_use_profile_address(checked);
+        },
+        update_use_profile_address: function(checked) {
             this.model.set('use_profile_address', checked);
             this.$('.checkbox').attr('checked', checked ? 'checked' : false);
         }

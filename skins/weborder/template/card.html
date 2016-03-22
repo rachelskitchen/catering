@@ -62,37 +62,45 @@
         </span>
     </div>
     <div class="address">
-    <div>
-        <label for="street_1">
-            <span class="required bold"><%= _lp.CHECKOUT_ADDRESS_LINE1 %>:</span>
-        </label>
-        <div class="input_beauty">
-            <input type="text" id="street_1" class="street_1 ios-safari-caret">
+        <div>
+            <label for="countries">
+                <span class="required bold"><%= _lp.CHECKOUT_COUNTRY %>:</span>
+            </label>
+            <div class="select select-wrapper">
+                <select id="countries" class="countries"></select>
+            </div>
         </div>
-    </div>
-    <div>
-        <label for="city">
-            <span class="required bold"><%= _lp.CHECKOUT_CITY %>:</span>
-        </label>
-        <div class="input_beauty">
-            <input type="text" id="city" class="city ios-safari-caret">
+        <div>
+            <label for="street_1">
+                <span class="required bold"><%= _lp.CHECKOUT_ADDRESS_LINE1 %>:</span>
+            </label>
+            <div class="input_beauty">
+                <input type="text" id="street_1" class="street_1 ios-safari-caret">
+            </div>
         </div>
-    </div>
-    <div>
-        <label for="states">
-            <span class="required bold"><%= _lp.CHECKOUT_STATE %>:</span>
-        </label>
-        <div class="select states select-wrapper">
-            <select id="states" class="states"></select>
+        <div>
+            <label for="city">
+                <span class="required bold"><%= _lp.CHECKOUT_CITY %>:</span>
+            </label>
+            <div class="input_beauty">
+                <input type="text" id="city" class="city ios-safari-caret">
+            </div>
         </div>
-    </div>
-    <div>
-        <label for="zip">
-            <span class="required bold"><%= _lp.CHECKOUT_ZIP_CODE %>:</span>
-        </label>
-        <div class="input_beauty">
-            <input type="text" id="zip" class="zip ios-safari-caret">
+        <div>
+            <label for="states">
+                <span class="required bold"><%= _lp.CHECKOUT_STATE %>:</span>
+            </label>
+            <div class="select select-wrapper">
+                <select id="states" class="states"></select>
+            </div>
         </div>
-    </div>
+        <div>
+            <label for="zipcode">
+                <span class="required bold"><%= _lp.CHECKOUT_ZIP_CODE %>:</span>
+            </label>
+            <div class="input_beauty">
+                <input type="text" id="zipcode" class="zipcode ios-safari-caret">
+            </div>
+        </div>
     </div>
 </script>

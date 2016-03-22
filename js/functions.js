@@ -1351,6 +1351,9 @@ var PaymentProcessor = {
         }
         return payment_processor;
     },
+    /**
+     * return true if card type payment processor needs in billing address to be filled.
+     */
     isBillingAddressCard: function() {
         var pp = this.getCreditCardPaymentProcessor();
         return pp == GlobalCollectPaymentProcessor;
@@ -1568,30 +1571,31 @@ var GlobalCollectPaymentProcessor = {
                 var paymentRequest = session.getPaymentRequest();  // This will return the same instance of PaymentRequest every time.
                 paymentRequest.setValue("cardNumber", card.get("cardNumber")); // This should be the unmasked value.
                 paymentRequest.setValue("cvv", card.get("securityCode"));
-                paymentRequest.setValue("expiryDate", card.get("expMonth") + "/" + card.get("expDate").substring(2));
+                paymentRequest.setValue("expiryDate", card.get("expMonth") + "////" + card.get("expDate").substring(2));
 
                 var encryptor = session.getEncryptor();
 
                 // Encrypting is an async task that we provide you as a promise.
                 encryptor.encrypt(paymentRequest).then(function(encryptedString) {
-                  // The promise has fulfilled. The encryptedString contains the ciphertext
+                  // The encryptedString contains the ciphertext
                   // that should be sent to the GlobalCollect platform via the Server API
-                    trace("encripted!", encryptedString);
-
                     App.Data.card.set('encrypted_customer_input', encryptedString);
                     myorder.submit_order_and_pay(PAYMENT_TYPE.CREDIT, false, myorder.paymentResponse.capturePhase);
-
                 }, function(errors) {
-                    // The promise failed, inform the user what happened.
-                    trace("enc.error!", errors);
+                    on_error();
                 });
 
-            }, function() {
+            }, function(errors) {
                 // The promise failed, inform the user what happened.
-                trace("error");
-
+                on_error()
             });
 
+            function on_error(errors) {
+                var errorMsg = MSG.ERROR_OCCURRED + ' ' + MSG.ERROR_DURING_TOKENIZATION;
+                trace(errorMsg + (errors ? (": " + errors) : ""));
+                myorder.paymentResponse = {status: 'error', errorMsg: errorMsg};
+                myorder.trigger('paymentResponse');
+            }
         });
     }
 };
