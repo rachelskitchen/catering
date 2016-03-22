@@ -2188,6 +2188,28 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if (card.nonce) {
                 payment_info.cardInfo.nonce = card.nonce;
             }
+            if (card.encrypted_customer_input) {
+                payment_info.cardInfo.encrypted_customer_input = card.encrypted_customer_input;
+            }
+
+            var profile_address,
+                paymentProcessor = PaymentProcessor.getPaymentProcessor(payment_type),
+                use_profile_address = App.Data.card.get("use_profile_address");
+            if (use_profile_address) {
+                profile_address = App.Data.customer.getProfileAddress();
+            } else {
+                profile_address = App.Data.card.get("billing_address");
+            }
+
+            if (paymentProcessor == GlobalCollectPaymentProcessor && profile_address) {
+                payment_info.cardInfo.address = {
+                    street_1: profile_address.street_1,
+                    city: profile_address.city,
+                    state: profile_address.state,
+                    zipcode: profile_address.zipcode,
+                    country: profile_address.country_code
+                };
+            }
 
             var notifications = this.getNotifications();
             order_info.call_name = call_name.join(' / ');
@@ -2332,6 +2354,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 payment_type === PAYMENT_TYPE.PAYPAL_MOBILE && $.mobile.loading("hide");
                 delete myorder.paymentInProgress;
                 App.Data.card.unset('nonce');
+                if (myorder.paymentResponse.status != "PAYMENT_INFO_REQUIRED") {
+                    App.Data.card.unset('encrypted_customer_input');
+                }
                 successValidation && successValidation.resolve();
             });
 

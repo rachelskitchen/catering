@@ -1346,8 +1346,14 @@ var PaymentProcessor = {
             payment_processor = CRESecurePaymentProcessor;
         } else if (payment.braintree) {
             payment_processor = BraintreePaymentProcessor;
+        } else if (payment.globalcollect) {
+            payment_processor = GlobalCollectPaymentProcessor;
         }
         return payment_processor;
+    },
+    isBillingAddressCard: function() {
+        var pp = this.getCreditCardPaymentProcessor();
+        return pp == GlobalCollectPaymentProcessor;
     },
     /**
      * Save default state of payment (string 'false') of app in storage before redirect to another page.
@@ -1513,6 +1519,79 @@ var BraintreePaymentProcessor = {
                     myorder.trigger('paymentResponse');
                 }
             });
+        });
+    }
+};
+
+var GlobalCollectPaymentProcessor = {
+    clearQueryString: function(queryString) {
+        return queryString;//.replace(/&?UM[^=]*=[^&]*/g, '');
+    },
+    showCreditCardDialog: function() {
+        return true;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        return payment_info;
+    },
+    handlePaymentDataRequest: function(myorder, data) {
+        var token_arr = data.data.app_token.split(":");
+        var js = "js/libs/gcsdk.js"; //it's to exclude gcsdk.js from minimized main.js file (made by build.js procedure).
+        var defineOld = define;
+        define = undefined;
+        require([js], function(gcsdk) {
+            define = defineOld; //restore the define function from require.js
+            var card = App.Data.card;
+
+            var session = new GCsdk.Session({
+                clientSessionID : token_arr[0],
+                customerId : token_arr[1],
+                region : token_arr[2], // EU or US
+                environment: token_arr[3] == "True" ? "SANDBOX" : "PROD" // PROD, PREPROD or SANDBOX
+            });
+
+            // We assume we already have a Session stored in the variable "session".
+            // See Session how to create such an instance.
+            var billing_address = card.billing_address;
+            var paymentDetails = { "totalAmount" : parseInt(parseFloat(App.Data.myorder.total.get_grand()) * 100), // in cents
+                                   "countryCode" : "US",
+                                   "locale" : "en_GB", // as specified in the config center
+                                   "isRecurring" : false, // set if recurring
+                                   "currency" : "USD" // set currency, see dropdown
+                                 };
+
+            session.getPaymentProduct("1", paymentDetails).then(function(paymentProduct) {
+                var paymentRequest = session.getPaymentRequest();  // This will return the same instance of PaymentRequest every time.
+                paymentRequest.setPaymentProduct(paymentProduct);  // paymentProduct is an instance of the PaymentProduct class (not BasicPaymentProduct)
+                //paymentRequest.setAccountOnFile(accountOnFile);    // accountOnFile is an instance of the AccountOnFile class
+                //paymentRequest.setTokenize(false);
+
+                var paymentRequest = session.getPaymentRequest();  // This will return the same instance of PaymentRequest every time.
+                paymentRequest.setValue("cardNumber", card.get("cardNumber")); // This should be the unmasked value.
+                paymentRequest.setValue("cvv", card.get("securityCode"));
+                paymentRequest.setValue("expiryDate", card.get("expMonth") + "/" + card.get("expDate").substring(2));
+
+                var encryptor = session.getEncryptor();
+
+                // Encrypting is an async task that we provide you as a promise.
+                encryptor.encrypt(paymentRequest).then(function(encryptedString) {
+                  // The promise has fulfilled. The encryptedString contains the ciphertext
+                  // that should be sent to the GlobalCollect platform via the Server API
+                    trace("encripted!", encryptedString);
+
+                    App.Data.card.set('encrypted_customer_input', encryptedString);
+                    myorder.submit_order_and_pay(PAYMENT_TYPE.CREDIT, false, myorder.paymentResponse.capturePhase);
+
+                }, function(errors) {
+                    // The promise failed, inform the user what happened.
+                    trace("enc.error!", errors);
+                });
+
+            }, function() {
+                // The promise failed, inform the user what happened.
+                trace("error");
+
+            });
+
         });
     }
 };
