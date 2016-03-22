@@ -1,6 +1,4 @@
 .promotions-title {
-    background: #EAF3F9;
-    color: #373B40;
     font-weight: 300;
     padding: 2em 1.8em;
     margin: 0 -1.8em;
@@ -26,7 +24,8 @@
     right: 0;
     width: 2em;
     height: 2em;
-    background: url(../img/promotion.svg) center no-repeat;
+    background-position: center;
+    background-repeat: no-repeat;
     background-size: 1.7em 1.7em;
 }
 
@@ -63,9 +62,6 @@
     font-style: italic;
     text-decoration: underline;
 }
-.promotion__description {
-    color: #13B21A;
-}
 .promotion__apply {
     font-weight: 300;
     position: absolute;
@@ -74,19 +70,15 @@
     transform: translateY(-50%);
 }
 .promotion__apply.added {
-    color: #13B21A;
     display: flex !important;
     align-items: center;
     justify-content: center;
 }
 .promotion__apply.added:after {
-    content: "";
+    content: "\f00c";
+    font-family: "FontAwesome";
     display: inline-block;
-    width: 1.5em;
-    height: 1.5em;
     margin-left: 0.2em;
-    background: url(../img/check.svg) no-repeat;
-    background-size: 1.5em 1.5em;
 }
 
 /* Promotion Details */
