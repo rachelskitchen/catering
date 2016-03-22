@@ -16,20 +16,46 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
             expect(model.toJSON()).toEqual(def);
         });
 
-        it('change:is_applied event', function() {
-            model.collection = new Backbone.Collection();
-            spyOn(model.collection, 'trigger');
-            App.Data.myorder.checkout = new Backbone.Model();
-            App.Data.myorder.get_cart_totals = jasmine.createSpy();
+        describe('change:is_applied event', function() {
+            var getProductsQty;
 
-            model.set({
-                code: '123',
-                is_applied: true
+            beforeEach(function() {
+                App.Data.myorder.checkout = new Backbone.Model();
+                App.Data.myorder.get_cart_totals = jasmine.createSpy();
+                getProductsQty = App.Data.myorder.get_only_product_quantity = jasmine.createSpy();
+                model = new App.Models.Promotion({
+                    code: '123'
+                });
+                model.collection = new Backbone.Collection();
+                spyOn(model.collection, 'trigger');
             });
 
-            expect(model.collection.trigger).toHaveBeenCalledWith('onPromotionApply');
-            expect(App.Data.myorder.checkout.get('discount_code')).toBe('123');
-            expect(App.Data.myorder.get_cart_totals).toHaveBeenCalledWith({apply_discount: true});
+            it('promotion gets applied, cart is empty', function() {
+                getProductsQty.and.returnValue(0);
+                model.set({
+                    is_applied: true
+                });
+
+                expect(model.collection.trigger).toHaveBeenCalledWith('onPromotionApply', model);
+                expect(App.Data.myorder.checkout.get('last_discount_code')).toBe('123');
+                expect(App.Data.myorder.get_cart_totals).not.toHaveBeenCalledWith();
+            });
+
+
+            it('promotion gets applied, cart is not empty', function() {
+                getProductsQty.and.returnValue(1);
+                model.set({
+                    is_applied: true
+                });
+
+                expect(model.collection.trigger).toHaveBeenCalledWith('onPromotionApply', model);
+                expect(App.Data.myorder.checkout.get('discount_code')).toBe('123');
+                expect(App.Data.myorder.get_cart_totals).toHaveBeenCalledWith({apply_discount: true});
+            });
+
+            it('promotion gets not applied', function() {
+
+            });
         });
     });
 
@@ -92,7 +118,7 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
                 expect(result).toBeUndefined();
             });
 
-            it('`promotions` is array', function() {
+            it('`promotions` is array of objects', function() {
                 var data = deepClone(promotionsData.campaigns);
                 collection.addAjaxJson(data);
                 expect(collection.length).toBe(promotionsData.campaigns.length);
@@ -100,12 +126,38 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
                 var model0 = collection.models[0].toJSON(),
                     model1Cid = collection.models[1].cid;
                 data[1].is_applicable = false;
+
                 collection.addAjaxJson(data);
                 // model0 was not changed
                 expect(model0).toEqual(collection.models[0].toJSON());
                 // model1.is_applicable was changed
                 expect(collection.models[1].cid).toBe(model1Cid);
                 expect(collection.models[1].get('is_applicable')).toBe(false);
+            });
+
+            it('`promotions` is array of models', function() {
+                var data = deepClone(promotionsData.campaigns),
+                    arr = [];
+                data = new App.Collections.Promotions(data);
+
+                spyOn(data.models[0], 'toJSON').and.callThrough();
+                collection.addAjaxJson(data.models);
+                expect(data.models[0].toJSON).toHaveBeenCalled();
+
+                expect(collection.length).toBe(data.length);
+            });
+
+            it('`promotions` is array of objects, some promotion has wrong code format', function() {
+                var data = deepClone(promotionsData.campaigns);
+                data[0].code = '!#$';
+                collection.addAjaxJson(data);
+                expect(collection.length).toBe(promotionsData.campaigns.length - 1);
+            });
+
+            it('`promotions` is array of not objects', function() {
+                var data = [1, 2, '3'];
+                collection.addAjaxJson(data);
+                expect(collection.length).toBe(0);
             });
 
             describe('getPromotions()', function() {
@@ -195,8 +247,33 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
                 }
             });
 
-            describe('init()', function() {
+            it('update()', function() {
+                spyOn(collection, 'getPromotions');
+                collection.update();
+                expect(collection.getPromotions).toHaveBeenCalled();
+            });
 
+            describe('init()', function() {
+                var result,
+                    fetching = Backbone.$.Deferred();
+
+                beforeEach(function() {
+                    spyOn(App.Collections.Promotions.prototype, 'getPromotions').and.returnValue(fetching);
+                });
+
+                it('App.Data.promotions in undefined', function() {
+                    App.Data.promotions = undefined;
+                    result = App.Collections.Promotions.init();
+                    expect(App.Collections.Promotions.prototype.getPromotions).toHaveBeenCalled();
+                    expect(result.state()).toBe('pending');
+                });
+
+                it('App.Data.promotions is defined', function() {
+                    App.Data.promotions = new Backbone.Collection();
+                    result = App.Collections.Promotions.init();
+                    expect(App.Collections.Promotions.prototype.getPromotions).not.toHaveBeenCalled();
+                    expect(result.state()).toBe('resolved');
+                });
             });
 
         });
