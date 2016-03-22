@@ -1571,7 +1571,7 @@ var GlobalCollectPaymentProcessor = {
                 var paymentRequest = session.getPaymentRequest();  // This will return the same instance of PaymentRequest every time.
                 paymentRequest.setValue("cardNumber", card.get("cardNumber")); // This should be the unmasked value.
                 paymentRequest.setValue("cvv", card.get("securityCode"));
-                paymentRequest.setValue("expiryDate", card.get("expMonth") + "////" + card.get("expDate").substring(2));
+                paymentRequest.setValue("expiryDate", card.get("expMonth") + "/" + card.get("expDate").substring(2));
 
                 var encryptor = session.getEncryptor();
 
