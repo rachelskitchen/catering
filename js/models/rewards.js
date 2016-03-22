@@ -282,12 +282,12 @@ define(['backbone', 'captcha'], function(Backbone) {
          *     url: '/weborders/rewards/',
          *     type: 'POST',
          *     dataType: 'json',
-         *     data: JSON.stringify({
+         *     data: {
          *         establishmentId: <establishment id>,
          *         number: <rewards card number>,
          *         captchaKey: <captcha key>,
          *         captchaValue: <captcha value>
-         *     })
+         *     }
          * }
          * ```
          */

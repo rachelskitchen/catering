@@ -42,13 +42,11 @@ define(['factory'], function() {
         bindings: {
             '.promotion': 'classes: {disabled: not(is_applicable)}',
             '.promotion__name': 'text: name',
-            //'.promotion__link': 'toggle: is_applicable',
-            '.promotion__description': 'toggle: not(is_applicable)', // , text: info
+            '.promotion__description': 'toggle: not(is_applicable)',
             '.promotion__apply': 'text: select(is_applied, _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {added: is_applied}',
         },
         events: {
             'click .promotion__link': 'seeInfo',
-            //'click .promotion.disabled .promotion__name': 'seeInfo',
             'click .promotion:not(.disabled) .promotion__apply': 'apply'
         },
         /**
@@ -88,8 +86,8 @@ define(['factory'], function() {
         },
         updateBindings: function() {
             var promotions = this.model.get('promotions');
-            this.getBinding('$_available').set(promotions.where({'is_applicable': true}));
-            this.getBinding('$_other').set(promotions.where({'is_applicable': false}));
+            this.getBinding('$_available').reset(promotions.where({'is_applicable': true}));
+            this.getBinding('$_other').reset(promotions.where({'is_applicable': false}));
         }
     });
 
@@ -99,7 +97,12 @@ define(['factory'], function() {
         bindings: {
             '.promotion-details__title-text': 'text: name',
             '.promotion-details__discount-code': 'text: code',
-            '.promotion-details__barcode-img': 'loadSpinner: barcode',
+            '.promotion-details__barcode-img': 'loadSpinner: setBarcodeURL(_settings_host, code)',
+        },
+        bindingFilters: {
+            setBarcodeURL: function(host, code) {
+                return code ? addHost('/weborders/barcode/' + code, host) : '';
+            }
         }
     });
 
