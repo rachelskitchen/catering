@@ -174,6 +174,8 @@
         'COMBO_CUSTOMIZE': 'Customize',
         'PRODUCT_SETS_SELECT_1': 'Please choose your "',
         'PRODUCT_SETS_SELECT_2': '" options',
-        'UPSELL_DONT_WANT_COMBO': 'I don\'t want a combo'
+        'UPSELL_DONT_WANT_COMBO': 'I don\'t want a combo',
+        'BILLING_ADDRESS_TITLE': 'Specify a card billing address',
+        'USE_PROFILE_ADDRESS_TITLE_1': 'Use the profile address'
     } // end of locale
 }); // end of module

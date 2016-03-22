@@ -90,8 +90,80 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
+    App.Views.CoreCardView.CoreCardBillingAddressView = App.Views.FactoryView.extend({
+        name: 'card',
+        mod: 'billing_address',
+        events: {
+            'click #use_profile_address': 'change',
+        },
+        bindings: {
+            "#use_profile_address":"classes:{hide:hide_profile_address}",
+            "#use_profile_address .title":"text:use_profile_address_title,classes:{inactive:not(use_profile_address)}",
+            ".checkbox":"classes:{checked:use_profile_address,unchecked:not(use_profile_address)}",
+            ".address input":"attr:{disabled:select(use_profile_address,'disabled',false)}",
+            ".address":"classes:{inactive:use_profile_address}",
+            ".address select.states": "value: state, options: states",
+            ".address .city": "value: address_city",
+            ".address .street_1": "value: address_street_1",
+            ".address .zip": "value: address_zip"
+        },
+        computeds: {
+            use_profile_address_title: {
+                deps: [],
+                get: function() {
+                    var customer = App.Data.customer;
+                    var addr = customer.getProfileAddress();
+                    if (!customer.isAuthorized() || !addr) {
+                        return "";
+                    }
+                    var addr_str = [addr.street_1,addr.city,addr.state,addr.country,addr.zipcode].join(", ");
+                    return _loc.USE_PROFILE_ADDRESS_TITLE_1 + ' \"' + addr_str + '\"';
+                }
+            },
+            hide_profile_address: {
+                deps: [],
+                get: function() {
+                    var customer = this.options.customer;
+                    var addr = customer.getProfileAddress();
+                    if (!customer.isAuthorized() || !addr)
+                        return true;
+                    else
+                        return false;
+                }
+            },
+            states: function() {
+                return sort_i18nObject(_loc['STATES']);
+                //model.countries = sort_i18nObject(_loc['COUNTRIES']);
+            },
+            state: {
+                deps: ["address_state"],
+                set: function(state) {
+                    var key = _.findKey(_loc['STATES'], function(value) { return value == state; } );
+                    this.options.address.set('state', key);
+                },
+                get: function() {
+                    var model = App.Data.customer.toJSON(),
+                        defaultAddress = App.Settings.address,
+                        address = App.Views.AddressView.prototype.getAddress.apply(this);
+                    model.country = address && address.country ? address.country : defaultAddress.country;
+                    var state = model.country == 'US' ? (model.address ? address.state : defaultAddress.state) : null;
+                    return state ? _loc['STATES'][state] : null;
+                }
+            }
+        },
+        change: function(event){
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            var el = this.$(".checkbox"),
+                checked = el.attr('checked') == "checked" ? false : true;
+            this.model.set('use_profile_address', checked);
+            this.$('.checkbox').attr('checked', checked ? 'checked' : false);
+        }
+    });
+
     return new (require('factory'))(function() {
         App.Views.CardView = {};
         App.Views.CardView.CardMainView = App.Views.CoreCardView.CoreCardMainView;
+        App.Views.CardView.CardBillingAddressView = App.Views.CoreCardView.CoreCardBillingAddressView;
     });
 });

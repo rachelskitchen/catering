@@ -44,7 +44,8 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
         bindings: {
             '#credit-card': 'toggle: not(ui_showPayments)',
             '.payments': 'toggle: ui_showPayments',
-            '.payments-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_CREDIT_CARD, _lp_PAYMENTS), toggle: ui_showPaymentsBtn'
+            '.payments-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_CREDIT_CARD, _lp_PAYMENTS), toggle: ui_showPaymentsBtn',
+            '#credit-card': 'classes:{no_top_margin:card_billing_address}'
         },
         bindingSources: {
             ui: function() {
@@ -65,6 +66,17 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
                 mod: 'Main',
                 model: this.options.card
             }));
+
+            var paymentProcessor = PaymentProcessor.getPaymentProcessor(PAYMENT_TYPE.CREDIT);
+            if (paymentProcessor == GlobalCollectPaymentProcessor) {
+                this.subViews.push(App.Views.GeneratorView.create('Card', {
+                    el: this.$('#billing-address'),
+                    mod: 'BillingAddress',
+                    model: this.options.card,
+                    customer: this.options.customer,
+                    address: this.options.card.get("billing_address")
+                }));
+            }
 
             if (this.options.payments) {
                 this.subViews.push(App.Views.GeneratorView.create('Profile', {

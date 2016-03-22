@@ -651,7 +651,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     card: App.Data.card,
                     payments: payments,
                     isOnlyTokensDialog: !payment.credit_card_dialog,
-                    two_columns_view: true
+                    two_columns_view: true,
+                    customer: App.Data.customer
                 });
             }
         },

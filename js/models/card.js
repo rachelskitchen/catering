@@ -110,7 +110,27 @@ define(["backbone"], function(Backbone) {
              * A path for relative image url
              * @type {sting}
              */
-            img: App.Data.settings.get("img_path")
+            img: App.Data.settings.get("img_path"),
+            /**
+             * A billing address bound to credit card
+             * @type {sting}
+             */
+            billing_address: null,
+            /**
+             * Use the user profile address as a card billing address
+             * @type {boolean}
+             */
+            use_profile_address: false
+        },
+        initialize: function() {
+            if (PaymentProcessor.isBillingAddressCard())
+                this.set("billing_address", new Backbone.Model({
+                    city: "",
+                    street_1: "",
+                    state: "",
+                    zip: "",
+                    country: ""
+                }));
         },
         /**
          * Trims the `firstName`, `lastName` attributes values.

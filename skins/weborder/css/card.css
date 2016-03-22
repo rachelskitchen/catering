@@ -1,5 +1,5 @@
 /* styles for Card elements */
-#credit-card label {
+.card-block label {
     display: inline-block;
     width: 200px;
     margin: 10px 0;
@@ -7,49 +7,56 @@
     font-weight: bold;
     height: 19px;
 }
-#credit-card label > span {
+.card-block label > span {
     padding-right: 8px;
     padding-left: 5px;
     float: left;
 }
 
-#credit-card > div {
+.card-block > div,
+.card-block .address > div {
     position: relative;
     margin-bottom: 5px;
 }
-
-#credit-card div.input_beauty {
+#billing-address .inactive
+{
+    opacity: 0.5;
+}
+.card-block div.input_beauty {
     position: absolute;
     top: 6px;
     bottom: 6px;
     left: 230px;
     right: 40px;
 }
-#credit-card div.select {
+.card-block div.select {
     display: inline-block;
     width: 78px;
     position: relative;
     left: -7px;
 }
-#credit-card div.select {
+.card-block .address .select-wrapper {
+    width: 200px;
+}
+.card-block div.select {
     position: relative;
     top: 6px;
     vertical-align: top;
 }
-#credit-card div.select:last-child {
+.card-block div.select:last-child {
     margin-bottom: 10px;
 }
-#credit-card div.select[disabled="disabled"] {
+.card-block div.select[disabled="disabled"] {
     opacity: .5;
     opacity: filter(50);
 }
-#credit-card ul.card.firefox label {
+.card-block ul.card.firefox label {
     line-height: 2.4em;
 }
-#credit-card ul.card.firefox label:before {
+.card-block ul.card.firefox label:before {
     top: 0;
 }
-#credit-card .select-wrapper {
+.card-block .select-wrapper {
     margin-right: 10px;
 }
 #exp-year {
@@ -57,11 +64,11 @@
 }
 /* for tablets */
 @media only screen and (max-device-width: 949px) {
-    #credit-card label {
+    .card-block label {
         width: 150px !important;
     }
-    #credit-card div.input_beauty,
-    #credit-card div.tips {
+    .card-block div.input_beauty,
+    .card-block div.tips {
         left: 180px !important;
     }
     div.select.month {
