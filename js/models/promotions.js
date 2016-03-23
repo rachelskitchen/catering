@@ -110,12 +110,13 @@ define(['backbone'], function(Backbone) {
          * (assume that only 1 promotion can be applied).
          */
         initialize: function() {
-            this.listenTo(this, 'change:is_applied', function(appliedPromotion) {
-                if (appliedPromotion.get('is_applied')) {
-                    var applied = this.filter(function(promotion) {
-                        return promotion.cid != appliedPromotion.cid && promotion.get('is_applied');
+            this.listenTo(this, 'change:is_applied', function(appliedPromotion, is_applied) {
+                if (is_applied) {
+                    this.where({is_applied: true}).forEach(function(item) {
+                        if (item !== appliedPromotion) {
+                            item.set('is_applied', false);
+                        }
                     });
-                    applied.length && _.invoke(applied, 'set', 'is_applied', false);
                 }
             });
         },
