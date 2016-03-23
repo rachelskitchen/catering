@@ -91,7 +91,7 @@ define(['backbone'], function(Backbone) {
      * @augments Backbone.Collection
      * @example
      * require(['promotions'], function() {
-     *     var promotions = new App.collections.Promotions();
+     *     var promotions = new App.Collections.Promotions();
      * });
      */
     App.Collections.Promotions = Backbone.Collection.extend(
