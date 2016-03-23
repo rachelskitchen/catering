@@ -109,6 +109,7 @@ define(["main_router"], function(main_router) {
 
                 this.listenTo(App.Data.myorder, 'add remove change', function() {
                     App.Data.header.set('cartItemsQuantity', App.Data.myorder.get_only_product_quantity());
+                    App.Data.promotions && (App.Data.promotions.needToUpdate = true);
                 });
 
                 new App.Views.MainView.MainMainView({
@@ -1807,42 +1808,17 @@ define(["main_router"], function(main_router) {
             });
 
             this.prepare('promotions', function() {
-                // get the order items for submitting to server
-                items = App.Data.myorder.map(function(order) {
-                    return order.item_submit();
-                });
+                App.Data.promotions || this.initPromotions();
+                promotions = App.Data.promotions;
 
-                App.Collections.Promotions.init(items).always(function() {
-                    promotions = App.Data.promotions;
-
-                    // set `needToUpdate` flag to true once order gets changed
-                    self.listenTo(App.Data.myorder, 'add change remove', function() {
-                        promotions.needToUpdate = true;
-                    });
-
-                    // listen to `promotion.is_applied` change
-                    self.listenTo(promotions, 'change:is_applied', function(appliedPromotion) {
-                        // promotion is seleted
-                        if (appliedPromotion.get('is_applied')) {
-                            if (myorder.get_only_product_quantity()) {
-                                checkout.set({discount_code: appliedPromotion.get('code')});
-                                myorder.get_cart_totals({apply_discount: true});
-                            }
-                            else {
-                                checkout.set({last_discount_code: appliedPromotion.get('code')});
-                            }
-                        }
-                        // promotion is unselected
-                        else {
-                            checkout.set({
-                                last_discount_code: '',
-                                discount_code: ''
-                            });
-                            myorder.get_cart_totals();
-                        }
-                    });
-
-                    promotions.needToUpdate && promotions.update(items);
+                promotions.fetching.always(function() {
+                    if (promotions.needToUpdate) {
+                        // get the order items for submitting to server
+                        items = App.Data.myorder.map(function(order) {
+                            return order.item_submit();
+                        });
+                        promotions.update(items);
+                    }
 
                     App.Data.header.set({
                         page_title: _loc.HEADER_PROMOTIONS_LIST_PT,
@@ -1855,9 +1831,7 @@ define(["main_router"], function(main_router) {
                     content = {
                         modelName: 'Promotions',
                         mod: 'List',
-                        model: new Backbone.Model({
-                            promotions: promotions
-                        }),
+                        collection: promotions,
                         cacheId: true
                     };
 
@@ -1870,17 +1844,13 @@ define(["main_router"], function(main_router) {
 
 
                 function cart() {
-                    if (App.Data.myorder.get_only_product_quantity() > 0) {
-                        App.Data.header.set('cart', self.navigate.bind(self, 'cart', true), {silent: true});
-                        self.navigate('cart', true);
-                    }
+                    self.navigate('cart', true);
                 }
             });
         },
         promotions_my: new Function,
         promotion_details: function(id) {
             var self = this,
-                items,
                 promotions,
                 model,
                 content;
@@ -1888,17 +1858,12 @@ define(["main_router"], function(main_router) {
             id = Number(id);
 
             this.prepare('promotions', function() {
-                // get the order items for submitting to server
-                items = App.Data.myorder.map(function(order) {
-                    return order.item_submit();
-                });
+                App.Data.promotions || this.initPromotions();
+                promotions = App.Data.promotions;
 
-                App.Collections.Promotions.init(items).always(function() {
-                    promotions = App.Data.promotions;
-                    promotions = App.Data.promotions;
-
-                    promotions.needToUpdate && promotions.update();
+                promotions.fetching.always(function() {
                     model = promotions.findWhere({id: id});
+
                     content = {
                         modelName: 'Promotions',
                         mod: 'Item',

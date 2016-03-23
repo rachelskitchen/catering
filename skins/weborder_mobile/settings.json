@@ -15,13 +15,13 @@
         },
         "index": {
             "css": ["categories", "promo_message", "promotions"],
-            "views": ["categories", "promo_message", "promotions"],
+            "views": ["categories", "promo_message"],
             "templates": ["categories", "promo_message", "promotions"],
             "core": ["categories", "products", "subcategories", "promotions_view"]
         },
         "products": {
             "css": ["categories", "products", "promotions"],
-            "views": ["categories", "promotions"],
+            "views": ["categories"],
             "templates": ["products", "categories", "promotions"],
             "core": ["categories", "products", "subcategories", "promotions_view"]
         },
@@ -115,9 +115,8 @@
         },
         "profile": {},
         "promotions": {
-            "core": ["promotions"],
+            "core": ["promotions", "promotions_view"],
             "css": ["promotions"],
-            "views": ["promotions"],
             "templates": ["promotions"]
         }
     }
