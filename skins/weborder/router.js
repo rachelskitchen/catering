@@ -558,9 +558,7 @@ define(["main_router"], function(main_router) {
                     App.Data.card = new App.Models.Card;
                 }
 
-                if(!App.Data.giftcard) {
-                    App.Data.giftcard = new App.Models.GiftCard;
-                }
+                this.initGiftCard();
 
                 var settings = App.Data.settings.get('settings_system');
 
@@ -625,12 +623,13 @@ define(["main_router"], function(main_router) {
             this.change_page();
         },
         profile_payments: function() {
-            var customer = App.Data.customer;
-            if (!customer.payments || !customer.paymentsRequest) {
+            var promisesChain = this.setProfilePaymentsContent();
+
+            if (!promisesChain.length) {
                 return this.navigate('index', true);
+            } else {
+                Backbone.$.when.apply(Backbone.$, promisesChain).then(this.change_page.bind(this));
             }
-            this.setProfilePaymentsContent();
-            customer.paymentsRequest.always(this.change_page.bind(this));
         }
     });
 

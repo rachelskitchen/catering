@@ -300,9 +300,7 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.loadFromLocalStorage = true;
                 App.Data.card = new App.Models.Card();
                 App.Data.card.loadCard();
-                if(!App.Data.giftcard) {
-                    App.Data.giftcard = new App.Models.GiftCard();
-                }
+                this.initGiftCard();
                 App.Data.giftcard.loadCard();
                 App.Data.stanfordCard && App.Data.stanfordCard.restoreCard();
                 this.loadCustomer();
@@ -318,7 +316,7 @@ define(["backbone", "factory"], function(Backbone) {
          * Init App.Data.customer
          */
         initCustomer: function() {
-            var paymentProcessor = PaymentProcessor.getPaymentProcessor(PAYMENT_TYPE.CREDIT),
+            var paymentProcessor = _.isObject(App.Settings.payment_processor) && PaymentProcessor.getPaymentProcessor(PAYMENT_TYPE.CREDIT),
                 customer = App.Data.customer = new App.Models.Customer({
                     keepCookie: App.SettingsDirectory.remember_me
                 });
@@ -396,6 +394,15 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(customer, 'onTokenNotFound', function() {
                 App.Data.errors.alert(_loc.PROFILE_PAYMENT_TOKEN_NOT_FOUND);
             });
+        },
+        /**
+         * Inits App.Data.giftcard if it is undefined
+         */
+        initGiftCard: function() {
+            if(!App.Data.giftcard) {
+                App.Data.giftcard = new App.Models.GiftCard();
+                this.listenTo(App.Data.giftcard, 'onLinkError', App.Data.errors.alert.bind(App.Data.errors));
+            }
         },
         /**
          * Init App.Data.customer and restore its state from a storage
@@ -866,22 +873,51 @@ define(["backbone", "factory"], function(Backbone) {
             }
         },
         setProfilePaymentsContent: function() {
-            var customer = App.Data.customer;
+            var customer = App.Data.customer,
+                promisesChain = [],
+                paymentsDef = Backbone.$.Deferred(),
+                giftCardsDef = Backbone.$.Deferred();
 
-            App.Data.mainModel.set({
-                mod: 'Profile',
-                className: 'profile-container',
-                profile_content: {
-                    modelName: 'Profile',
-                    mod: 'Payments',
-                    collection: customer.payments,
-                    removeToken: removeToken,
-                    className: 'profile-edit text-center'
-                }
-            });
+            // payments are available
+            if (customer.payments && customer.paymentsRequest) {
+                customer.paymentsRequest.always(paymentsDef.resolve.bind(paymentsDef));
+                promisesChain.push(paymentsDef);
+            }
+
+            // gift cards are available
+            if (customer.giftCards && customer.giftCardsRequest) {
+                customer.giftCardsRequest.always(giftCardsDef.resolve.bind(giftCardsDef));
+                promisesChain.push(giftCardsDef);
+            }
+
+            if (promisesChain.length) {
+                App.Data.mainModel.set({
+                    mod: 'Profile',
+                    className: 'profile-container',
+                    profile_content: {
+                        modelName: 'Profile',
+                        mod: 'Payments',
+                        model: customer,
+                        removeToken: removeToken,
+                        unlinkGiftCard: unlinkGiftCard,
+                        className: 'profile-edit text-center'
+                    }
+                });
+            }
+
+            return promisesChain;
 
             function removeToken(token_id) {
                 var req = customer.removePayment(token_id),
+                    mainModel = App.Data.mainModel;
+                if (req) {
+                    mainModel.trigger('loadStarted');
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                }
+            }
+
+            function unlinkGiftCard(giftCard) {
+                var req = customer.unlinkGiftCard(giftCard),
                     mainModel = App.Data.mainModel;
                 if (req) {
                     mainModel.trigger('loadStarted');

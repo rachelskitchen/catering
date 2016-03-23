@@ -530,10 +530,12 @@
         'NEXT': 'Далее',
         'WELCOME': 'Добро пожаловать',
         "PAYMENTS": "Платежи",
+        "GIFT_CARDS": "Подарочные карты",
         "SETTINGS": "Настройки",
         'CONTINUE': 'Далее',
         "SAVE": "Сохранить",
         "RESET": "Сбросить",
+        'BALANCE': 'Баланс',
         'PROFILE': 'Профиль',
         'PROFILE_EMAIL_ADDRESS': 'Эл. почта',
         'PROFILE_PASSWORD': 'Пароль',
@@ -588,6 +590,7 @@
         "PROFILE_PASSWORD_RESET_SUCCESS": "Временный пароль отправлен на вашу электронную почту",
         "PROFILE_INVALID_EMAIL": "Неверный адрес электронной почты",
         "PROFILE_ADD_CREDIT_CARD": "Добавить кред. карту",
-        "PROFILE_CREDIT_CARDS": "Кредитные карты"
+        "PROFILE_CREDIT_CARDS": "Кредитные карты",
+        "PROFILE_ADD_ANOTHER_CARD": "Добавить другую карту"
     } // end of locale
 }); // end of module

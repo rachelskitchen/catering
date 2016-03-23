@@ -585,7 +585,9 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             }
         },
         gift_card: function() {
-            var self = this;
+            var self = this,
+                giftCards = App.Data.customer.giftCards;
+
             $('#popup .cancel').trigger('click');
             App.Data.myorder.check_order({
                 order: true,
@@ -603,6 +605,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     className: 'confirmPayCard',
                     timetable: App.Data.timetables,
                     card: App.Data.giftcard,
+                    giftCards: giftCards,
                     two_columns_view: true
                 });
             });

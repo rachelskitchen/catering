@@ -52,12 +52,16 @@ define(["backbone", "captcha"], function(Backbone) {
          * @property {string} cardNumber='' - gift card number
          * @property {string} storageKey='giftcard' - key in a storage
          * @property {string} remainingBalance=null - remaining balance on the card
+         * @property {string} token='' - token for current session
+         * @property {boolean} selected=false - the card is selected for payment or not
          */
         defaults: _.extend({}, App.Models.Captcha.prototype.defaults,
         {
             cardNumber: '',
             storageKey: 'giftcard',
-            remainingBalance: null
+            remainingBalance: null,
+            token: '',
+            selected: false
         }),
         /**
          * Saves attributes values in a storage (detected automatic).
@@ -182,7 +186,11 @@ define(["backbone", "captcha"], function(Backbone) {
 
                     switch(data.status) {
                         case "OK":
-                            self.set('remainingBalance', data.data.remaining_balance);
+                            self.set({
+                                remainingBalance: data.data.remaining_balance,
+                                token: data.data.token,
+                                selected: true
+                            });
                             break;
                         default:
                             self.trigger('onLinkError', data.errorMsg || 'Gift Card error');
@@ -245,7 +253,7 @@ define(["backbone", "captcha"], function(Backbone) {
      * @alias App.Collections.GiftCards
      * @augments Backbone.Collection
      * @example
-     * // create a gift card model
+     * // create a gift cards collection
      * require(['giftcard'], function() {
      *     var giftcards = new App.Collections.GiftCards([{cardNumber: '777'}, {cardNumber: '555'}]);
      * });
@@ -261,6 +269,28 @@ define(["backbone", "captcha"], function(Backbone) {
          * @default App.Models.GiftCard
          */
         model: App.Models.GiftCard,
+        /**
+         * If value is `true` selected gift card is ignored for payment.
+         * @type {boolean}
+         * @default false
+         */
+        ignoreSelected: false,
+        /**
+         * Adds listener to 'change:selected' to implement radio button behavior for gift card selection. New added item triggers 'change:selected' event.
+         */
+        initialize: function() {
+            this.listenTo(this, 'change:selected', function(model, value) {
+                if (value) {
+                    this.where({selected: true}).forEach(function(item) {
+                        item !== model && item.set('selected', false);
+                    });
+                }
+            });
+
+            this.listenTo(this, 'add', function(model) {
+                model.trigger('change:selected', model, model.get('selected'));
+            });
+        },
         /**
          * Receives gift cards from server. Sends request with following parameters:
          * ```
@@ -304,13 +334,45 @@ define(["backbone", "captcha"], function(Backbone) {
                         self.reset(data.data.map(function(giftCard) {
                             return {
                                 cardNumber: giftCard.number,
-                                remainingBalance: giftCard.remaining_balance
+                                remainingBalance: giftCard.remaining_balance,
+                                token: giftCard.token
                             };
                         }));
                     }
                 },
                 error: new Function()           // to override global ajax error handler
             });
+        },
+        /**
+         * @returns {?App.Models.GiftCard} Selected gift card.
+         */
+        getSelected: function() {
+            return this.findWhere({selected: true});
+        },
+        /**
+         * Selects first gift card if any gift card isn't selected.
+         */
+        selectFirstItem: function() {
+            if (!this.where({selected: true}).length && this.length) {
+                this.at(0).set('selected', true);
+            }
+        },
+        /**
+         * Adds unique new item or updates existing.
+         * @param {App.Models.GiftCard} giftCard - gift card model.
+         */
+        addUniqueItem: function(giftCard) {
+            if (!(giftCard instanceof App.Models.GiftCard)) {
+                return;
+            }
+
+            var existingGiftCard = this.findWhere({cardNumber: giftCard.get('cardNumber')});
+
+            if (existingGiftCard) {
+                existingGiftCard.set(giftCard.toJSON());
+            } else {
+                this.add(giftCard);
+            }
         }
     });
 });

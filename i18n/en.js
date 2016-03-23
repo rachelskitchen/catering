@@ -547,10 +547,12 @@
         'NEXT': 'Next',
         'WELCOME': 'Welcome',
         'PAYMENTS': "Payments",
+        'GIFT_CARDS': 'Gift Cards',
         'SETTINGS': "Settings",
         'CONTINUE': 'Continue',
         'SAVE': "Save",
         "RESET": "Reset",
+        'BALANCE': 'Balance',
         'PROFILE': "Profile",
         'PROFILE_EMAIL_ADDRESS': 'Email Address',
         'PROFILE_PASSWORD': 'Password',
@@ -606,6 +608,7 @@
         "PROFILE_INVALID_EMAIL": "Email address is invalid",
         "PROFILE_ADD_CREDIT_CARD": "Add Credit Card",
         "PROFILE_CREDIT_CARDS": "Credit Cards",
-        "PROFILE_PAYMENT_TOKEN_NOT_FOUND": "Payment token is not found"
+        "PROFILE_PAYMENT_TOKEN_NOT_FOUND": "Payment token is not found",
+        "PROFILE_ADD_ANOTHER_CARD": "Add Another Card"
     }; // end of locale
 }); // end of module

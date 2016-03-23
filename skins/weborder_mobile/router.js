@@ -170,7 +170,7 @@ define(["main_router"], function(main_router) {
             });
 
             /* Gift Card */
-            App.Data.giftcard = new App.Models.GiftCard;
+            this.initGiftCard();
 
             // invokes when user chooses the 'Gift Card' payment processor on the #payments screen
             this.listenTo(App.Data.payments, 'payWithGiftCard', function() {
