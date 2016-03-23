@@ -121,14 +121,15 @@ define(['backbone'], function(Backbone) {
         },
         /**
          * Updates the promotions list.
+         * @param {array} items - list of order items for submitting to server.
          * @returns {Object} Deferred object.
          */
-        update: function() {
-            return this.getPromotions();
+        update: function(items) {
+            return this.getPromotions(items);
         },
         /**
          * Initialization through a json object, used after the server is requested for promotions list.
-         * @param {Object} data
+         * @param {array} promotions - list of promotions.
          */
         addAjaxJson: function(promotions) {
             if (!Array.isArray(promotions)) return;
@@ -157,7 +158,7 @@ define(['backbone'], function(Backbone) {
         },
         /**
          * Loads the promotions list from backend.
-         * @param {array} items - order items for submitting to server.
+         * @param {array} items - list of order items for submitting to server.
          *
          * Used parameters of the request are:
          * ```
@@ -176,6 +177,7 @@ define(['backbone'], function(Backbone) {
          */
         getPromotions: function(items) {
             var self = this;
+            items = items || [];
 
             this.needToUpdate = false;
 

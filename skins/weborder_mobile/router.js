@@ -131,9 +131,7 @@ define(["main_router"], function(main_router) {
                 /**
                  * Promotions
                  */
-                var set_dir = App.SettingsDirectory;
-                set_dir.promotionsAvailable = true; // DEBUG
-                if (set_dir.promotionsAvailable) {
+                if (App.Settings.has_campaigns) {
                     this.promotions = {
                         modelName: 'Promotions',
                         model: new Backbone.Model(),
@@ -883,8 +881,7 @@ define(["main_router"], function(main_router) {
                 // Need to specify shipping address (Bug 34676)
                 App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
 
-                App.SettingsDirectory.promotionsAvailable = true; // DEBUG
-                App.Data.header.set('showPromotionsLink', App.SettingsDirectory.promotionsAvailable);
+                App.Data.header.set('showPromotionsLink', App.Settings.has_campaigns);
                 this.listenToOnce(this, 'route', function() {
                     App.Data.header.set('showPromotionsLink', false); // hide Promotions link
                 });
@@ -1015,8 +1012,7 @@ define(["main_router"], function(main_router) {
                     cacheId: true
                 });
 
-                App.SettingsDirectory.promotionsAvailable = true; // DEBUG
-                App.Data.header.set('showPromotionsLink', App.SettingsDirectory.promotionsAvailable);
+                App.Data.header.set('showPromotionsLink', App.Settings.has_campaigns);
                 this.listenToOnce(this, 'route', function() {
                     App.Data.header.set('showPromotionsLink', false); // hide Promotions link
                 });
@@ -1845,7 +1841,7 @@ define(["main_router"], function(main_router) {
                         }
                     });
 
-                    promotions.needToUpdate && promotions.update();
+                    promotions.needToUpdate && promotions.update(items);
 
                     App.Data.header.set({
                         page_title: _loc.HEADER_PROMOTIONS_LIST_PT,
