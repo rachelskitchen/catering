@@ -78,7 +78,7 @@ define(["done_view", "generator"], function(done_view) {
         },
         content_change: function() {
             var view,
-                content = this.$('#content'),
+                content = this.$('#section > div'),
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
 

@@ -207,16 +207,10 @@ define(['backbone'], function(Backbone) {
      * @returns {Object} Deferred object.
      */
     App.Collections.Promotions.init = function(items) {
-        var fetching = Backbone.$.Deferred();
+        var promotions = new App.Collections.Promotions();
+        promotions.fetching = promotions.getPromotions(items);
 
-        if (App.Data.promotions === undefined) {
-            App.Data.promotions = new App.Collections.Promotions;
-            fetching = App.Data.promotions.getPromotions(items);
-        } else {
-            fetching.resolve();
-        }
-
-        return fetching;
+        return promotions;
     };
 
 });

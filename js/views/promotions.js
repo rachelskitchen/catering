@@ -69,8 +69,7 @@ define(['factory'], function() {
         mod: 'list',
         itemView: App.Views.CorePromotionsView.CorePromotionsListItemView,
         initialize: function() {
-            var promotions = this.model.get('promotions');
-            this.listenTo(promotions, 'promotionsLoaded', this.updateBindings);
+            this.listenTo(this.collection, 'promotionsLoaded', this.updateBindings);
             this.bindingSources = _.extend({}, this.bindingSources, {
                 _available: new Backbone.Collection(),
                 _other: new Backbone.Collection()
@@ -85,9 +84,8 @@ define(['factory'], function() {
             '.promotions-other__list': 'collection: $_other'
         },
         updateBindings: function() {
-            var promotions = this.model.get('promotions');
-            this.getBinding('$_available').reset(promotions.where({'is_applicable': true}));
-            this.getBinding('$_other').reset(promotions.where({'is_applicable': false}));
+            this.getBinding('$_available').reset(this.collection.where({'is_applicable': true}));
+            this.getBinding('$_other').reset(this.collection.where({'is_applicable': false}));
         }
     });
 
