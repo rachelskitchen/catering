@@ -38,7 +38,8 @@
     right: 0;
     text-align: center;
 }
-.confirmPayCard .payments-btn {
+.confirmPayCard .payments-btn,
+.confirmPayCard .gift-cards-btn {
     display: inline-block;
     min-width: 268px;
     padding: 0px 15px;

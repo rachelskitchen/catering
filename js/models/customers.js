@@ -1768,6 +1768,12 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             var req = giftCard.linkToCustomer(this.getAuthorizationHeader()),
                 self = this;
 
+            req.done(function(data) {
+                if (_.isObject(data) && data.status == 'OK') {
+                    self.giftCards.addUniqueItem(giftCard);
+                }
+            });
+
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
                     self.trigger('onUserSessionExpired');
@@ -1798,6 +1804,12 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             });
 
             return req;
-        }
+        },
+        /**
+         * @returns {boolean} `true` if any gift card is selected for payment.
+         */
+        doPayWithGiftCard: function() {
+            return Boolean(this.isAuthorized() && this.giftCards && !this.giftCards.ignoreSelected && this.giftCards.getSelected());
+        },
     });
 });

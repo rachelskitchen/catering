@@ -161,9 +161,13 @@
 </script>
 
 <script type="text/template" id="profile_payments-template">
-    <div class="left-side side text-center border-box fl-left">
+    <div class="left-side side text-center border-box">
         <h2 class="title"><%= _lp.PROFILE_CREDIT_CARDS %></h2>
         <div class="payments-box"></div>
+    </div>
+    <div class="right-side side text-center border-box">
+        <h2 class="title"><%= _lp.GIFT_CARDS %></h2>
+        <div class="gift-cards-box"></div>
     </div>
 </script>
 
@@ -174,4 +178,23 @@
 
 <script type="text/template" id="profile_payments_edition-template">
     <ul class="payments-list"></ul>
+</script>
+
+<script type="text/template" id="profile_gift_card_selection-template">
+    <span class="card-number"></span>
+    <span class="balance-line">&mdash; <%= _loc.BALANCE %>: <span class="balance-value"></span></span>
+</script>
+
+<script type="text/template" id="profile_gift_cards_selection-template">
+    <ul class="gift-cards-list"></ul>
+</script>
+
+<script type="text/template" id="profile_gift_card_edition-template">
+    <span class="card-number"></span>
+    <span class="balance-line">&mdash; <%= _loc.BALANCE %>: <span class="balance-value"></span></span>
+    <div class="remove-btn"></div>
+</script>
+
+<script type="text/template" id="profile_gift_cards_edition-template">
+    <ul class="gift-cards-list"></ul>
 </script>

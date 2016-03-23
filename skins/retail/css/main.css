@@ -850,7 +850,7 @@ section.maintenance .back {
     -o-user-select: none;
     user-select: none;
 }
-.hide {
+.hide, .hidden {
     display: none !important;
 }
 /* for tablets */
@@ -1204,4 +1204,8 @@ span.cancel-input:before {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+}
+
+.border-none {
+    border: none !important;
 }

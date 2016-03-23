@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
+define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], function(Backbone) {
     'use strict';
 
     App.Views.CoreConfirmView = {};
@@ -40,17 +40,22 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
 
             // show payments
             this.options.payments && this.options.payments.length && this.showPayments();
+
+            // show gift cards
+            this.options.giftCards && this.options.giftCards.length && this.showGiftCards();
         },
         bindings: {
             '#credit-card': 'toggle: not(ui_showPayments)',
             '.payments': 'toggle: ui_showPayments',
-            '.payments-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_CREDIT_CARD, _lp_PAYMENTS), toggle: ui_showPaymentsBtn'
+            '.payments-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_CREDIT_CARD, _lp_PAYMENTS), classes: {hidden: not(ui_showPaymentsBtn)}',
+            '.gift-cards-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_ANOTHER_CARD, _lp_GIFT_CARDS), classes: {hidden: not(ui_showGiftCardsBtn)}'
         },
         bindingSources: {
             ui: function() {
                 return new Backbone.Model({
                     showPayments: false,
-                    showPaymentsBtn: false
+                    showPaymentsBtn: false,
+                    showGiftCardsBtn: false
                 });
             }
         },
@@ -60,20 +65,33 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             return this;
         },
         afterRender: function() {
+            var payments = this.options.payments,
+                giftCards = this.options.giftCards;
+
             this.subViews.push(App.Views.GeneratorView.create(this.options.submode == 'Gift' ? 'GiftCard' : 'Card', {
                 el: this.$('#credit-card'),
                 mod: 'Main',
                 model: this.options.card
             }));
 
-            if (this.options.payments) {
+            if (payments) {
                 this.subViews.push(App.Views.GeneratorView.create('Profile', {
                     el: this.$('.payments'),
                     mod: 'PaymentsSelection',
-                    collection: this.options.payments
+                    collection: payments
                 }));
                 this.$('.payments-control').show();
-                this.options.payments.selectFirstItem();
+                payments.selectFirstItem();
+            }
+
+            if (giftCards) {
+                this.subViews.push(App.Views.GeneratorView.create('Profile', {
+                    el: this.$('.payments'),
+                    mod: 'GiftCardsSelection',
+                    collection: giftCards
+                }));
+                this.$('.payments-control').show();
+                giftCards.selectFirstItem();
             }
 
             this.addCart();
@@ -81,6 +99,7 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
         events: {
             'click .btn-submit': 'submit_payment',
             'click .payments-btn': 'addCreditCard',
+            'click .gift-cards-btn': 'showGiftCards',
             'keydown .btn-submit': function(e) {
                 if (this.pressedButtonIsEnter(e)) {
                     this.submit_payment();
@@ -88,21 +107,38 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
             }
         },
         submit_payment: function(cb) {
-            var self = this;
+            var self = this,
+                customer = App.Data.customer,
+                doPayWithToken = customer.doPayWithToken(),
+                doPayWithGiftCard = customer.doPayWithGiftCard();
+
             saveAllData();
 
             self.collection.check_order({
-                card: self.options.submode == 'Credit' && !App.Data.customer.doPayWithToken(),
-                giftcard: self.options.submode == 'Gift',
+                card: self.options.submode == 'Credit' && !doPayWithToken,
+                giftcard: self.options.submode == 'Gift' && !doPayWithGiftCard,
                 order: true,
                 tip: true,
                 customer: true,
                 checkout: true
             }, function() {
+                if (self.options.submode == 'Gift' && !doPayWithGiftCard) {
+                    customer.linkGiftCard(self.options.card).done(function(data) {
+                        if (_.isObject(data) && data.status == 'OK') {
+                            customer.giftCards.ignoreSelected = false;
+                            makePayment();
+                        }
+                    });
+                } else {
+                    makePayment();
+                }
+            });
+
+            function makePayment() {
                 typeof cb == 'function' && cb();
                 self.collection.create_order_and_pay(self.options.submode == 'Gift' ? PAYMENT_TYPE.GIFT : PAYMENT_TYPE.CREDIT);
                 !self.canceled && self.collection.trigger('showSpinner');
-            });
+            }
         },
         addCart: function() {
             this.subViews.push(App.Views.GeneratorView.create('MyOrder', {
@@ -141,6 +177,20 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
                 });
             } else {
                 this.showPayments();
+            }
+        },
+        showGiftCards: function() {
+            var $ui = this.getBinding('$ui'),
+                value = !$ui.get('showPayments'),
+                giftCards = this.options.giftCards;
+            $ui.set({
+                showPayments: value,
+                showGiftCardsBtn: Boolean(giftCards.length)
+            });
+            if (value) {
+                giftCards.ignoreSelected = false;
+            } else {
+                giftCards.ignoreSelected = true;
             }
         }
     });

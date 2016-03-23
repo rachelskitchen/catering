@@ -1864,12 +1864,19 @@ var GiftCardPaymentProcessor = {
         return queryString;
     },
     processPayment: function(myorder, payment_info, pay_get_parameter) {
-        var giftcard = App.Data.giftcard && App.Data.giftcard.toJSON();
-        payment_info.cardInfo = {
-            cardNumber: $.trim(giftcard.cardNumber),
-            captchaKey: giftcard.captchaKey,
-            captchaValue: giftcard.captchaValue
-        };
+        var giftcard = App.Data.giftcard && App.Data.giftcard.toJSON(),
+            customer = App.Data.customer;
+        if (customer.doPayWithGiftCard()) {
+            payment_info.cardInfo = {
+                token: customer.giftCards.getSelected().get('token')
+            };
+        } else {
+            payment_info.cardInfo = {
+                cardNumber: $.trim(giftcard.cardNumber),
+                captchaKey: giftcard.captchaKey,
+                captchaValue: giftcard.captchaValue
+            };
+        }
         return payment_info;
     }
 };

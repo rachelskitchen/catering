@@ -101,7 +101,7 @@ define(["factory"], function() {
             '.logout-link': 'toggle: access_token',
             '.logged-as': 'toggle: access_token, html: loggedAs(first_name)',
             '.private-btn': 'classes: {"primary-text": access_token, "regular-text": not(access_token), disabled: not(access_token)}',
-            '.payments-link': 'toggle: _settings_directory_saved_credit_cards'
+            '.payments-link': 'toggle: any(_settings_directory_saved_credit_cards, _settings_directory_saved_gift_cards)'
         },
         bindingFilters: {
             loggedAs: function(username) {
@@ -348,23 +348,95 @@ define(["factory"], function() {
         itemView: App.Views.CoreProfileView.CoreProfilePaymentEditionView
     });
 
+    App.Views.CoreProfileView.CoreProfileGiftCardSelectionView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'gift_card_selection',
+        tagName: 'li',
+        bindings: {
+            ':el': 'classes: {selected: selected}',
+            '.card-number': 'text: cardNumber',
+            '.balance-line': 'toggle: not(equal(remainingBalance, null))',
+            '.balance-value': 'text: currencyFormat(remainingBalance)'
+        },
+        bindingFilters: {
+            creditCardType: creditCardType
+        },
+        events: {
+            'click': 'select'
+        },
+        select: function() {
+            var isSelect = !this.model.get('selected');
+            isSelect && this.model.set('selected', isSelect);
+        }
+    });
+
+    App.Views.CoreProfileView.CoreProfileGiftCardsSelectionView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'gift_cards_selection',
+        bindings: {
+            '.gift-cards-list': 'collection: $collection'
+        },
+        itemView: App.Views.CoreProfileView.CoreProfileGiftCardSelectionView,
+        // events: {
+        //     'click .add-cc': setCallback('addCreditCard')
+        // }
+    });
+
+    App.Views.CoreProfileView.CoreProfileGiftCardEditionView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'gift_card_edition',
+        tagName: 'li',
+        bindings: {
+            '.card-number': 'text: cardNumber',
+            '.balance-line': 'toggle: not(equal(remainingBalance, null))',
+            '.balance-value': 'text: currencyFormat(remainingBalance)'
+        },
+        events: {
+            'click .remove-btn': 'removeToken'
+        },
+        removeToken: function() {
+            this.options.collectionView.options.unlinkGiftCard(this.model);
+        }
+    });
+
+    App.Views.CoreProfileView.CoreProfileGiftCardsEditionView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'gift_cards_edition',
+        bindings: {
+            '.gift-cards-list': 'collection: $collection'
+        },
+        itemView: App.Views.CoreProfileView.CoreProfileGiftCardEditionView
+    });
+
     App.Views.CoreProfileView.CoreProfilePaymentsView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'payments',
-        // events: {
-        //     'click .update-btn': setCallback('updateAction')
-        // },
+        bindings: {
+            '.left-side': 'classes: {hidden: not(_settings_directory_saved_credit_cards), "border-none": not(_settings_directory_saved_gift_cards), "fl-left": _settings_directory_saved_gift_cards}',
+            '.right-side': 'classes: {hidden: not(_settings_directory_saved_gift_cards)}'
+        },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
 
-            var paymentsEdition = App.Views.GeneratorView.create('Profile', {
-                el: this.$('.payments-box'),
-                mod: 'PaymentsEdition',
-                collection: this.collection,
-                removeToken: this.options.removeToken
-            });
+            if (this.model.payments) {
+                var paymentsEdition = App.Views.GeneratorView.create('Profile', {
+                    el: this.$('.payments-box'),
+                    mod: 'PaymentsEdition',
+                    collection: this.model.payments,
+                    removeToken: this.options.removeToken
+                });
+                this.subViews.push(paymentsEdition);
+            }
 
-            this.subViews.push(paymentsEdition);
+            if (this.model.giftCards) {
+                var giftCardsEdition = App.Views.GeneratorView.create('Profile', {
+                    el: this.$('.gift-cards-box'),
+                    mod: 'GiftCardsEdition',
+                    collection: this.model.giftCards,
+                    unlinkGiftCard: this.options.unlinkGiftCard
+                });
+                this.subViews.push(giftCardsEdition);
+            }
 
             return this;
         }
@@ -404,5 +476,9 @@ define(["factory"], function() {
         App.Views.ProfileView.ProfilePaymentEditionView = App.Views.CoreProfileView.CoreProfilePaymentEditionView;
         App.Views.ProfileView.ProfilePaymentsEditionView = App.Views.CoreProfileView.CoreProfilePaymentsEditionView;
         App.Views.ProfileView.ProfilePaymentsView = App.Views.CoreProfileView.CoreProfilePaymentsView;
+        App.Views.ProfileView.ProfileGiftCardSelectionView = App.Views.CoreProfileView.CoreProfileGiftCardSelectionView;
+        App.Views.ProfileView.ProfileGiftCardsSelectionView = App.Views.CoreProfileView.CoreProfileGiftCardsSelectionView;
+        App.Views.ProfileView.ProfileGiftCardEditionView = App.Views.CoreProfileView.CoreProfileGiftCardEditionView;
+        App.Views.ProfileView.ProfileGiftCardsEditionView = App.Views.CoreProfileView.CoreProfileGiftCardsEditionView;
     });
 });

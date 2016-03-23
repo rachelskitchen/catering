@@ -183,12 +183,14 @@
 
 }
 
-.profile-edit .payments-list {
+.profile-edit .payments-list,
+.profile-edit .gift-cards-list {
     font-size: 14px;
     width: 300px;
 }
 
-.profile-edit .payments-list > li {
+.profile-edit .payments-list > li,
+.profile-edit .gift-cards-list > li {
     text-align: left;
 }
 
@@ -217,13 +219,15 @@
     padding-bottom: 15px;
 }
 
-.payments-list {
+.payments-list,
+.gift-cards-list {
     display: inline-block;
     width: 95%;
     vertical-align: middle;
 }
 
-.payments-list > li {
+.payments-list > li,
+.gift-cards-list > li {
     border-color: #fff;
     border-style: solid;
     border-width: 1px;
@@ -234,7 +238,8 @@
     position: relative;
 }
 
-.payments-list > li.selected::after {
+.payments-list > li.selected::after,
+.gift-cards-list > li.selected::after {
     content: '';
     display: block;
     width: 30px;
