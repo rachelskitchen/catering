@@ -1802,7 +1802,8 @@ define(["main_router"], function(main_router) {
 
             App.Data.mainModel.set({
                 header: headerModes.Promotions,
-                footer: footerModes.None
+                footer: footerModes.None,
+                contentClass: ''
             });
 
             this.prepare('promotions', function() {
@@ -1916,7 +1917,8 @@ define(["main_router"], function(main_router) {
                     App.Data.mainModel.set({
                         header: headerModes.Promotions,
                         footer: footerModes.None,
-                        content: content
+                        content: content,
+                        contentClass: ''
                     });
 
                     self.change_page();
