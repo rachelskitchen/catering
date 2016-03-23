@@ -383,7 +383,9 @@
             'RESOURCES_CSS': 'Unable to load CSS resources. Now the page is reloaded.',
             'RESOURCES_TEMPLATES': 'Unable to load template resources. Now the page is reloaded.',
             'PRODUCT_SET_QUANTITY_IS_NOT_VALID': 'Please select exact | %d product(s) in %s',
-            'COMBO_HAS_NO_CHILD_PRODUCTS': '\'%s\' has no child products, please check the backend settings'
+            'COMBO_HAS_NO_CHILD_PRODUCTS': '\'%s\' has no child products, please check the backend settings',
+            'CARD_TYPE_IS_NOT_RECOGNIZED': 'The card type is not recognized.',
+            'CARD_TYPE_IS_NOT_SUPPORTED': 'The card type is not supported.'
         },
         'MSG': {
             'ERROR_STORE_IS_CLOSED': 'We\'re sorry, your order cannot be processed because the store is closed for selected pickup day/time',

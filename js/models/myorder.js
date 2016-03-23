@@ -1532,6 +1532,17 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
             }
 
+            if (options.card_billing_address) {
+                var card = App.Data.card,
+                    check_card = card.check_billing_address();
+
+                if (check_card.status === 'ERROR') {
+                    errorMsg = check_card.errorMsg;
+                } else if (check_card.status === 'ERROR_EMPTY_FIELDS') {
+                    fields = fields.concat(check_card.errorList);
+                }
+            }
+
             if (options.giftcard) {
                 var giftcard = App.Data.giftcard,
                     check_card = giftcard.check();
@@ -2139,7 +2150,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     items: items,
                     orderInfo: order_info,
                     paymentInfo: payment_info
-                };
+                },
+                billing_address;
 
             myorder.each(function(model) {
                 if (!model.isServiceFee())
@@ -2193,24 +2205,17 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
 
 
-            var profile_address,
-                paymentProcessor = PaymentProcessor.getPaymentProcessor(payment_type),
-                use_profile_address = App.Data.card.get("use_profile_address");
+            if (payment_type == PAYMENT_TYPE.CREDIT && PaymentProcessor.isBillingAddressCard()) {
 
-            if (PaymentProcessor.isBillingAddressCard()) {
-                if (use_profile_address) {
-                    profile_address = App.Data.customer.getProfileAddress();
-                } else {
-                    profile_address = App.Data.card.get("billing_address").toJSON();
-                }
+                billing_address = get_billing_address();
+                if (_.isObject(billing_address)) {
 
-                if (paymentProcessor == GlobalCollectPaymentProcessor && profile_address) {
                     payment_info.cardInfo.address = {
-                        street_1: profile_address.street_1,
-                        city: profile_address.city,
-                        state: profile_address.state,
-                        zipcode: profile_address.zipcode,
-                        country: profile_address.country_code
+                        street_1: billing_address.street_1,
+                        city: billing_address.city,
+                        state: billing_address.state,
+                        zipcode: billing_address.zipcode,
+                        country: billing_address.country_code
                     };
                 }
             }

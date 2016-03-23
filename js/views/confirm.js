@@ -67,8 +67,7 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
                 model: this.options.card
             }));
 
-            var paymentProcessor = PaymentProcessor.getPaymentProcessor(PAYMENT_TYPE.CREDIT);
-            if (paymentProcessor == GlobalCollectPaymentProcessor) {
+            if (PaymentProcessor.isBillingAddressCard()) {
                 this.subViews.push(App.Views.GeneratorView.create('Card', {
                     el: this.$('#billing-address'),
                     mod: 'BillingAddress',
@@ -109,7 +108,8 @@ define(["backbone", "checkout_view", "stanfordcard_view"], function(Backbone) {
                 order: true,
                 tip: true,
                 customer: true,
-                checkout: true
+                checkout: true,
+                card_billing_address: PaymentProcessor.isBillingAddressCard()
             }, function() {
                 typeof cb == 'function' && cb();
                 self.collection.create_order_and_pay(self.options.submode == 'Gift' ? PAYMENT_TYPE.GIFT : PAYMENT_TYPE.CREDIT);
