@@ -185,27 +185,16 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
                 expect(collection.getPromotions).toHaveBeenCalled();
             });
 
-            describe('init()', function() {
-                var result,
+            it('init()', function() {
+                var promotions,
                     fetching = Backbone.$.Deferred();
 
-                beforeEach(function() {
-                    spyOn(App.Collections.Promotions.prototype, 'getPromotions').and.returnValue(fetching);
-                });
-
-                it('App.Data.promotions in undefined', function() {
-                    App.Data.promotions = undefined;
-                    result = App.Collections.Promotions.init();
-                    expect(App.Collections.Promotions.prototype.getPromotions).toHaveBeenCalled();
-                    expect(result.state()).toBe('pending');
-                });
-
-                it('App.Data.promotions is defined', function() {
-                    App.Data.promotions = new Backbone.Collection();
-                    result = App.Collections.Promotions.init();
-                    expect(App.Collections.Promotions.prototype.getPromotions).not.toHaveBeenCalled();
-                    expect(result.state()).toBe('resolved');
-                });
+                spyOn(App.Collections.Promotions.prototype, 'getPromotions').and.returnValue(fetching);
+                App.Data.promotions = undefined;
+                promotions = App.Collections.Promotions.init();
+                expect(App.Collections.Promotions.prototype.getPromotions).toHaveBeenCalled();
+                expect(promotions instanceof App.Collections.Promotions).toBe(true);
+                expect(promotions.fetching.state()).toBe('pending');
             });
 
         });
