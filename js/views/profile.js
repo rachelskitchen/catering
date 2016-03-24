@@ -377,9 +377,9 @@ define(["factory"], function() {
             '.gift-cards-list': 'collection: $collection'
         },
         itemView: App.Views.CoreProfileView.CoreProfileGiftCardSelectionView,
-        // events: {
-        //     'click .add-cc': setCallback('addCreditCard')
-        // }
+        events: {
+            'click .add-gift-card': setCallback('addGiftCard')
+        }
     });
 
     App.Views.CoreProfileView.CoreProfileGiftCardEditionView = App.Views.FactoryView.extend({
@@ -392,9 +392,9 @@ define(["factory"], function() {
             '.balance-value': 'text: currencyFormat(remainingBalance)'
         },
         events: {
-            'click .remove-btn': 'removeToken'
+            'click .remove-btn': 'unlinkGiftCard'
         },
-        removeToken: function() {
+        unlinkGiftCard: function() {
             this.options.collectionView.options.unlinkGiftCard(this.model);
         }
     });

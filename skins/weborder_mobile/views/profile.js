@@ -58,8 +58,45 @@ define(["profile_view"], function(profile_view) {
         }
     });
 
+    var ProfileGiftCardSelectionView = App.Views.CoreProfileView.CoreProfileGiftCardSelectionView.extend({
+        className: 'payment-item font-size3 primary-bg primary-text'
+    });
+
+    var ProfileGiftCardsSelectionView = App.Views.CoreProfileView.CoreProfileGiftCardsSelectionView.extend({
+        bindings: {
+            ':el': 'toggle: equal(selected, "gift_card")'
+        },
+        itemView: ProfileGiftCardSelectionView
+    });
+
+    var ProfileGiftCardEditionView = App.Views.CoreProfileView.CoreProfileGiftCardEditionView.extend({
+        className: 'payment-item font-size3 primary-text list-subheader'
+    });
+
+    var ProfileGiftCardsEditionView = App.Views.CoreProfileView.CoreProfileGiftCardsEditionView.extend({
+        bindings: {
+            '.gift-cards': 'classes: {collapsed: ui_collapsed}',
+            '.gift-cards-list': 'toggle: not(ui_collapsed), collection: $collection'
+        },
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({collapsed: true});
+            }
+        },
+        itemView: ProfileGiftCardEditionView,
+        events: {
+            'click .gift-cards': 'collapse'
+        },
+        collapse: function() {
+            var $ui = this.getBinding('$ui');
+            $ui.set('collapsed', !$ui.get('collapsed'));
+        }
+    });
+
     return new (require('factory'))(profile_view.initViews.bind(profile_view), function() {
         App.Views.ProfileView.ProfilePaymentsSelectionView = ProfilePaymentsSelectionView;
         App.Views.ProfileView.ProfilePaymentsEditionView = ProfilePaymentsEditionView;
+        App.Views.ProfileView.ProfileGiftCardsSelectionView = ProfileGiftCardsSelectionView;
+        App.Views.ProfileView.ProfileGiftCardsEditionView = ProfileGiftCardsEditionView;
     });
 });

@@ -159,7 +159,7 @@
 
 <script type="text/template" id="profile_payments_selection-template">
     <ul class="payments-list"></ul>
-    <div class="add-cc payment-item primary-text font-size3">+ Add Credit Card</div>
+    <div class="add-cc payment-item primary-text font-size3">+ <%= _loc.PROFILE_ADD_CREDIT_CARD %></div>
 </script>
 
 <script type="text/template" id="profile_payment_edition-template">
@@ -172,4 +172,27 @@
         <span class="font-size1"><%= _lp.PROFILE_CREDIT_CARDS %></span>
     </div>
     <ul class="payments-list"></ul>
+</script>
+
+<script type="text/template" id="profile_gift_card_selection-template">
+    <span class="card-number"></span>
+    <span class="balance-line">&mdash; <%= _loc.BALANCE %>: <span class="balance-value"></span></span>
+</script>
+
+<script type="text/template" id="profile_gift_cards_selection-template">
+    <ul class="gift-cards-list"></ul>
+    <div class="add-gift-card payment-item primary-text font-size3">+ <%= _loc.PROFILE_ADD_ANOTHER_CARD %></div>
+</script>
+
+<script type="text/template" id="profile_gift_card_edition-template">
+    <span class="card-number"></span>
+    <span class="balance-line">&mdash; <%= _loc.BALANCE %>: <span class="balance-value"></span></span>
+    <div class="remove-btn"></div>
+</script>
+
+<script type="text/template" id="profile_gift_cards_edition-template">
+    <div class="gift-cards primary-text text-center primary-bg">
+        <span class="font-size1"><%= _lp.GIFT_CARDS %></span>
+    </div>
+    <ul class="gift-cards-list"></ul>
 </script>

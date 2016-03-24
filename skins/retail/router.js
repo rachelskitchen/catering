@@ -766,12 +766,12 @@ define(["main_router"], function(main_router) {
             this.change_page();
         },
         profile_payments: function() {
-            var promisesChain = this.setProfilePaymentsContent();
+            var promises = this.setProfilePaymentsContent();
 
-            if (!promisesChain.length) {
+            if (!promises.length) {
                 return this.navigate('index', true);
             } else {
-                Backbone.$.when.apply(Backbone.$, promisesChain).then(this.change_page.bind(this));
+                Backbone.$.when.apply(Backbone.$, promises).then(this.change_page.bind(this));
             }
         }
     });
