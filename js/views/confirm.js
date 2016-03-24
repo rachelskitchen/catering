@@ -122,7 +122,7 @@ define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], funct
                 customer: true,
                 checkout: true
             }, function() {
-                if (self.options.submode == 'Gift' && !doPayWithGiftCard) {
+                if (self.options.submode == 'Gift' && customer.isAuthorized() && !doPayWithGiftCard) {
                     customer.linkGiftCard(self.options.card).done(function(data) {
                         if (_.isObject(data) && data.status == 'OK') {
                             customer.giftCards.ignoreSelected = false;
