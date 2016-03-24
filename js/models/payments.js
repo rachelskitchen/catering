@@ -217,17 +217,23 @@ define(['backbone'], function(Backbone) {
          */
         ignoreSelectedToken: false,
         /**
-         * Creates listener for `change:selected` event to deselect all payments (radio button behavior).
+         * Creates listener for `change:selected` event.
          */
         initialize: function() {
-            this.listenTo(this, 'change:selected', function(model, value) {
-                if(value) {
-                    this.where({selected: true}).forEach(function(payment) {
-                        model != payment && payment.set({selected: false});
-                    });
-                }
-            });
+            this.listenTo(this, 'change:selected', this.radioSelection);
             Backbone.Collection.prototype.initialize.apply(this, arguments);
+        },
+        /**
+         * When payment is selected, deselects all other payments (radio button behavior).
+         * @param {App.Models.PaymentToken} model - Selected/deselected payment.
+         * @param {boolean} value - model.selected attribute value.
+         */
+        radioSelection: function(model, value) {
+            if (value) {
+                this.where({selected: true}).forEach(function(payment) {
+                    model != payment && payment.set({selected: false});
+                });
+            }
         },
         /**
          * Creates a new order via selected payment token. Sends request with following parameters:
@@ -499,12 +505,10 @@ define(['backbone'], function(Backbone) {
                 contentType: "application/json",
                 success: function(data) {
                     self.where({is_primary: true}).forEach(function(payment) {
-                        payment.set({
-                            is_primary: false,
-                            selected: false
-                        });
+                        payment.set('is_primary', false);
                     });
-                    self.add(data).set('selected', true);
+                    var model = self.add(data);
+                    self.radioSelection(model, true);
                 },
                 error: new Function()              // to override global ajax error handler
             });
