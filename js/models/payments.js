@@ -499,7 +499,10 @@ define(['backbone'], function(Backbone) {
                 contentType: "application/json",
                 success: function(data) {
                     self.where({is_primary: true}).forEach(function(payment) {
-                        payment.set('is_primary', false);
+                        payment.set({
+                            is_primary: false,
+                            selected: false
+                        });
                     });
                     self.add(data).set('selected', true);
                 },
