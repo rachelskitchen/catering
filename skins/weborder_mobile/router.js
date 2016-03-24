@@ -174,17 +174,39 @@ define(["main_router"], function(main_router) {
 
             // invokes when user chooses the 'Gift Card' payment processor on the #payments screen
             this.listenTo(App.Data.payments, 'payWithGiftCard', function() {
-                this.navigate('giftcard', true);
+                var customer = App.Data.customer;
+                if (customer.isAuthorized() && customer.doPayWithGiftCard()) {
+                    myorder.check_order({
+                        order: true,
+                        tip: true,
+                        customer: true,
+                        checkout: true
+                    }, sendRequest.bind(window, PAYMENT_TYPE.GIFT));
+                } else {
+                    this.navigate('giftcard', true);
+                }
             }, this);
 
             this.listenTo(App.Data.giftcard, 'pay', function() {
+                var customer = App.Data.customer;
                 myorder.check_order({
                     order: true,
                     tip: true,
                     customer: true,
                     checkout: true,
                     giftcard: true
-                }, sendRequest.bind(window, PAYMENT_TYPE.GIFT));
+                }, function() {
+                    if (customer.isAuthorized() && !customer.doPayWithGiftCard()) {
+                        customer.linkGiftCard(App.Data.giftcard).done(function(data) {
+                            if (_.isObject(data) && data.status == 'OK') {
+                                customer.giftCards.ignoreSelected = false;
+                                sendRequest(PAYMENT_TYPE.GIFT);
+                            }
+                        });
+                    } else {
+                        sendRequest(PAYMENT_TYPE.GIFT);
+                    }
+                });
             }, this);
 
             /* Cash Card */
@@ -1112,6 +1134,8 @@ define(["main_router"], function(main_router) {
 
                 var customer = App.Data.customer,
                     payments = customer.payments,
+                    giftCards = customer.giftCards,
+                    promises = this.getProfilePaymentsPromises(),
                     isAuthorized;
 
                 if (payments) {
@@ -1127,17 +1151,34 @@ define(["main_router"], function(main_router) {
                     });
                 }
 
+                if (giftCards) {
+                    // do not cache it
+                    // App.Data.customer.giftCards can change after logout/login
+                    content.push({
+                        modelName: 'Profile',
+                        mod: 'GiftCardsSelection',
+                        collection: giftCards,
+                        model: App.Data.payments,
+                        addGiftCard: addGiftCard,
+                        className: 'text-center'
+                    });
+                }
+
                 App.Data.mainModel.set({
                     contentClass: '',
                     content: content
                 });
 
-                if (payments) {
-                    customer.paymentsRequest.done(function() {
+                if (promises.length) {
+                    customer.paymentsRequest && customer.paymentsRequest.done(function() {
                         payments.selectFirstItem();
                         payments.ignoreSelectedToken = false;
                     });
-                    customer.paymentsRequest.always(this.change_page.bind(this));
+                    customer.giftCardsRequest && customer.giftCardsRequest.done(function() {
+                        giftCards.selectFirstItem();
+                        giftCards.ignoreSelected = false;
+                    });
+                    Backbone.$.when.apply(Backbone.$, promises).then(this.change_page.bind(this));
                 } else {
                     this.change_page()
                 };
@@ -1145,6 +1186,11 @@ define(["main_router"], function(main_router) {
                 function addCreditCard() {
                     payments && (payments.ignoreSelectedToken = true);
                     App.Data.payments.trigger('payWithCreditCard');
+                }
+
+                function addGiftCard() {
+                    giftCards && (giftCards.ignoreSelected = true);
+                    App.Data.payments.trigger('payWithGiftCard');
                 }
             });
         },
@@ -1758,23 +1804,19 @@ define(["main_router"], function(main_router) {
             this.change_page();
         },
         profile_payments: function() {
-            var customer = App.Data.customer,
-                content;
+            var data = this.setProfilePaymentsContent();
 
-            if (!customer.payments || !customer.paymentsRequest) {
+            if (!data.promises.length) {
                 return this.navigate('index', true);
+            } else {
+                App.Data.mainModel.set({
+                    header: headerModes.Modifiers,
+                    footer: footerModes.None,
+                    contentClass: '',
+                    content: data.content
+                });
+                Backbone.$.when.apply(Backbone.$, data.promises).then(this.change_page.bind(this));
             }
-
-            content = this.profilePaymentsContent();
-
-            App.Data.mainModel.set({
-                header: headerModes.Modifiers,
-                footer: footerModes.None,
-                contentClass: '',
-                content: content
-            });
-
-            customer.paymentsRequest.always(this.change_page.bind(this));
         }
     });
 

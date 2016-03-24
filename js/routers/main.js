@@ -682,6 +682,26 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.errors.alert(MSG.ERROR_CAN_NOT_LOAD_THE_GOOGLE_MAPS_SERVICE, true); // user notification
             });
             return dfd;
+        },
+        getProfilePaymentsPromises: function() {
+            var customer = App.Data.customer,
+                promises = [],
+                paymentsDef = Backbone.$.Deferred(),
+                giftCardsDef = Backbone.$.Deferred();
+
+            // payments are available
+            if (customer.payments && customer.paymentsRequest) {
+                customer.paymentsRequest.always(paymentsDef.resolve.bind(paymentsDef));
+                promises.push(paymentsDef);
+            }
+
+            // gift cards are available
+            if (customer.giftCards && customer.giftCardsRequest) {
+                customer.giftCardsRequest.always(giftCardsDef.resolve.bind(giftCardsDef));
+                promises.push(giftCardsDef);
+            }
+
+            return promises;
         }
     });
 
@@ -873,24 +893,9 @@ define(["backbone", "factory"], function(Backbone) {
             }
         },
         setProfilePaymentsContent: function() {
-            var customer = App.Data.customer,
-                promisesChain = [],
-                paymentsDef = Backbone.$.Deferred(),
-                giftCardsDef = Backbone.$.Deferred();
+            var promises = this.getProfilePaymentsPromises();
 
-            // payments are available
-            if (customer.payments && customer.paymentsRequest) {
-                customer.paymentsRequest.always(paymentsDef.resolve.bind(paymentsDef));
-                promisesChain.push(paymentsDef);
-            }
-
-            // gift cards are available
-            if (customer.giftCards && customer.giftCardsRequest) {
-                customer.giftCardsRequest.always(giftCardsDef.resolve.bind(giftCardsDef));
-                promisesChain.push(giftCardsDef);
-            }
-
-            if (promisesChain.length) {
+            if (promises.length) {
                 App.Data.mainModel.set({
                     mod: 'Profile',
                     className: 'profile-container',
@@ -905,7 +910,7 @@ define(["backbone", "factory"], function(Backbone) {
                 });
             }
 
-            return promisesChain;
+            return promises;
 
             function removeToken(token_id) {
                 var req = customer.removePayment(token_id),
@@ -1271,30 +1276,59 @@ define(["backbone", "factory"], function(Backbone) {
                         .always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
             }
         },
-        profilePaymentsContent: function() {
-            var customer = App.Data.customer;
+        setProfilePaymentsContent: function() {
+            var customer = App.Data.customer,
+                promises = this.getProfilePaymentsPromises(),
+                content = [];
 
-            var content = {
-                modelName: 'Profile',
-                mod: 'PaymentsEdition',
-                collection: customer.payments,
-                removeToken: removeToken,
-                className: 'profile-payments-edition text-center',
-                cacheId: true
+            if (customer.payments) {
+                content.push({
+                    modelName: 'Profile',
+                    mod: 'PaymentsEdition',
+                    collection: customer.payments,
+                    removeToken: removeToken,
+                    className: 'profile-payments-edition text-center',
+                    cacheId: true
+                });
+            }
+
+            if (customer.giftCards) {
+                content.push({
+                    modelName: 'Profile',
+                    mod: 'GiftCardsEdition',
+                    collection: customer.giftCards,
+                    unlinkGiftCard: unlinkGiftCard,
+                    className: 'profile-payments-edition text-center',
+                    cacheId: true
+                });
+            }
+
+            if (promises.length) {
+                App.Data.header.set({
+                    page_title: _loc.PAYMENTS,
+                    back_title: _loc.BACK,
+                    back: window.history.back.bind(window.history),
+                    link: new Function(),
+                    link_title: ''
+                });
+            }
+
+            return {
+                content: content,
+                promises: promises
             };
-
-            App.Data.header.set({
-                page_title: _loc.PAYMENTS,
-                back_title: _loc.BACK,
-                back: window.history.back.bind(window.history),
-                link: new Function(),
-                link_title: ''
-            });
-
-            return content;
 
             function removeToken(token_id) {
                 var req = customer.removePayment(token_id),
+                    mainModel = App.Data.mainModel;
+                if (req) {
+                    mainModel.trigger('loadStarted');
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                }
+            }
+
+            function unlinkGiftCard(giftCard) {
+                var req = customer.unlinkGiftCard(giftCard),
                     mainModel = App.Data.mainModel;
                 if (req) {
                     mainModel.trigger('loadStarted');
