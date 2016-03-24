@@ -893,7 +893,8 @@ define(["backbone", "factory"], function(Backbone) {
             }
         },
         setProfilePaymentsContent: function() {
-            var promises = this.getProfilePaymentsPromises();
+            var promises = this.getProfilePaymentsPromises(),
+                customer = App.Data.customer;
 
             if (promises.length) {
                 App.Data.mainModel.set({
