@@ -1455,13 +1455,13 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * @param {Object} data - object corresponding to response of `v1/authorization/token-customer/` {@link App.Models.Customer#login request}
          */
         setCustomerFromAPI: function(data) {
-            if(!_.isObject(data.customer) || !_.isObject(data.token)) {
+            if(!_.isObject(data) || !_.isObject(data.customer) || !_.isObject(data.token)) {
                 console.error('Incorrect `v1/authorization/token-customer/` data format');
                 return;
             }
 
             // set profile address
-            var address = data.customer.addresses[0] || this.getEmptyAddress();
+            var address = Array.isArray(data.customer.addresses) && _.isObject(data.customer.addresses[0]) ? data.customer.addresses[0] : this.getEmptyAddress();
             this.setProfileAddress(this.convertAddressFromAPIFormat(address));
 
             // need to reset password and set `email` attribute as username
@@ -1484,7 +1484,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * @param {Object} data - object corresponding to response of `v1/authorization/token-customer/` {@link App.Models.Customer#login request}
          */
         updateCookie: function(data) {
-            if (!_.isObject(data)) {
+            if (!_.isObject(data) || !_.isObject(data.token)) {
                 return;
             }
 
