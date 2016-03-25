@@ -78,7 +78,7 @@ define(["done_view", "generator"], function(done_view) {
         },
         content_change: function() {
             var view,
-                content = this.$('#section > div').eq(0),//Backbone.$('<div></div>'),
+                content = this.$('#section > div'),
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
 
@@ -170,6 +170,11 @@ define(["done_view", "generator"], function(done_view) {
             return {
                 el: this.$('#aside')
             };
+        },
+        promotions_defaults: function() {
+            return {
+                modelName: 'Promotions'
+            }
         },
         addContent: function(data, removeClass) {
             var id = 'content_' + data.modelName + '_' + data.mod;

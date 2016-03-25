@@ -412,6 +412,40 @@ define(["backbone", "factory"], function(Backbone) {
             App.Data.customer.loadAddresses();
         },
         /**
+         * Init App.Data.promotions.
+         */
+        initPromotions: function() {
+            // get the order items for submitting to server
+            var items = App.Data.myorder.map(function(order) {
+                    return order.item_submit();
+                }),
+                promotions = App.Data.promotions = App.Collections.Promotions.init(items),
+                myorder = App.Data.myorder,
+                checkout = myorder.checkout;
+
+            // listen to change of promotions selection
+            this.listenTo(promotions, 'change:is_applied', function(appliedPromotion, is_applied) {
+                // promotion is seleted
+                if (is_applied) {
+                    if (myorder.get_only_product_quantity()) {
+                        checkout.set({discount_code: appliedPromotion.get('code')});
+                        myorder.get_cart_totals({apply_discount: true});
+                    }
+                    else {
+                        checkout.set({last_discount_code: appliedPromotion.get('code')});
+                    }
+                }
+                // promotion is unselected
+                else {
+                    checkout.set({
+                        last_discount_code: '',
+                        discount_code: ''
+                    });
+                    myorder.get_cart_totals();
+                }
+            });
+        },
+        /**
          * Handler of a payment response.
          * Check payment state and redirect to #pay if payment exists
          *
@@ -724,6 +758,7 @@ define(["backbone", "factory"], function(Backbone) {
                     settings_link: new Function,
                     payments_link: profilePayments,
                     profile_link: profileEdit,
+                    my_promotions_link: myPromotions,
                     cacheId: true
                 }
             });
@@ -762,6 +797,10 @@ define(["backbone", "factory"], function(Backbone) {
             function profileEdit() {
                 self.navigate('profile_edit', true);
                 customer.trigger('hidePanel');
+            }
+
+            function myPromotions() {
+                self.navigate('my_promotions', true);
             }
 
             function profilePayments() {
@@ -949,6 +988,7 @@ define(["backbone", "factory"], function(Backbone) {
                     settings_link: profile_settings,
                     payments_link: profile_payments,
                     profile_link: profile_edit,
+                    my_promotions_link: myPromotions,
                     close_link: close,
                     cacheId: true
                 }
@@ -972,6 +1012,11 @@ define(["backbone", "factory"], function(Backbone) {
 
             function profile_settings() {
                 self.navigate('profile_settings', true);
+                close();
+            }
+
+            function myPromotions() {
+                self.navigate('my_promotions', true);
                 close();
             }
 

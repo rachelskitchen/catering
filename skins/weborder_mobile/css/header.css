@@ -77,11 +77,17 @@
     vertical-align: middle;
 }
 
-#header .btn-back-title {
+#header .btn-back-title,
+#header .btn-promotions-title {
     display: inline-block;
     font-weight: 200;
     vertical-align: middle;
     padding-left: 0.4em;
+}
+
+#header .btn-promotions {
+    display: none;
+    line-height: 7em;
 }
 
 #header .btn-profile {

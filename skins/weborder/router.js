@@ -47,6 +47,8 @@ define(["main_router"], function(main_router) {
             "confirm": "confirm",
             "maintenance": "maintenance",
             "profile_edit": "profile_edit",
+            "promotions": "promotions_list",
+            "my_promotions": "promotions_my",
             "profile_payments": "profile_payments",
             "*other": "index"
         },
@@ -620,6 +622,16 @@ define(["main_router"], function(main_router) {
         },
         profile_edit: function() {
             this.setProfileEditContent();
+            this.change_page();
+        },
+        promotions_list: function() {
+            // @TODO
+
+            this.change_page();
+        },
+        promotions_my: function() {
+            // @TODO
+
             this.change_page();
         },
         profile_payments: function() {
