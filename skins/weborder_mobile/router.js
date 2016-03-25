@@ -1844,6 +1844,7 @@ define(["main_router"], function(main_router) {
                 items = [],
                 promotions,
                 content,
+                backToMenu = false,
                 myorder = App.Data.myorder,
                 checkout = App.Data.myorder.checkout;
 
@@ -1854,7 +1855,10 @@ define(["main_router"], function(main_router) {
             });
 
             this.prepare('promotions', function() {
-                App.Data.promotions || this.initPromotions();
+                if (!App.Data.promotions) {
+                    this.initPromotions();
+                    App.Data.dirMode && (backToMenu = true);
+                }
                 promotions = App.Data.promotions;
 
                 promotions.fetching.always(function() {
@@ -1868,8 +1872,8 @@ define(["main_router"], function(main_router) {
 
                     App.Data.header.set({
                         page_title: _loc.HEADER_PROMOTIONS_LIST_PT,
-                        back_title: _loc.BACK,
-                        back: window.history.back.bind(window.history),
+                        back_title: backToMenu ? _loc.MENU : _loc.BACK,
+                        back: back,
                         cart: cart,
                         hideCart: App.Data.myorder.get_only_product_quantity() < 1
                     });
@@ -1888,6 +1892,9 @@ define(["main_router"], function(main_router) {
                     self.change_page();
                 });
 
+                function back() {
+                    backToMenu ? self.navigate('index', true) : window.history.back();
+                }
 
                 function cart() {
                     self.navigate('cart', true);
