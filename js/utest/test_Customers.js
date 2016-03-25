@@ -1056,7 +1056,8 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
         describe("login()", function() {
             var originalEmail, originalPWD, ajaxMock, ajaxOpts,
                 email = 'test@revelsystems.com',
-                password = "123";
+                password = "123",
+                instanceName = 'weborder-dev-branch';
 
             beforeEach(function() {
                 originalEmail = typeof originalEmail != 'undefined' ? originalEmail : model.get('email');
@@ -1079,6 +1080,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 spyOn(model, 'initPayments');
                 spyOn(model, 'initGiftCards');
                 spyOn(model, 'trigger');
+                spyOn(window, 'getInstanceName').and.returnValue(instanceName);
 
                 model.login();
             });
@@ -1093,11 +1095,13 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             function commonExpectations() {
                 expect(ajaxOpts.url.indexOf('/customers-auth/v1/authorization/token-customer/')).not.toBe(-1);
                 expect(ajaxOpts.method).toBe('POST');
+                expect(window.getInstanceName).toHaveBeenCalled();
                 expect(ajaxOpts.data).toEqual({
                     username: email,
                     scope: '*',
                     password: password,
-                    grant_type: "password"
+                    grant_type: "password",
+                    instance: instanceName
                 });
             }
 
@@ -1224,7 +1228,8 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 password = "123",
                 first_name = 'First Name',
                 last_name = 'Last Name',
-                phone = '12321383232';
+                phone = '12321383232',
+                instanceName = 'weborder-dev-branch';
 
             beforeEach(function() {
                 originalEmail = model.get('email');
@@ -1252,6 +1257,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 spyOn(model, 'convertAddressToAPIFormat').and.callFake(function() {
                     return address;
                 });
+                spyOn(window, 'getInstanceName').and.returnValue(instanceName);
                 spyOn(model, 'clearPasswords');
                 spyOn(model, 'logout');
                 spyOn(model, 'trigger');
@@ -1279,6 +1285,8 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(data.last_name).toBe(last_name);
                 expect(data.phone_number).toBe(phone);
                 expect(model.convertAddressToAPIFormat).toHaveBeenCalled();
+                expect(window.getInstanceName).toHaveBeenCalled();
+                expect(data.instance).toBe(instanceName);
             }
 
             it("`address` param isn't object", function() {

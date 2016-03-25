@@ -690,7 +690,8 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     username: attrs.email,
                     scope: '*',
                     password: attrs.password,
-                    grant_type: "password"
+                    grant_type: "password",
+                    instance: getInstanceName()
                 },
                 success: function(data) {
                     try {
@@ -822,7 +823,8 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     first_name: attrs.first_name,
                     last_name: attrs.last_name,
                     phone_number: attrs.phone,
-                    address: _.isObject(address) ? address : undefined
+                    address: _.isObject(address) ? address : undefined,
+                    instance: getInstanceName()
                 }),
                 success: function(data) {
                     this.clearPasswords();
