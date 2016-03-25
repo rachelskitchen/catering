@@ -2030,3 +2030,16 @@ function sort_i18nObject(obj) {
         return a[1].localeCompare(b[1]);
     }
 }
+
+/**
+ *
+ */
+function getInstanceName() {
+    var host = require('app').REVEL_HOST;
+    if (host && typeof host == 'string') {
+        return host.replace(/https?:\/\//, '').replace(/\..*/,'');
+    } else {
+        return '';
+    }
+
+}
