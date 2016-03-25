@@ -62,6 +62,21 @@
     .resolve-background(@tab_active_underline);
 }
 
+/* [promotions_title_background] Promotions title background
+   [promotions_title_color] Promotions title color */
+.promotions-title {
+    .resolve-background(@promotions_title_background);
+    .resolve-color(@promotions_title_color);
+}
+
+.all-promotions__text:after {
+    background-image: data-uri('image/svg+xml;base64', 'img/promotion.svg');
+}
+
+.promotion__apply.added {
+    .resolve-color(@promotions_applied);
+}
+
 /* [input_background] Text fields background */
 .input-colors {
     .resolve-background(@input_background);

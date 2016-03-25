@@ -26,6 +26,7 @@ define(["backbone"], function(Backbone) {
     App.Models.MainModel = Backbone.Model.extend({
         defaults: {
             header: {},
+            promotions: {},
             content: {},
             footer: {},
             img: App.Data.settings.get("img_path"),

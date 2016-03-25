@@ -398,6 +398,16 @@ define({
         profile_view: 'js/views/profile',
         /**
          * @type {string}
+         * @description The actual path of [promotions]{@link module:promotions} module.
+         */
+        promotions: 'js/models/promotions',
+        /**
+         * @type {string}
+         * @description The actual path of [promotions_view]{@link module:promotions_view} module.
+         */
+        promotions_view: 'js/views/promotions',
+        /**
+         * @type {string}
          * @description The actual path of [doc_cookies]{@link module:doc_cookies} module.
          */
         doc_cookies: 'js/libs/docCookies',
@@ -595,6 +605,9 @@ define({
             deps: ['backbone', 'collection_sort']
         },
         'profile_view' : {
+            deps: ['factory']
+        },
+        'promotions_view' : {
             deps: ['factory']
         },
         'doc_cookies': {

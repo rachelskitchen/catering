@@ -33,6 +33,7 @@ define(["main_router"], function(main_router) {
         headerModes.Main = {mod: 'Main', className: 'main'};
         headerModes.Modifiers = {mod: 'Modifiers', className: 'modifiers'};
         headerModes.ComboProduct = {mod: 'ComboProduct', className: 'modifiers'};
+        headerModes.Promotions = {mod: 'Promotions'},
         headerModes.Cart = {mod: 'Cart'};
         headerModes.None = null;
         footerModes.Main = {mod: 'Main'};
@@ -70,6 +71,9 @@ define(["main_router"], function(main_router) {
             "profile_edit": "profile_edit",
             "profile_settings": "profile_settings",
             "profile_forgot_password": "profile_forgot_password",
+            "promotions": "promotions_list",
+            "my_promotions": "promotions_my",
+            "promotion/:id_promotion": "promotion_details",
             "profile_payments": "profile_payments",
             "*other": "index"
         },
@@ -105,6 +109,7 @@ define(["main_router"], function(main_router) {
 
                 this.listenTo(App.Data.myorder, 'add remove change', function() {
                     App.Data.header.set('cartItemsQuantity', App.Data.myorder.get_only_product_quantity());
+                    App.Data.promotions && (App.Data.promotions.needToUpdate = true);
                 });
 
                 new App.Views.MainView.MainMainView({
@@ -123,6 +128,18 @@ define(["main_router"], function(main_router) {
 
                 // run history tracking
                 this.triggerInitializedEvent();
+
+                /**
+                 * Promotions
+                 */
+                if (App.Settings.has_campaigns) {
+                    this.promotions = {
+                        modelName: 'Promotions',
+                        model: new Backbone.Model(),
+                        mod: 'TopLine',
+                        cacheId: true
+                    };
+                }
             });
 
             var checkout = App.Data.myorder.checkout;
@@ -379,6 +396,8 @@ define(["main_router"], function(main_router) {
                     className: 'content_scrollable'
                 }];
 
+                content.unshift(this.promotions);
+
                 var footerMode;
                 if (App.Settings.promo_message) {
                     footerMode = footerModes.Promo;
@@ -477,7 +496,8 @@ define(["main_router"], function(main_router) {
                 // load categories and products
                 $.when(this.initCategories(), App.Collections.Products.get_slice_products(_ids)).then(function() {
                     var parentCategory = App.Data.parentCategories.findWhere({ids: ids}),
-                        subs;
+                        subs,
+                        content;
 
                     if(parentCategory) {
                         subs = parentCategory.get('subs');
@@ -492,15 +512,19 @@ define(["main_router"], function(main_router) {
 
                     fetched[ids] = true;
 
+                    content = [{
+                        modelName: 'Categories',
+                        model: parentCategory,
+                        mod: 'Main',
+                        cacheId: true,
+                        cacheIdUniq: ids
+                    }];
+
+                    content.unshift(self.promotions);
+
                     App.Data.mainModel.set({
                         contentClass: '',
-                        content: {
-                            modelName: 'Categories',
-                            model: parentCategory,
-                            mod: 'Main',
-                            cacheId: true,
-                            cacheIdUniq: ids
-                        }
+                        content: content
                     });
 
                     self.change_page();
@@ -852,7 +876,8 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.HEADER_CHECKOUT_PT,
                 back_title: _loc.BACK,
-                back: this.navigate.bind(this, 'cart', true)
+                back: this.navigate.bind(this, 'cart', true),
+                promotions: this.navigate.bind(this, 'promotions', true)
             });
 
             App.Data.mainModel.set({
@@ -878,6 +903,11 @@ define(["main_router"], function(main_router) {
 
                 // Need to specify shipping address (Bug 34676)
                 App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+
+                App.Data.header.set('showPromotionsLink', App.Settings.has_campaigns);
+                this.listenToOnce(this, 'route', function() {
+                    App.Data.header.set('showPromotionsLink', false); // hide Promotions link
+                });
 
                 App.Data.footer.set({
                     btn_title: _loc.CONTINUE,
@@ -973,7 +1003,8 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.HEADER_CHECKOUT_PT,
                 back_title: _loc.BACK,
-                back: this.navigate.bind(this, 'checkout', true)
+                back: this.navigate.bind(this, 'checkout', true),
+                promotions: this.navigate.bind(this, 'promotions', true)
             });
 
             App.Data.mainModel.set({
@@ -1002,6 +1033,11 @@ define(["main_router"], function(main_router) {
                     mod: 'Line',
                     total: myorder.total,
                     cacheId: true
+                });
+
+                App.Data.header.set('showPromotionsLink', App.Settings.has_campaigns);
+                this.listenToOnce(this, 'route', function() {
+                    App.Data.header.set('showPromotionsLink', false); // hide Promotions link
                 });
 
                 if(!App.Data.card)
@@ -1802,6 +1838,103 @@ define(["main_router"], function(main_router) {
             });
 
             this.change_page();
+        },
+        promotions_list: function() {
+            var self = this,
+                items = [],
+                promotions,
+                content,
+                myorder = App.Data.myorder,
+                checkout = App.Data.myorder.checkout;
+
+            App.Data.mainModel.set({
+                header: headerModes.Promotions,
+                footer: footerModes.None,
+                contentClass: ''
+            });
+
+            this.prepare('promotions', function() {
+                App.Data.promotions || this.initPromotions();
+                promotions = App.Data.promotions;
+
+                promotions.fetching.always(function() {
+                    if (promotions.needToUpdate) {
+                        // get the order items for submitting to server
+                        items = App.Data.myorder.map(function(order) {
+                            return order.item_submit();
+                        });
+                        promotions.update(items);
+                    }
+
+                    App.Data.header.set({
+                        page_title: _loc.HEADER_PROMOTIONS_LIST_PT,
+                        back_title: _loc.BACK,
+                        back: window.history.back.bind(window.history),
+                        cart: cart,
+                        hideCart: App.Data.myorder.get_only_product_quantity() < 1
+                    });
+
+                    content = {
+                        modelName: 'Promotions',
+                        mod: 'List',
+                        collection: promotions,
+                        cacheId: true
+                    };
+
+                    App.Data.mainModel.set({
+                        content: content
+                    });
+
+                    self.change_page();
+                });
+
+
+                function cart() {
+                    self.navigate('cart', true);
+                }
+            });
+        },
+        promotions_my: new Function,
+        promotion_details: function(id) {
+            var self = this,
+                promotions,
+                model,
+                content;
+
+            id = Number(id);
+
+            this.prepare('promotions', function() {
+                App.Data.promotions || this.initPromotions();
+                promotions = App.Data.promotions;
+
+                promotions.fetching.always(function() {
+                    model = promotions.findWhere({id: id});
+
+                    content = {
+                        modelName: 'Promotions',
+                        mod: 'Item',
+                        model: model,
+                        cacheId: true,
+                        init_cache_session: true // 'true' means that the view will be removed from cache before creating a new one.
+                    };
+
+                    App.Data.header.set({
+                        page_title: _loc.HEADER_PROMOTION_PT,
+                        back_title: _loc.BACK,
+                        back: window.history.back.bind(window.history),
+                        hideCart: true
+                    });
+
+                    App.Data.mainModel.set({
+                        header: headerModes.Promotions,
+                        footer: footerModes.None,
+                        content: content,
+                        contentClass: ''
+                    });
+
+                    self.change_page();
+                });
+            });
         },
         profile_payments: function() {
             var data = this.setProfilePaymentsContent();

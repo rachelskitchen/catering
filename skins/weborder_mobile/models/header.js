@@ -75,6 +75,9 @@ define(["backbone"], function(Backbone) {
          *
          * @property {boolean} default.showProfileMenu - if `true` profile menu should be shown.
          * @default false.
+         *
+         * @property {boolean} defaults.showPromotionsLink - if `true`, "Promotions" link should be shown.
+         * @default false.
          */
         defaults: {
             page_title: '',
@@ -91,7 +94,8 @@ define(["backbone"], function(Backbone) {
             enableLink: true,
             hideCart: false,
             showMenuBtn: false,
-            showProfileMenu: false
+            showProfileMenu: false,
+            showPromotionsLink: false
         },
         addProduct: function(orderItem) {
             var self = this,

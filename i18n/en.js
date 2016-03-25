@@ -548,6 +548,7 @@
         'WELCOME': 'Welcome',
         'PAYMENTS': "Payments",
         'GIFT_CARDS': 'Gift Cards',
+        'MY_PROMOTIONS': 'My Promotions',
         'SETTINGS': "Settings",
         'CONTINUE': 'Continue',
         'SAVE': "Save",

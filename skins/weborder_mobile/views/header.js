@@ -239,16 +239,54 @@ define(["factory"], function() {
         }
     });
 
+    var HeaderPromotionsView = App.Views.FactoryView.extend({
+        name: 'header',
+        mod: 'promotions',
+        tagName: 'div',
+        bindings: {
+            '.title': 'text:page_title',
+            '.btn-back-title': 'text: back_title',
+            '.btn-cart': 'toggle: all(not(link), select(hideCart, false, true)), attr: {"data-count": cartItemsQuantity}, classes: {"qty-visible": cartItemsQuantity}'
+        },
+        events: {
+            'click .btn-link': setCallback('link'),
+            'click .btn-back': setCallback('back'),
+            'click .btn-cart': setCallback('cart')
+        },
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        }
+    });
+
+    var HeaderPromotionView = App.Views.FactoryView.extend({
+        name: 'header',
+        mod: 'promotion',
+        tagName: 'div',
+        bindings: {
+            '.title': 'text:page_title',
+            '.btn-back-title': 'text: back_title'
+        },
+        events: {
+            'click .btn-link': setCallback('link'),
+            'click .btn-back': setCallback('back')
+        },
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        }
+    });
+
     var HeaderCartView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'cart',
         bindings: {
            '.title': 'text:page_title',
            '.btn-back': 'toggle: back',
-           '.btn-back-title': 'text: back_title'
+           '.btn-back-title': 'text: back_title',
+           '.btn-promotions': 'toggle: showPromotionsLink'
         },
         events: {
-            'click .btn-back': setCallback('back')
+            'click .btn-back': setCallback('back'),
+            'click .btn-promotions': setCallback('promotions')
         }
     });
 
@@ -272,6 +310,8 @@ define(["factory"], function() {
         App.Views.HeaderView.HeaderModifiersView = HeaderModifiersView;
         App.Views.HeaderView.HeaderComboProductView = HeaderComboProductView;
         App.Views.HeaderView.HeaderCartView = HeaderCartView;
+        App.Views.HeaderView.HeaderPromotionView = HeaderPromotionView;
+        App.Views.HeaderView.HeaderPromotionsView = HeaderPromotionsView;
         App.Views.HeaderView.HeaderMaintenanceView = HeaderMaintenanceView;
         App.Views.HeaderView.HeaderEmptyView = HeaderEmptyView;
     });

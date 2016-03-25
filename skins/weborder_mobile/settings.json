@@ -14,16 +14,16 @@
             "js" : ["jquery.smartbanner"]
         },
         "index": {
-            "css": ["categories", "promo_message"],
+            "css": ["categories", "promo_message", "promotions"],
             "views": ["categories", "promo_message"],
-            "templates": ["categories", "promo_message"],
-            "core": ["categories", "products", "subcategories"]
+            "templates": ["categories", "promo_message", "promotions"],
+            "core": ["categories", "products", "subcategories", "promotions_view"]
         },
         "products": {
-            "css": ["categories", "products"],
+            "css": ["categories", "products", "promotions"],
             "views": ["categories"],
-            "templates": ["products", "categories"],
-            "core": ["categories", "products", "subcategories"]
+            "templates": ["products", "categories", "promotions"],
+            "core": ["categories", "products", "subcategories", "promotions_view"]
         },
         "modifiers": {
             "css": ["modifiers", "products", "quantity", "instructions", "myorder", "stanfordcard", "card"],
@@ -113,6 +113,11 @@
             "views": ["stanfordcard"],
             "core": ["giftcard", "jquery_numbermask"]
         },
-        "profile": {}
+        "profile": {},
+        "promotions": {
+            "core": ["promotions", "promotions_view"],
+            "css": ["promotions"],
+            "templates": ["promotions"]
+        }
     }
 }
