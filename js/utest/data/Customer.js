@@ -1,5 +1,9 @@
 define([], function() {
     return {
+        "cookieName": "user",
+        "cookiePath": "/weborder",
+        "cookieDomain": "revelup.com",
+        "cookieSecure": true,
         "defaults": {
             "first_name": "",
             "last_name": "",

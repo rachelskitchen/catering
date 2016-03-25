@@ -2,16 +2,13 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
     describe("App.Models.Customer", function() {
 
-        var model, def, customer1,
-            dontSetCustomerFromCookie = true;
+        var model, def, customer1, docCookies_getItem_spyOn, docCookies_getItem;
 
         beforeEach(function() {
-            // set spyOn for setCustomerFromCookie() to avoid customer restoring from cookie
-            var setCustomerFromCookie = App.Models.Customer.prototype.setCustomerFromCookie;
-            spyOn(App.Models.Customer.prototype, 'setCustomerFromCookie').and.callFake(function() {
-                // if (!dontSetCustomerFromCookie) {
-                //     return setCustomerFromCookie.apply(model, arguments);
-                // }
+            docCookies_getItem = undefined;
+            docCookies_getItem_spyOn = spyOn(require('doc_cookies'), 'getItem');
+            docCookies_getItem_spyOn.and.callFake(function() {
+                return docCookies_getItem;
             });
 
             model = new App.Models.Customer();
@@ -47,6 +44,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
             //  test initialization of inner state
             var page_visibility = require('page_visibility');
+            spyOn(model, 'setCustomerFromCookie');
             spyOn(model, 'setAddressesIndexes');
             spyOn(model, 'listenTo');
             spyOn(page_visibility, 'on');
@@ -2141,6 +2139,256 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                     province: address.region
                 }));
             });
+        });
+
+        describe("isProfileAddress()", function() {
+            it("`address` param isn't object", function() {
+                values = [1, '', 0, '123', NaN, Infinity, false, undefined, null];
+                values.forEach(function(value) {
+                    expect(model.isProfileAddress(value)).toBe(false);
+                });
+            });
+
+            it("`address` param is object, `address.id` is undefined", function() {
+                var address = {};
+                expect(model.isProfileAddress(address)).toBe(false);
+            });
+
+            it("`address` param is object, `address.id` is specified, `address.customer` is undefined", function() {
+                var address = {id: 123};
+                expect(model.isProfileAddress(address)).toBe(false);
+            });
+
+            it("`address` param is object, `address.id` is specified, `address.customer` is specified", function() {
+                var address = {id: 123, customer: 2123};
+                expect(model.isProfileAddress(address)).toBe(true);
+            });
+        });
+
+        describe("setCustomerFromAPI()", function() {
+            var originalEmail, originalFirstName, originalLastName, originalPhone,
+                originalUserId, originalAccessToken, originalTokenType, originalExpiresIn,
+                address,
+                notObjectValues,
+                customer, token;
+
+            beforeEach(function() {
+                originalEmail = model.get('email');
+                originalFirstName = model.get('first_name');
+                originalLastName = model.get('last_name');
+                originalPhone = model.get('phone');
+                originalUserId = model.get('user_id');
+                originalAccessToken = model.get('access_token');
+                originalTokenType = model.get('token_type');
+                originalExpiresIn = model.get('expires_in');
+                address = {city: 'SF'};
+                notObjectValues = [1, '22', 0, '', NaN, Infinity, false, true, undefined, null];
+                customer = {
+                    first_name: 'Test FN',
+                    last_name: 'Test LN',
+                    email: 'asda@asd.com',
+                    phone_number: '23423423'
+                };
+                token = {
+                    user_id: 12,
+                    access_token: 'ASDASdASDASDAS',
+                    token_type: 'Bearer',
+                    expires_in: 3600
+                };
+
+                spyOn(model, 'getEmptyAddress').and.callFake(returnAddress);
+                spyOn(model, 'convertAddressFromAPIFormat').and.callFake(returnAddress);
+                spyOn(model, 'setProfileAddress');
+                spyOn(model, 'clearPasswords');
+
+                function returnAddress() {
+                    return address;
+                }
+            });
+
+            afterEach(function() {
+                model.set({
+                    email: originalEmail,
+                    first_name: originalFirstName,
+                    last_name: originalLastName,
+                    phone: originalPhone,
+                    user_id: originalUserId,
+                    access_token: originalAccessToken,
+                    token_type: originalTokenType,
+                    expires_in: originalExpiresIn
+                });
+            });
+
+            function failureExpectations() {
+                expect(model.convertAddressFromAPIFormat).not.toHaveBeenCalled();
+                expect(model.setProfileAddress).not.toHaveBeenCalled();
+                expect(model.clearPasswords).not.toHaveBeenCalled();
+            }
+
+            function successfulExpectations() {
+                var _model = model.toJSON();
+                expect(_model.email).toBe(customer.email);
+                expect(_model.first_name).toBe(customer.first_name);
+                expect(_model.last_name).toBe(customer.last_name);
+                expect(_model.phone).toBe(customer.phone_number);
+                expect(_model.user_id).toBe(token.user_id);
+                expect(_model.access_token).toBe(token.access_token);
+                expect(_model.token_type).toBe(token.token_type);
+                expect(_model.expires_in).toBe(token.expires_in);
+                expect(model.clearPasswords).toHaveBeenCalled();
+            }
+
+            it("`data` param isn't object", function() {
+                notObjectValues.forEach(function(value) {
+                    model.setCustomerFromAPI(value);
+                    failureExpectations();
+                });
+            });
+
+            it("`data` param is object, `data.customer` isn't object", function() {
+                notObjectValues.forEach(function(value) {
+                    var data = {
+                        customer: value
+                    };
+                    model.setCustomerFromAPI(data);
+                    failureExpectations();
+                });
+            });
+
+            it("`data` param is object, `data.customer` is object, `data.token` isn't object", function() {
+                notObjectValues.forEach(function(value) {
+                    var data = {
+                        customer: customer,
+                        token: value
+                    };
+                    model.setCustomerFromAPI(data);
+                    failureExpectations();
+                });
+            });
+
+            it("`data` param is object, `data.customer` is object, `data.token` is object, `data.customer.addresses` isn't array", function() {
+                notObjectValues.forEach(function(value) {
+                    var data = {
+                        customer: _.extend(customer, {addresses: value}),
+                        token: token
+                    };
+
+                    model.setCustomerFromAPI(data);
+                    successfulExpectations();
+                    expect(model.getEmptyAddress).toHaveBeenCalled();
+                    expect(model.convertAddressFromAPIFormat).toHaveBeenCalledWith(address);
+                    expect(model.setProfileAddress).toHaveBeenCalledWith(address);
+                });
+            });
+
+            it("`data` param is object, `data.customer` is object, `data.token` is object, `data.customer.addresses` is array, `data.customer.addresses[0]` isn't object", function() {
+                notObjectValues.forEach(function(value) {
+                    var data = {
+                        customer: _.extend(customer, {addresses: [value]}),
+                        token: token
+                    };
+
+                    model.setCustomerFromAPI(data);
+                    successfulExpectations();
+                    expect(model.getEmptyAddress).toHaveBeenCalled();
+                    expect(model.convertAddressFromAPIFormat).toHaveBeenCalledWith(address);
+                    expect(model.setProfileAddress).toHaveBeenCalledWith(address);
+                });
+            });
+
+            it("`data` param is object, `data.customer` is object, `data.token` is object, `data.customer.addresses` is array, `data.customer.addresses[0]` is object", function() {
+                var data = {
+                    customer: _.extend(customer, {addresses: [address]}),
+                    token: token
+                };
+
+                model.setCustomerFromAPI(data);
+                successfulExpectations();
+                expect(model.getEmptyAddress).not.toHaveBeenCalled();
+                expect(model.convertAddressFromAPIFormat).toHaveBeenCalledWith(address);
+                expect(model.setProfileAddress).toHaveBeenCalledWith(address);
+            });
+        });
+
+        describe("updateCookie()", function() {
+            var docCookies, _data, keepCookie, dataStr;
+
+            beforeEach(function() {
+                keepCookie = undefined;
+                docCookies = require('doc_cookies');
+                dataStr = "123213213";
+                _data = {
+                    customer: {first_name: 'Test Name'},
+                    token: {expires_in: 3600}
+                };
+
+                spyOn(docCookies, 'setItem');
+                spyOn(window, 'utf8_to_b64').and.returnValue(dataStr);
+                spyOn(model, 'get').and.callFake(function() {
+                    return keepCookie;
+                });
+            });
+
+            it("`data` param isn't object", function() {
+                var value = [1, '22', 0, '', NaN, Infinity, false, true, undefined, null];
+                values.forEach(function(value) {
+                    model.updateCookie(value);
+                    expect(model.get).not.toHaveBeenCalled();
+                    expect(docCookies.setItem).not.toHaveBeenCalled();
+                });
+            });
+
+            it("`data` param is object, `data.token` isn't object", function() {
+                var value = [1, '22', 0, '', NaN, Infinity, false, true, undefined, null];
+                values.forEach(function(value) {
+                    model.updateCookie(_.extend(_data, {token: value}));
+                    expect(model.get).not.toHaveBeenCalled();
+                    expect(docCookies.setItem).not.toHaveBeenCalled();
+                });
+            });
+
+
+            it("`data` param is object, `data.token` is object, `keepCookie` is false", function() {
+                keepCookie = false;
+                model.updateCookie(_data);
+                expect(model.get).toHaveBeenCalledWith('keepCookie');
+                expect(window.utf8_to_b64).toHaveBeenCalledWith(JSON.stringify(_data));
+                expect(docCookies.setItem).toHaveBeenCalledWith(data.cookieName, dataStr, 0, data.cookiePath, data.cookieDomain, data.cookieSecure);
+            });
+
+            it("`data` param is object, `data.token` is object, `keepCookie` is true", function() {
+                keepCookie = true;
+                model.updateCookie(_data);
+                expect(model.get).toHaveBeenCalledWith('keepCookie');
+                expect(window.utf8_to_b64).toHaveBeenCalledWith(JSON.stringify(_data));
+                expect(docCookies.setItem).toHaveBeenCalledWith(data.cookieName, dataStr, _data.token.expires_in, data.cookiePath, data.cookieDomain, data.cookieSecure);
+            });
+        });
+
+        describe("setCustomerFromCookie()", function() {
+            var docCookies = require('doc_cookies'),
+                decodeStr = '{"a": 1}';
+
+            beforeEach(function() {
+                spyOn(window, 'b64_to_utf8').and.returnValue(decodeStr);
+                spyOn(model, 'setCustomerFromAPI');
+            });
+
+            it("cookie isn't specified", function() {
+                model.setCustomerFromCookie();
+                expect(docCookies.getItem).toHaveBeenCalledWith(data.cookieName);
+                expect(window.b64_to_utf8).not.toHaveBeenCalled();
+                expect(model.setCustomerFromAPI).not.toHaveBeenCalled();
+            });
+
+            it("cookie is specified", function() {
+                docCookies_getItem = 'aSDASDSsd';
+                model.setCustomerFromCookie();
+                expect(docCookies.getItem).toHaveBeenCalledWith(data.cookieName);
+                expect(window.b64_to_utf8).toHaveBeenCalledWith(docCookies_getItem);
+                expect(model.setCustomerFromAPI).toHaveBeenCalledWith(JSON.parse(decodeStr));
+            });
+
         });
     });
 });
