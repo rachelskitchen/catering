@@ -20,6 +20,12 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.WorkingDay}, {@link App.Models.Timetable} constructors.
+ * @module timetable
+ * @requires module:backbone
+ * @see {@link module:config.paths actual path}
+ */
 define(["backbone"], function(Backbone) {
     'use strict';
 
@@ -39,20 +45,83 @@ define(["backbone"], function(Backbone) {
 // options = wd.pickupTimeOptions({today: false});
 //
 
-    App.Models.WorkingDay = Backbone.Model.extend({
-        pickup_time_interval: 0,   // minutes between pickup time options
-        start_time: 0, // minutes after start
-        end_time: 0, // minutes before end
-        delivery_time: 0, // order delivery time
-        preparation_time: 0, // order preparation time
+    /**
+     * @class
+     * @classdesc Represents workig day model.
+     * @alias App.Models.WorkingDay
+     * @augments Backbone.Model
+     * @example
+     * // create a working day model
+     * require(['timetable'], function() {
+     *     var order = new App.Models.WorkingDay();
+     * });
+     */
+    App.Models.WorkingDay = Backbone.Model.extend(
+    /**
+     * @lends App.Models.WorkingDay.prototype
+     */
+    {
+        /**
+         * The number of minutes between pickup time options.
+         * @type {Number}
+         * @default 0
+         */
+        pickup_time_interval: 0,
+        /**
+         * Number of minutes after start.
+         * @type {Number}
+         * @default 0
+         */
+        start_time: 0,
+        /**
+         * Number of minutes before end.
+         * @type {Number}
+         * @default 0
+         */
+        end_time: 0,
+        /**
+         * Order delivery time.
+         * @type {Number}
+         * @default 0
+         */
+        delivery_time: 0,
+        /**
+         * Order preparation time.
+         * @type {Number}
+         * @default 0
+         */
+        preparation_time: 0,
+        /**
+         * Enable ASAP option.
+         * @type {Boolean}
+         * @default true
+         */
         enable_asap: true,
         defaults: {
-            timetable: [],            // input param is like [{to:'06:00', from:'05:00'}, {to:'19:00', from:'07:00'}, {to:'23:00', from:'21:00'}]
-                                        // if timetable = true or null => the store opened all the day,
-                                        // if timetable = false  => the store is closed all the day,
-            options: [],                // output param is pickup times array
-            curTime: null               // time point for calculating pickup time
+            /**
+             * Input param is like [{to:'06:00', from:'05:00'}, {to:'19:00', from:'07:00'}, {to:'23:00', from:'21:00'}].
+             * If timetable = true or null => the store opened all the day.
+             * If timetable = false  => the store is closed all the day.
+             * @type {Array}
+             * @default []
+             */
+            timetable: [],
+            /**
+             * Output param is pickup times array.
+             * @type {Array}
+             * @default []
+             */
+            options: [],
+            /**
+             * Time point for calculating pickup time.
+             * @type {?string}
+             * @default null
+             */
+            curTime: null
         },
+        /**
+         * Initializes the model.
+         */
         initialize: function() {
             var times = App.Data.settings.get('settings_system');
             this.pickup_time_interval = Math.abs(times.online_order_time_slot) || 1;
@@ -63,13 +132,16 @@ define(["backbone"], function(Backbone) {
             this.enable_asap = times.enable_asap_due_time;
         },
         /**
-         * Set proget_working_hoursperty "Timetable" to use it.
+         * Updates models's attributes.
+         * @param {object} data - Data to set.
          */
         update: function(data) {
             this.set(data);
         },
         /**
-         * Return offset time from current time to order ready time
+         * Returns offset time from current time to order ready time.
+         * @param {?boolean} isDelivery - the order is for delivery or not.
+         * @returns {number} - the amount of time (in milliseconds) required to prepare the order.
          */
         get_dining_offset: function(isDelivery) {
             if (isDelivery) {
@@ -79,7 +151,9 @@ define(["backbone"], function(Backbone) {
             }
         },
         /**
-         *  return true if store work all the day else false
+         * Store works all day long?
+         * @returns {Boolean} - true, if store works all day
+         * - false otherwise.
          */
         _isAllTheDay: function() {
             var timetable = this.get('timetable');
@@ -87,14 +161,20 @@ define(["backbone"], function(Backbone) {
             return (timetable === null || timetable === true);
         },
         /**
-         * return true if store closed all day
+         * Is store closed all day?
+         * @returns {Boolean} - true, if store is closed all day
+         * - false otherwise.
          */
         _isClosedToday: function() {
             var timetable = this.get('timetable');
             return (timetable === false || $.isArray(timetable) && timetable.length === 0);
         },
-        // Internal function.
-        // It returns potentially pickup times for single period:
+        /**
+         * Internal function. Returns potential pickup times for single period.
+         * @param   {string|Object}  period - can be string "all-the-day" or object in format like {from: 540, to: 750}
+         * @param   {?boolean} isDelivery - the order is for delivery or not.
+         * @returns {array} Array of possible pickup times for specified period.
+         */
         _pickupTimesForPeriod: function(period, isDelivery) {
             var start_minutes, end_minutes,
                 start_interval = this.start_time + (isDelivery ? this.delivery_time : this.preparation_time),
@@ -118,8 +198,10 @@ define(["backbone"], function(Backbone) {
             return options;
         },
         /**
-         * merge periods and return minutes equivalent
-         * from 09:00 to 11:30 and from 09:20 to 12:00 into from 540 to 750
+         * Merges periods and returns minutes equivalent.
+         * E.g., from 09:00 to 11:30 and from 09:20 to 12:00 into from 540 to 750.
+         * @param   {array} periods - Array of periods of time, e.g. [{from: "9:30", to: "14:00"}].
+         * @returns {array} Array of periods of time converted to minutes, e.g. [{from: 570, to: 840}].
          */
         _unionPeriods: function(periods) {
             var sorted = deepClone(periods).
@@ -152,7 +234,9 @@ define(["backbone"], function(Backbone) {
             return sorted;
         },
         /**
-         * Internal function - it returns sum of potentially pickup times for all timetable periods.
+         * Internal function - it returns potential pickup times for all timetable periods.
+         * @param   {?boolean} isDelivery - the order is for delivery or not.
+         * @returns {array} possible pickup times for all timetable periods.
          */
         _pickupSumTimes: function(isDelivery) {
             var self = this,
@@ -174,7 +258,11 @@ define(["backbone"], function(Backbone) {
             return this.times;
         },
         /**
-         * check if shop works at curTime
+         * Checks if shop works at curTime.
+         * @param   {?boolean} isDelivery - the order is for delivery or not.
+         * @returns {Boolean}
+         * - true, if store is open;
+         * - false, if store is closed.
          */
         checking_work_shop: function(isDelivery) {
             var timetable = this.get('timetable'),
@@ -188,25 +276,32 @@ define(["backbone"], function(Backbone) {
                     return false;
             }
 
-            var worked = false,
+            var works = false,
                 start_interval = this.start_time,
                 end_interval = this.end_time - (isDelivery ? this.delivery_time : this.preparation_time),
                 time = new TimeFrm(curtime.getHours(), curtime.getMinutes()).get_minutes();
 
             this._unionPeriods(timetable).forEach(function(value) {
                 if (value.from + start_interval <= time && time <= value.to - end_interval) {
-                    worked = true;
+                    works = true;
                 }
             });
-            return worked;
+            return works;
         },
-        // pickupTimeOptions,
-        // Call it to get the pickup time options for dropdown list
-        // Returns: the array like ["ASAP", "10:30am", "10:45am", ...]
-        //          "ASAP" option presents if isToday = true AND store is not closed now and store is working now.
-        //          It returns ["closed"] - the store is alwayes closed for the day OR
-        //                                  it's too late to make the order for Today
-        //          {today: true/false, isDelivery: true/equal false (undefined)}
+
+        /**
+         * Returns pickup time options for dropdown list
+         * @param   {object} params - Object with following params:
+         * ```
+         * {
+         *     today: true|false,
+         *     isDelivery: true|false|undefined
+         * }
+         * ```
+         * @returns {array} - Array like ["ASAP", "10:30am", "10:45am", ...].
+         * - "ASAP" option is presented in returned array if isToday = true AND store is not closed now and store is working now.
+         * - ["closed"] - if the store is closed all day OR it's too late to make the order for today.
+         */
         pickupTimeOptions: function(params) {
             /*
                 today - true if timetable for current day;
@@ -265,9 +360,12 @@ define(["backbone"], function(Backbone) {
             return options;
         },
         /**
-        * It finds the last pickup time available for the working period later then 'curtime'.
-        * The working period is detemined by the case when period 'from' time < curtime < period 'to' time
-        */
+         * Finds the last pickup time available for the working period later than 'curtime'.
+         * The working period is detemined by the case when period 'from' time < curtime < period 'to' time.
+         * @param   {Date} curtime - current time.
+         * @param   {?boolean} isDelivery - the order is for delivery or not.
+         * @returns {object} Date object of the last pickup time available for the working period.
+         */
         getLastPTforPeriod: function(curtime, isDelivery) {
             if (this._isAllTheDay()) {
                 return "all-the-day";
@@ -294,14 +392,62 @@ define(["backbone"], function(Backbone) {
         }
     });
 
-    App.Models.Timetable = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents a timetable model.
+     * @alias App.Models.Timetable
+     * @augments Backbone.Model
+     * @example
+     * // create a timetable model
+     * require(['timetable'], function() {
+     *     var timetable = new App.Models.Timetable();
+     * });
+     */
+    App.Models.Timetable = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Timetable.prototype
+     */
+    {
+        /**
+         * Pickup time interval in milliseconds.
+         * @type {number}
+         * @default 900000 (15 minutes)
+         */
         pickup_time_interval: 15 * 60 * 1000,
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum
+         */
         defaults: {
-            timetables: null,        // whole timetable. Dates couldn't be intersected
+            /**
+             * Array of timetables (whole timetable. Dates couldn't be intersected).
+             * @type {?array}
+             * @default null
+             */
+            timetables: null,
+            /**
+             * Array of holidays.
+             * @type {?array}
+             * @default null
+             */
             holidays: null,
-            server_time: null,          // timezone offset in minutes
-            hours: null              // array of week days with working hours starting from current day
+            /**
+             * Timezone offset in minutes.
+             * @type {?number}
+             * @default null
+             */
+            server_time: null,
+            /**
+             * Array of week days with working hours starting from current day.
+             * @type {?array}
+             * @default null
+             */
+            hours: null
         },
+        /**
+         * Initializes the model.
+         */
         initialize: function() {
             var times = App.Data.settings.get('settings_system'),
                 hours;
@@ -312,9 +458,12 @@ define(["backbone"], function(Backbone) {
             (hours = this.getHoursOnWeek()) && this.set('hours', hours);
         },
         /**
-         * Get ID of month in format JS.
+         * Converts short name of the month to its numeric representation.
+         * @param   {string} month_text - short month name. Possible values: Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec.
+         * @returns {number} an integer between 0 and 11. 0 corresponds to January, 1 to February, and so on.
+         * The same format as value returned by Date.prototype.getMonth().
          */
-        _get_month_id: function(month_text) { //Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec
+        _get_month_id: function(month_text) {
             for (var i = 0; i < EN_ARRAY_MONTH.length; i++) {
                 if (month_text === EN_ARRAY_MONTH[i].substr(0, 3)) {
                     return i;
@@ -322,19 +471,25 @@ define(["backbone"], function(Backbone) {
             }
         },
         /**
-         * Get day of week from ID of week in format JS.
+         * Converts numeric representation of the day of the week to its name.
+         * @param   {number} id_week - an integer corresponding to the day of the week: 0 for Sunday, 1 for Monday, 2 for Tuesday, and so on.
+         * The same format as value returned by Date.prototype.getDay().
+         * @returns {string} A name of the day of the week ("Monday", "Friday" etc).
          */
         get_day_of_week: function(id_week) {
             return weekDays[id_week];
         },
         /**
-         * Get current time depends on server time
+         * Gets current time depends on server time.
+         * @param   {Date} current_time - current time.
+         * @returns {Date}
          */
-        get_current_time : function(current_time) {
+        get_current_time: function(current_time) {
             return new Date(current_time.getTime() + this.get('server_time'));
         },
         /**
-         * Base time
+         * Gets base time.
+         * @returns {Date} base time.
          */
         base: function() {
             return this.get_current_time(new Date());
@@ -345,11 +500,29 @@ define(["backbone"], function(Backbone) {
         current_dining_time: function(isDelivery) {
             return new Date(this.base().getTime() + this.workingDay.get_dining_offset(isDelivery));
         },
+
         /**
-         * Get timetable on a particular day.
-         * current_date - real date
+         * Gets timetable on a particular day.
+         * @param   {Date} current_date - real date.
+         * @returns {?object|false}
+         * - timetable object in following format:
+         * ```
+         * {
+         *     "monday": [{
+         *         "to": "19:59",
+         *         "from": "00:00"
+         *     }],
+         *     "tuesday": [{
+         *         "to": "23:52",
+         *         "from": "00:00"
+         *     }],
+         *     ...
+         * }
+         * ```
+         * - {} - always open;
+         * - FALSE - always closed;
+         * - NULL - timetables is empty.
          */
-        // {} - always open; FALSE - always closed; NULL - timetables is empty
         _get_timetable: function(current_date) {
             var table = this.get('timetables'),
                 current_date_year = current_date.getFullYear();
@@ -379,11 +552,14 @@ define(["backbone"], function(Backbone) {
             }
             return false;
         },
+        /**
+         * Checks if current date is a holiday.
+         * @param   {Date} cur_date - current date.
+         * @returns {boolean}
+         * - true - current date is a holiday.
+         * - false - current date is not a holiday.
+         */
         isHoliday: function(cur_date) {
-            /*
-            *  returns FALSE - no holiday for cur_date
-            *          TRUE - holiday registered for cur_date
-            */
             var self = this,
                 holidays = this.get("holidays");
             if (holidays == null || !$.isArray(holidays) || !holidays.length) {
@@ -408,17 +584,17 @@ define(["backbone"], function(Backbone) {
             return false;
         },
         /**
-         * Get an array of working hours on a particular day.
+         * Gets an array of working hours on a particular day.
+         * @param {Date} current_date - current date.
+         * @param {number} format_output - format of output time:
+         * - 0: 12-hours format (default);
+         * - 1: 24-hours format.
+         * @returns {?boolean}
+         * - TRUE - around the clock;
+         * - FALSE - closed;
+         * - NULL - working hours is undefined. timetables is empty.
          */
         get_working_hours: function(current_date, format_output) {
-            /*
-            current_date - Date() in format JS.
-            format_output - format output time:
-                1) 0: 12-hours format (default);
-                2) 1: 24-hours format.
-
-            // TRUE - around the clock; FALSE - closed; NULL - working hours is undefined. timetables is empty
-            */
             format_output = format_output === 1 ? 1 : 0;
             var timetable = this._get_timetable(new Date(current_date.getFullYear(), current_date.getMonth(), current_date.getDate())); // get timetable on a particular day
 
@@ -458,15 +634,29 @@ define(["backbone"], function(Backbone) {
             return false;
         },
         /**
-         * Get timetable on the week from the current day.
+         * Gets timetable on the week from the current day.
+         * @param {number} format_output - format of output time:
+         * - 0: 12-hours format (default);
+         * - 1: 24-hours format.
+         * @returns {?object}
+         * - timetable object in following format:
+         * ```
+         * {
+         *    "sunday": false,
+         *    "monday": [{
+         *        "from": "0:00",
+         *        "to": "19:59"
+         *    }],
+         *    "tuesday": [{
+         *        "from": "0:00",
+         *        "to": "23:52"
+         *    }],
+         *    ...
+         * }
+         * ```
+         * - null, if timetable is empty.
          */
         get_timetable_on_week: function(format_output) {
-            /*
-            format_output - format output time:
-                1) 0: 12-hours format (default);
-                2) 1: 24-hours format.
-            */
-           // return null if timetable is empty
             format_output = format_output === 1 ? 1 : 0;
             var timetable = {},
                 current_date = this.base(), // need to create new, not link (current_date = today)
@@ -482,6 +672,30 @@ define(["backbone"], function(Backbone) {
             }
             return timetable;
         },
+        /**
+         * Gets working hours for each day of the week.
+         * @returns {array} Array of timetables per day, e.g.
+         * ```
+         * [{
+         *      "weekDay": "sunday",
+         *      "hours": false
+         * }, {
+         *      "weekDay": "monday",
+         *      "hours": [{
+         *          "from": "0:00",
+         *          "to": "19:59"
+         *      }]
+         * }, {
+         *      "weekDay": "tuesday",
+         *      "hours": [{
+         *          "from": "0:00",
+         *          "to": "23:52"
+         *      }]
+         * },
+         *  ...
+         * ]
+         * ```
+         */
         getHoursOnWeek: function() {
             var timetable_on_week = this.get_timetable_on_week(),
                 timetable;
@@ -500,30 +714,45 @@ define(["backbone"], function(Backbone) {
 
             return timetable;
         },
-        /*
-        *   returns working hours for current date
-        */
+        /**
+         * Returns working hours for the current date.
+         * @returns {?object}
+         */
         getCurDayHours: function() {
             return Array.isArray(this.get('hours')) ? this.get('hours')[0] : null; //{hours: true};
         },
         /**
-         * Checking work shop at a specified time.
+         * Checks if shop works at a specified time.
+         * @param   {Date} current_time - current time.
+         * @param   {?boolean} isDelivery - the order is for delivery or not.
+         * @returns {boolean}
+         * - true, if store is open.
+         * - false, if store is closed.
          */
         checking_work_shop: function(current_time, isDelivery) {
             this.workingDay.update({timetable: this.get_working_hours(current_time, 1), curTime : current_time});
             return this.workingDay.checking_work_shop(isDelivery);
         },
+        /**
+         * Returns given date with hours, minutes and seconds set to 00:00:00.
+         * @param   {Date} date - Date to round.
+         * @returns {Date} rounded date.
+         */
         round_date: function(date) {
             return new Date(date.getFullYear(), date.getMonth(), date.getDate());
         },
         /**
-         * Get lists "Pickup Date and Pickup Time".
-         * returns an array of valid days with pickup time grids
-         * index_by_day_delta - is an object which recieves data mapping the delta in days (between cur date and target date) into an index of the array returned by getPickupList.
-         * index_by_day_delta is needed beacause getPickupList does not returns invalid days within a App.Settings.online_order_date_range period (which timetable is not set (closed) or holidays).
-         * Usage: var out_obj = {};
-         *        var list = timetable.getPickupList(true, out_obj);
-         *        list[out_obj[1]] - returns tommorow day (if store is not closed for tommorow, otherwise out_obj[1] is undefined)
+         * Gets lists "Pickup Date and Pickup Time".
+         * Usage:
+         * ```
+         * var out_obj = {};
+         * var list = timetable.getPickupList(true, out_obj);
+         * // list[out_obj[1]] - is tommorow day (if store is not closed for tommorow, otherwise out_obj[1] is undefined)
+         * ```
+         * @param   {?boolean} isDelivery - the order is for delivery or not.
+         * @param   {object}  index_by_day_delta - an object which recieves data mapping the delta in days (between cur date and target date) into an index of the array returned by getPickupList.
+         * It is needed beacause getPickupList does not returns invalid days within a App.Settings.online_order_date_range period (which timetable is not set (closed) or holidays).
+         * @returns {array} an array of valid days with pickup time grids.
          */
         getPickupList: function(isDelivery, index_by_day_delta) {
             var self = this, wh, check_day,
@@ -578,12 +807,24 @@ define(["backbone"], function(Backbone) {
                 };
             }, self);
         },
+        /**
+         * Finds the last pickup time available for the working period later than 'curtime'.
+         * @param   {Date} current_time - current time.
+         * @returns {Date}
+         */
         getLastPTforWorkPeriod: function(curtime) {
             var wd = new App.Models.WorkingDay( {timetable: this.get_working_hours(curtime, 1),
                                                  curTime : curtime});
 
             return wd.getLastPTforPeriod(curtime);
         },
+        /**
+         * Checks if store accepts orders at this moment. It's true if store is open or accepts online orders when it's closed.
+         * @param   {?boolean} isDelivery - the order is for delivery or not.
+         * @returns {boolean}
+         * - true, if store accepts orders.
+         * - false otherwise.
+         */
         check_order_enable: function(isDelivery) {
             var currentTime = this.base(),
 
@@ -596,6 +837,12 @@ define(["backbone"], function(Backbone) {
                 return true;
             }
         },
+        /**
+         * Checks if store is open now.
+         * @returns {boolean}
+         * - true, if store is open;
+         * - false, if store is closed.
+         */
         openNow: function() {
             if(this.isHoliday()) {
                 return false;

@@ -122,7 +122,7 @@ define(['backbone'], function(Backbone) {
         },
         /**
          * Updates the promotions list.
-         * @param {array} items - list of order items for submitting to server.
+         * @param {array} items - array of cart items for submitting to server.
          * @returns {Object} Deferred object.
          */
         update: function(items) {
@@ -159,7 +159,7 @@ define(['backbone'], function(Backbone) {
         },
         /**
          * Loads the promotions list from backend.
-         * @param {array} items - list of order items for submitting to server.
+         * @param {array} items - array of cart items for submitting to server.
          *
          * Used parameters of the request are:
          * ```
