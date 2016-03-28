@@ -825,6 +825,7 @@ define(["backbone", "factory"], function(Backbone) {
         setProfileEditContent: function() {
             var customer = App.Data.customer,
                 address = new Backbone.Model(customer.getProfileAddress() || customer.getEmptyAddress()),
+                ui = new Backbone.Model({show_response: false}),
                 updateBasicDetails = false,
                 updateAddress = false,
                 updatePassword = false,
@@ -839,6 +840,7 @@ define(["backbone", "factory"], function(Backbone) {
                     model: customer,
                     address: address,
                     updateAction: update,
+                    ui: ui,
                     className: 'profile-edit text-center'
                 }
             });
@@ -868,14 +870,17 @@ define(["backbone", "factory"], function(Backbone) {
 
             function basicDetailsChanged() {
                 updateBasicDetails = true;
+                ui.set('show_response', false);
             }
 
             function accountPasswordChanged() {
                 updatePassword = Boolean(customer.get('password')) && Boolean(customer.get('confirm_password'));
+                ui.set('show_response', false);
             }
 
             function addressChanged() {
                 updateAddress = true;
+                ui.set('show_response', false);
             }
 
             function update() {
@@ -933,6 +938,7 @@ define(["backbone", "factory"], function(Backbone) {
                 function hideSpinner() {
                     if(--requests <= 0) {
                         mainModel.trigger('loadCompleted');
+                        ui.set('show_response', true);
                     }
                 }
             }

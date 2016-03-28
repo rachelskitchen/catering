@@ -732,7 +732,6 @@ define(["backbone", "async"], function(Backbone) {
          * - configuration object otherwise.
          */
         get_payment_process: function() {
-            debugger;
             var settings_system = this.get('settings_system'),
                 processor = settings_system.payment_processor,
                 skin = this.get("skin"),

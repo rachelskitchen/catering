@@ -154,6 +154,9 @@ define(["factory"], function() {
     App.Views.CoreProfileView.CoreProfileEditView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'edit',
+        bindings: {
+            '.successful-update': 'classes: {visible: ui_show_response}'
+        },
         events: {
             'click .update-btn': setCallback('updateAction')
         },
