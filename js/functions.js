@@ -107,9 +107,15 @@ var ACCEPTABLE_CREDIT_CARD_TYPES = {
 };
 
 /**
-*  format message by formatting string and params.
-*  example: msgFrm("Message text param1 = %s, param2 = %s", 10, 20) returns the string "Message text param1 = 10, param2 = 20"
-*/
+ *  Format message by formatting string and params.
+ *  Example:
+ *  ```
+ *  msgFrm("Message text param1 = %s, param2 = %s", 10, 20);
+ *  // returns the string "Message text param1 = 10, param2 = 20"
+ *  ```
+ *  @param {string} msg_format - string to format.
+ *  @param {...*} - replacement params.
+ */
 function msgFrm(msg_format) {
     var args = arguments,
         newStr, index = 1;
@@ -161,21 +167,7 @@ function parse_get_params() {
 }
 
 /**
- * Make the GET-params strings from address line.
- */
-function make_get_params_string(params) {
-    if (!params)
-        return "";
-    var i=0, data = [];
-    for (var key in params) {
-        if (key && params[key]) {
-            data[i++] = key + "=" + params[key];
-        }
-    }
-    return data.join("&");
-}
-/**
- * Load styles and scripts.
+ * Loads styles and scripts.
  */
 function load_styles_and_scripts() {
     var i, scripts,
@@ -194,8 +186,13 @@ function load_styles_and_scripts() {
         });
     }
 }
+
 /**
- * Check object (empty or not empty).
+ * Checks whether object is empty.
+ * @param   {object} obj - object to check.
+ * @returns {boolean}
+ * - true, if given object is empty;
+ * - false otherwise.
  */
 function empty_object(obj) {
     for (var i in obj) {
@@ -204,7 +201,11 @@ function empty_object(obj) {
     return true;
 }
 
-// returns cookie if it exists or undefined
+/**
+ * Returns cookie if it exists or undefined
+ * @param   {string} name - cookie name.
+ * @returns {string} cookie value.
+ */
 function getCookie(name) {
     var matches = document.cookie.match(new RegExp(
         "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
@@ -242,21 +243,29 @@ Date.prototype.format = function(date_format) {
 }
 
 /**
- * Formatting a date in the format "YYYY-MM-DDTHH:MM:SS".
+ * Formats a date in the format "YYYY-MM-DDTHH:MM:SS".
+ * @param   {Date} date - date.
+ * @returns {Date} formatted date.
  */
 function format_date_1(date) {
     return (new Date(date)).toISOString().replace(/\..*$/, '');
 }
+
 /**
- * Formatting a date in the format "MM/DD/YYYY HH:MM(am/pm)".
+ * Formats a date in the format "MM/DD/YYYY HH:MM(am/pm)".
+ * @param   {Date} date - date.
+ * @returns {Date} formatted date.
  */
 function format_date_2(date) {
     var js_date = new Date(date);
     return js_date.format() + ' '  + new TimeFrm(js_date.getHours(), js_date.getMinutes());
 }
-/**
- * Formatting a date in the format "(Yesterday/Today/Tomorrow) at HH:MM(am/pm) | MONTH DD(st/nd/rd/th) at HH:MM(am/pm)".
- */
+
+ /**
+  * Formats a date in the format "(Yesterday/Today/Tomorrow) at HH:MM(am/pm) | MONTH DD(st/nd/rd/th) at HH:MM(am/pm)".
+  * @param   {Date} date - date.
+  * @returns {Date} formatted date.
+  */
 function format_date_3(date) {
     var SECONDS_IN_DAY = 86400000;
     var days = _loc['DAYS'],
@@ -295,8 +304,12 @@ function format_date_3(date) {
     result += ' ' + time_prefix['TIME_AT'] + ' ' + new TimeFrm(js_date.getHours(), js_date.getMinutes());
     return result;
 }
+
 /**
- * Load data from storage (cookie, sessionStorage, localStorage).
+ * Loads data from storage (cookie, sessionStorage, localStorage).
+ * @param   {string}  name  - data key in storage.
+ * @param   {boolean} local - indicates that data should be loaded from LocalStorage.
+ * @returns {*}               loaded data.
  */
 function getData(name, local) {
     var data;
@@ -322,8 +335,11 @@ function getData(name, local) {
     return data;
 }
 /**
- * Save data to storage (cookie, sessionStorage, localStorage).
- * Return true if successfully saved
+ * Saves data to storage (cookie, sessionStorage, localStorage).
+ * @param   {string}   name  - data key in storage.
+ * @param   {*}        data  - data to save.
+ * @param   {boolean}  local - indicates that data should be saved in LocalStorage.
+ * @returns {?boolean} - true, if successfully saved.
  */
 function setData(name, data, local) {
     if (typeof data.toJSON == 'function')
@@ -343,7 +359,9 @@ function setData(name, data, local) {
     return true;
 }
 /**
- * remove data from storage (coockie or sessionStorage)
+ * Removes data from storage (coockie or sessionStorage)
+ * @param {string}  name  - data key in storage.
+ * @param {boolean} local - indicates that data should be loaded from LocalStorage.
  */
 function removeData(name, local) {
     switch (App.Data.settings.get('storage_data')) {
@@ -358,10 +376,11 @@ function removeData(name, local) {
             break;
     }
 }
+
 /**
  * Helper of template.
  */
-function template_helper(name,mod) {
+function template_helper(name, mod) {
     var id;
     if(mod) {
         id = "#" + name + "_" + mod + "-template";
@@ -375,21 +394,27 @@ function template_helper(name,mod) {
     //trace(id);
     return _.template($(id).html());
 }
+
 /**
  * Helper of template for paypal.
  */
 function template_helper2(name) {
     return _.template($('#' + name).html());
 }
+
 /**
- * Rounding monetary currency.
+ * Rounds monetary currency.
+ * @param   {number} value     - amount of money.
+ * @param   {number} precision - precision.
+ * @param   {boolean} up       - if true, rounds 0.049 to 0.05.
+ * @returns {number} rounded number.
  */
 function round_monetary_currency(value, precision, up) {
     precision = precision || 2;
     var val = Math.floor(value * Math.pow(10, precision)) / Math.pow(10, precision),
         delta = value * Math.pow(10, precision + 2) - val * Math.pow(10, precision + 2),
         result;
-    if(delta > 49 || (delta === 49 && up)) {
+    if (delta > 49 || (delta === 49 && up)) {
         result = val + 1 / Math.pow(10, precision);
     } else {
         result = val;
@@ -400,9 +425,18 @@ function round_monetary_currency(value, precision, up) {
 var round_money = round_monetary_currency;
 
 /**
- *  Sync load template
+ * Loads the template synchrounously.
+ * @param   {?string} name              - skin name.
+ * @param   {string}  file              - file name.
+ * @param   {boolean} isCore            - indicate whether this is core template.
+ * @param   {object}  loadModelTemplate - object in following format:
+ * ```
+ * {
+ *     count: <count of templates to load>,
+ *     dfd: <Deferrec object>
+ * }
+ * ```
  */
-
 function loadTemplate2(name, file, isCore, loadModelTemplate) {
     var id = name ? name + '_' + file : file;
 
@@ -440,10 +474,13 @@ function loadTemplate2(name, file, isCore, loadModelTemplate) {
         resolve(); // resolve current CSS file
     }
 }
+
 /**
- * load template
+ * Loads the template.
+ * @param {?string} name - template name.
+ * @param {string}  file - file name.
  */
-function loadTemplate(name,file) {
+function loadTemplate(name, file) {
     var dfd = $.Deferred();
     if ($("#" + name).length === 0) {
         var version = is_minimized_version ? '?ver=' + autoVersion : '';
@@ -462,18 +499,16 @@ function loadTemplate(name,file) {
 }
 
 /**
- * Calls callback after template is loaded
- */
-function processTemplate(templateLoad, callback) {
-    if (templateLoad) {
-        templateLoad.then(callback);
-    } else {
-        callback();
-    }
-}
-
-/**
- * Include CSS file
+ * Appends CSS file.
+ * @param {string} name - file name.
+ * @param {object} loadModelCSS - object in following format:
+ * ```
+ * {
+ *     count: <count of templates to load>,
+ *     dfd: <Deferrec object>
+ * }
+ * ```
+ * @returns {object} jQuery object of <link> element.
  */
 function loadCSS(name, loadModelCSS) {
     // cache is used after a return to previous establishment
@@ -576,7 +611,8 @@ function loadCSS(name, loadModelCSS) {
 }
 
 /**
- * Include common CSS file
+ * Appends common CSS file to `<head>`.
+ * @param {name} string - file name.
  */
 function loadCommonCSS(name) {
     if ($('link[href="' + name + '.css"]').length === 0) {
@@ -585,23 +621,30 @@ function loadCommonCSS(name) {
 }
 
 /**
- * Set page title
+ * Sets page title.
+ * @param {string} title - title to set.
  */
 function pageTitle(title) {
     $("head title").html(title);
 }
 
+/**
+ * Checks whether given argument is numeric.
+ * @param   {*}  num - variable to check.
+ * @returns {Boolean}
+ *     - true, if `num` is numeric;
+ *     - false otherwise.
+ */
 function isNumber(num) {
     return typeof(num) === 'number' || num instanceof Number;
 }
 
 /*
-*  TimeFrm 'class'.
-*  This class is created for time strings convertation from 24-hour format to USA format and back.
-*  The internal state value is minutes. You can update the minutes (set_minutes func.) and get updated time strings in desired format.
-*  Please use/modify time_TimeFrm.html(js) file to test the class when new modifications is applied.
-*/
-
+ *  TimeFrm 'class'.
+ *  This class is created for time strings convertation from 24-hour format to USA format and back.
+ *  The internal state value is minutes. You can update the minutes (set_minutes func.) and get updated time strings in desired format.
+ *  Please use/modify time_TimeFrm.html(js) file to test the class when new modifications is applied.
+ */
 function TimeFrm(hour, min, frm_type){
     var def = {
         minutes: 0,
@@ -621,9 +664,9 @@ function TimeFrm(hour, min, frm_type){
 }
 
 /*
-*  Function: load_from_str
-*
-*/
+ *  Function: load_from_str
+ *
+ */
 TimeFrm.prototype.load_from_str = function(time_str) {
     if (typeof this.load_from_str_ft[ this.frm_type ] === 'function' && typeof time_str === 'string')
     {
@@ -752,8 +795,13 @@ TimeFrm.prototype.set_minutes = function(minutes) {
     this.minutes = parseInt(minutes);
     return this;
 };
+
 /**
- * Checking version OS Android (old version is Android <= 4.2.1).
+ * Checks if given version of Android is <= 4.2.1.
+ * @param  {string} version - Android version.
+ * @return {boolean}
+ *     - true, if given version is considered old;
+ *     - false otherwise.
  */
 function check_android_old_version(version) {
     var old_version = false;
@@ -782,14 +830,18 @@ function check_android_old_version(version) {
 }
 
 /**
- * Checking if it's Android device based on WebKit.
+ * Checks if it's Android device and browser is based on WebKit.
  */
 function isAndroidWebKit() {
     return /Android/i.test(navigator.userAgent) && /WebKit/i.test(navigator.userAgent);
 }
 
 /**
- * Loading img spinner
+ * Loads image spinner.
+ * @param   {[type]}   logo        [description]
+ * @param   {[type]}   anim_params [description]
+ * @param   {Function} cb          [description]
+ * @returns {[type]}               [description]
  */
 function loadSpinner(logo, anim_params, cb) {
     var show_spinner = true,
