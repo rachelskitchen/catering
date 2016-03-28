@@ -26,6 +26,7 @@ define([], function() {
     /**
      * Used tax codes.
      * @type {object}
+     * @memberof App
      */
     App.TaxCodes = {
             TAX_COUNTRY_USA: 'usa',

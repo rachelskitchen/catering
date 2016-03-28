@@ -508,7 +508,7 @@ function loadTemplate(name, file) {
  *     dfd: <Deferrec object>
  * }
  * ```
- * @returns {object} jQuery object of <link> element.
+ * @returns {jQuery} '<link>' element.
  */
 function loadCSS(name, loadModelCSS) {
     // cache is used after a return to previous establishment
@@ -838,10 +838,18 @@ function isAndroidWebKit() {
 
 /**
  * Loads image spinner.
- * @param   {[type]}   logo        [description]
- * @param   {[type]}   anim_params [description]
- * @param   {Function} cb          [description]
- * @returns {[type]}               [description]
+ * @param   {jQuery}   logo - img element(s).
+ * @param   {*} anim_params
+ *     - object in following format:
+ *     ```
+ *     {
+ *         anim: false|true, // use animation or not
+ *         spinner: false|true // show spinner or not
+ *     }
+ *     ```
+ *     - true|false - use animtaion or not.
+ * @param   {Function} cb - callback function.
+ * @returns {jQuery} spinner element.
  */
 function loadSpinner(logo, anim_params, cb) {
     var show_spinner = true,
@@ -898,6 +906,11 @@ function loadSpinner(logo, anim_params, cb) {
     return s;
 }
 
+/**
+ * Generates image hash.
+ * @param   {jQuery} image - image element.
+ * @returns {string} image hash (encoded string).
+ */
 function makeImageName(image) {
 	return utf8_to_b64(image.attr('src') + image.attr('alt'));
 }
@@ -921,7 +934,8 @@ function b64_to_utf8(str) {
 }
 
 /**
- * Check if IE mobile version
+ * Checks if the app is opened on IE mobile.
+ * @returns {boolean}
  */
 function isIEMobile() {
     if (isIEMobile.retval) {
@@ -934,7 +948,8 @@ function isIEMobile() {
 }
 
 /**
- * Check if iPad device
+ * Checks if the app is opened on iPad device.
+ * @returns {boolean}
  */
 function iPad() {
     if (iPad.retval) {
@@ -947,7 +962,8 @@ function iPad() {
 }
 
 /**
- * Check if is iOS device
+ * Checks if the app is opened on iOS device.
+ * @returns {boolean}
  */
 function isIOS() {
     if (iPad.retval) {
@@ -960,7 +976,9 @@ function isIOS() {
 }
 
 /**
- * Pickup time to string
+ * Converts pickup time to string in format like "Mar 28, 14:54".
+ * @param {Date} date - date.
+ * @returns {string}
  */
 function pickupToString(date) {
     var skin = App.Data.settings.get('skin'),
@@ -978,7 +996,9 @@ function pickupToString(date) {
 }
 
 /**
- * deep copy. check array and object before copy
+ * Creates and returns a deep copy. Checks array and object before copying.
+ * @param {*} data - data to deep copy.
+ * @returns {*} deep copy of given data.
  */
 function deepClone(data) {
     var i, j, obj;
@@ -999,27 +1019,36 @@ function deepClone(data) {
 }
 
 /**
- * Escape special characters in RegExp string
- **/
+ * Escapes special characters in RegExp string.
+ * @param {string} str - escaped string.
+ */
 function escapeRegExp(str) {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
 /**
- * Replace all function
- **/
+ * 'Replace all' function.
+ * @param   {string} find    - string that is to be replaced by `replace`.
+ * @param   {string} replace - string that replaces the found matches.
+ * @param   {string} str     - source string.
+ * @returns {string}
+ */
 function replaceAll(find, replace, str) {
     return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
 }
 
 /**
- * use mask for input field
- * type can be 'integer', (number keyboard for numbers like 100)
- *             'float', (number or tel keyboard for floats like 5.25)
- *             'numeric' (number or tel keyboard for strings of digits "000123456" (zero can be in front of it),
- *             'cardNumber' (number or text keyboard for strings of digits "0001-23-456" (like 'numeric', but may have minus),
- *             'text', (for general text keyboard)
- *             'tel' (for phones)
+ * Use mask for input field.
+ * @param   {jQuery} el      - input element.
+ * @param   {RegExp} pattern - RegExp pattern.
+ * @param   {string} initial - initial value.
+ * @param   {string} type
+ *     - 'integer', (number keyboard for numbers like 100)
+ *     - 'float', (number or tel keyboard for floats like 5.25)
+ *     - 'numeric' (number or tel keyboard for strings of digits "000123456" (zero can be in front of it),
+ *     - 'cardNumber' (number or text keyboard for strings of digits "0001-23-456" (like 'numeric', but may have minus),
+ *     - 'text', (for general text keyboard)
+ *     - 'tel' (for phones)
  */
 function inputTypeMask(el, pattern, initial, type) {
     inputTypeSwitcher(el, type);
@@ -1043,6 +1072,16 @@ function inputTypeMask(el, pattern, initial, type) {
     }
 }
 
+/**
+ * Switches input type.
+ * @param   {jQuery} el   - input element.
+ * @param   {string} type
+ *     - 'integer', (number keyboard for numbers like 100)
+ *     - 'float', (number or tel keyboard for floats like 5.25)
+ *     - 'numeric' (number or tel keyboard for strings of digits "000123456" (zero can be in front of it),
+ *     - 'cardNumber' (number or text keyboard for strings of digits "0001-23-456" (like 'numeric', but may have minus),
+ *     - 'text', (for general text keyboard)
+ */
 function inputTypeSwitcher(el, type) {
     if (cssua.userAgent.mobile) { //change the type only for mobile devices, desktop browsers add the arrows up/down for number keyboard
         if (type == 'integer') {
@@ -1079,7 +1118,7 @@ function inputTypeSwitcher(el, type) {
 }
 
 /**
- * save all data
+ * Saves all data.
  */
 function saveAllData() {
     var settings = App.Data.settings,
@@ -1094,11 +1133,9 @@ function saveAllData() {
 }
 
 /**
- * @function
- * Calls callback function when element is inserted to DOM
- *
- * @param {Jquery} $el - target element.
- * @param {Function} cb - callback function.
+ * Calls callback function when element is inserted to DOM.
+ * @param {jQuery}   $el - target element.
+ * @param {Function} cb  - callback function.
  */
 function listenToInsertionIntoDOM($el, cb) {
     if (typeof cb != 'function') {
@@ -1121,27 +1158,40 @@ function listenToInsertionIntoDOM($el, cb) {
     }
 }
 
-/*
-*  Transfor the first text letter to upper case
-*/
+/**
+ * Transform the first letter to upper case.
+ * @param   {string} text - text to transform.
+ * @returns {string}
+ */
 function fistLetterToUpperCase(text) {
     return text.replace(/(^[a-z])|\s([a-z])/g, function(m, g1, g2){
         return g1 ? g1.toUpperCase() : ' ' + g2.toUpperCase();
     });
 }
 
-/*
-*  trace function:
-*/
+/**
+ * Trace function.
+ */
 function trace() {
     return console.log.apply(console, arguments);
 }
 
+/**
+ * Formats time array as string.
+ * @param   {array} time - array in format ["hh", "mm"], e.g. ["23", "59"]
+ * @returns {string} - formatted string, e.g. "23:59".
+ */
 function format_time(time) {
     time = time.split(":")
     return new TimeFrm(time[0] * 1, time[1] * 1).toString();
 }
 
+/**
+ * Formats day timetable.
+ * @param   {array} days      - array of days names, e.g. ["monday"]
+ * @param   {string} day_time - time period, e.g. "0:00 - 23:59"
+ * @returns {string} - e.g. "Mon 0:00 - 23:59"
+ */
 function format_days(days, day_time) {
     var str = "";
     if (days.length > 1 && days.length < 7) {
@@ -1153,6 +1203,22 @@ function format_days(days, day_time) {
     return str;
 }
 
+/**
+ * Formats time periods.
+ * @param   {array}  times     - array of time periods objects, e.g.
+ * ```
+ * [{
+ *     from: "08:00",
+ *     to: "13:00"
+ * },
+ * {
+ *     from: "14:00",
+ *     to: "18:00"
+ * }]
+ * ```
+ * @param   {string} separator - separator.
+ * @returns {string} formatted and concatenated time periods, e.g. "8:00 - 13:00, 14:00 - 18:00".
+ */
 function format_times(times, separator) {
     if (!times) {
         return null;
@@ -1171,6 +1237,12 @@ function format_times(times, separator) {
     return res.join(separator);
 }
 
+/**
+ * Formats timetables.
+ * @param   {array} timetables  - array of timetables.
+ * @param   {?string} separator - separator.
+ * @returns {string} formatted timetables.
+ */
 function format_timetables(timetables, separator) {
     if (!timetables) {
         return null;
@@ -1998,10 +2070,15 @@ var CRESecurePaymentProcessor = {
     }
 };
 
-/*
-* removeClassRegexp: removes all classes by regular expression
-*           example: removeClassRegexp($('#element_id'), "s\\d+")
-*/
+/**
+ * Removes all classes by regular expression.
+ * Example:
+ * ```
+ * removeClassRegexp($('#element_id'), "s\\d+");
+ * ```
+ * @param {jQuery} jq_elem - element.
+ * @param {string} exp_str - expression string.
+ */
 function removeClassRegexp(jq_elem, exp_str) {
     var regexpStr = "(\\s+)?" + exp_str + "(?=\\s|$)";
     var regexp = new RegExp(regexpStr, "g");
@@ -2010,11 +2087,11 @@ function removeClassRegexp(jq_elem, exp_str) {
     });
 }
 
-/*
-*  @function implements logical AND operation on all arguments passed (it's needed for automatic binding discovering for Epoxy)
-*  @returns arg1 && arg2 && arg3 ...
+/**
+* Implements logical AND operation on all arguments passed (it's needed for automatic binding discovering for Epoxy).
+* @returns {boolean} arg1 && arg2 && arg3 ...
 */
-function AND(){
+function AND() {
     var result = arguments[0];
     for (var i = 1; i < arguments.length; i++) {
         result = result && arguments[i];
@@ -2022,11 +2099,11 @@ function AND(){
     return result;
 }
 
-/*
-*  @function implements logical OR operation on all arguments passed (it's needed for automatic binding discovering for Epoxy)
-*  returns arg1 || arg2 || arg3 ...
-*/
-function OR(){
+/**
+ * Implements logical OR operation on all arguments passed (it's needed for automatic binding discovering for Epoxy).
+ * @returns {boolean} arg1 || arg2 || arg3 ...
+ */
+function OR() {
     var result = arguments[0];
     for (var i = 1; i < arguments.length; i++) {
         result = result || arguments[i];
@@ -2035,15 +2112,15 @@ function OR(){
 }
 
 /*
-* Integrity simple test function (Bug 23033), it's checked from categories view.
-* When the minimization done it's combined into main.js then checked from mainView.js
-*/
+ * Integrity simple test function (Bug 23033), it's checked from categories view.
+ * When the minimization done it's combined into main.js then checked from mainView.js
+ */
 function testA_5() {
    return 23033 + 'v1';
 }
 
 /**
- * Reload page in browser once it's online.
+ * Reloads page in browser once it's online.
  */
 function reloadPageOnceOnline() {
     App.Data.mainModel && App.Data.mainModel.trigger('loadStarted'); // show spinner
@@ -2061,7 +2138,9 @@ function reloadPageOnceOnline() {
 }
 
 /**
- * Add @host to @image URL if it is relative
+ * Add @host to @image URL if it is relative.
+ * @param {string} image - path to image file (can be absolute or relative).
+ * @param {string} host  - host to be added to image path to make it absolute.
  */
 function addHost(image, host) {
     var image = decodeURIComponent(image);
@@ -2084,7 +2163,8 @@ function sort_i18nObject(obj) {
 }
 
 /**
- *
+ * Gets the instance name.
+ * @return {string} instance name.
  */
 function getInstanceName() {
     var host = require('app').REVEL_HOST;
