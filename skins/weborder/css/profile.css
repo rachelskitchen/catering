@@ -25,7 +25,6 @@
     right: 6px;
     top: 8px;
     padding: 4px;
-    background: #fff;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
 }
@@ -74,19 +73,13 @@
     position: absolute;
 }
 
-#profile-panel .btn {
+#profile-panel .flat-btn {
     display: inline-block;
     width: 84%;
     height: auto;
     margin-top: 10px;
     font-size: 14px;
-    padding: 6px 0;
     line-height: normal;
-}
-
-#profile-panel .btn.disabled {
-    margin-top: 13px;
-    margin-bottom: 3px;
 }
 
 #profile-panel .forgot-password {
@@ -160,12 +153,10 @@
 }
 
 .profile-edit .update-btn {
-    height: 28px;
     width: auto;
     min-width: 100px;
     display: inline-block;
     font-size: 14px;
-    line-height: 26px;
 }
 
 .profile-edit .profile-form input {

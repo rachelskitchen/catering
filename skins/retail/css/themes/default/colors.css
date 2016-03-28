@@ -690,3 +690,16 @@ input:-ms-input-placeholder {
 .profile-edit .successful-update {
     color: #00a3e0;
 }
+#profile-panel.active .links {
+    background: #ffffff;
+}
+.flat-btn {
+    background-color: #2699ca;
+    border-color: #2699ca;
+    color: #fff;
+    text-shadow: none;
+}
+.flat-btn:active {
+    background-color: transparent;
+    color: #2699ca;
+}

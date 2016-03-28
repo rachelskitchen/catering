@@ -1198,3 +1198,21 @@ span.cancel-input:before {
     background: transparent;
     position: absolute;
 }
+
+.flat-btn {
+    display: inline-block;
+    height: auto;
+    font-size: 14px;
+    line-height: normal;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 15px;
+    cursor: pointer;
+    padding: 6px 4px;
+}
+
+.flat-btn.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    pointer-events: none;
+}
