@@ -165,6 +165,7 @@ define(["main_router"], function(main_router) {
                     tip: true,
                     customer: true,
                     checkout: true,
+                    card_billing_address: PaymentProcessor.isBillingAddressCard(),
                     card: doPayWithToken ? false : paymentProcessor.credit_card_dialog
                 }, sendRequest.bind(window, PAYMENT_TYPE.CREDIT));
             });
@@ -1175,16 +1176,27 @@ define(["main_router"], function(main_router) {
                     }
                 });
 
-                App.Data.mainModel.set({
-                    contentClass: '',
-                    content: [
-                        {
+                var content = [{
                             modelName: 'Card',
                             model: App.Data.card,
                             mod: 'Main',
                             cacheId: true
-                        }
-                    ]
+                        }];
+
+                if (PaymentProcessor.isBillingAddressCard()) {
+                    content.push({
+                            modelName: 'Card',
+                            model: App.Data.card,
+                            mod: 'BillingAddress',
+                            cacheId: true,
+                            customer: App.Data.customer,
+                            address: App.Data.card.get("billing_address")
+                        });
+                }
+
+                App.Data.mainModel.set({
+                    contentClass: '',
+                    content: content
                 });
 
                 this.change_page();

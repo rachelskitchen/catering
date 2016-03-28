@@ -1612,7 +1612,7 @@ var GlobalCollectPaymentProcessor = {
     },
     getGlobalCollectProductID: function( backendCardType ) {
         /*
-        all payment cards supported by Global Collect:
+        these are payment cards supported by Global Collect:
         1:Visa
         2:American Express
         3:MasterCard

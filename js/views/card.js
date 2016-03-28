@@ -109,6 +109,9 @@ define(["backbone", "factory"], function(Backbone) {
                 this.options.address.set('state', state);
             }
         },
+        start: function() {
+           this.options.customer.trigger("change:addresses");
+        },
         events: {
             'click #use_profile_address': 'change',
         },
@@ -123,12 +126,27 @@ define(["backbone", "factory"], function(Backbone) {
             ".address select.countries": "value: country_code, options: countries",
             ".address .city": "value: address_city",
             ".address .street_1": "value: address_street_1",
-            ".address .zipcode": "value: address_zipcode"
+            ".address .zipcode": "value: address_zipcode",
+            "label[for=zipcode] span": "text: zipcode_label",
+            ".states-wrap": "classes:{hide:hide_states}"
         },
         computeds: {
+            hide_states: {
+                deps: ["address_country_code"],
+                get: function(country_code) {
+                    return !(country_code == "US");
+                }
+            },
+            zipcode_label: {
+                deps: ["address_country_code"],
+                get: function(country_code) {
+                    return country_code == "US" ? _loc.CHECKOUT_ZIP_CODE : _loc.CHECKOUT_POSTAL_CODE;
+                }
+            },
             use_profile_address_title: {
-                deps: [],
+                deps: ["customer_addresses"],
                 get: function() {
+                    trace("use_profile_address_title=>")
                     var customer = this.options.customer;
                     var addr = customer.getProfileAddress();
                     if (!customer.isAuthorized() || !addr) {
@@ -139,8 +157,9 @@ define(["backbone", "factory"], function(Backbone) {
                 }
             },
             hide_profile_address: {
-                deps: [],
+                deps: ["customer_addresses"],
                 get: function() {
+                    trace("hide_profile_address=>")
                     var customer = this.options.customer;
                     var addr = customer.getProfileAddress();
                     if (!customer.isAuthorized() || !addr)

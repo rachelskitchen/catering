@@ -606,6 +606,8 @@
         "PROFILE_INVALID_EMAIL": "Email address is invalid",
         "PROFILE_ADD_CREDIT_CARD": "Add Credit Card",
         "PROFILE_CREDIT_CARDS": "Credit Cards",
-        "PROFILE_PAYMENT_TOKEN_NOT_FOUND": "Payment token is not found"
+        "PROFILE_PAYMENT_TOKEN_NOT_FOUND": "Payment token is not found",
+        'BILLING_ADDRESS_TITLE': 'Specify a card billing address',
+        'USE_PROFILE_ADDRESS_TITLE_1': 'Use the profile address'
     }; // end of locale
 }); // end of module

@@ -213,18 +213,6 @@
     margin-left: 17px;
 }
 
-#use_profile_address {
-    margin: 0px 30px;
-}
-#use_profile_address .checkbox {
-    display: inline-block;
-    height: 21px;
-    width: 21px;
-    border-radius: 4px;
-    float: left;
-    margin-right: 7px;
-}
-
 #popup .order-items {
     max-height: 335px;
     margin: 0 10px;
