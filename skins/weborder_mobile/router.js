@@ -109,7 +109,6 @@ define(["main_router"], function(main_router) {
 
                 this.listenTo(App.Data.myorder, 'add remove change', function() {
                     App.Data.header.set('cartItemsQuantity', App.Data.myorder.get_only_product_quantity());
-                    App.Data.promotions && (App.Data.promotions.needToUpdate = true);
                 });
 
                 new App.Views.MainView.MainMainView({
@@ -1911,7 +1910,9 @@ define(["main_router"], function(main_router) {
             id = Number(id);
 
             this.prepare('promotions', function() {
-                App.Data.promotions || this.initPromotions();
+                if (!App.Data.promotions) {
+                    this.initPromotions();
+                }
                 promotions = App.Data.promotions;
 
                 promotions.fetching.always(function() {
