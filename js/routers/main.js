@@ -839,6 +839,7 @@ define(["backbone", "factory"], function(Backbone) {
             App.Data.mainModel.set({
                 mod: 'Profile',
                 className: 'profile-container',
+                profile_title: _loc.PROFILE_EDIT_TITLE,
                 profile_content: {
                     modelName: 'Profile',
                     mod: 'Edit',
@@ -956,6 +957,7 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.mainModel.set({
                     mod: 'Profile',
                     className: 'profile-container',
+                    profile_title: _loc.PAYMENT_METHODS,
                     profile_content: {
                         modelName: 'Profile',
                         mod: 'Payments',
