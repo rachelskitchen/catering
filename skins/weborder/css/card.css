@@ -24,6 +24,10 @@
     margin-bottom: 2px;
 }
 
+.card-block.no_top_margin > div.card_title {
+    margin-bottom: 7px;
+}
+
 #billing-address .inactive
 {
     opacity: 0.5;
@@ -68,6 +72,20 @@
 }
 #exp-year {
     padding-right: 22px;
+}
+#use_profile_address {
+    margin: 0px 30px;
+}
+#use_profile_address .checkbox {
+    display: inline-block;
+    height: 21px;
+    width: 21px;
+    border-radius: 4px;
+    float: left;
+    margin-right: 7px;
+}
+.card-block .select-wrapper select[disabled=disabled] {
+    color: rgba(0, 0, 0, 0.7);
 }
 /* for tablets */
 @media only screen and (max-device-width: 949px) {

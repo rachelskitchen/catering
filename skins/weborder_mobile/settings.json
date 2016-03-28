@@ -75,6 +75,7 @@
         "card": {
             "css": ["card"],
             "templates": ["card"],
+            "views": ["card"],
             "core": ["card", "card_view", "jquery_numbermask"]
         },
         "giftcard": {
