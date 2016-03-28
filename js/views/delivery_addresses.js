@@ -32,7 +32,7 @@ define(['backbone', 'factory'], function(Backbone) {
         initialize: function() {
             var model = _.extend({}, this.options.customer.toJSON()),
                 defaultAddress = App.Settings.address,
-                address = this.getAddress();
+                address = this.options.customer.getCheckoutAddress();
 
             model.country = address && address.country ? address.country : defaultAddress.country;
             model.state = model.country == 'US' ? (address ? address.state : defaultAddress.state) : null;
@@ -50,36 +50,6 @@ define(['backbone', 'factory'], function(Backbone) {
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.updateAddress();
-        },
-        getAddress: function() {
-            var customer = this.options.customer.toJSON(),
-                shipping_address = customer.shipping_address;
-
-            // if shipping address isn't selected take last index
-            if(this.options.customer.isDefaultShippingAddress()) {
-                shipping_address = customer.addresses.length - 1;
-            } else {
-                var reverse_addr_index = shipping_address == customer.deliveryAddressIndex ? customer.shippingAddressIndex : customer.deliveryAddressIndex;
-                var addr = customer.addresses[shipping_address];
-                var reverse_addr = customer.addresses[reverse_addr_index];
-                addr == undefined && (addr = {});
-                if (reverse_addr) {
-                    if ((addr.country && reverse_addr.country && addr.country == reverse_addr.country) ||
-                        (!addr.country && reverse_addr.country == App.Settings.address.country)) { //if country was changed then we can't copy address
-                        if (!addr.province && !addr.street_1 && !addr.street_2 && !addr.city && !addr.zipcode) { //and we will copy address if all target fields are empty only
-                            return _.extend(addr, { state: reverse_addr.state,
-                                                    province: reverse_addr.province,
-                                                    street_1: reverse_addr.street_1,
-                                                    street_2: reverse_addr.street_2,
-                                                    city: reverse_addr.city,
-                                                    zipcode: reverse_addr.zipcode });
-                        }
-                    }
-                }
-            }
-
-            // return last address
-            return customer.addresses[shipping_address] && typeof customer.addresses[shipping_address].street_1 === 'string' ? customer.addresses[shipping_address] : undefined;
         },
         bindings: {
             'input[name="street_1"]': 'value: firstLetterToUpperCase(street_1), events: ["input"], trackCaretPosition: street_1',

@@ -1532,6 +1532,17 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
             }
 
+            if (options.card_billing_address) {
+                var card = App.Data.card,
+                    check_card = card.check_billing_address();
+
+                if (check_card.status === 'ERROR') {
+                    errorMsg = check_card.errorMsg;
+                } else if (check_card.status === 'ERROR_EMPTY_FIELDS') {
+                    fields = fields.concat(check_card.errorList);
+                }
+            }
+
             if (options.giftcard) {
                 var giftcard = App.Data.giftcard,
                     check_card = giftcard.check();
@@ -2139,7 +2150,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     items: items,
                     orderInfo: order_info,
                     paymentInfo: payment_info
-                };
+                },
+                billing_address;
 
             myorder.each(function(model) {
                 if (!model.isServiceFee())
@@ -2187,6 +2199,25 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             if (card.nonce) {
                 payment_info.cardInfo.nonce = card.nonce;
+            }
+            if (card.encrypted_customer_input) {
+                payment_info.cardInfo.encrypted_customer_input = card.encrypted_customer_input;
+            }
+
+
+            if (payment_type == PAYMENT_TYPE.CREDIT && PaymentProcessor.isBillingAddressCard()) {
+
+                billing_address = get_billing_address();
+                if (_.isObject(billing_address)) {
+
+                    payment_info.cardInfo.address = {
+                        street_1: billing_address.street_1,
+                        city: billing_address.city,
+                        state: billing_address.state,
+                        zipcode: billing_address.zipcode,
+                        country: billing_address.country_code
+                    };
+                }
             }
 
             var notifications = this.getNotifications();
@@ -2332,6 +2363,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 payment_type === PAYMENT_TYPE.PAYPAL_MOBILE && $.mobile.loading("hide");
                 delete myorder.paymentInProgress;
                 App.Data.card.unset('nonce');
+                if (myorder.paymentResponse.status != "PAYMENT_INFO_REQUIRED") {
+                    App.Data.card.unset('encrypted_customer_input');
+                }
                 successValidation && successValidation.resolve();
             });
 

@@ -110,7 +110,27 @@ define(["backbone"], function(Backbone) {
              * A path for relative image url
              * @type {sting}
              */
-            img: App.Data.settings.get("img_path")
+            img: App.Data.settings.get("img_path"),
+            /**
+             * A billing address bound to credit card
+             * @type {sting}
+             */
+            billing_address: null,
+            /**
+             * Use the user profile address as a card billing address
+             * @type {boolean}
+             */
+            use_profile_address: false
+        },
+        initialize: function() {
+            if (PaymentProcessor.isBillingAddressCard())
+                this.set("billing_address", new Backbone.Model({
+                    city: null,
+                    street_1: null,
+                    state: null,
+                    zipcode: null,
+                    country_code: null
+                }));
         },
         /**
          * Trims the `firstName`, `lastName` attributes values.
@@ -199,6 +219,37 @@ define(["backbone"], function(Backbone) {
                 status: "OK"
             };
         },
+         /**
+         * Checks current billing address attributes values.
+         * @returns {Object} A validation result. Object literal is one of the following sets of key<->value pairs:
+         * - All values are valid: `{status: 'OK'}`
+         * - Has empty fields: `{status: 'ERROR_EMPTY_FIELDS', errorMsg: 'message string', errorList: 'array of empty fields'}`
+         * - Invalid card expiration values: `{status: 'ERROR', errorMsg: 'message string'}`
+         */
+        check_billing_address: function() {
+            var card = this.toJSON(),
+                err = [];
+
+            var billing_address = get_billing_address();
+
+            !billing_address.street_1 && err.push(_loc.PROFILE_ADDRESS_LINE1);
+            !billing_address.city && err.push(_loc.PROFILE_CITY);
+            !billing_address.state && err.push(_loc.PROFILE_STATE);
+            !billing_address.zipcode && err.push(billing_address.country_code == "US" ? _loc.PROFILE_ZIP_CODE : _loc.PROFILE_POSTAL_CODE);
+            !billing_address.country_code && err.push(_loc.PROFILE_COUNTRY);
+
+            if (err.length) {
+                return {
+                    status: "ERROR_EMPTY_FIELDS",
+                    errorMsg: MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, err.join(', ')),
+                    errorList: err
+                };
+            }
+
+            return {
+                status: "OK"
+            };
+        },
         /**
          * Trims `firstName`, `secondName` attributes values then checks them.
          * @returns {Array} An array contaning empty fields.
@@ -249,4 +300,15 @@ define(["backbone"], function(Backbone) {
             this.saveCard();
         }
     });
+
+    window.get_billing_address = function() {
+        var billing_address,
+            use_profile_address = App.Data.card.get("use_profile_address");
+        if (use_profile_address) {
+            return App.Data.customer.getProfileAddress();
+        } else {
+            billing_address = App.Data.card.get("billing_address");
+            return _.isObject(billing_address) ? billing_address.toJSON() : null;
+        }
+    }
 });

@@ -48,7 +48,8 @@ define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], funct
             '#credit-card': 'toggle: not(ui_showPayments)',
             '.payments': 'toggle: ui_showPayments',
             '.payments-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_CREDIT_CARD, _lp_PAYMENTS), classes: {hidden: not(ui_showPaymentsBtn)}',
-            '.gift-cards-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_ANOTHER_CARD, _lp_GIFT_CARDS), classes: {hidden: not(ui_showGiftCardsBtn)}'
+            '.gift-cards-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_ANOTHER_CARD, _lp_GIFT_CARDS), classes: {hidden: not(ui_showGiftCardsBtn)}',
+            '#credit-card': 'classes:{no_top_margin:card_billing_address}'
         },
         bindingSources: {
             ui: function() {
@@ -73,6 +74,16 @@ define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], funct
                 mod: 'Main',
                 model: this.options.card
             }));
+
+            if (PaymentProcessor.isBillingAddressCard()) {
+                this.subViews.push(App.Views.GeneratorView.create('Card', {
+                    el: this.$('#billing-address'),
+                    mod: 'BillingAddress',
+                    model: this.options.card,
+                    customer: this.options.customer,
+                    address: this.options.card.get("billing_address")
+                }));
+            }
 
             if (payments) {
                 this.subViews.push(App.Views.GeneratorView.create('Profile', {
@@ -120,7 +131,8 @@ define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], funct
                 order: true,
                 tip: true,
                 customer: true,
-                checkout: true
+                checkout: true,
+                card_billing_address: PaymentProcessor.isBillingAddressCard()
             }, function() {
                 if (self.options.submode == 'Gift' && customer.isAuthorized() && !doPayWithGiftCard) {
                     customer.linkGiftCard(self.options.card).done(function(data) {

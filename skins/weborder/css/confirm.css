@@ -18,6 +18,9 @@
 .confirmPayCard #credit-card {
     margin-top: 150px;
 }
+.confirmPayCard #credit-card.no_top_margin {
+    margin-top: 0px;
+}
 .confirmPayCard .payments {
     height: 530px;
     overflow: auto;
@@ -74,6 +77,9 @@
     font-weight: bold;
     padding-left: 30px;
     margin: 15px 0;
+}
+.confirmPayCard #billing-address .card_title {
+    font-size: 20px;
 }
 .confirmPayCard .cart_title {
     font-size: 24px;
