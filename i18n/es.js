@@ -607,6 +607,8 @@ define([], function() {
         "PROFILE_USER_NOT_ACTIVATED": "",
         "PROFILE_SESSION_EXPIRED": "",
         "PROFILE_USER_NOT_FOUND": "",
-        "PROFILE_USER_ADDRESS_NOT_FOUND": ""
+        "PROFILE_USER_ADDRESS_NOT_FOUND": "",
+        'BILLING_ADDRESS_TITLE': '',
+        'USE_PROFILE_ADDRESS_TITLE_1': ''
     } // end of locale
 }); // end of module
