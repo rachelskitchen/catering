@@ -1368,7 +1368,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             if (promises.length) {
                 App.Data.header.set({
-                    page_title: _loc.PAYMENTS,
+                    page_title: _loc.PAYMENT_METHODS,
                     back_title: _loc.BACK,
                     back: window.history.back.bind(window.history),
                     link: new Function(),
