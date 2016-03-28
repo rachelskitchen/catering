@@ -595,6 +595,8 @@
         "PROFILE_ADD_CREDIT_CARD": "Добавить кред. карту",
         "PROFILE_CREDIT_CARDS": "Кредитные карты",
         "PROFILE_ADD_ANOTHER_CARD": "Добавить другую карту",
-        "PROFILE_UPDATE_SUCCESSFUL": "Успешно обновлено"
+        "PROFILE_UPDATE_SUCCESSFUL": "Успешно обновлено",
+        'BILLING_ADDRESS_TITLE': 'Задайте билинг-адрес',
+        'USE_PROFILE_ADDRESS_TITLE_1': 'Исользовать адрес профиля'
     } // end of locale
 }); // end of module

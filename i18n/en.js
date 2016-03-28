@@ -548,6 +548,7 @@
         'ENTER_CAPTCHA': 'Enter Captcha',
         'NEXT': 'Next',
         'WELCOME': 'Welcome',
+        'PAYMENTS': 'Payments',
         'PAYMENT_METHODS': "Payment Methods",
         'GIFT_CARDS': 'Gift Cards',
         'MY_PROMOTIONS': 'My Promotions',
