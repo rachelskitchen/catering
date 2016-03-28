@@ -23,7 +23,10 @@
 define([], function() {
     'use strict';
 
-    // used tax codes
+    /**
+     * Used tax codes.
+     * @type {object}
+     */
     App.TaxCodes = {
             TAX_COUNTRY_USA: 'usa',
             TAX_COUNTRY_AU: 'au',
@@ -31,6 +34,15 @@ define([], function() {
             TAX_COUNTRY_CA_ON: 'ca_on',
             TAX_COUNTRY_UK: 'uk',
             TAX_COUNTRY_OTHER_INCLUDED: 'other_tax_included',
+            /**
+             * Checks if tax and surcharge are included in subtotal.
+             * @method
+             * @type {function}
+             * @param   {string}  tax_country - country code.
+             * @returns {boolean}
+             * - true, if tax is included for `tax_country`;
+             * - false otherwise.
+             */
             is_tax_included: function(tax_country) {
                 if (!tax_country) {
                     return false;
