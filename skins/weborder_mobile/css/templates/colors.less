@@ -93,10 +93,20 @@
 }
 
 /* [input_placeholder] Text field placeholder text */
-.input-colors::-webkit-input-placeholder,
-.input-colors:-moz-placeholder, /* Firefox 18- */
-.input-colors::-moz-placeholder, /* Firefox 19+ */
+/** do not combine placeholder selectors (won't be applied) **/
+.input-colors::-webkit-input-placeholder {
+    .resolve-color(@input_placeholder);
+}
+.input-colors:-moz-placeholder { /* Firefox 18- */
+    .resolve-color(@input_placeholder);
+}
+.input-colors::-moz-placeholder { /* Firefox 19+ */
+    .resolve-color(@input_placeholder);
+}
 .input-colors:-ms-input-placeholder {
+    .resolve-color(@input_placeholder);
+}
+.placeholder::before {
     .resolve-color(@input_placeholder);
 }
 

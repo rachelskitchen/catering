@@ -536,6 +536,8 @@
         "SAVE": "Сохранить",
         "RESET": "Сбросить",
         'BALANCE': 'Баланс',
+        "CHOOSE_COUNTRY": "Выберите Страну",
+        "CHOOSE_STATE": "Выберите Штат",
         'PROFILE': 'Профиль',
         'PROFILE_EMAIL_ADDRESS': 'Эл. почта',
         'PROFILE_PASSWORD': 'Пароль',

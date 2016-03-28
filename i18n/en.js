@@ -554,6 +554,8 @@
         'SAVE': "Save",
         "RESET": "Reset",
         'BALANCE': 'Balance',
+        "CHOOSE_COUNTRY": "Choose Country",
+        "CHOOSE_STATE": "Choose State",
         'PROFILE': "Profile",
         'PROFILE_EMAIL_ADDRESS': 'Email Address',
         'PROFILE_PASSWORD': 'Password',

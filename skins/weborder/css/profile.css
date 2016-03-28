@@ -155,8 +155,9 @@
 
 .profile-edit .select-wrapper {
     width: 228px;
+    height: 24px;
     box-shadow: none;
-    padding: 1px 0px;
+    background: transparent;
 }
 
 .profile-edit .title {
@@ -211,6 +212,18 @@
     border-width: 1px;
     border-style: solid;
     border-color: #ccc;
+    font-size: 14px;
+}
+
+.profile-form select {
+    font-size: 14px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+}
+
+.profile-form .placeholder::before {
+    padding: 4px 8px;
     font-size: 14px;
 }
 
