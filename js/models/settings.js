@@ -20,10 +20,35 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+ /**
+  * Contains {@link App.Models.Settings} constructor.
+  * @module settings
+  * @requires module:backbone
+  * @requires module:async
+  * @see {@link module:config.paths actual path}
+  */
 define(["backbone", "async"], function(Backbone) {
     'use strict';
 
-    App.Models.Settings = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents a settings model.
+     * @alias App.Models.Settings
+     * @augments Backbone.Model
+     * @example
+     * // create a settings model
+     * require(['settings'], function() {
+     *     var settings = new App.Models.Settings();
+     * });
+     */
+    App.Models.Settings = Backbone.Model.extend(
+    /**
+     * @lends App.Models.Settings.prototype
+     */
+    {
+        /**
+         * Initializes the model.
+         */
         initialize: function() {
             var app = require('app');
             this.get_data_warehouse(); // selection of the data warehouse
@@ -35,6 +60,10 @@ define(["backbone", "async"], function(Backbone) {
             this.ajaxSetup(); // AJAX-requests settings
             this.listenTo(this, 'change:establishment', this.load, this); // load app
         },
+        /**
+         * Loads the app.
+         * @returns {object} Deferred object that tracks state of loading system and customer settings.
+         */
         load: function() {
             var self = this;
             this.listenToOnce(this, 'change:settings_system', this.get_settings_main, this);
@@ -47,30 +76,134 @@ define(["backbone", "async"], function(Backbone) {
 
             return $.when(self.get_settings_system(), self.get_customer_settings());
         },
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         */
         defaults: {
+            /**
+             * Brand id.
+             * @type {?number}
+             * @default null
+             */
             brand: null,
+            /**
+             * Establishment id.
+             * @type {?number}
+             * @default null
+             */
             establishment: null,
+            /**
+             * Instance url w/o trailing slash.
+             * @type {string}
+             * @default ""
+             */
             host: "",
+            /**
+             * Type of data warehouse:
+             * - 0: the data warehouse disabled;
+             * - 1: the data warehouse is "sessionStorage (HTML 5)";
+             * - 2: the data warehouse is "Cookie (HTML 4)".
+             * @type {number}
+             * @default 0
+             */
             storage_data: 0,
+            /**
+             * Skin name.
+             * @type {string}
+             * @default ""
+             */
             skin: "", // weborder by default
+            /**
+             * Contains skin settings.
+             * @type {object}
+             * @enum
+             */
             settings_skin: {
+                /**
+                 * Contains skin routing settings.
+                 * @type {object}
+                 */
                 routing: {
+                    /**
+                     * Contains skin settings for 'errors' routing.
+                     * @type {object}
+                     */
                     errors: {
+                        /**
+                         * List of core css files to load on errors page.
+                         * @type {Array}
+                         * @default []
+                         */
                         cssCore: [],
+                        /**
+                         * List of core templates to load on errors page.
+                         * @type {Array}
+                         * @default ['errors_core']
+                         */
                         templatesCore: ['errors_core']
                     },
+                    /**
+                     * Contains skin settings for 'establishments' routing.
+                     * @type {object}
+                     */
                     establishments: {
+                        /**
+                         * List of core css files to load on establishments page.
+                         * @type {Array}
+                         * @default ['establishments'],
+                         */
                         cssCore: ['establishments'],
+                        /**
+                         * List of core templates to load on establishments page.
+                         * @type {Array}
+                         * @default ['establishments']
+                         */
                         templatesCore: ['establishments']
                     }
                 }
             },
+            /**
+             * List of system settings.
+             * @type {Object}
+             * @default {}
+             */
             settings_system: {},
+            /**
+             * Ajax timeout in milliseconds.
+             * @type {Number}
+             * @default 60000
+             */
             timeout: 60000,
+            /**
+             * Used as X-Revel-Revision request header (not used now).
+             * @type {?}
+             * @default null
+             */
             x_revel_revision: null,
+            /**
+             * Indicates that app is in maintenance mode.
+             * @type {Boolean}
+             * @default false
+             */
             isMaintenance: false,
+            /**
+             * Message to display in maintenance mode (it depends on error type).
+             * @type {String}
+             * @default ''
+             */
             maintenanceMessage: '',
+            /**
+             * App version.
+             * @type {Number}
+             * @default 1.06
+             */
             version: 1.06,
+            /**
+             * List of supported skins.
+             * @type {Array}
+             * @default []
+             */
             supported_skins: []
         },
         /**
@@ -144,6 +277,7 @@ define(["backbone", "async"], function(Backbone) {
         /**
          * Determines whether the app is a mobile version.
          * If a device is Nexus 7 or a smaller, then the mobile version of the Weborder skin should be applied.
+         * @return {boolean} Whether the app is a mobile version.
          */
         isMobileVersion: function() {
             var isMobileVersion = App.Skins.WEBORDER_MOBILE
@@ -155,7 +289,7 @@ define(["backbone", "async"], function(Backbone) {
             return isMobileVersion;
         },
         /**
-         * Resolve app's skin.
+         * Resolves app's skin.
          */
         get_settings_main: function() {
             var params = parse_get_params(),
@@ -176,7 +310,7 @@ define(["backbone", "async"], function(Backbone) {
             this.trigger('changeSkin');
         },
         /*
-         * Convert desktop version of skin to mobile
+         * Converts desktop version of skin to mobile
          */
         checkIfMobile: function() {
             // convert `WEBORDER` skin to 'WEBORDER_MOBILE' for mobile devices
@@ -184,7 +318,13 @@ define(["backbone", "async"], function(Backbone) {
                 App.skin = App.Skins.WEBORDER_MOBILE;
         },
         /**
-         * Get settings from file "settings.json" for current skin.
+         * Gets settings from file "settings.json" for current skin.
+         * Request parameters:
+         * ```
+         * url:  "/skins/<skin>/settings.json"
+         * type: "GET"
+         * ```
+         * @returns {object} Deferred object.
          */
         get_settings_for_skin: function() {
             var self = this,
@@ -226,7 +366,8 @@ define(["backbone", "async"], function(Backbone) {
             return load;
         },
         /**
-         * Get ID of current establishment.
+         * Gets ID of current establishment.
+         * @returns {number} Establishment id.
          */
         get_establishment: function() {
             var get_parameters = parse_get_params(), // get GET-parameters from address line
@@ -234,7 +375,14 @@ define(["backbone", "async"], function(Backbone) {
             return establishment;
         },
         /**
-         * Get system setting.
+         * Gets system settings.
+         * Request parameters:
+         * ```
+         * url:  "/weborders/system_settings/"
+         * data: {establishment: %estId%}
+         * type: "GET"
+         * ```
+         * @returns {object} Deferred object.
          */
         get_settings_system: function() {
             var self = this,
@@ -490,7 +638,13 @@ define(["backbone", "async"], function(Backbone) {
             return load;
         },
         /**
-         * Get customers setting for /core/ skins.
+         * Gets customer settings for /core/ skins.
+         * Request parameters:
+         * ```
+         * url:  "/weborders/weborder_settings/"
+         * type: "GET"
+         * ```
+         * @returns {object} Deferred object.
          */
         get_customer_settings: function() {
             var self = this,
@@ -529,6 +683,10 @@ define(["backbone", "async"], function(Backbone) {
             });
             return self.loadCustomerSettings;
         },
+        /**
+         * Loads geolocation.
+         * Asynchronously loads Google Maps API, and, if coordinates are not set in settings_system, gets current coordinates.
+         */
         load_geoloc: function() {
             var set_sys = this.get("settings_system");
             var just_load_lib = false;
@@ -567,7 +725,14 @@ define(["backbone", "async"], function(Backbone) {
                     });
                 });
         },
+        /**
+         * Gets payment processor config for current skin.
+         * @returns {?object}
+         * - undefined, if no one payment processors is set;
+         * - configuration object otherwise.
+         */
         get_payment_process: function() {
+            debugger;
             var settings_system = this.get('settings_system'),
                 processor = settings_system.payment_processor,
                 skin = this.get("skin"),
@@ -579,6 +744,11 @@ define(["backbone", "async"], function(Backbone) {
 
             return Backbone.$.extend(processor, config);
         },
+        /**
+         * Gets detault image.
+         * @param   {?nubmer} index - index of default image in 'settings_skin.img_default' array.
+         * @returns {string} Image filename.
+         */
         get_img_default: function(index) {
             var img = this.get('settings_skin').img_default;
             if(typeof img == 'string') {
@@ -590,15 +760,20 @@ define(["backbone", "async"], function(Backbone) {
                 return '';
             }
         },
+        /**
+         * Saves settings to storage.
+         */
         saveSettings: function() {
             setData('settings', this);
         },
+        /**
+         * Loads system settings from storage to 'settings_system' attribute of this model.
+         */
         loadSettings: function() {
             this.set('settings_system', getData('settings').settings_system);
         },
         /**
-         * Set path for the current skin.
-         *
+         * Sets path for the current skin.
          * @param {boolean} withoutTrigger Is it necessary to initiate the "changeSkinPath" trigger?
          */
         setSkinPath: function(withoutTrigger) {

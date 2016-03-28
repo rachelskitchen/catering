@@ -20,14 +20,32 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+ /**
+  * Contains {@link App.Models.StanfordCardPlan}, {@link App.Collections.StanfordCardPlans}, {@link App.Models.StanfordCard}.
+  * @module stanfordcard
+  * @requires module:backbone
+  * @requires module:captcha
+  * @see {@link module:config.paths actual path}
+  */
 define(["backbone", "captcha"], function(Backbone) {
     'use strict';
 
     /**
      * @class
-     * Represents Stanford Card Plan model.
+     * @classdesc Represents a Stanford Card Plan model.
+     * @alias App.Models.StanfordCardPlan
+     * @augments Backbone.Model
+     * @example
+     * // create a Stanford Card Plan model
+     * require(['stanfordcard'], function() {
+     *     var order = new App.Models.StanfordCardPlan();
+     * });
      */
-    App.Models.StanfordCardPlan = Backbone.Model.extend({
+    App.Models.StanfordCardPlan = Backbone.Model.extend(
+    /**
+     * @lends App.Models.StanfordCardPlan.prototype
+     */
+    {
         /**
          * @prop {object} defaults - the literal object containing attributes with default values.
          *
@@ -74,9 +92,20 @@ define(["backbone", "captcha"], function(Backbone) {
 
     /**
      * @class
-     * Represents collection of Stanford Card Plans.
+     * @classdesc Represents collection of Stanford Card Plans.
+     * @alias App.Collections.StanfordCardPlans
+     * @augments Backbone.Collection
+     * @example
+     * // create a collection of Stanford Card Plans
+     * require(['stanfordcard'], function() {
+     *     var stanfordCardPlans = new App.Collections.StanfordCardPlans();
+     * });
      */
-    App.Collections.StanfordCardPlans = Backbone.Collection.extend({
+    App.Collections.StanfordCardPlans = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.StanfordCardPlans.prototype
+     */
+    {
         /**
          * @prop {App.Models.StanfordCardPlan} model - the constructor of models.
          * @default App.Models.StanfordCardPlan.
@@ -108,7 +137,11 @@ define(["backbone", "captcha"], function(Backbone) {
      * @class
      * Represents Stanford Card model.
      */
-    App.Models.StanfordCard = App.Models.Captcha.extend({
+    App.Models.StanfordCard = App.Models.Captcha.extend(
+    /**
+     * @lends App.Models.StanfordCard.prototype
+     */
+    {
         /**
          * @prop {object} defaults - the literal object containing attributes with default values.
          *
@@ -327,4 +360,3 @@ define(["backbone", "captcha"], function(Backbone) {
         }
     });
 });
-

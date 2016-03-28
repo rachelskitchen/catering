@@ -444,6 +444,12 @@ define(["backbone", "factory"], function(Backbone) {
                     myorder.get_cart_totals();
                 }
             });
+
+            this.listenTo(checkout, 'change:discount_code change:last_discount_code', function(model, value) {
+                if (!value) {
+                    promotions.set('is_applied', false);
+                }
+            });
         },
         /**
          * Handler of a payment response.
