@@ -396,7 +396,7 @@ define(["main_router"], function(main_router) {
                     className: 'content_scrollable'
                 }];
 
-                content.unshift(this.promotions);
+                this.promotions && content.unshift(this.promotions);
 
                 var footerMode;
                 if (App.Settings.promo_message) {
@@ -520,7 +520,7 @@ define(["main_router"], function(main_router) {
                         cacheIdUniq: ids
                     }];
 
-                    content.unshift(self.promotions);
+                    self.promotions && content.unshift(self.promotions);
 
                     App.Data.mainModel.set({
                         contentClass: '',
