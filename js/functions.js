@@ -1484,8 +1484,17 @@ var PaymentProcessor = {
             payment_processor = CRESecurePaymentProcessor;
         } else if (payment.braintree) {
             payment_processor = BraintreePaymentProcessor;
+        } else if (payment.globalcollect) {
+            payment_processor = GlobalCollectPaymentProcessor;
         }
         return payment_processor;
+    },
+    /**
+     * return true if card type payment processor needs in billing address to be filled.
+     */
+    isBillingAddressCard: function() {
+        var pp = this.getCreditCardPaymentProcessor();
+        return pp == GlobalCollectPaymentProcessor;
     },
     /**
      * Save default state of payment (string 'false') of app in storage before redirect to another page.
@@ -1652,6 +1661,130 @@ var BraintreePaymentProcessor = {
                 }
             });
         });
+    }
+};
+
+var GlobalCollectPaymentProcessor = {
+    clearQueryString: function(queryString) {
+        return queryString;//.replace(/&?UM[^=]*=[^&]*/g, '');
+    },
+    showCreditCardDialog: function() {
+        return true;
+    },
+    processPayment: function(myorder, payment_info, pay_get_parameter) {
+        return payment_info;
+    },
+    handlePaymentDataRequest: function(myorder, data) {
+        var self = this,
+            card = App.Data.card;
+            token_arr = data.data.app_token.split(":");
+        var js = "js/libs/gcsdk.js"; //it's to exclude gcsdk.js from minimized main.js file (made by build.js procedure).
+        var defineOld = define;
+        define = undefined;
+        require([js], function(gcsdk) {
+            define = defineOld; //restore the define function from require.js
+
+            var session = new GCsdk.Session({
+                clientSessionID : token_arr[0],
+                customerId : token_arr[1],
+                region : token_arr[2], // EU or US
+                environment: token_arr[3] == "True" ? "SANDBOX" : "PROD" // PROD, PREPROD or SANDBOX
+            });
+
+            // We assume we already have a Session stored in the variable "session".
+            // See Session how to create such an instance.
+            var billing_address = get_billing_address();
+            var paymentDetails = { "totalAmount" : parseInt(parseFloat(App.Data.myorder.total.get_grand()) * 100), // in cents
+                                   "countryCode" : billing_address ? billing_address.country_code : 'error',
+                                   "locale" : "en_GB", // as specified in the config center
+                                   "isRecurring" : false, // set if recurring
+                                   "currency" : App.Settings.currency_name // set currency, see dropdown
+                                 };
+
+        var card_type = get_card_type(card.get("cardNumber"));
+        if (!card_type) {
+            on_error(ERROR.CARD_TYPE_IS_NOT_RECOGNIZED);
+            return;
+        }
+        var productID = self.getGlobalCollectProductID(card_type);
+        if (!productID) {
+            on_error(ERROR.CARD_TYPE_IS_NOT_SUPPORTED);
+            return;
+        }
+        session.getPaymentProduct(productID, paymentDetails).then(
+            function(paymentProduct) {
+                var paymentRequest = session.getPaymentRequest();  // This will return the same instance of PaymentRequest every time.
+                paymentRequest.setPaymentProduct(paymentProduct);  // paymentProduct is an instance of the PaymentProduct class (not BasicPaymentProduct)
+                //paymentRequest.setAccountOnFile(accountOnFile);    // accountOnFile is an instance of the AccountOnFile class
+                //paymentRequest.setTokenize(false);
+
+                var paymentRequest = session.getPaymentRequest();  // This will return the same instance of PaymentRequest every time.
+                paymentRequest.setValue("cardNumber", card.get("cardNumber")); // This should be the unmasked value.
+                paymentRequest.setValue("cvv", card.get("securityCode"));
+                paymentRequest.setValue("expiryDate", card.get("expMonth") + "/" + card.get("expDate").substring(2));
+
+                var encryptor = session.getEncryptor();
+
+                // Encrypting is an async task that we provide you as a promise.
+                encryptor.encrypt(paymentRequest).then(function(encryptedString) {
+                  // The encryptedString contains the ciphertext
+                  // that should be sent to the GlobalCollect platform via the Server API
+                    App.Data.card.set('encrypted_customer_input', encryptedString);
+                    myorder.submit_order_and_pay(PAYMENT_TYPE.CREDIT, false, myorder.paymentResponse.capturePhase);
+                }, function(errors) {
+                    on_error(MSG.ERROR_DURING_TOKENIZATION, errors)
+                });
+
+            }, function(errors) {
+                // The promise failed, inform the user what happened.
+                on_error(MSG.ERROR_DURING_TOKENIZATION, errors)
+            });
+
+            function on_error(errorMsg, errors) {
+                var errorMsg = MSG.ERROR_OCCURRED + ' ' + errorMsg;
+                //trace(errorMsg + (errors ? (": " + errors) : ""));
+                myorder.paymentResponse = {status: 'error', errorMsg: errorMsg};
+                myorder.trigger('paymentResponse');
+            }
+        });
+    },
+    getGlobalCollectProductID: function( backendCardType ) {
+        /*
+        these are payment cards supported by Global Collect:
+        1:Visa
+        2:American Express
+        3:MasterCard
+        11:Bank Transfer
+        114:Visa Debit
+        119:MasterCard Debit
+        122:Visa Electron
+        125:JCB
+        128:Discover
+        132:Diners Club
+        201:Invoice
+        430:UnionPay
+        830:paysafecard
+        840:PayPal
+        841:WebMoney
+        843:Skrill
+        845:CASHU
+        861:Alipay
+        870:Boku
+        1501:Western Union
+        8583:QIWI Recurring */
+        var _map = {},
+            _types = ACCEPTABLE_CREDIT_CARD_TYPES;
+        _map[_types.AMERICANEXPRESS] = "2";
+        _map[_types.DISCOVER] = "128";
+        _map[_types.MASTERCARD] = "3";
+        _map[_types.VISA] = "1";
+        _map[_types.DINERS] = "132";
+        _map[_types.JCB] = "125";
+
+        if (_map[backendCardType]) {
+            return _map[backendCardType];
+        } else
+            return null; //not supported
     }
 };
 
@@ -2174,4 +2307,147 @@ function getInstanceName() {
         return '';
     }
 
+}
+
+/**
+ * Gets a card type by its number.
+ * @return {string} card number
+ */
+function get_card_type( card_number ) {
+/*
+jQuery Credit Card Validator 1.0
+Copyright 2012-2015 Pawel Decowski
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software
+is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+ */
+    var $ = jQuery, options = null,
+        __indexOf = [].indexOf;
+    var bind, card, card_type, card_types, get_card_type, _i, _len, _ref;
+
+    card_types = [
+      {
+        name: 'amex',
+        pattern: /^3[47]/,
+        valid_length: [15]
+      }, {
+        name: 'diners_club_carte_blanche',
+        pattern: /^30[0-5]/,
+        valid_length: [14]
+      }, {
+        name: 'diners_club_international',
+        pattern: /^36/,
+        valid_length: [14]
+      }, {
+        name: 'jcb',
+        pattern: /^35(2[89]|[3-8][0-9])/,
+        valid_length: [16]
+      }, {
+        name: 'laser',
+        pattern: /^(6304|670[69]|6771)/,
+        valid_length: [16, 17, 18, 19]
+      }, {
+        name: 'visa_electron',
+        pattern: /^(4026|417500|4508|4844|491(3|7))/,
+        valid_length: [16]
+      }, {
+        name: 'visa',
+        pattern: /^4/,
+        valid_length: [16]
+      }, {
+        name: 'mastercard',
+        pattern: /^5[1-5]/,
+        valid_length: [16]
+      }, {
+        name: 'maestro',
+        pattern: /^(5018|5020|5038|6304|6759|676[1-3])/,
+        valid_length: [12, 13, 14, 15, 16, 17, 18, 19]
+      }, {
+        name: 'discover',
+        pattern: /^(6011|622(12[6-9]|1[3-9][0-9]|[2-8][0-9]{2}|9[0-1][0-9]|92[0-5]|64[4-9])|65)/,
+        valid_length: [16]
+      }
+    ];
+    if (options == null) {
+      options = {};
+    }
+    if (options.accept == null) {
+      options.accept = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = card_types.length; _i < _len; _i++) {
+          card = card_types[_i];
+          _results.push(card.name);
+        }
+        return _results;
+      })();
+    }
+    _ref = options.accept;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      card_type = _ref[_i];
+      if (__indexOf.call((function() {
+        var _j, _len1, _results;
+        _results = [];
+        for (_j = 0, _len1 = card_types.length; _j < _len1; _j++) {
+          card = card_types[_j];
+          _results.push(card.name);
+        }
+        return _results;
+      })(), card_type) < 0) {
+        throw "Credit card type '" + card_type + "' is not supported";
+      }
+    }
+    _get_card_type = function(number) {
+      var _j, _len1, _ref1;
+      _ref1 = (function() {
+        var _k, _len1, _ref1, _results;
+        _results = [];
+        for (_k = 0, _len1 = card_types.length; _k < _len1; _k++) {
+          card = card_types[_k];
+          if (_ref1 = card.name, __indexOf.call(options.accept, _ref1) >= 0) {
+            _results.push(card);
+          }
+        }
+        return _results;
+      })();
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        card_type = _ref1[_j];
+        if (number.match(card_type.pattern)) {
+          return card_type;
+        }
+      }
+      return null;
+    };
+
+
+    var _cardTypes = ACCEPTABLE_CREDIT_CARD_TYPES;
+    var map_card_types = {
+        'amex': _cardTypes.AMERICANEXPRESS,
+        'diners_club_carte_blanche': _cardTypes.DINERS,
+        'diners_club_international': _cardTypes.DINERS,
+        'jcb':  _cardTypes.JCB,
+        'visa_electron': _cardTypes.VISA,
+        'visa': _cardTypes.VISA,
+        'mastercard': _cardTypes.MASTERCARD,
+        'maestro': _cardTypes.MAESTRO,
+        'discover': _cardTypes.DISCOVER,
+    }
+
+    var cardType = _get_card_type(card_number);
+    if (_.isObject(cardType) && map_card_types[cardType.name]) {
+        return map_card_types[cardType.name];
+    } else
+        return null;
 }

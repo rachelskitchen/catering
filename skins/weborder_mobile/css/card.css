@@ -15,6 +15,12 @@
     margin-left: 1em;
 }
 
+.address .select-wrapper {
+    width: auto;
+    margin-right: 0em;
+    margin-left: 0em;
+}
+
 .captcha_container > * {
     display: inline-block;
     vertical-align: middle;
@@ -36,5 +42,42 @@
 
 .captcha_container .btn-reload {
     padding-left: 4em;
+}
+
+/* [checkbox] checked checkbox background */
+#use_profile_address {
+    display: inline-block;
+}
+.billing_address .input[checked=checked]{
+    background: #8C1515;
+    border-color: #8C1515;
+}
+.billing_address .input {
+    vertical-align: middle;
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border-radius: 0.2em;
+    border-width: 1px;
+    border-style: solid;
+    text-align: center;
+    line-height: 0.9em;
+    margin-right: 0.3em;
+}
+.billing_address .input::before {
+    content: '\f00c';
+    font-family: 'FontAwesome';
+    font-size: 0.8em;
+    color: #fff;
+}
+.billing_address .title_wrapper {
+    width: 92%;
+}
+.billing_address .inactive
+{
+    opacity: 0.5;
+}
+.billing_address .select-wrapper select[disabled=disabled] {
+    opacity: 0.7;
 }
 

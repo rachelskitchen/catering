@@ -513,6 +513,40 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             return (shipping_address == this.get('deliveryAddressIndex') || shipping_address == this.get('shippingAddressIndex') || shipping_address == this.get('cateringAddressIndex')) && isDelivery ? true : false;
         },
         /**
+         * Get address set for shipping/delivery or default address set in backend.
+         * @returns {object} with state, province, city, street_1, street_2, zipcode, contry fields
+         */
+        getCheckoutAddress: function() {
+            var customer = this.toJSON(),
+                shipping_address = customer.shipping_address;
+
+            // if shipping address isn't selected take last index
+            if(this.isDefaultShippingAddress()) {
+                shipping_address = customer.addresses.length - 1;
+            } else {
+                var reverse_addr_index = shipping_address == customer.deliveryAddressIndex ? customer.shippingAddressIndex : customer.deliveryAddressIndex;
+                var addr = customer.addresses[shipping_address];
+                var reverse_addr = customer.addresses[reverse_addr_index];
+                addr == undefined && (addr = {});
+                if (reverse_addr) {
+                    if ((addr.country && reverse_addr.country && addr.country == reverse_addr.country) ||
+                        (!addr.country && reverse_addr.country == App.Settings.address.country)) { //if country was changed then we can't copy address
+                        if (!addr.province && !addr.street_1 && !addr.street_2 && !addr.city && !addr.zipcode) { //and we will copy address if all target fields are empty only
+                            return _.extend(addr, { state: reverse_addr.state,
+                                                    province: reverse_addr.province,
+                                                    street_1: reverse_addr.street_1,
+                                                    street_2: reverse_addr.street_2,
+                                                    city: reverse_addr.city,
+                                                    zipcode: reverse_addr.zipcode });
+                        }
+                    }
+                }
+            }
+
+            // return last address
+            return customer.addresses[shipping_address] && typeof customer.addresses[shipping_address].street_1 === 'string' ? customer.addresses[shipping_address] : undefined;
+        },
+        /**
          * Validates `first_name`, `last_name`, `email` and `password` attributes for Sign Up.
          * @returns {Object} One of the following object literals:
          * - If all fine:

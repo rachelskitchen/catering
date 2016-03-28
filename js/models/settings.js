@@ -435,7 +435,9 @@ define(["backbone", "async"], function(Backbone) {
                         "credit_card_button":false,
                         "credit_card_dialog":false,
                         //add all new payment processors here for consistency of new frontend with old Backend
-                        "stanford":false
+                        "stanford":false,
+                        "braintree":false,
+                        "globalcollect":false
                     }
                 },
                 load = $.Deferred();

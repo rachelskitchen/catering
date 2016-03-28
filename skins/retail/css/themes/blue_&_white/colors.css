@@ -405,29 +405,41 @@ aside:after, aside:before {
 .confirmPayCard .total_block {
     border-color: transparent; /* #c9c9c9; transparent;*/
 }
-#credit-card .select-wrapper {
+.card-block .select-wrapper {
     background-color: #f6f6f6;
     box-shadow: 0px 2px 4px 1px rgba(31,31,31,0.1), 0 0 2px #fff inset;
 }
-#credit-card ul.card li.required:before {
+.card-block ul.card li.required:before {
     color: #f00;
 }
 
-#credit-card ul.card label:before {
+.card-block ul.card label:before {
     color: #cacaca;
 }
 
-#credit-card ul.card.firefox select {
+.card-blockul.card.firefox select {
     color: transparent;
     text-shadow: 0 0 #464646;
 }
 
-#credit-card ul.card .border:after {
+.card-block ul.card .border:after {
     background-image: -o-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
     background-image: -moz-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
     background-image: -webkit-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
     background-image: -ms-linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
     background-image: linear-gradient(bottom, rgba(226, 226, 226, 0.62) 0%, rgba(29, 78, 60, 0.22) 70%, rgba(29, 78, 60, 0.62) 100%);
+}
+
+#use_profile_address .checkbox {
+    background: url("img/ui.png") no-repeat scroll -91px -1px transparent;
+}
+#use_profile_address .checkbox[checked] {
+    background-position: -91px -26px;
+}
+#use_profile_address:hover .checkbox {
+    -webkit-box-shadow: 0px 0px 3px 4px rgba(129,195,222,0.3);
+    -moz-box-shadow: 0px 0px 3px 3px rgba(129,195,222,0.5);
+    box-shadow: 0px 0px 3px 3px rgba(129,195,222,0.5);
 }
 
 #content > .checkout div.select {
