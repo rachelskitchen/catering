@@ -1188,3 +1188,13 @@ span.cancel-input:before {
 .border-none {
     border: none !important;
 }
+
+.placeholder::before {
+    content: attr(data-placeholder);
+    display: block;
+    max-width: 100%;
+    text-align: left;
+    pointer-events: none;
+    background: transparent;
+    position: absolute;
+}

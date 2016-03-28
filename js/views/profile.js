@@ -122,8 +122,10 @@ define(["factory"], function() {
         name: 'profile',
         mod: 'address',
         bindings: {
+            '.country-wrapper': 'classes: {placeholder: not(country)}',
             '.country': 'value: country, options: parseOptions(_lp_COUNTRIES)',
             '.state-row': 'toggle: equal(country, "US")',
+            '.state-wrapper': 'classes: {placeholder: not(state)}',
             '.state': 'value: state, options: parseOptions(_lp_STATES)',
             '.street_1': 'value: firstLetterToUpperCase(street_1), events: ["input"], trackCaretPosition: street_1',
             '.street_2': 'value: firstLetterToUpperCase(street_2), events: ["input"], trackCaretPosition: street_2',

@@ -626,3 +626,19 @@ body .ui-loader-default {
 .signup-link {
     border-color: #686868;
 }
+.placeholder::before {
+    color: #999999;
+}
+/** do not combine placeholder selectors (won't be applied) **/
+input::-webkit-input-placeholder {
+   color: #999999;
+}
+input:-moz-placeholder { /* Firefox 18- */
+   color: #999999;
+}
+input::-moz-placeholder {  /* Firefox 19+ */
+   color: #999999;
+}
+input:-ms-input-placeholder {
+   color: #999999;
+}

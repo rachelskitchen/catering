@@ -577,3 +577,14 @@ select::-ms-expand { /*Removes default IE style*/
     padding: 0.5em 2em;
     margin: 1em 0.5em 0;
 }
+
+.placeholder::before {
+    content: attr(data-placeholder);
+    display: block;
+    max-width: 100%;
+    text-align: left;
+    pointer-events: none;
+    background: transparent;
+    position: absolute;
+    padding: 0 0.6em;
+}
