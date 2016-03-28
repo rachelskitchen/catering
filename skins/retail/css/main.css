@@ -434,7 +434,7 @@ footer {
     filter: alpha(opacity=0);
 }
 #cart .main.visible {
-    opacity: 100;
+    opacity: 1;
     filter: alpha(opacity=100);
     z-index: 800;
 }

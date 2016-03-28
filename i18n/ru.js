@@ -551,6 +551,7 @@
         "PROFILE_SIGN_UP": "Регистрация",
         "PROFILE_SIGN_UP_INFO": "Введите Ваши данные",
         "PROFILE_ACCOUNT_PASSWORD": "Введите пароль",
+        "PROFILE_CHANGE_PASSWORD": "Изменение пароля",
         "PROFILE_REENTER_PASSWORD": "Повторите пароль",
         "PROFILE_CREATE_TITLE": "Создать профиль",
         "PROFILE_EDIT_TITLE": "Редактировать профиль",
@@ -593,6 +594,7 @@
         "PROFILE_INVALID_EMAIL": "Неверный адрес электронной почты",
         "PROFILE_ADD_CREDIT_CARD": "Добавить кред. карту",
         "PROFILE_CREDIT_CARDS": "Кредитные карты",
-        "PROFILE_ADD_ANOTHER_CARD": "Добавить другую карту"
+        "PROFILE_ADD_ANOTHER_CARD": "Добавить другую карту",
+        "PROFILE_UPDATE_SUCCESSFUL": "Успешно обновлено"
     } // end of locale
 }); // end of module

@@ -569,6 +569,7 @@
         'PROFILE_SIGN_UP': "Sign Up",
         'PROFILE_SIGN_UP_INFO': "Let us know who you are!",
         'PROFILE_ACCOUNT_PASSWORD': "Account Password",
+        'PROFILE_CHANGE_PASSWORD': "Change Password",
         'PROFILE_REENTER_PASSWORD': "Re-enter Password",
         'PROFILE_CREATE_TITLE': "Create a Profile",
         "PROFILE_EDIT_TITLE": "Edit Profile",
@@ -612,6 +613,7 @@
         "PROFILE_ADD_CREDIT_CARD": "Add Credit Card",
         "PROFILE_CREDIT_CARDS": "Credit Cards",
         "PROFILE_PAYMENT_TOKEN_NOT_FOUND": "Payment token is not found",
-        "PROFILE_ADD_ANOTHER_CARD": "Add Another Card"
+        "PROFILE_ADD_ANOTHER_CARD": "Add Another Card",
+        "PROFILE_UPDATE_SUCCESSFUL": "Update Successful"
     }; // end of locale
 }); // end of module

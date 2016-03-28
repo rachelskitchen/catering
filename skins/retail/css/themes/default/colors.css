@@ -677,3 +677,6 @@ input::-moz-placeholder {  /* Firefox 19+ */
 input:-ms-input-placeholder {
    color: #999999;
 }
+.profile-edit .successful-update {
+    color: #00a3e0;
+}
