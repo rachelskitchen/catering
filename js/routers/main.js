@@ -440,14 +440,19 @@ define(["backbone", "factory"], function(Backbone) {
                     checkout.set({
                         last_discount_code: '',
                         discount_code: ''
-                    });
+                    }, {silent: true});
                     myorder.get_cart_totals();
                 }
             });
 
+            this.listenTo(App.Data.myorder, 'add remove change', function() {
+                // need to update promotions since 'is_applicable' attribute could be changed after changing order
+                promotions.needToUpdate = true;
+            });
+
             this.listenTo(checkout, 'change:discount_code change:last_discount_code', function(model, value) {
                 if (!value) {
-                    promotions.set('is_applied', false);
+                    promotions.invoke('set', {is_applied: false});
                 }
             });
         },
