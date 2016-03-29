@@ -273,7 +273,7 @@ span.tooltip:before {
 }
 @media only screen and (min-width: 949px) {
     #modifiers_popup .modifiers_table_scroll {
-        margin-right: -25px;
+        margin-right: -28px;
     }
     .modifiers_table .modifier {
         width: 310px;
