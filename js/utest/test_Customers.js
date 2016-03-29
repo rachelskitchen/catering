@@ -1093,7 +1093,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
 
             function commonExpectations() {
-                expect(ajaxOpts.url.indexOf('/customers-auth/v1/authorization/token-customer/')).not.toBe(-1);
+                expect(ajaxOpts.url.indexOf('/v1/authorization/token-customer/')).not.toBe(-1);
                 expect(ajaxOpts.method).toBe('POST');
                 expect(window.getInstanceName).toHaveBeenCalled();
                 expect(ajaxOpts.data).toEqual({
@@ -1275,7 +1275,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
             function commonExpectations() {
                 var data = JSON.parse(ajaxOpts.data);
-                expect(ajaxOpts.url.indexOf('/customers-auth/v1/customers/register-customer/')).not.toBe(-1);
+                expect(ajaxOpts.url.indexOf('/v1/customers/register-customer/')).not.toBe(-1);
                 expect(ajaxOpts.method).toBe('POST');
                 expect(ajaxOpts.contentType).toBe('application/json');
                 expect(typeof ajaxOpts.data).toBe('string');
@@ -1533,7 +1533,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
             function commonExpectations() {
                 var data = JSON.parse(ajaxOpts.data);
-                expect(ajaxOpts.url.indexOf('/customers-auth/v1/customers/customers/' + user_id + '/')).not.toBe(-1);
+                expect(ajaxOpts.url.indexOf('/v1/customers/customers/' + user_id + '/')).not.toBe(-1);
                 expect(ajaxOpts.method).toBe('PATCH');
                 expect(ajaxOpts.contentType).toBe('application/json');
                 expect(typeof ajaxOpts.data).toBe('string');
@@ -1650,7 +1650,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
             function commonExpectations() {
                 var data = JSON.parse(ajaxOpts.data);
-                expect(ajaxOpts.url.indexOf('/customers-auth/v1/customers/addresses/')).not.toBe(-1);
+                expect(ajaxOpts.url.indexOf('/v1/customers/addresses/')).not.toBe(-1);
                 expect(ajaxOpts.method).toBe('POST');
                 expect(ajaxOpts.contentType).toBe('application/json');
                 expect(typeof ajaxOpts.data).toBe('string');
@@ -1756,7 +1756,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
 
             function commonExpectations() {
-                expect(ajaxOpts.url.indexOf('/customers-auth/v1/customers/addresses/' + address.id + '/')).not.toBe(-1);
+                expect(ajaxOpts.url.indexOf('/v1/customers/addresses/' + address.id + '/')).not.toBe(-1);
                 expect(ajaxOpts.method).toBe('PATCH');
                 expect(ajaxOpts.contentType).toBe('application/json');
                 expect(typeof ajaxOpts.data).toBe('string');
@@ -1882,7 +1882,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
 
             function commonExpectations() {
-                expect(ajaxOpts.url.indexOf('/customers-auth/v1/customers/change-password/' + user_id + '/')).not.toBe(-1);
+                expect(ajaxOpts.url.indexOf('/v1/customers/change-password/' + user_id + '/')).not.toBe(-1);
                 expect(ajaxOpts.method).toBe('POST');
                 expect(ajaxOpts.contentType).toBe('application/json');
                 expect(model.getAuthorizationHeader).toHaveBeenCalled();
@@ -1980,7 +1980,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
 
             function commonExpectations() {
-                expect(ajaxOpts.url.indexOf('/customers-auth/v1/customers/reset-password/')).not.toBe(-1);
+                expect(ajaxOpts.url.indexOf('/v1/customers/reset-password/')).not.toBe(-1);
                 expect(ajaxOpts.method).toBe('POST');
                 expect(ajaxOpts.contentType).toBe('application/json');
                 expect(ajaxOpts.data).toEqual(JSON.stringify({
