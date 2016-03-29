@@ -321,6 +321,10 @@ define(["backbone", "factory"], function(Backbone) {
                     keepCookie: App.SettingsDirectory.remember_me
                 });
 
+            if (typeof App.SettingsDirectory.auth_url == 'string' && App.SettingsDirectory.auth_url) {
+                customer.set('serverURL', App.SettingsDirectory.auth_url.replace(/\/*$/, ''));
+            }
+
             // set payments tokens collection
             if (App.SettingsDirectory.saved_credit_cards && paymentProcessor === USAePayPaymentProcessor) {
                 customer.setPayments(App.Collections.USAePayPayments);
