@@ -588,7 +588,7 @@
         "PROFILE_FIRST_NAME": "First Name",
         "PROFILE_LAST_NAME": "Last Name",
         "PROFILE_PHONE": "Phone #",
-        "PROFILE_USER_CREATED": "The user has been created. Please check your email and confirm registration.",
+        "PROFILE_USER_CREATED": "Thank you for signing-up with %s. Please check your email and activate your account.",
         "PROFILE_ADDRESS_LINE1": "Address Line 1",
         "PROFILE_ADDRESS_LINE2": "Address Line 2",
         "PROFILE_COUNTRY": "Country",

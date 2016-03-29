@@ -340,7 +340,7 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             this.listenTo(customer, 'onUserCreated', function() {
-                App.Data.errors.alert(_loc.PROFILE_USER_CREATED);
+                App.Data.errors.alert(_loc.PROFILE_USER_CREATED.replace('%s', App.Settings.business_name || ''));
             });
 
             this.listenTo(customer, 'onInvalidUser', function() {
