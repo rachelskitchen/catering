@@ -140,7 +140,7 @@ define(["backbone", "factory"], function(Backbone) {
             zipcode_label: {
                 deps: ["address_country_code"],
                 get: function(country_code) {
-                    return country_code == "US" ? _loc.PROFILE_ZIP_CODE : _loc.PROFILE_POSTAL_CODE;
+                    return (country_code == "US" ? _loc.PROFILE_ZIP_CODE : _loc.PROFILE_POSTAL_CODE) + ":";
                 }
             },
             use_profile_address_title: {
@@ -160,7 +160,7 @@ define(["backbone", "factory"], function(Backbone) {
                 get: function() {
                     var customer = this.options.customer;
                     var addr = customer.getProfileAddress();
-                    if (!customer.isAuthorized() || !addr)
+                    if (!customer.isAuthorized() || !addr || !addr.city || !addr.country_code || !addr.street_1 || !addr.zipcode)
                         return true;
                     else
                         return false;

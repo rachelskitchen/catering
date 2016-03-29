@@ -48,10 +48,6 @@
 #use_profile_address {
     display: inline-block;
 }
-.billing_address .input[checked=checked]{
-    background: #8C1515;
-    border-color: #8C1515;
-}
 .billing_address .input {
     vertical-align: middle;
     display: inline-block;
@@ -68,8 +64,8 @@
     content: '\f00c';
     font-family: 'FontAwesome';
     font-size: 0.8em;
-    color: #fff;
 }
+
 .billing_address .title_wrapper {
     width: 92%;
 }
