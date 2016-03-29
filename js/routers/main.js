@@ -440,7 +440,7 @@ define(["backbone", "factory"], function(Backbone) {
                     checkout.set({
                         last_discount_code: '',
                         discount_code: ''
-                    }, {silent: true});
+                    });
                     myorder.get_cart_totals();
                 }
             });

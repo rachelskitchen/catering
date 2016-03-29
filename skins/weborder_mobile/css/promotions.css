@@ -54,6 +54,9 @@
     clear: both;
     position: relative;
 }
+.promotion__left {
+    max-width: 70%;
+}
 .promotion__name {
     margin-bottom: 0.2em;
 }

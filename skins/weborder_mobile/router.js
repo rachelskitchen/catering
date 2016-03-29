@@ -1857,7 +1857,8 @@ define(["main_router"], function(main_router) {
                 content,
                 backToMenu = false,
                 myorder = App.Data.myorder,
-                checkout = App.Data.myorder.checkout;
+                checkout = App.Data.myorder.checkout,
+                mainModel = App.Data.mainModel;
 
             App.Data.mainModel.set({
                 header: headerModes.Promotions,
@@ -1874,11 +1875,12 @@ define(["main_router"], function(main_router) {
 
                 promotions.fetching.always(function() {
                     if (promotions.needToUpdate) {
+                        mainModel.trigger('loadStarted');
                         // get the order items for submitting to server
                         items = App.Data.myorder.map(function(order) {
                             return order.item_submit();
                         });
-                        promotions.update(items);
+                        promotions.update(items).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                     }
 
                     App.Data.header.set({
