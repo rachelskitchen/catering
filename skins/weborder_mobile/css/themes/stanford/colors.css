@@ -299,14 +299,14 @@ ul.reward-selection > li,
 /* [checkbox] checked checkbox background */
 .modifier input:checked + .input,
 .combo_item .input[checked=checked],
-.billing_address .input[checked=checked] {
+.input.checkbox[checked=checked] {
   background: #8C1515;
   border-color: #8C1515;
 }
 /* [checkbox_mark] jackdaw color in checked checkbox */
 .modifier .input::before,
 .combo_item .input::before,
-.billing_address .input::before {
+.input.checkbox::before {
   color: #FFFFFF;
 }
 /* [checkbox_unchecked] border of unchecked checkbox */
