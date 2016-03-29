@@ -25,7 +25,8 @@ define([], function() {
             "expires_in": null,
             "token_type": "",
             "access_token": "",
-            "keepCookie": true
+            "keepCookie": true,
+            "serverURL": "https://identity-dev.revelup.com/customers-auth/"
         },
         "customer1": {
             "first_name": "Firstone",
