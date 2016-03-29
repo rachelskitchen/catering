@@ -231,6 +231,46 @@ define(['backbone', 'backbone_epoxy', 'backbone_epoxy_handlers', 'backbone_epoxy
             this.subViews.forEach(function(view) {
                 typeof view.stop == 'function' && view.stop();
             });
+        },
+        /**
+         * ```
+         * {
+         *     '<selector>': ('method' || new Function),
+         *     ...
+         * }
+         * ```
+         */
+        onEnterListeners: {},
+        /**
+         * Handles listeners on `onEnter` event ('enter' button on keyboard).
+         * Uses `onEnterListeners` property as listeners source.
+         */
+        addOnEnterListeners: function() {
+            var listeners = this.onEnterListeners,
+                self = this,
+                events = {};
+
+            if (!_.isObject(listeners) || !Object.keys(listeners).length) {
+                return;
+            }
+
+            for (var key in listeners) {
+                events['keydown ' + key] = wrapHandler(listeners[key]);
+            }
+
+            this.delegateEvents(events);
+
+            function wrapHandler(handler) {
+                return function(event) {
+                    if (self.pressedButtonIsEnter(event)) {
+                        if (typeof handler == 'function') {
+                            handler.apply(self, arguments);
+                        } else if (typeof handler == 'string' && typeof self[handler] == 'function') {
+                            self[handler].apply(self, arguments);
+                        }
+                    }
+                }
+            }
         }
     });
 
