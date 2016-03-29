@@ -32,8 +32,7 @@
 define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Backbone, docCookies, page_visibility) {
     'use strict';
 
-    var SERVER_URL = "https://identity-dev.revelup.com",
-        cookieName = "user",
+    var cookieName = "user",
         cookieDomain = "revelup.com",
         cookiePath = "/weborder";
 
@@ -184,7 +183,13 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
              * @type {boolean}
              * @default true
              */
-            keepCookie: true
+            keepCookie: true,
+            /**
+             * Authorization URL.
+             * @type {string}
+             * @default "https://identity-dev.revelup.com/customers-auth/"
+             */
+            serverURL: "https://identity-dev.revelup.com/customers-auth/"
         },
         /**
          * Adds validation listeners for `first_name`, `last_name` attributes changes.
@@ -717,7 +722,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
         login: function() {
             var attrs = this.toJSON();
             return Backbone.$.ajax({
-                url: SERVER_URL + "/customers-auth/v1/authorization/token-customer/",
+                url: attrs.serverURL + "/v1/authorization/token-customer/",
                 method: "POST",
                 context: this,
                 data: {
@@ -847,7 +852,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             address = this.convertAddressToAPIFormat(address);
 
             return Backbone.$.ajax({
-                url: SERVER_URL + "/customers-auth/v1/customers/register-customer/",
+                url: attrs.serverURL + "/v1/customers/register-customer/",
                 method: "POST",
                 context: this,
                 contentType: "application/json",
@@ -1012,7 +1017,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             var attrs = this.toJSON();
 
             return Backbone.$.ajax({
-                url: SERVER_URL + "/customers-auth/v1/customers/customers/" + attrs.user_id + "/",
+                url: attrs.serverURL + "/v1/customers/customers/" + attrs.user_id + "/",
                 method: "PATCH",
                 context: this,
                 contentType: "application/json",
@@ -1116,7 +1121,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             address = this.convertAddressToAPIFormat(address);
 
             return Backbone.$.ajax({
-                url: SERVER_URL + "/customers-auth/v1/customers/addresses/",
+                url: this.get('serverURL') + "/v1/customers/addresses/",
                 method: "POST",
                 context: this,
                 contentType: "application/json",
@@ -1222,7 +1227,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             address = this.convertAddressToAPIFormat(address);
 
             return Backbone.$.ajax({
-                url: SERVER_URL + "/customers-auth/v1/customers/addresses/" + address.id + "/",
+                url: this.get('serverURL') + "/v1/customers/addresses/" + address.id + "/",
                 method: "PATCH",
                 context: this,
                 contentType: "application/json",
@@ -1311,7 +1316,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             var attrs = this.toJSON();
 
             return Backbone.$.ajax({
-                url: SERVER_URL + "/customers-auth/v1/customers/change-password/" + attrs.user_id + "/",
+                url: attrs.serverURL + "/v1/customers/change-password/" + attrs.user_id + "/",
                 method: "POST",
                 context: this,
                 contentType: "application/json",
@@ -1408,7 +1413,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          */
         resetPassword: function() {
             return Backbone.$.ajax({
-                url: SERVER_URL + "/customers-auth/v1/customers/reset-password/",
+                url: this.get('serverURL') + "/v1/customers/reset-password/",
                 method: "POST",
                 context: this,
                 contentType: "application/json",
@@ -1685,7 +1690,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                      * @default undefined
                      */
                     this.payments = new constr();
-                    this.payments.serverURL = SERVER_URL;
+                    this.payments.serverURL = this.get('serverURL');
                 }
             };
             this.isAuthorized() && this.initPayments();
