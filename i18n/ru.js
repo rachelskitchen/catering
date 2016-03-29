@@ -567,7 +567,7 @@
         "PROFILE_FIRST_NAME": "Имя",
         "PROFILE_LAST_NAME": "Фамилия",
         "PROFILE_PHONE": "Телефон",
-        "PROFILE_USER_CREATED": "Пользователь создан. Пожалуйста, проверьте вашу почту и подтвердите регистрацию.",
+        "PROFILE_USER_CREATED": "Спасибо за регистрацию в %s. Пожалуйста, проверьте вашу эл. почту, чтобы активировать ваш аккаунт.",
         "PROFILE_ADDRESS_LINE1": "Адрес",
         "PROFILE_ADDRESS_LINE2": "Адрес 2",
         "PROFILE_COUNTRY": "Страна",
