@@ -168,7 +168,7 @@ define(["factory"], function() {
         mod: 'address',
         bindings: {
             '.country-wrapper': 'classes: {placeholder: not(country)}',
-            '.country': 'value: select(country, country, ""), options: parseOptions(_lp_COUNTRIES)', // value: select(...) is used to get rid of autoselect in mobile devices
+            '.country': 'value: country, options: parseOptions(_lp_COUNTRIES)',
             '.state-row': 'toggle: equal(country, "US")',
             '.state-wrapper': 'classes: {placeholder: not(state)}',
             '.state': 'value: state, options: parseOptions(_lp_STATES)',
@@ -196,6 +196,10 @@ define(["factory"], function() {
         },
         onEnterListeners: {
             ':el': setCallback('applyChanges')
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.$('.country').val(''); // fix silent autoselect in mobile browsers
         }
     });
 
