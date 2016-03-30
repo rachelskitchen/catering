@@ -196,6 +196,13 @@ define(["factory"], function() {
         },
         onEnterListeners: {
             ':el': setCallback('applyChanges')
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            var self = this;
+            setTimeout(function() {
+                self.$('.country').val('');
+            }, 0); // fix silent autoselect in mobile browsers
         }
     });
 
