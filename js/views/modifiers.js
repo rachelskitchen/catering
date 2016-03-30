@@ -350,6 +350,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
     App.Views.CoreModifiersView.CoreModifiersListView = App.Views.ListView.extend({
         name: 'modifiers',
         mod: 'list',
+        bindings: {
+            '.modifiers': 'classes: {"modifiers_has-qty": _system_settings_enable_quantity_modifiers, "modifiers_has-split": _system_settings_enable_split_modifiers, "modifiers_show-description": _system_settings_show_modifiers_description}'
+        },
         render: function() {
             this.model = {
                 name: this.options.modifierClass.get('name')
