@@ -9,13 +9,10 @@
         <span class="title_wrapper">
             <span class="title <% if(isSpecial) { %>special<% } %>">
                 <%= name %>
-                <% if (!isInventoryMatrix && description && cssua.ua.webkit) { %>
+                <% if (!isInventoryMatrix && description) { %>
                 <span class="info"><span class="tooltip transparent"><%= description %></span></span>
                 <% } %>
             </span>
-            <% if (!isInventoryMatrix && description && !cssua.ua.webkit) { %>
-            <span class="info"><span class="tooltip transparent"><%= description %></span></span>
-            <% } %>
         </span>
         <% if(isSize) { %>
             <span class="cost">
