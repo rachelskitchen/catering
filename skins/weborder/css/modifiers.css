@@ -1,6 +1,6 @@
 .modifiers_table {
     margin: 20px 20px 0;
-    padding: 17px 14px;
+    padding: 17px 5px;
     overflow: hidden;
     position: relative;
     border-radius: 10px 10px 10px 10px;
@@ -64,12 +64,11 @@
 }
 
 .modifiers_table .modifier {
-    width: 330px;
-    float: left;
     word-break: break-all;
-    margin: 0 150px 15px 0;
+    margin: 0 25px 15px 0;
     cursor: pointer;
     min-height: 30px;
+    clear: left;
 }
 
 .modifiers_table .modifier .input {
@@ -94,7 +93,7 @@
 .modifiers_table .modifier label {
     cursor: inherit;
     display: inline-block !important;
-    width: 210px;
+    width: 250px;
     float: left;
 }
 
@@ -106,7 +105,7 @@
     display: inline-block;
     float: left;
     line-height: 1.4em;
-    width: 120px;
+    width: 150px;
     word-break: normal;
     word-wrap: break-word;
 }
@@ -116,10 +115,6 @@
     float: left;
     line-height: 1.4em;
     max-width: 100%;
-}
-/* Fix for IE and FF. Bug 39378, 34207 */
-html:not(.ua-webkit) .modifiers_table .modifier span.title {
-    width: 78px;
 }
 
 .modifiers_table .modifier span.info {
@@ -144,9 +139,6 @@ html:not(.ua-webkit) .modifiers_table .modifier span.title {
 
 .modifiers_table .modifier_class_list {
     margin-top: 5px;
-}
-#modifiers_popup .modifiers_table_scroll {
-    margin-right: -150px;
 }
 
 .modifiers_table .special_button {
@@ -272,35 +264,31 @@ span.tooltip:before {
     }
 }
 @media only screen and (min-width: 949px) {
-    #modifiers_popup .modifiers_table_scroll {
-        margin-right: -28px;
-    }
     .modifiers_table .modifier {
-        width: 310px;
+        float: left;
+        width: 230px;
         min-height: 45px;
-        margin-right: 25px;
         margin-bottom: 5px;
+        clear: none;
     }
+    .modifiers_table .modifiers_has-qty .modifier,
+    .modifiers_table .modifiers_has-split .modifier {
+        width: 275px;
+    }
+    .modifiers_table .modifiers_has-qty.modifiers_has-split .modifier {
+        width: 320px;
+    }
+
     .modifiers_table .modifier label {
-        width: 190px;
+        width: 200px;
     }
+
     .modifiers_table .modifier span.title_wrapper {
         width: 100px;
     }
+
     .modifiers_table .modifier .mdf_quantity select {
         width: 55px;
-    }
-}
-@media only screen and (min-width: 1440px) {
-    #modifiers_popup .modifiers_table_scroll {
-        margin-right: -90px;
-    }
-    .modifiers_table .modifier {
-        width: 320px;
-        margin-right: 90px;
-    }
-    .modifiers_table .modifier label {
-        width: 195px;
     }
 }
 
