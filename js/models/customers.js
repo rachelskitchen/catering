@@ -187,9 +187,9 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             /**
              * Authorization URL.
              * @type {string}
-             * @default "https://identity-dev.revelup.com/customers-auth/"
+             * @default "https://identity-dev.revelup.com/customers-auth"
              */
-            serverURL: "https://identity-dev.revelup.com/customers-auth/"
+            serverURL: "https://identity-dev.revelup.com/customers-auth"
         },
         /**
          * Adds validation listeners for `first_name`, `last_name` attributes changes.
