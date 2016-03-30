@@ -69,6 +69,9 @@ define(['backbone', 'backbone_epoxy', 'backbone_epoxy_handlers', 'backbone_epoxy
                 };
             };
 
+            // adds 'onEnter' listeners to this.events
+            this.addOnEnterListeners();
+
             return Backbone.View.prototype.constructor.apply(this, arguments);
         },
         initialize: function() {
@@ -247,6 +250,7 @@ define(['backbone', 'backbone_epoxy', 'backbone_epoxy_handlers', 'backbone_epoxy
          */
         addOnEnterListeners: function() {
             var listeners = this.onEnterListeners,
+                protoEvents = _.result(this, 'events'),
                 self = this,
                 events = {};
 
@@ -255,10 +259,10 @@ define(['backbone', 'backbone_epoxy', 'backbone_epoxy_handlers', 'backbone_epoxy
             }
 
             for (var key in listeners) {
-                events['keydown ' + key] = wrapHandler(listeners[key]);
+                events['keydown ' + (key == ':el' ? '' : key)] = wrapHandler(listeners[key]);
             }
 
-            this.delegateEvents(events);
+            this.events = _.extend(_.isObject(protoEvents) ? protoEvents : {}, events);
 
             function wrapHandler(handler) {
                 return function(event) {
