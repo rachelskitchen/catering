@@ -40,6 +40,21 @@ define(["factory"], function() {
             '.last-name': 'value: firstLetterToUpperCase(last_name), events:["input"], trackCaretPosition: last_name',
             '.email': 'value: email, events:["input"]',
             '.phone': 'value: phone, events: ["input"], restrictInput: "0123456789+", pattern: /^\\+?\\d{0,15}$/'
+        },
+        computeds: {
+            allFilled: {
+                deps: ['first_name', 'last_name', 'email', 'phone'],
+                get: function(first_name, last_name, email, phone) {
+                    return Boolean(first_name && last_name && email && phone);
+                }
+            }
+        },
+        onEnterListeners: {
+            ':el': 'onEnter'
+        },
+        onEnter: function() {
+            var action = setCallback('applyChanges');
+            this.getBinding('allFilled') && action.apply(this, arguments);
         }
     });
 
@@ -50,10 +65,22 @@ define(["factory"], function() {
             '.password': 'value: password, events:["input"]',
             '.password-confirm': 'value: confirm_password, events:["input"]',
             '.passwords-mismatch': 'toggle: select(all(password, confirm_password), not(equal(password, confirm_password)), false)',
-            '.signup-btn': 'classes: {disabled: any(not(first_name), not(last_name), not(email), not(phone), not(password), not(confirm_password), not(equal(password, confirm_password)))}'
+            '.signup-btn': 'classes: {disabled: not(allFilled)}'
+        },
+        computeds: {
+            allFilled: {
+                deps: ['first_name', 'last_name', 'email', 'phone', 'password', 'confirm_password'],
+                get: function(first_name, last_name, email, phone, password, confirm_password) {
+                    return Boolean(first_name && last_name && email && phone && password && confirm_password && (password === confirm_password));
+                }
+            }
         },
         events: {
             'click .signup-btn:not(.disabled)': setCallback('signupAction')
+        },
+        onEnter: function() {
+            var action = setCallback('signupAction');
+            this.getBinding('allFilled') && action.apply(this, arguments);
         }
     });
 
@@ -63,13 +90,28 @@ define(["factory"], function() {
         bindings: {
             '.email': 'value: email, events: ["input"]',
             '.pwd': 'value: password, events: ["input"]',
-            '.login-btn': 'classes: {disabled: any(not(email), not(password))}'
+            '.login-btn': 'classes: {disabled: not(allFilled)}'
+        },
+        computeds: {
+            allFilled: {
+                deps: ['email', 'password'],
+                get: function(email, password) {
+                    return Boolean(email && password);
+                }
+            }
         },
         events: {
             'click .login-btn:not(.disabled)': setCallback('loginAction'),
             'click .create-btn': setCallback('createAccount'),
             'click .guest-btn': setCallback('guestCb'),
             'click .forgot-password': setCallback('forgotPasswordAction')
+        },
+        onEnterListeners: {
+            ':el': 'onEnter'
+        },
+        onEnter: function() {
+            var action = setCallback('loginAction');
+            this.getBinding('allFilled') && action.apply(this, arguments);
         }
     });
 
@@ -89,6 +131,9 @@ define(["factory"], function() {
             }));
 
             return this;
+        },
+        onEnterListeners: {
+            ':el': setCallback('createProfileAction')
         }
     });
 
@@ -148,6 +193,9 @@ define(["factory"], function() {
                 }
                 return result;
             }
+        },
+        onEnterListeners: {
+            ':el': setCallback('applyChanges')
         }
     });
 
@@ -184,6 +232,9 @@ define(["factory"], function() {
             this.subViews.push(basicDetails, address);
 
             return this;
+        },
+        onEnterListeners: {
+            ':el': setCallback('updateAction')
         }
     });
 
@@ -194,6 +245,15 @@ define(["factory"], function() {
             '.current-password': 'value: password, events:["input"], pattern: /^.{0,255}$/',
             '.new-password': 'value: confirm_password, events:["input"], pattern: /^.{0,255}$/',
             '.account-password': 'classes: {required: any(password, confirm_password)}'
+        },
+        onEnterListeners: {
+            ':el': 'onEnter'
+        },
+        onEnter: function() {
+            var action = setCallback('changeAction'),
+                password = this.model.get('password'),
+                confirm_password = this.model.get('confirm_password');
+            password && confirm_password && action.apply(this, arguments);
         }
     });
 
@@ -206,6 +266,13 @@ define(["factory"], function() {
         },
         events: {
             'click .reset-btn': setCallback('resetAction')
+        },
+        onEnterListeners: {
+            ':el': 'onEnter'
+        },
+        onEnter: function() {
+            var action = setCallback('resetAction');
+            this.model.get('email') && action.apply(this, arguments);
         }
     });
 

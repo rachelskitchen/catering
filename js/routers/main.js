@@ -343,8 +343,11 @@ define(["backbone", "factory"], function(Backbone) {
                 customer.setGiftCards(App.Collections.GiftCards);
             }
 
+            // replace business name
+            _loc.PROFILE_USER_CREATED = _loc.PROFILE_USER_CREATED.replace('%s', App.Settings.business_name || '');
+
             this.listenTo(customer, 'onUserCreated', function() {
-                App.Data.errors.alert(_loc.PROFILE_USER_CREATED.replace('%s', App.Settings.business_name || ''));
+                App.Data.errors.alert(_loc.PROFILE_USER_CREATED);
             });
 
             this.listenTo(customer, 'onInvalidUser', function() {
@@ -1093,6 +1096,7 @@ define(["backbone", "factory"], function(Backbone) {
                 mod: 'SignUp',
                 model: customer,
                 next: next,
+                signupAction: next,
                 back: this.navigate.bind(this, 'login', true),
                 cacheId: true
             }
@@ -1127,6 +1131,7 @@ define(["backbone", "factory"], function(Backbone) {
                 model: customer,
                 register: register,
                 address: address,
+                createProfileAction: register,
                 back: this.navigate.bind(this, 'signup', true)
             };
 
@@ -1167,11 +1172,13 @@ define(["backbone", "factory"], function(Backbone) {
                 modelName: 'Profile',
                 mod: 'BasicDetails',
                 model: customer,
+                applyChanges: update,
                 className: 'profile-basic-details'
             }, {
                 modelName: 'Profile',
                 mod: 'Address',
-                model: address
+                model: address,
+                applyChanges: update
             });
 
             window.setTimeout(function() {
@@ -1277,6 +1284,7 @@ define(["backbone", "factory"], function(Backbone) {
                 modelName: 'Profile',
                 mod: 'AccountPassword',
                 model: customer,
+                changeAction: save,
                 cacheId: true
             }, {
                 modelName: 'Profile',
@@ -1331,6 +1339,7 @@ define(["backbone", "factory"], function(Backbone) {
                 modelName: 'Profile',
                 mod: 'PWDReset',
                 model: App.Data.customer,
+                resetAction: reset,
                 cacheId: true
             };
 
