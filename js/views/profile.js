@@ -199,7 +199,10 @@ define(["factory"], function() {
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            this.$('.country').val(''); // fix silent autoselect in mobile browsers
+            var self = this;
+            setTimeout(function() {
+                self.$('.country').val('');
+            }, 0); // fix silent autoselect in mobile browsers
         }
     });
 
