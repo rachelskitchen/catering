@@ -68,6 +68,7 @@
     margin: 0 25px 15px 0;
     cursor: pointer;
     min-height: 30px;
+    clear: left;
 }
 
 .modifiers_table .modifier .input {
@@ -92,7 +93,7 @@
 .modifiers_table .modifier label {
     cursor: inherit;
     display: inline-block !important;
-    width: 210px;
+    width: 250px;
     float: left;
 }
 
@@ -104,7 +105,7 @@
     display: inline-block;
     float: left;
     line-height: 1.4em;
-    width: 120px;
+    width: 150px;
     word-break: normal;
     word-wrap: break-word;
 }
@@ -268,37 +269,24 @@ span.tooltip:before {
         width: 230px;
         min-height: 45px;
         margin-bottom: 5px;
+        clear: none;
     }
     .modifiers_table .modifiers_has-qty .modifier,
     .modifiers_table .modifiers_has-split .modifier {
-        width: 260px;
+        width: 275px;
     }
-    .modifiers_table .modifiers_has-qty .modifier label,
-    .modifiers_table .modifiers_has-split .modifier label {
-        width: 190px;
-    }
-    .modifiers_table .modifiers_has-split .modifier span.title_wrapper,
-    .modifiers_table .modifiers_has-qty .modifier span.title_wrapper {
-        width: 100px;
-    }
-
-    .modifiers_table .modifiers_has-qty.modifiers_has-split .modifier,
-    .modifiers_table .modifiers_has-qty.modifiers_show-description .modifier,
-    .modifiers_table .modifiers_has-split.modifiers_show-description .modifier {
-        width: 310px;
-    }
-
-    .modifiers_table .modifiers_has-qty.modifiers_has-split.modifiers_show-description .modifier {
+    .modifiers_table .modifiers_has-qty.modifiers_has-split .modifier {
         width: 320px;
     }
 
-    .modifiers_table .modifiers_show-description .modifier label {
+    .modifiers_table .modifier label {
         width: 200px;
     }
 
-    .modifiers_table .modifiers_show-description .modifier span.title_wrapper {
-        width: 110px;
+    .modifiers_table .modifier span.title_wrapper {
+        width: 100px;
     }
+
     .modifiers_table .modifier .mdf_quantity select {
         width: 55px;
     }
