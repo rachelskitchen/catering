@@ -20,7 +20,13 @@
     <div class='delivery_info'>
         <%
             var title = _lp.HEADER_DELIVERY,
-                content = (delivery_charge > 0) ? (currency_symbol + delivery_charge) : _lp.HEADER_DELIVERY_FREE;
+                content = _lp.HEADER_DELIVERY_FREE;
+
+            if (typeof delivery_charge === 'object')
+            {
+                content = round_monetary_currency(delivery_charge.amount);
+                content = (delivery_charge.type === 1) ? content + '%' : currency_symbol + content;
+            }
         %>
         <span title="<%= title %>: <%= content %>">
             <span> <%= title %>: </span>
