@@ -421,6 +421,256 @@ define([], function() {
                 "attribute_1_values": ['f1', 'd1', 'e1'],
                 "attribute_2_values": ['f2', 'd2', 'e2']
             },
-        ]
+        ],
+        "addJSON_has_upsell_true": {
+            "image": "test.png",
+            "created_date": 12,
+            "original_tax": 2,
+            "is_combo": false,
+            "has_upsell": true,
+            "price": 8.3,
+            "product_sets": [{
+                "name": "Product set 1",
+                "id": 4,
+                "is_combo_saving": false,
+                "order_products": [{
+                    "product": {
+                        "description": null,
+                        "id": 2078,
+                        "id_category": 495,
+                        "images": [],
+                        "is_cold": false,
+                        "name": "Combo item 1",
+                        "price": 4,
+                        "upcharge_price": 2,
+                        "tax": 0,
+                        "sort": 1
+                    },
+                    "modifiers": [],
+                    "id_product": 2078,
+                    "sum": 0,
+                    "quantity": 2,
+                    "weight": 0,
+                    "quantity_prev": 1,
+                    "special": "",
+                    "initial_price": 4,
+                    "discount": {
+                        "id": null,
+                        "name": "default",
+                        "sum": 0,
+                        "taxed": false,
+                        "type": null
+                    },
+                    "stanfordCard": null,
+                    "stanford_card_number": "",
+                    "planId": null,
+                    "isServiceFee": false,
+                    "is_child_product": true,
+                    "selected": true
+                }, {
+                    "product": {
+                        "description": null,
+                        "id": 2079,
+                        "id_category": 495,
+                        "images": [],
+                        "is_cold": false,
+                        "name": "Combo item 2",
+                        "price": 10,
+                        "img": "./skins/weborder/img/",
+                        "tax": 0,
+                        "sort": 2
+                    },
+                    "modifiers": [],
+                    "id_product": 2079,
+                    "sum": 0,
+                    "quantity": 1,
+                    "weight": 0,
+                    "quantity_prev": 1,
+                    "special": "",
+                    "initial_price": 10,
+                    "discount": {
+                        "id": null,
+                        "name": "default",
+                        "sum": 0,
+                        "taxed": false,
+                        "type": null
+                    },
+                    "stanfordCard": null,
+                    "stanford_card_number": "",
+                    "planId": null,
+                    "isServiceFee": false,
+                    "is_child_product": true
+                }],
+                "minimum_amount": 2,
+                "maximum_amount": 2,
+                "sort": 1,
+                "quantity": 2
+            },
+
+                {
+                "name": "Product set 2",
+                "id": 5,
+                "is_combo_saving": true,
+                "order_products": [{
+                    "product": {
+                        "description": null,
+                        "id": 1859,
+                        "id_category": 413,
+                        "image": "./skins/weborder/img/none.png",
+                        "images": [],
+                        "is_cold": false,
+                        "name": "Coke",
+                        "price": 10,
+                        "upcharge_price": 3,
+                        "img": "./skins/weborder/img/",
+                        "tax": 0,
+                        "sort": 1
+                    },
+                    "modifiers": [],
+                    "id_product": 1859,
+                    "sum": 0,
+                    "quantity": 1,
+                    "weight": 0,
+                    "quantity_prev": 1,
+                    "special": "",
+                    "initial_price": 10,
+                    "discount": {
+                        "id": null,
+                        "name": "default",
+                        "sum": 0,
+                        "taxed": false,
+                        "type": null
+                    },
+                    "stanfordCard": null,
+                    "stanford_card_number": "",
+                    "planId": null,
+                    "isServiceFee": false,
+                    "is_child_product": true,
+                    "selected": true
+                }, {
+                    "product": {
+                        "description": "",
+                        "id": 1862,
+                        "id_category": 413,
+                        "image": "./skins/weborder/img/none.png",
+                        "images": [],
+                        "is_cold": true,
+                        "name": "Diet Coke",
+                        "price": 5,
+                        "img": "./skins/weborder/img/",
+                        "tax": 0,
+                        "sort": 4
+                    },
+                    "modifiers": [],
+                    "id_product": 1862,
+                    "sum": 5,
+                    "quantity": 1,
+                    "weight": 0,
+                    "quantity_prev": 1,
+                    "special": "",
+                    "initial_price": 5,
+                    "discount": {
+                        "id": null,
+                        "name": "default",
+                        "sum": 0,
+                        "taxed": false,
+                        "type": null
+                    },
+                    "stanfordCard": null,
+                    "stanford_card_number": "",
+                    "planId": null,
+                    "isServiceFee": false,
+                    "is_child_product": true
+                }],
+                "minimum_amount": 1,
+                "maximum_amount": 1,
+                "sort": 1,
+                "quantity": 1
+            },
+
+
+                    {
+                "name": "Product set 3",
+                "id": 7,
+                "is_combo_saving": false,
+                "order_products": [{
+                    "product": {
+                        "description": null,
+                        "id": 1860,
+                        "id_category": 413,
+                        "image": "./skins/weborder/img/none.png",
+                        "images": [],
+                        "is_cold": false,
+                        "name": "Prod 3",
+                        "price": 2,
+                        "upcharge_price": 1,
+                        "img": "./skins/weborder/img/",
+                        "tax": 0,
+                        "sort": 1
+                    },
+                    "modifiers": [],
+                    "id_product": 1859,
+                    "sum": 0,
+                    "quantity": 3,
+                    "weight": 0,
+                    "quantity_prev": 1,
+                    "special": "",
+                    "initial_price": 2,
+                    "discount": {
+                        "id": null,
+                        "name": "default",
+                        "sum": 0,
+                        "taxed": false,
+                        "type": null
+                    },
+                    "stanfordCard": null,
+                    "stanford_card_number": "",
+                    "planId": null,
+                    "isServiceFee": false,
+                    "is_child_product": true,
+                    "selected": true
+                }, {
+                    "product": {
+                        "description": "",
+                        "id": 1863,
+                        "id_category": 413,
+                        "image": "./skins/weborder/img/none.png",
+                        "images": [],
+                        "is_cold": true,
+                        "name": "Diet Prod 3",
+                        "price": 5,
+                        "img": "./skins/weborder/img/",
+                        "tax": 0,
+                        "sort": 4
+                    },
+                    "modifiers": [],
+                    "id_product": 1862,
+                    "sum": 5,
+                    "quantity": 1,
+                    "weight": 0,
+                    "quantity_prev": 1,
+                    "special": "",
+                    "initial_price": 5,
+                    "discount": {
+                        "id": null,
+                        "name": "default",
+                        "sum": 0,
+                        "taxed": false,
+                        "type": null
+                    },
+                    "stanfordCard": null,
+                    "stanford_card_number": "",
+                    "planId": null,
+                    "isServiceFee": false,
+                    "is_child_product": true
+                }
+                ],
+                "minimum_amount": 3,
+                "maximum_amount": 3,
+                "sort": 2,
+                "quantity": 3
+            }]
+        },
     };
 });
+

@@ -148,7 +148,11 @@ define(["products_view"], function(products_view) {
                 id = this.model.get('id');
             var has_combo = this.model.isComboBased();
             if (has_combo) {
-                App.Data.router.navigate("combo_product/" + id_category + "/" + id, true);
+                if (this.model.isUpsellProduct()) {
+                    App.Data.router.navigate("upsell_product/" + id_category + "/" + id, true);
+                } else {
+                    App.Data.router.navigate("combo_product/" + id_category + "/" + id, true);
+                }
             }
             else
                 App.Data.router.navigate("modifiers/" + id_category + "/" + id, true);

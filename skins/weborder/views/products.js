@@ -26,9 +26,10 @@ define(['products_view'], function(products_view) {
     var ProductListItemView = App.Views.CoreProductView.CoreProductListItemView.extend({
         showModifiers: function(event, status) {
             var isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
-                combo_based = this.model.isComboBased() && status != 'No_Combo';
+                combo_based = this.model.isComboBased() && status != 'No_Combo',
+                has_upsell = this.model.isUpsellProduct();
 
-            var myorder = App.Models.create(combo_based ? 'MyorderCombo' : 'Myorder');
+            var myorder = App.Models.create(combo_based ? (has_upsell ? 'MyorderUpsell' : 'MyorderCombo') : 'Myorder');
 
             var def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
 
