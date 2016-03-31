@@ -201,7 +201,7 @@ define(["factory"], function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             var self = this;
             setTimeout(function() {
-                self.$('.country').val('');
+                !self.model.get('country') && self.$('.country').val('');
             }, 0); // fix silent autoselect in mobile browsers
         }
     });
