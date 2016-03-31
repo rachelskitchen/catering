@@ -10,6 +10,7 @@
         'CARD_NUMBER': 'Номер карты',
         'CARD_SECURITY_CODE': 'Код безопасности',
         'CARD_EXP_DATE': 'Срок действия',
+        'CARD_SAVE': 'Сохранить для будущих платежей',
         'CART_MAIN_TITLE': 'Корзина',
         'CART_CHECKOUT': 'Оформить заказ',
         'CART_CHECKOUT_TITLE': 'Корзина',

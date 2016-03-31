@@ -10,6 +10,7 @@
         'CARD_NUMBER': 'Card Number',
         'CARD_SECURITY_CODE': 'Security Code',
         'CARD_EXP_DATE': 'Exp. Date',
+        'CARD_SAVE': 'Save for future payments',
         'CART_MAIN_TITLE': 'Your Shopping Bag',
         'CART_CHECKOUT': 'Checkout',
         'CART_CHECKOUT_TITLE': 'Your Shopping Bag',
