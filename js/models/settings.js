@@ -302,6 +302,28 @@ define(["backbone", "async"], function(Backbone) {
             this.set('skin', App.skin);
             this.trigger('changeSkin');
         },
+        
+        /**
+         * Preparing delivery charges
+         */
+        get_delivery_charges: function()
+        {
+            var settings = this.get('settings_system'),
+                charges = settings.delivery_charges;
+
+            if (typeof charges === 'object' && Object.keys(charges).length)
+            {
+                charges.sort(function(a, b)
+                {
+                    return a.amount - b.amount
+                });
+
+                return charges;
+            }
+
+            return null;
+        },
+
         /*
          * Converts desktop version of skin to mobile
          */
