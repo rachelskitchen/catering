@@ -145,11 +145,6 @@ define(['backbone'], function(Backbone) {
                     promotion = promotion.toJSON();
                 }
 
-                // wrong code format
-                if (!/^[\d\w]{1,200}$/.test(promotion.code)) {
-                    return;
-                }
-
                 modelToUpdate = self.find(function(model) {
                     return promotion.id === model.get('id') && !_.isEqual(model.toJSON(), promotion);
                 });
