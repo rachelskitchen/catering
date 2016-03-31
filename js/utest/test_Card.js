@@ -22,7 +22,9 @@ define(['card'], function() {
                 city: '',
                 state: '',
                 zip: '',
-                img: App.Data.settings.get('img_path')
+                img: App.Data.settings.get('img_path'),
+                billing_address: null,
+                saveCard: false
             };
         });
 

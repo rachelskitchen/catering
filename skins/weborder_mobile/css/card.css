@@ -21,6 +21,12 @@
     margin-left: 0em;
 }
 
+#saveCard {
+    width: auto;
+    height: 1em;
+    margin-right: 0.2em;
+}
+
 .captcha_container > * {
     display: inline-block;
     vertical-align: middle;
