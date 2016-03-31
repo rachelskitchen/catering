@@ -63,8 +63,13 @@ define(["myorder_view"], function(myorder_view) {
         editItem: function(e) {
             e.preventDefault();
             var index = this.model.collection.models.indexOf(this.model);
-            if (this.model.isComboBased())
-                App.Data.router.navigate('combo_product/' + index, true);
+            if (this.model.isComboBased()) {
+                if (this.model.isUpsellProduct()){
+                    App.Data.router.navigate('upsell_product/' + index, true);
+                } else {
+                    App.Data.router.navigate('combo_product/' + index, true);
+                }
+            }
             else
                 App.Data.router.navigate('modifiers/' + index, true);
         }
