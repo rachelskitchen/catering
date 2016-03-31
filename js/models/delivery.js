@@ -82,7 +82,7 @@ define(["backbone"], function(Backbone) {
         initialize: function(opts) {
             var settings = App.Settings,
                 set = {
-                    charge: settings.delivery_charge,
+                    charges: App.Data.settings.get_delivery_charges(),
                     enable: settings.delivery_for_online_orders,
                     max_distance: settings.max_delivery_distance,
                     min_amount: settings.min_delivery_amount
@@ -101,8 +101,26 @@ define(["backbone"], function(Backbone) {
          * @returns {?number} Amount that need to be added to order to allow 'Delivery' feature.
          */
         getRemainingAmount: function(subtotal) {
+            // Get correct delivery charge
+            var charges = this.get('charges'),
+                charge = 0;
+
+            if (charges)
+            {
+                for (var i in charges)
+                {
+                    var obj = charges[i],
+                        min = obj.min_threshold,
+                        max = obj.max_threshold;
+
+                    if (subtotal > min && (subtotal <= max || max === null))
+                    {
+                        charge = (obj.type === 1) ? (subtotal/100 * obj.amount) : obj.amount;
+                    }
+                }
+            }
+
             var min_amount = this.get('min_amount'),
-                charge = this.get('charge'),
                 diff = this.get('enable') ? min_amount - (subtotal - charge) : null
 
             return diff;
