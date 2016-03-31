@@ -2473,7 +2473,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     expDate: '',
                     securityCode: '',
                     billing_address: null,
-                    saveCard: false
+                    rememberCard: false
                 };
                 spyOn(App.Data.card, 'toJSON').and.callFake(function() {
                     return card;

@@ -24,7 +24,7 @@ define(['card'], function() {
                 zip: '',
                 img: App.Data.settings.get('img_path'),
                 billing_address: null,
-                saveCard: false
+                rememberCard: false
             };
         });
 
