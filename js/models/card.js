@@ -120,7 +120,13 @@ define(["backbone"], function(Backbone) {
              * Use the user profile address as a card billing address
              * @type {boolean}
              */
-            use_profile_address: false
+            use_profile_address: false,
+            /**
+             * Indicates whether to remember this card for future payments.
+             * @type {Boolean}
+             * @default false
+             */
+            saveCard: false
         },
         initialize: function() {
             if (PaymentProcessor.isBillingAddressCard())

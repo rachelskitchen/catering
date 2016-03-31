@@ -42,7 +42,8 @@ define(["backbone", "factory"], function(Backbone) {
             '.number': 'value: cardNumber, events: ["input"], restrictInput: "0123456789", pattern: /^[\\d|-]{0,19}$/',
             '.secure': 'value: securityCode, events: ["input"], restrictInput: "0123456789", pattern: /^[\\d|-]{0,4}$/',
             '.card-expiration-month': 'value: expMonth',
-            '.card-expiration-year': 'value: expDate, options: years'
+            '.card-expiration-year': 'value: expDate, options: years',
+            '#saveCard': 'checked: saveCard'
         },
         computeds: {
             years: function() {
