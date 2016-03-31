@@ -36,6 +36,12 @@ define(["backbone", "factory"], function(Backbone) {
     App.Views.CoreCardView.CoreCardMainView = App.Views.FactoryView.extend({
         name: 'card',
         mod: 'main',
+        initialize: function() {
+            _.extend(this.bindingSources, {
+                customer: App.Data.customer
+            });
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
         bindings: {
             '.first_name': 'value: firstLetterToUpperCase(firstName), events: ["input"], trackCaretPosition: firstName',
             '.last_name': 'value: firstLetterToUpperCase(secondName), events: ["input"], trackCaretPosition: secondName',
@@ -43,7 +49,8 @@ define(["backbone", "factory"], function(Backbone) {
             '.secure': 'value: securityCode, events: ["input"], restrictInput: "0123456789", pattern: /^[\\d|-]{0,4}$/',
             '.card-expiration-month': 'value: expMonth',
             '.card-expiration-year': 'value: expDate, options: years',
-            '#saveCard': 'checked: saveCard'
+            '.card__remember': 'toggle: customer_access_token',
+            '#rememberCard': 'checked: rememberCard'
         },
         computeds: {
             years: function() {
