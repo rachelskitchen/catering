@@ -49,6 +49,7 @@ define(["main_router"], function(main_router) {
             "products/:ids": "products",
             "modifiers/:id_category(/:id_product)": "modifiers",
             "combo_product/:id_category(/:id_product)": "combo_product",
+            "upsell_product/:id_category(/:id_product)": "upsell_product",
             "cart": "cart",
             "checkout" : "checkout",
             "confirm": "confirm",
@@ -767,11 +768,28 @@ define(["main_router"], function(main_router) {
             header.trigger('reinit');
             this.change_page();
         },
+        upsell_product: function(id_category, id_product) {
+            this.combo_upsell_product( {
+                id_category: id_category,
+                id_product: id_product,
+                has_upsell: true
+            });
+        },
         combo_product: function(id_category, id_product) {
+            this.combo_upsell_product( {
+                id_category: id_category,
+                id_product: id_product,
+                has_upsell: false
+            });
+        },
+        combo_upsell_product: function(options) {
+            var id_category = options.id_category,
+                id_product = options.id_product,
+                has_upsell = options.has_upsell;
             this.prepare('combo_product', function() {
                 var self = this,
                     isEditMode = !id_product,
-                    order = isEditMode ? App.Data.myorder.at(id_category) : new App.Models.MyorderCombo(),
+                    order = isEditMode ? App.Data.myorder.at(id_category) : (has_upsell ? App.Models.create('MyorderUpsell') : App.Models.create('MyorderCombo')),
                     orderClone = null,
                     isOrderChanged;
 
