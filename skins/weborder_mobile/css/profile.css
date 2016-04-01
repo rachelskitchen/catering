@@ -1,3 +1,14 @@
+.content-profile-login {
+    height: 100% !important;
+    min-height: 65em !important;
+    position: relative;
+}
+.content-profile-login > div {
+    width: 100% !important;
+    height: 100% !important;
+    height: 65em !important;
+}
+
 .profile-info {
     display: block;
     margin: 1.4em 0;
