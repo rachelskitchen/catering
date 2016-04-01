@@ -246,10 +246,6 @@ define(['js/utest/data/Settings'], function(settings) {
                 expect(all.supported_skins instanceof Array).toBeTruthy();
             });
 
-            it("X Revel Revision", function() {
-                expect(all.x_revel_revision).toBeDefined();
-            });
-
         });
 
         describe("System settings test", function() {
