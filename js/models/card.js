@@ -73,47 +73,47 @@ define(["backbone"], function(Backbone) {
             securityCode: '',
             /**
              * A card expiration month
-             * @type {sting}
+             * @type {string}
              */
             expMonth: '01',
             /**
              * A card expiration year
-             * @type {sting}
+             * @type {string}
              */
             expDate: new Date().getFullYear().toString(),
             /**
              * A total card expiration date
-             * @type {sting}
+             * @type {string}
              */
             expTotal: "",
             /**
              * Customer's address
-             * @type {sting}
+             * @type {string}
              */
             street: '',
             /**
              * Customer's city
-             * @type {sting}
+             * @type {string}
              */
             city: '',
             /**
              * Customer's state
-             * @type {sting}
+             * @type {string}
              */
             state: '',
             /**
              * Customer's zip code
-             * @type {sting}
+             * @type {string}
              */
             zip: '',
             /**
              * A path for relative image url
-             * @type {sting}
+             * @type {string}
              */
             img: App.Data.settings.get("img_path"),
             /**
              * A billing address bound to credit card
-             * @type {sting}
+             * @type {?Backbone.Model}
              */
             billing_address: null,
             /**

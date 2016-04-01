@@ -45,7 +45,7 @@ define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], funct
             this.options.giftCards && this.options.giftCards.length && this.showGiftCards();
         },
         bindings: {
-            '#credit-card': 'toggle: not(ui_showPayments),classes:{no_top_margin:card_billing_address}',
+            '#credit-card': 'toggle: not(ui_showPayments), classes: {no_top_margin: cardBillingAddress}',
             '.payments': 'toggle: ui_showPayments',
             '.payments-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_CREDIT_CARD, _lp_PAYMENTS), classes: {hidden: not(ui_showPaymentsBtn)}',
             '.gift-cards-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_ANOTHER_CARD, _lp_GIFT_CARDS), classes: {hidden: not(ui_showGiftCardsBtn)}'
@@ -57,6 +57,14 @@ define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], funct
                     showPaymentsBtn: false,
                     showGiftCardsBtn: false
                 });
+            }
+        },
+        computeds: {
+            cardBillingAddress: {
+                deps: ['card_billing_address'],
+                get: function(card_billing_address) {
+                    return card_billing_address || null;
+                }
             }
         },
         render: function() {
