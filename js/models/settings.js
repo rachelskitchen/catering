@@ -176,12 +176,6 @@ define(["backbone", "async"], function(Backbone) {
              */
             timeout: 60000,
             /**
-             * Used as X-Revel-Revision request header (not used now).
-             * @type {?}
-             * @default null
-             */
-            x_revel_revision: null,
-            /**
              * Indicates that app is in maintenance mode.
              * @type {Boolean}
              * @default false
@@ -249,7 +243,6 @@ define(["backbone", "async"], function(Backbone) {
                     xhr.setRequestHeader('X-Requested-With', {
                         toString: function() { return ''; }
                     });
-                    xhr.setRequestHeader('X-Revel-Revision', self.get('x_revel_revision'));
                     xhr.setRequestHeader("X-Revel-Client", App.Data.dirMode ? "RevelDirectory" : "RevelOnlineOrdering");
                 }
             });
