@@ -16,15 +16,15 @@
         </span>
         <% if(isSize) { %>
             <span class="cost">
-                (<span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>)
+                <span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
             </span>
         <% } else if(!isSpecial && !isInventoryMatrix) { %>
             <span class="cost">
-                (<span class="plus">+</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>)
+                <span class="plus">+</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
             </span>
         <% } %>
         <% if (!isInventoryMatrix && _settings.online_orders) { %>
-        <span class="free">(<span class="value"></span>)</span>
+        <span class="free"><span class="value"></span></span>
         <% } %>
     </label>
     <div class="mdf_spacer">
