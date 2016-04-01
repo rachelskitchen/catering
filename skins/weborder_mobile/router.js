@@ -1785,7 +1785,7 @@ define(["main_router"], function(main_router) {
             App.Data.mainModel.set({
                 header: headerModes.Cart,
                 footer: footerModes.None,
-                contentClass: 'primary-bg',
+                contentClass: 'content-profile-login primary-bg',
                 content: content
             });
 
