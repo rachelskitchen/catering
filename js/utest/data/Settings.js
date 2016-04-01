@@ -20,7 +20,6 @@ define([], function() {
             },
             "settings_system": {},
             "timeout": 60000,
-            "x_revel_revision": null,
             "isMaintenance": false,
             "maintenanceMessage": "",
             "version": 1.06,
@@ -47,7 +46,6 @@ define([], function() {
             },
             "settings_system": {},
             "timeout": 60000,
-            "x_revel_revision": null,
             "isMaintenance": false,
             "maintenanceMessage": "",
             "version": 1.06,
@@ -237,7 +235,6 @@ define([], function() {
                 "mobile_main_header_title": null
             },
             "timeout": 60000,
-            "x_revel_revision": null,
             "isMaintenance": false,
             "maintenanceMessage": "",
             "version": 1.06,
