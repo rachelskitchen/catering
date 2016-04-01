@@ -87,13 +87,6 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
                 expect(collection.length).toBe(data.length);
             });
 
-            it('`promotions` is array of objects, some promotion has wrong code format', function() {
-                var data = deepClone(promotionsData.campaigns);
-                data[0].code = '!#$';
-                collection.addAjaxJson(data);
-                expect(collection.length).toBe(promotionsData.campaigns.length - 1);
-            });
-
             it('`promotions` is array of not objects', function() {
                 var data = [1, 2, '3'];
                 collection.addAjaxJson(data);
