@@ -869,7 +869,7 @@ define(['backbone'], function(Backbone) {
 
                 req.fail(def.fail.bind(def));
 
-                req.always(payment.set.bind(payment, 'cvv', payment.defaults.cvv));
+                payment && req.always(payment.set.bind(payment, 'cvv', payment.defaults.cvv));
             }
 
             return def;
