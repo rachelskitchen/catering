@@ -46,6 +46,7 @@ define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], funct
         },
         bindings: {
             '#credit-card': 'toggle: not(ui_showPayments), classes: {no_top_margin: cardBillingAddress}',
+            '#billing-address': 'toggle: not(ui_showPayments)',
             '.payments': 'toggle: ui_showPayments',
             '.payments-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_CREDIT_CARD, _lp_PAYMENTS), classes: {hidden: not(ui_showPaymentsBtn)}',
             '.gift-cards-btn': 'text: select(ui_showPayments, _lp_PROFILE_ADD_ANOTHER_CARD, _lp_GIFT_CARDS), classes: {hidden: not(ui_showGiftCardsBtn)}'
@@ -139,7 +140,7 @@ define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], funct
                 tip: true,
                 customer: true,
                 checkout: true,
-                card_billing_address: PaymentProcessor.isBillingAddressCard()
+                card_billing_address: PaymentProcessor.isBillingAddressCard() && !doPayWithToken
             }, function() {
                 if (self.options.submode == 'Gift' && customer.isAuthorized() && !doPayWithGiftCard) {
                     customer.linkGiftCard(self.options.card).done(function(data) {

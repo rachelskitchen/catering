@@ -2462,6 +2462,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     case "PRODUCTS_NOT_AVAILABLE_FOR_SELECTED_TIME":
                         reportErrorFrm(data.errorMsg + " " + MSG.PRODUCTS_VALID_TIME + "<br/>" + format_timetables(data.responseJSON["timetables"], ",<br/>"));
                         break;
+                    case "CVV_REQUIRED_CANCELED":
+                        break;
                     default:
                         data.errorMsg = MSG.ERROR_OCCURRED + ' ' + data.errorMsg;
                         reportErrorFrm(data.errorMsg);

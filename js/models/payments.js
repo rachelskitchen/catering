@@ -35,7 +35,7 @@ define(['backbone'], function(Backbone) {
      * @alias App.Models.PaymentToken
      * @augments Backbone.Model
      * @example
-     * // create an order item
+     * // create a payment token
      * require(['payments'], function() {
      *     var payment = new App.Models.PaymentToken();
      * });
@@ -125,7 +125,13 @@ define(['backbone'], function(Backbone) {
              * @type {string}
              * @default ''
              */
-            token_expiration: ''
+            token_expiration: '',
+            /**
+             * CVV. Used in GlobalCollect.
+             * @type {string}
+             * @default ''
+             */
+            cvv: ''
         },
         /**
          * Makes the payment token is selected if `is_primary` attribute is `true`.
@@ -194,7 +200,7 @@ define(['backbone'], function(Backbone) {
      * @alias App.Collections.PaymentTokens
      * @augments Backbone.Collection
      * @example
-     * // create an order item
+     * // create payments tokens
      * require(['payments'], function() {
      *     var payments = new App.Collections.PaymentTokens();
      * });
@@ -362,7 +368,7 @@ define(['backbone'], function(Backbone) {
      * @alias App.Models.USAePayPayment
      * @augments App.Models.PaymentToken
      * @example
-     * // create an order item
+     * // create a payment token
      * require(['payments'], function() {
      *     var payment = new App.Models.USAePayPayment();
      * });
@@ -372,6 +378,11 @@ define(['backbone'], function(Backbone) {
      * @lends App.Models.USAePayPayment.prototype
      */
     {
+        /**
+         * Payment token type.
+         * @type {string}
+         * @default 'usaepay'
+         */
         type: 'usaepay'
     });
 
@@ -381,7 +392,7 @@ define(['backbone'], function(Backbone) {
      * @alias App.Collections.USAePayPayments
      * @augments App.Collections.PaymentTokens
      * @example
-     * // create an order item
+     * // create payment tokens
      * require(['payments'], function() {
      *     var payments = new App.Collections.USAePayPayments();
      * });
@@ -522,7 +533,7 @@ define(['backbone'], function(Backbone) {
      * @alias App.Models.MercuryPayment
      * @augments App.Models.PaymentToken
      * @example
-     * // create an order item
+     * // create a payment tokens
      * require(['payments'], function() {
      *     var payment = new App.Models.MercuryPayment();
      * });
@@ -532,6 +543,11 @@ define(['backbone'], function(Backbone) {
      * @lends App.Models.MercuryPayment.prototype
      */
     {
+        /**
+         * Payment token type.
+         * @type {string}
+         * @default 'mercurypay'
+         */
         type: 'mercurypay'
     });
 
@@ -541,7 +557,7 @@ define(['backbone'], function(Backbone) {
      * @alias App.Collections.MercuryPayments
      * @augments App.Collections.PaymentTokens
      * @example
-     * // create an order item
+     * // create payment tokens
      * require(['payments'], function() {
      *     var payments = new App.Collections.USAePayPayments();
      * });
@@ -600,7 +616,7 @@ define(['backbone'], function(Backbone) {
      * @alias App.Models.FreedomPayment
      * @augments App.Models.PaymentToken
      * @example
-     * // create an order item
+     * // create a payment token
      * require(['payments'], function() {
      *     var payment = new App.Models.FreedomPayment();
      * });
@@ -610,6 +626,11 @@ define(['backbone'], function(Backbone) {
      * @lends App.Models.FreedomPayment.prototype
      */
     {
+        /**
+         * Payment token type.
+         * @type {string}
+         * @default 'freedompay'
+         */
         type: 'freedompay'
     });
 
@@ -619,7 +640,7 @@ define(['backbone'], function(Backbone) {
      * @alias App.Collections.FreedomPayments
      * @augments App.Collections.PaymentTokens
      * @example
-     * // create an order item
+     * // create payment tokens
      * require(['payments'], function() {
      *     var payments = new App.Collections.FreedomPayments();
      * });
@@ -673,7 +694,7 @@ define(['backbone'], function(Backbone) {
      * @alias App.Models.BraintreePayment
      * @augments App.Models.PaymentToken
      * @example
-     * // create an order item
+     * // create a payment token
      * require(['payments'], function() {
      *     var payment = new App.Models.BraintreePayment();
      * });
@@ -683,16 +704,21 @@ define(['backbone'], function(Backbone) {
      * @lends App.Models.BraintreePayment.prototype
      */
     {
+        /**
+         * Payment token type.
+         * @type {string}
+         * @default 'braintree'
+         */
         type: 'braintree'
     });
 
     /**
      * @class
      * @classdesc Represents collections of Braintree payments.
-     * @alias App.Collections.BraintreeTokens
+     * @alias App.Collections.BraintreePayments
      * @augments App.Collections.PaymentTokens
      * @example
-     * // create an order item
+     * // create payment tokens
      * require(['payments'], function() {
      *     var payments = new App.Collections.BraintreePayments();
      * });
@@ -737,6 +763,116 @@ define(['backbone'], function(Backbone) {
             });
 
             return req;
+        }
+    });
+
+    /**
+     * @class
+     * @classdesc Represents GlobalCollect payment token.
+     * @alias App.Models.GlobalCollectPayment
+     * @augments App.Models.PaymentToken
+     * @example
+     * // create a payment token
+     * require(['payments'], function() {
+     *     var payment = new App.Models.GlobalCollectPayment();
+     * });
+     */
+    App.Models.GlobalCollectPayment = App.Models.PaymentToken.extend(
+    /**
+     * @lends App.Models.GlobalCollectPayment.prototype
+     */
+    {
+        /**
+         * Payment token type.
+         * @type {string}
+         * @default 'globalcollect'
+         */
+        type: 'globalcollect',
+
+    });
+
+    /**
+     * @class
+     * @classdesc Represents collections of GlobalCollect payments.
+     * @alias App.Collections.GlobalCollectPayments
+     * @augments App.Collections.PaymentTokens
+     * @example
+     * // create payment tokens
+     * require(['payments'], function() {
+     *     var payments = new App.Collections.GlobalCollectPayments();
+     * });
+     */
+    App.Collections.GlobalCollectPayments = App.Collections.PaymentTokens.extend(
+    /**
+     * @lends App.Collections.GlobalCollectPayments.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default App.Models.GlobalCollectPayment
+         */
+        model: App.Models.GlobalCollectPayment,
+        /**
+         * Payment processor.
+         * @type {string}
+         * @default 'globalcollectpayment'
+         */
+        paymentProcessor: 'globalcollectpayment',
+        /**
+         * Payment token type.
+         * @type {string}
+         * @default 'globalcollect'
+         */
+        type: 'globalcollect',
+        /**
+         * Adds CVV to cardInfo. After placing order need to add created token to collection.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @param {Object} order - order json (see {@link App.Collections.Myorder#submit_order_and_pay})
+         * @returns {undefined|Object} Deferred.
+         */
+        orderPayWithToken: function(authorizationHeader, order) {
+            var payment = !this.ignoreSelectedToken ? this.getSelectedPayment() : null,
+                cardInfo = _.isObject(order.paymentInfo) && order.paymentInfo.cardInfo,
+                def = Backbone.$.Deferred(),
+                self = this;
+
+            if (_.isObject(cardInfo) && payment) {
+                delete cardInfo.address;
+                if (payment.get('cvv')) {
+                    addCVV();
+                } else {
+                    this.trigger('onCVVRequired', {
+                        callback: addCVV,
+                        payment: payment,
+                        def: def
+                    });
+                }
+            } else {
+                performRequest();
+            }
+
+            function addCVV() {
+                cardInfo.cvv = payment.get('cvv');
+                performRequest();
+            }
+
+            function performRequest() {
+                var req = App.Collections.PaymentTokens.prototype.orderPayWithToken.call(self, authorizationHeader, order);
+
+                req.done(function(data) {
+                    if (_.isObject(data) && _.isObject(data.token)) {
+                        self.add(data.token);
+                    }
+                    def.resolve.apply(def, arguments);
+                });
+
+                req.fail(def.fail.bind(def));
+
+                req.always(payment.set.bind(payment, 'cvv', payment.defaults.cvv));
+            }
+
+            return def;
         }
     });
 });

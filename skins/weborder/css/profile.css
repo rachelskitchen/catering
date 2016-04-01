@@ -272,3 +272,24 @@
     top: 5px;
     right: 5px;
 }
+
+.profile-cvv-container {
+    margin-bottom: 25px;
+}
+
+.profile-cvv-container .title {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.profile-cvv-container {
+    font-size: 16px;
+}
+
+.profile-cvv-container .input_beauty {
+    width: 200px;
+    margin: 10px auto;
+    position: relative;
+    top: initial;
+    bottom: initial;
+}

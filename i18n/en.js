@@ -619,6 +619,8 @@
         "PROFILE_ADD_ANOTHER_CARD": "Add Another Card",
         "PROFILE_UPDATE_SUCCESSFUL": "Update Successful",
         'BILLING_ADDRESS_TITLE': 'Specify a card billing address',
-        'USE_PROFILE_ADDRESS_TITLE_1': 'Use the profile address'
+        'USE_PROFILE_ADDRESS_TITLE_1': 'Use the profile address',
+        'CVV_REQUIRED': 'CVV required',
+        'CVV_REQUIRED_INFO': 'Please enter security code'
     }; // end of locale
 }); // end of module

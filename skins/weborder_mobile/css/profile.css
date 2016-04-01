@@ -225,6 +225,15 @@
     margin-top: -0.45em;
 }
 
+.profile-cvv-container .cvv-required-info {
+    display: block;
+    margin: 1em 0 0.5em 0;
+}
+
+.profile-cvv-container .cvv {
+    width: 15em;
+}
+
 /* landscape */
 @media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (orientation: landscape) {
     .forgot-password {
