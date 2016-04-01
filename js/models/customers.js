@@ -1674,7 +1674,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * @returns {boolean} `true` if any payment token is selected for payment.
          */
         doPayWithToken: function() {
-            return Boolean(this.isAuthorized() && this.payments && this.payments.getSelectedPayment());
+            return Boolean(this.isAuthorized() && this.payments && !this.payments.ignoreSelectedToken && this.payments.getSelectedPayment());
         },
         /**
          * Sets payments tokens collection.
@@ -1691,6 +1691,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                      */
                     this.payments = new constr();
                     this.payments.serverURL = this.get('serverURL');
+                    this.listenTo(this.payments, 'onCVVRequired', this.trigger.bind(this, 'onCVVRequired'));
                 }
             };
             this.isAuthorized() && this.initPayments();

@@ -533,11 +533,13 @@ select:focus {
 #alert {
     background: rgba(70, 70, 70, .8);
 }
-.alert_block {
+.alert_block,
+#popup_content {
     border-color: #f6f6f6;
     background: #f6f6f6;
 }
-.alert-background {
+.alert-background,
+#popup_content {
     background: url('data:image/gif;base64,R0lGODlhBAAEAKECAOLi4vDw8DYrGDYrGCH5BAEAAAIALAAAAAAEAAQAAAIFRB6GelAAOw==') repeat 0 0 #f0f0f0 !important;
 }
 #alert .cancel {
@@ -703,4 +705,10 @@ input:-ms-input-placeholder {
 .flat-btn:active {
     background-color: transparent;
     color: #2699ca;
+}
+#popup_panel input[type="button"] {
+    border-color: #bad9e9;
+    box-shadow: 0 3px 4px 1px rgba(0,0,0,.3);
+    background: #eee;
+    color: #4a4a4a;
 }

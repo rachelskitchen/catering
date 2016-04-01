@@ -334,6 +334,9 @@ define(["backbone", "factory"], function(Backbone) {
                 customer.setPayments(App.Collections.FreedomPayments);
             } else if (App.SettingsDirectory.saved_credit_cards && paymentProcessor === BraintreePaymentProcessor) {
                 customer.setPayments(App.Collections.BraintreePayments);
+            } else if (App.SettingsDirectory.saved_credit_cards && paymentProcessor === GlobalCollectPaymentProcessor) {
+                customer.setPayments(App.Collections.GlobalCollectPayments);
+                listenToCVVRequired.call(this);
             } else {
                 App.SettingsDirectory.saved_credit_cards = false;
             }
@@ -401,6 +404,31 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(customer, 'onTokenNotFound', function() {
                 App.Data.errors.alert(_loc.PROFILE_PAYMENT_TOKEN_NOT_FOUND);
             });
+
+            function listenToCVVRequired() {
+                this.listenTo(customer, 'onCVVRequired', function(data) {
+                    App.Data.errors.alert('', false, false, {
+                        isConfirm: true,
+                        typeIcon: '',
+                        confirm: {
+                            ok: _loc.CONTINUE,
+                            cancel: _loc.CANCEL
+                        },
+                        customView: new App.Views.ProfileView.ProfilePaymentCVVView({
+                            model: data.payment,
+                            className: 'profile-cvv-container'
+                        }),
+                        callback: function(res) {
+                            if(res) {
+                                data.callback();
+                            } else {
+                                App.Data.mainModel.trigger('loadCompleted');
+                                data.def.resolve({status: 'CVV_REQUIRED_CANCELED'});
+                            }
+                        }
+                    });
+                });
+            }
         },
         /**
          * Inits App.Data.giftcard if it is undefined
