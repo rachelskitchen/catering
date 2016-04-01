@@ -521,6 +521,17 @@ define(["factory"], function() {
         }
     });
 
+    /**
+     * this.model is instance of App.Models.PaymentToken.
+     */
+    App.Views.CoreProfileView.CoreProfilePaymentCVVView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'payment_cvv',
+        bindings: {
+            '.cvv': 'value: cvv, events: ["input"], restrictInput: "0123456789", pattern: /^\\d*$/'
+        }
+    });
+
     function controlLinks(showSignUp, showLogIn, showMenu, showPWDReset) {
         return function() {
             this.getBinding('$ui').set({
@@ -559,5 +570,6 @@ define(["factory"], function() {
         App.Views.ProfileView.ProfileGiftCardsSelectionView = App.Views.CoreProfileView.CoreProfileGiftCardsSelectionView;
         App.Views.ProfileView.ProfileGiftCardEditionView = App.Views.CoreProfileView.CoreProfileGiftCardEditionView;
         App.Views.ProfileView.ProfileGiftCardsEditionView = App.Views.CoreProfileView.CoreProfileGiftCardsEditionView;
+        App.Views.ProfileView.ProfilePaymentCVVView = App.Views.CoreProfileView.CoreProfilePaymentCVVView
     });
 });

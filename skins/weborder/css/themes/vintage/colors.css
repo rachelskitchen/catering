@@ -502,11 +502,13 @@ select:focus,
 #alert {
     background: rgba(70, 70, 70, .8);
 }
-.alert_block {
+.alert_block,
+#popup_content {
     border-color: #f6f6f6;
     background: #f6f6f6;
 }
-.alert-background {
+.alert-background,
+#popup_content {
     background: url('img/cart-bg.png') repeat 0 0 #e6decb !important;
 }
 #alert .cancel {
@@ -641,4 +643,10 @@ input:-ms-input-placeholder {
 .flat-btn:active {
     background-color: transparent;
     color: #362b18;
+}
+#popup_panel input[type="button"] {
+    border-color: #b9b5b0;
+    box-shadow: 0 3px 4px 1px rgba(0,0,0,.3);
+    background: #f2f2f2;
+    color: #4a4a4a;
 }

@@ -597,6 +597,8 @@
         "PROFILE_ADD_ANOTHER_CARD": "Добавить другую карту",
         "PROFILE_UPDATE_SUCCESSFUL": "Успешно обновлено",
         'BILLING_ADDRESS_TITLE': 'Задайте билинг-адрес',
-        'USE_PROFILE_ADDRESS_TITLE_1': 'Исользовать адрес профиля'
+        'USE_PROFILE_ADDRESS_TITLE_1': 'Исользовать адрес профиля',
+        'CVV_REQUIRED': 'Требуется CVV',
+        'CVV_REQUIRED_INFO': 'Пожалуйста, введите код безопасности'
     } // end of locale
 }); // end of module
