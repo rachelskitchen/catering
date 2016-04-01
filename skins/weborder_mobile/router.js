@@ -182,7 +182,7 @@ define(["main_router"], function(main_router) {
                     tip: true,
                     customer: true,
                     checkout: true,
-                    card_billing_address: PaymentProcessor.isBillingAddressCard(),
+                    card_billing_address: PaymentProcessor.isBillingAddressCard() && !doPayWithToken,
                     card: doPayWithToken ? false : paymentProcessor.credit_card_dialog
                 }, sendRequest.bind(window, PAYMENT_TYPE.CREDIT));
             });
@@ -2000,7 +2000,7 @@ define(["main_router"], function(main_router) {
     function showDefaultCardView() {
         var paymentProcessor = App.Data.settings.get_payment_process(),
             customer = App.Data.customer,
-            showCCForm = customer.payments ? (!customer.doPayWithToken() || customer.payments.ignoreSelectedToken) : true;
+            showCCForm = customer.payments ? !customer.doPayWithToken() : true;
         if(paymentProcessor.credit_card_dialog && showCCForm) {
             this.navigate('card', true);
         } else {
