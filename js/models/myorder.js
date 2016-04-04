@@ -357,7 +357,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 quantity: data.product.sold_by_weight ? 1 : (data.quantity ? data.quantity : 1),
                 weight: data.weight ? data.weight : 0,
                 selected: data.selected,
-                is_child_product: data.is_child_product
+                is_child_product: data.is_child_product,
+                upcharge_name: data.upcharge_name,
+                combo_name: data.combo_name,
+                upcharge_price: data.upcharge_price
             });
             data.special && this.set('special', data.special, {silent: true});
             if (!this.get('product').get('gift_card_number') && data.gift_card_number) {
@@ -788,6 +791,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         defaults: _.extend({}, App.Models.Myorder.prototype.defaults, {
             upcharge_price: 0,
             upcharge_name: ''
+            // any items added here should be explisitly restored in Myorder.addJSON() function
         }),
         /**
          * Initializes the model.
