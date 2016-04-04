@@ -83,7 +83,7 @@ define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], funct
                 model: this.options.card
             }));
 
-            if (PaymentProcessor.isBillingAddressCard()) {
+            if (this.options.submode == 'Credit' && PaymentProcessor.isBillingAddressCard()) {
                 this.subViews.push(App.Views.GeneratorView.create('Card', {
                     el: this.$('#billing-address'),
                     mod: 'BillingAddress',

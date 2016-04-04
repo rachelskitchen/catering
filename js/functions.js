@@ -1490,7 +1490,7 @@ var PaymentProcessor = {
         return payment_processor;
     },
     /**
-     * return true if card type payment processor needs in billing address to be filled.
+     * Returns true if card type payment processor needs billing address to be filled.
      */
     isBillingAddressCard: function() {
         var pp = this.getCreditCardPaymentProcessor();
