@@ -218,7 +218,8 @@ select:-moz-focusring {
 /* [primary_button] primary background button */
 .primary-button,
 #popup_ok[id],
-.quantity .btn-qty {
+.quantity .btn-qty,
+.checkout-short .pickup-box::after {
   background: #199ACD;
 }
 .primary-button:not([disabled]):active,
@@ -316,13 +317,11 @@ ul.reward-selection > li,
 }
 /* [checkbox_unchecked] border of unchecked checkbox */
 .modifier .input,
-.combo_item .input,
-.input.checkbox {
+.combo_item .input {
   border-color: #415264;
 }
 .modifier .input,
-.combo_item .input,
-.input.checkbox {
+.combo_item .input {
   background: transparent;
 }
 .select-wrapper input {

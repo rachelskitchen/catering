@@ -33,7 +33,16 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             '.see-rewards': 'classes: {hide: select(length(rewardsCard_discounts), false, true)}',
             '.cancel-input': 'classes: {hide: select(rewardsCard_discounts, false, true)}',
             '.rewardCard': 'attr: {readonly: select(length(rewardsCard_discounts), true, false)}, restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^\\d*$/',
-            '.phone': 'restrictInput: "0123456789+", kbdSwitcher: "tel", pattern: /^\\+?\\d{0,15}$/'
+            '.phone': 'restrictInput: "0123456789+", kbdSwitcher: "tel", pattern: /^\\+?\\d{0,15}$/',
+            '.personal': 'toggle: not(isAuthorized)'
+        },
+        computeds: {
+            isAuthorized: {
+                deps: ['customer_access_token'],
+                get: function() {
+                    return this.getBinding('$customer').isAuthorized();
+                }
+            }
         },
         initialize: function() {
             this.listenTo(this.model, 'change:dining_option', this.controlAddress, this);

@@ -38,9 +38,9 @@
             "core": ["categories", "products", "modifiers", "modifiers_view", "product_sets", "product_sets_view"]
         },
         "cart": {
-            "css": ["myorder"],
-            "views": ["myorder"],
-            "templates": ["myorder"]
+            "css": ["myorder", "stanfordcard"],
+            "views": ["myorder", "stanfordcard"],
+            "templates": ["myorder", "stanfordcard"]
         },
         "store_info": {
             "css": ["store_info"],
@@ -62,10 +62,10 @@
             "core": ["card", "checkout", "products", "product_sets", "delivery_addresses", "customers", "pikaday", "jquery_numbermask", "giftcard"]
         },
         "confirm": {
-            "css": ["total", "checkout", "card", "tips"],
+            "css": ["total", "checkout", "card", "tips", "pikaday"],
             "views": ["checkout", "tips", "total"],
             "templates": ["total", "checkout", "card", "tips"],
-            "core": ["tip", "checkout", "card", "card_view", "jquery_numbermask"]
+            "core": ["tip", "checkout", "card", "card_view", "jquery_numbermask", "products", "product_sets", "delivery_addresses", "pikaday"]
         },
         "payments": {
             "css": ["payments"],

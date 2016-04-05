@@ -25,8 +25,8 @@ define(["checkout_view"], function(checkout_view) {
 
     var CoreDeliveryAddressesView = App.Views.DeliveryAddressesView,
         CoreCheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView,
-        DeliveryAddressesView, CheckoutAddressView, CheckoutMainView, DiscountCodeView;
-
+        DeliveryAddressesView, CheckoutAddressView, CheckoutMainView, DiscountCodeView,
+        OrderTypeShort, PickupShort, AddressShort, OtherShort;
 
     DeliveryAddressesView = CoreDeliveryAddressesView.extend({
         initialize: function() {
@@ -64,9 +64,55 @@ define(["checkout_view"], function(checkout_view) {
         }
     });
 
+    OrderTypeShort = App.Views.CoreCheckoutView.CoreCheckoutOrderTypeView.extend({
+        name: 'checkout',
+        mod: 'order_type_short'
+    });
+
+    PickupShort = App.Views.CoreCheckoutView.CoreCheckoutPickupView.extend({
+        name: 'checkout',
+        mod: 'pickup_short'
+    });
+
+    AddressShort = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'address_short',
+        initialize: function() {
+            var model = this.model;
+            this.listenTo(model, 'change:dining_option', this.updateAddress, this);
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.updateAddress(model, model.get('dining_option'));
+        },
+        bindings: {
+            ':el': 'toggle: inList(dining_option, "DINING_OPTION_DELIVERY", "DINING_OPTION_SHIPPING", "DINING_OPTION_CATERING")'
+        },
+        updateAddress: function(model, value) {
+            if(value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING' || value === 'DINING_OPTION_CATERING') {
+                var address = App.Views.GeneratorView.create('Checkout', {
+                    mod: 'Address',
+                    customer: this.options.customer,
+                    checkout: this.model
+                });
+                this.subViews.remove();
+                this.subViews.push(address);
+                this.$el.append(address.el);
+            }
+        }
+    });
+
+    OtherShort = App.Views.CoreCheckoutView.CoreCheckoutOtherView.extend({
+        bindings: {
+            ':el': 'toggle: equal(dining_option, "DINING_OPTION_OTHER")'
+        }
+    });
+
     return new (require('factory'))(checkout_view.initViews.bind(checkout_view), function() {
         App.Views.DeliveryAddressesView = DeliveryAddressesView;
         App.Views.CoreCheckoutView.CoreCheckoutAddressView = CheckoutAddressView;
         App.Views.CheckoutView.CheckoutDiscountCodeView = DiscountCodeView;
+        App.Views.CheckoutView.CheckoutOrderTypeShortView = OrderTypeShort;
+        App.Views.CheckoutView.CheckoutPickupShortView = PickupShort;
+        App.Views.CheckoutView.CheckoutAddressShortView = AddressShort;
+        App.Views.CheckoutView.CheckoutOtherShortView = OtherShort;
     });
 });
