@@ -145,7 +145,7 @@ define(["generator", "list"], function() {
             this.slider_index = this.slider_index || 0;
             this.slider_elem_width = elemWidth;
 
-            wrapper.css('max-width', (elemWidth * Math.min(this.slider_count, this.slider_elem_count) - 1) + 'px'); // minus border and padding
+            wrapper.css('max-width', (elemWidth * Math.min(this.slider_count, this.slider_elem_count)) + 'px');
             if (this.slider_elem_count < this.slider_count) {
                 this.slider_index = 0;
             } else {
