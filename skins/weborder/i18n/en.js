@@ -56,7 +56,7 @@
         'HEADER_DELIVERY_HOUR': 'hr',
         'HEADER_DELIVERY_MINUTES': 'min',
         'HEADER_DELIVERY_ASAP': 'ASAP',
-        'HEADER_DELIVERY_MINIMUM': 'Minimum',
+        'HEADER_DELIVERY_MINIMUM': 'Delivery Minimum',
         'HEADER_DELIVERY_AREA': 'Delivery Area',
         'HEADER_DELIVERY_RADIUS': 'Delivery Radius',
         'HEADER_DELIVERY_KM': 'km',
