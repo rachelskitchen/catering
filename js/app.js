@@ -219,13 +219,13 @@
             app.get['srv'] == 'mlb' && (app.REVEL_HOST = 'https://mlb-dev.revelup.com');
             app.get['srv'] == 'dev' && (app.REVEL_HOST = 'https://weborder-dev-branch.revelup.com');
             app.get['srv'] == 'qa-dev' && (app.REVEL_HOST = 'https://weborder-qa-dev-branch.revelup.com');
-            app.get['srv'] == 'ee-dev' && (app.REVEL_HOST = 'https://eegorov-dev-branch.revelup.com');
             app.get['srv'] == 'ap-dev' && (app.REVEL_HOST = 'https://apakhunov-dev-branch.revelup.com');
             app.get['srv'] == 'rde-lab' && (app.REVEL_HOST = 'https://rde-lab.revelup.com');
             app.get['srv'] == 'ab-qa2' && (app.REVEL_HOST = 'https://abeagon-qa2.revelup.com');
             app.get['srv'] == 'ee-dev1' && (app.REVEL_HOST = 'https://eegorov-dev1.revelup.com');
             app.get['srv'] == 'mk-dev' && (app.REVEL_HOST = 'https://mkhazov-dev.revelup.com');
             app.get['srv'] == 'as3-test' && (app.REVEL_HOST = 'https://amazon-s3-test.revelup.com');
+            app.get['srv'] == '2-16' && (app.REVEL_HOST = 'https://2-16.revelup.com');
 
             App.Data.is_stanford_mode = false;
             if (app.get['stanford'] == 'true') {
