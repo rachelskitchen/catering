@@ -81,4 +81,9 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             return g1 ? g1.toUpperCase() : ' ' + g2.toUpperCase();
         });
     });
+
+    Backbone.Epoxy.binding.addFilter('inList', function(value) {
+        var values = Array.prototype.slice.call(arguments, 1);
+        return values.indexOf(value) > -1;
+    });
 });
