@@ -35,20 +35,23 @@
                 </select>
             </div>
         </li>
-        <li class="card__remember">
-            <input type="checkbox" id="rememberCard">
-            <label for="rememberCard"><%= _lp.CARD_SAVE %></label>
+    </ul>
+    <ul class="card font-size3 regular-text">
+        <li class="card__remember checkbox-outer">
+            <span class="input checkbox" id="rememberCard"></span>
+            <label class="title_wrapper fl-right">
+                <span class="title"><%= _lp.CARD_SAVE %></span>
+            </label>
         </li>
     </ul>
 </script>
 
 <script type="text/template" id="card_billing_address-template">
 <div class="billing_address">
-    <div id="use_profile_address" class="font-size3 regular-text">
+    <div id="use_profile_address" class="checkbox-outer font-size3 regular-text">
         <span class="input checkbox"></span>
         <label class="title_wrapper fl-right">
-                <span class="title"></span>
-            </span>
+            <span class="title"></span>
         </label>
     </div>
     <ul class="card address font-size2 regular-text">

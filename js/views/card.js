@@ -131,7 +131,7 @@ define(["backbone", "factory"], function(Backbone) {
            this.options.customer.trigger("change:addresses");
         },
         events: {
-            'click .checkbox-outer': 'change',
+            'click #use_profile_address': 'change',
         },
         bindings: {
             "#use_profile_address":"classes:{hide:hide_profile_address}",
