@@ -91,6 +91,7 @@ define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], funct
                     customer: this.options.customer,
                     address: this.options.card.get("billing_address")
                 }));
+                this.$(".left-panel .scroll-area").contentarrow();
             }
 
             if (payments) {

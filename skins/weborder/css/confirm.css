@@ -5,7 +5,7 @@
 .confirmPayCard .panel {
     border: 0px;
     border-radius: 10px;
-    height: 600px;
+    height: 630px;
     padding-top: 10px;
     padding-bottom: 10px;
     position: relative;
@@ -14,6 +14,17 @@
     display: table-cell;
     vertical-align: top;
     width: 500px;
+}
+.confirmPayCard .scroll-area {
+    max-height: 560px;
+    min-height: 100px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin-right: 10px;
+}
+.confirmPayCard .scroll-area-wrapper {
+    margin-top: 2px;
+    position: relative;
 }
 .confirmPayCard #credit-card {
     margin-top: 150px;
@@ -215,7 +226,7 @@
 }
 
 #popup .order-items {
-    max-height: 335px;
+    max-height: 365px;
     margin: 0 10px;
     min-height: 5px;
     border-width: 1px 1px 0;
