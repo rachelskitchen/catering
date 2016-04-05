@@ -22,8 +22,6 @@
 }
 
 #rememberCard {
-    width: auto;
-    height: 1em;
     margin-right: 0.2em;
 }
 
@@ -54,7 +52,8 @@
 #use_profile_address {
     display: inline-block;
 }
-.billing_address .input {
+.billing_address .input,
+.card__remember .input {
     vertical-align: middle;
     display: inline-block;
     width: 1em;
@@ -66,13 +65,13 @@
     line-height: 0.9em;
     margin-right: 0.3em;
 }
-.billing_address .input::before {
+.input.checkbox::before {
     content: '\f00c';
     font-family: 'FontAwesome';
     font-size: 0.8em;
 }
 
-.billing_address .title_wrapper {
+.checkbox-outer .title_wrapper {
     width: 92%;
 }
 .billing_address .inactive
