@@ -42,6 +42,9 @@ define(["backbone", "factory"], function(Backbone) {
             });
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
+        events: {
+            'click .checkbox-outer': 'changeRememberCard',
+        },
         bindings: {
             '.first_name': 'value: firstLetterToUpperCase(firstName), events: ["input"], trackCaretPosition: firstName',
             '.last_name': 'value: firstLetterToUpperCase(secondName), events: ["input"], trackCaretPosition: secondName',
@@ -50,7 +53,7 @@ define(["backbone", "factory"], function(Backbone) {
             '.card-expiration-month': 'value: expMonth',
             '.card-expiration-year': 'value: expDate, options: years',
             '.card__remember': 'toggle: customer_access_token',
-            '#rememberCard': 'checked: rememberCard'
+            '#rememberCard': "attr:{checked:select(rememberCard,'checked',false)}"
         },
         computeds: {
             years: function() {
@@ -95,6 +98,13 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             return this;
+        },
+        changeRememberCard: function() {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            var el = this.$(".checkbox"),
+                checked = el.attr('checked') == "checked" ? false : true;
+            this.model.set('rememberCard', checked);
         }
     });
 
@@ -121,11 +131,11 @@ define(["backbone", "factory"], function(Backbone) {
            this.options.customer.trigger("change:addresses");
         },
         events: {
-            'click #use_profile_address': 'change',
+            'click .checkbox-outer': 'change',
         },
         bindings: {
             "#use_profile_address":"classes:{hide:hide_profile_address}",
-            "#use_profile_address .title":"text:use_profile_address_title,classes:{inactive:not(use_profile_address)}",
+            "#use_profile_address .title":"text:use_profile_address_title",
             ".checkbox":"classes:{checked:use_profile_address,unchecked:not(use_profile_address)}",
             ".address input":"attr:{disabled:select(use_profile_address,'disabled',false)}",
             ".address":"classes:{inactive:use_profile_address}",

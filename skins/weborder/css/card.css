@@ -5,7 +5,6 @@
     margin: 10px 0;
     padding-left: 30px;
     font-weight: bold;
-    height: 19px;
 }
 .card-block label > span {
     padding-right: 8px;
@@ -37,7 +36,7 @@
     top: 6px;
     bottom: 6px;
     left: 230px;
-    right: 40px;
+    right: 30px;
 }
 .card-block div.select {
     display: inline-block;
@@ -73,12 +72,19 @@
 #exp-year {
     padding-right: 22px;
 }
+.card-block .card__remember {
+    width: 60%;
+}
+.card-block .card__remember label{
+    margin-top: 0.1em;
+    margin-bottom: 0.1em;
+}
 #rememberCard {
     display: inline-block;
     vertical-align: top;
     position: relative;
     font-size: 2em;
-    top: 0.4em;
+    top: 0.2em;
 }
 #use_profile_address {
     margin: 0px 30px 3px 30px;
@@ -89,7 +95,12 @@
     width: 21px;
     border-radius: 4px;
     float: left;
-    margin-right: 7px;
+    margin-right: 12px;
+}
+.input.checkbox {
+    height: 21px;
+    width: 21px;
+    border-radius: 4px;
 }
 .card-block .select-wrapper select[disabled=disabled] {
     color: rgba(0, 0, 0, 0.7);
