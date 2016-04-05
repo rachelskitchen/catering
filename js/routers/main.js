@@ -1117,6 +1117,7 @@ define(["backbone", "factory"], function(Backbone) {
             window.setTimeout(function() {
                 self.listenTo(customer, events, preValidateData);
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, events, preValidateData));
+                self.listenToOnce(self, 'route', App.Data.header.set.bind(App.Data.header, 'enableLink', true));
             }, 0);
 
             return {
@@ -1217,6 +1218,7 @@ define(["backbone", "factory"], function(Backbone) {
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, address, 'change', addressChanged));
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddressAttributes));
+                self.listenToOnce(self, 'route', App.Data.header.set.bind(App.Data.header, 'enableLink', true));
             }, 0);
 
             function updateAddressAttributes() {
@@ -1306,6 +1308,7 @@ define(["backbone", "factory"], function(Backbone) {
                 var events = 'change:password change:confirm_password';
                 self.listenTo(customer, events, preValidateData);
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, events, preValidateData));
+                self.listenToOnce(self, 'route', App.Data.header.set.bind(App.Data.header, 'enableLink', true));
             }, 0);
 
             content.push({
@@ -1361,6 +1364,7 @@ define(["backbone", "factory"], function(Backbone) {
             window.setTimeout(function() {
                 self.listenTo(customer, 'change:email', preValidateData);
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'change:email', preValidateData));
+                self.listenToOnce(self, 'route', App.Data.header.set.bind(App.Data.header, 'enableLink', true));
             }, 0);
 
             return {
