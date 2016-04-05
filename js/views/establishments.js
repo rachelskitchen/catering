@@ -124,7 +124,7 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
         */
         addItem: function(model) {
             var currentEstablishment = this.collection.getEstablishmentID(); // get a establishment's ID
-            if (currentEstablishment != model.get('id')) {
+            if (currentEstablishment != model.get('id') && model.get('system_settings').online_and_app_orders) {
                 this.viewSelectItem = App.Views.GeneratorView.create('CoreEstablishments', {
                     mod: 'SelectItem',
                     el: Backbone.$('<option value="' + model.get('id') + '"> </option>'),
