@@ -855,8 +855,12 @@ define(["main_router"], function(main_router) {
             });
 
             this.prepare('cart', function() {
+                var isAuthorized = App.Data.customer.isAuthorized(),
+                    cb = isAuthorized ? this.navigate.bind(this, 'confirm', true) : this.navigate.bind(this, 'checkout', true),
+                    self = this;
+
                 App.Data.footer.set({
-                    action: this.navigate.bind(this, 'checkout', true)
+                    action: setAction(cb)
                 });
 
                 App.Data.mainModel.set({
@@ -886,6 +890,16 @@ define(["main_router"], function(main_router) {
                 });
 
                 this.change_page();
+
+                function setAction(cb) {
+                    return function() {
+                        if (isAuthorized) {
+                            !self.showIsStudentQuestion(cb) && cb();
+                        } else {
+                            cb();
+                        }
+                    }
+                }
             });
         },
         checkout: function() {
@@ -975,36 +989,11 @@ define(["main_router"], function(main_router) {
                         checkout: true,
                         validationOnly: true
                     }, function() {
-                        if(App.Data.stanfordCard && App.Data.stanfordCard.get('needToAskStudentStatus') && !App.Data.myorder.checkout.isDiningOptionOnline()) {
-                            // App.Data.router.navigate('stanford_is_student', true);
-                            showIsStudentQuestion();
-                        } else {
+                        if (!self.showIsStudentQuestion(cb)) {
                             cb();
                         }
                     });
                 };
-            }
-
-            function showIsStudentQuestion() {
-                App.Data.errors.alert('', false, false, {
-                    isConfirm: true,
-                    typeIcon: '',
-                    confirm: {
-                        ok: _loc.YES,
-                        cancel: _loc.NO
-                    },
-                    customView: new App.Views.StanfordCardView.StanfordCardStudentStatusView({
-                        model: App.Data.stanfordCard
-                    }),
-                    callback: function(res) {
-                        if(res) {
-                            self.navigate('stanford_student_verification', true);
-                        } else {
-                            App.Data.stanfordCard.set('needToAskStudentStatus', false);
-                            self.navigate('confirm', true);
-                        }
-                    }
-                });
             }
         },
         confirm: function() {
@@ -1021,7 +1010,7 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.HEADER_CHECKOUT_PT,
                 back_title: _loc.BACK,
-                back: this.navigate.bind(this, 'checkout', true),
+                back: App.Data.customer.isAuthorized() ? this.navigate.bind(this, 'cart', true) : this.navigate.bind(this, 'checkout', true),
                 promotions: this.navigate.bind(this, 'promotions', true)
             });
 
@@ -1052,6 +1041,42 @@ define(["main_router"], function(main_router) {
                     total: myorder.total,
                     cacheId: true
                 });
+
+                if (App.Data.customer.isAuthorized()) {
+                    content.push({
+                        modelName: 'Checkout',
+                        model: App.Data.myorder.checkout,
+                        collection: App.Data.myorder,
+                        mod: 'OrderTypeShort',
+                        DINING_OPTION_NAME: self.LOC_DINING_OPTION_NAME,
+                        className: 'checkout-short checkout-short-left',
+                        cacheId: true
+                    },
+                    {
+                        modelName: 'Checkout',
+                        model: App.Data.myorder.checkout,
+                        customer: App.Data.customer,
+                        mod: 'AddressShort',
+                        className: 'checkout checkout-lines font-size2',
+                        cacheId: true
+                    },
+                    {
+                        modelName: 'Checkout',
+                        model: App.Data.myorder.checkout,
+                        collection: App.Data.myorder.checkout.get('other_dining_options'),
+                        mod: 'OtherShort',
+                        className: 'checkout checkout-lines font-size2',
+                        cacheId: true
+                    },
+                    {
+                        modelName: 'Checkout',
+                        model: App.Data.myorder.checkout,
+                        timetable: App.Data.timetables,
+                        mod: 'PickupShort',
+                        className: 'checkout checkout-short',
+                        cacheId: true
+                    });
+                }
 
                 App.Data.header.set('showPromotionsLink', App.Settings.has_campaigns);
                 this.listenToOnce(this, 'route', function() {
@@ -1402,7 +1427,7 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: _loc.STANFORD_VERIFICATION,
                 back_title: _loc.BACK,
-                back: this.navigate.bind(this, 'checkout', true)
+                back: this.navigate.bind(this, App.Data.customer.isAuthorized() ? 'cart' : 'checkout', true)
             });
 
             App.Data.mainModel.set({
@@ -1990,6 +2015,36 @@ define(["main_router"], function(main_router) {
                 });
                 Backbone.$.when.apply(Backbone.$, data.promises).then(this.change_page.bind(this));
             }
+        },
+        showIsStudentQuestion: function(cancelCb) {
+            var self = this,
+                stanfordCard = App.Data.stanfordCard;
+
+            if(!stanfordCard || !stanfordCard.get('needToAskStudentStatus') || App.Data.myorder.checkout.isDiningOptionOnline()) {
+                return false;
+            }
+
+            App.Data.errors.alert('', false, false, {
+                isConfirm: true,
+                typeIcon: '',
+                confirm: {
+                    ok: _loc.YES,
+                    cancel: _loc.NO
+                },
+                customView: new App.Views.StanfordCardView.StanfordCardStudentStatusView({
+                    model: App.Data.stanfordCard
+                }),
+                callback: function(res) {
+                    if(res) {
+                        self.navigate('stanford_student_verification', true);
+                    } else {
+                        stanfordCard.set('needToAskStudentStatus', false);
+                        typeof cancelCb == 'function' && cancelCb(); //self.navigate('confirm', true);
+                    }
+                }
+            });
+
+            return true;
         }
     });
 
