@@ -100,27 +100,21 @@ define(["backbone", "factory"], function() {
         name: 'header',
         mod: 'delivery',
         render: function() {
-            var settings = App.Data.settings,
-                sys_settings = settings.get('settings_system'),
+            var settings = App.Data.settings.get('settings_system'),
                 initial_model = this.model.toJSON();
 
-            // Get delivery charge with the greatest amount
-            var delivery_charges = settings.get_delivery_charges(),
-                delivery_charge = delivery_charges ? delivery_charges[delivery_charges.length - 1] : 0;
-
             $.extend(initial_model, {
-                delivery_charge: delivery_charge,
-                currency_symbol: sys_settings.currency_symbol,
-                min_delivery_amount: round_monetary_currency(sys_settings.min_delivery_amount),
-                delivery_post_code_lookup_enabled: _.isArray(sys_settings.delivery_post_code_lookup) && sys_settings.delivery_post_code_lookup[0],
-                delivery_post_codes: _.isArray(sys_settings.delivery_post_code_lookup) && sys_settings.delivery_post_code_lookup[1],
-                delivery_geojson_enabled: _.isArray(sys_settings.delivery_geojson) && sys_settings.delivery_geojson[0],
-                max_delivery_distance: sys_settings.max_delivery_distance,
+                currency_symbol: settings.currency_symbol,
+                min_delivery_amount: round_monetary_currency(settings.min_delivery_amount),
+                delivery_post_code_lookup_enabled: _.isArray(settings.delivery_post_code_lookup) && settings.delivery_post_code_lookup[0],
+                delivery_post_codes: _.isArray(settings.delivery_post_code_lookup) && settings.delivery_post_code_lookup[1],
+                delivery_geojson_enabled: _.isArray(settings.delivery_geojson) && settings.delivery_geojson[0],
+                max_delivery_distance: settings.max_delivery_distance,
                 delivery_time: {
-                    hour: Math.floor(sys_settings.estimated_delivery_time / 60),
-                    minutes: Math.ceil(sys_settings.estimated_delivery_time % 60)
+                    hour: Math.floor(settings.estimated_delivery_time / 60),
+                    minutes: Math.ceil(settings.estimated_delivery_time % 60)
                 },
-                distance_mearsure: sys_settings.distance_mearsure
+                distance_mearsure: settings.distance_mearsure
             });
 
             this.model = initial_model;
