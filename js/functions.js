@@ -2196,7 +2196,7 @@ var FreedomPayPaymentProcessor = {
      */
     saveIgnoreSelectedToken: function(value) {
         if(App.Data.router) {
-            setData(App.Data.router.getUID() + this.ignoreSelectedTokenKey, true);
+            setData(App.Data.router.getUID() + this.ignoreSelectedTokenKey, value);
         }
     },
     /**
