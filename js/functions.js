@@ -2161,16 +2161,56 @@ var FreedomPayPaymentProcessor = {
         return false;
     },
     processPayment: function(myorder, payment_info, pay_get_parameter) {
+        var customer = App.Data.customer,
+            payments = customer.payments;
+
         if (pay_get_parameter) {
-            var get_parameters = App.Data.get_parameters;
+            var get_parameters = App.Data.get_parameters,
+                savedIgnoreSelectedToken = this.loadIgnoreSelectedToken();
+
             if (pay_get_parameter === 'true') {
                 payment_info.transaction_id = get_parameters.transid;
             } else {
                 //TODO: better message
                 payment_info.errorMsg = 'Payment failed.';
             }
+
+            // restore payments.ignoreSelectedToken from a storage
+            if (payments && typeof savedIgnoreSelectedToken == 'boolean') {
+                payments.ignoreSelectedToken = savedIgnoreSelectedToken;
+            }
+        } else if(payments) {
+            // save payments.ignoreSelectedToken to restore that value in capture phase
+            this.saveIgnoreSelectedToken(payments.ignoreSelectedToken);
         }
         return payment_info;
+    },
+    /**
+     * Key used as storage record name.
+     */
+    ignoreSelectedTokenKey: '.freedompay_ignore_selected_token',
+    /**
+     * Saves `ignoreSelectedToken` value of payment tokens collection in storage to restore that value after redirect.
+     * The redirect occurs in case payment token creation and in case payment with saved token. Due to it need to differ these cases.
+     * @param {boolean} value - payment tokens collection `ignoreSelectedToken` value
+     */
+    saveIgnoreSelectedToken: function(value) {
+        if(App.Data.router) {
+            setData(App.Data.router.getUID() + this.ignoreSelectedTokenKey, true);
+        }
+    },
+    /**
+     * Restores `ignoreSelectedToken` of payment tokens collection from storage.
+     * @returns {boolean} Saved value of `ignoreSelectedToken`
+     */
+    loadIgnoreSelectedToken: function() {
+        if(App.Data.router) {
+            var uid = App.Data.router.getUID(),
+                savedValue = getData(App.Data.router.getUID() + this.ignoreSelectedTokenKey);
+            removeData(App.Data.router.getUID() + this.ignoreSelectedTokenKey);
+            return savedValue;
+        }
+
     }
 };
 
