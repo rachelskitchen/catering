@@ -17,7 +17,6 @@
 }
 .confirmPayCard .scroll-area {
     max-height: 560px;
-    min-height: 100px;
     overflow-x: hidden;
     overflow-y: auto;
     margin-right: 10px;
