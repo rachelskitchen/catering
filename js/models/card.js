@@ -177,6 +177,7 @@ define(["backbone"], function(Backbone) {
             var data = getData('card');
             data = data instanceof Object ? data : {};
             delete data.img;
+            data.billing_address = new Backbone.Model(data.billing_address);
             this.set(data);
             return this;
         },
