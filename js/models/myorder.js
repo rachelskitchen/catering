@@ -2707,8 +2707,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          */
         setShippingAddress: function(model, value) {
             var customer = App.Data.customer,
-                shipping_addresses = {},
-                address = {};
+                shipping_addresses = {};
 
             if(!customer) {
                 return;
@@ -2719,13 +2718,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             shipping_addresses.DINING_OPTION_CATERING = customer.get('cateringAddressIndex');
 
             if (value == 'DINING_OPTION_DELIVERY' || value == 'DINING_OPTION_SHIPPING' || value === 'DINING_OPTION_CATERING') {
-                address = customer.isAuthorized() ? customer.get('profileAddressIndex') : shipping_addresses[value];
+                customer.set('shipping_address', shipping_addresses[value]);
             } else {
-                address = customer.defaults.shipping_address;
+                customer.set('shipping_address', customer.defaults.shipping_address);
             }
-            customer.set('shipping_address', address);
 
-            return address;
+            return customer.get('shipping_address');
         }
     });
 
