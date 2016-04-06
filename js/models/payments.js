@@ -227,6 +227,7 @@ define(['backbone'], function(Backbone) {
          */
         initialize: function() {
             this.listenTo(this, 'change:selected', this.radioSelection);
+            this.listenTo(this, 'add', this.onAddHandler);
             Backbone.Collection.prototype.initialize.apply(this, arguments);
         },
         /**
@@ -238,6 +239,23 @@ define(['backbone'], function(Backbone) {
             if (value) {
                 this.where({selected: true}).forEach(function(payment) {
                     model != payment && payment.set({selected: false});
+                });
+            }
+        },
+        /**
+         * When new payment is added, deselects all other payments (radio button behavior)
+         * and changes `is_primary` attribute on `false` for existing payments.
+         * @param {App.Models.PaymentToken} model - new payment.
+         */
+        onAddHandler: function(model) {
+            if (model.get('selected')) {
+                this.where({selected: true}).forEach(function(payment) {
+                    model != payment && payment.set({selected: false});
+                });
+            }
+            if (model.get('is_primary')) {
+                this.where({is_primary: true}).forEach(function(payment) {
+                    model != payment && payment.set({is_primary: false});
                 });
             }
         },
@@ -515,11 +533,7 @@ define(['backbone'], function(Backbone) {
                 headers: authorizationHeader,
                 contentType: "application/json",
                 success: function(data) {
-                    self.where({is_primary: true}).forEach(function(payment) {
-                        payment.set('is_primary', false);
-                    });
-                    var model = self.add(data);
-                    self.radioSelection(model, true);
+                    _.isObject(data) && self.add(data);
                 },
                 error: new Function()              // to override global ajax error handler
             });
