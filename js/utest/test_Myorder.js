@@ -3359,14 +3359,19 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             beforeEach(function() {
                 this.customer = App.Data.customer;
                 App.Data.customer = new Backbone.Model({
+                    access_token: '',
                     shipping_address: -1,
                     addresses: ['address 1', 'address 2'],
                     shipping_selected: -1,
                     shipping_services: ['shipping service 1', 'shipping service 2'],
                     deliveryAddressIndex: 0,
                     shippingAddressIndex: 1,
-                    cateringAddressIndex: 2
+                    cateringAddressIndex: 2,
+                    profileAddressIndex: 3
                 });
+
+                App.Data.customer.isAuthorized = jasmine.createSpy().and.returnValue(false);
+
                 App.Data.customer.defaults = {
                     shipping_address: -1
                 };
@@ -3400,6 +3405,14 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 expect(App.Data.customer.get('cateringAddressIndex')).toBe(2);
                 expect(model.setShippingAddress(checkout, diningOption)).toBe(2);
                 expect(App.Data.customer.get('cateringAddressIndex')).toBe(2);
+            });
+
+            it('dining option is delivery, customer is logged in', function() {
+                diningOption = 'DINING_OPTION_DELIVERY';
+                App.Data.customer.isAuthorized.and.returnValue(true);
+                expect(App.Data.customer.get('profileAddressIndex')).toBe(3);
+                expect(model.setShippingAddress(checkout, diningOption)).toBe(3);
+                expect(App.Data.customer.get('shipping_address')).toBe(3);
             });
 
             it('dining option is not shipping or delivery', function() {
