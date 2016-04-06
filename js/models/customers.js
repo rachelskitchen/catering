@@ -1612,9 +1612,10 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * Creates an order making payment with token.
          * @param {Object} order - order json (see {@link App.Collections.Myorder#submit_order_and_pay})
          * @param {?Object} [card] - CC json (see {@link App.Collections.Myorder#submit_order_and_pay})
+         * @param {boolean} [isCapturePhase] - payment capture phase
          * @returns {Object|undefined} Deferred object.
          */
-        payWithToken: function(order, card) {
+        payWithToken: function(order, card, isCapturePhase) {
             if (!this.payments) {
                 return console.error("CC payment processor doesn't provide tokenization")
             }
@@ -1624,6 +1625,9 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 self = this;
 
             this.paymentsRequest && this.paymentsRequest.always(function() {
+                if (isCapturePhase) {
+                    payments.ignoreSelectedToken = true; // set to true if this is only capture phase [Bug 40175]
+                }
                 payments.orderPayWithToken(self.getAuthorizationHeader(), order, self.get('user_id'), card)
                         .done(def.resolve.bind(def))
                         .fail(function(jqXHR) {
