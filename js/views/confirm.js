@@ -193,11 +193,16 @@ define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], funct
         addCreditCard: function() {
             var self = this;
             if (this.options.isOnlyTokensDialog) {
-                this.submit_payment(function() {
-                    self.options.payments.ignoreSelectedToken = true;
+                self.options.payments.trigger('onAskForRememberCard', {
+                    callback: submitPayment
                 });
             } else {
                 this.showPayments();
+            }
+            function submitPayment() {
+                self.submit_payment(function() {
+                    self.options.payments.ignoreSelectedToken = true;
+                });
             }
         },
         showGiftCards: function() {
