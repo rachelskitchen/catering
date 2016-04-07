@@ -31,9 +31,9 @@
     border-width: 2px;
     border-radius: 15px;
     border-style: solid;
-    padding: 0 15px;
+    padding: 5px 15px;
     cursor: pointer;
-    line-height: 26px;
+    max-width: 175px;
 }
 
 .product_instructions .add_instructions.parent-product {
@@ -46,6 +46,7 @@
 
 .product_instructions  .instruction_block {
     display: none;
+    padding-bottom: 1px;
 }
 
 /* modifiers mod block end */

@@ -146,9 +146,12 @@
 }
 #pay_popup .btn {
     width: 248px;
-    height: 38px;
+    height: auto;
     border-radius: 25px;
     margin: 0 auto 20px;
+    line-height: normal;
+    padding-top: 3px;
+    padding-bottom: 3px;
 }
 .btn.paypal {
     border: none;
