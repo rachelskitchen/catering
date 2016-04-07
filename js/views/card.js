@@ -24,8 +24,8 @@ define(["backbone", "factory"], function(Backbone) {
     'use strict';
 
     var years = (function() {
-        var arr= [];
-        for(var i = (new Date).getFullYear(), l = i + 21; i <= l; i++) {
+        var arr = [];
+        for (var i = (new Date).getFullYear(), l = i + 21; i <= l; i++) {
             arr.push(i);
         }
         return arr;
@@ -116,8 +116,8 @@ define(["backbone", "factory"], function(Backbone) {
             this.update_use_profile_address(this.model.get('use_profile_address'));
 
             var model = this.options.customer.toJSON(),
-                        defaultAddress = App.Settings.address,
-                        address = this.options.customer.getCheckoutAddress();
+                defaultAddress = App.Settings.address,
+                address = this.options.customer.getCheckoutAddress();
             var country = address && address.country ? address.country : defaultAddress.country;
             var state = country == 'US' ? (model.address ? address.state : defaultAddress.state) : null;
             if (!this.model.get('country_code')) {
@@ -128,22 +128,22 @@ define(["backbone", "factory"], function(Backbone) {
             }
         },
         start: function() {
-           this.options.customer.trigger("change:addresses");
+            this.options.customer.trigger("change:addresses");
         },
         events: {
             'click #use_profile_address': 'change',
         },
         bindings: {
-            "#use_profile_address":"classes:{hide:hide_profile_address}",
-            "#use_profile_address .title":"text:use_profile_address_title",
-            ".checkbox":"classes:{checked:use_profile_address,unchecked:not(use_profile_address)}",
-            ".address input":"attr:{disabled:select(use_profile_address,'disabled',false)}",
-            ".address":"classes:{inactive:use_profile_address}",
-            ".address select":"attr:{disabled:select(use_profile_address,'disabled',false)}",
+            "#use_profile_address": "classes: {hide: hide_profile_address}",
+            "#use_profile_address .title": "text: use_profile_address_title",
+            ".checkbox": "classes: {checked: use_profile_address, unchecked: not(use_profile_address)}",
+            ".address input": "attr: {disabled: select(use_profile_address, 'disabled', false)}",
+            ".address": "classes: {inactive: use_profile_address}",
+            ".address select": "attr: {disabled: select(use_profile_address, 'disabled', false)}",
             ".address select.states": "value: state, options: states",
             ".address select.countries": "value: country_code, options: countries",
-            ".address .city": "value: address_city",
-            ".address .street_1": "value: address_street_1",
+            ".address .city": "value: firstLetterToUpperCase(address_city), events: ['input'], trackCaretPosition: address_city",
+            ".address .street_1": "value: firstLetterToUpperCase(address_street_1), events: ['input'], trackCaretPosition: address_street_1",
             ".address .zipcode": "value: address_zipcode",
             "label[for=zipcode] span": "text: zipcode_label",
             ".states-wrap": "classes:{hide:hide_states}"
@@ -169,7 +169,7 @@ define(["backbone", "factory"], function(Backbone) {
                     if (!customer.isAuthorized() || !addr) {
                         return "";
                     }
-                    var addr_str = [addr.street_1,addr.city,addr.state,addr.country,addr.zipcode].join(", ");
+                    var addr_str = [addr.street_1, addr.city, addr.state, addr.country, addr.zipcode].join(", ");
                     return _loc.USE_PROFILE_ADDRESS_TITLE_1 + ' \"' + addr_str + '\"';
                 }
             },
@@ -213,7 +213,7 @@ define(["backbone", "factory"], function(Backbone) {
                 }
             },
         },
-        change: function(event){
+        change: function(event) {
             event.stopImmediatePropagation();
             event.preventDefault();
             var el = this.$(".checkbox"),
