@@ -894,8 +894,9 @@ footer.profile-container {
     font-size: 21px;
 }
 .confirm .btn.btn-long {
+    display: inline-block;
     min-width: 400px;
-    max-width: 450px;
+    max-width: 590px;
 }
 .confirm #content img {
     height: 200px;
