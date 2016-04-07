@@ -405,6 +405,21 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.errors.alert(_loc.PROFILE_PAYMENT_TOKEN_NOT_FOUND);
             });
 
+            this.listenTo(customer.payments, 'onAskForRememberCard', function(data) {
+                App.Data.errors.alert(MSG.CARD_SAVE, false, false, {
+                    isConfirm: true,
+                    typeIcon: '',
+                    confirm: {
+                        ok: _loc.YES,
+                        cancel: _loc.NO
+                    },
+                    callback: function(res) {
+                        App.Data.card.set('rememberCard', !!res);
+                        data.callback();
+                    }
+                });
+            });
+
             function listenToCVVRequired() {
                 this.listenTo(customer, 'onCVVRequired', function(data) {
                     App.Data.errors.alert('', false, false, {

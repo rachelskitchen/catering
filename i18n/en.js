@@ -491,7 +491,8 @@
             'MERCURY_RETURN_MESSAGE_VALIDATE_NAME_FAIL': 'Invalid data entered in cardholder name field',
             'MERCURY_RETURN_MESSAGE_DEFAULT': 'Unknown error',
             'ERROR_DURING_TOKENIZATION': 'Error during tokenization',
-            'ERROR_CAN_NOT_LOAD_THE_GOOGLE_MAPS_SERVICE': 'Can\'t load the google maps service. The page will be reloaded.'
+            'ERROR_CAN_NOT_LOAD_THE_GOOGLE_MAPS_SERVICE': 'Can\'t load the google maps service. The page will be reloaded.',
+            'CARD_SAVE': 'Remember the card data for future payments?'
         },
         'DINING_OPTION_NAME': {
             'DINING_OPTION_TOGO': 'Take Out',
