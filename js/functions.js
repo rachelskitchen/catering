@@ -2218,9 +2218,17 @@ var FreedomPayPaymentProcessor = {
             if (payments && typeof savedIgnoreSelectedToken == 'boolean') {
                 payments.ignoreSelectedToken = savedIgnoreSelectedToken;
             }
+
+            // restore selected token id
+            if (payments) {
+                payment_info.token_id = this.loadSelectedToken();
+            }
         } else if(payments) {
             // save payments.ignoreSelectedToken to restore that value in capture phase
             this.saveIgnoreSelectedToken(payments.ignoreSelectedToken);
+
+            // save selected token
+            customer.doPayWithToken() && this.saveSelectedToken(payments.getSelected().get('id'));
         }
         return payment_info;
     },
@@ -2245,8 +2253,33 @@ var FreedomPayPaymentProcessor = {
     loadIgnoreSelectedToken: function() {
         if(App.Data.router) {
             var uid = App.Data.router.getUID(),
-                savedValue = getData(App.Data.router.getUID() + this.ignoreSelectedTokenKey);
-            removeData(App.Data.router.getUID() + this.ignoreSelectedTokenKey);
+                savedValue = getData(uid + this.ignoreSelectedTokenKey);
+            removeData(uid + this.ignoreSelectedTokenKey);
+            return savedValue;
+        }
+    },
+    /**
+     * Key used as storage record name.
+     */
+    selectedTokenKey: '.freedompay_selected_token',
+    /**
+     * Saves `id` of selected token in storage to restore that value after redirect.
+     * @param {number} token_id - selected token
+     */
+    saveSelectedToken: function(token_id) {
+        if(App.Data.router) {
+            setData(App.Data.router.getUID() + this.selectedTokenKey, token_id);
+        }
+    },
+    /**
+     * Restores `id` of selected token from storage.
+     * @returns {number} Saved id of selected token.
+     */
+    loadSelectedToken: function() {
+        if(App.Data.router) {
+            var uid = App.Data.router.getUID(),
+                savedValue = getData(uid + this.selectedTokenKey);
+            removeData(uid + this.selectedTokenKey);
             return savedValue;
         }
 
