@@ -52,12 +52,18 @@ define(["backbone", "factory"], function(Backbone) {
             '.secure': 'value: securityCode, events: ["input"], restrictInput: "0123456789", pattern: /^[\\d|-]{0,4}$/',
             '.card-expiration-month': 'value: expMonth',
             '.card-expiration-year': 'value: expDate, options: years',
-            '.card__remember': 'toggle: customer_access_token',
-            '#rememberCard': "attr:{checked:select(rememberCard,'checked',false)}"
+            '.card__remember': 'toggle: customerPayments',
+            '#rememberCard': "attr: {checked: select(rememberCard, 'checked', false)}"
         },
         computeds: {
             years: function() {
                 return years;
+            },
+            customerPayments: {
+                deps: ['customer_access_token'],
+                get: function() {
+                    return App.Data.customer.payments;
+                }
             }
         },
         render: function() {
