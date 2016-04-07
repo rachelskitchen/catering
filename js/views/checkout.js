@@ -628,15 +628,15 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
             var payment = App.Data.settings.get_payment_process();
             if (!payment.credit_card_dialog && noTokens) {
-                App.Data.myorder.check_order({
-                    order: true,
-                    tip: true,
-                    customer: true,
-                    checkout: true,
-                    validationOnly: this.needPreValidate
-                }, function() {
-                    self.pay(PAYMENT_TYPE.CREDIT);
-                });
+                if (this.needPreValidate) {
+                    check_order();
+                }
+                else {
+                    // if there are no tokens and this is not prevalidation, need to ask for remember card
+                    payments.trigger('onAskForRememberCard', {
+                        callback: check_order
+                    });
+                }
             } else if (this.options.flag) {
                 App.Data.myorder.check_order({
                     order: true,
@@ -649,6 +649,18 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 });
             } else {
                 card_popup();
+            }
+
+            function check_order() {
+                App.Data.myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                    validationOnly: this.needPreValidate
+                }, function() {
+                    self.pay(PAYMENT_TYPE.CREDIT);
+                });
             }
 
             function card_popup() {
