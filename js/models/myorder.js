@@ -2391,7 +2391,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     error: new Function()    // to override global ajax error handler
                 });
             } else {
-                req = App.Data.customer.payWithToken(order, card);
+                req = App.Data.customer.payWithToken(order, card, payment_info.token_id);
             }
 
             // successfull payment handler
