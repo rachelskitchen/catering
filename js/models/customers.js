@@ -1617,9 +1617,10 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * Creates an order making payment with token.
          * @param {Object} order - order json (see {@link App.Collections.Myorder#submit_order_and_pay})
          * @param {?Object} [card] - CC json (see {@link App.Collections.Myorder#submit_order_and_pay})
+         * @param {?number} [token_id] - token id that has to be used for payment.
          * @returns {Object|undefined} Deferred object.
          */
-        payWithToken: function(order, card) {
+        payWithToken: function(order, card, token_id) {
             if (!this.payments) {
                 return console.error("CC payment processor doesn't provide tokenization")
             }
@@ -1629,6 +1630,10 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                 self = this;
 
             this.paymentsRequest && this.paymentsRequest.always(function() {
+                var token;
+                if (token_id > -1 && (token = payments.get(token_id))) {
+                    token.set('selected', true);
+                }
                 payments.orderPayWithToken(self.getAuthorizationHeader(), order, self.get('user_id'), card)
                         .done(def.resolve.bind(def))
                         .fail(function(jqXHR) {
