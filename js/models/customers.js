@@ -523,15 +523,20 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          */
         getCheckoutAddress: function() {
             var customer = this.toJSON(),
-                shipping_address = customer.shipping_address;
+                shipping_address = customer.shipping_address,
+                reverse_addr;
 
             // if shipping address isn't selected take last index
             if(this.isDefaultShippingAddress()) {
                 shipping_address = customer.addresses.length - 1;
             } else {
-                var reverse_addr_index = shipping_address == customer.deliveryAddressIndex ? customer.shippingAddressIndex : customer.deliveryAddressIndex;
                 var addr = customer.addresses[shipping_address];
-                var reverse_addr = customer.addresses[reverse_addr_index];
+                customer.addresses.some(function(el, index) {
+                    return index != shipping_address && index != customer.profileAddressIndex && (reverse_addr = el); // use the first existing address
+                });
+                if (!reverse_addr && this.isAuthorized()) {
+                    reverse_addr = customer.addresses[customer.profileAddressIndex]; // use profile address
+                }
                 addr == undefined && (addr = {});
                 if (reverse_addr) {
                     if ((addr.country && reverse_addr.country && addr.country == reverse_addr.country) ||
