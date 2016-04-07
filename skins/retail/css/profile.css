@@ -43,6 +43,8 @@
 #profile-panel .signup-link {
     border-right-width: 1px;
     border-right-style: solid;
+    width: 200px;
+    text-align: right;
 }
 
 #profile-panel .box {

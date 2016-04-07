@@ -285,14 +285,14 @@ footer {
     top: 32px;
 }
 #header .main ul.menu {
-    min-width: 340px;
+    min-width: 290px;
     position: absolute;
-    right: 155px;
+    right: 210px;
     top: 0;
 }
 #header .main ul.menu li {
     display: inline-block;
-    margin: 12px 10px 0;
+    margin: 12px 5px 0;
     vertical-align: middle;
     padding-bottom: 1px;
 }
@@ -342,7 +342,7 @@ footer {
     border-style: solid;
     padding: 0 10px 0 30px;
     height: 25px;
-    width: 130px;
+    width: 120px;
     border-radius: 14px;
 }
 #header .main .search:before {
@@ -912,7 +912,10 @@ section.maintenance .back {
     font-size: 21px;
 }
 .confirm .btn.btn-long {
-    width: 400px;
+    display: inline-block;
+    max-width: 560px;
+    min-width: 400px;
+    width: auto;
 }
 .confirm #content img {
     height: 200px;
