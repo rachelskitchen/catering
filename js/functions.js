@@ -2228,7 +2228,7 @@ var FreedomPayPaymentProcessor = {
             this.saveIgnoreSelectedToken(payments.ignoreSelectedToken);
 
             // save selected token
-            customer.doPayWithToken() && this.saveSelectedToken(payments.getSelected().get('id'));
+            customer.doPayWithToken() && this.saveSelectedToken(payments.getSelectedPayment().get('id'));
         }
         return payment_info;
     },
