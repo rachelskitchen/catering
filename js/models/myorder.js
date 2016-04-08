@@ -2282,6 +2282,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     orderInfo: order_info,
                     paymentInfo: payment_info
                 },
+                payment = App.Data.settings.get_payment_process(),
                 billing_address;
 
             myorder.each(function(model) {
@@ -2381,7 +2382,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             var myorder_json = JSON.stringify(order),
                 successValidation;
 
-            if (validationOnly || payment_type != PAYMENT_TYPE.CREDIT || !App.Data.customer.isAuthorized() || !App.Data.customer.payments || (card.cardNumber && !card.rememberCard)) {
+            if (validationOnly || payment_type != PAYMENT_TYPE.CREDIT || !App.Data.customer.isAuthorized() || !App.Data.customer.payments || (card.cardNumber && !card.rememberCard) || (!payment.credit_card_dialog && !card.rememberCard)) {
                 var req = $.ajax({
                     type: "POST",
                     url: App.Data.settings.get("host") + "/weborders/" + (validationOnly ? "pre_validate/" : "create_order_and_pay_v1/"),
