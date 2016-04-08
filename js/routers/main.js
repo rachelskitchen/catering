@@ -405,7 +405,7 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.errors.alert(_loc.PROFILE_PAYMENT_TOKEN_NOT_FOUND);
             });
 
-            this.listenTo(customer.payments, 'onAskForRememberCard', function(data) {
+            this.listenTo(customer, 'onAskForRememberCard', function(data) {
                 App.Data.errors.alert(MSG.CARD_SAVE, false, false, {
                     isConfirm: true,
                     typeIcon: '',
