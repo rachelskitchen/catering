@@ -122,7 +122,7 @@ define(["backbone"], function(Backbone) {
              */
             use_profile_address: false,
             /**
-             * Indicates whether to remember this card for future payments.
+             * Indicates whether to save this card for future payments.
              * @type {Boolean}
              * @default false
              */
