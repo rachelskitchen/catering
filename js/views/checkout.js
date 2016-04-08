@@ -147,12 +147,6 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 });
                 this.subViews.push(address);
                 this.$('.delivery_address').append(address.el);
-                if(address.model.state || address.model.province)
-                    this.trigger('address-with-states');
-                else
-                    this.trigger('address-without-states');
-            } else {
-                this.trigger('address-hide');
             }
         },
         controlDeliveryOther: function(model, value) {
@@ -238,8 +232,35 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
     App.Views.CoreCheckoutView.CoreCheckoutAddressView = App.Views.DeliveryAddressesView.extend({
         name: 'checkout',
-        mod: 'address'
+        mod: 'address',
+        initialize: function() {
+            _.extend(this.bindingSources, {
+                customer: this.options.customer
+            });
+            App.Views.DeliveryAddressesView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            '#addresses': 'options: customerAddresses'
+        },
+        computeds: {
+            customerAddresses: function() {
+                var addresses = this.options.customer.get('addresses');
+                return _.map(addresses, function(addr, key) {
+                    return addr && addr.street_1 ? {label: addr.street_1, value: key} : undefined;
+                }).filter(function(addr) {
+                    return addr;
+                });
+            }
+        }
     });
+
+    // App.View.CoreCheckoutView.CoreCheckoutAddressSelectionView = App.View.FactoryView.extend({
+    //     name: 'checkout',
+    //     mod: 'address_selection',
+    //     bindings: {
+    //         '#addresses': 'options: adresses'
+    //     }
+    // });
 
     App.Views.CoreCheckoutView.CoreCheckoutOtherItemView = App.Views.FactoryView.extend({
         name: 'checkout',
