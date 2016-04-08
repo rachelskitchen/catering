@@ -193,7 +193,7 @@ define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], funct
         addCreditCard: function() {
             var self = this;
             if (this.options.isOnlyTokensDialog) {
-                self.options.payments.trigger('onAskForRememberCard', {
+                self.options.customer.trigger('onAskForRememberCard', {
                     callback: submitPayment
                 });
             } else {

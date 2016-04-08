@@ -642,7 +642,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         },
         credit_card: function() {
             var self = this,
-                payments = App.Data.customer.payments,
+                customer = App.Data.customer,
+                payments = customer.payments,
                 noTokens = payments ? !payments.length : true;
 
             $('#popup .cancel').trigger('click');
@@ -654,7 +655,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 }
                 else {
                     // if there are no tokens and this is not prevalidation, need to ask for remember card
-                    payments.trigger('onAskForRememberCard', {
+                    customer.trigger('onAskForRememberCard', {
                         callback: check_order
                     });
                 }
@@ -697,7 +698,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     payments: payments,
                     isOnlyTokensDialog: !payment.credit_card_dialog,
                     two_columns_view: true,
-                    customer: App.Data.customer
+                    customer: customer
                 });
             }
         },
