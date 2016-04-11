@@ -229,6 +229,10 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                 return this.model.get_modifiers().length > 0;
             }
         },
+        getProductPrice: function() {
+            var modifiers_price = this.model.get_sum_of_modifiers();
+            return round_monetary_currency(this.model.get_product_price() + modifiers_price);
+        },
         customize: function(event) {
             var self = this;
             var clone = this.model.clone();
@@ -248,6 +252,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                                 mod: 'MatrixCombo',
                                 cache_id: self.model.get('id_product')
                             });
+                        self.update_price();
                     }
                 }
             });

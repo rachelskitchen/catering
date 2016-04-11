@@ -55,16 +55,27 @@ define(["myorder_view"], function(myorder_view) {
         }
     });
 
-    var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
+    var MyOrderItemView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemView );
+    var MyOrderItemComboView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemComboView );
+    var MyOrderItemUpsellView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemUpsellView );
+
+    function _MyOrderItemView(_base){ return _base.extend({
         editItem: function(e) {
             e.preventDefault();
             var index = this.model.collection.models.indexOf(this.model);
-            if (this.model.isComboBased())
-                App.Data.router.navigate('combo_product/' + index, true);
+            if (this.model.isComboBased()) {
+                if (this.model.isUpsellProduct()){
+                    App.Data.router.navigate('upsell_product/' + index, true);
+                } else {
+                    App.Data.router.navigate('combo_product/' + index, true);
+                }
+            }
             else
                 App.Data.router.navigate('modifiers/' + index, true);
         }
-    });
+      });
+    }
+
 
     var MyOrderListView = App.Views.CoreMyOrderView.CoreMyOrderListView.extend({
         bindings: {
@@ -145,6 +156,8 @@ define(["myorder_view"], function(myorder_view) {
         App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
         App.Views.MyOrderView.MyOrderMatrixComboView = MyOrderMatrixComboView;
         App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
+        App.Views.MyOrderView.MyOrderItemComboView = MyOrderItemComboView;
+        App.Views.MyOrderView.MyOrderItemUpsellView = MyOrderItemUpsellView;
         App.Views.MyOrderView.MyOrderStanfordItemView = MyOrderStanfordItemView;
     });
 });

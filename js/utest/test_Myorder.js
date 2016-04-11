@@ -3644,6 +3644,54 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
     });
 
+    describe('App.Models.MyorderUpsell', function() {
+        var model;
+
+        beforeEach(function() {
+            model = new App.Models.MyorderUpsell();
+        });
+
+        it('Environment', function() {
+            expect(App.Models.MyorderUpsell).toBeDefined();
+        });
+
+        describe('update_product_price()', function() {
+            var product, productData, comboInitialPrice, getInitialPriceSpy,
+                orderInitialPrice = 10;
+
+            beforeEach(function() {
+                spyOn(App.Models.Myorder.prototype, 'get_initial_price').and.callFake(function() {
+                    return this.get('product').get('price');
+                });
+                product = new App.Models.Product();
+                productData = deepClone(productsData.addJSON_has_upsell_true);
+            });
+
+            it('calculation case # 1, saving amount is negative', function() {
+                product.addJSON(productData);
+                model.set('product', product, {silent: true});
+                model.set("upcharge_price", 20, {silent: true});
+                expect(model.update_product_price()).toBe(38.3);
+                expect(model.get('product').get('combo_price')).toBe(38.3);
+            });
+
+            it('calculation case # 2, saving amount is positive', function() {
+                product.addJSON(productData);
+                model.set('product', product, {silent: true});
+                model.get('product').set('price', 38.7, {silent: true});
+                model.set("upcharge_price", 5, {silent: true});
+                expect(model.update_product_price()).toBe(53.7);
+            });
+
+            it('calculation case # 3, saving delta is positive > root product price', function() {
+                product.addJSON(productData);
+                model.set('product', product, {silent: true});
+                model.get('product').set('price', 4.1, {silent: true});
+                model.set("upcharge_price", 5, {silent: true});
+                expect(model.update_product_price()).toBe(24.0);
+            });
+        });
+    });
 //===============================================================
 
     describe('App.Models.DiscountItem', function() {

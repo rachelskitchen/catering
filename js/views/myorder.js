@@ -285,7 +285,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     if (self.options.action === 'add') {
                         App.Data.myorder.add(self.model);
                     } else {
-                        collection = self.options.real.collection;
                         self.options.real.update(self.model);
                     }
                     $('#popup .cancel').trigger('click', ['OK']);
@@ -360,11 +359,9 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             //it's for save time for useless processing:
             this.stopListening();
         },
-        render: function() {
-            var self = this, view,
+        renderModifiers: function() {
+            var self = this,
                 modifiers = this.model.get_modifiers();
-
-            this.$el.html(this.template(this.getData()));
 
             modifiers && modifiers.each(function(modifier) {
                 if(modifier.get('admin_modifier') && (modifier.get('admin_mod_key') == 'SPECIAL' || modifier.get('admin_mod_key') == 'SIZE'))
@@ -381,26 +378,21 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     self.$('.modifier_place').append(view.el);
                 });
             });
+        },
+        render: function() {
+            var self = this, view;
 
-            if (this.model.isComboBased()) {
-                view = App.Views.GeneratorView.create('MyOrder', {
-                    el: this.$('.combo_products_place'),
-                    mod: 'ComboList',
-                    collection: this.model.get('product').get('product_sets').get_selected_products()
-                });
-                self.subViews.push(view);
-            }
+            this.$el.html(this.template(this.getData()));
 
-            if (!this.model.isChildProduct()) {
-                view = App.Views.GeneratorView.create('MyOrder', {
-                    el: $('<li></li>'),
-                    mod: 'ProductDiscount',
-                    model: this.model
-                });
-                self.subViews.push(view);
-                self.$('.discount_place').append(view.el);
-            }
+            this.renderModifiers();
 
+            view = App.Views.GeneratorView.create('MyOrder', {
+                el: $('<li></li>'),
+                mod: 'ProductDiscount',
+                model: this.model
+            });
+            self.subViews.push(view);
+            self.$('.discount_place').append(view.el);
             return this;
         },
         getData: function() {
@@ -463,6 +455,78 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         }
     });
 
+    var CoreMyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView;
+    App.Views.CoreMyOrderView.CoreMyOrderItemComboView = CoreMyOrderItemView.extend({
+        render: function() {
+            var self = this, view,
+                modifiers = this.model.get_modifiers(),
+                model = this.getData();
+
+            if (this.model.isUpsellProduct()) {
+                model.name = model.upcharge_name;
+            }
+
+            this.$el.html(this.template(model));
+
+            if (this.model.isChildProduct()) {
+                this.renderModifiers();
+            }
+
+            if (!this.model.isChildProduct()) {
+                view = App.Views.GeneratorView.create('MyOrder', {
+                    el: this.$('.combo_products_place'),
+                    mod: 'ComboList',
+                    collection: this.model.get('product').get('product_sets').get_selected_products()
+                });
+                self.subViews.push(view);
+            }
+
+            if (!this.model.isChildProduct()) {
+                view = App.Views.GeneratorView.create('MyOrder', {
+                    el: $('<li></li>'),
+                    mod: 'ProductDiscount',
+                    model: this.model
+                });
+                self.subViews.push(view);
+                self.$('.discount_place').append(view.el);
+            }
+
+            return this;
+        }
+    });
+
+    App.Views.CoreMyOrderView.CoreMyOrderItemUpsellRootView = CoreMyOrderItemView.extend({
+        name: 'myorder',
+        mod: 'item_upsell_root',
+        render: function() {
+            var self = this,
+                model = this.getData();
+
+            model.quantity = 1;
+            this.$el.html(this.template(model));
+
+            this.renderModifiers();
+            return this;
+        }
+    });
+
+    var CoreMyOrderItemComboView = App.Views.CoreMyOrderView.CoreMyOrderItemComboView;
+    App.Views.CoreMyOrderView.CoreMyOrderItemUpsellView = CoreMyOrderItemComboView.extend({
+        render: function() {
+            var self = this, view;
+            CoreMyOrderItemComboView.prototype.render.apply(this, arguments);
+
+            view = App.Views.GeneratorView.create('MyOrder', {
+                el: this.$('.upsell_root_product_place'),
+                mod: 'ItemUpsellRoot',
+                model: this.model,
+                collection: this.collection
+            });
+
+            self.subViews.push(view);
+        }
+    });
+
     App.Views.CoreMyOrderView.CoreMyOrderDiscountView = App.Views.FactoryView.extend({
         name: 'myorder',
         mod: 'discount',
@@ -515,8 +579,9 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             this.collection.each(this.addItem.bind(this));
         },
         addItem: function(model) {
+            var mod = model.isComboBased() ? (model.isUpsellProduct() ? 'ItemUpsell' : 'ItemCombo') : 'Item';
             var view = App.Views.GeneratorView.create('MyOrder', {
-                mod: 'Item',
+                mod: mod,
                 model: model,
                 el: $('<li></li>'),
                 collection: this.collection
@@ -559,7 +624,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         mod: 'combo_list',
         addItem: function(model) {
             var view = App.Views.GeneratorView.create('MyOrder', {
-                mod: 'Item',
+                mod: 'ItemCombo',
                 model: model,
                 el: $('<li></li>'),
                 collection: this.collection
@@ -709,5 +774,8 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         App.Views.MyOrderView.MyOrderNoteView = App.Views.CoreMyOrderView.CoreMyOrderNoteView;
         App.Views.MyOrderView.MyOrderStanfordItemView = App.Views.CoreMyOrderView.CoreMyOrderStanfordItemView;
         App.Views.MyOrderView.MyOrderMatrixComboView = App.Views.CoreMyOrderView.CoreMyOrderMatrixComboView;
+        App.Views.MyOrderView.MyOrderItemComboView = App.Views.CoreMyOrderView.CoreMyOrderItemComboView;
+        App.Views.MyOrderView.MyOrderItemUpsellView = App.Views.CoreMyOrderView.CoreMyOrderItemUpsellView;
+        App.Views.MyOrderView.MyOrderItemUpsellRootView = App.Views.CoreMyOrderView.CoreMyOrderItemUpsellRootView;
     });
 });

@@ -225,6 +225,7 @@
             app.get['srv'] == 'ab-qa2' && (app.REVEL_HOST = 'https://abeagon-qa2.revelup.com');
             app.get['srv'] == 'ee-dev1' && (app.REVEL_HOST = 'https://eegorov-dev1.revelup.com');
             app.get['srv'] == 'as3-test' && (app.REVEL_HOST = 'https://amazon-s3-test.revelup.com');
+            app.get['srv'] == '2-13' && (app.REVEL_HOST = 'https://2-13.revelup.com');
 
             App.Data.is_stanford_mode = false;
             if (app.get['stanford'] == 'true') {

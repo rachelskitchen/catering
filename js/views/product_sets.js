@@ -170,14 +170,11 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             if(this.model.get('selected')) {
                 this.$('.input').attr('checked', 'checked');
 
-                if (App.Settings.enable_quantity_modifiers) {
-                    this.$(".mdf_quantity").css("display", "inline-block");
-
-                    this.$('.mdf_quantity option:selected').removeAttr('selected');
-                    quantity = this.model.get('quantity');
-                    if (quantity > 0) {
-                        this.$(".mdf_quantity select").val(quantity);
-                    }
+                this.$(".mdf_quantity").css("display", "inline-block");
+                this.$('.mdf_quantity option:selected').removeAttr('selected');
+                quantity = this.model.get('quantity');
+                if (quantity > 0) {
+                    this.$(".mdf_quantity select").val(quantity);
                 }
                 this.$(".split-qty-wrapper").addClass('single')
             }
@@ -280,7 +277,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         name: 'product_sets',
         mod: 'list',
         initialize: function() {
-            this.model.set('combo_name', this.model.get('product').get('name'));
+            var combo_name = this.model.isUpsellProduct() ? this.model.get('upcharge_name') : this.model.get('product').get('name');
+            this.model.set('combo_name', combo_name);
             App.Views.ListView.prototype.initialize.apply(this, arguments);
         },
         render: function() {

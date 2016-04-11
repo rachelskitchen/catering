@@ -277,11 +277,13 @@ ul.reward-selection > li,
 }
 /* [checkbox_unchecked] border of unchecked checkbox */
 .modifier .input,
-.combo_item .input {
+.combo_item .input,
+.input.checkbox {
   border-color: #415264;
 }
 .modifier .input,
-.combo_item .input {
+.combo_item .input,
+.input.checkbox {
   background: transparent;
 }
 .select-wrapper input {

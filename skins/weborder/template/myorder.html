@@ -35,6 +35,7 @@
         <% } %>
     </ul>
     <% if(is_child_product != true) { %>
+    <div class="upsell_root_product_place"></div>
     <div class="combo_products_place"></div>
     <ul class="discount_place"></ul>
     <% } %>
@@ -45,6 +46,26 @@
         <span class="remove"> <span> <%= _lp.MYORDER_REMOVE %> </span> </span>
     </div>
     <% } %>
+</script>
+
+<script type="text/template" id="myorder_item_upsell_root-template">
+  <div class="combo_products_place">
+    <h3 class="product_place">
+        <% if(sold_by_weight) { %>
+            <span class="name"><%= sizeModifier %> <%= name %></span>
+        <% } else { %>
+            <span class="name"><% if(!is_service_fee) { print(quantity + "x") }%> <%= sizeModifier %> <%= name %></span>
+        <% } %>
+        <span class="cost">
+            <span class="item-sum"><%= currency_symbol %><%= product_sum %></span>
+        </span>
+    </h3>
+    <ul class="modifier_place">
+        <% if(sold_by_weight) { %>
+        <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
+        <% } %>
+    </ul>
+  </div>
 </script>
 
 <script type="text/template" id="myorder_discount-template">

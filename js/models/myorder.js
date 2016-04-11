@@ -357,7 +357,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 quantity: data.product.sold_by_weight ? 1 : (data.quantity ? data.quantity : 1),
                 weight: data.weight ? data.weight : 0,
                 selected: data.selected,
-                is_child_product: data.is_child_product
+                is_child_product: data.is_child_product,
+                upcharge_name: data.upcharge_name,
+                combo_name: data.combo_name,
+                upcharge_price: data.upcharge_price
             });
             data.special && this.set('special', data.special, {silent: true});
             if (!this.get('product').get('gift_card_number') && data.gift_card_number) {
@@ -766,7 +769,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         }
     }
 
-    /**
+     /**
      * @class
      * @classdesc Represents an combo order item (used for combo products feature).
      * @alias App.Models.MyorderCombo
@@ -784,6 +787,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
      * @lends App.Models.MyorderCombo.prototype
      */
     {
+        defaults: _.extend({}, App.Models.Myorder.prototype.defaults, {
+            upcharge_price: 0,
+            upcharge_name: ''
+            // any items added here should be explisitly restored in Myorder.addJSON() function
+        }),
         /**
          * Initializes the model.
          * @override
@@ -800,7 +808,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * @returns {Object} Deferred object that is resolved when product, modifiers and product sets are loaded.
          */
         add_empty: function (id_product, id_category) {
-            var self = this, product,
+            var self = this, product, combo_type,
                 product_load = App.Collections.Products.init(id_category),
                 modifier_load = $.Deferred(),
                 quick_modifier_load = App.Collections.ModifierBlocks.init_quick_modifiers();
@@ -813,10 +821,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 product.set({is_gift: false, // no gifts for combos
                              max_price: 0}, // turn off max price feature for combo
                              {silent: true});
-                var combo_type = product.get('is_combo') ? 'combo' : 'upsell';
+                combo_type = product.get('is_combo') ? 'combo' : 'upsell';
                 return App.Collections.ProductSets.init(id_product, combo_type);
             }).then(function() {
-                product.set("product_sets", App.Data.productSets[id_product]);
+                var slots = App.Data.productSets[id_product];
+                product.set("product_sets", slots);
                 self.set({
                     product: product,
                     id_product: id_product,
@@ -824,7 +833,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 });
                 self.set({
                     sum: self.get_modelsum(), // sum with modifiers
-                    initial_price: self.get_initial_price()
+                    initial_price: self.get_initial_price(),
+                    upcharge_price: combo_type == 'upsell' ? slots.upcharge_price : 0,
+                    upcharge_name: combo_type == 'upsell' ? slots.upcharge_name : ''
                 });
                 self.update_prices();
             });
@@ -852,6 +863,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             var root_price = this.get_initial_price(),
                 sum = 0, combo_saving_products = [];
 
+            var prices = [this.get_initial_price()];
+
             this.get('product').get('product_sets').each( function(product_set) {
                 if ( product_set.get('is_combo_saving') ) {
                     combo_saving_products.push( product_set );
@@ -859,21 +872,29 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
                 product_set.get_selected_products().forEach(function(model) {
                     //trace("add product_price : ",  model.get('product').get('name'), model.get_initial_price());
-                    var sold_by_weight = model.get("product") ?  model.get("product").get('sold_by_weight') : false,
+                    var product = model.get("product"),
+                        sold_by_weight = product ?  product.get('sold_by_weight') : false,
                         weight = model.get('weight'),
                         initial_price = model.get_initial_price();
 
                     if (sold_by_weight && weight) {
                         sum += initial_price * weight;
+                        prices.push(initial_price * weight);
                     }
                     else {
                         sum += initial_price * model.get('quantity');
+                        prices.push(initial_price * model.get('quantity'));
                     }
                 });
             });
 
             if (combo_saving_products.length && sum < root_price) {
                 sum = root_price;
+                prices.push("< root_price");
+            }
+
+            if (App.Data.devMode) {
+                trace("Combo price = ", prices.join(" + "), "=", sum);
             }
 
             this.get('product').set("combo_price", sum);
@@ -904,10 +925,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 is_modifiers_only = _.isObject(opt) ? opt.modifiers_only : false;
             if (result.status != 'OK' || is_modifiers_only) {
                 return result;
-            }
-
-            if (is_modifiers_only) {
-                return status;
             }
 
             var psets = [],
@@ -960,6 +977,128 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             else
                 return false;
         }
+    });
+
+    /**
+     * @class
+     * @classdesc Represents an combo order item (used for combo products feature).
+     * @alias App.Models.MyorderUpsell
+     * @extends App.Models.Myorder
+     * @example
+     * // create an order item
+     * require(['myorder'], function() {
+     *     var order = new App.Models.MyorderUpsell();
+     *     //or through the class factory function:
+     *     var order2 = App.Models.create('MyorderUpsell')
+     * });
+     */
+    App.Models.MyorderUpsell = App.Models.MyorderCombo.extend(
+    /**
+     * @lends App.Models.MyorderUpsell.prototype
+     */
+    {
+        /**
+         * Update price for combo product.
+         * @returns {number} - the calculated price of combo product.
+         */
+        update_product_price: function() {
+            App.Data.devMode && trace("culculate upcharge ==>");
+            var compound_price = this.get_compound_price(),
+                total_upcharge_price = this.get_total_upcharge_price();
+
+            var saving_amount = Math.min(compound_price - total_upcharge_price, this.get_initial_price());
+            saving_amount = parseFloat(saving_amount.toFixed(2));
+
+            var final_upsell_price = compound_price - saving_amount;
+            final_upsell_price = parseFloat(final_upsell_price.toFixed(2));
+
+            if (App.Data.devMode) {
+                trace("saving_amount = MIN(compound_price - total_upcharge_price, initial_product_price) =", saving_amount);
+                trace("final_upsell_price = compound_price - saving_amount =", final_upsell_price);
+            }
+
+            this.get('product').set("combo_price", final_upsell_price);
+            return final_upsell_price;
+        },
+        /**
+         * get sum of the base product price and item prices (backend product field 'Price' is used only).
+         * @returns {number} - the calculated compound price of combo product.
+         */
+        get_compound_price: function() {
+            var product_price = this.get_initial_price(),
+                sum = 0, prices = [product_price];
+
+            this.get('product').get('product_sets').each( function(product_set) {
+                product_set.get_selected_products().forEach(function(model) {
+                    var product = model.get("product"),
+                        sold_by_weight = product ?  product.get('sold_by_weight') : false,
+                        weight = model.get('weight'),
+                        initial_price = model.get_initial_price();
+
+                    if (sold_by_weight && weight) {
+                        sum += initial_price * weight;
+                        prices.push(initial_price * weight);
+                    }
+                    else {
+                        sum += initial_price * model.get('quantity');
+                        prices.push(initial_price * model.get('quantity'));
+                    }
+                });
+            });
+
+            sum += product_price;
+
+            if (App.Data.devMode) {
+                trace("compound_price = ", prices.join(" + "), "=", sum);
+            }
+
+            //this.get('product').set("combo_price", sum);
+            return sum;
+        },
+         /**
+         * get total upcharge combo price
+         * The total upcharge combo price is calculated as a sum of prices of three components:
+         *   1.  The base product price.
+         *   2.  One of the next two values:
+         *       o)   Base product upcharge price The POS uses the value unless it is set to 0.
+         *       o)   Upcharge combo price. The POS uses upcharge combo price only if the upcharge combo price of the base product is set to 0.
+         *   3.  The sum of item upcharge prices of items selected from the upcharge combo.
+         * @returns {number} - the calculated total upcharge combo price.
+         */
+        get_total_upcharge_price: function() {
+            var root_price = this.get_initial_price() + this.get('upcharge_price'),
+                sum = 0;
+
+            var prices = [this.get_initial_price(), this.get('upcharge_price')];
+
+            this.get('product').get('product_sets').each( function(product_set) {
+                product_set.get_selected_products().forEach(function(model) {
+                    //trace("add product_price : ",  model.get('product').get('name'), model.get_initial_price());
+                    var product = model.get("product"),
+                        sold_by_weight = product ?  product.get('sold_by_weight') : false,
+                        weight = model.get('weight'),
+                        initial_price = product.get("upcharge_price");
+
+                    if (sold_by_weight && weight) {
+                        sum += initial_price * weight;
+                        prices.push(initial_price * weight);
+                    }
+                    else {
+                        sum += initial_price * model.get('quantity');
+                        prices.push(initial_price * model.get('quantity'));
+                    }
+                });
+            });
+
+            sum += root_price;
+
+            if (App.Data.devMode) {
+                trace("total_upcharge_price = ", prices.join(" + "), "=", sum);
+            }
+
+            return sum;
+        }
+
     });
 
     if (App.Data.devMode) {
@@ -1259,10 +1398,17 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * @param {Array} data - JSON representation of the collection
          */
         addJSON: function(data) {
-            var self = this, obj;
+            var self = this, obj, type;
             Array.isArray(data) && data.forEach(function(element) {
                 if (element.product.id) {
-                    var type = (element.product.is_combo || element.product.has_upsell)? 'MyorderCombo' : 'Myorder';
+                    if (element.product.is_combo || element.product.has_upsell) {
+                        if (element.product.has_upsell)
+                            type = 'MyorderUpsell';
+                        else
+                            type = 'MyorderCombo';
+                    } else {
+                        type = 'Myorder';
+                    }
                     var myorder = App.Models.create(type);
                     myorder.addJSON(element);
                     self.add(myorder);

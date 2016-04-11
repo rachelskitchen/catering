@@ -645,6 +645,12 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          */
         isComboBased: function() {
             return this.get("is_combo") === true || this.get("has_upsell") === true;
+        },
+        /**
+         * @returns {boolean} `true` if the order item is Upsell product.
+         */
+        isUpsellProduct: function() {
+            return this.get("has_upsell") === true;
         }
     });
 

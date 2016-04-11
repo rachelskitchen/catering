@@ -65,7 +65,7 @@
             "css": ["total", "checkout", "card", "tips"],
             "views": ["checkout", "tips", "total"],
             "templates": ["total", "checkout", "card", "tips"],
-            "core": ["tip", "checkout", "card", "card_view", "jquery_numbermask"]
+            "core": ["tip", "checkout", "card", "card_view", "jquery_numbermask", "products", "product_sets", "delivery_addresses"]
         },
         "payments": {
             "css": ["payments"],
