@@ -141,12 +141,71 @@ define(['backbone', 'factory'], function(Backbone) {
 
     var DeliveryAddressesView = AddressView.extend({
         initialize: function() {
+            var self = this;
+
             this.isShippingServices = this.options.checkout && this.options.checkout.get('dining_option') === 'DINING_OPTION_SHIPPING';
 
             if (this.isShippingServices)
                 this.listenTo(this.options.customer, 'change:shipping_services', this.updateShippingServices, this);
 
+            this.bindingSources = _.extend({}, this.bindingSources, {
+                address: function() {
+                    var model = new Backbone.Model({index: -1});
+                    self.listenTo(model, 'change:index', self.changeAddressSelection);
+                    return model;
+                }
+            });
+
+            this.listenTo(this.options.customer, 'change:addresses', function changeCustomerAddresess() {
+                debugger;
+            });
+
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            '.address-selection': 'toggle: length(customerAddresses)',
+            '#addresses': 'options: customerAddresses, value: address_index',
+            '.address-edit': 'classes: {hidden: not(equal(address_index, -1))}'
+        },
+        computeds: {
+            isAuthorized: {
+                deps: ['customer_access_token'],
+                get: function() {
+                    return this.getBinding('$customer').isAuthorized();
+                }
+            },
+            customerAddresses: {
+                deps: ['isAuthorized'],
+                get: function(isAuthorized) {
+                    if (!isAuthorized) {
+                        return [];
+                    }
+
+                    var addresses = this.options.customer.get('addresses'),
+                        options = _.map(addresses, function(addr, key) {
+                        return addr && addr.street_1 ? {label: addr.street_1, value: key} : undefined;
+                    }).filter(function(addr) {
+                        return addr;
+                    });
+
+                    options.length && (this.getBinding('address_index') === -1) && this.setBinding('address_index', options[0].value);
+
+                    options.length && options.push({label: 'Enter New Address', value: '-1'});
+
+                    return options;
+                }
+            }
+        },
+        changeAddressSelection: function(model, value) {
+            if (!value) {
+                return;
+            }
+            value = Number(value);
+            var customer = this.options.customer;
+            if (value == -1) {
+                this.model.set(customer.getEmptyAddress()); // reset address
+            }
+            customer.set('shipping_address', value);
         },
         render: function() {
             this.model.set('isShippingServices', this.isShippingServices);
