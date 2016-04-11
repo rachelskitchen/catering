@@ -2701,7 +2701,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
         },
         /*
-         * Updates App.Data.customer.attributes.shipping_address according specified dining option.
+         * Updates App.Data.customer.attributes.shipping_address according to the specified dining option.
+         * If shipping_address > 2 (profle address is selected), do not change it.
          * @param {App.Models.Checkout} model - {@link App.Collections.Myorders#checkout} object
          * @param {string} value - dining option
          * @returns {numder} selected shipping address
@@ -2710,18 +2711,20 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             var customer = App.Data.customer,
                 shipping_addresses = {};
 
-            if(!customer) {
+            if (!customer) {
                 return;
             }
 
-            shipping_addresses.DINING_OPTION_DELIVERY = customer.get('deliveryAddressIndex');
-            shipping_addresses.DINING_OPTION_SHIPPING = customer.get('shippingAddressIndex');
-            shipping_addresses.DINING_OPTION_CATERING = customer.get('cateringAddressIndex');
+            if (customer.get('shipping_address') < 3) {
+                shipping_addresses.DINING_OPTION_DELIVERY = customer.get('deliveryAddressIndex');
+                shipping_addresses.DINING_OPTION_SHIPPING = customer.get('shippingAddressIndex');
+                shipping_addresses.DINING_OPTION_CATERING = customer.get('cateringAddressIndex');
 
-            if (value == 'DINING_OPTION_DELIVERY' || value == 'DINING_OPTION_SHIPPING' || value === 'DINING_OPTION_CATERING') {
-                customer.set('shipping_address', shipping_addresses[value]);
-            } else {
-                customer.set('shipping_address', customer.defaults.shipping_address);
+                if (value == 'DINING_OPTION_DELIVERY' || value == 'DINING_OPTION_SHIPPING' || value === 'DINING_OPTION_CATERING') {
+                    customer.set('shipping_address', shipping_addresses[value]);
+                } else {
+                    customer.set('shipping_address', customer.defaults.shipping_address);
+                }
             }
 
             return customer.get('shipping_address');

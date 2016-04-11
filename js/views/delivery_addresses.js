@@ -56,7 +56,8 @@ define(['backbone', 'factory'], function(Backbone) {
             'input[name="street_2"]': 'value: firstLetterToUpperCase(street_2), events: ["input"], trackCaretPosition: street_2',
             'input[name="city"]': 'value: firstLetterToUpperCase(city), events: ["input"], trackCaretPosition: city',
             'input[name="province"]': 'value: firstLetterToUpperCase(province), events: ["input"], trackCaretPosition: province',
-            'input[name=zipcode]': 'value: zipcode, pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
+            'input[name=zipcode]': 'value: zipcode, pattern: /^((\\w|\\s){0,20})$/', // all requirements are in Bug 33655
+            '.zip-label-text': 'text: select(equal(country, "US"), _lp_PROFILE_ZIP_CODE, _lp_PROFILE_POSTAL_CODE)'
         },
         computeds: {
             zipcodeValue: {
@@ -69,7 +70,7 @@ define(['backbone', 'factory'], function(Backbone) {
                         }
                         return _.isUndefined(customer_addresses[addr_index]) ? "" : customer_addresses[addr_index].zipcode;
                     }
-                    return "";
+                    return '';
                 }
             }
         },
@@ -95,17 +96,18 @@ define(['backbone', 'factory'], function(Backbone) {
                 if (typeof model.originalState == 'string' && model.originalState.length > 0)
                     model.state = model.originalState;
                 else {
-                    model.state = model.originalState = "CA";
+                    model.state = model.originalState = 'CA';
                 }
             }
             else {
                 model.state = undefined;
             }
 
-            model.province = model.country == 'CA' ? "" : undefined;
+            model.province = model.country == 'CA' ? '' : undefined;
 
             this.model.set(model);
             this.render(); // need to hide state if this is neccessary
+
             this.updateAddress();
         },
         changeState: function(e) {
@@ -143,29 +145,32 @@ define(['backbone', 'factory'], function(Backbone) {
         initialize: function() {
             var self = this;
 
-            this.isShippingServices = this.options.checkout && this.options.checkout.get('dining_option') === 'DINING_OPTION_SHIPPING';
+            this.firstRun = true;
+            this.addressIndex = -1;
 
-            if (this.isShippingServices)
-                this.listenTo(this.options.customer, 'change:shipping_services', this.updateShippingServices, this);
+            this.isShippingServices = this.options.checkout && this.options.checkout.get('dining_option') === 'DINING_OPTION_SHIPPING';
 
             this.bindingSources = _.extend({}, this.bindingSources, {
                 address: function() {
-                    var model = new Backbone.Model({index: -1});
+                    var model = new Backbone.Model({index: self.addressIndex});
                     self.listenTo(model, 'change:index', self.changeAddressSelection);
                     return model;
                 }
             });
 
-            this.listenTo(this.options.customer, 'change:addresses', function changeCustomerAddresess() {
-                debugger;
-            });
+            //self.listenTo(this.options.checkout, 'change:address_index', self.changeAddressSelection);
+
+            if (this.isShippingServices)
+                this.listenTo(this.options.customer, 'change:shipping_services', this.updateShippingServices, this);
+
+            this.listenTo(this.options.customer, 'change:access_token', this.updateAddressSelection);
 
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
-            '.address-selection': 'toggle: length(customerAddresses)',
-            '#addresses': 'options: customerAddresses, value: address_index',
-            '.address-edit': 'classes: {hidden: not(equal(address_index, -1))}'
+            '.address-selection': 'toggle: showAddressSelection',
+            '#addresses': 'value: address_index',
+            '.address-edit': 'classes: {hidden: all(isAuthorized, not(equal(address_index, -1)))}'
         },
         computeds: {
             isAuthorized: {
@@ -174,25 +179,10 @@ define(['backbone', 'factory'], function(Backbone) {
                     return this.getBinding('$customer').isAuthorized();
                 }
             },
-            customerAddresses: {
-                deps: ['isAuthorized'],
-                get: function(isAuthorized) {
-                    if (!isAuthorized) {
-                        return [];
-                    }
-
-                    var addresses = this.options.customer.get('addresses'),
-                        options = _.map(addresses, function(addr, key) {
-                        return addr && addr.street_1 ? {label: addr.street_1, value: key} : undefined;
-                    }).filter(function(addr) {
-                        return addr;
-                    });
-
-                    options.length && (this.getBinding('address_index') === -1) && this.setBinding('address_index', options[0].value);
-
-                    options.length && options.push({label: 'Enter New Address', value: '-1'});
-
-                    return options;
+            showAddressSelection: {
+                deps: ['isAuthorized', 'customer_addresses'],
+                get: function(isAuthorized, customer_addresses) {
+                    return isAuthorized && customer_addresses.length;
                 }
             }
         },
@@ -200,12 +190,26 @@ define(['backbone', 'factory'], function(Backbone) {
             if (!value) {
                 return;
             }
+
+            var customer = this.options.customer,
+                checkout = this.options.checkout,
+                prevValue = customer.get('shipping_address');
+
             value = Number(value);
-            var customer = this.options.customer;
-            if (value == -1) {
-                this.model.set(customer.getEmptyAddress()); // reset address
+
+            if (value == prevValue) {
+                return;
             }
-            customer.set('shipping_address', value);
+
+            if (value == -1) {
+                this.model.set(_.extend({}, customer.getEmptyAddress(), {country: App.Settings.address.country, state: App.Settings.address.state})); // reset address
+                value = App.Data.myorder.setShippingAddress(checkout, checkout.get('dining_option'));
+            }
+            else {
+                customer.set('shipping_address', value);
+                this.model.set(customer.getCheckoutAddress());
+            }
+            checkout.set('address_index', value);
         },
         render: function() {
             this.model.set('isShippingServices', this.isShippingServices);
@@ -215,9 +219,45 @@ define(['backbone', 'factory'], function(Backbone) {
             if (this.isShippingServices)
                 this.updateShippingServices();
 
+            this.updateAddressSelection();
+
             return this;
         },
-        updateShippingServices: function(){
+        updateAddressSelection: function() {
+            var customer = this.options.customer;
+
+            if (!customer.isAuthorized()) {
+                return;
+            }
+
+            var addresses = customer.get('addresses'),
+                optionsStr = '',
+                options = _.map(addresses, function(addr, index) {
+                    if (addr && addr.street_1 && index > 2) {
+                        return addr && addr.street_1 ? {label: addr.street_1, value: index} : undefined;
+                    }
+                    else {
+                        return undefined;
+                    }
+                }).filter(function(addr) {
+                    return addr;
+                });
+
+            if (options.length) {
+                if (this.firstRun && this.options.checkout.get('address_index') == -1) {
+                    this.addressIndex = options[0].value;
+                    this.firstRun = false;
+                }
+
+                optionsStr = _.reduce(options, function(memo, option) {
+                    return memo + '<option value="' + option.value + '">' + option.label + '</option>';
+                }, '');
+                optionsStr += '<option value="-1">Enter New Address</option>';
+            }
+
+            this.$('#addresses').html(optionsStr);
+        },
+        updateShippingServices: function() {
             var customer = this.options.customer,
                 shipping_services = customer.get("shipping_services"),
                 shipping_status = customer.get("load_shipping_status");
