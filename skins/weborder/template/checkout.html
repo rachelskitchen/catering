@@ -146,7 +146,7 @@
         </div>
         <% } %>
         <div class="row">
-            <label for="zip"> <span class="required bold"><% if(country == 'US') {print(_lp.PROFILE_ZIP_CODE);} else {print(_lp.PROFILE_POSTAL_CODE);} %>:</span> </label>
+            <label for="zip"> <span class="required bold"><span class="zip-label-text bold"></span>:</span> </label>
             <div class="input_beauty">
                 <input type="text" id="zip" name="zipcode" class='zipcode ios-safari-caret' value="<%= zipcode %>">
             </div>
