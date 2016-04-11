@@ -1681,7 +1681,8 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             return req;
         },
         /**
-         * @returns {boolean} `true` if any payment token is selected for payment.
+         * @returns {boolean} `true` if any payment token is selected for payment
+         * and `payments.ignoreSelectedToken` property is `false`.
          */
         doPayWithToken: function() {
             return Boolean(this.isAuthorized() && this.payments && !this.payments.ignoreSelectedToken && this.payments.getSelectedPayment());
@@ -1862,6 +1863,6 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          */
         doPayWithGiftCard: function() {
             return Boolean(this.isAuthorized() && this.giftCards && !this.giftCards.ignoreSelected && this.giftCards.getSelected());
-        },
+        }
     });
 });
