@@ -2531,7 +2531,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
 
             function getAddress() {
-                return customer.addresses[App.Data.customer.isDefaultShippingAddress() ? customer.addresses.length - 1 : customer.shipping_address];
+                return customer.addresses[customer.shipping_address];
             }
         },
         /**

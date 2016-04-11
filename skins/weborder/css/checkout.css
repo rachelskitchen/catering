@@ -11,7 +11,8 @@
     text-align: center;
     font-weight: bold;
 }
-#content > .checkout div.row, #content > .checkout div.delivery_address > div > div {
+#content > .checkout div.row,
+.delivery_address .row {
     position: relative;
     height: 39px;
 }
