@@ -11,6 +11,9 @@
     text-align: center;
     font-weight: bold;
 }
+.delivery_address {
+    margin: 1em 0;
+}
 #content > .checkout div.row,
 .delivery_address .row {
     position: relative;
