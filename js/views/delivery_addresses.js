@@ -176,7 +176,11 @@ define(['backbone', 'factory'], function(Backbone) {
             isAuthorized: {
                 deps: ['customer_access_token'],
                 get: function() {
-                    return this.getBinding('$customer').isAuthorized();
+                    var isAuthorized = this.getBinding('$customer').isAuthorized();
+                    if (!isAuthorized) {
+                        this.setBinding('address_index', -1);
+                    }
+                    return isAuthorized;
                 }
             },
             showAddressSelection: {
