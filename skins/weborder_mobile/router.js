@@ -1263,8 +1263,19 @@ define(["main_router"], function(main_router) {
                 };
 
                 function addCreditCard() {
+                    var payment = App.Data.settings.get_payment_process();
                     payments && (payments.ignoreSelectedToken = true);
-                    App.Data.payments.trigger('payWithCreditCard');
+
+                    if (!payment.credit_card_dialog) {
+                        customer.trigger('onAskForRememberCard', {
+                            callback: function() {
+                                App.Data.payments.trigger('payWithCreditCard');
+                            }
+                        });
+                    }
+                    else {
+                        App.Data.payments.trigger('payWithCreditCard');
+                    }
                 }
 
                 function addGiftCard() {
