@@ -2380,9 +2380,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
 
             var myorder_json = JSON.stringify(order),
+                doPayWithToken = App.Data.customer.doPayWithToken(),
                 successValidation;
 
-            if (validationOnly || payment_type != PAYMENT_TYPE.CREDIT || !App.Data.customer.isAuthorized() || !App.Data.customer.payments || (card.cardNumber && !card.rememberCard) || (!payment.credit_card_dialog && !card.rememberCard)) {
+            if (validationOnly || payment_type != PAYMENT_TYPE.CREDIT || !App.Data.customer.isAuthorized() || (!doPayWithToken && !card.rememberCard && (!payment.credit_card_dialog || card.cardNumber))) {
                 var req = $.ajax({
                     type: "POST",
                     url: App.Data.settings.get("host") + "/weborders/" + (validationOnly ? "pre_validate/" : "create_order_and_pay_v1/"),
