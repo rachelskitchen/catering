@@ -26,10 +26,9 @@
  * @requires module:backbone
  * @requires module:doc_cookies
  * @requires module:page_visibility
- * @requires module:geopoint
  * @see {@link module:config.paths actual path}
  */
-define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Backbone, docCookies, page_visibility) {
+define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCookies, page_visibility) {
     'use strict';
 
     var cookieName = "user",
@@ -200,24 +199,24 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             this.setAddressesIndexes();
 
             // trim for `first_name`, `last_name`
-            this.listenTo(this, 'change:first_name', function() {
-                var firstName = this.get('first_name');
-                (typeof(firstName) == 'string') ?
-                    this.set('first_name', Backbone.$.trim(firstName)) :
-                    this.set('first_name', this.defaults.first_name);
-            }, this);
-            this.listenTo(this, 'change:last_name', function() {
-                var lastName = this.get('last_name');
-                (typeof(lastName) == 'string') ?
-                    this.set('last_name', Backbone.$.trim(lastName)) :
-                    this.set('last_name', this.defaults.last_name);
-            }, this);
+            this.listenTo(this, 'change:first_name', this._trimValue.bind(this, 'first_name'));
+            this.listenTo(this, 'change:last_name', this._trimValue.bind(this, 'last_name'));
 
             // set customer data from cookie
             this.setCustomerFromCookie();
 
             // set tracking of cookie change when user leaves/returns to current tab
             page_visibility.on(this.trackCookieChange.bind(this));
+        },
+        /**
+         * Trims value of attribute passed as parameter.
+         * @param {string} attr - attribute name
+         */
+        _trimValue: function(attr) {
+            var value = this.get(attr);
+            typeof value  == 'string'
+                ? this.set(attr, Backbone.$.trim(value))
+                : this.set(attr, this.defaults[attr]);
         },
         /**
          * Gets customer name in the format "John M.".
