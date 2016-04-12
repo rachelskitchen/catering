@@ -629,7 +629,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
             var payment = App.Data.settings.get_payment_process();
             if (!payment.credit_card_dialog && noTokens) {
-                if (this.needPreValidate) {
+                if (this.needPreValidate || !payments) {
                     check_order();
                 }
                 else {
@@ -658,7 +658,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     tip: true,
                     customer: true,
                     checkout: true,
-                    validationOnly: this.needPreValidate
+                    validationOnly: self.needPreValidate
                 }, function() {
                     self.pay(PAYMENT_TYPE.CREDIT);
                 });
