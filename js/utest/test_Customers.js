@@ -26,35 +26,61 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
         });
 
         it('initialize()', function() {
-            // test trim
-            model.set({
-                first_name: ' firstName ',
-                last_name: ' lastName '
-            });
-            expect(model.get('first_name')).toBe('firstName');
-            expect(model.get('last_name')).toBe('lastName');
-
-            // test default value
-            model.set({
-                first_name: 12312,
-                last_name: 123123
-            });
-            expect(model.get('first_name')).toBe(model.defaults.first_name);
-            expect(model.get('last_name')).toBe(model.defaults.last_name);
-
             //  test initialization of inner state
-            var page_visibility = require('page_visibility');
+            var page_visibility = require('page_visibility'),
+                trimFirstNameValue = new Function(),
+                trimLastNameValue = new Function();
             spyOn(model, 'setCustomerFromCookie');
             spyOn(model, 'setAddressesIndexes');
             spyOn(model, 'listenTo');
             spyOn(page_visibility, 'on');
+            spyOn(model._trimValue, 'bind').and.callFake(function(obj, attr) {
+                if (attr == 'first_name') {
+                    return trimFirstNameValue;
+                } else if (attr == 'last_name') {
+                    return trimLastNameValue
+                }
+            });
 
             model.initialize();
             expect(model.setAddressesIndexes).toHaveBeenCalled();
-            expect(model.listenTo).toHaveBeenCalled();
+            expect(model._trimValue.bind).toHaveBeenCalledWith(model, 'first_name');
+            expect(model._trimValue.bind).toHaveBeenCalledWith(model, 'last_name');
+            expect(model.listenTo).toHaveBeenCalledWith(model, 'change:first_name', trimFirstNameValue);
+            expect(model.listenTo).toHaveBeenCalledWith(model, 'change:last_name', trimLastNameValue);
             expect(model.setCustomerFromCookie).toHaveBeenCalled();
             expect(page_visibility.on).toHaveBeenCalled();
 
+        });
+
+        describe("_trimValue()", function() {
+            var originalFirstName,
+                attr = 'first_name';
+
+            beforeEach(function() {
+                originalFirstName = model.get(attr);
+            });
+
+            afterEach(function() {
+                 model.set(attr, originalFirstName);
+            });
+
+            it("value isn't string", function() {
+                var testValues = [null, undefined, true, 123, {}, NaN, Infinity, -Infinity, -0, 0, 2.23];
+                testValues.forEach(function(testValue) {
+                    model.set(attr, testValue);
+                    model._trimValue(attr);
+                    expect(model.get(attr)).toBe(data.defaults[attr]);
+                });
+            });
+
+            it("value is string", function() {
+                var testValue = ' asd asdd   asd  ',
+                    expectValue = 'asd asdd   asd';
+                model.set(attr, testValue);
+                model._trimValue(attr);
+                expect(model.get(attr)).toBe(expectValue);
+            });
         });
 
         // App.Models.Customer function get_customer_name
@@ -74,19 +100,30 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(model.get_customer_name()).toBe('firstName l.');
             });
 
-            it("`first_name` is invalid string data, `last_name` is valid string data.", function() {
+            it("`first_name` isn't a string, `last_name` is valid string data.", function() {
                 testValues.forEach(function(first_name) {
                     model.set({first_name: first_name, last_name: 'lastName'});
                     expect(model.get_customer_name()).toBe(' l.');
                 });
             });
 
-            it("`first_name` is valid string data, `last_name` is invalid string data", function() {
+            it("`first_name` is an empty string, `last_name` is valid string data.", function() {
+                model.set({first_name: '', last_name: 'lastName'});
+                expect(model.get_customer_name()).toBe(' l.');
+            });
+
+            it("`first_name` is valid string data, `last_name` isn't a string", function() {
                 var firstName = 'firstName';
                 testValues.forEach(function(last_name) {
                     model.set({first_name: firstName, last_name: last_name});
                     expect(model.get_customer_name()).toBe(firstName);
                 });
+            });
+
+            it("`first_name` is valid string data, `last_name` is an empty string", function() {
+                var firstName = 'firstName';
+                model.set({first_name: firstName, last_name: ''});
+                expect(model.get_customer_name()).toBe(firstName);
             });
 
             it("`first_name` and `last_name` are invalid string data", function() {
@@ -483,10 +520,20 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(model.isNewAddressSelected).toHaveBeenCalledWith(dining_option);
                 expect(model._check_delivery_fields).not.toHaveBeenCalled();
             });
+
+            it("passed", function() {
+                model.set({
+                    first_name: 'asdas',
+                    last_name: 'adasdasd',
+                    email: 'asdasd@sadasd.com',
+                    phone: '87238778'
+                });
+                expect(model.check()).toEqual({status: "OK"});
+            });
         });
 
         describe("get_shipping_services()", function() {
-            var ajaxOpts,
+            var ajaxOpts, orderItem,
                 ajaxMock = (function(ajax) {
                     return function() {
                         ajaxOpts = arguments[0];
@@ -499,8 +546,11 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 spyOn(model, 'resetShippingServices');
                 spyOn(model, 'trigger');
                 spyOn(Backbone.$, 'ajax').and.callFake(ajaxMock);
-                App.Data.myorder = new Backbone.Collection();
+                orderItem = new Backbone.Model({id: 123});
+                orderItem.item_submit = new Function();
+                App.Data.myorder = new Backbone.Collection([orderItem]);
                 model.set('addresses', customer1.addresses);
+                spyOn(orderItem, 'item_submit');
             });
 
             it("`addresses` is not set", function() {
@@ -529,6 +579,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(Backbone.$.ajax).not.toHaveBeenCalled();
                 expect(def.done).toHaveBeenCalled();
                 expect(def.fail).toHaveBeenCalled();
+                expect(orderItem.item_submit).toHaveBeenCalled();
             });
 
             it("`jqXHR` param isn't passed", function() {
@@ -542,6 +593,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                     dataType: "json",
                     error: jasmine.any(Function)
                 });
+                expect(orderItem.item_submit).toHaveBeenCalled();
             });
 
             it("`getShippingOptions` param is passed", function() {
@@ -556,6 +608,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
                 def.resolve(res);
                 expect(data.getShippingOptions).toHaveBeenCalledWith(res);
+                expect(orderItem.item_submit).toHaveBeenCalled();
             });
 
             it("`getShippingOptions` param isn't passed", function() {
@@ -567,6 +620,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
                 def.resolve(res);
                 expect(model.set).toHaveBeenCalledWith('shipping_services', res.data, {silent: true});
+                expect(orderItem.item_submit).toHaveBeenCalled();
             });
 
             it("this.isDefaultShippingAddress() returns `true`", function() {
@@ -576,6 +630,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 model.get_shipping_services();
 
                 expect(JSON.parse(ajaxOpts.data).address).toEqual(address);
+                expect(orderItem.item_submit).toHaveBeenCalled();
             });
 
             it("this.isDefaultShippingAddress() returns `false`", function() {
@@ -588,6 +643,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 model.get_shipping_services();
 
                 expect(JSON.parse(ajaxOpts.data).address).toEqual(addresses[0]);
+                expect(orderItem.item_submit).toHaveBeenCalled();
 
                 model.set('shipping_address', originalShippingAddress);
             });
@@ -657,7 +713,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                     _model.set('addresses', customer1.addresses);
                     _model.get_shipping_services(def);
 
-                    def.reject(xhr);
+                    def.resolve(xhr);
 
                     setTimeout(function() {
                         done();
@@ -2380,6 +2436,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             beforeEach(function() {
                 spyOn(window, 'b64_to_utf8').and.returnValue(decodeStr);
                 spyOn(model, 'setCustomerFromAPI');
+                spyOn(console, 'error');
             });
 
             it("cookie isn't specified", function() {
@@ -2397,6 +2454,19 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(model.setCustomerFromAPI).toHaveBeenCalledWith(JSON.parse(decodeStr));
             });
 
+            it("`docCookies.getItem(cookieName)` throws an error", function() {
+                var error = '123';
+                docCookies_getItem_spyOn.and.throwError(error);
+                model.setCustomerFromCookie();
+                expect(docCookies.getItem).toThrowError(error);
+            });
+
+            it("`this.setCustomerFromAPI(JSON.parse(b64_to_utf8(data)));` throws an error", function() {
+                var error = '123';
+                spyOn(JSON, 'parse').and.throwError(error);
+                model.setCustomerFromCookie();
+                expect(JSON.parse).toThrowError(error);
+            });
         });
 
         it("getCustomerInAPIFormat()", function() {
