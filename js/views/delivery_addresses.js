@@ -30,9 +30,13 @@ define(['backbone', 'factory'], function(Backbone) {
      */
     var AddressView = App.Views.FactoryView.extend({
         initialize: function() {
-            var model = _.extend({}, this.options.customer.toJSON()),
+            var model = {},
                 defaultAddress = App.Settings.address,
                 address = this.options.customer.getCheckoutAddress();
+
+            if (!this.options.customer.isAuthorized() || this.options.customer.get('addresses').length < 4) {
+                model = _.extend(model, this.options.customer.toJSON());
+            }
 
             model.country = address && address.country ? address.country : defaultAddress.country;
             model.state = model.country == 'US' ? (address ? address.state : defaultAddress.state) : null;
@@ -121,8 +125,9 @@ define(['backbone', 'factory'], function(Backbone) {
                 model = this.model.toJSON(),
                 address;
 
-            // if shipping_address isn't selected take last index
-            if(customer.isDefaultShippingAddress()) {
+            // if shipping_address isn't selected take the last index
+            if (customer.isDefaultShippingAddress()) {
+                // @TODO: take the default profile address if it exists
                 shipping_address = addresses.length ? addresses.length - 1 : 0;
             }
 
@@ -145,32 +150,22 @@ define(['backbone', 'factory'], function(Backbone) {
         initialize: function() {
             var self = this;
 
-            this.firstRun = true;
-            this.addressIndex = -1;
-
             this.isShippingServices = this.options.checkout && this.options.checkout.get('dining_option') === 'DINING_OPTION_SHIPPING';
-
-            this.bindingSources = _.extend({}, this.bindingSources, {
-                address: function() {
-                    var model = new Backbone.Model({index: self.addressIndex});
-                    self.listenTo(model, 'change:index', self.changeAddressSelection);
-                    return model;
-                }
-            });
-
-            //self.listenTo(this.options.checkout, 'change:address_index', self.changeAddressSelection);
 
             if (this.isShippingServices)
                 this.listenTo(this.options.customer, 'change:shipping_services', this.updateShippingServices, this);
 
-            this.listenTo(this.options.customer, 'change:access_token', this.updateAddressSelection);
+            this.listenTo(this.options.customer, 'change:access_token', this.updateAddressesOptions);
+            this.listenTo(this.options.checkout, 'change:address_index', function(checkout, address_index) {
+                this.options.customer.set('shipping_address', address_index);
+            });
 
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
             '.address-selection': 'toggle: showAddressSelection',
-            '#addresses': 'value: address_index',
-            '.address-edit': 'classes: {hidden: all(isAuthorized, not(equal(address_index, -1)))}'
+            '#addresses': 'value: customer_shipping_address',
+            '.address-edit': 'classes: {hidden: not(showAddressEdit)}'
         },
         computeds: {
             isAuthorized: {
@@ -178,7 +173,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 get: function() {
                     var isAuthorized = this.getBinding('$customer').isAuthorized();
                     if (!isAuthorized) {
-                        this.setBinding('address_index', -1);
+                        App.Data.myorder.setShippingAddress();
                     }
                     return isAuthorized;
                 }
@@ -187,6 +182,12 @@ define(['backbone', 'factory'], function(Backbone) {
                 deps: ['isAuthorized', 'customer_addresses'],
                 get: function(isAuthorized, customer_addresses) {
                     return isAuthorized && customer_addresses.length;
+                }
+            },
+            showAddressEdit: {
+                deps: ['isAuthorized', 'customer_shipping_address'],
+                get: function(isAuthorized, address_index) {
+                    return !isAuthorized || address_index < 3;
                 }
             }
         },
@@ -223,18 +224,20 @@ define(['backbone', 'factory'], function(Backbone) {
             if (this.isShippingServices)
                 this.updateShippingServices();
 
-            this.updateAddressSelection();
+            this.updateAddressesOptions();
 
             return this;
         },
-        updateAddressSelection: function() {
+        updateAddressesOptions: function() {
             var customer = this.options.customer;
 
             if (!customer.isAuthorized()) {
                 return;
             }
 
-            var addresses = customer.get('addresses'),
+            var checkout = this.options.checkout,
+                addresses = customer.get('addresses'),
+                address_index = checkout.get('address_index'),
                 optionsStr = '',
                 options = _.map(addresses, function(addr, index) {
                     if (addr && addr.street_1 && index > 2) {
@@ -248,15 +251,15 @@ define(['backbone', 'factory'], function(Backbone) {
                 });
 
             if (options.length) {
-                if (this.firstRun && this.options.checkout.get('address_index') == -1) {
-                    this.addressIndex = options[0].value;
-                    this.firstRun = false;
+                if (address_index == -1) {
+                    checkout.set('address_index', options[0].value);
+                    customer.set('shipping_address', options[0].value);
                 }
 
                 optionsStr = _.reduce(options, function(memo, option) {
                     return memo + '<option value="' + option.value + '">' + option.label + '</option>';
                 }, '');
-                optionsStr += '<option value="-1">Enter New Address</option>';
+                optionsStr += '<option value="' + App.Data.myorder.getShippingAddress(checkout.get('dining_option')) + '">Enter New Address</option>';
             }
 
             this.$('#addresses').html(optionsStr);

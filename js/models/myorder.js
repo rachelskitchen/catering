@@ -2700,28 +2700,39 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 return this.paymentResponse = paymentResponse;
             }
         },
+        getShippingAddress: function(dining_option) {
+            var customer = App.Data.customer;
+
+            if (!customer) {
+                return -1;
+            }
+
+            var shipping_addresses = {
+                DINING_OPTION_DELIVERY: customer.get('deliveryAddressIndex'),
+                DINING_OPTION_SHIPPING: customer.get('shippingAddressIndex'),
+                DINING_OPTION_CATERING: customer.get('cateringAddressIndex')
+            };
+
+            return shipping_addresses[dining_option] !== undefined ? shipping_addresses[dining_option] : -1;
+        },
         /*
          * Updates App.Data.customer.attributes.shipping_address according to the specified dining option.
          * If shipping_address > 2 (profle address is selected), do not change it.
          * @param {App.Models.Checkout} model - {@link App.Collections.Myorders#checkout} object
          * @param {string} value - dining option
-         * @returns {numder} selected shipping address
+         * @returns {numder} index of selected shipping address
          */
         setShippingAddress: function(model, value) {
-            var customer = App.Data.customer,
-                shipping_addresses = {};
+            var customer = App.Data.customer;
 
             if (!customer) {
                 return;
             }
 
+            // if profile address is selected, do not change the selection
             if (customer.get('shipping_address') < 3) {
-                shipping_addresses.DINING_OPTION_DELIVERY = customer.get('deliveryAddressIndex');
-                shipping_addresses.DINING_OPTION_SHIPPING = customer.get('shippingAddressIndex');
-                shipping_addresses.DINING_OPTION_CATERING = customer.get('cateringAddressIndex');
-
                 if (value == 'DINING_OPTION_DELIVERY' || value == 'DINING_OPTION_SHIPPING' || value === 'DINING_OPTION_CATERING') {
-                    customer.set('shipping_address', shipping_addresses[value]);
+                    customer.set('shipping_address', this.getShippingAddress(value));
                 } else {
                     customer.set('shipping_address', customer.defaults.shipping_address);
                 }
