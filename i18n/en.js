@@ -619,6 +619,7 @@
         "PROFILE_PAYMENT_TOKEN_NOT_FOUND": "Payment token is not found",
         "PROFILE_ADD_ANOTHER_CARD": "Add Another Card",
         "PROFILE_UPDATE_SUCCESSFUL": "Update Successful",
+        "PROFILE_ADD_NEW_GIFT_CARD": "Add New Gift Card",
         'BILLING_ADDRESS_TITLE': 'Specify a card billing address',
         'USE_PROFILE_ADDRESS_TITLE_1': 'Use the profile address',
         'CVV_REQUIRED': 'CVV required',

@@ -139,6 +139,21 @@
     display: inline-block;
 }
 
+.gift-cards-box .add_gift_card_title {
+    text-align: left;
+    font-size: 14px;
+    margin: 8px 0px 10px 60px;
+}
+
+.gift-cards-box .add_gift_card_title .plus_sign {
+    width: 12px;
+    display: inline-block;
+}
+
+.gift-cards-box .add_gift_card_title:hover {
+    cursor: pointer;
+}
+
 .profile-edit .successful-update {
     position: relative;
     top: -12px;
@@ -154,7 +169,7 @@
 
 .profile-edit .update-btn {
     width: auto;
-    min-width: 100px;
+    min-width: 220px;
     display: inline-block;
     font-size: 14px;
 }
@@ -264,6 +279,7 @@
     text-align: center;
     cursor: pointer;
     position: relative;
+    padding-right: 20px;
 }
 
 .payments-list > li.selected::after,
