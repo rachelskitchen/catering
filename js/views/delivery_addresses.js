@@ -32,10 +32,11 @@ define(['backbone', 'factory'], function(Backbone) {
         initialize: function() {
             var model = {},
                 defaultAddress = App.Settings.address,
-                address = this.options.customer.getCheckoutAddress();
+                address = {};
 
-            if (!this.options.customer.isAuthorized() || this.options.customer.get('addresses').length < 4) {
+            if (!this.options.customer.isAuthorized() || !this.options.customer.isProfileAddressSelected()) {
                 model = _.extend(model, this.options.customer.toJSON());
+                address = this.options.customer.getCheckoutAddress();
             }
 
             model.country = address && address.country ? address.country : defaultAddress.country;
@@ -125,6 +126,11 @@ define(['backbone', 'factory'], function(Backbone) {
                 model = this.model.toJSON(),
                 address;
 
+            // do not change profile addresses
+            if (customer.isProfileAddressSelected()) {
+                return;
+            }
+
             // if shipping_address isn't selected take the last index
             if (customer.isDefaultShippingAddress()) {
                 // @TODO: take the default profile address if it exists
@@ -187,7 +193,7 @@ define(['backbone', 'factory'], function(Backbone) {
             showAddressEdit: {
                 deps: ['isAuthorized', 'customer_shipping_address'],
                 get: function(isAuthorized, address_index) {
-                    return !isAuthorized || address_index < 3;
+                    return !isAuthorized || !this.options.customer.isProfileAddressSelected();
                 }
             }
         },

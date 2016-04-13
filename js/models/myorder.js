@@ -2531,7 +2531,19 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
 
             function getAddress() {
-                return customer.addresses[customer.shipping_address];
+                var address = customer.addresses[customer.shipping_address];
+
+                return App.skin == App.Skins.PAYPAL ? address : {
+                    // here we need only the following fields (no need for extra fields from profile address)
+                    address: address.address,
+                    city: address.city,
+                    country: address.country,
+                    province: address.province,
+                    state: address.state,
+                    street_1: address.street_1,
+                    street_2: address.street_2,
+                    zipcode: address.zipcode
+                }
             }
         },
         /**
