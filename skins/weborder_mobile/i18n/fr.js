@@ -173,7 +173,7 @@ define([], function() {
         "STORE_INFO_CHANGE_STORE": "Changer l’emplacement du magasin ?",
         "STORE_INFO_DELIVERY": "Informations de livraison",
         "STORE_INFO_FREE": "Gratuit",
-        "STORE_INFO_MINIMUM": "Minimum",
+        "STORE_INFO_MINIMUM": "Delivery Minimum",
         "STORE_INFO_DELIVERY_TIME": "Attente estimée",
         "STORE_INFO_HR": "h",
         "STORE_INFO_MIN": "min",
