@@ -99,17 +99,15 @@ define(["store_info_view"], function(store_info_view) {
                         delivery_geojson_enabled = _.isArray(settings.delivery_geojson) && settings.delivery_geojson[0],
                         distance_mearsure = settings.distance_mearsure;
 
-                    var label, value = '';
-
                     if (delivery_post_code_lookup_enabled)
                     {
-                        label = _lp.STORE_INFO_DELIVERY_AREA;
-                        value = delivery_post_codes;
+                        var label = _lp.STORE_INFO_DELIVERY_AREA;
+                        var value = delivery_post_codes;
                     }
                     else if (!delivery_geojson_enabled)
                     {
-                        label = _lp.STORE_INFO_DELIVERY_RADIUS;
-                        value = distance + ' ';
+                        var label = _lp.STORE_INFO_DELIVERY_RADIUS;
+                        var value = distance + ' ';
 
                         if (distance_mearsure.toLowerCase() == 'km')
                         {
@@ -126,7 +124,7 @@ define(["store_info_view"], function(store_info_view) {
                         }
                     }
 
-                    return label + ': ' + value;
+                    return (label && value) ? (label + ': ' + value) : '';
                 }
             }
         },
