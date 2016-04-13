@@ -186,7 +186,7 @@
         'STORE_INFO_DELIVERY': 'Delivery Info',
         'STORE_INFO_FREE': 'Free',
         'STORE_INFO_DELIVERY_CHARGE': 'Fee',
-        'STORE_INFO_MINIMUM': 'Minimum',
+        'STORE_INFO_MINIMUM': 'Delivery Minimum',
         'STORE_INFO_DELIVERY_TIME': 'Est. Wait',
         'STORE_INFO_HR': 'hr',
         'STORE_INFO_MIN': 'min',
