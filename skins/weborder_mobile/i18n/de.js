@@ -131,7 +131,7 @@ define([], function() {
         "STORE_INFO_CHANGE_STORE": "Zu einem Geschäftsstandort wechseln?",
         "STORE_INFO_DELIVERY": "Lieferinfo",
         "STORE_INFO_FREE": "Kostenlos",
-        "STORE_INFO_MINIMUM": "Minimum",
+        "STORE_INFO_MINIMUM": "Delivery Minimum",
         "STORE_INFO_DELIVERY_TIME": "Geschätzt Warten",
         "STORE_INFO_HR": "Stunden",
         "STORE_INFO_MIN": "Min.",
