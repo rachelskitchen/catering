@@ -516,15 +516,34 @@ define(["factory"], function() {
     App.Views.CoreProfileView.CoreProfileGiftCardsEditionView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'gift_cards_edition',
-        bindings: {
-            '.gift-cards-list': 'collection: $collection'
+        events: {
+            'click .add_gift_card_title': 'hide_show_NewGiftCard'
         },
-        itemView: App.Views.CoreProfileView.CoreProfileGiftCardEditionView
+        bindings: {
+            '.gift-cards-list': 'collection: $collection',
+            '.add_gift_card_title .plus_sign': 'text:select(newCard_add_new_card,"- ","+ ")',
+            '.new_gift_card': "toggle:newCard_add_new_card,valueTimeout:newCard_cardNumber,params:{timeout:1500},events:['input','blur','change']"
+        },
+        itemView: App.Views.CoreProfileView.CoreProfileGiftCardEditionView,
+        hide_show_NewGiftCard: function() {
+            var card = this.options.newCard,
+                add_new_card = card.get('add_new_card');
+
+            card.set('add_new_card', !add_new_card);
+
+            if (!add_new_card) {
+                card.set('cardNumber', '');
+                card.set('remainingBalance', null);
+            }
+        }
     });
 
     App.Views.CoreProfileView.CoreProfilePaymentsView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'payments',
+        events: {
+            'click .update-btn':'onUpdate',
+        },
         bindings: {
             '.left-side': 'classes: {hidden: not(_settings_directory_saved_credit_cards), "border-none": not(_settings_directory_saved_gift_cards), "fl-left": _settings_directory_saved_gift_cards}',
             '.right-side': 'classes: {hidden: not(_settings_directory_saved_gift_cards)}'
@@ -544,16 +563,29 @@ define(["factory"], function() {
             }
 
             if (this.model.giftCards) {
+                this.newGiftCard = new App.Models.GiftCard({add_new_card: false});
                 var giftCardsEdition = App.Views.GeneratorView.create('Profile', {
                     el: this.$('.gift-cards-box'),
                     mod: 'GiftCardsEdition',
                     collection: this.model.giftCards,
-                    unlinkGiftCard: this.options.unlinkGiftCard
+                    unlinkGiftCard: this.options.unlinkGiftCard,
+                    newCard: this.newGiftCard
                 });
                 this.subViews.push(giftCardsEdition);
             }
 
             return this;
+        },
+        onUpdate: function() {
+            var clone;
+            if (this.newGiftCard.get('cardNumber')) {
+                this.newGiftCard.set('remainingBalance', 567);
+                clone = this.newGiftCard.deepClone();
+
+                this.model.giftCards.addUniqueItem(clone);
+
+                this.newGiftCard.set({ add_new_card: false, cardNumber: '', remainingBalance: null });
+            }
         }
     });
 
