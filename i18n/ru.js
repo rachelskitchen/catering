@@ -549,7 +549,7 @@
         "PROFILE_CONTINUE_AS_GUEST": "Продолжить как гость",
         "PROFILE_LOG_IN_INFO": "Введите email и пароль",
         "PROFILE_SIGN_UP": "Регистрация",
-        'PROFILE_SIGN_UP_BUTTON': "Зарегистрироваться",
+        "PROFILE_SIGN_UP_BUTTON": "Зарегистрироваться",
         "PROFILE_SIGN_UP_INFO": "Введите Ваши данные",
         "PROFILE_SIGN_UP_LINK": "Новый пользователь? Регистрация",
         "PROFILE_ACCOUNT_PASSWORD": "Введите пароль",
