@@ -135,15 +135,17 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.options.rewardsCard.set('number', e.target.value);
         },
         controlAddress: function(model, value) {
-            var address = this.subViews.shift();
+            var address = this.subViews.shift(),
+                address_index;
 
             // remove address if it exists
-            address && address.remove();
+            address ? address.remove() : (address_index = -1);
 
             if(value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING' || value === 'DINING_OPTION_CATERING') {
                 address = new App.Views.CheckoutView.CheckoutAddressView({
                     customer: this.customer,
-                    checkout: this.model
+                    checkout: this.model,
+                    address_index: address_index // -1 means that default profile address should be selected
                 });
                 this.subViews.push(address);
                 this.$('.delivery_address').append(address.el);
@@ -232,7 +234,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
     App.Views.CoreCheckoutView.CoreCheckoutAddressView = App.Views.DeliveryAddressesView.extend({
         name: 'checkout',
-        mod: 'address',
+        mod: 'address'
     });
 
     App.Views.CoreCheckoutView.CoreCheckoutOtherItemView = App.Views.FactoryView.extend({
