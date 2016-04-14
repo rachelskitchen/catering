@@ -86,26 +86,26 @@
 
 <script type="text/template" id="checkout_address-template">
     <div class="address-selection row">
-        <label class="select"> <span class="bold">Address:</span> </label>
+        <label class="select"> <span class="bold"><%= _lp.PROFILE_ADDRESS %>:</span> </label>
         <div class="select select-wrapper">
             <select id="addresses"></select>
         </div>
     </div>
 
     <div class="address-edit">
-        <% if(isShippingServices) { %>
-        <div class="row">
-            <label class="select" for="countries">
-                <span class="required bold"><%= _lp.PROFILE_COUNTRY %>:</span>
-            </label>
-            <div class="select countries select-wrapper">
-                <select class="country select" id="countries">
-                <% for (var i in countries) { %>
-                    <option value="<%= i %>" <% if(i.toLowerCase() == country.toLowerCase()) { %>selected="selected"<% } %>><%= countries[i] %></option>
-                <% } %>
-                </select>
+        <% if (isShippingServices) { %>
+            <div class="row">
+                <label class="select" for="countries">
+                    <span class="required bold"><%= _lp.PROFILE_COUNTRY %>:</span>
+                </label>
+                <div class="select countries select-wrapper">
+                    <select class="country select" id="countries">
+                    <% for (var i in countries) { %>
+                        <option value="<%= i %>" <% if(i.toLowerCase() == country.toLowerCase()) { %>selected="selected"<% } %>><%= countries[i] %></option>
+                    <% } %>
+                    </select>
+                </div>
             </div>
-        </div>
         <% } %>
         <div class="row">
             <label for="addressLine1"> <span class="required bold"><%= _lp.PROFILE_ADDRESS_LINE1 %>:</span> </label>
