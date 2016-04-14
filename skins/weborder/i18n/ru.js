@@ -159,8 +159,6 @@
         'COMBO_CUSTOMIZE': 'Модифаеры',
         'PRODUCT_SETS_SELECT_1': 'Пожалуйста, выберите опции для "',
         'PRODUCT_SETS_SELECT_2': '"',
-        'UPSELL_DONT_WANT_COMBO': 'Убрать комбо-опции',
-        'PROFILE_SIGN_UP': 'Новый Пользователь? Регистрация',
-        'PROFILE_LOG_IN': 'Войти'
+        'UPSELL_DONT_WANT_COMBO': 'Убрать комбо-опции'
     } // end of locale
 }); // end of module

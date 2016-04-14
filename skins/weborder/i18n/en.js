@@ -167,8 +167,6 @@
         'COMBO_CUSTOMIZE': 'Customize',
         'PRODUCT_SETS_SELECT_1': 'Please choose your "',
         'PRODUCT_SETS_SELECT_2': '" options',
-        'UPSELL_DONT_WANT_COMBO': 'I don\'t want a combo',
-        'PROFILE_SIGN_UP': 'New User? Register',
-        'PROFILE_LOG_IN': 'Sign In'
+        'UPSELL_DONT_WANT_COMBO': 'I don\'t want a combo'
     } // end of locale
 }); // end of module
