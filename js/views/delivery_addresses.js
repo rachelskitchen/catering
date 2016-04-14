@@ -133,7 +133,6 @@ define(['backbone', 'factory'], function(Backbone) {
 
             // if shipping_address isn't selected take the last index
             if (customer.isDefaultShippingAddress()) {
-                // @TODO: take the default profile address if it exists
                 shipping_address = addresses.length ? addresses.length - 1 : 0;
             }
 
@@ -154,73 +153,48 @@ define(['backbone', 'factory'], function(Backbone) {
 
     var DeliveryAddressesView = AddressView.extend({
         initialize: function() {
-            var self = this;
-
             this.isShippingServices = this.options.checkout && this.options.checkout.get('dining_option') === 'DINING_OPTION_SHIPPING';
 
             if (this.isShippingServices)
                 this.listenTo(this.options.customer, 'change:shipping_services', this.updateShippingServices, this);
 
             this.listenTo(this.options.customer, 'change:access_token', this.updateAddressesOptions);
-            this.listenTo(this.options.checkout, 'change:address_index', function(checkout, address_index) {
-                this.options.customer.set('shipping_address', address_index);
-            });
 
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
-            '.address-selection': 'toggle: showAddressSelection',
-            '#addresses': 'value: customer_shipping_address',
-            '.address-edit': 'classes: {hidden: not(showAddressEdit)}'
+            '.address-selection': 'toggle: showAddressSelection', // wrapper of the address selection drop-down
+            '#addresses': 'value: customer_shipping_address', // the address selection drop-down
+            '.address-edit': 'classes: {hidden: not(showAddressEdit)}' // the address edit form
         },
         computeds: {
+            /**
+             * Indicates whether the user is logged in.
+             */
             isAuthorized: {
                 deps: ['customer_access_token'],
                 get: function() {
-                    var isAuthorized = this.getBinding('$customer').isAuthorized();
-                    if (!isAuthorized) {
-                        App.Data.myorder.setShippingAddress();
-                    }
-                    return isAuthorized;
+                    return this.getBinding('$customer').isAuthorized();
                 }
             },
+            /**
+             * Indicates whether the address selection drop-down list should be shown.
+             */
             showAddressSelection: {
                 deps: ['isAuthorized', 'customer_addresses'],
                 get: function(isAuthorized, customer_addresses) {
                     return isAuthorized && customer_addresses.length;
                 }
             },
+            /**
+             * Indicates whether the address edit form should be shown.
+             */
             showAddressEdit: {
                 deps: ['isAuthorized', 'customer_shipping_address'],
-                get: function(isAuthorized, address_index) {
+                get: function(isAuthorized, customer_shipping_address) {
                     return !isAuthorized || !this.options.customer.isProfileAddressSelected();
                 }
             }
-        },
-        changeAddressSelection: function(model, value) {
-            if (!value) {
-                return;
-            }
-
-            var customer = this.options.customer,
-                checkout = this.options.checkout,
-                prevValue = customer.get('shipping_address');
-
-            value = Number(value);
-
-            if (value == prevValue) {
-                return;
-            }
-
-            if (value == -1) {
-                this.model.set(_.extend({}, customer.getEmptyAddress(), {country: App.Settings.address.country, state: App.Settings.address.state})); // reset address
-                value = App.Data.myorder.setShippingAddress(checkout, checkout.get('dining_option'));
-            }
-            else {
-                customer.set('shipping_address', value);
-                this.model.set(customer.getCheckoutAddress());
-            }
-            checkout.set('address_index', value);
         },
         render: function() {
             this.model.set('isShippingServices', this.isShippingServices);
@@ -234,16 +208,19 @@ define(['backbone', 'factory'], function(Backbone) {
 
             return this;
         },
+        /**
+         * Rendering of 'Address' drop-down list.
+         */
         updateAddressesOptions: function() {
             var customer = this.options.customer;
 
             if (!customer.isAuthorized()) {
+                App.Data.myorder.setShippingAddress(); // update customer.shipping_address on logout
                 return;
             }
 
             var checkout = this.options.checkout,
                 addresses = customer.get('addresses'),
-                address_index = checkout.get('address_index'),
                 optionsStr = '',
                 options = _.map(addresses, function(addr, index) {
                     if (addr && addr.street_1 && index > 2) {
@@ -257,8 +234,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 });
 
             if (options.length) {
-                if (address_index == -1) {
-                    checkout.set('address_index', options[0].value);
+                if (this.options.address_index == -1) { // default profile address should be selected
                     customer.set('shipping_address', options[0].value);
                 }
 
