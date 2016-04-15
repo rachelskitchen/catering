@@ -312,7 +312,11 @@ define(['backbone'], function(Backbone) {
                 });
             }
         },
-
+        /**
+         * When payment is checked, uncheck all other payments (radio button behavior).
+         * @param {App.Models.PaymentToken} model - Selected/deselected payment.
+         * @param {boolean} value - model.is_primary attribute value.
+         */
         checkboxSelection: function(model, value)
         {
             if (value)
@@ -323,7 +327,6 @@ define(['backbone'], function(Backbone) {
                 });
             }
         },
-
         /**
          * When new payment is added, deselects all other payments (radio button behavior)
          * and changes `is_primary` attribute on `false` for existing payments.
