@@ -318,7 +318,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
                     zipcode: _loc.PROFILE_ZIP_CODE
                 };
 
-            address = address[address.length -1];
+            address = address[this.get('shipping_address')];
 
             // if not USA exclude state property
             if(address.country != 'US')

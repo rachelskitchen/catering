@@ -50,6 +50,7 @@ define(['backbone', 'factory'], function(Backbone) {
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.updateAddress();
+            this.listenTo(App.Data.customer, 'change:access_token', this.updateAddress);
         },
         bindings: {
             'input[name="street_1"]': 'value: firstLetterToUpperCase(street_1), events: ["input"], trackCaretPosition: street_1',
