@@ -2386,10 +2386,10 @@ function reloadPageOnceOnline() {
  * Add @host to @image URL if it is relative.
  * @param {string} image - path to image file (can be absolute or relative).
  * @param {string} host  - host to be added to image path to make it absolute.
+ * @returns {string}
  */
 function addHost(image, host) {
-    var image = decodeURIComponent(image);
-    return /^https?:\/\//.test(image) ? image : host + image.replace(/^([^\/])/, '/$1');
+    return /^https?:\/\//.test(image) ? image : host + encodeURIComponent(image).replace(/^([^\/])/, '/$1');
 }
 
 /**

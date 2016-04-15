@@ -40,8 +40,8 @@ define(["store_info_view"], function(store_info_view) {
             '.access': 'toggle: _system_settings_about_access_to_location',
             '.access-info': 'text: _system_settings_about_access_to_location',
             '.delivery-info-wrapper': 'toggle: _system_settings_delivery_for_online_orders',
-            '.delivery-charge': 'text: select(decimal(_system_settings_delivery_charge), currencyFormat(_system_settings_delivery_charge), _lp_STORE_INFO_FREE)',
             '.delivery-minimum': 'text: currencyFormat(_system_settings_min_delivery_amount)',
+            '.delivery-distance': 'text: delivery_distance',
             '.delivery-time': 'text: delivery_time'
         },
         events: {
@@ -86,6 +86,46 @@ define(["store_info_view"], function(store_info_view) {
                     if (minutes == 0 && hour == 0) res += _lp.STORE_INFO_ASAP;
 
                     return  res;
+                }
+            },
+            delivery_distance: {
+                deps: ['_system_settings_max_delivery_distance'],
+                get: function(distance)
+                {
+                    var settings = App.Data.settings.get('settings_system'),
+                        _lp = this.getBinding('$_lp').toJSON();
+
+                    var delivery_post_code_lookup_enabled = _.isArray(settings.delivery_post_code_lookup) && settings.delivery_post_code_lookup[0],
+                        delivery_post_codes = _.isArray(settings.delivery_post_code_lookup) && settings.delivery_post_code_lookup[1],
+                        delivery_geojson_enabled = _.isArray(settings.delivery_geojson) && settings.delivery_geojson[0],
+                        distance_mearsure = settings.distance_mearsure;
+
+                    if (delivery_post_code_lookup_enabled)
+                    {
+                        var label = _lp.STORE_INFO_DELIVERY_AREA;
+                        var value = delivery_post_codes;
+                    }
+                    else if (!delivery_geojson_enabled)
+                    {
+                        var label = _lp.STORE_INFO_DELIVERY_RADIUS;
+                        var value = distance + ' ';
+
+                        if (distance_mearsure.toLowerCase() == 'km')
+                        {
+                            value += _lp.STORE_INFO_KM;
+                        }
+                        else
+                        {
+                            value += _lp.STORE_INFO_MILE;
+
+                            if (distance > 1)
+                            {
+                                value += _lp.STORE_INFO_MILE_END;
+                            }
+                        }
+                    }
+
+                    return (label && value) ? (label + ': ' + value) : '';
                 }
             }
         },

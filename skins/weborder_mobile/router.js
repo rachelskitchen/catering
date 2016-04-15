@@ -1021,6 +1021,7 @@ define(["main_router"], function(main_router) {
             this.prepare('confirm', function() {
                 var payments = App.Data.settings.get_payment_process(),
                     payment_count = _.isObject(payments) ? payments.payment_count : 0,
+                    mainFooter = payment_count > 1 || App.Data.customer.payments,
                     content = [];
 
                 content.push({
@@ -1083,7 +1084,7 @@ define(["main_router"], function(main_router) {
                 var payBtn = function() {
                     App.Data.footer.set({
                         btn_title: _loc.CONTINUE,
-                        action: payment_count > 1 ? goToPayments : App.Data.payments.onPay.bind(App.Data.payments)
+                        action: mainFooter ? goToPayments : App.Data.payments.onPay.bind(App.Data.payments)
                     });
                 }
 
@@ -1102,7 +1103,7 @@ define(["main_router"], function(main_router) {
                     }
                 };
 
-                if(payment_count > 1) {
+                if (mainFooter) {
                     placeOrderBtn();
                     this.listenTo(myorder.total, 'change:grandTotal', placeOrderBtn);
                     // unbind listener
@@ -1257,8 +1258,19 @@ define(["main_router"], function(main_router) {
                 };
 
                 function addCreditCard() {
+                    var payment = App.Data.settings.get_payment_process();
                     payments && (payments.ignoreSelectedToken = true);
-                    App.Data.payments.trigger('payWithCreditCard');
+
+                    if (!payment.credit_card_dialog) {
+                        customer.trigger('onAskForRememberCard', {
+                            callback: function() {
+                                App.Data.payments.trigger('payWithCreditCard');
+                            }
+                        });
+                    }
+                    else {
+                        App.Data.payments.trigger('payWithCreditCard');
+                    }
                 }
 
                 function addGiftCard() {

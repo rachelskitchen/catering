@@ -406,7 +406,7 @@ define(["backbone", "factory"], function(Backbone) {
             });
 
             this.listenTo(customer, 'onAskForRememberCard', function(data) {
-                App.Data.errors.alert(MSG.CARD_SAVE, false, false, {
+                App.Data.errors.alert(MSG.CARD_SAVE, false, true, {
                     isConfirm: true,
                     typeIcon: '',
                     confirm: {

@@ -124,8 +124,6 @@
         'STANFORD_RELOAD_INFO1': "Укажите номер карточки и сумму, на которую хотите пополнить план",
         'STANFORD_RELOAD_INFO2': "Выберите план, на который будет выполнено зачисление средств",
         'STANFORD_CARD_NUMBER': "Stanford Card #",
-        'STANFORD_CARD_CHOOSE_PLAN': "Stanford Card: Выбор Плана",
-        'PROFILE_SIGN_UP': 'Новый Пользователь? Регистрация',
-        'PROFILE_LOG_IN': 'Войти'
+        'STANFORD_CARD_CHOOSE_PLAN': "Stanford Card: Выбор Плана"
     } // end of locale
 }); // end of module

@@ -21,7 +21,14 @@
  */
 
 /**
- * Contains {@link App.Models.USAePayPayment}, {@link App.Collections.USAePayPayments} constructors.
+ * Contains {@link App.Models.PaymentToken}, {@link App.Collections.PaymentTokens},
+ * {@link App.Models.USAePayPayment}, {@link App.Collections.USAePayPayments},
+ * {@link App.Models.MercuryPayment}, {@link App.Collections.MercuryPayments},
+ * {@link App.Models.FreedomPayment}, {@link App.Collections.FreedomPayments},
+ * {@link App.Models.BraintreePayment}, {@link App.Collections.BraintreePayments},
+ * {@link App.Models.GlobalCollectPayment}, {@link App.Collections.GlobalCollectPayments}
+ * constructors.
+ *
  * @module payments
  * @requires module:backbone
  * @see {@link module:config.paths actual path}

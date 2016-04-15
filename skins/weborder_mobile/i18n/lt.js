@@ -121,7 +121,7 @@ define([], function() {
         "STORE_INFO_CHANGE_STORE": "Change to a store location?",
         "STORE_INFO_DELIVERY": "Delivery Info",
         "STORE_INFO_FREE": "Nemokamai",
-        "STORE_INFO_MINIMUM": "Min.",
+        "STORE_INFO_MINIMUM": "Delivery Minimum",
         "STORE_INFO_DELIVERY_TIME": "Est. Wait",
         "STORE_INFO_HR": "val.",
         "STORE_INFO_MIN": "min.",
