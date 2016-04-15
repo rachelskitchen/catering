@@ -26,35 +26,61 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
         });
 
         it('initialize()', function() {
-            // test trim
-            model.set({
-                first_name: ' firstName ',
-                last_name: ' lastName '
-            });
-            expect(model.get('first_name')).toBe('firstName');
-            expect(model.get('last_name')).toBe('lastName');
-
-            // test default value
-            model.set({
-                first_name: 12312,
-                last_name: 123123
-            });
-            expect(model.get('first_name')).toBe(model.defaults.first_name);
-            expect(model.get('last_name')).toBe(model.defaults.last_name);
-
             //  test initialization of inner state
-            var page_visibility = require('page_visibility');
+            var page_visibility = require('page_visibility'),
+                trimFirstNameValue = new Function(),
+                trimLastNameValue = new Function();
             spyOn(model, 'setCustomerFromCookie');
             spyOn(model, 'setAddressesIndexes');
             spyOn(model, 'listenTo');
             spyOn(page_visibility, 'on');
+            spyOn(model._trimValue, 'bind').and.callFake(function(obj, attr) {
+                if (attr == 'first_name') {
+                    return trimFirstNameValue;
+                } else if (attr == 'last_name') {
+                    return trimLastNameValue
+                }
+            });
 
             model.initialize();
             expect(model.setAddressesIndexes).toHaveBeenCalled();
-            expect(model.listenTo).toHaveBeenCalled();
+            expect(model._trimValue.bind).toHaveBeenCalledWith(model, 'first_name');
+            expect(model._trimValue.bind).toHaveBeenCalledWith(model, 'last_name');
+            expect(model.listenTo).toHaveBeenCalledWith(model, 'change:first_name', trimFirstNameValue);
+            expect(model.listenTo).toHaveBeenCalledWith(model, 'change:last_name', trimLastNameValue);
             expect(model.setCustomerFromCookie).toHaveBeenCalled();
             expect(page_visibility.on).toHaveBeenCalled();
 
+        });
+
+        describe("_trimValue()", function() {
+            var originalFirstName,
+                attr = 'first_name';
+
+            beforeEach(function() {
+                originalFirstName = model.get(attr);
+            });
+
+            afterEach(function() {
+                 model.set(attr, originalFirstName);
+            });
+
+            it("value isn't string", function() {
+                var testValues = [null, undefined, true, 123, {}, NaN, Infinity, -Infinity, -0, 0, 2.23];
+                testValues.forEach(function(testValue) {
+                    model.set(attr, testValue);
+                    model._trimValue(attr);
+                    expect(model.get(attr)).toBe(data.defaults[attr]);
+                });
+            });
+
+            it("value is string", function() {
+                var testValue = ' asd asdd   asd  ',
+                    expectValue = 'asd asdd   asd';
+                model.set(attr, testValue);
+                model._trimValue(attr);
+                expect(model.get(attr)).toBe(expectValue);
+            });
         });
 
         // App.Models.Customer function get_customer_name
@@ -74,19 +100,30 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(model.get_customer_name()).toBe('firstName l.');
             });
 
-            it("`first_name` is invalid string data, `last_name` is valid string data.", function() {
+            it("`first_name` isn't a string, `last_name` is valid string data.", function() {
                 testValues.forEach(function(first_name) {
                     model.set({first_name: first_name, last_name: 'lastName'});
                     expect(model.get_customer_name()).toBe(' l.');
                 });
             });
 
-            it("`first_name` is valid string data, `last_name` is invalid string data", function() {
+            it("`first_name` is an empty string, `last_name` is valid string data.", function() {
+                model.set({first_name: '', last_name: 'lastName'});
+                expect(model.get_customer_name()).toBe(' l.');
+            });
+
+            it("`first_name` is valid string data, `last_name` isn't a string", function() {
                 var firstName = 'firstName';
                 testValues.forEach(function(last_name) {
                     model.set({first_name: firstName, last_name: last_name});
                     expect(model.get_customer_name()).toBe(firstName);
                 });
+            });
+
+            it("`first_name` is valid string data, `last_name` is an empty string", function() {
+                var firstName = 'firstName';
+                model.set({first_name: firstName, last_name: ''});
+                expect(model.get_customer_name()).toBe(firstName);
             });
 
             it("`first_name` and `last_name` are invalid string data", function() {
@@ -483,10 +520,20 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(model.isNewAddressSelected).toHaveBeenCalledWith(dining_option);
                 expect(model._check_delivery_fields).not.toHaveBeenCalled();
             });
+
+            it("passed", function() {
+                model.set({
+                    first_name: 'asdas',
+                    last_name: 'adasdasd',
+                    email: 'asdasd@sadasd.com',
+                    phone: '87238778'
+                });
+                expect(model.check()).toEqual({status: "OK"});
+            });
         });
 
         describe("get_shipping_services()", function() {
-            var ajaxOpts,
+            var ajaxOpts, orderItem,
                 ajaxMock = (function(ajax) {
                     return function() {
                         ajaxOpts = arguments[0];
@@ -499,8 +546,11 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 spyOn(model, 'resetShippingServices');
                 spyOn(model, 'trigger');
                 spyOn(Backbone.$, 'ajax').and.callFake(ajaxMock);
-                App.Data.myorder = new Backbone.Collection();
+                orderItem = new Backbone.Model({id: 123});
+                orderItem.item_submit = new Function();
+                App.Data.myorder = new Backbone.Collection([orderItem]);
                 model.set('addresses', customer1.addresses);
+                spyOn(orderItem, 'item_submit');
             });
 
             it("`addresses` is not set", function() {
@@ -529,6 +579,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(Backbone.$.ajax).not.toHaveBeenCalled();
                 expect(def.done).toHaveBeenCalled();
                 expect(def.fail).toHaveBeenCalled();
+                expect(orderItem.item_submit).toHaveBeenCalled();
             });
 
             it("`jqXHR` param isn't passed", function() {
@@ -542,6 +593,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                     dataType: "json",
                     error: jasmine.any(Function)
                 });
+                expect(orderItem.item_submit).toHaveBeenCalled();
             });
 
             it("`getShippingOptions` param is passed", function() {
@@ -556,6 +608,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
                 def.resolve(res);
                 expect(data.getShippingOptions).toHaveBeenCalledWith(res);
+                expect(orderItem.item_submit).toHaveBeenCalled();
             });
 
             it("`getShippingOptions` param isn't passed", function() {
@@ -567,6 +620,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
                 def.resolve(res);
                 expect(model.set).toHaveBeenCalledWith('shipping_services', res.data, {silent: true});
+                expect(orderItem.item_submit).toHaveBeenCalled();
             });
 
             it("this.isDefaultShippingAddress() returns `true`", function() {
@@ -576,6 +630,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 model.get_shipping_services();
 
                 expect(JSON.parse(ajaxOpts.data).address).toEqual(address);
+                expect(orderItem.item_submit).toHaveBeenCalled();
             });
 
             it("this.isDefaultShippingAddress() returns `false`", function() {
@@ -588,6 +643,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 model.get_shipping_services();
 
                 expect(JSON.parse(ajaxOpts.data).address).toEqual(addresses[0]);
+                expect(orderItem.item_submit).toHaveBeenCalled();
 
                 model.set('shipping_address', originalShippingAddress);
             });
@@ -657,7 +713,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                     _model.set('addresses', customer1.addresses);
                     _model.get_shipping_services(def);
 
-                    def.reject(xhr);
+                    def.resolve(xhr);
 
                     setTimeout(function() {
                         done();
@@ -2380,6 +2436,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             beforeEach(function() {
                 spyOn(window, 'b64_to_utf8').and.returnValue(decodeStr);
                 spyOn(model, 'setCustomerFromAPI');
+                spyOn(console, 'error');
             });
 
             it("cookie isn't specified", function() {
@@ -2397,6 +2454,1055 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(model.setCustomerFromAPI).toHaveBeenCalledWith(JSON.parse(decodeStr));
             });
 
+            it("`docCookies.getItem(cookieName)` throws an error", function() {
+                var error = '123';
+                docCookies_getItem_spyOn.and.throwError(error);
+                model.setCustomerFromCookie();
+                expect(docCookies.getItem).toThrowError(error);
+            });
+
+            it("`this.setCustomerFromAPI(JSON.parse(b64_to_utf8(data)));` throws an error", function() {
+                var error = '123';
+                spyOn(JSON, 'parse').and.throwError(error);
+                model.setCustomerFromCookie();
+                expect(JSON.parse).toThrowError(error);
+            });
+        });
+
+        it("getCustomerInAPIFormat()", function() {
+            var address = 123, result, data;
+
+            spyOn(model, 'getProfileAddress').and.returnValue(address);
+
+            result = model.getCustomerInAPIFormat(),
+            data = model.toJSON();
+
+            expect(model.getProfileAddress).toHaveBeenCalled();
+            expect(result.customer.email).toBe(data.email);
+            expect(result.customer.first_name).toBe(data.first_name);
+            expect(result.customer.last_name).toBe(data.last_name);
+            expect(result.customer.phone_number).toBe(data.phone);
+            expect(result.customer.addresses).toEqual([address]);
+            expect(result.token.user_id).toBe(data.user_id);
+            expect(result.token.access_token).toBe(data.access_token);
+            expect(result.token.token_type).toBe(data.token_type);
+            expect(result.token.expires_in).toBe(data.expires_in);
+        });
+
+        describe("trackCookieChange()", function() {
+            var notString = [1, 0, Infinity, false, true, null, undefined, -2],
+                originalPrevstate;
+
+            beforeEach(function() {
+                spyOn(model, 'setCustomerFromCookie');
+                spyOn(model, 'trigger');
+                originalPrevValue = model.trackCookieChange.prevState;
+            });
+
+            afterEach(function() {
+                model.trackCookieChange.prevState = originalPrevValue;
+            });
+
+            function commonExpectations() {
+                expect(require('doc_cookies').getItem).toHaveBeenCalledWith(data.cookieName);
+                expect(model.trackCookieChange.prevState).toBe(docCookies_getItem);
+            }
+
+            it("`trackCookieChange.prevState` isn't string", function() {
+                notString.forEach(function(value) {
+                    model.trackCookieChange.prevState = value;
+                    model.trackCookieChange();
+                    commonExpectations()
+                    expect(model.setCustomerFromCookie).not.toHaveBeenCalled();
+                    expect(model.trigger).not.toHaveBeenCalled();
+                });
+            });
+
+            it("`trackCookieChange.prevState` is string, cookie value isn't string", function() {
+                model.trackCookieChange.prevState = 'qwe';
+
+                notString.forEach(function(value) {
+                    docCookies_getItem = value;
+                    model.trackCookieChange();
+                    commonExpectations()
+                    expect(model.setCustomerFromCookie).not.toHaveBeenCalled();
+                    expect(model.trigger).not.toHaveBeenCalled();
+                });
+            });
+
+            it("`trackCookieChange.prevState` is string, cookie value is string, `trackCookieChange.prevState` == cookie value", function() {
+                var value = '213';
+                model.trackCookieChange.prevState = value;
+                docCookies_getItem = value;
+                model.trackCookieChange();
+                commonExpectations()
+                expect(model.setCustomerFromCookie).not.toHaveBeenCalled();
+                expect(model.trigger).not.toHaveBeenCalled();
+            });
+
+            it("`trackCookieChange.prevState` is string, cookie value is string, `trackCookieChange.prevState` != cookie value", function() {
+                model.trackCookieChange.prevState = '1223';
+                docCookies_getItem = '23';
+                model.trackCookieChange();
+                commonExpectations()
+                expect(model.setCustomerFromCookie).toHaveBeenCalled();
+                expect(model.trigger).toHaveBeenCalledWith('onCookieChange');
+            });
+        });
+
+        describe("isAuthorized()", function() {
+            var originalAccessToken, originalUserId;
+
+            beforeEach(function() {
+                originalAccessToken = model.get('access_token');
+                originalUserId = model.get('user_id');
+            });
+
+            afterEach(function() {
+                model.set({
+                    access_token: originalAccessToken,
+                    user_id: originalUserId
+                });
+            });
+
+            it("`access_token` isn't specified, `user_id` isn't specified", function() {
+                model.set({
+                    access_token: model.defaults.access_token,
+                    user_id: model.defaults.user_id
+                });
+                expect(model.isAuthorized()).toBe(false);
+            });
+
+            it("`access_token` is specified, `user_id` isn't specified", function() {
+                model.set({
+                    access_token: 'ASDASDASDASDASDASD',
+                    user_id: model.defaults.user_id
+                });
+                expect(model.isAuthorized()).toBe(false);
+            });
+
+            it("`access_token` isn't specified, `user_id` is specified", function() {
+                model.set({
+                    access_token: model.defaults.access_token,
+                    user_id: 213123
+                });
+                expect(model.isAuthorized()).toBe(false);
+            });
+
+            it("`access_token` is specified, `user_id` is specified", function() {
+                model.set({
+                    access_token: 'ASDASDASDASDASDASD',
+                    user_id: 0
+                });
+                expect(model.isAuthorized()).toBe(true);
+            });
+        });
+
+        it("clearPasswords()", function() {
+            model.clearPasswords();
+            expect(model.get('password')).toBe(model.defaults.password);
+            expect(model.get('confirm_password')).toBe(model.defaults.confirm_password);
+        });
+
+        describe("payWithToken()", function() {
+            var originalPayments, originalPaymentsRequest, payments,
+                orderPayWithToken, paymentsRequest, token,
+                authHeader = {Authorization: "Bearer ASDASDASDASDSA"},
+                card = 1234,
+                order = 234;
+
+            beforeEach(function() {
+                originalPayments = model.payments;
+                originalPaymentsRequest = model.paymentsRequest;
+                paymentsRequest = Backbone.$.Deferred();
+                orderPayWithToken = Backbone.$.Deferred();
+                payments = {
+                    orderPayWithToken: new Function(),
+                    get: new Function()
+                },
+                token = new Backbone.Model();
+
+                spyOn(payments, 'orderPayWithToken').and.returnValue(orderPayWithToken);
+                spyOn(orderPayWithToken, 'done').and.callThrough();
+                spyOn(orderPayWithToken, 'fail').and.callThrough();
+                spyOn(paymentsRequest, 'always').and.callThrough();
+                spyOn(model, 'getAuthorizationHeader').and.returnValue(authHeader);
+
+                model.payments = payments;
+                model.paymentsRequest = paymentsRequest;
+            });
+
+            afterEach(function() {
+                model.payments = originalPayments;
+                model.paymentsRequest = originalPaymentsRequest;
+            });
+
+            function paymentsRequestExists() {
+                expect(model.paymentsRequest.always).toHaveBeenCalled();
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(model.payments.orderPayWithToken).toHaveBeenCalledWith(authHeader, order, model.get('user_id'), card);
+                expect(orderPayWithToken.done).toHaveBeenCalled();
+                expect(orderPayWithToken.fail).toHaveBeenCalled();
+            }
+
+            it("`payments` isn't specified", function() {
+                model.payments = undefined;
+                expect(model.payWithToken()).toBeUndefined();
+            });
+
+            it("`payments` is specified, `paymentsRequest` isn't specified", function() {
+                model.paymentsRequest = undefined;
+                expect(model.payWithToken()).not.toBeUndefined();
+            });
+
+            it("`payments` is specified, `paymentsRequest` is specified, payments request is failure", function() {
+                var req = model.payWithToken(order, card);
+                model.paymentsRequest.reject();
+
+                expect(req).not.toBeUndefined();
+                paymentsRequestExists();
+            });
+
+            it("`token_id` param isn't passed", function() {
+                spyOn(payments, 'get');
+
+                var req = model.payWithToken(order, card);
+                model.paymentsRequest.resolve();
+
+                expect(req).not.toBeUndefined();
+                paymentsRequestExists();
+                expect(payments.get).not.toHaveBeenCalled();
+                expect(!token.get('selected')).toBe(true);
+            });
+
+            it("`token_id` param is passed, `token_id > -1` is false", function() {
+                spyOn(payments, 'get');
+
+                var req = model.payWithToken(order, card, -1);
+                model.paymentsRequest.resolve();
+
+                expect(req).not.toBeUndefined();
+                paymentsRequestExists();
+                expect(payments.get).not.toHaveBeenCalled();
+                expect(!token.get('selected')).toBe(true);
+            });
+
+            it("`token_id` param is passed, `token_id` is invalid", function() {
+                spyOn(payments, 'get').and.returnValue(false);
+
+                var token_id = 2,
+                    req = model.payWithToken(order, card, token_id);
+                model.paymentsRequest.resolve();
+
+                expect(req).not.toBeUndefined();
+                paymentsRequestExists();
+                expect(payments.get).toHaveBeenCalledWith(token_id);
+                expect(!token.get('selected')).toBe(true);
+            });
+
+            it("`token_id` param is passed, `token_id` is valid", function() {
+                spyOn(payments, 'get').and.returnValue(token);
+
+                var token_id = 2,
+                    req = model.payWithToken(order, card, token_id);
+                model.paymentsRequest.resolve();
+
+                expect(req).not.toBeUndefined();
+                paymentsRequestExists();
+                expect(payments.get).toHaveBeenCalledWith(token_id);
+                expect(token.get('selected')).toBe(true);
+            });
+
+            it("`payments.orderPayWithToken()` is successful", function() {
+                var req = model.payWithToken(order, card);
+                model.paymentsRequest.resolve();
+                orderPayWithToken.resolve();
+
+                expect(req).not.toBeUndefined();
+                paymentsRequestExists();
+                expect(req.state()).toBe('resolved');
+            });
+
+            it("`payments.orderPayWithToken()` is failure, `jqXHR.status` isn't 403", function() {
+                var req = model.payWithToken(order, card);
+                model.paymentsRequest.resolve();
+                orderPayWithToken.reject({status: 404});
+
+                expect(req).not.toBeUndefined();
+                paymentsRequestExists();
+                expect(req.state()).toBe('rejected');
+            });
+
+            it("`payments.orderPayWithToken()` is failure, `jqXHR.status` is 403", function() {
+                spyOn(model, 'trigger');
+                spyOn(model, 'logout');
+
+                var req = model.payWithToken(order, card);
+                model.paymentsRequest.resolve();
+                orderPayWithToken.reject({status: 403});
+
+                expect(req).not.toBeUndefined();
+                paymentsRequestExists();
+                expect(req.state()).toBe('rejected');
+                expect(model.trigger).toHaveBeenCalledWith('onUserSessionExpired');
+                expect(model.logout).toHaveBeenCalled();
+            });
+        });
+
+        describe("getPayments()", function() {
+            var originalPayments, payments, paymentsRequest,
+                authHeader = {Authorization: "Bearer ASDASDASDASDSA"};
+
+            beforeEach(function() {
+                originalPayments = model.payments;
+                originalPaymentsRequest = model.paymentsRequest;
+                paymentsRequest = Backbone.$.Deferred(),
+                payments = {
+                    getPayments: new Function()
+                };
+
+                spyOn(payments, 'getPayments').and.returnValue(paymentsRequest);
+                spyOn(model, 'getAuthorizationHeader').and.returnValue(authHeader);
+                spyOn(model, 'trigger');
+                spyOn(model, 'logout');
+
+                model.payments = payments;
+            });
+
+            afterEach(function() {
+                model.payments = originalPayments;
+                model.paymentsRequest = originalPaymentsRequest;
+            });
+
+            function commonExpectations() {
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(model.payments.getPayments).toHaveBeenCalledWith(authHeader);
+                expect(model.paymentsRequest).toBe(paymentsRequest);
+            }
+
+            it("`payments` isn't specified", function() {
+                model.payments = undefined;
+                var req = model.getPayments();
+
+                expect(req).toBeUndefined();
+                expect(payments.getPayments).not.toHaveBeenCalled();
+                expect(model.getAuthorizationHeader).not.toHaveBeenCalled();
+                expect(model.paymentsRequest).not.toBe(paymentsRequest);
+            });
+
+            it("`payments` is specified", function() {
+                var req = model.getPayments();
+
+                expect(req).not.toBeUndefined();
+                commonExpectations();
+            });
+
+            it("`payments.getPayments()` request is failure, 'jqXHR.status' isn't 403", function() {
+                var req = model.getPayments();
+                paymentsRequest.reject({status: 404});
+
+                expect(req).not.toBeUndefined();
+                expect(model.trigger).not.toHaveBeenCalled();
+                expect(model.logout).not.toHaveBeenCalled();
+                commonExpectations();
+            });
+
+            it("`payments.getPayments()` request is failure, 'jqXHR.status' is 403", function() {
+                var req = model.getPayments();
+                paymentsRequest.reject({status: 403});
+
+                expect(req).not.toBeUndefined();
+                expect(model.trigger).toHaveBeenCalledWith('onUserSessionExpired');
+                expect(model.logout).toHaveBeenCalled();
+                commonExpectations();
+            });
+        });
+
+        describe("doPayWithToken()", function() {
+            var auth, payments, originalPayments, token;
+
+            beforeEach(function() {
+                token = {};
+                auth = true;
+                originalPayments = model.payments;
+
+                model.payments = {
+                    ignoreSelectedToken: false,
+                    getSelectedPayment: new Function()
+                };
+
+                spyOn(model, 'isAuthorized').and.callFake(function() {
+                    return auth;
+                });
+
+                spyOn(model.payments, 'getSelectedPayment').and.callFake(function() {
+                    return token;
+                });
+            });
+
+            afterEach(function() {
+                model.payments = originalPayments;
+            });
+
+            it("customer isn't authorized", function() {
+                auth = false;
+                expect(model.doPayWithToken()).toBe(false);
+            });
+
+            it("customer is authorized, `payments` isn't specified", function() {
+                model.payments = undefined;
+                expect(model.doPayWithToken()).toBe(false);
+            });
+
+            it("customer is authorized, `payments` is specified, `payments.ignoreSelectedToken` is true", function() {
+                model.payments.ignoreSelectedToken = true;
+                expect(model.doPayWithToken()).toBe(false);
+            });
+
+            it("customer is authorized, `payments` is specified, `payments.ignoreSelectedToken` is false, `payments.getSelectedPayment()` doesn't return token", function() {
+                token = undefined;
+                expect(model.doPayWithToken()).toBe(false);
+            });
+
+            it("customer is authorized, `payments` is specified, `payments.ignoreSelectedToken` is false, `payments.getSelectedPayment()` returns token", function() {
+                expect(model.doPayWithToken()).toBe(true);
+            });
+        });
+
+        describe("setPayments()", function() {
+            var original_setPayments, auth;
+
+            beforeEach(function() {
+                original_setPayments = model._setPayments;
+                model._setPayments = undefined;
+
+                spyOn(model, 'isAuthorized').and.callFake(function() {
+                    return auth;
+                });
+
+                spyOn(model, 'initPayments');
+            });
+
+            afterEach(function() {
+                model._setPayments = original_setPayments
+            });
+
+            it("customer isn't authorized", function() {
+                auth = false;
+                model.setPayments();
+                expect(typeof model._setPayments).toBe('function');
+                expect(model.isAuthorized).toHaveBeenCalled();
+                expect(model.initPayments).not.toHaveBeenCalled();
+            });
+
+            it("customer is authorized", function() {
+                auth = true;
+                model.setPayments();
+                expect(typeof model._setPayments).toBe('function');
+                expect(model.isAuthorized).toHaveBeenCalled();
+                expect(model.initPayments).toHaveBeenCalled();
+            });
+        });
+
+        describe("_setPayments()", function() {
+            var original_setPayments, originalPayments;
+
+            beforeEach(function() {
+                original_setPayments = model._setPayments;
+                originalPayments = model.payments;
+            });
+
+            afterEach(function() {
+                model._setPayments = original_setPayments;
+                model.payments = originalPayments;
+            });
+
+            it("`constr` param isn't function", function() {
+                model.payments = undefined;
+                model.setPayments();
+                model._setPayments();
+
+                expect(model.payments).toBeUndefined();
+            });
+
+            it("`constr` param is function", function() {
+                spyOn(model, 'trigger');
+
+                model.payments = undefined;
+                model.setPayments(Backbone.Model);
+                model._setPayments();
+                model.payments.trigger('onCVVRequired');
+
+                expect(model.payments instanceof Backbone.Model).toBe(true);
+                expect(model.payments.serverURL).toBe(data.defaults.serverURL);
+                expect(model.trigger).toHaveBeenCalledWith('onCVVRequired');
+            });
+        });
+
+        describe("initPayments()", function() {
+            var original_setPayments, originalPayments;
+
+            beforeEach(function() {
+                original_setPayments = model._setPayments;
+                originalPayments = model.payments;
+                model._setPayments = new Function();
+
+                spyOn(model, '_setPayments');
+                spyOn(model, 'getPayments');
+            });
+
+            afterEach(function() {
+                model._setPayments = original_setPayments;
+                model.payments = originalPayments;
+            });
+
+            it("`_setPayments` isn't function", function() {
+                model.payments = undefined;
+                model._setPayments = undefined;
+                model.initPayments();
+                expect(model.getPayments).not.toHaveBeenCalled();
+            });
+
+            it("`_setPayments` is function", function() {
+                model.initPayments();
+                expect(model._setPayments).toHaveBeenCalled();
+            });
+
+            it("`payments` isn't specified", function() {
+                model.payments = undefined;
+                model.initPayments();
+                expect(model.getPayments).not.toHaveBeenCalled();
+            });
+
+            it("`payments` is specified", function() {
+                model.payments = {};
+                model.initPayments();
+                expect(model.getPayments).toHaveBeenCalled();
+            });
+        });
+
+        describe("removePayments()", function() {
+            var originalPaymentsRequest, originalPayments;
+
+            beforeEach(function() {
+                originalPaymentsRequest = model.paymentsRequest;
+                originalPayments = model.payments;
+            });
+
+            afterEach(function() {
+                model.paymentsRequest = originalPaymentsRequest;
+                model.payments = originalPayments;
+            });
+
+            function commonExpectations() {
+                expect(model.paymentsRequest).toBeUndefined();
+                expect(model.payments).toBeUndefined();
+            }
+
+            it("`paymentsRequest` isn't jqXHR", function() {
+                model.removePayments();
+                commonExpectations();
+            });
+
+            it("`paymentsRequest` is jqXHR", function() {
+                var paymentsRequest = {
+                    abort: new Function()
+                };
+                model.paymentsRequest = paymentsRequest;
+                spyOn(model.paymentsRequest, 'abort');
+                model.removePayments();
+                commonExpectations();
+                expect(paymentsRequest.abort).toHaveBeenCalled();
+            });
+        });
+
+        describe("removePayment()", function() {
+            var authHeader = {Authorization: "Bearer SADSADASDSA"},
+                token_id = 2,
+                originalPayments,
+                removeRequest;
+
+            beforeEach(function() {
+                originalPayments = model.payments;
+                model.payments = {
+                    removePayment: new Function()
+                };
+                removeRequest = Backbone.$.Deferred();
+
+                spyOn(model.payments, 'removePayment').and.callFake(function() {
+                    return removeRequest;
+                });
+                spyOn(model, 'getAuthorizationHeader').and.returnValue(authHeader);
+                spyOn(model, 'trigger');
+                spyOn(model, 'logout');
+                spyOn(removeRequest, 'fail').and.callThrough();
+            });
+
+            afterEach(function() {
+                model.payments = originalPayments;
+            });
+
+            function commonExpectations(result) {
+                expect(removeRequest.fail).toHaveBeenCalled();
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(model.payments.removePayment).toHaveBeenCalledWith(token_id, authHeader);
+                expect(result).toBe(removeRequest);
+            }
+
+            it("successful removing", function() {
+                commonExpectations(model.removePayment(token_id));
+            });
+
+            it("`payments.removePayment()` doesn't return request", function() {
+                removeRequest = undefined;
+                var result = model.removePayment(token_id);
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(model.payments.removePayment).toHaveBeenCalledWith(token_id, authHeader);
+                expect(result).toBe(removeRequest);
+            });
+
+            it("failure removing, `jqXHR` is neither 403 nor 404", function() {
+                var result = model.removePayment(token_id);
+                removeRequest.reject({status: 400});
+                commonExpectations(result);
+                expect(model.trigger).not.toHaveBeenCalled();
+                expect(model.logout).not.toHaveBeenCalled();
+            });
+
+            it("failure removing, `jqXHR` is 403", function() {
+                var result = model.removePayment(token_id);
+                removeRequest.reject({status: 403});
+                commonExpectations(result);
+                expect(model.trigger).toHaveBeenCalledWith('onUserSessionExpired');
+                expect(model.logout).toHaveBeenCalled();
+            });
+
+            it("failure removing, `jqXHR` is 404", function() {
+                var result = model.removePayment(token_id);
+                removeRequest.reject({status: 404});
+                commonExpectations(result);
+                expect(model.trigger).toHaveBeenCalledWith('onTokenNotFound');
+                expect(model.logout).not.toHaveBeenCalled();
+            });
+        });
+
+        describe("setGiftCards()", function() {
+            var originalGiftCards, original_setGiftCards, auth;
+
+            beforeEach(function() {
+                originalGiftCards = model.giftCards;
+                original_setGiftCards = model._setGiftCards;
+                model._setGiftCards = undefined;
+
+                spyOn(model, 'initGiftCards');
+                spyOn(model, 'isAuthorized').and.callFake(function() {
+                    return auth;
+                });
+            });
+
+            afterEach(function() {
+                model.giftCards = originalGiftCards;
+                model._setGiftCards = original_setGiftCards;
+            });
+
+            function commonExpectations() {
+                expect(model.isAuthorized).toHaveBeenCalled();
+                expect(typeof model._setGiftCards).toBe('function');
+            }
+
+            it("customer isn't authorized", function() {
+                auth = false;
+                model.setGiftCards();
+                commonExpectations();
+                expect(model.initGiftCards).not.toHaveBeenCalled();
+            });
+
+            it("customer is authorized", function() {
+                auth = true;
+                model.setGiftCards();
+                commonExpectations();
+                expect(model.initGiftCards).toHaveBeenCalled();
+            });
+        });
+
+        describe("_setGiftCards()", function() {
+            var original_setGiftCards, originalGiftCards;
+
+            beforeEach(function() {
+                originalGiftCards = model.giftCards;
+                original_setGiftCards = model._setGiftCards;
+                model.giftCards = undefined;
+            });
+
+            afterEach(function() {
+                model.giftCards = originalGiftCards;
+                model._setGiftCards = original_setGiftCards;
+            });
+
+            it("`constr` param isn't a function", function() {
+                model.setGiftCards();
+                model._setGiftCards();
+                expect(model.giftCards).toBeUndefined();
+            });
+
+            it("`constr` param is a function", function() {
+                model.setGiftCards(Backbone.Model);
+                model._setGiftCards();
+                expect(model.giftCards instanceof Backbone.Model).toBe(true);
+            });
+        });
+
+        describe("initGiftCards()", function() {
+            var original_setGiftCards, originalGiftCards;
+
+            beforeEach(function() {
+                originalGiftCards = model.giftCards;
+                original_setGiftCards = model._setGiftCards;
+                spyOn(model, 'getGiftCards');
+            });
+
+            afterEach(function() {
+                model.giftCards = originalGiftCards;
+                model._setGiftCards = original_setGiftCards;
+            });
+
+            it("`_setGiftCards` isn't a function", function() {
+                model._setGiftCards = undefined;
+                model.giftCards = undefined;
+                model.initGiftCards();
+
+                expect(model.getGiftCards).not.toHaveBeenCalled();
+            });
+
+            it("`_setGiftCards` is a function", function() {
+                model._setGiftCards = new Function();
+                model.giftCards = {};
+                model.initGiftCards();
+
+                expect(model.getGiftCards).toHaveBeenCalled();
+            });
+
+            it("`giftCards` isn't specified", function() {
+                model.giftCards = undefined;
+                model.initGiftCards();
+
+                expect(model.getGiftCards).not.toHaveBeenCalled();
+            });
+
+            it("`giftCards` is specified", function() {
+                model.giftCards = {};
+                model.initGiftCards();
+
+                expect(model.getGiftCards).toHaveBeenCalled();
+            });
+        });
+
+        describe("removeGiftCards()", function() {
+            var originalGiftCardsRequest, originalGiftCards;
+
+            beforeEach(function() {
+                originalGiftCardsRequest = model.giftCardsRequest;
+                originalGiftCards = model.giftCards;
+            });
+
+            afterEach(function() {
+                model.giftCardsRequest = originalGiftCardsRequest;
+                model.giftCards = originalGiftCards;
+            });
+
+            function commonExpectations() {
+                expect(model.giftCards).toBeUndefined();
+                expect(model.giftCardsRequest).toBeUndefined();
+            }
+
+            it("`giftCardsRequest` isn't jqXHR", function() {
+                model.removeGiftCards();
+                commonExpectations();
+            });
+
+            it("`giftCardsRequest` is jqXHR", function() {
+                var giftCardsRequest = {
+                    abort: new Function()
+                };
+                model.giftCardsRequest = giftCardsRequest;
+                spyOn(model.giftCardsRequest, 'abort');
+                model.removeGiftCards();
+                commonExpectations();
+                expect(giftCardsRequest.abort).toHaveBeenCalled();
+            });
+        });
+
+        describe("getGiftCards()", function() {
+            var originalGiftCards, giftCards, originalGiftCardsRequest,
+                authHeader = {Authorization: "Bearer ASDASDASDASDSA"};
+
+            beforeEach(function() {
+                originalGiftCards = model.giftCards;
+                originalGiftCardsRequest = model.giftCardsRequest;
+                giftCardsRequest = Backbone.$.Deferred(),
+                giftCards = {
+                    getCards: new Function()
+                };
+
+                spyOn(giftCards, 'getCards').and.returnValue(giftCardsRequest);
+                spyOn(model, 'getAuthorizationHeader').and.returnValue(authHeader);
+                spyOn(model, 'trigger');
+                spyOn(model, 'logout');
+
+                model.giftCards = giftCards;
+            });
+
+            afterEach(function() {
+                model.giftCards = originalGiftCards;
+                model.giftCardsRequest = originalGiftCardsRequest;
+            });
+
+            function commonExpectations() {
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(model.giftCards.getCards).toHaveBeenCalledWith(authHeader);
+                expect(model.giftCardsRequest).toBe(giftCardsRequest);
+            }
+
+            it("`giftCards` isn't specified", function() {
+                model.giftCards = undefined;
+                var req = model.getGiftCards();
+
+                expect(req).toBeUndefined();
+                expect(giftCards.getCards).not.toHaveBeenCalled();
+                expect(model.getAuthorizationHeader).not.toHaveBeenCalled();
+                expect(model.giftCardsRequest).not.toBe(giftCardsRequest);
+            });
+
+            it("`giftCards` is specified", function() {
+                var req = model.getGiftCards();
+                commonExpectations();
+            });
+
+            it("`giftCards.getCards()` request is failure, 'jqXHR.status' isn't 403", function() {
+                var req = model.getGiftCards();
+                giftCardsRequest.reject({status: 404});
+
+                expect(model.trigger).not.toHaveBeenCalled();
+                expect(model.logout).not.toHaveBeenCalled();
+                commonExpectations();
+            });
+
+            it("`giftCards.getCards()` request is failure, 'jqXHR.status' is 403", function() {
+                var req = model.getGiftCards();
+                giftCardsRequest.reject({status: 403});
+
+                expect(model.trigger).toHaveBeenCalledWith('onUserSessionExpired');
+                expect(model.logout).toHaveBeenCalled();
+                commonExpectations();
+            });
+        });
+
+        describe("linkGiftCard()", function() {
+            var authHeader = {Authorization: "Bearer ADASDASDDASDASDASD"},
+                linkToCustomerRequest,
+                originalGiftCards,
+                giftCard;
+
+            beforeEach(function() {
+                originalGiftCards = model.giftCards;
+                linkToCustomerRequest = Backbone.$.Deferred();
+                giftCard = {
+                    linkToCustomer: new Function()
+                };
+                model.giftCards = {
+                    addUniqueItem: new Function()
+                };
+
+                spyOn(model, 'getAuthorizationHeader').and.returnValue(authHeader);
+                spyOn(model, 'trigger');
+                spyOn(model, 'logout');
+                spyOn(linkToCustomerRequest, 'fail').and.callThrough();
+                spyOn(linkToCustomerRequest, 'done').and.callThrough();
+                spyOn(model.giftCards, 'addUniqueItem');
+                spyOn(giftCard, 'linkToCustomer').and.callFake(function() {
+                    return linkToCustomerRequest;
+                });
+            });
+
+            afterEach(function() {
+                model.giftCards = originalGiftCards;
+            });
+
+            function commonExpectations(req) {
+                expect(req).toBe(linkToCustomerRequest);
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(giftCard.linkToCustomer).toHaveBeenCalledWith(authHeader);
+                expect(linkToCustomerRequest.done).toHaveBeenCalled();
+                expect(linkToCustomerRequest.fail).toHaveBeenCalled();
+            }
+
+            it("`giftCard` param isn't object", function() {
+                var req = model.linkGiftCard();
+                expect(model.getAuthorizationHeader).not.toHaveBeenCalled();
+                expect(req).toBeUndefined();
+            });
+
+            it("`giftCard` param is object, `giftCard.linkToCustomer` isn't a function", function() {
+                giftCard.linkToCustomer = undefined;
+                var req = model.linkGiftCard(giftCard);
+                expect(model.getAuthorizationHeader).not.toHaveBeenCalled();
+                expect(req).toBeUndefined();
+            });
+
+            it("`giftCard` param is object, `giftCard.linkToCustomer` is a function", function() {
+                var req = model.linkGiftCard(giftCard);
+                commonExpectations(req);
+            });
+
+            it("`giftCard.linkToCustomer()` request is successful, `data` isn't object", function() {
+                var req = model.linkGiftCard(giftCard);
+                linkToCustomerRequest.resolve(123);
+                commonExpectations(req);
+                expect(model.giftCards.addUniqueItem).not.toHaveBeenCalled();
+            });
+
+            it("`giftCard.linkToCustomer()` request is successful, `data` is object, `data.status` isn't 'OK'", function() {
+                var req = model.linkGiftCard(giftCard);
+                linkToCustomerRequest.resolve({status: 'ERROR'});
+                commonExpectations(req);
+                expect(model.giftCards.addUniqueItem).not.toHaveBeenCalled();
+            });
+
+            it("`giftCard.linkToCustomer()` request is successful, `data` is object, `data.status` is 'OK'", function() {
+                var req = model.linkGiftCard(giftCard);
+                linkToCustomerRequest.resolve({status: 'OK'});
+                commonExpectations(req);
+                expect(model.giftCards.addUniqueItem).toHaveBeenCalledWith(giftCard);
+            });
+
+            it("`giftCard.linkToCustomer()` request is failure, `jqXHR.status` isn't 403", function() {
+                var req = model.linkGiftCard(giftCard);
+                linkToCustomerRequest.reject({status: 404});
+                commonExpectations(req);
+                expect(model.trigger).not.toHaveBeenCalled();
+                expect(model.logout).not.toHaveBeenCalled();
+            });
+
+            it("`giftCard.linkToCustomer()` request is failure, `jqXHR.status` is 403", function() {
+                var req = model.linkGiftCard(giftCard);
+                linkToCustomerRequest.reject({status: 403});
+                commonExpectations(req);
+                expect(model.trigger).toHaveBeenCalledWith('onUserSessionExpired');
+                expect(model.logout).toHaveBeenCalled();
+            });
+        });
+
+        describe("unlinkGiftCard", function() {
+            var authHeader = {Authorization: "Bearer ADASDASDDASDASDASD"},
+                unlinkToCustomerRequest,
+                giftCard;
+
+            beforeEach(function() {
+                unlinkToCustomerRequest = Backbone.$.Deferred();
+                giftCard = {
+                    unlinkToCustomer: new Function()
+                };
+
+                spyOn(model, 'getAuthorizationHeader').and.returnValue(authHeader);
+                spyOn(model, 'trigger');
+                spyOn(model, 'logout');
+                spyOn(unlinkToCustomerRequest, 'fail').and.callThrough();
+                spyOn(giftCard, 'unlinkToCustomer').and.callFake(function() {
+                    return unlinkToCustomerRequest;
+                });
+            });
+
+            function commonExpectations(req) {
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(giftCard.unlinkToCustomer).toHaveBeenCalledWith(authHeader);
+                expect(unlinkToCustomerRequest.fail).toHaveBeenCalled();
+                expect(req).toBe(unlinkToCustomerRequest);
+            }
+
+            it("`giftCard` param isn't object", function() {
+                var req = model.unlinkGiftCard();
+                expect(model.getAuthorizationHeader).not.toHaveBeenCalled();
+                expect(req).toBeUndefined();
+            });
+
+            it("`giftCard` param is object, `giftCard.unlinkToCustomer` isn't a function", function() {
+                giftCard.unlinkToCustomer = undefined;
+                var req = model.unlinkGiftCard(giftCard);
+                expect(model.getAuthorizationHeader).not.toHaveBeenCalled();
+                expect(req).toBeUndefined();
+            });
+
+            it("`giftCard` param is object, `giftCard.unlinkToCustomer` is a function", function() {
+                var req = model.unlinkGiftCard(giftCard);
+                commonExpectations(req);
+            });
+
+            it("`giftCard.unlinkToCustomer()` request is failed, `jqXHR.status` isn't 403", function() {
+                var req = model.unlinkGiftCard(giftCard);
+                unlinkToCustomerRequest.reject({status: 404});
+                commonExpectations(req);
+                expect(model.trigger).not.toHaveBeenCalled();
+                expect(model.logout).not.toHaveBeenCalled();
+            });
+
+            it("`giftCard.unlinkToCustomer()` request is failed, `jqXHR.status` is 403", function() {
+                var req = model.unlinkGiftCard(giftCard);
+                unlinkToCustomerRequest.reject({status: 403});
+                commonExpectations(req);
+                expect(model.trigger).toHaveBeenCalledWith('onUserSessionExpired');
+                expect(model.logout).toHaveBeenCalled();
+            });
+        });
+
+        describe("doPayWithGiftCard()", function() {
+            var auth, originalGiftCards, giftCard;
+
+            beforeEach(function() {
+                giftCard = {};
+                auth = true;
+                originalGiftCards = model.giftCards;
+
+                model.giftCards = {
+                    ignoreSelected: false,
+                    getSelected: new Function()
+                };
+
+                spyOn(model, 'isAuthorized').and.callFake(function() {
+                    return auth;
+                });
+
+                spyOn(model.giftCards, 'getSelected').and.callFake(function() {
+                    return giftCard;
+                });
+            });
+
+            afterEach(function() {
+                model.giftCards = originalGiftCards;
+            });
+
+            it("customer isn't authorized", function() {
+                auth = false;
+                expect(model.doPayWithGiftCard()).toBe(false);
+            });
+
+            it("customer is authorized, `giftCards` isn't specified", function() {
+                model.giftCards = undefined;
+                expect(model.doPayWithGiftCard()).toBe(false);
+            });
+
+            it("customer is authorized, `giftCards` is specified, `giftCards.ignoreSelected` is true", function() {
+                model.giftCards.ignoreSelected = true;
+                expect(model.doPayWithGiftCard()).toBe(false);
+            });
+
+            it("customer is authorized, `giftCards` is specified, `giftCards.ignoreSelected` is false, `giftCards.getSelectedPayment()` doesn't return giftCard", function() {
+                giftCard = undefined;
+                expect(model.doPayWithGiftCard()).toBe(false);
+            });
+
+            it("customer is authorized, `giftCards` is specified, `giftCards.ignoreSelected` is false, `giftCards.getSelectedPayment()` returns giftCard", function() {
+                expect(model.doPayWithGiftCard()).toBe(true);
+            });
         });
     });
 });
