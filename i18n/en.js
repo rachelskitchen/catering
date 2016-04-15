@@ -616,6 +616,7 @@
         "PROFILE_INVALID_EMAIL": "Email address is invalid",
         "PROFILE_ADD_CREDIT_CARD": "Add Credit Card",
         "PROFILE_CREDIT_CARDS": "Credit Cards",
+        "PROFILE_DEFAULT_CARD": 'Default Card',
         "PROFILE_PAYMENT_TOKEN_NOT_FOUND": "Payment token is not found",
         "PROFILE_ADD_ANOTHER_CARD": "Add Another Card",
         "PROFILE_UPDATE_SUCCESSFUL": "Update Successful",

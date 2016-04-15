@@ -413,7 +413,6 @@ define(["factory"], function() {
         bindings: {
             '.card-number': 'text: last_digits',
             '.card-type': 'text: creditCardType(_lp_CREDIT_CARD_TYPES, card_type)',
-
             '.card-holder': 'value: getCardHolder(first_name, last_name)',
             '.card-num': 'value: getCardNumber(last_digits)',
             '.card-default': 'checked: is_primary'
@@ -421,12 +420,10 @@ define(["factory"], function() {
         bindingFilters: {
             creditCardType: creditCardType,
             
-            getCardHolder: function(first_name, last_name)
-            {
+            getCardHolder: function(first_name, last_name) {
                 return first_name + ' ' + last_name;
             },
-            getCardNumber: function(last_digits)
-            {
+            getCardNumber: function(last_digits) {
                 return '**** **** **** ' + last_digits;
             }
         },
@@ -437,9 +434,16 @@ define(["factory"], function() {
         removeToken: function() {
             this.options.collectionView.options.removeToken(this.model.get('id'));
         },
-        setDefaultCard: function()
-        {
-            this.model.collection.trigger('change:is_primary');
+        setDefaultCard: function(e) {
+            var element = e.target,
+                checked = !element.checked;
+
+            if (checked) {
+                element.checked = true;
+            }
+            else {
+                this.model.collection.trigger('change:is_primary');
+            }
         }
     });
 
@@ -449,17 +453,7 @@ define(["factory"], function() {
         bindings: {
             '.payments-list': 'collection: $collection'
         },
-        events: {
-            'click .payments-update': 'saveChanges'
-        },
-        itemView: App.Views.CoreProfileView.CoreProfilePaymentEditionView,
-        saveChanges: function() {
-            var selected_model = this.collection.models.find(function(model) {
-                return model.get('is_primary');
-            });
-
-            this.options.changeToken(selected_model.id);
-        }
+        itemView: App.Views.CoreProfileView.CoreProfilePaymentEditionView
     });
 
     App.Views.CoreProfileView.CoreProfileGiftCardSelectionView = App.Views.FactoryView.extend({
@@ -583,12 +577,22 @@ define(["factory"], function() {
             return this;
         },
         onUpdate: function() {
+            // Saving Gift Cards data
             var clone;
             if (this.newGiftCard.get('cardNumber')) {
                 this.newGiftCard.set('remainingBalance', 567);
                 clone = this.newGiftCard.deepClone();
                 this.addCardToServer(clone);
             }
+
+            // Saving Credit Cards data
+            var collection = this.model.payments;
+
+            var primaryPaymentsModel = collection.models.find(function(model) {
+                return model.get('is_primary');
+            });
+
+            this.options.changeToken(primaryPaymentsModel.id);
         },
         addCardToServer: function(giftcard) {
             var self = this,
