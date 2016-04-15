@@ -207,7 +207,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         events: {
             'change .order-type-select': 'change_type'
         },
-        change_type : function(e) {
+        change_type: function(e) {
             var value = e.currentTarget.value,
                 oldValue = this.model.get('dining_option');
 
@@ -215,7 +215,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 this.model.set('dining_option', value);
             }
         },
-        set_type : function() {
+        set_type: function() {
             var dining_option = this.model.get('dining_option') || App.Settings.default_dining_option,
                 type = this.$('.order-type-select');
 
@@ -235,6 +235,11 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
     App.Views.CoreCheckoutView.CoreCheckoutAddressView = App.Views.DeliveryAddressesView.extend({
         name: 'checkout',
         mod: 'address'
+    });
+
+    App.Views.CoreCheckoutView.CoreCheckoutAddressSelectionView = App.Views.DeliveryAddressesSelectionView.extend({
+        name: 'checkout',
+        mod: 'address_selection'
     });
 
     App.Views.CoreCheckoutView.CoreCheckoutOtherItemView = App.Views.FactoryView.extend({
@@ -881,6 +886,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         App.Views.CheckoutView.CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView;
         App.Views.CheckoutView.CheckoutOrderTypeView = App.Views.CoreCheckoutView.CoreCheckoutOrderTypeView;
         App.Views.CheckoutView.CheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView;
+        App.Views.CheckoutView.CheckoutAddressSelectionView = App.Views.CoreCheckoutView.CoreCheckoutAddressSelectionView;
         App.Views.CheckoutView.CheckoutPickupView = App.Views.CoreCheckoutView.CoreCheckoutPickupView;
         App.Views.CheckoutView.CheckoutDiscountCodeView = App.Views.CoreCheckoutView.CoreCheckoutDiscountCodeView;
         App.Views.CheckoutView.CheckoutDiscountCode2View = App.Views.CoreCheckoutView.CoreCheckoutDiscountCode2View;

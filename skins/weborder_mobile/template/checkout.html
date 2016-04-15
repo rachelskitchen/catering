@@ -104,10 +104,23 @@
 </script>
 
 <script type="text/template" id="checkout_order_type_short-template">
-    <span class="title font-size3 regular-text"><%= _lp.CHECKOUT_ORDER_TYPE %></span>
+    <div class="checkout-short-left">
+        <span class="title font-size3 regular-text"><%= _lp.CHECKOUT_ORDER_TYPE %></span>
+        <div class="block text-center">
+            <div class="select-wrapper font-size2 input-colors">
+                <select class="order-type-select"></select>
+            </div>
+        </div>
+    </div>
+
+    <div class="address-selection checkout-short-right fl-right"></div>
+</script>
+
+<script type="text/template" id="checkout_address_selection-template">
+    <span class="title font-size3 regular-text"><%= _lp.PROFILE_ADDRESS %></span>
     <div class="block text-center">
         <div class="select-wrapper font-size2 input-colors">
-            <select class="order-type-select"></select>
+            <select id="addresses"></select>
         </div>
     </div>
 </script>
