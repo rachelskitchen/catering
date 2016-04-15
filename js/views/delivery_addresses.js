@@ -34,6 +34,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 defaultAddress = App.Settings.address,
                 address = {};
 
+            // do not touch profile addresses
             if (!this.options.customer.isAuthorized() || !this.options.customer.isProfileAddressSelected()) {
                 model = _.extend(model, this.options.customer.toJSON());
                 address = this.options.customer.getCheckoutAddress();
@@ -127,7 +128,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 model = this.model.toJSON(),
                 address;
 
-            // do not change profile addresses
+            // do not touch profile addresses
             if (customer.isProfileAddressSelected()) {
                 return;
             }
@@ -285,7 +286,10 @@ define(['backbone', 'factory'], function(Backbone) {
 
     var DeliveryAddressesSelectionView = App.Views.FactoryView.extend({
         initialize: function() {
-            this.listenTo(this.options.customer, 'change:access_token', this.updateAddressesOptions);
+            this.listenTo(this.options.customer, 'change:access_token', function() {
+                delete this.options.address_index;
+                this.updateAddressesOptions();
+            });
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
@@ -305,15 +309,15 @@ define(['backbone', 'factory'], function(Backbone) {
          * Rendering of 'Address' drop-down list.
          */
         updateAddressesOptions: function() {
-            var customer = this.options.customer;
+            var customer = this.options.customer,
+                checkout = this.options.checkout,
+                dining_option = checkout.get('dining_option');
 
             if (!customer.isAuthorized()) {
-                App.Data.myorder.setShippingAddress(); // update customer.shipping_address on logout
                 return;
             }
 
-            var checkout = this.options.checkout,
-                addresses = customer.get('addresses'),
+            var addresses = customer.get('addresses'),
                 optionsStr = '',
                 options = _.map(addresses, function(addr, index) {
                     if (addr && addr.street_1 && index > 2) {
@@ -335,11 +339,15 @@ define(['backbone', 'factory'], function(Backbone) {
                 optionsStr = _.reduce(options, function(memo, option) {
                     return memo + '<option value="' + option.value + '">' + option.label + '</option>';
                 }, '');
-                optionsStr += '<option value="' + App.Data.myorder.getShippingAddress(checkout.get('dining_option')) + '">Enter New Address</option>';
+                optionsStr += '<option value="' + App.Data.myorder.getShippingAddress(dining_option) + '">Enter New Address</option>';
             }
 
             this.$('#addresses').html(optionsStr);
+            customer.trigger('change:shipping_address');
         },
+        /**
+         * Updates value of 'Enter New Address' option.
+         */
         updateNewAddressIndex: function() {
             var checkout = this.options.checkout,
                 customer = this.options.customer,

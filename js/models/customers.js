@@ -518,7 +518,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         },
         /**
          * Checks whether the selected address is from user profile.
-         * @returns {Boolean} [description]
+         * @returns {boolean}
          */
         isProfileAddressSelected: function() {
             return this.get('shipping_address') > 2;
