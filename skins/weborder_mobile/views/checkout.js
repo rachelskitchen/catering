@@ -26,7 +26,7 @@ define(["checkout_view"], function(checkout_view) {
     var CoreDeliveryAddressesView = App.Views.DeliveryAddressesView,
         CoreCheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView,
         DeliveryAddressesView, CheckoutAddressView, CheckoutMainView, DiscountCodeView,
-        OrderTypeShort, PickupShort, AddressShort, OtherShort;
+        OrderTypeShort, PickupShort, AddressShort, AddressSelection, OtherShort;
 
     DeliveryAddressesView = CoreDeliveryAddressesView.extend({
         initialize: function() {
@@ -64,45 +64,6 @@ define(["checkout_view"], function(checkout_view) {
         }
     });
 
-    OrderTypeShort = App.Views.CoreCheckoutView.CoreCheckoutOrderTypeView.extend({
-        name: 'checkout',
-        mod: 'order_type_short',
-        bindings: {
-            '.address-selection': 'toggle: all(showAddressSelection, inList(dining_option, "DINING_OPTION_DELIVERY", "DINING_OPTION_SHIPPING", "DINING_OPTION_CATERING"))', // wrapper of the address selection drop-down
-            '#addresses': 'value: customer_shipping_address', // the address selection drop-down
-        },
-        computeds: {
-            /**
-             * Indicates whether the user is logged in.
-             */
-            isAuthorized: {
-                deps: ['customer_access_token'],
-                get: function() {
-                    return this.options.customer.isAuthorized();
-                }
-            },
-            /**
-             * Indicates whether the address selection drop-down list should be shown.
-             */
-            showAddressSelection: {
-                deps: ['isAuthorized', 'customer_addresses'],
-                get: function(isAuthorized, customer_addresses) {
-                    return isAuthorized && customer_addresses.length;
-                }
-            }
-        },
-        render: function() {
-            App.Views.CoreCheckoutView.CoreCheckoutOrderTypeView.prototype.render.apply(this, arguments);
-
-            CoreDeliveryAddressesView.prototype.updateAddressesOptions.apply(this, arguments);
-            this.listenTo(this.model, 'change:dining_option', function() {
-                CoreDeliveryAddressesView.prototype.updateAddressesOptions.apply(this, arguments);
-            });
-
-            return this;
-        }
-    });
-
     PickupShort = App.Views.CoreCheckoutView.CoreCheckoutPickupView.extend({
         name: 'checkout',
         mod: 'pickup_short'
@@ -112,25 +73,18 @@ define(["checkout_view"], function(checkout_view) {
         name: 'checkout',
         mod: 'address_short',
         initialize: function() {
-            var model = this.model;
-            this.listenTo(model, 'change:dining_option', this.updateAddress, this);
+            var checkout = this.options.checkout;
+            this.listenTo(checkout, 'change:dining_option', this.updateAddress, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.address_index = -1;
-            this.updateAddress(model, model.get('dining_option'));
+            this.updateAddress(checkout, checkout.get('dining_option'));
         },
-        bindings: {
-            ':el': 'toggle: all(inList(dining_option, "DINING_OPTION_DELIVERY", "DINING_OPTION_SHIPPING", "DINING_OPTION_CATERING"), showAddressEdit)'
-        },
-        computeds: CoreDeliveryAddressesView.prototype.computeds,
-        updateAddress: function(model, value) {
+        updateAddress: function(checkout, value) {
             if (value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING' || value === 'DINING_OPTION_CATERING') {
                 var address = App.Views.GeneratorView.create('Checkout', {
                     mod: 'Address',
                     customer: this.options.customer,
-                    checkout: this.model,
-                    address_index: this.address_index
+                    checkout: this.options.checkout
                 });
-                delete this.address_index;
                 this.subViews.remove();
                 this.subViews.push(address);
                 this.$el.append(address.el);
@@ -138,9 +92,51 @@ define(["checkout_view"], function(checkout_view) {
         }
     });
 
+    AddressSelection = App.Views.CoreCheckoutView.CoreCheckoutAddressSelectionView.extend({
+        name: 'checkout',
+        mod: 'address_selection',
+        initialize: function() {
+            this.listenTo(this.options.checkout, 'change:dining_option', this.updateNewAddressIndex);
+            App.Views.CoreCheckoutView.CoreCheckoutAddressSelectionView.prototype.initialize.apply(this, arguments);
+        }
+    });
+
     OtherShort = App.Views.CoreCheckoutView.CoreCheckoutOtherView.extend({
         bindings: {
             ':el': 'toggle: equal(dining_option, "DINING_OPTION_OTHER")'
+        }
+    });
+
+    OrderTypeShort = App.Views.CoreCheckoutView.CoreCheckoutOrderTypeView.extend({
+        name: 'checkout',
+        mod: 'order_type_short',
+        bindings: {
+            '.address-selection': 'toggle: all(inList(dining_option, "DINING_OPTION_DELIVERY", "DINING_OPTION_SHIPPING", "DINING_OPTION_CATERING"), showAddressSelection)',
+            '.address-edit': 'toggle: all(showAddressSelection, showAddressEdit)'
+        },
+        computeds: _.extend({}, App.Views.DeliveryAddressesSelectionView.prototype.computeds),
+        render: function() {
+            App.Views.CoreCheckoutView.CoreCheckoutOrderTypeView.prototype.render.apply(this, arguments);
+
+            var addressSelection = App.Views.GeneratorView.create('Checkout', {
+                    mod: 'AddressSelection',
+                    checkout: this.options.checkout,
+                    customer: this.options.customer,
+                    address_index: -1
+                }),
+                addressEdit = App.Views.GeneratorView.create('Checkout', {
+                    mod: 'AddressShort',
+                    checkout: this.options.checkout,
+                    customer: this.options.customer,
+                    className: 'checkout checkout-lines font-size2'
+                });
+            this.subViews.push(addressSelection);
+            this.$('.address-selection').html(addressSelection.el);
+
+            this.subViews.push(addressEdit);
+            this.$('.address-edit').html(addressEdit.el);
+
+            return this;
         }
     });
 
@@ -152,5 +148,6 @@ define(["checkout_view"], function(checkout_view) {
         App.Views.CheckoutView.CheckoutPickupShortView = PickupShort;
         App.Views.CheckoutView.CheckoutAddressShortView = AddressShort;
         App.Views.CheckoutView.CheckoutOtherShortView = OtherShort;
+        App.Views.CheckoutView.CheckoutAddressSelectionView = AddressSelection;
     });
 });

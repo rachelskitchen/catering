@@ -1057,14 +1057,6 @@ define(["main_router"], function(main_router) {
                     {
                         modelName: 'Checkout',
                         model: App.Data.myorder.checkout,
-                        customer: App.Data.customer,
-                        mod: 'AddressShort',
-                        className: 'checkout checkout-lines font-size2',
-                        cacheId: true
-                    },
-                    {
-                        modelName: 'Checkout',
-                        model: App.Data.myorder.checkout,
                         collection: App.Data.myorder.checkout.get('other_dining_options'),
                         mod: 'OtherShort',
                         className: 'checkout checkout-lines font-size2',

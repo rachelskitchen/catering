@@ -292,10 +292,7 @@ define(['backbone', 'factory'], function(Backbone) {
             ':el': 'toggle: showAddressSelection', // wrapper of the address selection drop-down
             '#addresses': 'value: customer_shipping_address', // the address selection drop-down
         },
-        computeds: DeliveryAddressesView.prototype.computeds,
-        /**
-         * Rendering of 'Address' drop-down list.
-         */
+        computeds: _.extend({}, DeliveryAddressesView.prototype.computeds),
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
 
@@ -303,6 +300,9 @@ define(['backbone', 'factory'], function(Backbone) {
 
             return this;
         },
+        /**
+         * Rendering of 'Address' drop-down list.
+         */
         updateAddressesOptions: function() {
             var customer = this.options.customer;
 
@@ -328,6 +328,7 @@ define(['backbone', 'factory'], function(Backbone) {
             if (options.length) {
                 if (this.options.address_index == -1) { // default profile address should be selected
                     customer.set('shipping_address', options[0].value);
+                    delete this.options.address_index;
                 }
 
                 optionsStr = _.reduce(options, function(memo, option) {
@@ -337,6 +338,19 @@ define(['backbone', 'factory'], function(Backbone) {
             }
 
             this.$('#addresses').html(optionsStr);
+        },
+        updateNewAddressIndex: function() {
+            var checkout = this.options.checkout,
+                customer = this.options.customer,
+                newValue = App.Data.myorder.getShippingAddress(checkout.get('dining_option'));
+
+            this.$('#addresses option').filter(function(i, el) {
+                return $(el).val() < 3;
+            }).val(newValue);
+
+            if (customer.get('shipping_address') < 3) {
+                this.$('#addresses').val(newValue);
+            }
         }
     });
 
