@@ -522,7 +522,7 @@ define(["factory"], function() {
         bindings: {
             '.gift-cards-list': 'collection: $collection',
             '.add_gift_card_title .plus_sign': 'text:select(newCard_add_new_card,"- ","+ ")',
-            '.new_gift_card': "toggle:newCard_add_new_card,valueTimeout:newCard_cardNumber,params:{timeout:1500},events:['input','blur','change']"
+            '.new_gift_card': "toggle:newCard_add_new_card"
         },
         itemView: App.Views.CoreProfileView.CoreProfileGiftCardEditionView,
         hide_show_NewGiftCard: function() {
@@ -531,12 +531,18 @@ define(["factory"], function() {
 
             card.set('add_new_card', !add_new_card);
 
-            if (!add_new_card) {
-                card.set('cardNumber', '');
-                card.set('remainingBalance', null);
+            if (!add_new_card && !this.newCardView) {
+                this.newCardView = App.Views.GeneratorView.create('GiftCard', {
+                    el: this.$('.new_gift_card'),
+                    model: this.options.newCard,
+                    mod: 'Profile',
+                    cacheId: true });
             }
+
         }
     });
+
+
 
     App.Views.CoreProfileView.CoreProfilePaymentsView = App.Views.FactoryView.extend({
         name: 'profile',
@@ -581,10 +587,21 @@ define(["factory"], function() {
             if (this.newGiftCard.get('cardNumber')) {
                 this.newGiftCard.set('remainingBalance', 567);
                 clone = this.newGiftCard.deepClone();
-
-                this.model.giftCards.addUniqueItem(clone);
-
-                this.newGiftCard.set({ add_new_card: false, cardNumber: '', remainingBalance: null });
+                this.addCardToServer(clone);
+            }
+        },
+        addCardToServer: function(giftcard) {
+            var self = this,
+                mainModel = App.Data.mainModel,
+                req = this.model.linkGiftCard(giftcard);
+            this.listenTo(giftcard, 'onLinkError', App.Data.errors.alert.bind(App.Data.errors));
+            if (req) {
+                mainModel.trigger('loadStarted');
+                req.done(function(data){
+                    if (data && data.status == 'OK') {
+                        self.newGiftCard.set({ add_new_card: false, cardNumber: '', remainingBalance: null });
+                    }
+                }).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
             }
         }
     });
