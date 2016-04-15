@@ -1049,7 +1049,9 @@ define(["main_router"], function(main_router) {
                         collection: App.Data.myorder,
                         mod: 'OrderTypeShort',
                         DINING_OPTION_NAME: self.LOC_DINING_OPTION_NAME,
-                        className: 'checkout-short checkout-short-left',
+                        checkout: myorder.checkout,
+                        customer: App.Data.customer,
+                        className: 'checkout-short',
                         cacheId: true
                     },
                     {

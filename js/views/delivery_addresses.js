@@ -158,14 +158,10 @@ define(['backbone', 'factory'], function(Backbone) {
             if (this.isShippingServices)
                 this.listenTo(this.options.customer, 'change:shipping_services', this.updateShippingServices, this);
 
-            this.listenTo(this.options.customer, 'change:access_token', this.updateAddressesOptions);
-
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
-            '.address-selection': 'toggle: showAddressSelection', // wrapper of the address selection drop-down
-            '#addresses': 'value: customer_shipping_address', // the address selection drop-down
-            '.address-edit': 'classes: {hidden: not(showAddressEdit)}' // the address edit form
+            '.address-edit': 'toggle: showAddressEdit' // the address edit form
         },
         computeds: {
             /**
@@ -174,7 +170,7 @@ define(['backbone', 'factory'], function(Backbone) {
             isAuthorized: {
                 deps: ['customer_access_token'],
                 get: function() {
-                    return this.getBinding('$customer').isAuthorized();
+                    return this.options.customer.isAuthorized();
                 }
             },
             /**
@@ -204,47 +200,7 @@ define(['backbone', 'factory'], function(Backbone) {
             if (this.isShippingServices)
                 this.updateShippingServices();
 
-            this.updateAddressesOptions();
-
             return this;
-        },
-        /**
-         * Rendering of 'Address' drop-down list.
-         */
-        updateAddressesOptions: function() {
-            var customer = this.options.customer;
-
-            if (!customer.isAuthorized()) {
-                App.Data.myorder.setShippingAddress(); // update customer.shipping_address on logout
-                return;
-            }
-
-            var checkout = this.options.checkout,
-                addresses = customer.get('addresses'),
-                optionsStr = '',
-                options = _.map(addresses, function(addr, index) {
-                    if (addr && addr.street_1 && index > 2) {
-                        return addr && addr.street_1 ? {label: addr.street_1, value: index} : undefined;
-                    }
-                    else {
-                        return undefined;
-                    }
-                }).filter(function(addr) {
-                    return addr;
-                });
-
-            if (options.length) {
-                if (this.options.address_index == -1) { // default profile address should be selected
-                    customer.set('shipping_address', options[0].value);
-                }
-
-                optionsStr = _.reduce(options, function(memo, option) {
-                    return memo + '<option value="' + option.value + '">' + option.label + '</option>';
-                }, '');
-                optionsStr += '<option value="' + App.Data.myorder.getShippingAddress(checkout.get('dining_option')) + '">Enter New Address</option>';
-            }
-
-            this.$('#addresses').html(optionsStr);
         },
         updateShippingServices: function() {
             var customer = this.options.customer,
@@ -326,6 +282,64 @@ define(['backbone', 'factory'], function(Backbone) {
         }
     });
 
+    var DeliveryAddressesSelectionView = App.Views.FactoryView.extend({
+        initialize: function() {
+            this.listenTo(this.options.customer, 'change:access_token', this.updateAddressesOptions);
+
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            ':el': 'toggle: showAddressSelection', // wrapper of the address selection drop-down
+            '#addresses': 'value: customer_shipping_address', // the address selection drop-down
+        },
+        computeds: DeliveryAddressesView.prototype.computeds,
+        /**
+         * Rendering of 'Address' drop-down list.
+         */
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+
+            this.updateAddressesOptions();
+
+            return this;
+        },
+        updateAddressesOptions: function() {
+            var customer = this.options.customer;
+
+            if (!customer.isAuthorized()) {
+                App.Data.myorder.setShippingAddress(); // update customer.shipping_address on logout
+                return;
+            }
+
+            var checkout = this.options.checkout,
+                addresses = customer.get('addresses'),
+                optionsStr = '',
+                options = _.map(addresses, function(addr, index) {
+                    if (addr && addr.street_1 && index > 2) {
+                        return addr && addr.street_1 ? {label: addr.street_1, value: index} : undefined;
+                    }
+                    else {
+                        return undefined;
+                    }
+                }).filter(function(addr) {
+                    return addr;
+                });
+
+            if (options.length) {
+                if (this.options.address_index == -1) { // default profile address should be selected
+                    customer.set('shipping_address', options[0].value);
+                }
+
+                optionsStr = _.reduce(options, function(memo, option) {
+                    return memo + '<option value="' + option.value + '">' + option.label + '</option>';
+                }, '');
+                optionsStr += '<option value="' + App.Data.myorder.getShippingAddress(checkout.get('dining_option')) + '">Enter New Address</option>';
+            }
+
+            this.$('#addresses').html(optionsStr);
+        }
+    });
+
     function getInitialAddresses(i) {
         return !i.street_1;
     }
@@ -333,5 +347,6 @@ define(['backbone', 'factory'], function(Backbone) {
     return new (require('factory'))(function() {
         App.Views.AddressView = AddressView;
         App.Views.DeliveryAddressesView = DeliveryAddressesView;
+        App.Views.DeliveryAddressesSelectionView = DeliveryAddressesSelectionView;
     });
 });

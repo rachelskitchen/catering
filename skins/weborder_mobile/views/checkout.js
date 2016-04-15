@@ -66,7 +66,41 @@ define(["checkout_view"], function(checkout_view) {
 
     OrderTypeShort = App.Views.CoreCheckoutView.CoreCheckoutOrderTypeView.extend({
         name: 'checkout',
-        mod: 'order_type_short'
+        mod: 'order_type_short',
+        bindings: {
+            '.address-selection': 'toggle: all(showAddressSelection, inList(dining_option, "DINING_OPTION_DELIVERY", "DINING_OPTION_SHIPPING", "DINING_OPTION_CATERING"))', // wrapper of the address selection drop-down
+            '#addresses': 'value: customer_shipping_address', // the address selection drop-down
+        },
+        computeds: {
+            /**
+             * Indicates whether the user is logged in.
+             */
+            isAuthorized: {
+                deps: ['customer_access_token'],
+                get: function() {
+                    return this.options.customer.isAuthorized();
+                }
+            },
+            /**
+             * Indicates whether the address selection drop-down list should be shown.
+             */
+            showAddressSelection: {
+                deps: ['isAuthorized', 'customer_addresses'],
+                get: function(isAuthorized, customer_addresses) {
+                    return isAuthorized && customer_addresses.length;
+                }
+            }
+        },
+        render: function() {
+            App.Views.CoreCheckoutView.CoreCheckoutOrderTypeView.prototype.render.apply(this, arguments);
+
+            CoreDeliveryAddressesView.prototype.updateAddressesOptions.apply(this, arguments);
+            this.listenTo(this.model, 'change:dining_option', function() {
+                CoreDeliveryAddressesView.prototype.updateAddressesOptions.apply(this, arguments);
+            });
+
+            return this;
+        }
     });
 
     PickupShort = App.Views.CoreCheckoutView.CoreCheckoutPickupView.extend({
@@ -81,18 +115,22 @@ define(["checkout_view"], function(checkout_view) {
             var model = this.model;
             this.listenTo(model, 'change:dining_option', this.updateAddress, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.address_index = -1;
             this.updateAddress(model, model.get('dining_option'));
         },
         bindings: {
-            ':el': 'toggle: inList(dining_option, "DINING_OPTION_DELIVERY", "DINING_OPTION_SHIPPING", "DINING_OPTION_CATERING")'
+            ':el': 'toggle: all(inList(dining_option, "DINING_OPTION_DELIVERY", "DINING_OPTION_SHIPPING", "DINING_OPTION_CATERING"), showAddressEdit)'
         },
+        computeds: CoreDeliveryAddressesView.prototype.computeds,
         updateAddress: function(model, value) {
-            if(value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING' || value === 'DINING_OPTION_CATERING') {
+            if (value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING' || value === 'DINING_OPTION_CATERING') {
                 var address = App.Views.GeneratorView.create('Checkout', {
                     mod: 'Address',
                     customer: this.options.customer,
-                    checkout: this.model
+                    checkout: this.model,
+                    address_index: this.address_index
                 });
+                delete this.address_index;
                 this.subViews.remove();
                 this.subViews.push(address);
                 this.$el.append(address.el);

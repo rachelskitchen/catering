@@ -84,13 +84,17 @@
     </div>
 </script>
 
-<script type="text/template" id="checkout_address-template">
-    <div class="address-selection row">
-        <label class="select"> <span class="bold"><%= _lp.PROFILE_ADDRESS %>:</span> </label>
-        <div class="select select-wrapper">
-            <select id="addresses"></select>
-        </div>
+<script type="text/template" id="checkout_address_selection-template">
+    <label class="select">
+        <span class="bold"><%= _lp.PROFILE_ADDRESS %>:</span>
+    </label>
+    <div class="select select-wrapper">
+        <select id="addresses"></select>
     </div>
+</script>
+
+<script type="text/template" id="checkout_address-template">
+    <div class="address-selection row"></div>
 
     <div class="address-edit">
         <% if (isShippingServices) { %>
