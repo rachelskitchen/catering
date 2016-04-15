@@ -2531,11 +2531,16 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 myorder.trigger('paymentResponse');
             }
 
+            /**
+             * Returns customer address.
+             * @returns {object}
+             */
             function getAddress() {
                 var address = customer.addresses[customer.shipping_address];
 
                 return App.skin == App.Skins.PAYPAL ? address : {
-                    // here we need only the following fields (no need for extra fields from profile address)
+                    // here we need only the following fields (no need for extra fields from profile address.
+                    // once Backend receives customer.address.id, it will look for this address in the database, but it could be saved on another instance.)
                     address: address.address,
                     city: address.city,
                     country: address.country,
@@ -2713,11 +2718,18 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 return this.paymentResponse = paymentResponse;
             }
         },
+        /**
+         * Returns index of shipping address coressponding to the specified dining option.
+         * @param   {string} dining_option - dining option.
+         * @returns {number}
+         *     - index of shipping address, if the specified dining option is delivery, shipping or catering;
+         *     - {App.Models.customer.defaults.shipping_address} otherwise
+         */
         getShippingAddress: function(dining_option) {
             var customer = App.Data.customer;
 
             if (!customer) {
-                return -1;
+                return;
             }
 
             var shipping_addresses = {
@@ -2726,7 +2738,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 DINING_OPTION_CATERING: customer.get('cateringAddressIndex')
             };
 
-            return shipping_addresses[dining_option] !== undefined ? shipping_addresses[dining_option] : -1;
+            return shipping_addresses[dining_option] !== undefined ? shipping_addresses[dining_option] : customer.defaults.shipping_address;
         },
         /*
          * Updates App.Data.customer.attributes.shipping_address according to the specified dining option.
@@ -2744,11 +2756,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             // if profile address is selected, do not change the selection
             if (customer.get('shipping_address') < 3) {
-                if (value == 'DINING_OPTION_DELIVERY' || value == 'DINING_OPTION_SHIPPING' || value === 'DINING_OPTION_CATERING') {
-                    customer.set('shipping_address', this.getShippingAddress(value));
-                } else {
-                    customer.set('shipping_address', customer.defaults.shipping_address);
-                }
+                customer.set('shipping_address', this.getShippingAddress(value));
             }
 
             return customer.get('shipping_address');
