@@ -1012,6 +1012,7 @@ define(["backbone", "factory"], function(Backbone) {
                         modelName: 'Profile',
                         mod: 'Payments',
                         model: customer,
+                        changeToken: changeToken,
                         removeToken: removeToken,
                         unlinkGiftCard: unlinkGiftCard,
                         className: 'profile-edit text-center'
@@ -1020,6 +1021,18 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             return promises;
+
+            function changeToken(token_id)
+            {
+                var req = customer.changePayment(token_id),
+                    mainModel = App.Data.mainModel;
+
+                if (req)
+                {
+                    mainModel.trigger('loadStarted');
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                }
+            }
 
             function removeToken(token_id) {
                 var req = customer.removePayment(token_id),

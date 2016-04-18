@@ -1714,6 +1714,34 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             this.payments && this.getPayments();
         },
         /**
+         * Changes payment token.
+         * @param {number} token_id - token id.
+         * @return {Object} jqXHR object.
+         */
+        changePayment: function(token_id)
+        {
+            var req = this.payments.changePayment(token_id, this.getAuthorizationHeader()),
+                self = this;
+
+            if (req)
+            {
+                req.fail(function(jqXHR)
+                {
+                    if (jqXHR.status == 403)
+                    {
+                        self.trigger('onUserSessionExpired');
+                        self.logout(); // need to reset current account to allow to re-log in
+                    }
+                    else if (jqXHR.status == 404)
+                    {
+                        self.trigger('onTokenNotFound');
+                    }
+                });
+            }
+
+            return req;
+        },
+        /**
          * Aborts payments request and deletes {@link App.Models.Customer#payments payments},
          * {@link App.Models.Customer#paymentsRequest paymentsRequest} properties.
          */
