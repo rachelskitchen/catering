@@ -175,10 +175,26 @@
 <script type="text/template" id="profile_payment_edition-template">
     <span class="card-type"></span> &mdash; ****<span class="card-number"></span>
     <div class="remove-btn"></div>
+
+    <br>
+    <ul class="profile-form">
+        <li>
+            <input type="text" placeholder="Card Name (First & Last)" class="card-holder" disabled>
+        </li>
+        <li>
+            <input type="text" placeholder="Card Number" class="card-num" disabled>
+        </li>
+        <li>
+            <label>
+                <input type="checkbox" class="card-default" style="width: auto;"> Default Card
+            </label>
+        </li>
+    </ul>
 </script>
 
 <script type="text/template" id="profile_payments_edition-template">
     <ul class="payments-list"></ul>
+    <button class="payments-update">Update</button>
 </script>
 
 <script type="text/template" id="profile_gift_card_selection-template">

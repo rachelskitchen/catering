@@ -400,21 +400,46 @@ define(["factory"], function() {
     });
 
     App.Views.CoreProfileView.CoreProfilePaymentEditionView = App.Views.FactoryView.extend({
+        initialize: function()
+        {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+
+            this.model.setOriginalAttributes();
+            return this;
+        },
         name: 'profile',
         mod: 'payment_edition',
         tagName: 'li',
         bindings: {
             '.card-number': 'text: last_digits',
-            '.card-type': 'text: creditCardType(_lp_CREDIT_CARD_TYPES, card_type)'
+            '.card-type': 'text: creditCardType(_lp_CREDIT_CARD_TYPES, card_type)',
+
+            '.card-holder': 'value: getCardHolder(first_name, last_name)',
+            '.card-num': 'value: getCardNumber(last_digits)',
+            '.card-default': 'checked: is_primary'
         },
         bindingFilters: {
-            creditCardType: creditCardType
+            creditCardType: creditCardType,
+            
+            getCardHolder: function(first_name, last_name)
+            {
+                return first_name + ' ' + last_name;
+            },
+            getCardNumber: function(last_digits)
+            {
+                return '**** **** **** ' + last_digits;
+            }
         },
         events: {
-            'click .remove-btn': 'removeToken'
+            'click .remove-btn': 'removeToken',
+            'click .card-default': 'setDefaultCard'
         },
         removeToken: function() {
             this.options.collectionView.options.removeToken(this.model.get('id'));
+        },
+        setDefaultCard: function()
+        {
+            this.model.collection.trigger('change:is_primary');
         }
     });
 
@@ -424,7 +449,17 @@ define(["factory"], function() {
         bindings: {
             '.payments-list': 'collection: $collection'
         },
-        itemView: App.Views.CoreProfileView.CoreProfilePaymentEditionView
+        events: {
+            'click .payments-update': 'saveChanges'
+        },
+        itemView: App.Views.CoreProfileView.CoreProfilePaymentEditionView,
+        saveChanges: function() {
+            var selected_model = this.collection.models.find(function(model) {
+                return model.get('is_primary');
+            });
+
+            this.options.changeToken(selected_model.id);
+        }
     });
 
     App.Views.CoreProfileView.CoreProfileGiftCardSelectionView = App.Views.FactoryView.extend({
@@ -502,7 +537,8 @@ define(["factory"], function() {
                     el: this.$('.payments-box'),
                     mod: 'PaymentsEdition',
                     collection: this.model.payments,
-                    removeToken: this.options.removeToken
+                    removeToken: this.options.removeToken,
+                    changeToken: this.options.changeToken
                 });
                 this.subViews.push(paymentsEdition);
             }

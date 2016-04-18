@@ -138,7 +138,27 @@ define(['backbone'], function(Backbone) {
          */
         initialize: function() {
             this.get('is_primary') && this.set('selected', true);
+
+            // Store the original attributes for resetting
+            this._originalAttributes = _.clone(this.attributes);
+
             Backbone.Model.prototype.initialize.apply(this, arguments);
+        },
+        /**
+         * Reverts model's original attrbutes
+         */
+        setOriginalAttributes: function() {
+            this.set(this._originalAttributes);
+            return this;
+        },
+        /**
+         * Returns the difference between original and modified attributes
+         */
+        getAttributesDiff: function() {
+            var orig_attrs = this._originalAttributes,
+                curr_attrs = this.attributes;
+
+            return objectsDiff(orig_attrs, curr_attrs, ['is_primary']);
         },
         /**
          * Payment token type.
@@ -191,6 +211,55 @@ define(['backbone'], function(Backbone) {
                 success: new Function(),        // to override global ajax success handler
                 error: new Function()           // to override global ajax error handler
             });
+        },
+        /**
+         * Changes payment token. Sends request with the following parameters:
+         * ```
+         * {
+         *     url: <serverURL> + "/v1/customers/payments/<payment type>/<payment id>/",
+         *     method: "PATCH",
+         *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
+         *     data: {...}  // order json
+         * }
+         * ```
+         * - If session is already expired or invalid token is used the server returns the following response:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * `App.Data.customer` emits `onUserSessionExpired` event in this case. Method `App.Data.custromer.logout()` is automatically called in this case.
+         *
+         * - If token isn't found.
+         * ```
+         * Status: 404
+         * {
+         *     "detail":"Not found."
+         * }
+         * ```
+         * `App.Data.customer` emits `onTokenNotFound` event in this case.
+         *
+         * @param {string} serverURL - identity server url.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @param {Object} dataObject - request payload (data that needs to be changed).
+         * @returns {Object} jqXHR object.
+         */
+        changePayment: function(serverURL, authorizationHeader, dataObject) {
+            if (!_.isObject(authorizationHeader) || !_.isObject(dataObject)) {
+                return;
+            }
+
+            return Backbone.$.ajax({
+                url: serverURL + "/v1/customers/payments/" + this.type + "/" + this.get('id') + "/",
+                method: "PATCH",
+                headers: authorizationHeader,
+                contentType: 'application/json',
+                data: JSON.stringify(dataObject),
+                success: new Function(),        // to override global ajax success handler
+                error: new Function()           // to override global ajax error handler
+            });
         }
     });
 
@@ -227,6 +296,7 @@ define(['backbone'], function(Backbone) {
          */
         initialize: function() {
             this.listenTo(this, 'change:selected', this.radioSelection);
+            this.listenTo(this, 'change:is_primary', this.checkboxSelection);
             this.listenTo(this, 'add', this.onAddHandler);
             Backbone.Collection.prototype.initialize.apply(this, arguments);
         },
@@ -242,6 +312,18 @@ define(['backbone'], function(Backbone) {
                 });
             }
         },
+
+        checkboxSelection: function(model, value)
+        {
+            if (value)
+            {
+                this.where({is_primary: true}).forEach(function(cc_model)
+                {
+                    model != cc_model && cc_model.set({is_primary: false});
+                });
+            }
+        },
+
         /**
          * When new payment is added, deselects all other payments (radio button behavior)
          * and changes `is_primary` attribute on `false` for existing payments.
@@ -352,6 +434,27 @@ define(['backbone'], function(Backbone) {
                 },
                 error: new Function()              // to override global ajax error handler
             });
+        },
+        /**
+         * Changes payment token.
+         * @param {number} token_id - token id
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @returns {Object} jqXHR object.
+         */
+        changePayment: function(token_id, authorizationHeader) {
+            var token = this.get(token_id),
+                req = token && token.changePayment(this.serverURL, authorizationHeader, token.getAttributesDiff()),
+                self = this;
+
+            if (req) {
+                req.done(function() {
+                    _.each(self.models, function(model) {
+                        model._originalAttributes = _.clone(model.attributes);
+                    });
+                });
+            }
+
+            return req;
         },
         /**
          * Removes payment token.

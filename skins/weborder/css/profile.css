@@ -163,6 +163,10 @@
     width: 212px;
 }
 
+.profile-edit .profile-form input:disabled {
+    color: #999;
+}
+
 .profile-edit .select-wrapper {
     width: 228px;
     height: 24px;
