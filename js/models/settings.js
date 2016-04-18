@@ -302,7 +302,6 @@ define(["backbone", "async"], function(Backbone) {
             this.set('skin', App.skin);
             this.trigger('changeSkin');
         },
-        
         /**
          * Preparing delivery charges
          */

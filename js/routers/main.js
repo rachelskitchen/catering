@@ -1422,27 +1422,18 @@ define(["backbone", "factory"], function(Backbone) {
                 promises = this.getProfilePaymentsPromises(),
                 content = [];
 
-            if (customer.payments) {
+            //if (promises.length) {
                 content.push({
                     modelName: 'Profile',
-                    mod: 'PaymentsEdition',
-                    collection: customer.payments,
+                    mod: 'Payments',
+                    model: customer,
+                    changeToken: changeToken,
+                    ui: new Backbone.Model({show_response: false}),
                     removeToken: removeToken,
-                    className: 'profile-payments-edition text-center',
-                    cacheId: true
-                });
-            }
-
-            if (customer.giftCards) {
-                content.push({
-                    modelName: 'Profile',
-                    mod: 'GiftCardsEdition',
-                    collection: customer.giftCards,
                     unlinkGiftCard: unlinkGiftCard,
-                    className: 'profile-payments-edition text-center',
-                    cacheId: true
+                    className: 'profile-edit text-center'
                 });
-            }
+            //}
 
             if (promises.length) {
                 App.Data.header.set({
@@ -1459,6 +1450,16 @@ define(["backbone", "factory"], function(Backbone) {
                 promises: promises
             };
 
+            function changeToken(token_id)
+            {
+                var req = customer.changePayment(token_id),
+                    mainModel = App.Data.mainModel;
+                if (req)
+                {
+                    mainModel.trigger('loadStarted');
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                }
+            }
             function removeToken(token_id) {
                 var req = customer.removePayment(token_id),
                     mainModel = App.Data.mainModel;
