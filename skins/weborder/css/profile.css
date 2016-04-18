@@ -139,25 +139,6 @@
     display: inline-block;
 }
 
-.gift-cards-box .add_gift_card_title_wrap {
-    display: block;
-    margin: 8px auto 10px auto;
-    width: 300px;
-}
-.gift-cards-box .add_gift_card_title {
-    font-size: 14px;
-    margin-left: 15px;
-    text-align: left;
-}
-
-.gift-cards-box .add_gift_card_title .plus_sign {
-    width: 12px;
-    display: inline-block;
-}
-
-.gift-cards-box .add_gift_card_title:hover {
-    cursor: pointer;
-}
 .profile-edit .successful-update {
     position: relative;
     top: -12px;
@@ -176,6 +157,24 @@
     min-width: 220px;
     display: inline-block;
     font-size: 14px;
+}
+
+.profile-edit .gift-cards-box .add_gift_card_title_wrap {
+    display: block;
+    margin: 8px auto 10px auto;
+    width: 300px;
+}
+.profile-edit .gift-cards-box .add_gift_card_title {
+    font-size: 14px;
+    margin-left: 15px;
+    text-align: left;
+}
+.profile-edit .gift-cards-box .add_gift_card_title .plus_sign {
+    width: 12px;
+    display: inline-block;
+}
+.profile-edit .gift-cards-box .add_gift_card_title:hover {
+    cursor: pointer;
 }
 
 .profile-edit .profile-form input {
@@ -208,7 +207,6 @@
     width: 50px;
     height: 50px;
 }
-
 .profile-edit .gift-cards-box .new_gift_card {
     text-align: left;
 }
