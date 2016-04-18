@@ -521,32 +521,38 @@ define(["factory"], function() {
         itemView: App.Views.CoreProfileView.CoreProfileGiftCardEditionView,
         hide_show_NewGiftCard: function() {
             var card = this.options.newCard,
-                add_new_card = card.get('add_new_card');
+                cur_add_new_card = !card.get('add_new_card');
 
-            card.set('add_new_card', !add_new_card);
+            card.set('add_new_card', cur_add_new_card);
 
-            if (!add_new_card && !this.newCardView) {
-                this.newCardView = App.Views.GeneratorView.create('GiftCard', {
+            if (cur_add_new_card) {
+                if (!this.newCardView) {
+                  this.newCardView = App.Views.GeneratorView.create('GiftCard', {
                     el: this.$('.new_gift_card'),
                     model: this.options.newCard,
                     mod: 'Profile',
                     cacheId: true });
+                }
+                this.options.customer.trigger('change_cards');
             }
-
         }
     });
-
 
 
     App.Views.CoreProfileView.CoreProfilePaymentsView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'payments',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'change_cards', this.resetUpdateStatus);
+        },
         events: {
-            'click .update-btn':'onUpdate',
+            'click .update-btn':'onUpdate'
         },
         bindings: {
             '.left-side': 'classes: {hidden: not(_settings_directory_saved_credit_cards), "border-none": not(_settings_directory_saved_gift_cards), "fl-left": _settings_directory_saved_gift_cards}',
-            '.right-side': 'classes: {hidden: not(_settings_directory_saved_gift_cards)}'
+            '.right-side': 'classes: {hidden: not(_settings_directory_saved_gift_cards)}',
+            '.successful-update': 'classes: {visible: ui_show_response}'
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -569,7 +575,8 @@ define(["factory"], function() {
                     mod: 'GiftCardsEdition',
                     collection: this.model.giftCards,
                     unlinkGiftCard: this.options.unlinkGiftCard,
-                    newCard: this.newGiftCard
+                    newCard: this.newGiftCard,
+                    customer: this.options.model
                 });
                 this.subViews.push(giftCardsEdition);
             }
@@ -579,6 +586,7 @@ define(["factory"], function() {
         onUpdate: function() {
             // Saving Gift Cards data
             var clone;
+            this.resetUpdateStatus();
             if (this.newGiftCard.get('cardNumber')) {
                 this.newGiftCard.set('remainingBalance', 567);
                 clone = this.newGiftCard.deepClone();
@@ -600,13 +608,27 @@ define(["factory"], function() {
                 req = this.model.linkGiftCard(giftcard);
             this.listenTo(giftcard, 'onLinkError', App.Data.errors.alert.bind(App.Data.errors));
             if (req) {
+                this.incrementUpdateCounter();
                 mainModel.trigger('loadStarted');
                 req.done(function(data){
                     if (data && data.status == 'OK') {
+                        self.checkUpdateStatus();
                         self.newGiftCard.set({ add_new_card: false, cardNumber: '', remainingBalance: null });
                     }
                 }).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
             }
+        },
+        checkUpdateStatus: function() {
+            if(--this.updateCounter <= 0) {
+                this.options.ui.set('show_response', true);
+            }
+        },
+        resetUpdateStatus: function() {
+            this.options.ui.set('show_response', false);
+            this.updateCounter = 0;
+        },
+        incrementUpdateCounter: function() {
+            this.updateCounter++;
         }
     });
 
