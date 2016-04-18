@@ -34,7 +34,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 defaultAddress = App.Settings.address,
                 address = {};
 
-            // do not touch profile addresses
+            // do not change profile addresses
             if (!this.options.customer.isAuthorized() || !this.options.customer.isProfileAddressSelected()) {
                 model = _.extend(model, this.options.customer.toJSON());
                 address = this.options.customer.getCheckoutAddress();
@@ -128,8 +128,9 @@ define(['backbone', 'factory'], function(Backbone) {
                 model = this.model.toJSON(),
                 address;
 
-            // do not touch profile addresses
+            // do not change profile addresses, only generate address_str
             if (customer.isProfileAddressSelected()) {
+                addresses[shipping_address].address = customer.address_str(shipping_address);
                 return;
             }
 

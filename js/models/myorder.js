@@ -2316,7 +2316,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             order_info.customer = {};
             if(checkout.dining_option === 'DINING_OPTION_DELIVERY' || checkout.dining_option === 'DINING_OPTION_CATERING') {
-                order_info.customer.address = getAddress();
+                order_info.customer.address = this.getCustomerAddress();
             }
             $.extend(order_info.customer, customerData.payment_info);
 
@@ -2375,7 +2375,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if(checkout.dining_option === 'DINING_OPTION_SHIPPING') {
                 order_info.shipping = customer.shipping_services[customer.shipping_selected] || undefined;
                 order_info.customer = !order_info.shipping ? undefined : _.extend({
-                    address: getAddress()
+                    address: this.getCustomerAddress()
                 }, order_info.customer);
             }
 
@@ -2529,27 +2529,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             function reportPaymentError(message) {
                 myorder.paymentResponse = {status: 'error', errorMsg: message, capturePhase: capturePhase};
                 myorder.trigger('paymentResponse');
-            }
-
-            /**
-             * Returns customer address.
-             * @returns {object}
-             */
-            function getAddress() {
-                var address = customer.addresses[customer.shipping_address];
-
-                return App.skin == App.Skins.PAYPAL ? address : {
-                    // here we need only the following fields (no need for extra fields from profile address.
-                    // once Backend receives customer.address.id, it will look for this address in the database, but it could be saved on another instance.)
-                    address: address.address,
-                    city: address.city,
-                    country: address.country,
-                    province: address.province,
-                    state: address.state,
-                    street_1: address.street_1,
-                    street_2: address.street_2,
-                    zipcode: address.zipcode
-                }
             }
         },
         /**
@@ -2760,6 +2739,27 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
 
             return customer.get('shipping_address');
+        },
+        /**
+         * Returns customer address for sending to create_order_and_pay/.
+         * @returns {object} address object.
+         */
+        getCustomerAddress: function() {
+            var customer = App.Data.customer.toJSON(),
+                address = customer.addresses[customer.shipping_address];
+
+            return {
+                // here we need only the following fields (no need for extra fields from profile address.
+                // once Backend receives customer.address.id, it will look for this address in the database, but it could be saved on another instance.)
+                address: address.address,
+                city: address.city,
+                country: address.country,
+                province: address.province,
+                state: address.state,
+                street_1: address.street_1,
+                street_2: address.street_2,
+                zipcode: address.zipcode
+            };
         }
     });
 
