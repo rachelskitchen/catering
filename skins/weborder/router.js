@@ -27,8 +27,8 @@ define(["main_router"], function(main_router) {
         carts = {};
 
     /**
-    * Default router data.
-    */
+     * Default router data.
+     */
     function defaultRouterData() {
         headers.main = {mod: 'Main', className: 'main'};
         headers.checkout = {mod: 'Checkout', className: 'checkout'};
@@ -69,8 +69,6 @@ define(["main_router"], function(main_router) {
                 // set header, cart, main models
                 App.Data.header = new App.Models.HeaderModel();
                 var mainModel = App.Data.mainModel = new App.Models.MainModel({
-                    goToDirectory: App.Data.dirMode ? this.navigateDirectory.bind(this) : new Function,
-                    isDirMode: App.Data.dirMode && !App.Data.isNewWnd,
                     acceptableCCTypes: ACCEPTABLE_CREDIT_CARD_TYPES
                 });
                 var ests = App.Data.establishments;
@@ -78,11 +76,8 @@ define(["main_router"], function(main_router) {
                 App.Data.search = new App.Collections.Search();
 
                 this.listenTo(mainModel, 'change:mod', this.createMainView);
-                this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
-                this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
                 this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
-                this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
                 mainModel.set({
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
@@ -427,12 +422,6 @@ define(["main_router"], function(main_router) {
 
             return _.extend(App.Routers.MobileRouter.prototype.getState.apply(this, arguments), data);
         },
-        showPromoMessage: function() {
-            App.Data.mainModel.set('isShowPromoMessage', true);
-        },
-        hidePromoMessage: function() {
-            App.Data.mainModel.set('isShowPromoMessage', false);
-        },
         /**
         * Get a stores list.
         */
@@ -486,12 +475,12 @@ define(["main_router"], function(main_router) {
                             search: App.Data.search,
                             loaded: dfd
                         },
-                        {
-                            modelName: 'SubCategories',
-                            collection: App.Data.categories,
-                            search: App.Data.search,
-                            mod: 'Select'
-                        },
+                        // {
+                        //     modelName: 'SubCategories',
+                        //     collection: App.Data.categories,
+                        //     search: App.Data.search,
+                        //     mod: 'Select'
+                        // },
                         {
                             modelName: 'SearchLine',
                             model: App.Data.searchLine,
@@ -569,7 +558,7 @@ define(["main_router"], function(main_router) {
 
                 App.Data.mainModel.set('mod', 'Main');
                 App.Data.mainModel.set({
-                    header: headers.checkout,
+                    header: headers.main,
                     cart: carts.checkout,
                     content: {
                         modelName: 'Checkout',

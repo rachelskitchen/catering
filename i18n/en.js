@@ -564,7 +564,7 @@
         'PROFILE_EMAIL_ADDRESS': 'Email Address',
         'PROFILE_PASSWORD': 'Password',
         'PROFILE_FORGOT_PASSWORD': "Forgot Password?",
-        'PROFILE_LOG_IN': "Log In",
+        'PROFILE_LOG_IN': "Sign In",
         'PROFILE_LOG_OUT': "Log Out",
         'PROFILE_LOGGED_IN': "Logged in as %s",
         'PROFILE_CREATE_ACCOUNT': "Create an Account",

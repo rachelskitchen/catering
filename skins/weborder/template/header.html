@@ -1,18 +1,18 @@
 <script type="text/template" id="header_main-template">
-    <div class='delivery_wrapper'></div>
-    <div class="logo">
+    <div class="logo fl-left">
         <img src='<%= logo %>' alt="<%= business_name %> logo" class="logo" data-default-index="1">
     </div>
-    <ul class="tabs">
-        <li class="menu <% if (typeof tab_index == 'number' && tab_index === 0) { %> active <% } %>">
-            <span class="clip"> <%= _lp.HEADER_MENU %> </span>
-        </li>
-        <li class="about <% if (typeof tab_index == 'number' && tab_index === 1) { %> active <% } %>">
-            <span class="clip"> <%= _lp.HEADER_ABOUT %> </span>
-        </li>
-        <li class="map <% if (typeof tab_index == 'number' && tab_index === 2) { %> active <% } %>">
-            <span class="clip"> <%= _lp.HEADER_MAP %> </span>
-        </li>
+    <div class="fl-left">
+        <h1 class="title">Business Name</h1>
+        <div class="delivery_wrapper"></div>
+    </div>
+    <ul class="tabs fl-right text-center">
+        <li class="menu tab fl-left <% if (typeof tab_index == 'number' && tab_index === 0) { %> active <% } %>">
+            <%= _lp.HEADER_MENU %></li>
+        <li class="about tab fl-left <% if (typeof tab_index == 'number' && tab_index === 1) { %> active <% } %>">
+            <%= _lp.HEADER_ABOUT %></li>
+        <li class="map tab fl-left <% if (typeof tab_index == 'number' && tab_index === 2) { %> active <% } %>">
+            <%= _lp.HEADER_MAP %></li>
     </ul>
 </script>
 
@@ -22,10 +22,10 @@
             var title = _lp.HEADER_DELIVERY_MINIMUM,
                 content = currency_symbol + min_delivery_amount;
         %>
-        <span title="<%= title %>: <%= content %>">
+        <div class="row" title="<%= title %>: <%= content %>">
             <span> <%= title %>: </span>
             <%= content %>
-        </span>
+        </div>
         <%
             var title = '',
                 content = '';
@@ -45,10 +45,10 @@
                 }
             }
         %>
-        <span title="<%= title %> <%= content %>">
+        <div class="row" title="<%= title %> <%= content %>">
             <span> <%= title %> </span>
             <%= content %>
-        </span>
+        </div>
         <%
             var title = _lp.HEADER_DELIVERY_TIME,
                 content = '';
@@ -57,10 +57,10 @@
             if (delivery_time.minutes > 0) content += delivery_time.minutes + ' ' + _lp.HEADER_DELIVERY_MINUTES;
             if (delivery_time.minutes == 0 && delivery_time.hour == 0) content += _lp.HEADER_DELIVERY_ASAP;
         %>
-        <span title="<%= title %>: <%= content %>">
+        <div class="row" title="<%= title %>: <%= content %>">
             <span> <%= title %>: </span>
             <%= content %>
-        </span>
+        </div>
     </div>
 </script>
 

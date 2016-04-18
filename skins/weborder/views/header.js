@@ -23,12 +23,19 @@
 define(["backbone", "factory"], function() {
     'use strict';
 
+    function onClick(eventName) {
+        return function() {
+            this.model.trigger(eventName);
+        };
+    }
+
     var HeaderMainView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'main',
-        initialize: function() {
-            this.listenTo(this.model, 'change:tab_index', this.tabs, this);
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        bindings: {
+            '.menu': 'classes: {active: strictEqual(tab_index, 0)}',
+            '.about': 'classes: {active: strictEqual(tab_index, 1)}',
+            '.map': 'classes: {active: strictEqual(tab_index, 2)}'
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -43,51 +50,9 @@ define(["backbone", "factory"], function() {
             loadSpinner(this.$('img.logo'));
         },
         events: {
-            'click .menu': 'onMenu',
-            'click .about': 'onAbout',
-            'click .map': 'onMap'
-        },
-        tabs: function(model, value) {
-            var tabs = this.$('.tabs li');
-            tabs.removeClass('active');
-            tabs.eq(value).addClass('active');
-        },
-        onMenu: function() {
-            this.model.trigger('onMenu');
-        },
-        onAbout: function() {
-            this.model.trigger('onAbout');
-        },
-        onMap: function() {
-            this.model.trigger('onMap');
-        }
-    });
-
-    var HeaderCheckoutView = App.Views.FactoryView.extend({
-        name: 'header',
-        mod: 'checkout',
-        render: function() {
-            App.Views.FactoryView.prototype.render.apply(this, arguments);
-            if (App.Data.settings.get('settings_system').delivery_for_online_orders) {
-                var view = App.Views.GeneratorView.create('Header', {
-                    el: this.$('.delivery_wrapper'),
-                    mod: 'Delivery',
-                    model: this.model
-                });
-                this.subViews.push(view);
-            }
-            loadSpinner(this.$('img.logo'));
-        },
-        events: {
-            'click .btn': 'onBack',
-            'keydown .btn': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.onBack();
-                }
-            }
-        },
-        onBack: function() {
-            this.model.trigger('onBack');
+            'click .menu': onClick('onMenu'),
+            'click .about': onClick('onAbout'),
+            'click .map': onClick('onMap')
         }
     });
 
@@ -125,7 +90,6 @@ define(["backbone", "factory"], function() {
     return new (require('factory'))(function() {
         App.Views.HeaderView = {};
         App.Views.HeaderView.HeaderMainView = HeaderMainView;
-        App.Views.HeaderView.HeaderCheckoutView = HeaderCheckoutView;
         App.Views.HeaderView.HeaderConfirmationView = HeaderConfirmationView;
         App.Views.HeaderView.HeaderDeliveryView = HeaderDeliveryView;
         // App.Views.HeaderView.HeaderProfileView = HeaderProfileView;
