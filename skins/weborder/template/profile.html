@@ -175,10 +175,12 @@
 </script>
 
 <script type="text/template" id="profile_payment_edition-template">
-    <span class="card-type"></span> &mdash; ****<span class="card-number"></span>
+    <div class="card-title">
+        <span class="card-type"></span> &mdash; ****<span class="card-number"></span>
+    </div>
+
     <div class="remove-btn"></div>
 
-    <br>
     <ul class="profile-form">
         <li>
             <input type="text" placeholder="Card Name (First & Last)" class="card-holder" disabled>
@@ -188,7 +190,7 @@
         </li>
         <li>
             <label class="profile-checkbox">
-                <input type="checkbox" class="card-default" style="width: auto;"><i></i> <%= _lp.PROFILE_DEFAULT_CARD %>
+                <input type="checkbox" class="card-default"><i></i> <%= _lp.PROFILE_DEFAULT_CARD %>
             </label>
         </li>
     </ul>

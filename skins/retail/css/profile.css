@@ -170,6 +170,10 @@
     width: 212px;
 }
 
+.profile-edit .profile-form input:disabled {
+    color: #999;
+}
+
 .profile-edit .select-wrapper {
     width: 228px;
     height: 24px;
@@ -181,6 +185,10 @@
     margin-bottom: 15px;
     font-size: 16px;
     text-decoration: underline;
+}
+
+.profile-edit .card-title {
+    margin-bottom: 10px;
 }
 
 .profile-edit .basic-details-box {
@@ -200,10 +208,48 @@
     opacity: 0.5;
 }
 
+.profile-edit .payments-list .remove-btn::after {
+    right: auto;
+    left: 215px;
+    top: 14px;
+}
+
+.profile-edit .profile-checkbox {
+    display: inline-block;
+    position: relative;
+    line-height: 21px;
+    padding-left: 28px;
+}
+
+.profile-edit .profile-checkbox input {
+    display: none;
+}
+
+.profile-edit .profile-checkbox i {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 21px;
+    height: 21px;
+    background-image: url(themes/vintage/img/ui.png);
+    background-repeat: no-repeat;
+    background-position: -91px -1px;
+}
+
+.profile-edit .profile-checkbox input:checked + i {
+    background-position: -91px -26px;
+}
+
 .profile-edit .payments-list,
 .profile-edit .gift-cards-list {
     font-size: 14px;
     width: 300px;
+}
+
+.profile-edit .payments-list {
+    margin: 0;
+    padding: 0;
 }
 
 .profile-edit .payments-list > li,

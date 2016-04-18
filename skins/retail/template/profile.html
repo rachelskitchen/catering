@@ -170,11 +170,30 @@
         <h2 class="title"><%= _lp.GIFT_CARDS %></h2>
         <div class="gift-cards-box"></div>
     </div>
+    <div class="successful-update animation clear"><%= _lp.PROFILE_UPDATE_SUCCESSFUL %></div>
+    <div class="update-btn flat-btn"><%= _lp.UPDATE %></div>
 </script>
 
 <script type="text/template" id="profile_payment_edition-template">
-    <span class="card-type"></span> &mdash; ****<span class="card-number"></span>
+    <div class="card-title">
+        <span class="card-type"></span> &mdash; ****<span class="card-number"></span>
+    </div>
+
     <div class="remove-btn"></div>
+
+    <ul class="profile-form">
+        <li>
+            <input type="text" placeholder="Card Name (First & Last)" class="card-holder" disabled>
+        </li>
+        <li>
+            <input type="text" placeholder="Card Number" class="card-num" disabled>
+        </li>
+        <li>
+            <label class="profile-checkbox">
+                <input type="checkbox" class="card-default"><i></i> <%= _lp.PROFILE_DEFAULT_CARD %>
+            </label>
+        </li>
+    </ul>
 </script>
 
 <script type="text/template" id="profile_payments_edition-template">

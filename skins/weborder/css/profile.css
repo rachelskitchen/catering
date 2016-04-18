@@ -233,6 +233,10 @@
     text-decoration: underline;
 }
 
+.profile-edit .card-title {
+    margin-bottom: 10px;
+}
+
 .profile-edit .basic-details-box {
     margin-bottom: 15px;
 }
