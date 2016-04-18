@@ -957,6 +957,10 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
         });
 
+        describe('isNewAddressSelected()', function() {
+            
+        });
+
         describe("checkSignUpData()", function() {
             var originalFirstName, originalLastName, originalEmail,
                 originalPhone, originalPassword;
