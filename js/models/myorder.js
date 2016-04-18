@@ -2329,13 +2329,14 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 return reportPaymentError(payment_info.errorMsg);
             }
 
-            if (card.nonce) {
-                payment_info.cardInfo.nonce = card.nonce;
+            if (card) {
+                if (card.nonce) {
+                    payment_info.cardInfo.nonce = card.nonce;
+                }
+                if (card.encrypted_customer_input) {
+                    payment_info.cardInfo.encrypted_customer_input = card.encrypted_customer_input;
+                }
             }
-            if (card.encrypted_customer_input) {
-                payment_info.cardInfo.encrypted_customer_input = card.encrypted_customer_input;
-            }
-
 
             if (payment_type == PAYMENT_TYPE.CREDIT && PaymentProcessor.isBillingAddressCard()) {
 
