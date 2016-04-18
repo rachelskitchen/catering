@@ -1,0 +1,27 @@
+#cart {
+    width: 362px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 50px;
+    border-left-width: 1px;
+    border-left-style: solid;
+    padding: 0 10px;
+}
+
+#cart .cart_title {
+	padding: 18px 5px 15px;
+	border-bottom-width: 2px;
+	border-bottom-style: solid;
+	text-transform: uppercase;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 3px;
+}
+
+#cart .btn {
+	position: absolute;
+	left: -1px;
+	right: -1px;
+	bottom: 0;
+}

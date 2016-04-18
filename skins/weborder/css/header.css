@@ -1,0 +1,61 @@
+#header {
+    height: 166px;
+}
+
+#header .logo {
+    width: 166px;
+    height: 166px;
+    margin-right: 34px;
+}
+
+#header .title {
+    padding: 18px 0 33px;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+#header .row {
+    font-size: 14px;
+    padding-bottom: 8px;
+    cursor: default;
+}
+
+#header .tabs {
+    margin-top: 127px;
+    border-width: 1px 1px 0 1px;
+    border-style: solid;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+#header .tab {
+    display: block;
+    min-width: 86px;
+    padding: 15px 11px 9px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    position: relative;
+}
+
+#header .tab.active::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    bottom: -1px;
+    right: -1px;
+    border-width: 5px 1px 1px;
+    border-style: solid;
+}
+
+#header .menu::after {
+    border-top-left-radius: 5px;
+}
+
+#header .map::after {
+    border-top-right-radius: 5px;
+}

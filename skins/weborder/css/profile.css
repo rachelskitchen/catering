@@ -12,7 +12,6 @@
 }
 
 #profile-panel .close {
-    background: rgba(70, 70, 70, .8);
     width: 100%;
     height: 100%;
     position: absolute;
@@ -22,274 +21,103 @@
 
 #profile-panel .links {
     position: relative;
-    right: 6px;
-    top: 8px;
-    padding: 4px;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-}
-
-#profile-panel .links > div {
-    display: inline-block;
-    padding: 0 8px;
+    right: 399px;
+    top: 18px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px;
 }
 
-#profile-panel .regular-text.link {
-    text-decoration: none;
-    cursor: default;
+#profile-panel .signup-link,
+#profile-panel .login-link {
+    display: inline-block;
+    text-transform: uppercase;
+    position: relative;
 }
 
 #profile-panel .signup-link {
+    margin-right: 17px;
+}
+
+#profile-panel .signup-link::after {
+    content: '';
+    display: block;
+    position: absolute;
+    right: -9px;
+    top: 2px;
+    bottom: 2px;
     border-right-width: 1px;
     border-right-style: solid;
 }
 
+#profile-panel .active::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 0;
+    border-width: 1px;
+    border-style: solid;
+    position: absolute;
+    top: -5px;
+}
+
 #profile-panel .box {
     position: absolute;
-    right: 6px;
-    top: 30px;
-    width: 250px;
-    background: #fff;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
-    border-top-left-radius: 6px;
-    padding: 15px;
+    right: 399px;
+    top: 40px;
+    width: 330px;
+    padding-top: 10px;
+    border-width: 1px;
+    border-style: solid;
 }
 
-#profile-panel .box.menu-items {
-    padding: 0;
+#profile-panel .required {
+    position: relative;
 }
 
-#profile-panel .phone-privacy,
-#profile-panel .passwords-mismatch {
-    display: block;
-    padding: 0px 14px 5px;
-    font-size: 10px;
-}
-
-#profile-panel .passwords-mismatch {
+#profile-panel .required::before {
     position: absolute;
+    left: 5px;
 }
 
-#profile-panel .flat-btn {
-    display: inline-block;
-    width: 84%;
-    height: auto;
-    margin-top: 10px;
-    font-size: 14px;
-    line-height: normal;
+#profile-panel .profile-form {
+    padding: 15px 20px 0;
+}
+
+#profile-panel .label {
+    display: block;
+    font-size: 12px;
+    padding: 0 14px 4px;
+}
+
+#profile-panel .input {
+    margin-bottom: 15px;
 }
 
 #profile-panel .forgot-password {
-    margin: 0 15px 10px;
-    font-size: 14px;
+    padding: 0 20px;
+    font-size: 12px;
+    font-style: italic;
 }
 
-#profile-panel .profile-items li {
-    padding: 15px;
-    border-bottom-color: #ccc;
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    cursor: pointer
+#profile-panel .btn {
+    padding: 11px 10px;
+    margin-top: 15px;
 }
 
-#profile-panel .profile-items li:not(.disabled):hover,
-#profile-panel .profile-items li:not(.disabled):active  {
-    background-color: rgba(100,100,100,0.15);
-}
-
-#profile-panel .profile-items .logout-link {
-    border-bottom-style: none;
-}
-
-.profile-edit {
-    padding: 15px 0;
-}
-
-.profile-edit .side {
-    width: 50%;
-    min-height: 320px;
-    display: inline-block;
-    vertical-align: top;
-    position: relative;
-}
-
-.profile-edit .left-side::after {
-    content: '';
-    display: inline-block;
-    position: absolute;
-    top: 15%;
-    bottom: 15%;
-    right: 0;
-    border-left-width: 1px;
-    border-left-style: solid;
-    border-left-color: #ccc;
-}
-
-.profile-edit .phone-privacy {
-    font-size: 10px;
-    text-align: left;
-    padding-left: 15px;
-}
-
-.profile-edit .profile-form {
-    width: 250px;
-    display: inline-block;
-}
-
-.profile-edit .successful-update {
-    position: relative;
-    top: -12px;
-    text-align: center;
-    opacity: 0;
-    filter: alpha(opacity=0);
-}
-
-.profile-edit .successful-update.visible {
-    opacity: 1;
-    filter: alpha(opacity=100);
-}
-
-.profile-edit .update-btn {
-    width: auto;
-    min-width: 100px;
-    display: inline-block;
-    font-size: 14px;
-}
-
-.profile-edit .profile-form input {
-    width: 212px;
-}
-
-.profile-edit .select-wrapper {
-    width: 228px;
-    height: 24px;
-    box-shadow: none;
-    background: transparent;
-}
-
-.profile-edit .title {
-    margin-bottom: 15px;
-    font-size: 16px;
-    text-decoration: underline;
-}
-
-.profile-edit .basic-details-box {
-    margin-bottom: 15px;
-}
-
-.profile-edit .remove-btn::after {
-    content: '\f057';
-    font-size: 18px;
-    font-family: "FontAwesome";
+#profile-panel .phone-privacy {
     display: block;
-    width: 1em;
+    margin-top: -10px;
+    padding: 0 14px 15px;
+    font-size: 12px;
+}
+
+#profile-panel .passwords-mismatch {
     position: absolute;
-    top: 50%;
-    right: 0;
-    margin-top: -8px;
-    opacity: 0.5;
-
+    bottom: -5px;
+    left: 14px;
+    font-size: 12px;
 }
 
-.profile-edit .payments-list,
-.profile-edit .gift-cards-list {
-    font-size: 14px;
-    width: 300px;
-}
-
-.profile-edit .payments-list > li,
-.profile-edit .gift-cards-list > li {
-    text-align: left;
-}
-
-.profile-form > li {
-    margin-bottom: 10px;
-}
-
-.profile-form .required::before {
-    position: absolute;
-    left: 0px;
-    top: -4px;
-}
-
-.profile-form input {
-    width: 85%;
-    padding: 4px 8px;
-    border-radius: 12px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #ccc;
-    font-size: 14px;
-}
-
-.profile-form select {
-    font-size: 14px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: transparent;
-    color: initial;
-}
-
-.profile-form .placeholder::before {
-    padding: 4px 8px;
-    font-size: 14px;
-}
-
-.reset-password-info {
-    font-size: 14px;
-    padding-bottom: 15px;
-}
-
-.payments-list,
-.gift-cards-list {
-    display: inline-block;
-    width: 95%;
-    vertical-align: middle;
-}
-
-.payments-list > li,
-.gift-cards-list > li {
-    border-color: #fff;
-    border-style: solid;
-    border-width: 1px;
-    margin: 5px 10px;
-    padding: 7px 0;
-    text-align: center;
-    cursor: pointer;
-    position: relative;
-}
-
-.payments-list > li.selected::after,
-.gift-cards-list > li.selected::after {
-    content: '';
-    display: block;
-    width: 30px;
-    height: 30px;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-}
-
-.profile-cvv-container {
-    margin-bottom: 25px;
-}
-
-.profile-cvv-container .title {
-    font-size: 24px;
-    margin-bottom: 15px;
-}
-
-.profile-cvv-container {
-    font-size: 16px;
-}
-
-.profile-cvv-container .input_beauty {
-    width: 200px;
-    margin: 10px auto;
-    position: relative;
-    top: initial;
-    bottom: initial;
+#profile-panel .reset-password-info {
+    padding: 0 20px 15px;
 }

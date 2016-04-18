@@ -1,16 +1,15 @@
 <script type="text/template" id="cart_main-template">
-    <h2 class="cart_title"> <%= _lp.CART_CART %> </h2>
+    <h2 class="cart_title text-center"> <%= _lp.CART_CART %> </h2>
     <div class="order-items_wrapper">
         <div class="order-items"></div>
     </div>
-    <ul class="total_block"></ul>
     <% if(_settings.online_orders) { %>
-        <div class="btn unselectable" tabindex="0"> <span class="clip"> <%= _lp.CART_CHECKOUT %> </span> </div>
+        <div class="btn text-center" tabindex="0"><%= _lp.CART_CHECKOUT %></div>
     <% } %>
 </script>
 
 <script type="text/template" id="cart_checkout-template">
-    <h2 class="cart_title"> <%= _lp.CART_ORDER_SUMMARY %></h2>
+    <h2 class="cart_title"> <%= _lp.CART_CART %></h2>
     <div class="order-items_wrapper">
         <div class="order-items"></div>
     </div>
