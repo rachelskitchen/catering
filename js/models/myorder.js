@@ -2721,7 +2721,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         },
         /*
          * Updates App.Data.customer.attributes.shipping_address according to the specified dining option.
-         * If shipping_address > 2 (profle address is selected), do not change it.
+         * If profle address is selected, do not change it.
          * @param {App.Models.Checkout} model - {@link App.Collections.Myorders#checkout} object
          * @param {string} value - dining option
          * @returns {numder} index of selected shipping address
@@ -2734,7 +2734,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
 
             // if profile address is selected, do not change the selection
-            if (customer.get('shipping_address') < 3) {
+            if (!customer.isProfileAddressSelected()) {
                 customer.set('shipping_address', this.getShippingAddress(value));
             }
 

@@ -3352,9 +3352,8 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             }
         });
 
-        describe('setShippingAddress()', function() {
-            var checkout = new Backbone.Model(),
-                diningOption = '';
+        describe('getShippingAddress()', function() {
+            var diningOption = '';
 
             beforeEach(function() {
                 this.customer = App.Data.customer;
@@ -3374,39 +3373,116 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
             afterEach(function() {
                 App.Data.customer = this.customer;
-            })
+            });
+
+            it('App.Data.customer does not exist', function() {
+                App.Data.customer = undefined;
+                expect(model.getShippingAddress(diningOption)).toBeUndefined();
+            });
+
+            it('dining option is delivery', function() {
+                diningOption = 'DINING_OPTION_DELIVERY';
+                expect(App.Data.customer.get('deliveryAddressIndex')).toBe(0);
+                expect(model.getShippingAddress(diningOption)).toBe(0);
+            });
+
+            it('dining option is shipping', function() {
+                diningOption = 'DINING_OPTION_SHIPPING';
+                expect(App.Data.customer.get('shippingAddressIndex')).toBe(1);
+                expect(model.getShippingAddress(diningOption)).toBe(1);
+            });
+
+            it('dining option is catering', function() {
+                diningOption = 'DINING_OPTION_CATERING';
+                expect(App.Data.customer.get('cateringAddressIndex')).toBe(2);
+                expect(model.getShippingAddress(diningOption)).toBe(2);
+            });
+
+            it('dining option is not shipping or delivery', function() {
+                diningOption = 'DINING_OPTION_TOGO';
+                expect(model.getShippingAddress(diningOption)).toBe(-1);
+                expect(App.Data.customer.get('shipping_address')).toBe(-1);
+            });
+        });
+
+        describe('setShippingAddress()', function() {
+            var checkout = new Backbone.Model(),
+                diningOption = '',
+                getShippingAddress, isProfileAddressSelected;
+
+            beforeEach(function() {
+                this.customer = App.Data.customer;
+                App.Data.customer = new Backbone.Model({
+                    shipping_address: -1,
+                    addresses: ['address 1', 'address 2'],
+                    shipping_selected: -1,
+                    shipping_services: ['shipping service 1', 'shipping service 2'],
+                    deliveryAddressIndex: 0,
+                    shippingAddressIndex: 1,
+                    cateringAddressIndex: 2
+                });
+                App.Data.customer.defaults = {
+                    shipping_address: -1
+                };
+                App.Data.customer.isProfileAddressSelected = jasmine.createSpy();
+                getShippingAddress = spyOn(model, 'getShippingAddress');
+            });
+
+            afterEach(function() {
+                App.Data.customer = this.customer;
+            });
 
             it('App.Data.customer does not exist', function() {
                 App.Data.customer = undefined;
                 expect(model.setShippingAddress(checkout, diningOption)).toBeUndefined();
             });
 
-            it('dining option is delivery', function() {
+            it('selected address is not from profile', function() {
                 diningOption = 'DINING_OPTION_DELIVERY';
-                expect(App.Data.customer.get('deliveryAddressIndex')).toBe(0);
-                expect(model.setShippingAddress(checkout, diningOption)).toBe(0);
-                expect(App.Data.customer.get('shipping_address')).toBe(0);
+                shipping_address = App.Data.customer.get('deliveryAddressIndex');
+                expect(shipping_address).toBe(0);
+                getShippingAddress.and.returnValue(shipping_address);
+                App.Data.customer.isProfileAddressSelected.and.returnValue(false);
+
+                expect(model.setShippingAddress(checkout, diningOption)).toBe(shipping_address);
+                expect(model.getShippingAddress).toHaveBeenCalledWith(diningOption);
+                expect(App.Data.customer.get('shipping_address')).toBe(shipping_address);
             });
 
-            it('dining option is shipping', function() {
-                diningOption = 'DINING_OPTION_SHIPPING';
-                expect(App.Data.customer.get('shippingAddressIndex')).toBe(1);
-                expect(model.setShippingAddress(checkout, diningOption)).toBe(1);
-                expect(App.Data.customer.get('shipping_address')).toBe(1);
+            it('selected address is from profile', function() {
+                shipping_address = 4;
+                App.Data.customer.set('shipping_address', shipping_address, {silent: true});
+                diningOption = 'DINING_OPTION_DELIVERY';
+                getShippingAddress.and.returnValue(0);
+                App.Data.customer.isProfileAddressSelected.and.returnValue(true);
+
+                expect(model.setShippingAddress(checkout, diningOption)).toBe(shipping_address);
+                expect(model.getShippingAddress).not.toHaveBeenCalled();
+                expect(App.Data.customer.get('shipping_address')).toBe(shipping_address);
+            });
+        });
+
+        it('getCustomerAddress()', function() {
+            var address = {
+                address: 'test',
+                city: 'test',
+                country: 'test',
+                province: '',
+                state: 'test',
+                street_1: 'test',
+                street_2: '',
+                zipcode: 'test'
+            };
+
+            this.customer = App.Data.customer;
+            App.Data.customer = new Backbone.Model({
+                shipping_address: 1,
+                addresses: [undefined, address]
             });
 
-            it('dining option is catering', function() {
-                diningOption = 'DINING_OPTION_CATERING';
-                expect(App.Data.customer.get('cateringAddressIndex')).toBe(2);
-                expect(model.setShippingAddress(checkout, diningOption)).toBe(2);
-                expect(App.Data.customer.get('cateringAddressIndex')).toBe(2);
-            });
+            expect(model.getCustomerAddress()).toEqual(address);
 
-            it('dining option is not shipping or delivery', function() {
-                diningOption = 'DINING_OPTION_TOGO';
-                expect(model.setShippingAddress(checkout, diningOption)).toBe(-1);
-                expect(App.Data.customer.get('shipping_address')).toBe(-1);
-            });
+            App.Data.customer = this.customer;
         });
 
     });

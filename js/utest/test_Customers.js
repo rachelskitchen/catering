@@ -957,8 +957,21 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
         });
 
-        describe('isNewAddressSelected()', function() {
-            
+        describe('isProfileAddressSelected()', function() {
+            it('`shipping_address` is less than 3', function() {
+                model.set('shipping_address', 2);
+                expect(model.isProfileAddressSelected()).toBe(false);
+            });
+
+            it('`shipping_address` is 3', function() {
+                model.set('shipping_address', 3);
+                expect(model.isProfileAddressSelected()).toBe(true);
+            });
+
+            it('`shipping_address` is more than 3', function() {
+                model.set('shipping_address', 4);
+                expect(model.isProfileAddressSelected()).toBe(true);
+            });
         });
 
         describe("checkSignUpData()", function() {
