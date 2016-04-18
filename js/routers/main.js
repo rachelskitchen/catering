@@ -1033,6 +1033,8 @@ define(["backbone", "factory"], function(Backbone) {
                     mainModel.trigger('loadStarted');
                     req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                 }
+
+                return req;
             }
 
             function removeToken(token_id) {

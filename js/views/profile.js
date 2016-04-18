@@ -404,7 +404,7 @@ define(["factory"], function() {
         {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
 
-            this.model.setOriginalAttributes();
+            this.model.resetAttributes();
             return this;
         },
         name: 'profile',
@@ -594,13 +594,23 @@ define(["factory"], function() {
             }
 
             // Saving Credit Cards data
-            var collection = this.model.payments;
+            this.saveCreditCard();
+        },
+        saveCreditCard: function()
+        {
+            var self = this,
+                collection = this.model.payments,
+                primaryPaymentsModel = collection.getPrimaryPayment(),
+                req = this.options.changeToken(primaryPaymentsModel.id);
 
-            var primaryPaymentsModel = collection.models.find(function(model) {
-                return model.get('is_primary');
-            });
-
-            this.options.changeToken(primaryPaymentsModel.id);
+            if (req)
+            {
+                this.incrementUpdateCounter();
+                
+                req.done(function() {
+                    self.checkUpdateStatus();
+                });
+            }
         },
         addCardToServer: function(giftcard) {
             var self = this,

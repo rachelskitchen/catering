@@ -138,18 +138,22 @@ define(['backbone'], function(Backbone) {
          */
         initialize: function() {
             this.get('is_primary') && this.set('selected', true);
-
-            // Store the original attributes for resetting
-            this._originalAttributes = _.clone(this.attributes);
+            this.setOriginalAttributes();
 
             Backbone.Model.prototype.initialize.apply(this, arguments);
         },
         /**
          * Reverts model's original attrbutes
          */
-        setOriginalAttributes: function() {
+        resetAttributes: function() {
             this.set(this._originalAttributes);
             return this;
+        },
+        /**
+         * Stores the original attributes for resetting
+         */
+        setOriginalAttributes: function() {
+            this._originalAttributes = _.clone(this.attributes);
         },
         /**
          * Returns the difference between original and modified attributes
@@ -404,6 +408,17 @@ define(['backbone'], function(Backbone) {
             return this.findWhere({selected: true});
         },
         /**
+         * Returns primary payment model
+         */
+        getPrimaryPayment: function()
+        {
+            var primary_model = this.models.find(function(model) {
+                return model.get('is_primary');
+            });
+
+            return primary_model;
+        },
+        /**
          * Receives payments. Sends request with following parameters:
          * ```
          * {
@@ -452,7 +467,7 @@ define(['backbone'], function(Backbone) {
             if (req) {
                 req.done(function() {
                     _.each(self.models, function(model) {
-                        model._originalAttributes = _.clone(model.attributes);
+                        model.setOriginalAttributes();
                     });
                 });
             }
