@@ -1013,6 +1013,7 @@ define(["backbone", "factory"], function(Backbone) {
                         mod: 'Payments',
                         model: customer,
                         changeToken: changeToken,
+                        ui: new Backbone.Model({show_response: false}),
                         removeToken: removeToken,
                         unlinkGiftCard: unlinkGiftCard,
                         className: 'profile-edit text-center'
