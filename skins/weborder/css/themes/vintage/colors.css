@@ -644,12 +644,6 @@ input:-ms-input-placeholder {
     background-color: transparent;
     color: #362b18;
 }
-.flat-btn.btn-reload {
-    background-color: #362b18;
-    border-color: #362b18;
-    color: #ffffff;
-    text-shadow: none;
-}
 #popup_panel input[type="button"] {
     border-color: #b9b5b0;
     box-shadow: 0 3px 4px 1px rgba(0,0,0,.3);

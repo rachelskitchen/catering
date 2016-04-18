@@ -419,7 +419,7 @@ define(["factory"], function() {
         },
         bindingFilters: {
             creditCardType: creditCardType,
-            
+
             getCardHolder: function(first_name, last_name) {
                 return first_name + ' ' + last_name;
             },
@@ -624,7 +624,9 @@ define(["factory"], function() {
                     if (data && data.status == 'OK') {
                         self.checkUpdateStatus();
                         self.newGiftCard.set({ add_new_card: false, cardNumber: '', remainingBalance: null });
+                        self.newGiftCard.trigger('updateCaptcha');
                     }
+
                 }).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
             }
         },
