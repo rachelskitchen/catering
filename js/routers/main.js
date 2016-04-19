@@ -1447,6 +1447,7 @@ define(["backbone", "factory"], function(Backbone) {
             window.setTimeout(function() {
                 self.listenTo(customer, 'change_cards', preValidateData);
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'change_cards', preValidateData));
+                self.listenToOnce(self, 'route', App.Data.header.set.bind(App.Data.header, 'enableLink', true));
             }, 0);
 
             return {
