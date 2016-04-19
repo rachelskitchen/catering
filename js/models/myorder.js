@@ -2498,9 +2498,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             req.always(function(xhr, result) {
                 payment_type === PAYMENT_TYPE.PAYPAL_MOBILE && $.mobile.loading("hide");
                 delete myorder.paymentInProgress;
-                App.Data.card.unset('nonce');
-                if (myorder.paymentResponse.status != "PAYMENT_INFO_REQUIRED") {
-                    App.Data.card.unset('encrypted_customer_input');
+                if (App.Data.card) {
+                    App.Data.card.unset('nonce');
+                    if (myorder.paymentResponse.status != "PAYMENT_INFO_REQUIRED") {
+                        App.Data.card.unset('encrypted_customer_input');
+                    }
                 }
                 successValidation && successValidation.resolve();
             });
