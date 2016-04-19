@@ -106,14 +106,10 @@ define(['backbone'], function(Backbone) {
          */
         model: App.Models.Promotion,
         /**
-         * Adds listeners to track changes of 'is_applied' and 'is_applicable' attributes.
+         * Adds listener to track changes of 'is_applied' attribute.
          */
         initialize: function() {
             this.listenTo(this, 'change:is_applied', this.radioSelection);
-
-            this.listenTo(this, 'change:is_applicable', function(model, value) {
-                !value && model.set('is_applied', false);
-            });
         },
         /**
          * When promotion is selected, deselects all other promotions (radio button behavior).

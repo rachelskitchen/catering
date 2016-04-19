@@ -43,7 +43,7 @@ define(['factory'], function() {
             '.promotion': 'classes: {disabled: not(is_applicable)}',
             '.promotion__name': 'text: name',
             '.promotion__description': 'toggle: not(is_applicable)',
-            '.promotion__apply': 'text: select(is_applied, _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {added: is_applied}',
+            '.promotion__apply': 'text: select(all(is_applicable, is_applied), _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {added: all(is_applicable, is_applied)}',
         },
         events: {
             'click .promotion__link': 'seeInfo',
