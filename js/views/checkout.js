@@ -457,7 +457,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         mod: 'pay_button',
         bindings: {
             '.cash > span': 'text: applyCashLabel(checkout_dining_option)',
-            '.btn.place-order': 'classes: {disabled: any(shipping_pending, orderItems_pending), cash: placeOrder, pay: not(placeOrder)}',
+            '.btn.place-order': 'classes: {disabled: any(shippingPending, orderItems_pending), cash: placeOrder, pay: not(placeOrder)}',
             '.btn.place-order > span': 'text: payBtnText(orderItems_quantity, total_grandTotal)',
             '.stanford-card': 'classes:{hide: orderItems_hasGiftCard}'
         },
@@ -473,22 +473,6 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             }
         },
         bindingSources: {
-            shipping: function() {
-                var customer = App.Data.customer,
-                    status = customer.get('load_shipping_status'),
-                    model = new Backbone.Model({pending: getStatus()});
-
-                model.listenTo(customer, 'change:shipping_services', function() {
-                    model.set('pending', getStatus());
-                });
-
-                return model;
-
-                function getStatus() {
-                    return customer.get('load_shipping_status') == 'pending';
-                }
-            },
-
             orderItems: function() {
                 var model = new Backbone.Model({
                     hasGiftCard: hasGiftCard(),
@@ -519,7 +503,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     });
                 }
             },
-            total: App.Data.myorder.total
+            total: App.Data.myorder.total,
+            customer: App.Data.customer
         },
         computeds: {
             placeOrder: {
@@ -528,6 +513,12 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     var placeOrder = !Number(grandTotal) && quantity;
                     this.needPreValidate = placeOrder ? true : this.needPreValidateDefault;
                     return placeOrder;
+                }
+            },
+            shippingPending: {
+                deps: ['checkout_dining_option', 'customer_shipping_selected'],
+                get: function(checkout_dining_option, customer_shipping_selected) {
+                    return checkout_dining_option == 'DINING_OPTION_SHIPPING' && customer_shipping_selected == -1;
                 }
             }
         },
