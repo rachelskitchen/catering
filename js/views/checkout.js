@@ -457,7 +457,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         mod: 'pay_button',
         bindings: {
             '.cash > span': 'text: applyCashLabel(checkout_dining_option)',
-            '.btn.place-order': 'classes: {disabled: any(all(equal(checkout_dining_option, "DINING_OPTION_SHIPPING"), equal(customer_shipping_selected, -1)), orderItems_pending), cash: placeOrder, pay: not(placeOrder)}',
+            '.btn.place-order': 'classes: {disabled: any(shippingPending, orderItems_pending), cash: placeOrder, pay: not(placeOrder)}',
             '.btn.place-order > span': 'text: payBtnText(orderItems_quantity, total_grandTotal)',
             '.stanford-card': 'classes:{hide: orderItems_hasGiftCard}'
         },
@@ -513,6 +513,12 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     var placeOrder = !Number(grandTotal) && quantity;
                     this.needPreValidate = placeOrder ? true : this.needPreValidateDefault;
                     return placeOrder;
+                }
+            },
+            shippingPending: {
+                deps: ['checkout_dining_option', 'customer_shipping_selected'],
+                get: function(checkout_dining_option, customer_shipping_selected) {
+                    return checkout_dining_option == 'DINING_OPTION_SHIPPING' && customer_shipping_selected == -1;
                 }
             }
         },
