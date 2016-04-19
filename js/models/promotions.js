@@ -106,30 +106,40 @@ define(['backbone'], function(Backbone) {
          */
         model: App.Models.Promotion,
         /**
-         * Adds listener to track when some promotion gets applied and unselect previously selected promotion
-         * (assume that only 1 promotion can be applied).
+         * Adds listeners to track changes of 'is_applied' and 'is_applicable' attributes.
          */
         initialize: function() {
-            this.listenTo(this, 'change:is_applied', function(appliedPromotion, is_applied) {
-                if (is_applied) {
-                    this.where({is_applied: true}).forEach(function(item) {
-                        if (item !== appliedPromotion) {
-                            item.set('is_applied', false);
-                        }
-                    });
-                }
+            this.listenTo(this, 'change:is_applied', this.radioSelection);
+
+            this.listenTo(this, 'change:is_applicable', function(model, value) {
+                !value && model.set('is_applied', false);
             });
+        },
+        /**
+         * When promotion is selected, deselects all other promotions (radio button behavior).
+         * @param {App.Models.Promotion} model - Selected/deselected promotion.
+         * @param {boolean} is_applied - model.is_applied attribute value.
+         */
+        radioSelection: function(model, is_applied) {
+            if (is_applied) {
+                this.where({is_applied: true}).forEach(function(item) {
+                    if (item !== model) {
+                        item.set('is_applied', false);
+                    }
+                });
+            }
         },
         /**
          * Updates the promotions list.
          * @param {array} items - array of cart items for submitting to server.
+         * @param {string} discount_code - code of applied discount.
          * @returns {Object} Deferred object.
          */
-        update: function(items) {
-            return this.getPromotions(items);
+        update: function(items, discount_code) {
+            return this.getPromotions(items, discount_code);
         },
         /**
-         * Initialization through a json object, used after the server is requested for promotions list.
+         * Initialization through a json object, used after the server is requested for the promotions list.
          * @param {array} promotions - list of promotions.
          */
         addAjaxJson: function(promotions) {
@@ -155,6 +165,7 @@ define(['backbone'], function(Backbone) {
         /**
          * Loads the promotions list from backend.
          * @param {array} items - array of cart items for submitting to server.
+         * @param {string} discount_code - code of applied discount.
          *
          * Used parameters of the request are:
          * ```
@@ -171,7 +182,7 @@ define(['backbone'], function(Backbone) {
          *
          * @returns {object} jqXHR object, returned by $.ajax().
          */
-        getPromotions: function(items) {
+        getPromotions: function(items, discount_code) {
             var self = this;
             items = items || [];
 
@@ -188,10 +199,22 @@ define(['backbone'], function(Backbone) {
                 success: function(response) {
                     if (response.status === 'OK') {
                         self.addAjaxJson(response.data);
+                        // apply a promotion that match the applied discount code
+                        discount_code && self.applyByCode(discount_code);
                         self.trigger('promotionsLoaded');
                     }
                 }
             });
+        },
+        /**
+         * Applies a promotion that match the applied discount code.
+         * @param {string} code - code of applied discount.
+         * @param {boolean} [silent=true] - indicates whether to use silent mode.
+         */
+        applyByCode: function(code, silent) {
+            silent !== undefined || (silent = true);
+            var model = this.findWhere({code: code, is_applicable: true});
+            model && model.set('is_applied', true, {silent: silent});
         }
     });
 
@@ -199,11 +222,13 @@ define(['backbone'], function(Backbone) {
      * Loads the promotions list.
      * @static
      * @alias App.Collections.Promotions.init
+     * @param {array} items - array of cart items for submitting to server.
+     * @param {string} discount_code - code of applied discount.
      * @returns {Object} Deferred object.
      */
-    App.Collections.Promotions.init = function(items) {
+    App.Collections.Promotions.init = function(items, discount_code) {
         var promotions = new App.Collections.Promotions();
-        promotions.fetching = promotions.getPromotions(items);
+        promotions.fetching = promotions.getPromotions(items, discount_code);
 
         return promotions;
     };

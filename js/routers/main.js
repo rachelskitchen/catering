@@ -469,24 +469,25 @@ define(["backbone", "factory"], function(Backbone) {
             var items = App.Data.myorder.map(function(order) {
                     return order.item_submit();
                 }),
-                promotions = App.Data.promotions = App.Collections.Promotions.init(items),
                 myorder = App.Data.myorder,
-                checkout = myorder.checkout;
+                checkout = myorder.checkout,
+                discount_code = checkout.get('discount_code'),
+                promotions = App.Data.promotions = App.Collections.Promotions.init(items, discount_code);
 
             // listen to change of promotions selection
-            this.listenTo(promotions, 'change:is_applied', function(appliedPromotion, is_applied) {
+            this.listenTo(promotions, 'change:is_applied', function(model, is_applied) {
                 // promotion is seleted
                 if (is_applied) {
                     if (myorder.get_only_product_quantity()) {
-                        checkout.set({discount_code: appliedPromotion.get('code')});
+                        checkout.set({discount_code: model.get('code')});
                         myorder.get_cart_totals({apply_discount: true});
                     }
                     else {
-                        checkout.set({last_discount_code: appliedPromotion.get('code')});
+                        checkout.set({last_discount_code: model.get('code')});
                     }
                 }
-                // promotion is unselected
-                else {
+                // promotion is deselected
+                else if (!promotions.where({is_applied: true}).length) {
                     checkout.set({
                         last_discount_code: '',
                         discount_code: ''
@@ -500,9 +501,12 @@ define(["backbone", "factory"], function(Backbone) {
                 promotions.needToUpdate = true;
             });
 
-            this.listenTo(checkout, 'change:discount_code change:last_discount_code', function(model, value) {
+            this.listenTo(checkout, 'change:last_discount_code', function(model, value) {
                 if (!value) {
                     promotions.invoke('set', {is_applied: false});
+                }
+                else {
+                    promotions.applyByCode(value);
                 }
             });
         },
