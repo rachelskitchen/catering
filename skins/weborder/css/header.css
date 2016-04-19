@@ -6,6 +6,7 @@
     width: 166px;
     height: 166px;
     margin-right: 34px;
+    position: relative;
 }
 
 #header .title {

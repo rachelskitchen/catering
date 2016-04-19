@@ -22,6 +22,6 @@
 #cart .btn {
 	position: absolute;
 	left: -1px;
-	right: -1px;
+	right: 0;
 	bottom: 0;
 }

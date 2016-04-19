@@ -2,10 +2,6 @@
     <div class="logo fl-left">
         <img src='<%= logo %>' alt="<%= business_name %> logo" class="logo" data-default-index="1">
     </div>
-    <div class="fl-left">
-        <h1 class="title">Business Name</h1>
-        <div class="delivery_wrapper"></div>
-    </div>
     <ul class="tabs fl-right text-center">
         <li class="menu tab fl-left <% if (typeof tab_index == 'number' && tab_index === 0) { %> active <% } %>">
             <%= _lp.HEADER_MENU %></li>
@@ -14,6 +10,10 @@
         <li class="map tab fl-left <% if (typeof tab_index == 'number' && tab_index === 2) { %> active <% } %>">
             <%= _lp.HEADER_MAP %></li>
     </ul>
+    <div>
+        <h1 class="title">Business Name</h1>
+        <div class="delivery_wrapper"></div>
+    </div>
 </script>
 
 <script type="text/template" id="header_delivery-template">
