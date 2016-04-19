@@ -60,9 +60,9 @@ define(["profile_view", "giftcard_view"], function(profile_view) {
 
     var ProfilePaymentsView = App.Views.CoreProfileView.CoreProfilePaymentsView.extend({
         bindings: {
-            '.left-side': '', //classes: {hidden: not(_settings_directory_saved_credit_cards), "border-none": not(_settings_directory_saved_gift_cards), "fl-left": _settings_directory_saved_gift_cards}',
-            '.right-side': '', //classes: {hidden: not(_settings_directory_saved_gift_cards)}',
-            '.successful-update': 'classes: {visible: ui_show_response}'
+            '.left-side': '', //to disable base class bindings
+            '.right-side': '',
+            '.successful-update': ''
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);

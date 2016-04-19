@@ -1420,35 +1420,47 @@ define(["backbone", "factory"], function(Backbone) {
         setProfilePaymentsContent: function() {
             var customer = App.Data.customer,
                 promises = this.getProfilePaymentsPromises(),
-                content = [];
+                self=this, content = [];
 
-            //if (promises.length) {
-                content.push({
-                    modelName: 'Profile',
-                    mod: 'Payments',
-                    model: customer,
-                    changeToken: changeToken,
-                    ui: new Backbone.Model({show_response: false}),
-                    removeToken: removeToken,
-                    unlinkGiftCard: unlinkGiftCard,
-                    className: 'profile-edit text-center'
-                });
-            //}
+            content.push({
+                modelName: 'Profile',
+                mod: 'Payments',
+                model: customer,
+                changeToken: changeToken,
+                ui: new Backbone.Model({show_response: false}),
+                removeToken: removeToken,
+                unlinkGiftCard: unlinkGiftCard,
+                className: 'profile-edit text-center'
+            });
 
-            if (promises.length) {
-                App.Data.header.set({
-                    page_title: _loc.PAYMENT_METHODS,
-                    back_title: _loc.BACK,
-                    back: window.history.back.bind(window.history),
-                    link: new Function(),
-                    link_title: ''
-                });
-            }
+            App.Data.header.set({
+                page_title: _loc.PAYMENT_METHODS,
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history),
+                link: save,
+                link_title: _loc.SAVE,
+                enableLink: false
+            });
+
+            // to enable 'Save' link
+            preValidateData();
+            window.setTimeout(function() {
+                self.listenTo(customer, 'change_cards', preValidateData);
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'change_cards', preValidateData));
+            }, 0);
 
             return {
                 content: content,
                 promises: promises
             };
+
+            function preValidateData(data) {
+                App.Data.header.set('enableLink', data ? data.status == 'OK' : false);
+            }
+
+            function save() {
+                customer.trigger('payments_save_cards');
+            }
 
             function changeToken(token_id)
             {

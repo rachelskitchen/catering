@@ -510,6 +510,13 @@ define(["factory"], function() {
     App.Views.CoreProfileView.CoreProfileGiftCardsEditionView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'gift_cards_edition',
+        initialize: function() {
+            var self = this;
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.options.newCard, "change:captchaValue change:cardNumber", function() {
+                self.options.customer.trigger('change_cards', this.options.newCard.check());
+            });
+        },
         events: {
             'click .add_gift_card_title': 'hide_show_NewGiftCard'
         },
@@ -533,7 +540,7 @@ define(["factory"], function() {
                     mod: 'Profile',
                     cacheId: true });
                 }
-                this.options.customer.trigger('change_cards');
+                this.options.customer.trigger('change_cards', this.options.newCard.check());
             }
         }
     });
@@ -545,6 +552,7 @@ define(["factory"], function() {
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'change_cards', this.resetUpdateStatus);
+            this.listenTo(this.model, 'payments_save_cards', this.onUpdate);
         },
         events: {
             'click .update-btn':'onUpdate'
@@ -588,7 +596,6 @@ define(["factory"], function() {
             var clone;
             this.resetUpdateStatus();
             if (this.newGiftCard.get('cardNumber')) {
-                this.newGiftCard.set('remainingBalance', 567);
                 clone = this.newGiftCard.deepClone();
                 this.addCardToServer(clone);
             }
@@ -606,7 +613,7 @@ define(["factory"], function() {
             if (req)
             {
                 this.incrementUpdateCounter();
-                
+
                 req.done(function() {
                     self.checkUpdateStatus();
                 });
