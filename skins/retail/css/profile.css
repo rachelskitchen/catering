@@ -121,6 +121,8 @@
     display: inline-block;
     vertical-align: top;
     position: relative;
+    overflow-y: auto;
+    max-height: 560px;
 }
 
 .profile-edit .left-side::after {
