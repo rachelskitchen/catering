@@ -1,0 +1,131 @@
+.products_spinner {
+    top: 50%;
+    left: 50%;
+    z-index: -1;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
+.products_spinner.ui-visible {
+    opacity: 1;
+    filter: alpha(opacity=100);
+    z-index: 10000;
+}
+
+.product_table {
+    border-width: 1px 0;
+    border-style: solid;
+    position: relative;
+}
+
+.product_table .product {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.product_list_item {
+    min-height: 62px;
+    padding: 8px 0;
+    margin: 0 13px;
+    border-top-width: 1px;
+    border-top-style: solid;
+    cursor: pointer;
+}
+
+.product_image {
+    width: 60px;
+    height: 60px;
+    margin: 0 13px 2px 0;
+    position: relative;
+}
+
+.product_image img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.product .name {
+    padding-bottom: 5px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.product .price-box {
+    padding: 1px 0 5px 8px;
+}
+
+.product .uom {
+    font-size: 12px;
+}
+
+.product .description {
+    font-size: 13px;
+}
+
+/* products display in grid with 1 column */
+@media (min-width: 768px) {
+    .product_table .product {
+        width: 100%;
+    }
+
+    .products > .product:first-child > .product_list_item {
+        border: none;
+    }
+}
+
+/* products display in grid with 2 columns */
+@media (min-width: 992px) {
+    .product_table .product {
+        width: 50%;
+    }
+
+    .product_table::before {
+        content: '';
+        display: block;
+        height: 100%;
+        border-left-width: 1px;
+        border-left-style: solid;
+        border-color: inherit;
+        position: absolute;
+        top: 0;
+        left: 50%;
+    }
+
+    .products > .product:first-child > .product_list_item,
+    .products > .product:nth-child(2) > .product_list_item {
+        border: none;
+    }
+}
+
+/* products display in grid with 3 columns */
+@media (min-width: 1200px) {
+    .product_table .product {
+        width: 33.33333333%;
+    }
+
+    .product_table::before, .product_table::after {
+        content: '';
+        display: block;
+        height: 100%;
+        border-left-width: 1px;
+        border-left-style: solid;
+        border-color: inherit;
+        position: absolute;
+        top: 0;
+        left: 33.33333333%;
+    }
+
+    .product_table::after {
+        left: 66.66666667%;
+    }
+
+    .product_table[data-length="1"]::after {
+        display: none;
+    }
+
+    .products > .product:first-child > .product_list_item,
+    .products > .product:nth-child(2) > .product_list_item,
+    .products > .product:nth-child(3) > .product_list_item {
+        border: none;
+    }
+}

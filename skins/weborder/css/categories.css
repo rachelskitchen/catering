@@ -9,6 +9,7 @@
 
 .slider_wrapper {
     overflow: hidden;
+    height: 48px;
 }
 
 .categories {
@@ -18,8 +19,6 @@
 
 .categories li {
     display: inline-block;
-    position: relative;
-    overflow: hidden;
     vertical-align: bottom; /* removes bottom space */
 }
 
@@ -28,6 +27,21 @@
     padding: 13px 22px;
     font-size: 12px;
     cursor: pointer;
+    position: relative;
+    letter-spacing: 1px;
+}
+
+.categories label.checked::before {
+    content: '';
+    display: block;
+    width: 13px;
+    height: 8px;
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    z-index: 2;
+    margin-left: -6%;
+    background: url("./img/arrow-down.svg") no-repeat 0 0 transparent;
 }
 
 .categories input {
@@ -51,4 +65,34 @@
 .categories_slider .arrow_right {
     text-align: left;
     right: 40px;
+}
+
+.categories_products_wrapper {
+    width: 100%;
+    position: absolute;
+    top: 41px;
+    bottom: 0;
+    overflow: auto;
+}
+
+.categories_table .category_description {
+    min-height: 40px;
+    padding: 15px 13px;
+}
+
+.categories_table .category_name {
+    display: inline-block;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.categories_table .timetables {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 12px;
+    font-style: italic;
+}
+
+.categories_table .desc {
+    margin-top: 8px;
 }
