@@ -174,9 +174,10 @@
 }
 
 .payment-item {
-    padding: 1em 0;
+    padding: .8em 0 .8em 1em;
     margin-bottom: 2px;
     position: relative;
+    text-align: left;
 }
 
 .payment-item.selected::after  {
@@ -225,6 +226,44 @@
     margin-top: -0.45em;
 }
 
+.profile-edit .profile-checkbox {
+    display: block;
+    position: absolute;
+    right: 5em;
+    top: 0;
+    padding: .8em 0 .8em 1.8em;
+    color: #838385;
+}
+
+.profile-edit .profile-checkbox input {
+    display: none;
+}
+
+.profile-edit .profile-checkbox .input {
+    display: block;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 1.3em;
+    height: 1.3em;
+    line-height: 1;
+    margin-top: -0.7em;
+    padding-right: 1px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2px;
+    text-align: center;
+}
+
+.profile-edit .profile-checkbox .input::before {
+    content: '\f00c';
+    font-family: 'FontAwesome';
+    font-size: 0.7em;
+}
+
 .profile-cvv-container .cvv-required-info {
     display: block;
     margin: 1em 0 0.5em 0;
@@ -232,6 +271,45 @@
 
 .profile-cvv-container .cvv {
     width: 15em;
+}
+
+.profile-edit .gift-cards-box .add_gift_card_title_wrap {
+    display: block;
+    margin: 2.5em auto 3em auto;
+}
+.profile-edit .gift-cards-box .add_gift_card_title {
+    font-size: 2.4em;
+    text-decoration: underline;
+}
+.profile-edit .gift-cards-box .add_gift_card_title .plus_sign {
+    width: 1em;
+    display: inline-block;
+}
+.profile-edit .gift-cards-box .add_gift_card_title:hover {
+    cursor: pointer;
+}
+.profile-edit .profile-form input {
+    width: 100%;
+}
+.profile-edit .profile-form input:disabled {
+    color: #999;
+}
+.profile-edit .gift-cards-box input {
+    margin-bottom: 1em;
+}
+.profile-edit .gift-cards-box .captcha_wrap {
+    display: inline-block;
+    vertical-align: middle;
+    width: 20em;
+    height: 10em;
+}
+.profile-edit .gift-cards-box .captcha-spinner {
+    top: 3.4em;
+    left: 0em;
+}
+.profile-edit .gift-cards-box .ui-spinner {
+    width: 16em;
+    height: 16em;
 }
 
 /* landscape */

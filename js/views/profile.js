@@ -400,21 +400,58 @@ define(["factory"], function() {
     });
 
     App.Views.CoreProfileView.CoreProfilePaymentEditionView = App.Views.FactoryView.extend({
+        initialize: function()
+        {
+            var self = this,
+                customer = this.options.collectionView.options.customer;
+
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.model.resetAttributes();
+
+            this.listenTo(this.model, 'change:is_primary', function() {
+                customer.trigger('change_cards', self.model.checkAttributesDiff());
+            });
+
+            return this;
+        },
         name: 'profile',
         mod: 'payment_edition',
         tagName: 'li',
         bindings: {
             '.card-number': 'text: last_digits',
-            '.card-type': 'text: creditCardType(_lp_CREDIT_CARD_TYPES, card_type)'
+            '.card-type': 'text: creditCardType(_lp_CREDIT_CARD_TYPES, card_type)',
+            '.card-holder': 'value: getCardHolder(first_name, last_name)',
+            '.card-num': 'value: getCardNumber(last_digits)',
+            '.card-default': 'checked: is_primary',
+            '.checkbox': "attr: {checked: select(is_primary, 'checked', false)}"
         },
         bindingFilters: {
-            creditCardType: creditCardType
+            creditCardType: creditCardType,
+
+            getCardHolder: function(first_name, last_name) {
+                return first_name + ' ' + last_name;
+            },
+            getCardNumber: function(last_digits) {
+                return '**** **** **** ' + last_digits;
+            }
         },
         events: {
-            'click .remove-btn': 'removeToken'
+            'click .remove-btn': 'removeToken',
+            'click .card-default': 'setDefaultCard'
         },
         removeToken: function() {
             this.options.collectionView.options.removeToken(this.model.get('id'));
+        },
+        setDefaultCard: function(e) {
+            var element = e.target,
+                checked = !element.checked;
+
+            if (checked) {
+                element.checked = true;
+            }
+            else {
+                this.model.collection.trigger('change:is_primary');
+            }
         }
     });
 
@@ -481,18 +518,57 @@ define(["factory"], function() {
     App.Views.CoreProfileView.CoreProfileGiftCardsEditionView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'gift_cards_edition',
-        bindings: {
-            '.gift-cards-list': 'collection: $collection'
+        initialize: function() {
+            var self = this;
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.options.newCard, "change:captchaValue change:cardNumber", function() {
+                self.options.customer.trigger('change_cards', this.options.newCard.check());
+            });
         },
-        itemView: App.Views.CoreProfileView.CoreProfileGiftCardEditionView
+        events: {
+            'click .add_gift_card_title': 'hide_show_NewGiftCard'
+        },
+        bindings: {
+            '.gift-cards-list': 'collection: $collection',
+            '.add_gift_card_title .plus_sign': 'text:select(newCard_add_new_card,"- ","+ ")',
+            '.new_gift_card': "toggle:newCard_add_new_card"
+        },
+        itemView: App.Views.CoreProfileView.CoreProfileGiftCardEditionView,
+        hide_show_NewGiftCard: function() {
+            var card = this.options.newCard,
+                cur_add_new_card = !card.get('add_new_card');
+
+            card.set('add_new_card', cur_add_new_card);
+
+            if (cur_add_new_card) {
+                if (!this.newCardView) {
+                  this.newCardView = App.Views.GeneratorView.create('GiftCard', {
+                    el: this.$('.new_gift_card'),
+                    model: this.options.newCard,
+                    mod: 'Profile',
+                    cacheId: true });
+                }
+                this.options.customer.trigger('change_cards', this.options.newCard.check());
+            }
+        }
     });
+
 
     App.Views.CoreProfileView.CoreProfilePaymentsView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'payments',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'change_cards', this.resetUpdateStatus);
+            this.listenTo(this.model, 'payments_save_cards', this.onUpdate);
+        },
+        events: {
+            'click .update-btn':'onUpdate'
+        },
         bindings: {
             '.left-side': 'classes: {hidden: not(_settings_directory_saved_credit_cards), "border-none": not(_settings_directory_saved_gift_cards), "fl-left": _settings_directory_saved_gift_cards}',
-            '.right-side': 'classes: {hidden: not(_settings_directory_saved_gift_cards)}'
+            '.right-side': 'classes: {hidden: not(_settings_directory_saved_gift_cards)}',
+            '.successful-update': 'classes: {visible: ui_show_response}'
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -502,22 +578,85 @@ define(["factory"], function() {
                     el: this.$('.payments-box'),
                     mod: 'PaymentsEdition',
                     collection: this.model.payments,
-                    removeToken: this.options.removeToken
+                    removeToken: this.options.removeToken,
+                    changeToken: this.options.changeToken,
+                    customer: this.options.model
                 });
                 this.subViews.push(paymentsEdition);
             }
 
             if (this.model.giftCards) {
+                this.newGiftCard = new App.Models.GiftCard({add_new_card: false});
                 var giftCardsEdition = App.Views.GeneratorView.create('Profile', {
                     el: this.$('.gift-cards-box'),
                     mod: 'GiftCardsEdition',
                     collection: this.model.giftCards,
-                    unlinkGiftCard: this.options.unlinkGiftCard
+                    unlinkGiftCard: this.options.unlinkGiftCard,
+                    newCard: this.newGiftCard,
+                    customer: this.options.model
                 });
                 this.subViews.push(giftCardsEdition);
             }
 
             return this;
+        },
+        onUpdate: function() {
+            // Saving Gift Cards data
+            var clone;
+            this.resetUpdateStatus();
+            if (this.newGiftCard.get('cardNumber')) {
+                clone = this.newGiftCard.deepClone();
+                this.addCardToServer(clone);
+            }
+
+            // Saving Credit Cards data
+            this.saveCreditCard();
+        },
+        saveCreditCard: function()
+        {
+            var self = this,
+                collection = this.model.payments,
+                primaryPaymentsModel = collection.getPrimaryPayment(),
+                req = this.options.changeToken(primaryPaymentsModel.id);
+
+            if (req)
+            {
+                this.incrementUpdateCounter();
+
+                req.done(function() {
+                    self.checkUpdateStatus();
+                });
+            }
+        },
+        addCardToServer: function(giftcard) {
+            var self = this,
+                mainModel = App.Data.mainModel,
+                req = this.model.linkGiftCard(giftcard);
+            this.listenTo(giftcard, 'onLinkError', App.Data.errors.alert.bind(App.Data.errors));
+            if (req) {
+                this.incrementUpdateCounter();
+                mainModel.trigger('loadStarted');
+                req.done(function(data){
+                    if (data && data.status == 'OK') {
+                        self.checkUpdateStatus();
+                        self.newGiftCard.set({ add_new_card: false, cardNumber: '', remainingBalance: null });
+                        self.newGiftCard.trigger('updateCaptcha');
+                    }
+
+                }).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+            }
+        },
+        checkUpdateStatus: function() {
+            if(--this.updateCounter <= 0) {
+                this.options.ui.set('show_response', true);
+            }
+        },
+        resetUpdateStatus: function() {
+            this.options.ui.set('show_response', false);
+            this.updateCounter = 0;
+        },
+        incrementUpdateCounter: function() {
+            this.updateCounter++;
         }
     });
 

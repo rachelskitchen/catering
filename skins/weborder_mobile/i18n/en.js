@@ -218,6 +218,7 @@
         'COMBO_CUSTOMIZE': 'Customize',
         'PRODUCT_SETS_SELECT_1': 'Please choose your "',
         'PRODUCT_SETS_SELECT_2': '" options',
-        'UPSELL_DONT_WANT_COMBO': 'I don\'t want a combo'
+        'UPSELL_DONT_WANT_COMBO': 'I don\'t want a combo',
+        'PROFILE_DEFAULT_CARD': 'Default'
     } // end of locale
 }); // end of module

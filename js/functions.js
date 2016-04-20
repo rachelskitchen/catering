@@ -2563,3 +2563,37 @@ IN THE SOFTWARE.
     } else
         return null;
 }
+
+/**
+ * Detects the differences between objects including nested ones.
+ * @param {Object} a - the first object for comparison.
+ * @param {Object} b - the second object for comparison.
+ * @param {Object} props - the list of allowed object properties for comparison (optional)
+ * @return {Object} the differences object
+ */
+function objectsDiff(a, b, props)
+{
+    var has_props = (typeof props === 'object' && Object.keys(props).length),
+        diff = {};
+
+    for (var prop in a)
+    {
+        if (has_props && props.indexOf(prop) === -1) continue;
+
+        var a_val = a[prop],
+            b_val = b[prop];
+
+        if (typeof b_val === 'undefined') continue;
+
+        if (typeof a_val === 'object' && !_.isEqual(a_val, b_val))
+        {
+            diff[prop] = objectsDiff(a_val, b_val);
+        }
+        else if (typeof a_val !== 'object' && a_val !== b_val)
+        {
+            diff[prop] = b_val;
+        }
+    }
+
+    return diff;
+}
