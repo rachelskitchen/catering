@@ -30,14 +30,23 @@ define(['backbone', 'factory'], function(Backbone) {
      */
     var AddressView = App.Views.FactoryView.extend({
         initialize: function() {
+            this.initModel();
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.updateAddress();
+            this.listenTo(App.Data.customer, 'change:access_token', this.updateAddress);
+        },
+        initModel: function() {
             var model = {},
                 defaultAddress = App.Settings.address,
                 address = {};
 
-            // do not change profile addresses
+            address = this.options.customer.getCheckoutAddress();
+            // do not touch profile addresses
             if (!this.options.customer.isAuthorized() || !this.options.customer.isProfileAddressSelected()) {
                 model = _.extend(model, this.options.customer.toJSON());
-                address = this.options.customer.getCheckoutAddress();
+            }
+            else {
+                address = {country: address.country, state: address.state, province: address.province};
             }
 
             model.country = address && address.country ? address.country : defaultAddress.country;
@@ -53,10 +62,6 @@ define(['backbone', 'factory'], function(Backbone) {
 
             this.model = new Backbone.Model(model);
             this.prevValues = model;
-
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.updateAddress();
-            this.listenTo(App.Data.customer, 'change:access_token', this.updateAddress);
         },
         bindings: {
             'input[name="street_1"]': 'value: firstLetterToUpperCase(street_1), events: ["input"], trackCaretPosition: street_1',
@@ -164,7 +169,11 @@ define(['backbone', 'factory'], function(Backbone) {
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
-            '.address-edit': 'toggle: showAddressEdit' // the address edit form
+            '.address-edit': 'toggle: showAddressEdit', // the address edit form
+            '.shipping-services': 'toggle: equal(checkout_dining_option, "DINING_OPTION_SHIPPING")'
+        },
+        events: {
+            'change #addresses': 'updateAddress'
         },
         computeds: {
             /**
@@ -274,12 +283,13 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         updateAddress: function() {
             App.Views.AddressView.prototype.updateAddress.apply(this, arguments);
-            var model = this.model.toJSON();
+            var model = App.Data.myorder.getCustomerAddress();
+            // need to reset shipping services before updating them
+            // due to server needs a no shipping service specified to return a new set of shipping services.
+            this.options.customer.resetShippingServices();
+            this.isShippingServices = this.options.checkout && this.options.checkout.get('dining_option') === 'DINING_OPTION_SHIPPING';
             if (this.isShippingServices && model.street_1 && model.city && model.country && model.zipcode
                 && (model.country == 'US' ? model.state : true) && (model.country == 'CA' ? model.province : true)) {
-                // need to reset shipping services before updating them
-                // due to server needs a no shipping service specified to return a new set of shipping services.
-                this.options.customer.resetShippingServices();
                 App.Data.myorder.update_cart_totals({update_shipping_options: true});
             }
         }
@@ -305,6 +315,9 @@ define(['backbone', 'factory'], function(Backbone) {
             this.updateAddressesOptions();
 
             return this;
+        },
+        resetShippingServices: function() {
+            this.options.customer.resetShippingServices();
         },
         /**
          * Rendering of 'Address' drop-down list.
