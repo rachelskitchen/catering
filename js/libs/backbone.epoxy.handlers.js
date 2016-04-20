@@ -75,6 +75,24 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         }
     });
 
+    Backbone.Epoxy.binding.addHandler('checkedSpan', {
+        init: function($el, value, bindings, context) {
+            var self = this,
+                outer = context.checkedSpan.outer_elem ? $el.closest(context.checkedSpan.outer_elem) : $el;
+            !outer && (outer = $el);
+            this.value = context.checkedSpan.value;
+
+            outer.on('click', function(event) {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+                self.value(!self.value());
+            });
+        },
+        set: function($el, value_attr) {
+            $el.attr('checked', value_attr.value ? 'checked' : false);
+        }
+    });
+
     Backbone.Epoxy.binding.addHandler('replaceToTemplate', {
         init: function($el, value, bindings, context) {
             this.oldHTML = $el.html();

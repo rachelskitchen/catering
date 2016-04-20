@@ -1016,6 +1016,8 @@ define(["backbone", "factory"], function(Backbone) {
                         modelName: 'Profile',
                         mod: 'Payments',
                         model: customer,
+                        changeToken: changeToken,
+                        ui: new Backbone.Model({show_response: false}),
                         removeToken: removeToken,
                         unlinkGiftCard: unlinkGiftCard,
                         className: 'profile-edit text-center'
@@ -1024,6 +1026,20 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             return promises;
+
+            function changeToken(token_id)
+            {
+                var req = customer.changePayment(token_id),
+                    mainModel = App.Data.mainModel;
+
+                if (req)
+                {
+                    mainModel.trigger('loadStarted');
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                }
+
+                return req;
+            }
 
             function removeToken(token_id) {
                 var req = customer.removePayment(token_id),
@@ -1408,45 +1424,59 @@ define(["backbone", "factory"], function(Backbone) {
         setProfilePaymentsContent: function() {
             var customer = App.Data.customer,
                 promises = this.getProfilePaymentsPromises(),
-                content = [];
+                self=this, content = [];
 
-            if (customer.payments) {
-                content.push({
-                    modelName: 'Profile',
-                    mod: 'PaymentsEdition',
-                    collection: customer.payments,
-                    removeToken: removeToken,
-                    className: 'profile-payments-edition text-center',
-                    cacheId: true
-                });
-            }
+            content.push({
+                modelName: 'Profile',
+                mod: 'Payments',
+                model: customer,
+                changeToken: changeToken,
+                ui: new Backbone.Model({show_response: false}),
+                removeToken: removeToken,
+                unlinkGiftCard: unlinkGiftCard,
+                className: 'profile-edit text-center'
+            });
 
-            if (customer.giftCards) {
-                content.push({
-                    modelName: 'Profile',
-                    mod: 'GiftCardsEdition',
-                    collection: customer.giftCards,
-                    unlinkGiftCard: unlinkGiftCard,
-                    className: 'profile-payments-edition text-center',
-                    cacheId: true
-                });
-            }
+            App.Data.header.set({
+                page_title: _loc.PAYMENT_METHODS,
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history),
+                link: save,
+                link_title: _loc.SAVE,
+                enableLink: false
+            });
 
-            if (promises.length) {
-                App.Data.header.set({
-                    page_title: _loc.PAYMENT_METHODS,
-                    back_title: _loc.BACK,
-                    back: window.history.back.bind(window.history),
-                    link: new Function(),
-                    link_title: ''
-                });
-            }
+            // to enable 'Save' link
+            preValidateData();
+            window.setTimeout(function() {
+                self.listenTo(customer, 'change_cards', preValidateData);
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'change_cards', preValidateData));
+                self.listenToOnce(self, 'route', App.Data.header.set.bind(App.Data.header, 'enableLink', true));
+            }, 0);
 
             return {
                 content: content,
                 promises: promises
             };
 
+            function preValidateData(data) {
+                App.Data.header.set('enableLink', data ? data.status == 'OK' : false);
+            }
+
+            function save() {
+                customer.trigger('payments_save_cards');
+            }
+
+            function changeToken(token_id)
+            {
+                var req = customer.changePayment(token_id),
+                    mainModel = App.Data.mainModel;
+                if (req)
+                {
+                    mainModel.trigger('loadStarted');
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                }
+            }
             function removeToken(token_id) {
                 var req = customer.removePayment(token_id),
                     mainModel = App.Data.mainModel;
