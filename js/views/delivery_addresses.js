@@ -38,15 +38,12 @@ define(['backbone', 'factory'], function(Backbone) {
         initModel: function() {
             var model = {},
                 defaultAddress = App.Settings.address,
-                address = {};
+                address;
 
-            address = this.options.customer.getCheckoutAddress();
             // do not touch profile addresses
             if (!this.options.customer.isAuthorized() || !this.options.customer.isProfileAddressSelected()) {
+                address = this.options.customer.getCheckoutAddress();
                 model = _.extend(model, this.options.customer.toJSON());
-            }
-            else {
-                address = {country: address.country, state: address.state, province: address.province};
             }
 
             model.country = address && address.country ? address.country : defaultAddress.country;
@@ -170,6 +167,7 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         bindings: {
             '.address-edit': 'toggle: showAddressEdit', // the address edit form
+            '.address-selection': 'toggle: showAddressSelection',
             '.shipping-services': 'toggle: equal(checkout_dining_option, "DINING_OPTION_SHIPPING")'
         },
         events: {
@@ -189,18 +187,22 @@ define(['backbone', 'factory'], function(Backbone) {
              * Indicates whether the address selection drop-down list should be shown.
              */
             showAddressSelection: {
-                deps: ['isAuthorized', 'customer_addresses'],
-                get: function(isAuthorized, customer_addresses) {
-                    return isAuthorized && customer_addresses.length;
+                deps: ['isAuthorized', 'customer_addresses', 'checkout_dining_option'],
+                get: function(isAuthorized, customer_addresses, checkout_dining_option) {
+                    return isAuthorized && customer_addresses.length && customer_addresses.filter(function(addr) {
+                        return addr && addr.street_1 && addr.city && addr.country && addr.zipcode
+                            && (checkout_dining_option == 'DINING_OPTION_DELIVERY' ? addr.country == App.Settings.address.country : true)
+                            && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true);
+                    }).length;
                 }
             },
             /**
              * Indicates whether the address edit form should be shown.
              */
             showAddressEdit: {
-                deps: ['isAuthorized', 'customer_shipping_address'],
-                get: function(isAuthorized, customer_shipping_address) {
-                    return !isAuthorized || !this.options.customer.isProfileAddressSelected();
+                deps: ['isAuthorized', 'customer_shipping_address', 'showAddressSelection'],
+                get: function(isAuthorized, customer_shipping_address, showAddressSelection) {
+                    return !isAuthorized || !this.options.customer.isProfileAddressSelected() || !showAddressSelection;
                 }
             }
         },
@@ -297,9 +299,10 @@ define(['backbone', 'factory'], function(Backbone) {
 
     var DeliveryAddressesSelectionView = App.Views.FactoryView.extend({
         initialize: function() {
-            this.listenTo(this.options.customer, 'change:access_token', function() {
+            this.listenTo(this.options.customer, 'change:access_token onUserAddressCreated onUserAddressUpdate', function() {
                 delete this.options.address_index;
                 this.updateAddressesOptions();
+                this.options.customer.trigger('change:addresses');
             });
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
@@ -335,7 +338,10 @@ define(['backbone', 'factory'], function(Backbone) {
                 optionsStr = '',
                 options = _.map(addresses, function(addr, index) {
                     if (addr && addr.street_1 && index > 2) {
-                        return addr && addr.street_1 ? {label: addr.street_1, value: index} : undefined;
+                        return addr && addr.street_1 && addr.city && addr.country && addr.zipcode
+                            && (dining_option == 'DINING_OPTION_DELIVERY' ? addr.country == App.Settings.address.country : true)
+                            && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true)
+                            ? {label: addr.street_1, value: index} : undefined;
                     }
                     else {
                         return undefined;
@@ -354,10 +360,10 @@ define(['backbone', 'factory'], function(Backbone) {
                     return memo + '<option value="' + option.value + '">' + option.label + '</option>';
                 }, '');
                 optionsStr += '<option value="' + App.Data.myorder.getShippingAddress(dining_option) + '">Enter New Address</option>';
-            }
 
-            this.$('#addresses').html(optionsStr);
-            customer.trigger('change:shipping_address');
+                this.$('#addresses').html(optionsStr);
+                customer.trigger('change:shipping_address');
+            }
         },
         /**
          * Updates value of 'Enter New Address' option.
