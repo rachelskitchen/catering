@@ -165,6 +165,17 @@ define(['backbone'], function(Backbone) {
             return objectsDiff(orig_attrs, curr_attrs, ['is_primary']);
         },
         /**
+         * Verifies the availability of differences between original and modified attributes
+         */
+        checkAttributesDiff: function()
+        {
+            var diff = this.getAttributesDiff();
+
+            return {
+                status: Object.keys(diff).length ? 'OK' : 'ERROR'
+            }
+        },
+        /**
          * Payment token type.
          * @type {string}
          * @default ''
@@ -321,12 +332,9 @@ define(['backbone'], function(Backbone) {
          * @param {App.Models.PaymentToken} model - Selected/deselected payment.
          * @param {boolean} value - model.is_primary attribute value.
          */
-        checkboxSelection: function(model, value)
-        {
-            if (value)
-            {
-                this.where({is_primary: true}).forEach(function(cc_model)
-                {
+        checkboxSelection: function(model, value) {
+            if (value) {
+                this.where({is_primary: true}).forEach(function(cc_model) {
                     model != cc_model && cc_model.set({is_primary: false});
                 });
             }
