@@ -114,6 +114,9 @@ define(["checkout_view"], function(checkout_view) {
             '.address-selection': 'toggle: all(inList(dining_option, "DINING_OPTION_DELIVERY", "DINING_OPTION_SHIPPING", "DINING_OPTION_CATERING"), showAddressSelection)',
             '.address-edit': 'toggle: all(showAddressSelection, showAddressEdit)'
         },
+        events: _.extend({}, App.Views.DeliveryAddressesSelectionView.prototype.computeds, {
+            'change #addresses': 'updateShippingServices'
+        }),
         computeds: _.extend({}, App.Views.DeliveryAddressesSelectionView.prototype.computeds),
         render: function() {
             App.Views.CoreCheckoutView.CoreCheckoutOrderTypeView.prototype.render.apply(this, arguments);
@@ -124,7 +127,7 @@ define(["checkout_view"], function(checkout_view) {
                     customer: this.options.customer,
                     address_index: -1
                 }),
-                addressEdit = App.Views.GeneratorView.create('Checkout', {
+                addressForm = App.Views.GeneratorView.create('Checkout', {
                     mod: 'AddressShort',
                     checkout: this.options.checkout,
                     customer: this.options.customer,
@@ -133,10 +136,23 @@ define(["checkout_view"], function(checkout_view) {
             this.subViews.push(addressSelection);
             this.$('.address-selection').html(addressSelection.el);
 
-            this.subViews.push(addressEdit);
-            this.$('.address-edit').html(addressEdit.el);
+            this.subViews.push(addressForm);
+            this.$('.address-form').html(addressForm.el);
 
             return this;
+        },
+        updateShippingServices: function() {
+            App.Views.AddressView.prototype.initModel.apply(this, arguments);
+            App.Views.AddressView.prototype.updateAddress.apply(this, arguments);
+            var model = App.Data.myorder.getCustomerAddress();
+            // need to reset shipping services before updating them
+            // due to server needs a no shipping service specified to return a new set of shipping services.
+            this.options.customer.resetShippingServices();
+            this.isShippingServices = this.options.checkout && this.options.checkout.get('dining_option') === 'DINING_OPTION_SHIPPING';
+            if (this.isShippingServices && model.street_1 && model.city && model.country && model.zipcode
+                && (model.country == 'US' ? model.state : true) && (model.country == 'CA' ? model.province : true)) {
+                App.Data.myorder.update_cart_totals({update_shipping_options: true});
+            }
         }
     });
 
