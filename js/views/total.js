@@ -36,6 +36,7 @@ define(["backbone", "backbone_epoxy", "factory", "generator"], function(Backbone
         bindings: {
             ".total_discounts": "classes:{hide:hide_discounts}",
             ".discount": "text:discountsFrm",
+            ".discount-sign": "toggle: not(hide_discounts)",
             ".total": "text:totalFrm"
         },
         computeds: {
