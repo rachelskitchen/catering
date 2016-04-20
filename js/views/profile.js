@@ -402,9 +402,16 @@ define(["factory"], function() {
     App.Views.CoreProfileView.CoreProfilePaymentEditionView = App.Views.FactoryView.extend({
         initialize: function()
         {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            var self = this,
+                customer = this.options.collectionView.options.customer;
 
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.model.resetAttributes();
+
+            this.listenTo(this.model, 'change:is_primary', function() {
+                customer.trigger('change_cards', self.model.checkAttributesDiff());
+            });
+
             return this;
         },
         name: 'profile',
@@ -415,7 +422,8 @@ define(["factory"], function() {
             '.card-type': 'text: creditCardType(_lp_CREDIT_CARD_TYPES, card_type)',
             '.card-holder': 'value: getCardHolder(first_name, last_name)',
             '.card-num': 'value: getCardNumber(last_digits)',
-            '.card-default': 'checked: is_primary'
+            '.card-default': 'checked: is_primary',
+            '.checkbox': "attr: {checked: select(is_primary, 'checked', false)}"
         },
         bindingFilters: {
             creditCardType: creditCardType,
@@ -571,7 +579,8 @@ define(["factory"], function() {
                     mod: 'PaymentsEdition',
                     collection: this.model.payments,
                     removeToken: this.options.removeToken,
-                    changeToken: this.options.changeToken
+                    changeToken: this.options.changeToken,
+                    customer: this.options.model
                 });
                 this.subViews.push(paymentsEdition);
             }

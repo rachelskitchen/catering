@@ -261,7 +261,7 @@
 .profile-edit .profile-checkbox {
     display: inline-block;
     position: relative;
-    line-height: 21px;
+    line-height: 22px;
     padding-left: 28px;
 }
 
@@ -269,20 +269,14 @@
     display: none;
 }
 
-.profile-edit .profile-checkbox i {
+.profile-edit .profile-checkbox .input {
     display: block;
     position: absolute;
     left: 0;
     top: 0;
-    width: 21px;
     height: 21px;
-    background-image: url(themes/vintage/img/ui.png);
-    background-repeat: no-repeat;
-    background-position: -91px -1px;
-}
-
-.profile-edit .profile-checkbox input:checked + i {
-    background-position: -91px -26px;
+    width: 21px;
+    border-radius: 4px;
 }
 
 .profile-edit .payments-list,

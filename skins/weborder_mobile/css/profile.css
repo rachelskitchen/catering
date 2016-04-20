@@ -239,7 +239,7 @@
     display: none;
 }
 
-.profile-edit .profile-checkbox i {
+.profile-edit .profile-checkbox .input {
     display: block;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -249,24 +249,19 @@
     top: 50%;
     width: 1.3em;
     height: 1.3em;
-    line-height: .9;
+    line-height: 1;
     margin-top: -0.7em;
     padding-right: 1px;
-    background-color: #FFFFFF;
-    border: 2px solid #199ACD;
+    border-width: 1px;
+    border-style: solid;
     border-radius: 2px;
     text-align: center;
 }
 
-.profile-edit .profile-checkbox i::before {
+.profile-edit .profile-checkbox .input::before {
     content: '\f00c';
     font-family: 'FontAwesome';
     font-size: 0.7em;
-    color: #FFFFFF;
-}
-
-.profile-edit .profile-checkbox input:checked + i {
-    background-color: #199ACD;
 }
 
 .profile-cvv-container .cvv-required-info {
