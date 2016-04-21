@@ -534,7 +534,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 reverse_addr;
 
             // if shipping address isn't selected take last index
-            if(this.isDefaultShippingAddress()) {
+            if (this.isDefaultShippingAddress()) {
                 shipping_address = customer.addresses.length - 1;
             } else {
                 var addr = customer.addresses[shipping_address];
