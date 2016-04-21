@@ -2746,19 +2746,20 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          */
         getCustomerAddress: function() {
             var customer = App.Data.customer.toJSON(),
-                address = customer.addresses[customer.shipping_address];
+                shipping_address = App.Data.customer.isDefaultShippingAddress() ? customer.addresses.length - 1 : customer.shipping_address,
+                address = customer.addresses[shipping_address];
 
             return {
                 // here we need only the following fields (no need for extra fields from profile address.
                 // once Backend receives customer.address.id, it will look for this address in the database, but it could be saved on another instance.)
-                address: address.address,
-                city: address.city,
-                country: address.country,
-                province: address.province,
-                state: address.state,
-                street_1: address.street_1,
-                street_2: address.street_2,
-                zipcode: address.zipcode
+                address: address.address || '',
+                city: address.city || '',
+                country: address.country || '',
+                province: address.province || '',
+                state: address.state || '',
+                street_1: address.street_1 || '',
+                street_2: address.street_2 || '',
+                zipcode: address.zipcode || ''
             };
         }
     });

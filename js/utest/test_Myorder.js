@@ -2106,6 +2106,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             });
 
             it('`isShipping` is true, params.update_shipping_options is true', function() {
+                spyOn(model, 'getCustomerAddress').and.returnValue('address');
                 this.customer = App.Data.customer;
                 checkout = new Backbone.Model({
                     dining_option: 'DINING_OPTION_SHIPPING'
@@ -2597,6 +2598,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             });
 
             it('`checkout.dining_option` is `DINING_OPTION_SHIPPING`', function() {
+                spyOn(model, 'getCustomerAddress').and.returnValue('address');
                 checkout.dining_option = 'DINING_OPTION_SHIPPING';
                 customer.shipping_services = ['shipping service 1', 'shipping service 2'];
                 customer.shipping_selected = 1;
@@ -2604,9 +2606,10 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                 expect(ajax.data.orderInfo.shipping).toBe('shipping service 2');
                 expect(ajax.data.orderInfo.customer).toEqual({
-                         first_name: 'customer name',
-                         last_name: ''
-                       });
+                    first_name: 'customer name',
+                    last_name: '',
+                    address: 'address'
+                });
             });
 
             describe('skin paypal', function() {
@@ -3462,27 +3465,76 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             });
         });
 
-        it('getCustomerAddress()', function() {
-            var address = {
-                address: 'test',
-                city: 'test',
-                country: 'test',
-                province: '',
-                state: 'test',
-                street_1: 'test',
-                street_2: '',
-                zipcode: 'test'
-            };
+        describe('getCustomerAddress()', function() {
+            var address;
 
-            this.customer = App.Data.customer;
-            App.Data.customer = new Backbone.Model({
-                shipping_address: 1,
-                addresses: [undefined, address]
+            beforeEach(function() {
+                this.customer = App.Data.customer;
+
+                App.Data.customer = new Backbone.Model();
+                App.Data.customer.isDefaultShippingAddress = jasmine.createSpy();
+
+                address = {
+                    address: 'test',
+                    city: 'test',
+                    country: 'test',
+                    province: '',
+                    state: 'test',
+                    street_1: 'test',
+                    street_2: '',
+                    zipcode: 'test'
+                };
             });
 
-            expect(model.getCustomerAddress()).toEqual(address);
+            afterEach(function() {
+                App.Data.customer = this.customer;
+            });
 
-            App.Data.customer = this.customer;
+            it('shipping address is selected', function() {
+                App.Data.customer.isDefaultShippingAddress.and.returnValue(false);
+                App.Data.customer.set({
+                    shipping_address: 1,
+                    addresses: [undefined, address]
+                });
+
+                expect(model.getCustomerAddress()).toEqual(address);
+            });
+
+            it('shipping address is selected, some fields do not exist', function() {
+                App.Data.customer.isDefaultShippingAddress.and.returnValue(false);
+
+                delete address.address;
+                App.Data.customer.set({
+                    shipping_address: 1,
+                    addresses: [undefined, address]
+                });
+
+                address.address = '';
+                expect(model.getCustomerAddress()).toEqual(address);
+            });
+
+            it('shipping address is not selected, address with last index should be used', function() {
+                App.Data.customer.isDefaultShippingAddress.and.returnValue(true);
+                App.Data.customer.set({
+                    shipping_address: -1,
+                    addresses: [undefined, address]
+                });
+
+                expect(model.getCustomerAddress()).toEqual(address);
+            });
+
+            it('shipping address is not selected, address with last index should be used, extra fields should be ignored', function() {
+                App.Data.customer.isDefaultShippingAddress.and.returnValue(true);
+
+                address.id = 123;
+                App.Data.customer.set({
+                    shipping_address: -1,
+                    addresses: [undefined, undefined, undefined, address]
+                });
+
+                delete address.id;
+                expect(model.getCustomerAddress()).toEqual(address);
+            });
         });
 
     });
