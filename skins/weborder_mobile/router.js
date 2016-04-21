@@ -933,8 +933,10 @@ define(["main_router"], function(main_router) {
                     App.Data.customer.loadAddresses();
                 }
 
-                // Need to specify shipping address (Bug 34676)
-                App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+                if (!App.Data.customer.isProfileAddressSelected()) {
+                    // Need to specify shipping address (Bug 34676)
+                    App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+                }
 
                 App.Data.header.set('showPromotionsLink', App.Settings.has_campaigns);
                 this.listenToOnce(this, 'route', function() {
@@ -955,8 +957,7 @@ define(["main_router"], function(main_router) {
                             collection: App.Data.myorder,
                             mod: 'OrderType',
                             DINING_OPTION_NAME: self.LOC_DINING_OPTION_NAME,
-                            className: 'checkout',
-                            cacheId: true
+                            className: 'checkout'
                         },
                         {
                             modelName: 'Checkout',
@@ -964,16 +965,14 @@ define(["main_router"], function(main_router) {
                             customer: App.Data.customer,
                             rewardsCard: App.Data.myorder.rewardsCard,
                             mod: 'Main',
-                            className: 'checkout',
-                            cacheId: true
+                            className: 'checkout'
                         },
                         {
                             modelName: 'Checkout',
                             model: App.Data.myorder.checkout,
                             timetable: App.Data.timetables,
                             mod: 'Pickup',
-                            className: 'checkout',
-                            cacheId: true
+                            className: 'checkout'
                         }
                     ]
                 });
@@ -1050,15 +1049,9 @@ define(["main_router"], function(main_router) {
                         collection: App.Data.myorder,
                         mod: 'OrderTypeShort',
                         DINING_OPTION_NAME: self.LOC_DINING_OPTION_NAME,
-                        className: 'checkout-short checkout-short-left',
-                        cacheId: true
-                    },
-                    {
-                        modelName: 'Checkout',
-                        model: App.Data.myorder.checkout,
+                        checkout: myorder.checkout,
                         customer: App.Data.customer,
-                        mod: 'AddressShort',
-                        className: 'checkout checkout-lines font-size2',
+                        className: 'checkout-short',
                         cacheId: true
                     },
                     {

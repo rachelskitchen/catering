@@ -30,9 +30,34 @@ define(['backbone', 'factory'], function(Backbone) {
      */
     var AddressView = App.Views.FactoryView.extend({
         initialize: function() {
-            var model = _.extend({}, this.options.customer.toJSON()),
+            this.initModel();
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.updateAddress();
+            this.listenTo(App.Data.customer, 'change:access_token', this.updateAddress);
+        },
+        initModel: function() {
+            var model = {},
+                customer = this.options.customer,
+                checkout = this.options.checkout,
                 defaultAddress = App.Settings.address,
-                address = this.options.customer.getCheckoutAddress();
+                address;
+
+            if (!customer.isAuthorized() || !customer.isProfileAddressSelected()) { // do not touch profile addresses
+                address = customer.getCheckoutAddress();
+                model = _.extend(model, customer.toJSON());
+            }
+            if (customer.isAuthorized()) {
+                // use only not fully filled address from profile to populate address fields
+                var fullyFilledAddresses = customer.get('addresses').filter(function(addr) {
+                    return addr && addr.street_1 && addr.city && addr.country && addr.zipcode
+                        && (checkout.get('dining_option') == 'DINING_OPTION_DELIVERY' ? addr.country == App.Settings.address.country : true)
+                        && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true);
+                });
+                if (!fullyFilledAddresses.length) {
+                    address = customer.getCheckoutAddress(true);
+                    model = _.extend(model, customer.toJSON());
+                }
+            }
 
             model.country = address && address.country ? address.country : defaultAddress.country;
             model.state = model.country == 'US' ? (address ? address.state : defaultAddress.state) : null;
@@ -47,17 +72,14 @@ define(['backbone', 'factory'], function(Backbone) {
 
             this.model = new Backbone.Model(model);
             this.prevValues = model;
-
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.updateAddress();
-            this.listenTo(App.Data.customer, 'change:access_token', this.updateAddress);
         },
         bindings: {
             'input[name="street_1"]': 'value: firstLetterToUpperCase(street_1), events: ["input"], trackCaretPosition: street_1',
             'input[name="street_2"]': 'value: firstLetterToUpperCase(street_2), events: ["input"], trackCaretPosition: street_2',
             'input[name="city"]': 'value: firstLetterToUpperCase(city), events: ["input"], trackCaretPosition: city',
             'input[name="province"]': 'value: firstLetterToUpperCase(province), events: ["input"], trackCaretPosition: province',
-            'input[name=zipcode]': 'value: zipcode, pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
+            'input[name=zipcode]': 'value: zipcode, pattern: /^((\\w|\\s){0,20})$/', // all requirements are in Bug 33655
+            '.zip-label-text': 'text: select(equal(country, "US"), _lp_PROFILE_ZIP_CODE, _lp_PROFILE_POSTAL_CODE)'
         },
         computeds: {
             zipcodeValue: {
@@ -70,7 +92,7 @@ define(['backbone', 'factory'], function(Backbone) {
                         }
                         return _.isUndefined(customer_addresses[addr_index]) ? "" : customer_addresses[addr_index].zipcode;
                     }
-                    return "";
+                    return '';
                 }
             }
         },
@@ -96,17 +118,18 @@ define(['backbone', 'factory'], function(Backbone) {
                 if (typeof model.originalState == 'string' && model.originalState.length > 0)
                     model.state = model.originalState;
                 else {
-                    model.state = model.originalState = "CA";
+                    model.state = model.originalState = 'CA';
                 }
             }
             else {
                 model.state = undefined;
             }
 
-            model.province = model.country == 'CA' ? "" : undefined;
+            model.province = model.country == 'CA' ? '' : undefined;
 
             this.model.set(model);
             this.render(); // need to hide state if this is neccessary
+
             this.updateAddress();
         },
         changeState: function(e) {
@@ -120,8 +143,14 @@ define(['backbone', 'factory'], function(Backbone) {
                 model = this.model.toJSON(),
                 address;
 
-            // if shipping_address isn't selected take last index
-            if(customer.isDefaultShippingAddress()) {
+            // do not change profile addresses, only generate address_str
+            if (customer.isProfileAddressSelected()) {
+                addresses[shipping_address].address = customer.address_str(shipping_address);
+                return;
+            }
+
+            // if shipping_address isn't selected take the last index
+            if (customer.isDefaultShippingAddress()) {
                 shipping_address = addresses.length ? addresses.length - 1 : 0;
             }
 
@@ -149,6 +178,47 @@ define(['backbone', 'factory'], function(Backbone) {
 
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
         },
+        bindings: {
+            '.address-edit': 'toggle: showAddressEdit', // the address edit form
+            '.address-selection': 'toggle: showAddressSelection',
+            '.shipping-services': 'toggle: equal(checkout_dining_option, "DINING_OPTION_SHIPPING")'
+        },
+        events: {
+            'change #addresses': 'updateAddress'
+        },
+        computeds: {
+            /**
+             * Indicates whether the user is logged in.
+             */
+            isAuthorized: {
+                deps: ['customer_access_token'],
+                get: function() {
+                    return this.options.customer.isAuthorized();
+                }
+            },
+            /**
+             * Indicates whether the address selection drop-down list should be shown.
+             */
+            showAddressSelection: {
+                deps: ['isAuthorized', 'customer_addresses', 'checkout_dining_option'],
+                get: function(isAuthorized, customer_addresses, checkout_dining_option) {
+                    return isAuthorized && customer_addresses.filter(function(addr, index) {
+                        return index > 2 && addr && addr.street_1 && addr.city && addr.country && addr.zipcode
+                            && (checkout_dining_option == 'DINING_OPTION_DELIVERY' ? addr.country == App.Settings.address.country : true)
+                            && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true);
+                    }).length;
+                }
+            },
+            /**
+             * Indicates whether the address edit form should be shown.
+             */
+            showAddressEdit: {
+                deps: ['isAuthorized', 'customer_shipping_address', 'showAddressSelection'],
+                get: function(isAuthorized, customer_shipping_address, showAddressSelection) {
+                    return !isAuthorized || !this.options.customer.isProfileAddressSelected() || !showAddressSelection;
+                }
+            }
+        },
         render: function() {
             this.model.set('isShippingServices', this.isShippingServices);
 
@@ -159,7 +229,7 @@ define(['backbone', 'factory'], function(Backbone) {
 
             return this;
         },
-        updateShippingServices: function(){
+        updateShippingServices: function() {
             var customer = this.options.customer,
                 shipping_services = customer.get("shipping_services"),
                 shipping_status = customer.get("load_shipping_status");
@@ -229,12 +299,99 @@ define(['backbone', 'factory'], function(Backbone) {
         updateAddress: function() {
             App.Views.AddressView.prototype.updateAddress.apply(this, arguments);
             var model = this.model.toJSON();
+            // need to reset shipping services before updating them
+            // due to server needs a no shipping service specified to return a new set of shipping services.
+            this.options.customer.resetShippingServices();
+            this.isShippingServices = this.options.checkout && this.options.checkout.get('dining_option') === 'DINING_OPTION_SHIPPING';
             if (this.isShippingServices && model.street_1 && model.city && model.country && model.zipcode
                 && (model.country == 'US' ? model.state : true) && (model.country == 'CA' ? model.province : true)) {
-                // need to reset shipping services before updating them
-                // due to server needs a no shipping service specified to return a new set of shipping services.
-                this.options.customer.resetShippingServices();
                 App.Data.myorder.update_cart_totals({update_shipping_options: true});
+            }
+        }
+    });
+
+    var DeliveryAddressesSelectionView = App.Views.FactoryView.extend({
+        initialize: function() {
+            this.listenTo(this.options.customer, 'change:access_token onUserAddressCreated onUserAddressUpdate', function() {
+                delete this.options.address_index;
+                this.updateAddressesOptions();
+                this.options.customer.trigger('change:addresses');
+            });
+
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            ':el': 'toggle: showAddressSelection', // wrapper of the address selection drop-down
+            '#addresses': 'value: customer_shipping_address', // the address selection drop-down
+        },
+        computeds: _.extend({}, DeliveryAddressesView.prototype.computeds),
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+
+            this.updateAddressesOptions();
+
+            return this;
+        },
+        resetShippingServices: function() {
+            this.options.customer.resetShippingServices();
+        },
+        /**
+         * Rendering of 'Address' drop-down list.
+         */
+        updateAddressesOptions: function() {
+            var customer = this.options.customer,
+                checkout = this.options.checkout,
+                dining_option = checkout.get('dining_option');
+
+            if (!customer.isAuthorized()) {
+                return;
+            }
+
+            var addresses = customer.get('addresses'),
+                optionsStr = '',
+                options = _.map(addresses, function(addr, index) {
+                    if (addr && addr.street_1 && index > 2) {
+                        return addr && addr.street_1 && addr.city && addr.country && addr.zipcode
+                            && (dining_option == 'DINING_OPTION_DELIVERY' ? addr.country == App.Settings.address.country : true)
+                            && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true)
+                            ? {label: addr.street_1, value: index} : undefined;
+                    }
+                    else {
+                        return undefined;
+                    }
+                }).filter(function(addr) {
+                    return addr;
+                });
+
+            if (options.length) {
+                if (this.options.address_index == -1) { // default profile address should be selected
+                    customer.set('shipping_address', options[0].value);
+                    delete this.options.address_index;
+                }
+
+                optionsStr = _.reduce(options, function(memo, option) {
+                    return memo + '<option value="' + option.value + '">' + option.label + '</option>';
+                }, '');
+                optionsStr += '<option value="' + App.Data.myorder.getShippingAddress(dining_option) + '">Enter New Address</option>';
+
+                this.$('#addresses').html(optionsStr);
+                customer.trigger('change:shipping_address');
+            }
+        },
+        /**
+         * Updates value of 'Enter New Address' option.
+         */
+        updateNewAddressIndex: function() {
+            var checkout = this.options.checkout,
+                customer = this.options.customer,
+                newValue = App.Data.myorder.getShippingAddress(checkout.get('dining_option'));
+
+            this.$('#addresses option').filter(function(i, el) {
+                return $(el).val() < 3;
+            }).val(newValue);
+
+            if (customer.get('shipping_address') < 3) {
+                this.$('#addresses').val(newValue);
             }
         }
     });
@@ -246,5 +403,6 @@ define(['backbone', 'factory'], function(Backbone) {
     return new (require('factory'))(function() {
         App.Views.AddressView = AddressView;
         App.Views.DeliveryAddressesView = DeliveryAddressesView;
+        App.Views.DeliveryAddressesSelectionView = DeliveryAddressesSelectionView;
     });
 });

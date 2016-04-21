@@ -1985,7 +1985,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             order_info.dining_option = DINING_OPTION[checkout.dining_option];
 
             isShipping = checkout.dining_option === 'DINING_OPTION_SHIPPING' && customer
-                && (shipping_address = customer.get('addresses')[customer.get('shipping_address')])
+                && (shipping_address = this.getCustomerAddress())
                 && !customer._check_delivery_fields().length;
 
             if(isShipping) {
@@ -2316,7 +2316,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             order_info.customer = {};
             if(checkout.dining_option === 'DINING_OPTION_DELIVERY' || checkout.dining_option === 'DINING_OPTION_CATERING') {
-                order_info.customer.address = getAddress();
+                order_info.customer.address = this.getCustomerAddress();
             }
             $.extend(order_info.customer, customerData.payment_info);
 
@@ -2376,7 +2376,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if(checkout.dining_option === 'DINING_OPTION_SHIPPING') {
                 order_info.shipping = customer.shipping_services[customer.shipping_selected] || undefined;
                 order_info.customer = !order_info.shipping ? undefined : _.extend({
-                    address: getAddress()
+                    address: this.getCustomerAddress()
                 }, order_info.customer);
             }
 
@@ -2535,10 +2535,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             function reportPaymentError(message) {
                 myorder.paymentResponse = {status: 'error', errorMsg: message, capturePhase: capturePhase};
                 myorder.trigger('paymentResponse');
-            }
-
-            function getAddress() {
-                return customer.addresses[App.Data.customer.isDefaultShippingAddress() ? customer.addresses.length - 1 : customer.shipping_address];
             }
         },
         /**
@@ -2707,31 +2703,70 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 return this.paymentResponse = paymentResponse;
             }
         },
-        /*
-         * Updates App.Data.customer.attributes.shipping_address according specified dining option.
-         * @param {App.Models.Checkout} model - {@link App.Collections.Myorders#checkout} object
-         * @param {string} value - dining option
-         * @returns {numder} selected shipping address
+        /**
+         * Returns index of shipping address coressponding to the specified dining option.
+         * @param   {string} dining_option - dining option.
+         * @returns {number}
+         *     - index of shipping address, if the specified dining option is delivery, shipping or catering;
+         *     - {App.Models.customer.defaults.shipping_address} otherwise
          */
-        setShippingAddress: function(model, value) {
-            var customer = App.Data.customer,
-                shipping_addresses = {};
+        getShippingAddress: function(dining_option) {
+            var customer = App.Data.customer;
 
-            if(!customer) {
+            if (!customer) {
                 return;
             }
 
-            shipping_addresses.DINING_OPTION_DELIVERY = customer.get('deliveryAddressIndex');
-            shipping_addresses.DINING_OPTION_SHIPPING = customer.get('shippingAddressIndex');
-            shipping_addresses.DINING_OPTION_CATERING = customer.get('cateringAddressIndex');
+            var shipping_addresses = {
+                DINING_OPTION_DELIVERY: customer.get('deliveryAddressIndex'),
+                DINING_OPTION_SHIPPING: customer.get('shippingAddressIndex'),
+                DINING_OPTION_CATERING: customer.get('cateringAddressIndex')
+            };
 
-            if (value == 'DINING_OPTION_DELIVERY' || value == 'DINING_OPTION_SHIPPING' || value === 'DINING_OPTION_CATERING') {
-                customer.set('shipping_address', shipping_addresses[value]);
-            } else {
-                customer.set('shipping_address', customer.defaults.shipping_address);
+            return shipping_addresses[dining_option] !== undefined ? shipping_addresses[dining_option] : customer.defaults.shipping_address;
+        },
+        /*
+         * Updates App.Data.customer.attributes.shipping_address according to the specified dining option.
+         * If profle address is selected, do not change it.
+         * @param {App.Models.Checkout} model - {@link App.Collections.Myorders#checkout} object
+         * @param {string} value - dining option
+         * @returns {numder} index of selected shipping address
+         */
+        setShippingAddress: function(model, value) {
+            var customer = App.Data.customer;
+
+            if (!customer) {
+                return;
+            }
+
+            // if profile address is selected, do not change the selection
+            if (!customer.isProfileAddressSelected()) {
+                customer.set('shipping_address', this.getShippingAddress(value));
             }
 
             return customer.get('shipping_address');
+        },
+        /**
+         * Returns customer address for sending to create_order_and_pay/.
+         * @returns {object} address object.
+         */
+        getCustomerAddress: function() {
+            var customer = App.Data.customer.toJSON(),
+                shipping_address = App.Data.customer.isDefaultShippingAddress() ? customer.addresses.length - 1 : customer.shipping_address,
+                address = customer.addresses[shipping_address];
+
+            return {
+                // here we need only the following fields (no need for extra fields from profile address.
+                // once Backend receives customer.address.id, it will look for this address in the database, but it could be saved on another instance.)
+                address: address.address || '',
+                city: address.city || '',
+                country: address.country || '',
+                province: address.province || '',
+                state: address.state || '',
+                street_1: address.street_1 || '',
+                street_2: address.street_2 || '',
+                zipcode: address.zipcode || ''
+            };
         }
     });
 
