@@ -525,9 +525,10 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         },
         /**
          * Get address set for shipping/delivery or default address set in backend.
+         * @param {boolean} [fromProfile] - indicates whether to use fields from profile address
          * @returns {object} with state, province, city, street_1, street_2, zipcode, contry fields
          */
-        getCheckoutAddress: function() {
+        getCheckoutAddress: function(fromProfile) {
             var customer = this.toJSON(),
                 shipping_address = customer.shipping_address,
                 reverse_addr;
@@ -540,6 +541,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 customer.addresses.some(function(el, index) {
                     return index != shipping_address && index != customer.profileAddressIndex && (reverse_addr = el); // use the first existing address
                 });
+                if (!reverse_addr && fromProfile && this.isAuthorized()) {
+                    reverse_addr = customer.addresses[customer.profileAddressIndex]; // use profile address
+                }
                 addr == undefined && (addr = {});
                 if (reverse_addr) {
                     if ((addr.country && reverse_addr.country && addr.country == reverse_addr.country) ||

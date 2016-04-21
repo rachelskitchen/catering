@@ -37,13 +37,26 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         initModel: function() {
             var model = {},
+                customer = this.options.customer,
+                checkout = this.options.checkout,
                 defaultAddress = App.Settings.address,
                 address;
 
-            // do not touch profile addresses
-            if (!this.options.customer.isAuthorized() || !this.options.customer.isProfileAddressSelected()) {
-                address = this.options.customer.getCheckoutAddress();
-                model = _.extend(model, this.options.customer.toJSON());
+            if (customer.isAuthorized()) {
+                // use only not fully filled address from profile to populate address fields
+                var fullyFilledAddresses = customer.get('addresses').filter(function(addr) {
+                    return addr && addr.street_1 && addr.city && addr.country && addr.zipcode
+                        && (checkout.get('dining_option') == 'DINING_OPTION_DELIVERY' ? addr.country == App.Settings.address.country : true)
+                        && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true);
+                });
+                if (!fullyFilledAddresses.length) {
+                    address = customer.getCheckoutAddress(true);
+                    model = _.extend(model, customer.toJSON());
+                }
+            }
+            else if (!customer.isAuthorized() || !customer.isProfileAddressSelected()) { // do not touch profile addresses
+                address = customer.getCheckoutAddress();
+                model = _.extend(model, customer.toJSON());
             }
 
             model.country = address && address.country ? address.country : defaultAddress.country;
@@ -189,7 +202,7 @@ define(['backbone', 'factory'], function(Backbone) {
             showAddressSelection: {
                 deps: ['isAuthorized', 'customer_addresses', 'checkout_dining_option'],
                 get: function(isAuthorized, customer_addresses, checkout_dining_option) {
-                    return isAuthorized && customer_addresses.length && customer_addresses.filter(function(addr) {
+                    return isAuthorized && customer_addresses.filter(function(addr) {
                         return addr && addr.street_1 && addr.city && addr.country && addr.zipcode
                             && (checkout_dining_option == 'DINING_OPTION_DELIVERY' ? addr.country == App.Settings.address.country : true)
                             && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true);
