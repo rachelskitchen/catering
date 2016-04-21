@@ -26,7 +26,11 @@
     padding-left: 100px;
     font-weight: bold;
 }
-#content > .checkout div.row, #content > .checkout div.delivery_address > div > div {
+.delivery_address {
+    margin: 1em 0;
+}
+#content > .checkout div.row,
+.delivery_address .row {
     position: relative;
     height: 39px;
 }

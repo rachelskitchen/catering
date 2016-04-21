@@ -51,6 +51,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.listenTo(this.options.customer, 'change:first_name change:last_name change:email change:phone', this.updateData, this);
             this.customer = this.options.customer;
             this.card = App.Data.card;
+            this.address_index = -1;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
 
             this.model.get('dining_option') === 'DINING_OPTION_DELIVERY' &&
@@ -143,16 +144,12 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             if(value === 'DINING_OPTION_DELIVERY' || value === 'DINING_OPTION_SHIPPING' || value === 'DINING_OPTION_CATERING') {
                 address = new App.Views.CheckoutView.CheckoutAddressView({
                     customer: this.customer,
-                    checkout: this.model
+                    checkout: this.model,
+                    address_index: this.address_index // -1 means that default profile address should be selected
                 });
                 this.subViews.push(address);
                 this.$('.delivery_address').append(address.el);
-                if(address.model.state || address.model.province)
-                    this.trigger('address-with-states');
-                else
-                    this.trigger('address-without-states');
-            } else {
-                this.trigger('address-hide');
+                delete this.address_index;
             }
         },
         controlDeliveryOther: function(model, value) {
@@ -211,7 +208,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         events: {
             'change .order-type-select': 'change_type'
         },
-        change_type : function(e) {
+        change_type: function(e) {
             var value = e.currentTarget.value,
                 oldValue = this.model.get('dining_option');
 
@@ -219,7 +216,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 this.model.set('dining_option', value);
             }
         },
-        set_type : function() {
+        set_type: function() {
             var dining_option = this.model.get('dining_option') || App.Settings.default_dining_option,
                 type = this.$('.order-type-select');
 
@@ -239,6 +236,11 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
     App.Views.CoreCheckoutView.CoreCheckoutAddressView = App.Views.DeliveryAddressesView.extend({
         name: 'checkout',
         mod: 'address'
+    });
+
+    App.Views.CoreCheckoutView.CoreCheckoutAddressSelectionView = App.Views.DeliveryAddressesSelectionView.extend({
+        name: 'checkout',
+        mod: 'address_selection'
     });
 
     App.Views.CoreCheckoutView.CoreCheckoutOtherItemView = App.Views.FactoryView.extend({
@@ -879,6 +881,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         App.Views.CheckoutView.CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView;
         App.Views.CheckoutView.CheckoutOrderTypeView = App.Views.CoreCheckoutView.CoreCheckoutOrderTypeView;
         App.Views.CheckoutView.CheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView;
+        App.Views.CheckoutView.CheckoutAddressSelectionView = App.Views.CoreCheckoutView.CoreCheckoutAddressSelectionView;
         App.Views.CheckoutView.CheckoutPickupView = App.Views.CoreCheckoutView.CoreCheckoutPickupView;
         App.Views.CheckoutView.CheckoutDiscountCodeView = App.Views.CoreCheckoutView.CoreCheckoutDiscountCodeView;
         App.Views.CheckoutView.CheckoutDiscountCode2View = App.Views.CoreCheckoutView.CoreCheckoutDiscountCode2View;
