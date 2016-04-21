@@ -6,7 +6,7 @@
     "img_default": "none.png",
     "routing": {
         "main": {
-            "css": [ "main", "header", "footer", "jquery.smartbanner", "profile"],
+            "css": [ "main", "header", "footer", "jquery.smartbanner", "profile", "card"],
             "model": ["main", "header", "payments", "footer"],
             "templates": ["main", "header", "footer", "profile"],
             "views": ["main", "header", "products", "footer", "profile"],
