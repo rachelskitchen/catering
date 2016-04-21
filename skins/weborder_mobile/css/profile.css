@@ -295,7 +295,7 @@
     color: #999;
 }
 .profile-edit .gift-cards-box input {
-    margin-bottom: 1em;
+    margin-bottom: 0.1em;
 }
 .profile-edit .gift-cards-box .captcha_wrap {
     display: inline-block;
@@ -304,8 +304,8 @@
     height: 10em;
 }
 .profile-edit .gift-cards-box .captcha-spinner {
-    top: 3.4em;
-    left: 0em;
+    top: -1em;
+    left: 0.2em;
 }
 .profile-edit .gift-cards-box .ui-spinner {
     width: 16em;
