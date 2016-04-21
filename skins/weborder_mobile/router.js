@@ -1168,11 +1168,13 @@ define(["main_router"], function(main_router) {
                         className: 'checkout-discount-code'
                     }),
                     callback: function(res) {
-                        if(!res) {
+                        if (!res) {
                             return;
                         }
 
-                        if (!/^[\d\w]{1,200}$/.test(myorder.checkout.get("discount_code")) ) {
+                        var codeLength = myorder.checkout.get('discount_code').length;
+
+                        if (codeLength < 1 || codeLength > 200) {
                             return App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
                         }
 

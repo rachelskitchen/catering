@@ -29,9 +29,9 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         name: 'checkout',
         mod: 'main',
         bindings: {
-            '.rewards-card-apply': 'classes: {hide: select(length(rewardsCard_discounts), true, false)}',
-            '.see-rewards': 'classes: {hide: select(length(rewardsCard_discounts), false, true)}',
-            '.cancel-input': 'classes: {hide: select(rewardsCard_discounts, false, true)}',
+            '.rewards-card-apply': 'classes: {hide: length(rewardsCard_discounts)}',
+            '.see-rewards':  'classes: {hide: not(length(rewardsCard_discounts))}',
+            '.cancel-input': 'classes: {hide: not(length(rewardsCard_discounts))}',
             '.rewardCard': 'attr: {readonly: select(length(rewardsCard_discounts), true, false)}, restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^\\d*$/',
             '.phone': 'restrictInput: "0123456789+", kbdSwitcher: "tel", pattern: /^\\+?\\d{0,15}$/',
             '.personal': 'toggle: not(isAuthorized)'
@@ -771,7 +771,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             var data = this.model.toJSON();
             data.iPad = iPad();
             this.$el.html(this.template(data));
-            inputTypeMask(this.$('input'), /^[\d\w]{0,200}$/, '', 'text');
+            inputTypeMask(this.$('input'), /^.{0,200}$/, '', 'text');
 
             return this;
         },
@@ -781,9 +781,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         },
         onApplyCode: function() {
             var self = this,
+                codeLength = this.model.get('discount_code').length,
                 myorder = this.options.myorder;
 
-            if (!/^[\d\w]{1,200}$/.test(this.model.get("discount_code")) ) {
+            if (codeLength < 1 || codeLength > 200) {
                 App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
                 return;
             }
@@ -812,7 +813,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             data.discount_allow = App.Settings.accept_discount_code === true;
             data.discount_code_applied = this.model.get("last_discount_code");
             this.$el.html(this.template(data));
-            inputTypeMask(this.$('input'), /^[\d\w]{0,200}$/, '', 'text');
+            inputTypeMask(this.$('input'), /^.{0,200}$/, '', 'text');
+
             return this;
         },
         events: {
@@ -851,9 +853,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         },
         onApplyCode: function() {
             var self = this,
+                codeLength = this.model.get('discount_code').length,
                 myorder = this.options.myorder;
 
-            if (!/^[\d\w]{1,200}$/.test(this.model.get("discount_code")) ) {
+            if (codeLength < 1 || codeLength > 200) {
                 App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
                 return;
             }
