@@ -56,7 +56,7 @@ define(["checkout_view"], function(checkout_view) {
         mod: 'discount',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            inputTypeMask(this.$('input'), /^[\d\w]{0,200}$/, '', 'text');
+            inputTypeMask(this.$('input'), /^.{0,200}$/, '', 'text');
         },
         bindings: {
             '.discount-code': 'value: discount_code, events: ["input"]',
