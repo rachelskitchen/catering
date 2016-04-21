@@ -933,7 +933,7 @@ define(["main_router"], function(main_router) {
                     App.Data.customer.loadAddresses();
                 }
 
-                if (App.Data.customer.get('shipping_address') != 3) {
+                if (!App.Data.customer.isProfileAddressSelected()) {
                     // Need to specify shipping address (Bug 34676)
                     App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
                 }
@@ -957,8 +957,7 @@ define(["main_router"], function(main_router) {
                             collection: App.Data.myorder,
                             mod: 'OrderType',
                             DINING_OPTION_NAME: self.LOC_DINING_OPTION_NAME,
-                            className: 'checkout',
-                            cacheId: true
+                            className: 'checkout'
                         },
                         {
                             modelName: 'Checkout',
@@ -966,16 +965,14 @@ define(["main_router"], function(main_router) {
                             customer: App.Data.customer,
                             rewardsCard: App.Data.myorder.rewardsCard,
                             mod: 'Main',
-                            className: 'checkout',
-                            cacheId: true
+                            className: 'checkout'
                         },
                         {
                             modelName: 'Checkout',
                             model: App.Data.myorder.checkout,
                             timetable: App.Data.timetables,
                             mod: 'Pickup',
-                            className: 'checkout',
-                            cacheId: true
+                            className: 'checkout'
                         }
                     ]
                 });

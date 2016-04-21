@@ -42,6 +42,10 @@ define(['backbone', 'factory'], function(Backbone) {
                 defaultAddress = App.Settings.address,
                 address;
 
+            if (!customer.isAuthorized() || !customer.isProfileAddressSelected()) { // do not touch profile addresses
+                address = customer.getCheckoutAddress();
+                model = _.extend(model, customer.toJSON());
+            }
             if (customer.isAuthorized()) {
                 // use only not fully filled address from profile to populate address fields
                 var fullyFilledAddresses = customer.get('addresses').filter(function(addr) {
@@ -53,10 +57,6 @@ define(['backbone', 'factory'], function(Backbone) {
                     address = customer.getCheckoutAddress(true);
                     model = _.extend(model, customer.toJSON());
                 }
-            }
-            else if (!customer.isAuthorized() || !customer.isProfileAddressSelected()) { // do not touch profile addresses
-                address = customer.getCheckoutAddress();
-                model = _.extend(model, customer.toJSON());
             }
 
             model.country = address && address.country ? address.country : defaultAddress.country;
@@ -202,8 +202,8 @@ define(['backbone', 'factory'], function(Backbone) {
             showAddressSelection: {
                 deps: ['isAuthorized', 'customer_addresses', 'checkout_dining_option'],
                 get: function(isAuthorized, customer_addresses, checkout_dining_option) {
-                    return isAuthorized && customer_addresses.filter(function(addr) {
-                        return addr && addr.street_1 && addr.city && addr.country && addr.zipcode
+                    return isAuthorized && customer_addresses.filter(function(addr, index) {
+                        return index > 2 && addr && addr.street_1 && addr.city && addr.country && addr.zipcode
                             && (checkout_dining_option == 'DINING_OPTION_DELIVERY' ? addr.country == App.Settings.address.country : true)
                             && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true);
                     }).length;
@@ -298,7 +298,7 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         updateAddress: function() {
             App.Views.AddressView.prototype.updateAddress.apply(this, arguments);
-            var model = App.Data.myorder.getCustomerAddress();
+            var model = this.model.toJSON();
             // need to reset shipping services before updating them
             // due to server needs a no shipping service specified to return a new set of shipping services.
             this.options.customer.resetShippingServices();
