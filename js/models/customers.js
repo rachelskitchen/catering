@@ -517,23 +517,31 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             return (shipping_address == this.get('deliveryAddressIndex') || shipping_address == this.get('shippingAddressIndex') || shipping_address == this.get('cateringAddressIndex')) && isDelivery ? true : false;
         },
         /**
+         * Checks whether the selected address is from user profile.
+         * @returns {boolean}
+         */
+        isProfileAddressSelected: function() {
+            return this.get('shipping_address') > 2;
+        },
+        /**
          * Get address set for shipping/delivery or default address set in backend.
+         * @param {boolean} [fromProfile] - indicates whether to use fields from profile address
          * @returns {object} with state, province, city, street_1, street_2, zipcode, contry fields
          */
-        getCheckoutAddress: function() {
+        getCheckoutAddress: function(fromProfile) {
             var customer = this.toJSON(),
                 shipping_address = customer.shipping_address,
                 reverse_addr;
 
             // if shipping address isn't selected take last index
-            if(this.isDefaultShippingAddress()) {
+            if (this.isDefaultShippingAddress()) {
                 shipping_address = customer.addresses.length - 1;
             } else {
                 var addr = customer.addresses[shipping_address];
                 customer.addresses.some(function(el, index) {
                     return index != shipping_address && index != customer.profileAddressIndex && (reverse_addr = el); // use the first existing address
                 });
-                if (!reverse_addr && this.isAuthorized()) {
+                if (!reverse_addr && fromProfile && this.isAuthorized()) {
                     reverse_addr = customer.addresses[customer.profileAddressIndex]; // use profile address
                 }
                 addr == undefined && (addr = {});
