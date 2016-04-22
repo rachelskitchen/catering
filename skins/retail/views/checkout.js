@@ -25,7 +25,7 @@ define(["checkout_view"], function(checkout_view) {
 
     var CheckoutMainView = App.Views.CoreCheckoutView.CoreCheckoutMainView.extend({
         controlAddress: function(model, value) {
-            var arrAdd= this.$('.arrival_address');
+            var arrAdd = this.$('.arrival_address'); // store address
             App.Views.CoreCheckoutView.CoreCheckoutMainView.prototype.controlAddress.apply(this, arguments);
             if(value === 'DINING_OPTION_SHIPPING') {
                 arrAdd.hide();
