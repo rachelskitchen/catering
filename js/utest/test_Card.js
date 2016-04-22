@@ -4,9 +4,12 @@ define(['card'], function() {
     describe("App.Models.Card", function() {
 
         var model, def,
-            locale = App.Data.locale.toJSON();
+            locale = App.Data.locale.toJSON(),
+            isBillingAddressCard;
 
         beforeEach(function() {
+            isBillingAddressCard = spyOn(PaymentProcessor, 'isBillingAddressCard');
+
             model = new App.Models.Card();
             spyOn(window, "getData");
             spyOn(window, "setData");
@@ -24,6 +27,7 @@ define(['card'], function() {
                 zip: '',
                 img: App.Data.settings.get('img_path'),
                 billing_address: null,
+                use_profile_address: false,
                 rememberCard: false
             };
         });
@@ -34,6 +38,26 @@ define(['card'], function() {
 
         it('Create model', function() {
             expect(model.toJSON()).toEqual(def);
+        });
+
+        describe('set billing address', function() {
+            beforeEach(function() {
+                spyOn(App.Models.Card.prototype, 'set');
+            });
+
+            it('payment processor dos not require billing address', function() {
+                isBillingAddressCard.and.returnValue(false);
+
+                model = new App.Models.Card();
+                expect(_.indexOf(model.set.calls.mostRecent().args, 'billing_address')).toBe(-1);
+            });
+
+            it('payment processor requires billing address', function() {
+                isBillingAddressCard.and.returnValue(true);
+
+                model = new App.Models.Card();
+                expect(_.indexOf(model.set.calls.mostRecent().args, 'billing_address')).not.toBe(-1);
+            });
         });
 
         describe('trim()', function() {
@@ -79,18 +103,6 @@ define(['card'], function() {
         it('loadCard()', function() {
             model.loadCard(); // load state model from storage (detected automatic)
             expect(getData).toHaveBeenCalledWith('card');
-        });
-
-        it('clearData()', function() {
-            model.set({
-                cardNumber: '4234567890123456',
-                expDate: 2999,
-                expMonth: 12,
-                securityCode: '777'
-            });
-            model.clearData(); // removal of information about credit card
-            expect(model.toJSON()).toEqual(def);
-            expect(setData).toHaveBeenCalledWith('card', model);
         });
 
         describe("check()", function() {
@@ -198,6 +210,258 @@ define(['card'], function() {
                 expect(model.check().status).toBe('OK');
             });
 
+        });
+
+        describe('check_billing_address()', function() {
+            var billing_address,
+                get_billing_address;
+
+            beforeEach(function() {
+                billing_address = {
+                    city: 'city',
+                    street_1: 'street_1',
+                    state: 'state',
+                    zipcode: 'zipcode',
+                    country_code: 'country_code'
+                };
+
+                get_billing_address = spyOn(window, 'get_billing_address').and.returnValue(billing_address);
+            });
+
+            it('all values are valid', function() {
+                expect(model.check_billing_address()).toEqual({status: 'OK'});
+            });
+
+            it('empty fields', function() {
+                expect(model.check_billing_address()).toEqual({status: 'OK'});
+
+                billing_address.street_1 = '';
+                expect(model.check_billing_address().status).toBe('ERROR_EMPTY_FIELDS');
+                expect(model.check_billing_address().errorMsg.indexOf(_loc.PROFILE_ADDRESS_LINE1)).not.toBe(-1);
+                expect(model.check_billing_address().errorList.indexOf(_loc.PROFILE_ADDRESS_LINE1)).not.toBe(-1);
+
+                billing_address.city = '';
+                expect(model.check_billing_address().errorMsg.indexOf(_loc.PROFILE_CITY)).not.toBe(-1);
+                expect(model.check_billing_address().errorList.indexOf(_loc.PROFILE_CITY)).not.toBe(-1);
+
+                billing_address.state = '';
+                expect(model.check_billing_address().errorMsg.indexOf(_loc.PROFILE_STATE)).not.toBe(-1);
+                expect(model.check_billing_address().errorList.indexOf(_loc.PROFILE_STATE)).not.toBe(-1);
+
+                // ZIP code
+                billing_address.zipcode = '';
+                billing_address.country_code = 'US';
+                expect(model.check_billing_address().errorMsg.indexOf(_loc.PROFILE_ZIP_CODE)).not.toBe(-1);
+                expect(model.check_billing_address().errorList.indexOf(_loc.PROFILE_ZIP_CODE)).not.toBe(-1);
+
+                // Postal code
+                billing_address.country_code = 'CA';
+                expect(model.check_billing_address().errorMsg.indexOf(_loc.PROFILE_POSTAL_CODE)).not.toBe(-1);
+                expect(model.check_billing_address().errorList.indexOf(_loc.PROFILE_POSTAL_CODE)).not.toBe(-1);
+
+                billing_address.country_code = '';
+                expect(model.check_billing_address().errorMsg.indexOf(_loc.PROFILE_COUNTRY)).not.toBe(-1);
+                expect(model.check_billing_address().errorList.indexOf(_loc.PROFILE_COUNTRY)).not.toBe(-1);
+            });
+        });
+
+        describe('checkPerson()', function() {
+            var payment;
+
+            beforeEach(function() {
+                spyOn(model, 'trim');
+                payment = spyOn(App.Data.settings, 'get_payment_process');
+            });
+
+            it('all values are valid', function() {
+                payment.and.returnValue({});
+
+                expect(model.checkPerson()).toEqual([]);
+                expect(model.trim).toHaveBeenCalled();
+            });
+
+            it('payment is paypal, all values are valid', function() {
+                payment.and.returnValue({paypal: 'smth'});
+                model.set({firstName: 'John', secondName: 'Smith'});
+
+                expect(model.checkPerson()).toEqual([]);
+                expect(model.trim).toHaveBeenCalled();
+            });
+
+            it('payment is paypal, empty fields', function() {
+                payment.and.returnValue({paypal: 'smth'});
+                model.set({firstName: '', secondName: ''});
+
+                expect(model.checkPerson().indexOf(_loc.CARD_FIRST_NAME)).not.toBe(-1);
+                expect(model.checkPerson().indexOf(_loc.CARD_LAST_NAME)).not.toBe(-1);
+                expect(model.trim).toHaveBeenCalled();
+            });
+        });
+
+        describe('checkSecurityCode()', function() {
+            it('security code is empty', function() {
+                model.set('securityCode', '');
+                expectSecurityCodeError();
+            });
+
+            it('security code contains smth other than digits', function() {
+                model.set('securityCode', 'ab1');
+                expectSecurityCodeError();
+
+                model.set('securityCode', '1 23');
+                expectSecurityCodeError();
+
+                model.set('securityCode', '1%3');
+                expectSecurityCodeError();
+            });
+
+            it('security code length is less than 3', function() {
+                model.set('securityCode', '0');
+                expectSecurityCodeError();
+
+                model.set('securityCode', '12');
+                expectSecurityCodeError();
+            });
+
+            it('security code length is more than 4', function() {
+                model.set('securityCode', '12345');
+                expectSecurityCodeError();
+            });
+
+            it('security code is 3 or 4 digits', function() {
+                model.set('securityCode', '123');
+                expect(model.checkSecurityCode().indexOf(_loc.CARD_SECURITY_CODE)).toBe(-1);
+
+                model.set('securityCode', '1234');
+                expect(model.checkSecurityCode().indexOf(_loc.CARD_SECURITY_CODE)).toBe(-1);
+            });
+
+            function expectSecurityCodeError() {
+                expect(model.checkSecurityCode().indexOf(_loc.CARD_SECURITY_CODE)).not.toBe(-1);
+            }
+        });
+
+        describe('checkCardNumber()', function() {
+            it('card number is empty', function() {
+                model.set('cardNumber', '');
+                expectCardNumberError();
+            });
+
+            it('card number contains smth other than digits', function() {
+                model.set('cardNumber', '4234 5678 9012 3456');
+                expectCardNumberError();
+
+                model.set('cardNumber', '4234567890abcdef');
+                expectCardNumberError();
+
+                model.set('cardNumber', '4234.5678.9012.3456');
+                expectCardNumberError();
+            });
+
+            it('card number length is less than 13', function() {
+                model.set('cardNumber', '423456789012');
+                expectCardNumberError();
+
+                model.set('cardNumber', '42345678901');
+                expectCardNumberError();
+            });
+
+            it('card number length is more than 19', function() {
+                model.set('cardNumber', '42345678901234567890');
+                expectCardNumberError();
+
+                model.set('cardNumber', '423456789012345678901');
+                expectCardNumberError();
+            });
+
+            it('card number starts with digits other than 3-6', function() {
+                model.set('cardNumber', '1234567890123');
+                expectCardNumberError();
+
+                model.set('cardNumber', '0234567890123456');
+                expectCardNumberError();
+
+                model.set('cardNumber', '2234567890123456');
+                expectCardNumberError();
+
+                model.set('cardNumber', '7234567890123456');
+                expectCardNumberError();
+
+                model.set('cardNumber', '8234567890123456');
+                expectCardNumberError();
+
+                model.set('cardNumber', '9234567890123456');
+                expectCardNumberError();
+
+                model.set('cardNumber', '1234567890123456789');
+                expectCardNumberError();
+            });
+
+            it('card number is valid (starts with 3-6, 13-19 digits long)', function() {
+                model.set('cardNumber', '4234567890123');
+                expect(model.checkCardNumber().indexOf(_loc.CARD_NUMBER)).toBe(-1);
+
+                model.set('cardNumber', '4234567890123456');
+                expect(model.checkCardNumber().indexOf(_loc.CARD_NUMBER)).toBe(-1);
+
+                model.set('cardNumber', '4234567890123456789');
+                expect(model.checkCardNumber().indexOf(_loc.CARD_NUMBER)).toBe(-1);
+            });
+
+            function expectCardNumberError() {
+                expect(model.checkCardNumber().indexOf(_loc.CARD_NUMBER)).not.toBe(-1);
+            }
+        });
+
+        it('clearData()', function() {
+            model.set({
+                cardNumber: '4234567890123456',
+                expDate: 2999,
+                expMonth: 12,
+                securityCode: '777'
+            });
+            model.clearData(); // removal of information about credit card
+            expect(model.toJSON()).toEqual(def);
+            expect(setData).toHaveBeenCalledWith('card', model);
+        });
+
+        describe('window.get_billing_address()', function() {
+            var billing_address = new Backbone.Model({
+                test: 'test'
+            });
+
+            beforeEach(function() {
+                this.customer = App.Data.customer;
+
+                App.Data.customer = {
+                    getProfileAddress: jasmine.createSpy().and.returnValue('profile address')
+                };
+
+                App.Data.card = new Backbone.Model({billing_address: billing_address});
+            });
+
+            afterEach(function() {
+                App.Data.customer = this.customer;
+                App.Data.card = this.card;
+            });
+
+            it('card.use_profile_address is true', function() {
+                App.Data.card.set('use_profile_address', true);
+
+                expect(window.get_billing_address()).toBe('profile address');
+                expect(App.Data.customer.getProfileAddress).toHaveBeenCalled();
+            });
+
+            it('card.use_profile_address is false', function() {
+                App.Data.card.set('use_profile_address', false);
+
+                expect(window.get_billing_address()).toEqual(billing_address.toJSON());
+                expect(App.Data.customer.getProfileAddress).not.toHaveBeenCalled();
+
+                App.Data.card.set('billing_address', 'not object');
+                expect(window.get_billing_address()).toBe(null);
+
+            });
         });
 
     });
