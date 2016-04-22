@@ -469,7 +469,7 @@ define(["backbone", "factory"], function(Backbone) {
             var items = App.Data.myorder.map(function(order) {
                     return order.item_submit();
                 }),
-                promotions = App.Data.promotions = App.Collections.Promotions.init(items),
+                promotions = App.Data.promotions = App.Collections.Promotions.init(items, App.Data.customer.getAuthorizationHeader()),
                 myorder = App.Data.myorder,
                 checkout = myorder.checkout;
 

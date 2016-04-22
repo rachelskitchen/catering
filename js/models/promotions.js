@@ -123,10 +123,11 @@ define(['backbone'], function(Backbone) {
         /**
          * Updates the promotions list.
          * @param {array} items - array of cart items for submitting to server.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
          * @returns {Object} Deferred object.
          */
-        update: function(items) {
-            return this.getPromotions(items);
+        update: function(items, authorizationHeader) {
+            return this.getPromotions(items, authorizationHeader);
         },
         /**
          * Initialization through a json object, used after the server is requested for promotions list.
@@ -155,6 +156,7 @@ define(['backbone'], function(Backbone) {
         /**
          * Loads the promotions list from backend.
          * @param {array} items - array of cart items for submitting to server.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
          *
          * Used parameters of the request are:
          * ```
@@ -171,7 +173,7 @@ define(['backbone'], function(Backbone) {
          *
          * @returns {object} jqXHR object, returned by $.ajax().
          */
-        getPromotions: function(items) {
+        getPromotions: function(items, authorizationHeader) {
             var self = this;
             items = items || [];
 
@@ -181,6 +183,7 @@ define(['backbone'], function(Backbone) {
                 url: '/weborders/campaigns/',
                 type: 'POST',
                 dataType: 'json',
+                headers: authorizationHeader,
                 data: JSON.stringify({
                     establishmentId: App.Data.settings.get('establishment'),
                     items: items
@@ -199,11 +202,12 @@ define(['backbone'], function(Backbone) {
      * Loads the promotions list.
      * @static
      * @alias App.Collections.Promotions.init
+     * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
      * @returns {Object} Deferred object.
      */
-    App.Collections.Promotions.init = function(items) {
+    App.Collections.Promotions.init = function(items, authorizationHeader) {
         var promotions = new App.Collections.Promotions();
-        promotions.fetching = promotions.getPromotions(items);
+        promotions.fetching = promotions.getPromotions(items, authorizationHeader);
 
         return promotions;
     };

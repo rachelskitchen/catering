@@ -1934,7 +1934,7 @@ define(["main_router"], function(main_router) {
                         items = App.Data.myorder.map(function(order) {
                             return order.item_submit();
                         });
-                        promotions.update(items).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                        promotions.update(items, App.Data.customer.getAuthorizationHeader()).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                     }
 
                     App.Data.header.set({
