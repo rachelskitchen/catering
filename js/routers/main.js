@@ -472,7 +472,7 @@ define(["backbone", "factory"], function(Backbone) {
                 myorder = App.Data.myorder,
                 checkout = myorder.checkout,
                 discount_code = checkout.get('discount_code'),
-                promotions = App.Data.promotions = App.Collections.Promotions.init(items, discount_code);
+                promotions = App.Data.promotions = App.Collections.Promotions.init(items, discount_code, App.Data.customer.getAuthorizationHeader());
 
             // listen to change of promotions selection
             this.listenTo(promotions, 'change:is_applied', function(model, is_applied) {
@@ -507,6 +507,14 @@ define(["backbone", "factory"], function(Backbone) {
                 }
                 else {
                     promotions.applyByCode(value);
+                }
+            });
+
+            this.listenTo(App.Data.customer, 'change:access_token', function(customer, access_token) {
+                promotions.needToUpdate = true; // need to update promotions since they can depend on user
+
+                if (!access_token) {
+                    promotions.invoke('set', {is_applied: false}); // remove the applied promotion on logout
                 }
             });
         },
