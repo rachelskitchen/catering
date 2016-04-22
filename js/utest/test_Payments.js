@@ -29,6 +29,29 @@ define(['payments', 'js/utest/data/Payments', 'js/utest/data/Timetable'], functi
             });
         });
 
+        describe("resetAttributes()", function() {
+            var model = new App.Models.PaymentToken();
+
+            it("`attributes` is object", function() {
+                model._originalAttributes.new_property = 'some value';
+                expect(model.resetAttributes().attributes).toEqual(model._originalAttributes);
+            });
+        });
+
+        describe("checkAttributesDiff()", function() {
+            var model = new App.Models.PaymentToken();
+
+            it("there's differences between original and modified attributes", function() {
+                model.set('is_primary', true);
+                expect(model.checkAttributesDiff().status).toBe('OK');
+            });
+
+            it("there's no differences between original and modified attributes", function() {
+                model.set('is_primary', false);
+                expect(model.checkAttributesDiff().status).toBe('ERROR');
+            });
+        });
+
         describe("removePayment()", function() {
             var authHeader = {Authorization: 'Bearer ASDASDASDASDASDSAD'},
                 ajaxReq, ajaxParams;
@@ -62,6 +85,45 @@ define(['payments', 'js/utest/data/Payments', 'js/utest/data/Timetable'], functi
                 expect(ajaxParams.error).toEqual(jasmine.any(Function));
             });
         });
+
+        describe("changePayment()", function() {
+            var primitives = [1, -1, 0, NaN, Infinity, -Infinity, false, true, null, undefined, '', '213'],
+                authHeader = {Authorization: 'Bearer ASDASDASDASDASDSAD'},
+                ajaxReq, ajaxParams, _data;
+
+            beforeEach(function() {
+                _data = {
+                    is_primary: 1
+                };
+                ajaxReq = Backbone.$.Deferred();
+                spyOn(Backbone.$, 'ajax').and.callFake(function() {
+                    ajaxParams = arguments[0];
+                    return ajaxReq;
+                });
+            });
+
+            it("`authorizationHeader` param isn't object", function() {
+                primitives.forEach(function() {
+                    expect(model.changePayment()).toBeUndefined();
+                });
+            });
+
+            it("failure request", function() {
+                var serverURL = "sadasd",
+                    id = 12,
+                    type = "123123";
+                model.set('id', id);
+                model.type = type;
+                expect(model.changePayment(serverURL, authHeader, _data)).toBe(ajaxReq);
+                expect(ajaxParams.url).toBe(serverURL + "/v1/customers/payments/" + type + "/" + id + "/");
+                expect(ajaxParams.method).toBe("PATCH");
+                expect(ajaxParams.headers).toBe(authHeader);
+                expect(ajaxParams.contentType).toBe("application/json");
+                expect(ajaxParams.data).toBe(JSON.stringify(_data));
+                expect(ajaxParams.success).toEqual(jasmine.any(Function));
+                expect(ajaxParams.error).toEqual(jasmine.any(Function));
+            });
+        });
     });
 
     describe("App.Collections.PaymentTokens", function() {
@@ -84,6 +146,7 @@ define(['payments', 'js/utest/data/Payments', 'js/utest/data/Timetable'], functi
             spyOn(collection, 'listenTo');
             collection.initialize();
             expect(collection.listenTo).toHaveBeenCalledWith(collection, 'change:selected', collection.radioSelection);
+            expect(collection.listenTo).toHaveBeenCalledWith(collection, 'change:is_primary', collection.checkboxSelection);
             expect(collection.listenTo).toHaveBeenCalledWith(collection, 'add', collection.onAddHandler);
         });
 
@@ -114,6 +177,37 @@ define(['payments', 'js/utest/data/Payments', 'js/utest/data/Timetable'], functi
                 collection.radioSelection(token1, true);
                 expect(token1.get('selected')).toBe(true);
                 expect(token2.get('selected')).toBe(false);
+
+            });
+        });
+
+        describe("checkboxSelection()", function() {
+            var token1, token2;
+
+            beforeEach(function() {
+                collection.add([{'is_primary': false}, {'is_primary': true}]);
+                token1 = collection.at(0);
+                token2 = collection.at(1);
+            });
+
+            it("`value` param is false", function() {
+                collection.checkboxSelection(token1, false);
+                collection.checkboxSelection(token2, false);
+                expect(token1.get('is_primary')).toBe(false);
+                expect(token2.get('is_primary')).toBe(true);
+            });
+
+            it("`value` param is true", function() {
+                // token2 is primary
+                collection.checkboxSelection(token2, true);
+                expect(token1.get('is_primary')).toBe(false);
+                expect(token2.get('is_primary')).toBe(true);
+
+                // token1 is primary
+                token1.set('is_primary', true, {silent: true});
+                collection.checkboxSelection(token1, true);
+                expect(token1.get('is_primary')).toBe(true);
+                expect(token2.get('is_primary')).toBe(false);
 
             });
         });
@@ -276,6 +370,22 @@ define(['payments', 'js/utest/data/Payments', 'js/utest/data/Timetable'], functi
             expect(collection.getSelectedPayment()).toBeUndefined();
         });
 
+        it("getPrimaryPayment()", function() {
+            var token1 = {is_primary: false, id: 1},
+                token2 = {is_primary: true, id: 2},
+                token3 = {is_primary: true, id: 3};
+            // return first primary
+            collection.reset([token1, token2, token3]);
+            expect(collection.getPrimaryPayment().get('id')).toBe(token2.id);
+
+            // not found
+            token1 = {is_primary: false, id: 1};
+            token2 = {is_primary: false, id: 2};
+            token3 = {is_primary: false, id: 3};
+            collection.reset([token1, token2, token3]);
+            expect(collection.getPrimaryPayment()).toBeUndefined();
+        });
+
         describe("getPayments()", function() {
             var authHeader = {Authorization: "Bearer SDASDASDASD"},
                 serverURL = "https://identity-dev.revelup.com",
@@ -326,6 +436,65 @@ define(['payments', 'js/utest/data/Payments', 'js/utest/data/Timetable'], functi
                 ajaxReq.resolve([{id:1}, {id:2}]);
                 commonExpectations(req);
                 expect(collection.length).toBe(2);
+            });
+        });
+
+        describe("changePayment()", function() {
+            var authHeader = {Authorization: "Bearer DSASDSD"},
+                token, req, _data, _diff;
+
+            beforeEach(function() {
+                _data = { id: 1, is_primary: 0 };
+                _diff = { is_primary: 1 };
+
+                req = Backbone.$.Deferred();
+                token = new Backbone.Model(_data);
+                token._originalAttributes = _data;
+                token.changePayment = new Function();
+                token.getAttributesDiff = new Function();
+                token.setOriginalAttributes = new Function();
+                collection.reset([token]);
+
+                spyOn(token, 'changePayment').and.callFake(function() {
+                    token.set('is_primary', _diff.is_primary);
+                    return req;
+                });
+                spyOn(token, 'getAttributesDiff').and.returnValue(_diff);
+                spyOn(token, 'setOriginalAttributes').and.callFake(function() {
+                    token._originalAttributes = token.attributes;
+                });
+                spyOn(req, 'done').and.callThrough();
+            });
+
+            function commonExpectations(_req) {
+                expect(_req).toBe(req);
+                expect(token.changePayment).toHaveBeenCalledWith(collection.serverURL, authHeader, _diff);
+                expect(req.done).toHaveBeenCalled();
+            }
+
+            it("`token_id` param is invalid", function() {
+                var req = collection.changePayment(2, authHeader);
+                expect(req).toBeUndefined();
+                expect(token.changePayment).not.toHaveBeenCalled();
+            });
+
+            it("`token_id` param is valid", function() {
+                var _req = collection.changePayment(1, authHeader);
+                commonExpectations(_req);
+            });
+
+            it("failure changing", function() {
+                var _req = collection.changePayment(1, authHeader);
+                req.reject();
+                commonExpectations(_req);
+                expect(token.attributes).not.toBe(token._originalAttributes);
+            });
+
+            it("successful changing", function() {
+                var _req = collection.changePayment(1, authHeader);
+                req.resolve();
+                commonExpectations(_req);
+                expect(token.attributes).toBe(token._originalAttributes);
             });
         });
 

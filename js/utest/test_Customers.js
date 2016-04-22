@@ -3086,6 +3086,76 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
         });
 
+        describe("changePayment()", function() {
+            var authHeader = {Authorization: "Bearer SADSADASDSA"},
+                token_id = 2,
+                originalPayments,
+                req;
+
+            beforeEach(function() {
+                originalPayments = model.payments;
+                model.payments = {
+                    changePayment: new Function()
+                };
+                req = Backbone.$.Deferred();
+
+                spyOn(model.payments, 'changePayment').and.callFake(function() {
+                    return req;
+                });
+                spyOn(model, 'getAuthorizationHeader').and.returnValue(authHeader);
+                spyOn(model, 'trigger');
+                spyOn(model, 'logout');
+                spyOn(req, 'fail').and.callThrough();
+            });
+
+            afterEach(function() {
+                model.payments = originalPayments;
+            });
+
+            function commonExpectations(result) {
+                expect(req.fail).toHaveBeenCalled();
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(model.payments.changePayment).toHaveBeenCalledWith(token_id, authHeader);
+                expect(result).toBe(req);
+            }
+
+            it("successful removing", function() {
+                commonExpectations(model.changePayment(token_id));
+            });
+
+            it("`payments.changePayment()` doesn't return request", function() {
+                req = undefined;
+                var result = model.changePayment(token_id);
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(model.payments.changePayment).toHaveBeenCalledWith(token_id, authHeader);
+                expect(result).toBe(req);
+            });
+
+            it("failure removing, `jqXHR` is neither 403 nor 404", function() {
+                var result = model.changePayment(token_id);
+                req.reject({status: 400});
+                commonExpectations(result);
+                expect(model.trigger).not.toHaveBeenCalled();
+                expect(model.logout).not.toHaveBeenCalled();
+            });
+
+            it("failure removing, `jqXHR` is 403", function() {
+                var result = model.changePayment(token_id);
+                req.reject({status: 403});
+                commonExpectations(result);
+                expect(model.trigger).toHaveBeenCalledWith('onUserSessionExpired');
+                expect(model.logout).toHaveBeenCalled();
+            });
+
+            it("failure removing, `jqXHR` is 404", function() {
+                var result = model.changePayment(token_id);
+                req.reject({status: 404});
+                commonExpectations(result);
+                expect(model.trigger).toHaveBeenCalledWith('onTokenNotFound');
+                expect(model.logout).not.toHaveBeenCalled();
+            });
+        });
+
         describe("setGiftCards()", function() {
             var originalGiftCards, original_setGiftCards, auth;
 
