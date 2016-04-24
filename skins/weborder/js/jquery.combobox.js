@@ -32,12 +32,16 @@
                 var combobox = originalSelect.parent();
                 combobox.addClass("combobox");
 
+                var inputWrap = $("<div/>").attr({
+                    "class": "input-wrapper"
+                }).insertBefore(originalSelect);
+
                 //place an input which will represent the inputbox
                 var inputbox = $("<input/>").attr({
                     "min": min,
                     "type": "number",
                     "inputmode": "numeric"
-                }).insertBefore(originalSelect);
+                }).appendTo(inputWrap);
 
                 //get and remove the original id
                 var objID = originalSelect.attr("id");
@@ -58,11 +62,8 @@
                 inputbox.addClass("inputbox");
                 inputbox.val(originalSelect.val());
 
-                //add the triangle at the right
-                var triangle = $("<div/>").attr("class", originalSelect.attr("class")).addClass("triangle").insertAfter(inputbox);
-
                 //create the selectbox that will appear when the input gets focus
-                var selectbox = $("<ol/>").addClass("selectbox").insertAfter(triangle);
+                var selectbox = $("<ol/>").addClass("selectbox").insertAfter(inputWrap);
 
                 //add options
                 originalSelect.children().each(function(index, value) {
@@ -175,7 +176,7 @@
 
     function prepareOption(value, combobox) {
         var selectOption = $("<li>" + value + "</li>").appendTo(combobox.children("ol"));
-        var inputbox = combobox.children("input");
+        var inputbox = combobox.find("input");
 
         //bind click on this option
         selectOption.click(function() {

@@ -1,0 +1,91 @@
+.stanford-reload-item .header {
+    margin-top: 58px;
+    padding: 10px 16px;
+    border-width: 1px 0;
+    border-style: solid;
+}
+
+.stanford-reload-item .name {
+    font-size: 16px;
+    font-weight: 600;
+    padding-bottom: 5px;
+}
+
+.stanford-reload-item .row,
+.stanford-reload-item .captcha_container {
+    width: 400px;
+    margin: 20px auto;
+}
+
+.stanford-reload-item .label {
+    display: inline-block;
+    padding-left: 16px;
+    padding-bottom: 3px;
+}
+
+.stanford-reload-item .captcha-wrapper {
+    display: inline-block;
+    width: 120px;
+    height: 48px;
+    vertical-align: middle;
+    position: relative;
+}
+
+.stanford-reload-item .captcha-spinner {
+    width: 100%;
+    height: 100%;
+    position: absolute !important;
+    top: 0;
+}
+
+.stanford-reload-item .captcha-input {
+    display: inline-block;
+    width: 260px;
+    margin-top: 7px;
+    margin-left: 20px;
+    vertical-align: middle;
+}
+
+.stanford-reload-item .btn-reload {
+    display: inline-block;
+    width: 120px;
+    padding: 10px 0;
+}
+
+.stanford-reload-item .info-block {
+    margin: 20px 24px 40px;
+}
+
+.stanford-reload-item .plans {
+    margin: 0 24px 40px;
+}
+
+.stanford-reload-item .title,
+.stanford-reload-item .card_title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding-bottom: 15px;
+}
+
+.stanford-reload-item .stanford-plan {
+    padding: 0 0 10px 10px;
+}
+
+.stanford-plan .name {
+    padding: 0 5px;
+    font-size: 16px;
+    font-weight: normal;
+    vertical-align: middle;
+}
+
+.stanford-plan .row-balance {
+    display: inline-block;
+    padding-top: 2px;
+    font-size: 11px;
+    vertical-align: middle;
+}
+
+.stanford-plan .radio {
+    vertical-align: middle;
+}

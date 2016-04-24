@@ -1,0 +1,31 @@
+.combo_item {
+    padding: 10px 0 10px 14px;
+}
+
+.combo_item .title {
+    cursor: pointer;
+}
+
+.combo_item .input {
+    border-radius: 0;
+    padding: 0;
+    cursor: pointer;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: content-box;
+}
+
+.combo_item .mdf_spacer {
+    display: inline-block;
+    margin: 0 5px;
+    vertical-align: middle;
+}
+
+.combo_item .customize {
+    margin: 0 10px;
+}
+
+.no_combo_link {
+    display: inline-block;
+    padding: 14px 0;
+}

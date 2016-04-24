@@ -78,10 +78,20 @@ define(["quantity_view"], function(quantity_view) {
                 this.model.set('quantity', 1);
             }
             this.hide_show(isComboWithWeightProduct);
+        },
+        update: function() {
+            this.$('.inputbox').val(this.model.get('quantity'));
+        }
+    });
+
+    var QuantityWeightView = App.Views.CoreQuantityView.CoreQuantityWeightView.extend({
+        bindings: {
+            '.weight-wrapper': 'attr: {"data-weight": scalesFormat(weight)}'
         }
     });
 
     return new (require('factory'))(quantity_view.initViews.bind(quantity_view), function() {
         App.Views.QuantityView.QuantityMainView = QuantityMainView;
+        App.Views.QuantityView.QuantityWeightView = QuantityWeightView;
     });
 });

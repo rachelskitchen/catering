@@ -61,7 +61,14 @@ define(["factory", "stanfordcard_view"], function(factory, stanfordcard_view) {
         }
     });
 
+    var StanfordCardPlanView = App.Views.CoreStanfordCardView.CoreStanfordCardPlanView.extend({
+        bindings: {
+            '.radio': 'classes: {checked: selected}'
+        }
+    });
+
     return new (require('factory'))(stanfordcard_view.initViews.bind(stanfordcard_view), function() {
         App.Views.StanfordCardView.StanfordCardPopupView = StanfordCardPopupView;
+        App.Views.StanfordCardView.StanfordCardPlanView = StanfordCardPlanView;
     });
 });

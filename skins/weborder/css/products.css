@@ -39,11 +39,6 @@
     position: relative;
 }
 
-.product_image img {
-    max-width: 100%;
-    max-height: 100%;
-}
-
 .product .name {
     padding-bottom: 5px;
     font-size: 14px;
@@ -60,6 +55,103 @@
 
 .product .description {
     font-size: 13px;
+}
+
+.product_info {
+    min-height: 60px;
+    margin: 58px 0 0;
+    padding: 15px;
+    border-width: 1px 0;
+    border-style: solid;
+}
+
+.product_info .img_wrapper {
+    width: 60px;
+    height: 60px;
+    margin: 0 10px 0 0;
+    position: relative;
+}
+
+.product_info .name {
+    padding-bottom: 3px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.product_info .description {
+    font-size: 14px;
+}
+
+.product_info .timetables,
+.product_info .size_chart_wrapper,
+.product_info .customize {
+    margin-top: 10px;
+    font-size: 12px;
+    font-style: italic;
+}
+
+.product_info .size_chart_wrapper,
+.product_info .customize {
+    margin-right: 10px;
+}
+
+.product_info_footer .footer-line {
+    min-height: 44px;
+    padding: 19px 24px;
+    border-top-width: 2px;
+    border-top-style: solid;
+}
+
+.product_info_footer .currency,
+.product_info_footer .uom,
+.product_info_footer .price,
+.price-wrapper::before {
+    width: auto;
+    padding: 8px 0;
+    border-radius: 0;
+    font-size: 21px;
+    font-weight: 600;
+    background: inherit;
+    vertical-align: middle;
+}
+
+.product_info_footer .currency,
+.product_info_footer .uom {
+    padding: 9px 0;
+}
+
+.price-wrapper {
+    display: inline-block;
+    height: 44px;
+    position: relative;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+.price-wrapper::before {
+    content: attr(data-amount);
+    display: block;
+    padding: 50px 10px 0;
+}
+
+.price-wrapper .price {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: center;
+}
+
+.price-wrapper.product-price-wrapper {
+    margin-left: -8px;
+}
+
+.price-wrapper.product-price-wrapper::before {
+    padding: 50px 5px;
+}
+
+.price-wrapper.product-price-wrapper .price {
+    border-color: transparent;
 }
 
 /* products display in grid with 1 column */
