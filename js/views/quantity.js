@@ -34,7 +34,11 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.hide_show);
             this.hide_show();
         },
-        hide_show: function() {
+        events: {
+            'click .increase:not(.disabled)': 'increase',
+            'click .decrease:not(.disabled)': 'decrease'
+        },
+        hide_show: function(isComboWithWeightProduct) {
             var product = this.model.get_product(),
                 quantity = this.model.get('quantity'),
                 stock_amount = product.get('stock_amount'),
@@ -44,9 +48,9 @@ define(["backbone", "factory"], function(Backbone) {
             is_gift && this.model.set('quantity', 1);
 
             if (is_gift) {
-                this.$el.hide();
+                this.$el.addClass('hide');
             } else {
-                this.$el.show();
+                this.$el.removeClass('hide');
             }
 
             this.$('.select-wrapper').addClass('l' + (stock_amount ? stock_amount.toString().length : '1'));
@@ -56,6 +60,27 @@ define(["backbone", "factory"], function(Backbone) {
             if(arguments.length > 0 && disallowEmptyInventory) {
                 this.model.set('quantity', 1);
             }
+
+            if (stock_amount === 1 || product.isParent() || isComboWithWeightProduct) {
+                this.$('.decrease').addClass('disabled');
+                this.$('.increase').addClass('disabled');
+            } else {
+                this.$('.decrease').removeClass('disabled');
+                this.$('.increase').removeClass('disabled');
+            }
+        },
+        increase: function(event) {
+            if($(event.target).hasClass('disabled'))
+                return;
+            var q = this.model.get('quantity'),
+                stock_amount = this.model.get_product().get('stock_amount');
+            this.model.set('quantity', ++q <= stock_amount ? q : stock_amount);
+        },
+        decrease: function(event) {
+            if($(event.target).hasClass('disabled'))
+                return;
+            var q = this.model.get('quantity');
+            this.model.set('quantity', --q >= 1 ? q : 1);
         },
         update: function() {
 
@@ -99,7 +124,9 @@ define(["backbone", "factory"], function(Backbone) {
             this.$el.html(this.template(model));
         },
         events: {
-            'change .weight_edit_input': 'change_weight'
+            'change .weight_edit_input': 'change_weight',
+            'click .increase:not(.disabled)': 'increase',
+            'click .decrease:not(.disabled)': 'decrease'
         },
         change_weight: function(e) {
             var newWeight = e.target.value,
@@ -118,7 +145,19 @@ define(["backbone", "factory"], function(Backbone) {
         },
         update: function() {
             this.$('.weight_edit_input').val(this.model.get('weight').toFixed(this.number_decimal_digits));
-        }
+        },
+        increase: function(event) {
+            if($(event.target).hasClass('disabled'))
+                return;
+            var q = this.model.get('weight');
+            this.model.set('weight', ++q);
+        },
+        decrease: function(event) {
+            if($(event.target).hasClass('disabled'))
+                return;
+            var q = this.model.get('weight');
+            this.model.set('weight', --q >= 0 ? q : 0);
+        },
     });
 
     return new (require('factory'))(function() {

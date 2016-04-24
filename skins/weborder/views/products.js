@@ -64,7 +64,64 @@ define(['products_view'], function(products_view) {
         }
     });
 
+    var ProductPriceView = App.Views.FactoryView.extend({
+        name: 'product',
+        mod: 'price',
+        initialize: function() {
+            this.extendBindingSources({_product: this.model.get_product()});
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            '.price': 'classes: {"gift-amount": giftMode, "product-price": not(giftMode)}, attr: {size: length(monetaryFormat(product_price)), readonly: not(giftMode)}, restrictInput: "0123456789.,", kbdSwitcher: select(_product_is_gift, "float", "text"), pattern: /^\\d{0,3}(\\.\\d{0,2})?$/',
+            '.product-price': 'value: monetaryFormat(product_price)',
+            '.gift-amount': 'value: monetaryFormat(price), events: ["input"]',
+            '.currency': 'text: _system_settings_currency_symbol',
+            '.uom': 'text: uom, toggle: uom',
+            '.price-wrapper': 'attr: {"data-amount": monetaryFormat(product_price)}, classes: {"product-price-wrapper": not(giftMode)}'
+        },
+        computeds: {
+            giftMode: {
+                deps: ['_product_is_gift', '_system_settings_online_orders'],
+                get: function(isGift, onlineOrders) {
+                    var modifiers = this.model.get_modifiers(),
+                        not_size = modifiers && modifiers.getSizeModel() === undefined;
+                    return isGift && onlineOrders && not_size;
+                }
+            },
+            uom: {
+                deps: ['_system_settings_scales', '_product_sold_by_weight'],
+                get: function(scales, sold_by_weight) {
+                    return scales.default_weighing_unit && sold_by_weight ? '/ ' + scales.default_weighing_unit : false;
+                }
+            },
+            product_price: {
+                deps: ['initial_price', '_product_combo_price'],
+                get: function() {
+                    return this.model.get_product_price();
+                }
+            },
+            price: {
+                deps: ['product'],
+                get: function() {
+                    return this.model.get_product().get('price');
+                },
+                set: function(value) {
+                    var product = this.model.get_product();
+
+                    value = parseFloat(value);
+                    if(!isNaN(value)) {
+                        product.set('price', value);
+                        //this.model.set('initial_price', value);
+                    } else {
+                        this.model.trigger('change:initial_price');
+                    }
+                }
+            }
+        }
+    });
+
     return new (require('factory'))(products_view.initViews.bind(products_view), function() {
         App.Views.ProductView.ProductListItemView = ProductListItemView;
+        App.Views.ProductView.ProductPriceView = ProductPriceView;
     });
 });

@@ -1,0 +1,20 @@
+.product_instructions {
+    padding: 10px 24px 20px;
+}
+
+.product_instructions .title {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.product_instructions .tip {
+    font-size: 11px;
+}
+
+.product_instructions .instructions {
+    display: block;
+    margin-top: 10px;
+}
