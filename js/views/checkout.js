@@ -503,7 +503,9 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     });
                 }
             },
-            total: App.Data.myorder.total,
+            total: function() {
+                return App.Data.myorder.total;
+            },
             customer: App.Data.customer
         },
         computeds: {
