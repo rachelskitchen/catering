@@ -382,6 +382,7 @@ define(["main_router"], function(main_router) {
                     back: App.Data.dirMode ? this.navigateDirectory.bind(this) : null,
                     back_title: App.Data.dirMode ? _loc.BACK : '',
                     showMenuBtn: true,
+                    hideCart: false,
                     tab: 0
                 });
 
@@ -909,7 +910,10 @@ define(["main_router"], function(main_router) {
                 page_title: _loc.HEADER_CHECKOUT_PT,
                 back_title: _loc.BACK,
                 back: this.navigate.bind(this, 'cart', true),
-                promotions: this.navigate.bind(this, 'promotions', true)
+                promotions: function goToPromotions() {
+                    self.navigate('promotions', true);
+                    App.Data.header.set('hideCart', true);
+                }
             });
 
             App.Data.mainModel.set({
@@ -1011,7 +1015,10 @@ define(["main_router"], function(main_router) {
                 page_title: _loc.HEADER_CHECKOUT_PT,
                 back_title: _loc.BACK,
                 back: App.Data.customer.isAuthorized() ? this.navigate.bind(this, 'cart', true) : this.navigate.bind(this, 'checkout', true),
-                promotions: this.navigate.bind(this, 'promotions', true)
+                promotions: function goToPromotions() {
+                    self.navigate('promotions', true);
+                    App.Data.header.set('hideCart', true);
+                }
             });
 
             App.Data.mainModel.set({
@@ -1945,7 +1952,7 @@ define(["main_router"], function(main_router) {
                         back_title: backToMenu ? _loc.MENU : _loc.BACK,
                         back: back,
                         cart: cart,
-                        hideCart: App.Data.myorder.get_only_product_quantity() < 1
+                        hideCart: App.Data.header.get('hideCart') || App.Data.myorder.get_only_product_quantity() < 1
                     });
 
                     content = {
