@@ -186,7 +186,9 @@ select:focus,
 input[type="checkbox"]:checked + .checkbox::before,
 input[type="radio"]:checked + .radio::before,
 .checkbox[checked="checked"]::before,
-.radio[checked="checked"]::before {
+.radio[checked="checked"]::before,
+.checkbox.checked::before,
+.radio.checked::before {
     content: '';
     display: block;
     width: 9px;
@@ -314,6 +316,11 @@ background: green; /* remove */
     vertical-align: middle;
 }
 
+.cancel::before {
+    content: '\f057';
+    font-family: "FontAwesome";
+}
+
 .popup {
     width: 100%;
     position: absolute;
@@ -347,8 +354,6 @@ background: red; /* remove */
 }
 
 #popup .cancel::before {
-    content: '\f057';
-    font-family: "FontAwesome";
     font-size: 22px;
 }
 

@@ -6,7 +6,7 @@
     "color_schemes": ["default", "blue_&_white", "vintage", "stanford"],
     "routing": {
         "main": {
-            "css": ["main", "cart", "jquery.contentarrow", "products", "modifiers", "instructions", "quantity", "product_sets", "profile", "header", "footer", "stanford"],
+            "css": ["main", "cart", "jquery.contentarrow", "products", "myorder", "modifiers", "instructions", "quantity", "product_sets", "profile", "header", "footer", "stanford"],
             "model": ["main", "header", "categories"],
             "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "product_sets", "instructions", "quantity", "stanfordcard", "profile"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "quantity"],
@@ -15,7 +15,7 @@
         },
         "index": {
             "css": ["categories", "subcategories", "search_line"],
-            "views": ["categories", "subcategories"],
+            "views": ["categories", "subcategories", "stanfordcard"],
             "templates": ["categories", "subcategories", "search_line"],
             "core": ["categories", "search", "search_line_view"]
         },

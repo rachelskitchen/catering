@@ -1,0 +1,15 @@
+.myorder > li {
+	margin: 10px 0;
+	padding: 12px
+}
+
+.myorder .cancel {
+	height: 15px;
+    width: 15px;
+    overflow: hidden;
+}
+
+.myorder .cancel::before {
+	display: block;
+	font-size: 16px;
+}
