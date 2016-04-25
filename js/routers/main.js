@@ -496,6 +496,10 @@ define(["backbone", "factory"], function(Backbone) {
                 }
             });
 
+            this.listenTo(promotions, 'remove', function(model) {
+                model.set('is_applied', false); // remove a selection on promotion removal to fire corresponding event
+            });
+
             this.listenTo(App.Data.myorder, 'add remove change', function() {
                 // need to update promotions since 'is_applicable' attribute could be changed after changing order
                 promotions.needToUpdate = true;
@@ -512,10 +516,6 @@ define(["backbone", "factory"], function(Backbone) {
 
             this.listenTo(App.Data.customer, 'change:access_token', function(customer, access_token) {
                 promotions.needToUpdate = true; // need to update promotions since they can depend on user
-
-                if (!access_token) {
-                    promotions.invoke('set', {is_applied: false}); // remove the applied promotion on logout
-                }
             });
         },
         /**

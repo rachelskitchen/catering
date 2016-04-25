@@ -142,7 +142,9 @@ define(['backbone'], function(Backbone) {
         addAjaxJson: function(promotions) {
             if (!Array.isArray(promotions)) return;
             var self = this,
-                modelToUpdate;
+                modelToUpdate,
+                modelsToRemove = [],
+                ids = [];
 
             promotions.forEach(function(promotion, index) {
                 if (!(promotion instanceof Object)) {
@@ -152,12 +154,17 @@ define(['backbone'], function(Backbone) {
                     promotion = promotion.toJSON();
                 }
 
-                modelToUpdate = self.find(function(model) {
-                    return promotion.id === model.get('id') && !_.isEqual(model.toJSON(), promotion);
-                });
+                ids.push(promotion.id);
+                modelToUpdate = self.get(promotion.id); // update existing campaign ('is_applicable' flag could be changed)
 
                 modelToUpdate ? modelToUpdate.set(promotion) : self.add(promotion);
             });
+
+            // find and remove obsolete campaigns from collection
+            modelsToRemove = this.filter(function(model) {
+                return ids.indexOf(model.id) === -1;
+            });
+            this.remove(modelsToRemove);
         },
         /**
          * Loads the promotions list from backend.
@@ -226,7 +233,7 @@ define(['backbone'], function(Backbone) {
      * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
      * @returns {Object} Deferred object.
      */
-    App.Collections.Promotions.init = function(items, discount_code) {
+    App.Collections.Promotions.init = function(items, discount_code, authorizationHeader) {
         var promotions = new App.Collections.Promotions();
         promotions.fetching = promotions.getPromotions(items, discount_code, authorizationHeader);
         return promotions;
