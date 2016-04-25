@@ -57,7 +57,9 @@
 }
 
 .stanford-reload-item .plans {
-    margin: 0 24px 40px;
+    max-height: 400px;
+    margin: 0 24px 20px;
+    overflow-y: auto;
 }
 
 .stanford-reload-item .title,

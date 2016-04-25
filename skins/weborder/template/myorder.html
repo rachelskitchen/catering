@@ -9,6 +9,17 @@
 </script>
 
 <script type="text/template" id="myorder_item-template">
+    <% if(!is_service_fee) { %>
+    <% if(sold_by_weight) { %>
+        1
+    <% } else { %>
+        <span class="qty"><%= quantity %></span>
+    <% } %>
+    <% } %>
+    <% if(id_product !== null && is_child_product != true) { %>
+    <div class="remove cancel fl-right"><%= _lp.MYORDER_REMOVE %></div>
+    <!-- <span class="edit"> <% _lp.MYORDER_EDIT %> </span>-->
+    <% } %>
     <h3 class="product_place">
         <% if(sold_by_weight) { %>
             <span class="name"><%= sizeModifier %> <%= name %></span>
@@ -38,13 +49,6 @@
     <div class="upsell_root_product_place"></div>
     <div class="combo_products_place"></div>
     <ul class="discount_place"></ul>
-    <% } %>
-    <% if(id_product !== null && is_child_product != true) { %>
-    <div class="btns">
-        <span class="edit"> <% _lp.MYORDER_EDIT %> </span>
-        <span class="divider"></span>
-        <span class="remove"> <span> <%= _lp.MYORDER_REMOVE %> </span> </span>
-    </div>
     <% } %>
 </script>
 
