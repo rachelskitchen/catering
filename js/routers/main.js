@@ -516,7 +516,13 @@ define(["backbone", "factory"], function(Backbone) {
 
             this.listenTo(App.Data.customer, 'change:access_token', function(customer, access_token) {
                 promotions.needToUpdate = true; // need to update promotions since they can depend on user
+
+                if (!access_token) {
+                    promotions.invoke('set', {is_applied: false}); // remove the applied promotion on logout
+                }
             });
+
+            return promotions;
         },
         /**
          * Handler of a payment response.
