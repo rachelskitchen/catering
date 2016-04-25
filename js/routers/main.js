@@ -515,10 +515,17 @@ define(["backbone", "factory"], function(Backbone) {
             });
 
             this.listenTo(App.Data.customer, 'change:access_token', function(customer, access_token) {
-                promotions.needToUpdate = true; // need to update promotions since they can depend on user
-
-                if (!access_token) {
-                    promotions.invoke('set', {is_applied: false}); // remove the applied promotion on logout
+                if (access_token) {
+                    promotions.needToUpdate = true; // logged in user can have some unique promotions
+                }
+                else {
+                    // need to update promotions on logout
+                    // obsolete ones will be removed
+                    items = App.Data.myorder.map(function(order) {
+                        return order.item_submit();
+                    });
+                    discount_code = checkout.get('discount_code');
+                    promotions.update(items, discount_code);
                 }
             });
 
