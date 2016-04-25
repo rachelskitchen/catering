@@ -128,18 +128,6 @@ define(["main_router"], function(main_router) {
 
                 // run history tracking
                 this.triggerInitializedEvent();
-
-                /**
-                 * Promotions
-                 */
-                if (App.Settings.has_campaigns) {
-                    this.promotions = {
-                        modelName: 'Promotions',
-                        model: new Backbone.Model(),
-                        mod: 'TopLine',
-                        cacheId: true
-                    };
-                }
             });
 
             var checkout = App.Data.myorder.checkout;
@@ -373,6 +361,8 @@ define(["main_router"], function(main_router) {
             return App.Data.categories.loadData;
         },
         index: function() {
+            var self = this;
+
             this.prepare('index', function() {
                 // load categories
                 this.initCategories().then(this.change_page.bind(this));
@@ -398,7 +388,51 @@ define(["main_router"], function(main_router) {
                     className: 'content_scrollable'
                 }];
 
-                this.promotions && content.unshift(this.promotions);
+
+                /**
+                 * Promotions
+                 */
+                if (!this.promotions) {
+                    // current establishment has campaigns for non authorized users, so any user can access them
+                    if (App.Settings.has_campaigns) {
+                        initPromotionsLink();
+                    }
+                    // need to check if there are any available campaigns for current user
+                    else if (App.Data.customer.isAuthorized()) {
+                        this.prepare('promotions', function() {
+                            var promotions = self.initPromotions();
+
+                            promotions.fetching.always(function() {
+                                if (promotions.length) {
+                                    initPromotionsLink();
+
+                                    App.Data.mainModel.set({
+                                        content: _.union([self.promotions], content)
+                                    });
+                                }
+                            });
+                        });
+                    }
+                }
+                // 'has_campaigns' is false and the user is not authorized, so there are no available campaigns
+                else if (!App.Settings.has_campaigns && !App.Data.customer.isAuthorized()) {
+                    delete this.promotions;
+                    content.length > 1 && content.shift();
+                }
+
+                // this.promotions exists, need to display it
+                if (this.promotions) {
+                    content.unshift(this.promotions);
+                }
+
+                function initPromotionsLink() {
+                    self.promotions = {
+                        modelName: 'Promotions',
+                        model: new Backbone.Model(),
+                        mod: 'TopLine',
+                        cacheId: true
+                    };
+                }
 
                 var footerMode;
                 if (App.Settings.promo_message) {
@@ -942,7 +976,7 @@ define(["main_router"], function(main_router) {
                     App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
                 }
 
-                App.Data.header.set('showPromotionsLink', App.Settings.has_campaigns);
+                App.Data.header.set('showPromotionsLink', !!self.promotions);
                 this.listenToOnce(this, 'route', function() {
                     App.Data.header.set('showPromotionsLink', false); // hide Promotions link
                 });
@@ -1079,7 +1113,7 @@ define(["main_router"], function(main_router) {
                     });
                 }
 
-                App.Data.header.set('showPromotionsLink', App.Settings.has_campaigns);
+                App.Data.header.set('showPromotionsLink', !!self.promotions);
                 this.listenToOnce(this, 'route', function() {
                     App.Data.header.set('showPromotionsLink', false); // hide Promotions link
                 });
@@ -1937,7 +1971,7 @@ define(["main_router"], function(main_router) {
                         items = App.Data.myorder.map(function(order) {
                             return order.item_submit();
                         });
-                        promotions.update(items, checkout.get('discount_code')).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                        promotions.update(items, checkout.get('discount_code'), App.Data.customer.getAuthorizationHeader()).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                     }
 
                     App.Data.header.set({
@@ -1951,8 +1985,7 @@ define(["main_router"], function(main_router) {
                     content = {
                         modelName: 'Promotions',
                         mod: 'List',
-                        collection: promotions,
-                        cacheId: true
+                        collection: promotions
                     };
 
                     App.Data.mainModel.set({

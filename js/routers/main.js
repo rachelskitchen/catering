@@ -472,7 +472,7 @@ define(["backbone", "factory"], function(Backbone) {
                 myorder = App.Data.myorder,
                 checkout = myorder.checkout,
                 discount_code = checkout.get('discount_code'),
-                promotions = App.Data.promotions = App.Collections.Promotions.init(items, discount_code);
+                promotions = App.Data.promotions = App.Collections.Promotions.init(items, discount_code, App.Data.customer.getAuthorizationHeader());
 
             // listen to change of promotions selection
             this.listenTo(promotions, 'change:is_applied', function(model, is_applied) {
@@ -496,6 +496,10 @@ define(["backbone", "factory"], function(Backbone) {
                 }
             });
 
+            this.listenTo(promotions, 'remove', function(model) {
+                model.set('is_applied', false); // remove a selection on promotion removal to fire corresponding event
+            });
+
             this.listenTo(App.Data.myorder, 'add remove change', function() {
                 // need to update promotions since 'is_applicable' attribute could be changed after changing order
                 promotions.needToUpdate = true;
@@ -509,6 +513,23 @@ define(["backbone", "factory"], function(Backbone) {
                     promotions.applyByCode(value);
                 }
             });
+
+            this.listenTo(App.Data.customer, 'change:access_token', function(customer, access_token) {
+                if (access_token) {
+                    promotions.needToUpdate = true; // logged in user can have some unique promotions
+                }
+                else {
+                    // need to update promotions on logout
+                    // obsolete ones will be removed
+                    items = App.Data.myorder.map(function(order) {
+                        return order.item_submit();
+                    });
+                    discount_code = checkout.get('discount_code');
+                    promotions.update(items, discount_code);
+                }
+            });
+
+            return promotions;
         },
         /**
          * Handler of a payment response.
