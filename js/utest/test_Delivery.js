@@ -7,19 +7,47 @@ define(['delivery'], function() {
             model = new App.Models.Delivery();
             this.settings = App.Data.settings.get('settings_system');
             def = {
-                charge: 0, // delivery cost
+                charge: 0,
+                charges: null, // delivery cost
                 enable: false, // enable delivery for online ordering apps
                 max_distance: 0, // delivery max distance
                 min_amount: 0 // min total amount for delivery enable. Only sum of products and modifiers
             },
             opts = {
-                charge: 1,
+                charge: 5,
+                charges: [{
+                    amount: 5,
+                    max_threshold: null,
+                    min_threshold: 0,
+                    type: 0
+                }, {
+                    amount: 0,
+                    max_threshold: null,
+                    min_threshold: 20,
+                    type: 0
+                }],
                 enable: false,
                 max_distance: 0,
                 min_amount: 1
             },
             set = {
-                charge: 1,
+                charge: 5,
+                charges: [{
+                    amount: 5,
+                    max_threshold: null,
+                    min_threshold: 0,
+                    type: 0
+                }, {
+                    amount: 0,
+                    max_threshold: null,
+                    min_threshold: 20,
+                    type: 0
+                }, {
+                    amount: 10,
+                    max_threshold: 40,
+                    min_threshold: 20,
+                    type: 1
+                }],
                 enable: true,
                 max_distance: 2,
                 min_amount: 3                
@@ -69,7 +97,7 @@ define(['delivery'], function() {
 
             it('`enable` is true', function() {
                 model.set(set);
-                expect(model.getCharge()).toBe(1);
+                expect(model.getCharge()).toBe(5);
             });
         });
 
@@ -79,9 +107,14 @@ define(['delivery'], function() {
             });
 
             it('`enable` is true', function() {
-                var subtotal = 2;
                 model.set(set);
-                expect(model.getRemainingAmount(subtotal)).toBe(2); // 4 - (3 - 1) = 2
+                expect(model.getRemainingAmount(7)).toBe(1); // 3 - (7 - 5) = 1
+
+                model.set(set);
+                expect(model.getRemainingAmount(50)).toBe(-47); // 3 - (50 - 0) = -47
+
+                model.set(set);
+                expect(model.getRemainingAmount(30)).toBe(-24); // 3 - (30 - 30/100*10) = -24
             });
         });
     });

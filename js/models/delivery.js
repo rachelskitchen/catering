@@ -58,6 +58,25 @@ define(["backbone"], function(Backbone) {
              */
             charge: 0,
             /**
+             * Delivery charges. Array of objects in the following format:
+             * ```
+             * [{
+             *      amount: 10,
+             *      max_threshold: 50,
+             *      min_threshold: 0,
+             *      type: 1
+             * }, {
+             *      amount: 10,
+             *      max_threshold: null,
+             *      min_threshold: 50,
+             *      type: 0
+             * }]
+             * ```
+             * @type {?array}
+             * @default null
+             */
+            charges: null,
+            /**
              * Indicates 'Delivery' is enabled or disabled.
              * @type {boolean}
              * @default false
@@ -105,16 +124,13 @@ define(["backbone"], function(Backbone) {
             var charges = this.get('charges'),
                 charge = 0;
 
-            if (charges)
-            {
-                for (var i in charges)
-                {
+            if (charges) {
+                for (var i in charges) {
                     var obj = charges[i],
                         min = obj.min_threshold,
                         max = obj.max_threshold;
 
-                    if (subtotal > min && (subtotal <= max || max === null))
-                    {
+                    if (subtotal > min && (subtotal <= max || max === null)) {
                         charge = (obj.type === 1) ? (subtotal/100 * obj.amount) : obj.amount;
                     }
                 }
