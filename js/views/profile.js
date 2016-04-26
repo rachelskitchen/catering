@@ -167,6 +167,7 @@ define(["factory"], function() {
         name: 'profile',
         mod: 'address',
         bindings: {
+            '.country-row': 'classes: {required: all(not(country), any(street_1, street_2, city, state, province, zipcode))}', // country is the only required address field
             '.country-wrapper': 'classes: {placeholder: not(country)}',
             '.country': 'value: country, options: parseOptions(_lp_COUNTRIES)',
             '.state-row': 'toggle: equal(country, "US")',
@@ -210,10 +211,11 @@ define(["factory"], function() {
         name: 'profile',
         mod: 'edit',
         bindings: {
+            '.update-btn': 'classes: {disabled: updateBtn_disabled}',
             '.successful-update': 'classes: {visible: ui_show_response}'
         },
         events: {
-            'click .update-btn': setCallback('updateAction')
+            'click .update-btn:not(.disabled)': setCallback('updateAction')
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
