@@ -39,7 +39,6 @@ define(["products_view"], function() {
                 collection: this.collection
             }));
 
-            this.$('.order-items').contentarrow();
             this.onChangeOrder();
         },
         onChangeOrder: function() {
