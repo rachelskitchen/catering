@@ -13,7 +13,10 @@ define(['giftcard'], function() {
                 captchaKey: '',
                 captchaValue: '',
                 cardNumber: '',
-                storageKey: 'giftcard'
+                remainingBalance: null,
+                selected: false,
+                storageKey: 'giftcard',
+                token: ''
             };
 
             spyOn(window, 'setData');

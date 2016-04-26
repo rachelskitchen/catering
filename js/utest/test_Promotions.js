@@ -215,8 +215,8 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
 
             it('update()', function() {
                 spyOn(collection, 'getPromotions');
-                collection.update([], 'code1');
-                expect(collection.getPromotions).toHaveBeenCalledWith([], 'code1');
+                collection.update([], 'code1', {});
+                expect(collection.getPromotions).toHaveBeenCalledWith([], 'code1', {});
             });
 
             describe('applyByCode()', function() {
@@ -267,8 +267,8 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
 
                 spyOn(App.Collections.Promotions.prototype, 'getPromotions').and.returnValue(fetching);
                 App.Data.promotions = undefined;
-                promotions = App.Collections.Promotions.init([], 'code1');
-                expect(App.Collections.Promotions.prototype.getPromotions).toHaveBeenCalledWith([], 'code1');
+                promotions = App.Collections.Promotions.init([], 'code1', {});
+                expect(App.Collections.Promotions.prototype.getPromotions).toHaveBeenCalledWith([], 'code1', {});
                 expect(promotions instanceof App.Collections.Promotions).toBe(true);
                 expect(promotions.fetching.state()).toBe('pending');
             });
