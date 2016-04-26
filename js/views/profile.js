@@ -253,7 +253,7 @@ define(["factory"], function() {
         bindings: {
             '.current-password': 'value: password, events:["input"], pattern: /^.{0,255}$/',
             '.new-password': 'value: confirm_password, events:["input"], pattern: /^.{0,255}$/',
-            '.account-password': 'classes: {required: any(password, confirm_password)}'
+            '.account-password-field': 'classes: {required: any(password, confirm_password)}'
         },
         onEnterListeners: {
             ':el': 'onEnter'
