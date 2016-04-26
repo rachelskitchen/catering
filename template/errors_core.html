@@ -100,7 +100,7 @@
                     <%= message %>
                 <% if (errorServer) { %> </span> <% } %>
             </div>
-            <div class="btn_wrapper">
+            <div class="btn_wrapper" data-btns="<% print(isConfirm + !cancelHide) %>">
                 <% if (!btnsSwap) { %>
                     <div class="btn btnOk" tabindex="0"> <span class="clip"> <%= btnText1 %> </span> </div>
                     <% if (isConfirm && !cancelHide) { %>

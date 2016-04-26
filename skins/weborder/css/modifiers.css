@@ -99,7 +99,7 @@
 
 .modifier .transparent {
     opacity: 0;
-    filter: alpha(0);
+    filter: alpha(opacity=0);
     pointer-events: none;
 }
 
