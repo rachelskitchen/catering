@@ -909,6 +909,7 @@ define(["backbone", "factory"], function(Backbone) {
                 updateBasicDetails = false,
                 updateAddress = false,
                 updatePassword = false,
+                updateBtn = new Backbone.Model({disabled: true}),
                 self = this;
 
             App.Data.mainModel.set({
@@ -921,6 +922,7 @@ define(["backbone", "factory"], function(Backbone) {
                     model: customer,
                     address: address,
                     updateAction: update,
+                    updateBtn: updateBtn,
                     ui: ui,
                     className: 'profile-edit text-center'
                 }
@@ -928,7 +930,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             window.setTimeout(function() {
                 var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email',
-                    passwordEvents = 'change:password, change:confirm_password';
+                    passwordEvents = 'change:password change:confirm_password';
                 self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
                 self.listenTo(customer, passwordEvents, accountPasswordChanged);
                 self.listenTo(address, 'change', addressChanged);
@@ -951,17 +953,22 @@ define(["backbone", "factory"], function(Backbone) {
 
             function basicDetailsChanged() {
                 updateBasicDetails = true;
+                updateBtn.set('disabled', false);
                 ui.set('show_response', false);
             }
 
             function accountPasswordChanged() {
                 updatePassword = Boolean(customer.get('password')) && Boolean(customer.get('confirm_password'));
+                updateBtn.set('disabled', updateBtn.get('disabled') && !updatePassword);
                 ui.set('show_response', false);
             }
 
             function addressChanged() {
-                updateAddress = true;
-                ui.set('show_response', false);
+                if (address.get('country')) { // country is the only required field
+                    updateAddress = true;
+                    updateBtn.set('disabled', false);
+                    ui.set('show_response', false);
+                }
             }
 
             function update() {
@@ -1019,6 +1026,7 @@ define(["backbone", "factory"], function(Backbone) {
                 function hideSpinner() {
                     if(--requests <= 0) {
                         mainModel.trigger('loadCompleted');
+                        updateBtn.set('disabled', true);
                         ui.set('show_response', true);
                     }
                 }
@@ -1271,8 +1279,10 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             function addressChanged() {
-                updateAddress = true;
-                App.Data.header.set({enableLink: true});
+                if (address.get('country')) { // country is the only required field
+                    updateAddress = true;
+                    App.Data.header.set({enableLink: true});
+                }
             }
 
             function update() {
