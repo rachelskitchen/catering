@@ -129,10 +129,11 @@ define(['backbone'], function(Backbone) {
          * Updates the promotions list.
          * @param {array} items - array of cart items for submitting to server.
          * @param {string} discount_code - code of applied discount.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
          * @returns {Object} Deferred object.
          */
-        update: function(items, discount_code) {
-            return this.getPromotions(items, discount_code);
+        update: function(items, discount_code, authorizationHeader) {
+            return this.getPromotions(items, discount_code, authorizationHeader);
         },
         /**
          * Initialization through a json object, used after the server is requested for the promotions list.
@@ -141,7 +142,9 @@ define(['backbone'], function(Backbone) {
         addAjaxJson: function(promotions) {
             if (!Array.isArray(promotions)) return;
             var self = this,
-                modelToUpdate;
+                modelToUpdate,
+                modelsToRemove = [],
+                ids = [];
 
             promotions.forEach(function(promotion, index) {
                 if (!(promotion instanceof Object)) {
@@ -151,17 +154,23 @@ define(['backbone'], function(Backbone) {
                     promotion = promotion.toJSON();
                 }
 
-                modelToUpdate = self.find(function(model) {
-                    return promotion.id === model.get('id') && !_.isEqual(model.toJSON(), promotion);
-                });
+                ids.push(promotion.id);
+                modelToUpdate = self.get(promotion.id); // update existing campaign ('is_applicable' flag could be changed)
 
                 modelToUpdate ? modelToUpdate.set(promotion) : self.add(promotion);
             });
+
+            // find and remove obsolete campaigns from collection
+            modelsToRemove = this.filter(function(model) {
+                return ids.indexOf(model.id) === -1;
+            });
+            this.remove(modelsToRemove);
         },
         /**
          * Loads the promotions list from backend.
          * @param {array} items - array of cart items for submitting to server.
          * @param {string} discount_code - code of applied discount.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
          *
          * Used parameters of the request are:
          * ```
@@ -178,7 +187,7 @@ define(['backbone'], function(Backbone) {
          *
          * @returns {object} jqXHR object, returned by $.ajax().
          */
-        getPromotions: function(items, discount_code) {
+        getPromotions: function(items, discount_code, authorizationHeader) {
             var self = this;
             items = items || [];
 
@@ -188,6 +197,7 @@ define(['backbone'], function(Backbone) {
                 url: '/weborders/campaigns/',
                 type: 'POST',
                 dataType: 'json',
+                headers: authorizationHeader,
                 data: JSON.stringify({
                     establishmentId: App.Data.settings.get('establishment'),
                     items: items
@@ -220,12 +230,12 @@ define(['backbone'], function(Backbone) {
      * @alias App.Collections.Promotions.init
      * @param {array} items - array of cart items for submitting to server.
      * @param {string} discount_code - code of applied discount.
+     * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
      * @returns {Object} Deferred object.
      */
-    App.Collections.Promotions.init = function(items, discount_code) {
+    App.Collections.Promotions.init = function(items, discount_code, authorizationHeader) {
         var promotions = new App.Collections.Promotions();
-        promotions.fetching = promotions.getPromotions(items, discount_code);
-
+        promotions.fetching = promotions.getPromotions(items, discount_code, authorizationHeader);
         return promotions;
     };
 
