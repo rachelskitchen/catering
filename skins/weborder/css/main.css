@@ -202,7 +202,8 @@ background: green; /* remove */
     border-radius: 8px;
 }
 
-.border-box, .input, .textarea {
+.border-box, .input, .textarea,
+#popup_panel[id] > input[type='button'] {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -226,7 +227,7 @@ background: green; /* remove */
 
 .fade-out {
     opacity: 0.5;
-    filter: alpha(50%);
+    filter: alpha(opacity=50);
 }
 
 .select-wrapper {
@@ -268,7 +269,8 @@ background: green; /* remove */
     overflow: hidden;
 }
 
-.btn {
+.btn,
+#popup_panel[id] > input[type='button'] {
     font-size: 16px;
     padding: 16px 10px;
     cursor: pointer;
@@ -396,6 +398,98 @@ background: red; /* remove */
     right: 14px;
     border-width: 1px 1px 0 1px;
     border-style: solid;
+}
+
+#alert {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    z-index: -1;
+}
+
+#alert.ui-visible {
+    opacity: 1;
+    filter: alpha(opacity=100);
+    z-index: 10001;
+}
+
+#alert .alert_align {
+    display: inline-block;
+    height: 100%;
+    width: 0;
+    vertical-align: middle;
+}
+
+#alert .alert_wrapper {
+    display: inline-block;
+    min-width: 400px;
+    max-width: 600px;
+    vertical-align: middle;
+background: yellow; /*remove*/
+}
+
+#alert .icon::before {
+    display: inline-block;
+    padding: 30px 0 10px;
+    font-family: 'FontAwesome';
+    font-size: 25px;
+}
+
+#alert .icon.warning::before {
+    content: '\f06A';
+}
+
+#alert .icon.info::before {
+    content: '\f05A';
+}
+
+#alert .message {
+    margin: 35px 20px 75px;
+    font-size: 16px;
+}
+
+#alert [data-btns="2"] {
+    letter-spacing: -50px;
+}
+
+#alert [data-btns="2"] .btn {
+    display: inline-block;
+    width: 50%;
+}
+
+#popup_container[id] {
+    border: none;
+    border-radius: 0;
+    background: red;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+#popup_content[id] {
+    padding: 0;
+}
+
+#popup_message[id] {
+    padding: 0;
+}
+
+#popup_panel[id] {
+    margin: 0;
+    letter-spacing: -50px;
+    direction: rtl;
+}
+
+#popup_panel[id] > input[type='button'] {
+    display: inline-block;
+    width: 50%;
+    border: none;
+    border: none;
+    border-radius: 0;
 }
 
 /* for tablets */

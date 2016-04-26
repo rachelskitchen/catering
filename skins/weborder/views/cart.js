@@ -30,7 +30,6 @@ define(["products_view"], function() {
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            $(window).on('resize.cart', this.resize.bind(this));
             this.listenTo(App.Data.mainModel, 'loadCompleted', this.resize.bind(this));
 
             this.subViews.push(App.Views.GeneratorView.create('MyOrder', {
@@ -48,27 +47,10 @@ define(["products_view"], function() {
                 this.$(".order-items_wrapper, .total_block").hide();
         },
         resize: function() {
-            var self = this;
-            this.timeouts = this.timeouts || [];
-
-            this.timeouts.push(setTimeout(function() {
-                while (self.timeouts.length) {
-                    clearTimeout(self.timeouts.pop());
-                }
-                var main = self.$el.outerHeight(true),
-                    title = self.$('.cart_title').outerHeight(true),
-                    button = self.$('.btn').outerHeight(true),
-                    total = self.$('.total_block').outerHeight(true),
-                    height = main - title - button - total - 10,
-                    items = self.$('.order-items');
-
-                items.css('max-height', height);
-            },50));
-        },
-        remove: function() {
-            this.$('.order-items').contentarrow('destroy');
-            $(window).off('resize.cart');
-            App.Views.FactoryView.prototype.remove.apply(this, arguments);
+            var button = this.$('.btn').outerHeight(true),
+                totalBlock = this.$('.total_block').outerHeight(true);
+            this.$('.order-items_wrapper').css('bottom', (button + totalBlock) + 'px');
+            this.$('.total_block').css('bottom', button + 'px');
         }
     });
 
@@ -79,22 +61,21 @@ define(["products_view"], function() {
             App.Views.CartView.CartCoreView.prototype.render.apply(this, arguments);
 
             this.subViews.push(App.Views.GeneratorView.create('Total', {
-                el: this.$('.total_block'),
+                el: this.$('.subtotal-box'),
                 mod: 'Main',
                 model: this.collection.total,
                 collection: this.collection
             }));
         },
         bindings: {
-            '.btn': 'classes:{disabled: any(not(orderItems_quantity), orderItems_pending)}'
+            '.btn': 'classes: {disabled: any(not(orderItems_quantity), orderItems_pending)}',
+            '.subtotal-subline': 'toggle: orderItems_quantity'
         },
         events: {
-            'click .btn': 'checkout_event',
-            'keydown .btn': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.checkout_event();
-                }
-            },
+            'click .btn': 'checkout_event'
+        },
+        onEnterListeners: {
+            '.btn': 'checkout_event'
         },
         bindingSources: {
             orderItems: function() {

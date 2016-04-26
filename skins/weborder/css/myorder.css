@@ -1,9 +1,9 @@
 .myorder > li,
 .service_fees > li,
 .order-discount > li {
-    min-height: 59px;
+    min-height: 69px;
     margin: 10px 0;
-    padding: 12px
+    padding: 12px;
 }
 
 .myorder .qty-box {
