@@ -19,6 +19,12 @@
     display: inline-block;
     margin: 0 5px;
     vertical-align: middle;
+    position: relative;
+}
+
+.combo_item .mdf_quantity {
+    position: absolute;
+    top: -11px;
 }
 
 .combo_item .customize {

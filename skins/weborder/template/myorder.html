@@ -9,46 +9,48 @@
 </script>
 
 <script type="text/template" id="myorder_item-template">
-    <% if(!is_service_fee) { %>
-    <% if(sold_by_weight) { %>
-        1
-    <% } else { %>
+    <% var isUsualProduct = id_product !== null && is_child_product != true; %>
+    <% if(!is_service_fee && isUsualProduct) { %>
+    <div class="qty-box fl-left text-center">
+        <div class="btn-up"></div>
         <span class="qty"><%= quantity %></span>
+        <div class="btn-down"></div>
+    </div>
     <% } %>
-    <% } %>
-    <% if(id_product !== null && is_child_product != true) { %>
+    <% if(isUsualProduct) { %>
     <div class="remove cancel fl-right"><%= _lp.MYORDER_REMOVE %></div>
-    <!-- <span class="edit"> <% _lp.MYORDER_EDIT %> </span>-->
+    <% } %>
+    <% if(is_child_product != true) { %>
+    <div class="item-sum fl-right"><%= currency_symbol %><%= product_sum %></div>
     <% } %>
     <h3 class="product_place">
-        <% if(sold_by_weight) { %>
-            <span class="name"><%= sizeModifier %> <%= name %></span>
-        <% } else { %>
-            <span class="name"><% if(!is_service_fee) { print(quantity + "x") }%> <%= sizeModifier %> <%= name %></span>
-        <% } %>
-        <span class="cost">
-            <span class="item-sum"><%= currency_symbol %><%= product_sum %></span>
+        <span class="name <% if(isUsualProduct || is_service_fee) {print('bold')} %>">
+            <% if(is_child_product && !is_service_fee && !sold_by_weight) { print(quantity + "x") } %>
+            <%= sizeModifier %> <%= name %>
         </span>
+        <% if(isUsualProduct) { %>
+        <span class="edit"><% _lp.MYORDER_EDIT %></span>
+        <% } %>
     </h3>
     <ul class="modifier_place">
         <% if(sold_by_weight) { %>
-        <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
+        <li><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
         <% } %>
         <% if(is_gift) { %>
             <% if(planId && stanford_card_number) { %>
-                <li class="special"> *** <%= _lp.STANFORD_CARD_NUMBER %>: <%= stanford_card_number %> </li>
+                <li><%= _lp.STANFORD_CARD_NUMBER %>: <%= stanford_card_number %></li>
             <% } else { %>
-                <li class="special"> *** <%= _lp.MYORDER_ADD_AMOUNT %> <%= gift_card_number %> </li>
+                <li><%= _lp.MYORDER_ADD_AMOUNT %> <%= gift_card_number %></li>
             <% } %>
-        <% } %>
-        <% if(special) { %>
-        <li class="special">*** <%= special %></li>
         <% } %>
     </ul>
     <% if(is_child_product != true) { %>
     <div class="upsell_root_product_place"></div>
     <div class="combo_products_place"></div>
     <ul class="discount_place"></ul>
+    <% } %>
+    <% if(special) { %>
+    <div class="special"><%= special %></div>
     <% } %>
 </script>
 
@@ -60,9 +62,6 @@
         <% } else { %>
             <span class="name"><% if(!is_service_fee) { print(quantity + "x") }%> <%= sizeModifier %> <%= name %></span>
         <% } %>
-        <span class="cost">
-            <span class="item-sum"><%= currency_symbol %><%= product_sum %></span>
-        </span>
     </h3>
     <ul class="modifier_place">
         <% if(sold_by_weight) { %>
@@ -73,22 +72,20 @@
 </script>
 
 <script type="text/template" id="myorder_discount-template">
-    <h3>
-        <span class="name"><%= discount_name %></span>
-        <span class="cost">
-            <span class="plus">&minus;</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= discount_sum %></span>
-        </span>
+    <div class="cost fl-right">
+        <span class="plus bold">&minus;</span><span class="currency_symbol bold"><%= currency_symbol %></span><span class="price bold"><%= discount_sum %></span>
+    </div>
+    <h3 class="product_place">
+        <span class="name bold"><%= discount_name %></span>
     </h3>
 </script>
 
 <script type="text/template" id="myorder_modifier-template">
     <span class="name">
+        <%= _lp.ADD %>
         <% if (_settings.enable_quantity_modifiers) { print(quantity + 'x') } %>
         <% if (qty_type > 0) { print('(' + half_price_str + ')') } %>
-        <%= _lp.MYORDER_WEIGHT %> <%= name %>
-    </span>
-    <span class="cost">
-        <span class="plus">+</span><span class="mdf-sum"></span>
+        <%= name %>
     </span>
 </script>
 
@@ -144,7 +141,7 @@
         <div class="product_price fl-right"></div>
         <div class="no_combo_link fl-right link"><%= _lp.UPSELL_DONT_WANT_COMBO %></div>
     </div>
-    <div class="action_button clip" tabindex="0"><%= _lp.MYORDER_ADD_ITEM %></div>
+    <div class="action_button btn" tabindex="0"><%= _lp.MYORDER_ADD_ITEM %></div>
 </script>
 
 <script type="text/template" id="myorder_itemSpecial-template">

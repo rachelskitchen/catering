@@ -1,15 +1,90 @@
-.myorder > li {
-	margin: 10px 0;
-	padding: 12px
+.myorder > li,
+.service_fees > li,
+.order-discount > li {
+    min-height: 59px;
+    margin: 10px 0;
+    padding: 12px
+}
+
+.myorder .qty-box {
+    width: 18px;
+    padding-right: 12px;
+    margin-right: 11px;
+    border-width: 0 1px 0 0;
+    border-style: dotted;
+}
+
+.myorder .btn-up::before {
+    content: '\f077';
+    font-family: 'FontAwesome';
+}
+
+.myorder .btn-down::before {
+    content: '\f078';
+    font-family: 'FontAwesome';
+}
+
+.myorder .qty {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 8px 0;
 }
 
 .myorder .cancel {
-	height: 15px;
+    height: 15px;
     width: 15px;
+    padding-left: 14px;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .myorder .cancel::before {
-	display: block;
-	font-size: 16px;
+    display: block;
+    font-size: 16px;
+}
+
+.myorder .product_place {
+    margin-bottom: 10px;
+}
+
+.myorder .product_place,
+.myorder .modifier_place,
+.myorder .special {
+    margin-left: 42px;
+}
+
+.product_place .name {
+    font-size: 16px;
+}
+
+.myorder .edit {
+    cursor: pointer;
+}
+
+.myorder .edit::before {
+    content: '\f040';
+    font-family: 'FontAwesome';
+    padding-left: 5px;
+}
+
+.myorder .item-sum,
+.service_fees .item-sum,
+.order-discount .cost {
+    padding: 2px 0 3px 3px;
+    font-weight: 600;
+}
+
+.modifier_place > li {
+    margin: 10px 0;
+}
+
+.myorder .special {
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.combo_products_place .modifier_place,
+.upsell_root_product_place .modifier_place {
+    padding-left: 10px
 }

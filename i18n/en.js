@@ -627,6 +627,7 @@
         'CVV_REQUIRED_INFO': 'Please enter security code',
         "OPTIONAL": "Optional",
         "DEFAULT": "Default",
-        "REQUIRED": "Required"
+        "REQUIRED": "Required",
+        "ADD": "Add"
     }; // end of locale
 }); // end of module
