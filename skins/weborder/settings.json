@@ -10,7 +10,7 @@
             "model": ["main", "header", "categories"],
             "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "product_sets", "instructions", "quantity", "stanfordcard", "profile"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "quantity"],
-            "core": ["generator", "total_view", "products", "search", "product_sets", "product_sets_view", "instructions_view", "modifiers", "jquery_numbermask", "stanfordcard", "profile_view", "customers", "payments", "giftcard"],
+            "core": ["generator", "total_view", "products", "search", "product_sets", "product_sets_view", "instructions_view", "modifiers", "jquery_numbermask", "stanfordcard", "profile_view", "customers", "payments", "giftcard", "payment_methods"],
             "js" : ["jquery.contentarrow", "jquery.combobox"]
         },
         "index": {
@@ -34,8 +34,8 @@
         "checkout": {
             "css": ["checkout", "confirm", "card", "rewards", "pikaday"],
             "views": ["cart", "checkout", "cart", "confirm", "rewards", "stanfordcard"],
-            "templates": ["cart", "checkout", "cart", "tips", "confirm", "card", "giftcard", "rewards"],
-            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "card_view", "giftcard_view", "tips_view", "pikaday"]
+            "templates": ["cart", "checkout", "cart", "tips", "confirm", "card", "giftcard", "rewards", "payment_methods"],
+            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "card_view", "giftcard_view", "tips_view", "pikaday", "payment_methods_view"]
         },
         "confirm": {
             "views": [],

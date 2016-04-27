@@ -166,7 +166,7 @@ define(["main_router"], function(main_router) {
             }, this);
 
             /** [Credit Card] **/
-            App.Data.payments = new App.Models.Payments(App.Data.settings.get_payment_process());
+            App.Data.payments = new App.Models.PaymentMethods(App.Data.settings.get_payment_process());
 
             // invokes when user chooses the 'Credit Card' payment processor on the #payments screen
             this.listenTo(App.Data.payments, 'payWithCreditCard', function() {
@@ -1204,7 +1204,7 @@ define(["main_router"], function(main_router) {
                 });
 
                 var content = [{
-                    modelName: 'Payments',
+                    modelName: 'PaymentMethods',
                     model: App.Data.payments,
                     checkout: App.Data.myorder.checkout,
                     mod: 'Main',

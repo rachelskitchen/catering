@@ -189,50 +189,20 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
     App.Views.CoreCheckoutView.CoreCheckoutOrderTypeView = App.Views.FactoryView.extend({
         name: 'checkout',
         mod: 'order_type',
-        initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'change:dining_option', this.show_hide);
-            this.set_type();
-            this.show_hide();
+        bindings: {
+            ':el': 'toggle: not(equal(dining_option, "DINING_OPTION_ONLINE"))',
+            '.order-type-select': 'value: dining_option, options: dining_options'
         },
-        render: function() {
-            var model = {
-                isFirefox: /firefox/i.test(navigator.userAgent),
-                dining_option: this.model.get('dining_option')
-            };
-            this.$el.html(this.template(model));
-
-            var dining = this.$('.order-type-select');
-            for(var key in this.options.DINING_OPTION_NAME) {
-                dining.append('<option value="' + key + '">' + this.options.DINING_OPTION_NAME[key] + '</option>');
-            };
-            return this;
-        },
-        events: {
-            'change .order-type-select': 'change_type'
-        },
-        change_type : function(e) {
-            var value = e.currentTarget.value,
-                oldValue = this.model.get('dining_option');
-
-            if (value !== oldValue) {
-                this.model.set('dining_option', value);
+        computeds: {
+            dining_options: function() {
+                var opts = [];
+                if (_.isObject(this.options.DINING_OPTION_NAME)) {
+                    opts = _.map(this.options.DINING_OPTION_NAME, function(value, key) {
+                        return {label: value, value: key};
+                    });
+                }
+                return opts;
             }
-        },
-        set_type : function() {
-            var dining_option = this.model.get('dining_option') || App.Settings.default_dining_option,
-                type = this.$('.order-type-select');
-
-            type.val(dining_option);
-            this.model.set('dining_option', dining_option);
-        },
-        show_hide: function() {
-            if (this.model.get('dining_option') === 'DINING_OPTION_ONLINE') {
-                this.$el.hide();
-            } else {
-                this.$el.show();
-            }
-            this.$('.order-type-select').val(this.model.get('dining_option'));
         }
     });
 

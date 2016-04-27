@@ -420,7 +420,17 @@ define({
          * @type {string}
          * @description The actual path of [payments]{@link module:payments} module.
          */
-        payments: 'js/models/payments'
+        payments: 'js/models/payments',
+        /**
+         * @type {string}
+         * @description The actual path of [payment_methods]{@link module:payment_methods} module.
+         */
+        payment_methods: 'js/models/payment_methods',
+        /**
+         * @type {string}
+         * @description The actual path of [payment_methods_view]{@link module:payment_methods_view} module.
+         */
+        payment_methods_view: 'js/views/payment_methods'
     },
     /**
      * A waiting time of a module loading.
@@ -618,6 +628,12 @@ define({
         },
         'payments': {
             deps: ['backbone']
+        },
+        'payment_methods': {
+            deps: ['backbone']
+        },
+        'payment_methods_view': {
+            deps: ['factory']
         }
     },
     /**

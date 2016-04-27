@@ -1,0 +1,81 @@
+.checkout-order-details {
+    padding-bottom: 25px;
+}
+
+.checkout-order-details .title {
+    padding: 13px 25px;
+    border-width: 1px 0;
+    border-style: solid;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.checkout-order-details .order-details,
+.checkout-order-details .order-notes {
+    padding: 0 25px;
+}
+
+.checkout-order-details .label {
+    padding: 15px 0 5px 14px;
+    font-size: 13px;
+}
+
+.checkout-order-details .item {
+    margin-right: 17px;
+}
+
+.checkout-order-details .size1 {
+    width: 144px;
+}
+
+.checkout-order-details .size2 {
+    width: 200px;
+}
+
+.checkout-order-details .size3 {
+    width: 87px;
+}
+
+.checkout-order-details .size4 {
+    width: 100px;
+}
+
+.checkout-order-details select.country {
+    width: 100% !important;
+}
+
+.checkout-order-details .notes {
+    width: 466px;
+}
+
+.checkout-order-details .payment-methods-label {
+    padding-left: 39px;
+}
+
+.payment-methods {
+    padding: 0 25px;
+}
+
+.payment-method {
+    min-width: 116px;
+    padding: 11px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+    letter-spacing: 2px;
+    cursor: pointer;
+}
+
+.payment-method[data-payment=paypal] {
+    font-family: Verdana;
+    font-weight: 700;
+    font-style: italic;
+    letter-spacing: normal;
+}
+
+.payment-method[data-payment=paypal]::before {
+    content: '\f1ed';
+    font-family: 'FontAwesome';
+    font-size: 16px;
+    padding-right: 5px;
+}

@@ -20,28 +20,59 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Contains {@link App.Models.Payments} constructor.
+ * @module payment_methods
+ * @requires module:backbone
+ * @see {@link module:config.paths actual path}
+ */
 define(["backbone"], function(Backbone) {
     'use strict';
 
     /**
      * @class
-     * Represents payments model
+     * @classdesc Represents payment methods available for user.
+     * @alias App.Models.PaymentMethods
+     * @augments Backbone.Model
+     * @example
+     * // create a paymentMethods model
+     * require(['payment_methods'], function() {
+     *     var paymentMethods = new App.Models.PaymentMethods();
+     * });
      */
-    App.Models.Payments = Backbone.Model.extend({
+    App.Models.PaymentMethods = Backbone.Model.extend(
+    /**
+     * @lends App.Models.PaymentMethods.prototype
+     */
+    {
         /**
-         * @property {string} defaults.selected - selected payment type.
-         * @default ''.
-         *
-         * @property {Array} defaults.available_payments - list of available payment types.
-         * @default ['credit_card_button', 'gift_card', 'cash', 'paypal', 'stanford'].
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum {string}
          */
         defaults: {
+            /**
+             * Currently selected payment method
+             * @type {string}
+             * @default ''
+             */
             selected: '',
+            /**
+             * Array of available payment methods
+             * @type {Array}
+             * @default ['credit_card_button', 'gift_card', 'cash', 'paypal', 'stanford']
+             */
             available_payments: ['credit_card_button', 'gift_card', 'cash', 'paypal', 'stanford']
         },
+        /**
+         * Sets default payment method.
+         */
         initialize: function() {
             this.setDefaultPayment();
         },
+        /**
+         * Marks first available payment method as selected.
+         */
         setDefaultPayment: function() {
             this.get('available_payments').some(function(payment) {
                 if(this.get(payment)) {
@@ -50,6 +81,14 @@ define(["backbone"], function(Backbone) {
                 }
             }, this);
         },
+        /**
+         * Triggers unique event for selected payment method.
+         *  - 'credit_card_button' method emits 'payWithCreditCard' event;
+         *  - 'gift_card' method emits 'payWithGiftCard' event;
+         *  - 'paypal' method emits 'payWithPayPal' event;
+         *  - 'cash' method emits 'payWithCash' event;
+         *  - 'stanford' method emits 'payWithStanfordCard' event;
+         */
         onPay: function() {
             switch(this.get('selected')) {
                 case 'credit_card_button':

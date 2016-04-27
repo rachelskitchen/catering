@@ -74,6 +74,7 @@ define(["main_router"], function(main_router) {
                 var ests = App.Data.establishments;
                 App.Data.categories = new App.Collections.Categories();
                 App.Data.search = new App.Collections.Search();
+                App.Data.paymentMethods = new App.Models.PaymentMethods(App.Data.settings.get_payment_process());
 
                 this.listenTo(mainModel, 'change:mod', this.createMainView);
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
@@ -560,18 +561,27 @@ define(["main_router"], function(main_router) {
                 App.Data.mainModel.set({
                     header: headers.main,
                     cart: carts.checkout,
-                    content: {
-                        modelName: 'Checkout',
-                        collection: App.Data.myorder,
-                        mod: 'Page',
-                        className: 'checkout',
-                        DINING_OPTION_NAME: this.LOC_DINING_OPTION_NAME,
-                        timetable: App.Data.timetables,
-                        customer: App.Data.customer,
-                        acceptTips: settings.accept_tips_online,
-                        noteAllow:  settings.order_notes_allow,
-                        discountAvailable: settings.accept_discount_code
-                    }
+                    content: [
+                        {
+                            modelName: 'Checkout',
+                            collection: App.Data.myorder,
+                            mod: 'Page',
+                            className: 'checkout-order-details',
+                            DINING_OPTION_NAME: this.LOC_DINING_OPTION_NAME,
+                            timetable: App.Data.timetables,
+                            customer: App.Data.customer,
+                            acceptTips: settings.accept_tips_online,
+                            noteAllow:  settings.order_notes_allow,
+                            discountAvailable: settings.accept_discount_code,
+                            checkout: App.Data.myorder.checkout
+                        },
+                        {
+                            modelName: 'PaymentMethods',
+                            mod: 'Main',
+                            model: App.Data.paymentMethods,
+                            className: 'checkout-order-details'
+                        }
+                    ]
                 });
                 this.change_page();
             });

@@ -92,11 +92,7 @@ select::-ms-expand { /*Removes default IE style*/
 }
 
 select:focus,
-.pikaday:focus {
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 15px;
-}
+.pikaday:focus {}
 
 @-moz-document url-prefix() {
     /* due to firefox does not hide select element arrows need change padding */
@@ -161,7 +157,7 @@ select:focus,
     border-width: 1px;
     border-style: solid;
     border-radius: 18px;
-    font-size: 14px;
+    font-size: 16px;
     font-family: inherit;
 }
 
@@ -241,7 +237,7 @@ background: green; /* remove */
     font-family: "FontAwesome";
     font-size: 20px;
     display: block;
-    padding: 5px 8px 5px 3px;
+    padding: 7px 9px 7px 3px;
     border-top-right-radius: 50%;
     border-bottom-right-radius: 50%;
     position: absolute;
@@ -251,7 +247,9 @@ background: green; /* remove */
     background: inherit;
 }
 
-.select-wrapper select {
+.select-wrapper[class] select {
+    width: auto;
+    padding-right: 23px;
     background: inherit;
 }
 

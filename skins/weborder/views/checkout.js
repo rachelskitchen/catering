@@ -35,63 +35,45 @@ define(["checkout_view"], function(checkout_view) {
         }
     });
 
-    var CheckoutPageView = App.Views.CoreCheckoutView.CoreCheckoutPageView.extend({
+    var CheckoutPageView = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'page',
+        bindings: {
+            '.notes': 'value: checkout_notes, events: ["input"], toggle: _system_settings_order_notes_allow'
+        },
         render: function() {
-            var data = {
-                noteAllow: this.options.noteAllow,
-                note: this.collection.checkout.get('notes')
-            };
-            this.$el.html(this.template(data));
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
 
-            var order_type = App.Views.GeneratorView.create('Checkout', {
-                model: this.collection.checkout,
-                collection: this.collection,
-                DINING_OPTION_NAME: this.options.DINING_OPTION_NAME,
+            var orderDetails = this.$('.order-details'),
+                order_type, pickup, main;
+
+            order_type = App.Views.GeneratorView.create('Checkout', {
                 mod: 'OrderType',
-                className: 'row'
-            }), pickup = App.Views.GeneratorView.create('Checkout', {
+                model: this.collection.checkout,
+                DINING_OPTION_NAME: this.options.DINING_OPTION_NAME,
+                className: 'fl-left'
+            });
+
+            pickup = App.Views.GeneratorView.create('Checkout', {
                 model: this.collection.checkout,
                 timetable: this.options.timetable,
-                mod: 'Pickup'
-            }), main = App.Views.GeneratorView.create('Checkout', {
+                mod: 'Pickup',
+                className: 'fl-left'
+            });
+
+            main = App.Views.GeneratorView.create('Checkout', {
                 model: this.collection.checkout,
                 customer: this.options.customer,
                 rewardsCard: this.collection.rewardsCard,
                 mod: 'Main'
-            }), specials = this.$('.specials'),
-                tips, discount;
+            });
 
             this.subViews.push(order_type, pickup, main);
-            specials.before(order_type.el);
-            specials.before(pickup.el);
-            specials.before(main.el);
 
-            if (this.options.discountAvailable) {
-                discount = App.Views.GeneratorView.create('Checkout', {
-                    model: this.collection.checkout,
-                    mod: 'DiscountCode',
-                    className: 'row discountBlock',
-                    myorder: this.collection
-                });
-                this.subViews.push(discount);
-                specials.before(discount.el);
-                discount.$el.on('touchstart', 'input', this.inputClick.bind(this));
-            }
+            orderDetails.append(order_type.el);
+            orderDetails.append(pickup.el);
+            orderDetails.append(main.el);
 
-            if(this.options.acceptTips) {
-                tips = App.Views.GeneratorView.create('Tips', {
-                    model: this.collection.total.get('tip'),
-                    mod: 'Line',
-                    className: 'row tipBlock',
-                    total: this.collection.total
-                });
-                this.subViews.push(tips);
-                specials.before(tips.el);
-                tips.$el.on('touchstart', 'input', this.inputClick.bind(this));
-            }
-
-            this.$('.data').contentarrow();
-            main.$el.on('touchstart', 'input', this.inputClick.bind(this));
             this.iOSSafariCaretFix();
 
             return this;
