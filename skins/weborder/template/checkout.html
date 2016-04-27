@@ -1,97 +1,65 @@
 <script type="text/template" id="checkout_main-template">
-    <div class="arrival_address">
-        <% if(address instanceof Object || business_name) { %>
-        <ul>
-            <% if(business_name) { %>
-            <li class="bold"><%= business_name %></li>
-            <% } %>
-            <% if(address instanceof Object) { %>
-            <li><%= address.line_1 %><% if(address.line_2) print(', ' + address.line_2) %></li>
-            <li><%= address.city %>, <% if(address.getRegion()) print(address.getRegion() + ' ') %><%= address.postal_code %></li>
-            <% } %>
-        </ul>
-        <% } %>
-    </div>
-    <div class="row personal">
-        <label for="firstName"> <span class="required bold"><%= _lp.PROFILE_FIRST_NAME %>:</span> </label>
-        <div class="input_beauty">
-            <input type="text" id="firstName" class="firstName ios-safari-caret" value="<%= firstName %>">
+    <div class="personal clear">
+        <div class="fl-left item size1">
+            <div class="label required"><%= _lp.PROFILE_FIRST_NAME %></div>
+            <input type="text" class="firstName input ios-safari-caret">
         </div>
-    </div>
-    <div class="row personal">
-        <label for="lastName"> <span class="required bold"><%= _lp.PROFILE_LAST_NAME %>:</span> </label>
-        <div class="input_beauty">
-            <input type="text" id="lastName" class="lastName ios-safari-caret" value="<%= lastName %>">
+        <div class="fl-left item size1">
+            <div class="label required"><%= _lp.PROFILE_LAST_NAME %></div>
+            <input type="text" class="lastName input ios-safari-caret">
         </div>
-    </div>
-    <div class="row personal">
-        <label for="email"> <span class="required bold"><%= _lp.PROFILE_EMAIL_ADDRESS %>:</span> </label>
-        <div class="input_beauty">
-            <input type="email" id="email" class="email ios-safari-caret" value="<%= email %>" autocorrect="off" autocapitalize="none">
+        <div class="fl-left item size1">
+            <div class="label required"><%= _lp.PROFILE_PHONE %></div>
+            <input type="tel" id="phone" class="phone input ios-safari-caret">
         </div>
-    </div>
-    <div class="row personal">
-        <label for="phone"> <span class="required bold"><%= _lp.PROFILE_PHONE %>:</span> </label>
-        <div class="input_beauty">
-            <input type="tel" id="phone" class="phone ios-safari-caret" value="<%= phone %>">
+        <div class="fl-left item size2">
+            <div class="label required"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
+            <input type="email" class="email input ios-safari-caret" autocorrect="off" autocapitalize="none">
         </div>
     </div>
 
-    <div class="delivery_address"></div>
+    <div class="delivery_address clear"></div>
 
-    <div class="delivery_seat"></div>
-
-    <div class="delivery_other"></div>
-
-    <% if(enableRewardCard) { %>
-    <div class="row">
-        <label for="rewardCard"> <span> <%= _lp.CHECKOUT_REWARD_CARD %>: </span> </label>
-        <div class="input_beauty rewards-card-input">
-            <span class="cancel-input hide"></span>
-            <input type="text" id="rewardCard" class="rewardCard ios-safari-caret" value="<%= rewardCard %>">
-        </div>
-        <div class="fl-right text-left btn-container">
-            <span class="rewards-card-apply rewards-card-btn"> <%= _lp.CHECKOUT_DISC_CODE_APPLY %> </span>
-            <span class="see-rewards rewards-card-btn"> <%= _lp.CHECKOUT_SEE_REWARDS %> </span>
-        </div>
-    </div>
-    <% } %>
+    <div class="delivery_other clear"></div>
 </script>
 
 <script type="text/template" id="checkout_pickup-template">
-  <div>
-    <div class="row">
-        <label for="datepicker">
-            <span> <span class="required pickup bold"><%= pickupTimeLabel %></span>: </span>
-        </label>
-        <div class="select select_day select-wrapper">
-            <input type="text" id="datepicker" readonly = "readonly" data-day="0" class='pikaday ios-safari-caret' />
+    <div class="pickup label required"><%= pickupTimeLabel %></div>
+    <div>
+        <div class="select-wrapper item">
+            <input type="text" id="datepicker" readonly="readonly" data-day="0" class="pikaday input ios-safari-caret">
+        </div>
+        <div class="select-wrapper item">
+            <select class="time"></select>
         </div>
     </div>
-    <div class="row">
-        <label for="pickupTimeHour"></label>
-        <div class="select select_day select-wrapper">
-            <select class="time" id="pickupTimeHour"></select>
-        </div>
-    </div>
-  </div>
 </script>
 
 <script type="text/template" id="checkout_order_type-template">
-    <label class="select"> <span class="required bold"><%= _lp.CHECKOUT_ORDER_TYPE %>:</span> </label>
-    <div class="select select-wrapper">
+    <div class="label required"><%= _lp.CHECKOUT_ORDER_TYPE %></div>
+    <div class="select-wrapper item">
         <select class="order-type-select"></select>
     </div>
 </script>
 
 <script type="text/template" id="checkout_address-template">
+    <div class="fl-left item size2">
+        <div class="label required"><%= _lp.CHECKOUT_ADDRESS %></div>
+        <input type="text" name="street_1" class="input ios-safari-caret">
+    </div>
+    <div class="fl-left item size3">
+        <div class="label"><%= _lp.CHECKOUT_APT %></div>
+        <input type="text" name="street_2" class="input ios-safari-caret">
+    </div>
+    <div class="fl-left item size1">
+        <div class="label required"><%= _lp.PROFILE_CITY %></div>
+        <input type="text" name="city" class="input ios-safari-caret">
+    </div>
     <% if(isShippingServices) { %>
-    <div class="row">
-        <label class="select" for="countries">
-            <span class="required bold"><%= _lp.PROFILE_COUNTRY %>:</span>
-        </label>
-        <div class="select countries select-wrapper">
-            <select class="country select" id="countries">
+    <div class="fl-left item size2">
+        <div class="label required"><%= _lp.PROFILE_COUNTRY %>:</div>
+        <div class="select-wrapper size2">
+            <select class="country">
             <% for (var i in countries) { %>
                 <option value="<%= i %>" <% if(i.toLowerCase() == country.toLowerCase()) { %>selected="selected"<% } %>><%= countries[i] %></option>
             <% } %>
@@ -99,28 +67,10 @@
         </div>
     </div>
     <% } %>
-    <div class="row">
-        <label for="addressLine1"> <span class="required bold"><%= _lp.PROFILE_ADDRESS_LINE1 %>:</span> </label>
-        <div class="input_beauty">
-            <input type="text" id="addressLine1" name="street_1" class='street_1 ios-safari-caret' value="<%= street_1 %>">
-        </div>
-    </div>
-    <div class="row">
-        <label for="addressLine2"> <span> <%= _lp.PROFILE_ADDRESS_LINE2 %>: </span> </label>
-        <div class="input_beauty">
-            <input type="text" id="addressLine2" name="street_2" class='street_2 ios-safari-caret' value="<%= street_2 %>">
-        </div>
-    </div>
-    <div class="row">
-        <label for="city"> <span class="required bold"><%= _lp.PROFILE_CITY %>:</span> </label>
-        <div class="input_beauty">
-            <input type="text" id="city" name="city" class='city ios-safari-caret' value="<%= city %>">
-        </div>
-    </div>
     <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
-    <div class="row">
-        <label class="select" for="states"> <span class="required bold"><%= _lp.PROFILE_STATE %>:</span> </label>
-        <div class="select states select-wrapper">
+    <div class="fl-left item ">
+        <div class="label required"><%= _lp.PROFILE_STATE %></div>
+        <div class="select-wrapper">
             <select class="states" id="states">
             <% for(var i in states) { %>
                 <option value="<%= i %>" <% if(i.toLowerCase() == state.toLowerCase()) { %>selected="selected"<% } %>><%= states[i] %></option>
@@ -130,25 +80,19 @@
     </div>
     <% } %>
     <% if(typeof province == 'string') { %>
-    <div class="row">
-        <label for="province"> <span class="required bold"><%= _lp.PROFILE_PROVINCE %>:</span> </label>
-        <div class="input_beauty">
-            <input type="text" id="province" name="province" class='province ios-safari-caret' value="<%= province %>">
-        </div>
+    <div class="fl-left item size1">
+        <div class="label required"><%= _lp.PROFILE_PROVINCE %></div>
+        <input type="text" name="province" class="input ios-safari-caret">
     </div>
     <% } %>
-    <div class="row">
-        <label for="zip"> <span class="required bold"><% if(country == 'US') {print(_lp.PROFILE_ZIP_CODE);} else {print(_lp.PROFILE_POSTAL_CODE);} %>:</span> </label>
-        <div class="input_beauty">
-            <input type="text" id="zip" name="zipcode" class='zipcode ios-safari-caret' value="<%= zipcode %>">
-        </div>
+    <div class="fl-left item size4">
+        <div class="label required"><% if(country == 'US') {print(_lp.PROFILE_ZIP_CODE);} else {print(_lp.PROFILE_POSTAL_CODE);} %></div>
+        <input type="text" name="zipcode" class="input ios-safari-caret">
     </div>
     <% if(isShippingServices) { %>
-    <label class="select shipping">
-        <span class="required bold"> <%= _lp.CHECKOUT_SHIPPING_HANDLING %>:</span>
-    </label>
-    <div class="shipping-select-wrap">
-        <div class="select shipping select-wrapper">
+    <div class="fl-left item">
+        <div class="label required"><%= _lp.CHECKOUT_SHIPPING_HANDLING %></div>
+        <div class="select-wrapper">
             <select class="shipping-select select"></select>
         </div>
         <div class="shipping-status img-spinner"></div>
@@ -157,21 +101,18 @@
 </script>
 
 <script type="text/template" id="checkout_other-template">
-    <div class="list"></div>
+    <div class="list clear"></div>
 </script>
 
 <script type="text/template" id="checkout_other_item-template">
-    <div class="row">
-        <label> <span class="bold" data-isrequired><%= name %>:</span> </label>
+    <div class="fl-left item">
+        <div class="label" data-isrequired><%= name %></div>
         <% if (Array.isArray(choices) && choices.length) { %>
-            <div class="select select-wrapper">
-                <select class="section-select" name="<%= name %>">
-                </select>
+            <div class="select-wrapper">
+                <select class="section-select" name="<%= name %>"></select>
             </div>
         <% } else { %>
-            <div class="input_beauty">
-                <input type="text" name="<%= name %>" value="<%= value %>" class="ios-safari-caret">
-            </div>
+            <input type="text" name="<%= name %>" class="input ios-safari-caret size1">
         <% } %>
     </div>
 </script>
@@ -223,16 +164,11 @@
 </script>
 
 <script type="text/template" id="checkout_page-template">
-    <h2> <%= _lp.CHECKOUT_TITLE %> </h2>
-    <div class="data ios-safari-caret-fix">
-        <div class="specials row">
-            <% if(noteAllow) {%>
-                <label> <span class="bold"> <%= _lp.CHECKOUT_ORDER_NOTES %>: </span> </label>
-            <div class="input_beauty special">
-                    <textarea class="ios-safari-caret"><%=note%></textarea>
-            </div>
-            <% } %>
-        </div>
+    <h2 class="title"><%= _lp.CHECKOUT_TITLE %></h2>
+    <div class="order-details"></div>
+    <div class="clear order-notes">
+        <div class="label"><%= _lp.CHECKOUT_ORDER_NOTES %></div>
+        <textarea class="notes textarea ios-safari-caret"></textarea>
     </div>
 </script>
 

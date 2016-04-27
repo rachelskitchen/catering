@@ -28,7 +28,7 @@
         'CHECKOUT_CREDIT_CARD': 'Credit Card',
         'CHECKOUT_GIFT_CARD': 'Gift Card',
         'CHECKOUT_STANFORD_CARD': 'Stanford Card',
-        'CHECKOUT_TITLE': 'Checkout & Order Details',
+        'CHECKOUT_TITLE': 'Order Details',
         'CHECKOUT_ORDER_NOTES': 'Order Notes',
         'CHECKOUT_DISCOUNT_CODE': 'Discount Code',
         'CHECKOUT_DISC_CODE_APPLY': 'Apply',
@@ -167,6 +167,13 @@
         'COMBO_CUSTOMIZE': 'Customize',
         'PRODUCT_SETS_SELECT_1': 'Please choose your "',
         'PRODUCT_SETS_SELECT_2': '" options',
-        'UPSELL_DONT_WANT_COMBO': 'I don\'t want a combo'
+        'UPSELL_DONT_WANT_COMBO': 'I don\'t want a combo',
+        'CHECKOUT_ADDRESS': 'Address',
+        'CHECKOUT_APT': 'Apt #',
+        'CHECKOUT_PAYMENT_INFORMATION': 'Payment Information',
+        'CHECKOUT_PAYMENT_METHODS_LABEL': 'Select Payment Type',
+        'CHECKOUT_PAYMENT_METHOD_CREDIT_CARD': 'Credit Card',
+        'CHECKOUT_PAYMENT_METHOD_GIFT_CARD': 'Gift Card',
+        'CHECKOUT_PAYMENT_METHOD_STANFORD_CARD': 'Stanford Card'
     } // end of locale
 }); // end of module
