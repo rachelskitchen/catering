@@ -273,6 +273,16 @@ define(['js/utest/data/Rewards', 'rewards'], function(rewardsData) {
                 expect(rewardsCard.get('rewards').toJSON()).toEqual(rewards);
             });
 
+            it('`number`, `captchaKey`, `captchaValue` are assigned, request is successful, data.discounts is missing (response JSON: {status: "OK", data:{}})', function() {
+                rewardsCard.getRewards();
+                data = {status: 'OK', data: {}};
+                jqXHR.resolve();
+                expectRequestParameters();
+                expect(rewardsCard.trigger).toHaveBeenCalledWith('onRewardsReceived');
+
+                expect(rewardsCard.get('rewards').toJSON()).toEqual([]);
+            });
+
             function expectRequestParameters() {
                 expect(jqXHR.url).toBe(url);
                 expect(jqXHR.type).toBe(type);

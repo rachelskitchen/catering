@@ -396,7 +396,10 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     quantity: 'quan',
                     weight: 1,
                     selected: false,
-                    is_child_product: false
+                    is_child_product: false,
+                    upcharge_name: 'Upcharge',
+                    combo_name: 'Combo',
+                    upcharge_price: 100
                 };
                 mod = spyOn(App.Collections.ModifierBlocks.prototype, 'addJSON').and.returnValue(data.modifiers)
                 prod = spyOn(App.Models.Product.prototype, 'addJSON').and.returnValue(data.product)
@@ -1053,6 +1056,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 App.Data.customer = {
                     isDefaultShippingSelected: function() {return true;}
                 };
+
                 model.change_dining_option(checkout, 'DINING_OPTION_SHIPPING');
                 expect(model.update_cart_totals).toHaveBeenCalledWith({update_shipping_options: true});
             });
@@ -2404,12 +2408,17 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
         });
 
         describe('submit_order_and_pay()', function() {
-            var ajax, total, checkout, card, rewardsCard, customer, payment_process;
+            var ajax, total, checkout, card, rewardsCard, customer, payment_process,
+                dfd = new Backbone.$.Deferred(),
+                customer;
 
             beforeEach(function() {
+                dfd = new Backbone.$.Deferred();
                 spyOn($, 'ajax').and.callFake(function(opts) {
                     ajax = opts;
                     ajax.data = JSON.parse(ajax.data);
+
+                    return dfd;
                 });
                 this.mobile = $.mobile;
                 $.mobile = {
@@ -2481,11 +2490,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });
 
                 this.customer = App.Data.customer;
-                App.Data.customer = {
-                    toJSON: function() {},
-                    get_customer_name: function() {},
-                    isDefaultShippingAddress: function() {}
-                };
+
                 customer = {
                     phone: '',
                     first_name: 'customer name',
@@ -2496,10 +2501,17 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     shipping_services: [],
                     shipping_selected: -1
                 };
-                spyOn(App.Data.customer, 'toJSON').and.callFake(function() {
-                    return customer;
-                });
-                spyOn(App.Data.customer, 'get_customer_name').and.returnValue('customer name');
+
+                App.Data.customer = {
+                    toJSON: jasmine.createSpy().and.callFake(function() {
+                        return customer;
+                    }),
+                    get_customer_name: jasmine.createSpy().and.returnValue('customer name'),
+                    isDefaultShippingAddress: function() {},
+                    isAuthorized: jasmine.createSpy(),
+                    doPayWithToken: jasmine.createSpy().and.returnValue(dfd)
+                };
+
                 //spyOn(App.Models.Myorder.prototype, 'getCustomerData').and.returnValue({call_name: 'customer call name'});
 
                 payment_process = {
@@ -2690,23 +2702,24 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });
             });
 
-            describe('set address for dining option delivery', function() {
+            describe('set address for dining option delivery or catering', function() {
                 beforeEach(function() {
                     spyOn(App.Data.customer, 'isDefaultShippingAddress');
+                    spyOn(model, 'getCustomerAddress').and.returnValue('address');
+                });
+
+                it('dining option delivery', function() {
                     checkout.dining_option = 'DINING_OPTION_DELIVERY';
-                    customer.addresses = ['1', '2'];
+                    model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                    expect(model.getCustomerAddress).toHaveBeenCalled();
+                    expect(ajax.data.orderInfo.customer.address).toBe('address');
                 });
 
-                it('other delivery address', function() {
-                    customer.shipping_address = 1;
+                it('dining option catering', function() {
+                    checkout.dining_option = 'DINING_OPTION_CATERING';
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                    expect(ajax.data.orderInfo.customer.address).toBe('2');
-                });
-
-                it('selected first delivery address', function() {
-                    customer.shipping_address = 0;
-                    model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                    expect(ajax.data.orderInfo.customer.address).toBe('1');
+                    expect(model.getCustomerAddress).toHaveBeenCalled();
+                    expect(ajax.data.orderInfo.customer.address).toBe('address');
                 });
             });
 
@@ -2923,6 +2936,46 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });
             });
 
+            describe('payment type = 5 (giftcard)', function() {
+                var giftCard = new Backbone.Model({
+                    token: 'some token',
+                    cardNumber: '123',
+                    captchaKey: 'key',
+                    captchaValue: 'value'
+                });
+
+                beforeEach(function() {
+                    this.customer = App.Data.customer;
+                    this.giftCard = App.Data.giftcard;
+
+                    App.Data.customer.doPayWithGiftCard = jasmine.createSpy();
+                    App.Data.customer.giftCards = {
+                        getSelected: function() {
+                            return giftCard;
+                        }
+                    };
+
+                    App.Data.giftcard = giftCard;
+                });
+
+                afterEach(function() {
+                    App.Data.customer = this.customer;
+                    App.Data.giftcard = this.giftCard;
+                });
+
+                it('customer.doPayWithGiftCard() returns true', function() {
+                    App.Data.customer.doPayWithGiftCard.and.returnValue(true);
+                    model.submit_order_and_pay(5);
+                    expect(ajax.data.paymentInfo.cardInfo).toEqual({token: 'some token'});
+                });
+
+                it('customer.doPayWithGiftCard() returns false', function() {
+                    App.Data.customer.doPayWithGiftCard.and.returnValue(false);
+                    model.submit_order_and_pay(5);
+                    expect(ajax.data.paymentInfo.cardInfo).toEqual({cardNumber : '123', captchaKey : 'key', captchaValue : 'value'});
+                });
+            });
+
             describe('ajax success', function() {
 
                 beforeEach(function() {
@@ -2931,7 +2984,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                 it('status doesn\'t exist or emtpy', function() {
                     var data = {};
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                     expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(MSG.ERROR_INCORRECT_AJAX_DATA)).not.toBe(-1);
@@ -2939,7 +2992,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                 it('status OK', function() {
                     var data = {status: 'OK'};
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(model.paymentResponse).toBe(data);
                     expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
@@ -2948,8 +3001,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 it('status OK, `validationOnly` is true', function() {
                     model.submit_order_and_pay(2, true);
                     var data = {status: 'OK'};
-                    ajax.success(data);
-                    ajax.complete();
+                    dfd.resolve(data);
 
                     expect(model.trigger).toHaveBeenCalledWith('paymentResponseValid');
                 });
@@ -2974,7 +3026,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                             stanford: 'stanford balance'
                         }
                     };
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(updatePlans).toHaveBeenCalledWith('stanford balance');
                     expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
@@ -2996,7 +3048,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                             rewards: 'rewards balance'
                         }
                     };
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(resetDataAfterPayment).toHaveBeenCalled();
                     expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
@@ -3012,7 +3064,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                         }
                     };
                     spyOn(PaymentProcessor, 'handleRedirect');
-                    ajax.success(data);
+                    dfd.resolve(data);
                     //expect(model.checkout.set.calls.allArgs()).toEqual([['payment_id', 'id'],['payment_type', 5]]);
                     expect(PaymentProcessor.handleRedirect).toHaveBeenCalled();
                 });
@@ -3020,7 +3072,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 it('status PAYMENT_INFO_REQUIRED', function() {
                     spyOn(PaymentProcessor, 'handlePaymentDataRequest');
                     var data = {status: 'PAYMENT_INFO_REQUIRED'};
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(PaymentProcessor.handlePaymentDataRequest).toHaveBeenCalled();
                 });
@@ -3067,7 +3119,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                             status: 'INSUFFICIENT_STOCK',
                             responseJSON: []
                         };
-                        ajax.success(data);
+                        dfd.resolve(data);
                         expect(model.trigger.calls.argsFor(0)[1][0].indexOf(MSG.ERROR_INSUFFICIENT_STOCK)).not.toBe(-1);
                     });
 
@@ -3079,7 +3131,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                                 stock_amount: 0
                             }]
                         };
-                        ajax.success(data);
+                        dfd.resolve(data);
                         expect(set.set).toHaveBeenCalledWith('active', false);
                         expect(model.length).toBe(1);
                     });
@@ -3092,7 +3144,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                                 stock_amount: 1
                             }]
                         };
-                        ajax.success(data);
+                        dfd.resolve(data);
                         expect(set.set).toHaveBeenCalledWith('stock_amount', 1);
                         expect(model.length).toBe(2);
 
@@ -3106,7 +3158,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                             asap_pickup_time: '12/21/2015 03:46'
                         }]
                     };
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                     expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf('Selected time is not available. Next available time')).not.toBe(-1);
@@ -3114,7 +3166,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                 it('status ORDERS_PICKUPTIME_LIMIT', function() {
                     var data = {status: 'ORDERS_PICKUPTIME_LIMIT'};
-                    ajax.success(data);
+                    dfd.resolve(data);
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                 });
 
@@ -3122,7 +3174,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     var data = {
                         status: 'REWARD CARD UNDEFINED'
                     };
-                    ajax.success(data);
+                    dfd.resolve(data);
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                 });
 
@@ -3131,7 +3183,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                         status: 'DELIVERY_ADDRESS_ERROR',
                         errorMsg: 'delivery address error'
                     };
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                     expect(App.Data.errors.alert.calls.mostRecent().args[0]).toBe('delivery address error');
@@ -3147,7 +3199,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                         }
                     };
                     spyOn(window, 'format_timetables');
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                     expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(errorMsg)).not.toBe(-1);
@@ -3155,13 +3207,13 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                 it('status OTHER', function() {
                     var data = {status: 'OTHER', errorMsg: 'other'};
-                    ajax.success(data);
+                    dfd.resolve(data);
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                 });
 
                 describe('ajax error', function() {
                     it('general', function() {
-                        ajax.error();
+                        dfd.reject();
 
                         expect(model.paymentResponse).toEqual({
                             status: 'ERROR',
@@ -3174,14 +3226,14 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                     it('`validationOnly` is true', function() {
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT, true);
-                        ajax.error();
+                        dfd.reject();
 
                         expect(model.trigger.calls.mostRecent().args[0]).toBe('paymentFailedValid');
                     });
 
                     it('`validationOnly` is false, `capturePhase` is true', function() {
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT, false, true);
-                        ajax.error();
+                        dfd.reject();
 
                         expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
                         expect(model.paymentResponse.status).toBe('error');
