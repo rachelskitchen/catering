@@ -425,11 +425,8 @@ define(['backbone'], function(Backbone) {
         /**
          * Returns primary payment model
          */
-        getPrimaryPayment: function()
-        {
-            var primary_model = this.models.find(function(model) {
-                return model.get('is_primary');
-            });
+        getPrimaryPayment: function() {
+            var primary_model = this.findWhere({is_primary: true});
 
             return primary_model;
         },
