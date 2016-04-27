@@ -22,6 +22,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
         });
 
         it("Create model", function() {
+            spyOn(model, 'setCustomerFromCookie'); // avoid setting model values from cookie
             expect(model.toJSON()).toEqual(def);
         });
 
