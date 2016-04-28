@@ -65,6 +65,7 @@ define(["main_router"], function(main_router) {
             "maintenance": "maintenance",
             "pay": "pay",
             "rewards_card_submit": "rewards_card_submit",
+            "reward_cards_select": "reward_cards_select",
             "rewards": "rewards",
             "login": "login",
             "signup": "signup",
@@ -294,7 +295,7 @@ define(["main_router"], function(main_router) {
             }, this);
 
             // onApplyRewardsCard event occurs when Rewards Card's 'Apply' button is clicked on #checkout page
-            this.listenTo(App.Data.myorder.rewardsCard, 'onApplyRewardsCard', this.navigate.bind(this, 'rewards_card_submit', true));
+            this.listenTo(App.Data.myorder.rewardsCard, 'onApplyRewardsCard', this.navigate.bind(this, 'rewards_card_submit', {trigger: true, replace: true}));
 
             // onGetRewards event occurs when Rewards Card's 'Submit' button is clicked on 'Rewards Card Info' popup
             this.listenTo(App.Data.myorder.rewardsCard, 'onGetRewards', function() {
@@ -308,6 +309,7 @@ define(["main_router"], function(main_router) {
                 App.Data.mainModel.trigger('loadStarted');
                 App.Data.myorder.get_cart_totals().always(function() {
                     App.Data.mainModel.trigger('loadCompleted');
+                    App.Data.myorder.rewardsCard.trigger('onRedemptionApplyComplete');
                     self.navigate(self.rewardsPageReferrerHash, true);
                 });
             }, this);
@@ -325,7 +327,7 @@ define(["main_router"], function(main_router) {
                 if (!rewardsCard.get('rewards').length) {
                     App.Data.errors.alert(MSG.NO_REWARDS_AVAILABLE);
                 } else {
-                    this.navigate('rewards', true);
+                    this.navigate('rewards', {trigger: true, replace: true});
                 }
 
                 App.Data.mainModel.trigger('loadCompleted');
@@ -998,7 +1000,8 @@ define(["main_router"], function(main_router) {
         confirm: function() {
             var self = this,
                 load = $.Deferred(),
-                myorder = App.Data.myorder;
+                myorder = App.Data.myorder,
+                rewardCards = App.Data.customer.rewardCards;
 
             if (myorder.length === 0) {
                 load = this.loadData();
@@ -1028,10 +1031,14 @@ define(["main_router"], function(main_router) {
                     model: myorder.total,
                     mod: 'Checkout',
                     collection: myorder,
+                    customer: App.Data.customer,
                     checkout: myorder.checkout,
                     rewardsCard: myorder.rewardsCard,
+                    rewardCards: rewardCards,
                     showDiscountCode: showDiscountCode,
-                    showRewards: this.navigate.bind(this, 'rewards_card_submit', true),
+                    showRewards: function() {
+                            self.navigate(rewardCards.length ? 'reward_cards_select' : 'rewards_card_submit', true);
+                        },
                     cacheId: true
                 },
                 {
@@ -1640,8 +1647,10 @@ define(["main_router"], function(main_router) {
                 this.change_page();
             });
         },
-        rewards_card_submit: function() {
-            var rewardsCard = App.Data.myorder.rewardsCard;
+        rewards_card_submit: function(rewardsCard) {
+            if (!rewardsCard) {
+                rewardsCard = App.Data.myorder.rewardsCard;
+            }
             this.rewardsPageReferrerHash = this.lastHash;
 
             App.Data.header.set({
@@ -1684,8 +1693,60 @@ define(["main_router"], function(main_router) {
                 this.change_page();
             });
         },
-        rewards: function() {
-            var rewardsCard = App.Data.myorder.rewardsCard;
+        reward_cards_select: function() {
+            var self = this,
+                rewardCards = App.Data.customer.rewardCards;
+            this.rewardsPageReferrerHash = this.lastHash;
+
+            if (!rewardCards.length) {
+                return this.navigate('index', true);
+            }
+            App.Data.header.set({
+                page_title: _loc.HEADER_REWARDS_CARD_PT,
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history)
+            });
+
+            App.Data.mainModel.set({
+                header: headerModes.Cart,
+                footer: footerModes.None
+            });
+
+            this.prepare('rewards', function() {
+                App.Data.mainModel.set({
+                    contentClass: '',
+                    content: [{
+                        modelName: 'Profile',
+                        mod: 'RewardCardsSelection',
+                        collection: rewardCards,
+                        className: 'rewards-info',
+                        applyRewardCard: applyRewardCard
+                    }]
+                });
+
+                this.change_page();
+            });
+
+            function  applyRewardCard(rewardCard) {
+                var myorder = App.Data.myorder;
+                if (rewardCard.get('selected')) {
+                    self.navigate('rewards', true);
+                } else {
+                    myorder.rewardsCard.resetData();
+                    myorder.rewardsCard.set({
+                        number: rewardCard.get('number')
+                    });
+                    self.navigate('rewards_card_submit', true);
+                    self.listenToOnce(App.Data.myorder.rewardsCard, 'onRedemptionApplyComplete', function() {
+                        rewardCard.set('selected', true);
+                    });
+                }
+            }
+        },
+        rewards: function(rewardsCard) {
+            if (!rewardsCard) {
+                rewardsCard = App.Data.myorder.rewardsCard;
+            }
 
             App.Data.header.set({
                 page_title: _loc.HEADER_REWARDS_PT,
@@ -1693,10 +1754,12 @@ define(["main_router"], function(main_router) {
                 back: window.history.back.bind(window.history)
             });
 
+            var clone = rewardsCard.clone();
+
             App.Data.mainModel.set({
                 header: headerModes.Cart,
                 footer: {
-                        rewardsCard: rewardsCard,
+                        rewardsCard: clone,
                         mod: 'RewardRedemption',
                         className: 'footer'
                     }
@@ -1705,6 +1768,7 @@ define(["main_router"], function(main_router) {
             App.Data.footer.set({
                 btn_title: _loc.CHECKOUT_APPLY,
                 action: function() {
+                    rewardsCard.update(clone);
                     rewardsCard.trigger('beforeRedemptionApplied');
                     rewardsCard.trigger('onRedemptionApplied');
                 }
@@ -1716,12 +1780,11 @@ define(["main_router"], function(main_router) {
                     content: [{
                         modelName: 'Rewards',
                         mod: 'Info',
-                        model: rewardsCard,
+                        model: clone,
                         className: 'rewards-info',
-                        collection: App.Data.myorder,
-                        balance: rewardsCard.get('balance'),
-                        rewards: rewardsCard.get('rewards'),
-                        discounts: rewardsCard.get('discounts')
+                        balance: clone.get('balance'),
+                        rewards: clone.get('rewards'),
+                        discounts: clone.get('discounts')
                     }]
                 });
 
