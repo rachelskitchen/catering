@@ -419,6 +419,7 @@
             'BAG_CHARGE_ITEM': 'Bag Charge',
             'AUTOAPPLY_FEE_ITEM': 'AutoApply Fee',
             'REPEAT_ORDER_NOTIFICATION': 'Some items have changed or no longer available. Please review items before placing your order.',
+            'REPEAT_ORDER_UNAVAILABLE_NOTIFICATION': 'This order cannot be repeated. All items are no longer available. You will be forwaded to the orders list.',
             'REWARD_CARD_UNDEFINED': 'Invalid Reward Card Number.',
             'ADD_MORE_FOR_DELIVERY': 'Please add %s more for delivery',
             'ADD_MORE_FOR_SHIPPING': 'Please add %s more for shipping',
