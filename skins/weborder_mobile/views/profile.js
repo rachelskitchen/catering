@@ -91,6 +91,20 @@ define(["profile_view", "giftcard_view"], function(profile_view) {
                 });
                 this.subViews.push(giftCardsEdition);
             }
+
+            if (this.model.rewardCards) {
+                this.newRewardCard = new App.Models.RewardsCard({add_new_card: false});
+                var rewardCardsEdition = App.Views.GeneratorView.create('Profile', {
+                    el: this.$('.reward-cards-box'),
+                    mod: 'RewardCardsEdition',
+                    collection: this.model.rewardCards,
+                    newCard: this.newRewardCard,
+                    unlinkRewardCard: this.options.unlinkRewardCard,
+                    customer: this.options.model,
+                    className: 'profile-payments-edition text-center'
+                });
+                this.subViews.push(rewardCardsEdition);
+            }
             return this;
         },
     });
@@ -131,10 +145,47 @@ define(["profile_view", "giftcard_view"], function(profile_view) {
         }
     });
 
+    // Profile Views for Reward Cards:
+    var ProfileRewardCardSelectionView = App.Views.CoreProfileView.CoreProfileRewardCardSelectionView.extend({
+        className: 'payment-item font-size3 primary-bg primary-text'
+    });
+
+    var ProfileRewardCardsSelectionView = App.Views.CoreProfileView.CoreProfileRewardCardsSelectionView.extend({
+        itemView: ProfileRewardCardSelectionView
+    });
+
+    var ProfileRewardCardEditionView = App.Views.CoreProfileView.CoreProfileRewardCardEditionView.extend({
+        className: 'payment-item font-size3 primary-text list-subheader'
+    });
+
+    var ProfileRewardCardsEditionView = App.Views.CoreProfileView.CoreProfileRewardCardsEditionView.extend({
+        bindings: {
+            '.reward-cards': 'classes: {collapsed: ui_collapsed}',
+            '.reward-cards-list': 'collection: $collection',
+            '.reward-cards-list-wrap': 'toggle: not(ui_collapsed)'
+        },
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({collapsed: true});
+            }
+        },
+        itemView: ProfileRewardCardEditionView,
+        events: {
+            'click .reward-cards': 'collapse'
+        },
+        collapse: function() {
+            var $ui = this.getBinding('$ui');
+            $ui.set('collapsed', !$ui.get('collapsed'));
+        }
+    });
+
     return new (require('factory'))(profile_view.initViews.bind(profile_view), function() {
         App.Views.ProfileView.ProfilePaymentsSelectionView = ProfilePaymentsSelectionView;
         App.Views.ProfileView.ProfilePaymentsEditionView = ProfilePaymentsEditionView;
         App.Views.ProfileView.ProfileGiftCardsSelectionView = ProfileGiftCardsSelectionView;
         App.Views.ProfileView.ProfileGiftCardsEditionView = ProfileGiftCardsEditionView;
+        App.Views.ProfileView.ProfileRewardCardSelectionView = ProfileRewardCardSelectionView;
+        App.Views.ProfileView.ProfileRewardCardsSelectionView = ProfileRewardCardsSelectionView;
+        App.Views.ProfileView.ProfileRewardCardsEditionView = ProfileRewardCardsEditionView;
     });
 });

@@ -186,9 +186,9 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
          * Clone product set, deep clonning is used
          * @return {Object} - new product set object
          */
-        clone: function() {
-            return this.deepClone();
-        },
+        /*clone: function() {
+            return this.clone();
+        },*/
         /**
          * Get json for cart_totals/create_order_and_pay requests
          * @param {boolean} for_discount = true when cart totals is used, false - when create_order_and_pay request used
@@ -233,9 +233,9 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
          * Clone product collection, deep clonning is used
          * @return {Object} - new collection object
          */
-        clone: function() {
-            return this.deepClone();
-        }
+       /* clone: function() {
+            return this.clone();
+        }*/
     });
 
     /**
@@ -303,9 +303,9 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
          * Clone product collection, deep clonning is used
          * @return {object} - new collection object
          */
-        clone: function() {
-            return this.deepClone();
-        },
+/*      clone: function() {
+            return this.clone();
+        }, */
         /**
          * Get all selected products.
          * It searches through all products sets and return selected items as a single collection

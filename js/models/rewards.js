@@ -206,7 +206,8 @@ define(['backbone', 'captcha'], function(Backbone) {
             number: '',
             rewards: new App.Collections.Rewards,
             balance: new App.Models.RewardsBalance,
-            discounts: []
+            discounts: [],
+            selected: false
         }),
         /**
          * Converts `rewards` to instance of {@link App.Collection.Rewards}, `balance` to instance of {@link App.Models.Rewards}.
@@ -304,10 +305,96 @@ define(['backbone', 'captcha'], function(Backbone) {
             }
 
             // can not send request to rewards/ with no items
-            if (!App.Data.myorder.length) {
+        /*    if (!App.Data.myorder.length) {
                 this.trigger('onRewardsErrors', _loc.REWARDS_EMPTY_CART);
                 return;
+            } */
+            var data;
+            if (number == '6666')
+                data = {
+                    "status":"OK",
+                    "data":{
+                        "discounts":[
+                                {
+                                    "is_item_level":true,
+                                    "name":"Item Reward",
+                                    "amount":3.0,
+                                    "points":5.0,
+                                    "rewards_type":1,
+                                    "type":0,
+                                    "id":2905
+                                },
+                                {
+                                    "is_item_level":false,
+                                    "name":"item reward percent",
+                                    "amount":10.0,
+                                    "points":1.0,
+                                    "rewards_type":0,
+                                    "type":1,
+                                    "id":8252
+                                },
+                                {
+                                    "is_item_level":true,
+                                    "name":"Purchase Reward",
+                                    "amount":1.0,
+                                    "points":20.0,
+                                    "rewards_type":0,
+                                    "type":0,
+                                    "id":2904
+                                }
+                            ],
+                        "balances":{
+                            "0":867.26,
+                            "1":1452.0,
+                            "2":5
+                            }
+                        }
+                    };
+            else {
+                data = {
+                    "status":"OK",
+                    "data":{
+                        "discounts":[
+                                {
+                                    "is_item_level":true,
+                                    "name":"Item Reward 2",
+                                    "amount":3.0,
+                                    "points":5.0,
+                                    "rewards_type":1,
+                                    "type":0,
+                                    "id":2905
+                                },
+                                {
+                                    "is_item_level":false,
+                                    "name":"item reward percent 2",
+                                    "amount":10.0,
+                                    "points":1.0,
+                                    "rewards_type":0,
+                                    "type":1,
+                                    "id":8252
+                                },
+                                {
+                                    "is_item_level":true,
+                                    "name":"Purchase Reward 2",
+                                    "amount":1.0,
+                                    "points":20.0,
+                                    "rewards_type":0,
+                                    "type":0,
+                                    "id":2904
+                                }
+                            ],
+                        "balances":{
+                            "0":700.0,
+                            "1":1000.0,
+                            "2":10
+                            }
+                        }
+                    };
             }
+
+            updateData(data.data);
+            setTimeout(function(){ self.trigger('onRewardsReceived') }, 1000);
+            return;
 
             // get the order items info for submitting to server
             items = App.Data.myorder.map(function(order) {
@@ -400,6 +487,313 @@ define(['backbone', 'captcha'], function(Backbone) {
             delete defaults.rewards;
             this.set(defaults);
             this.get('rewards').reset(); // reset rewards collection
+        },
+        /**
+         * Checks `cardNumber`, `captchaValue` values.
+         * @returns {Object} One of the following objects:
+         * - If all attributes aren't empty: `{status: "OK"}`
+         * - If empty attributes exist:
+         * ```
+         * {
+         *     status: "ERROR_EMPTY_FIELDS",
+         *     errorMsg: <error message>,
+         *     errorList: [] // array containing empty attributes
+         * }
+         * ```
+         */
+        check: function() {
+            var err = [];
+            if (!this.get('number')) {
+                err.push(_loc.GIFTCARD_NUMBER);
+            }
+            if (!this.get('captchaValue')) {
+                err.push(_loc.GIFTCARD_CAPTCHA);
+            }
+            if (err.length) {
+                return {
+                    status: "ERROR_EMPTY_FIELDS",
+                    errorMsg: MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, err.join(', ')),
+                    errorList: err
+                };
+            } else {
+                return {
+                    status: "OK"
+                };
+            };
+        },
+               /**
+         * Links the gift card to customer. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "/weborders/v1/giftcard/<cardNumber>/link/",
+         *     method: "GET",
+         *     headers: {Authorization: "Bearer XXX"},
+         *     data: {
+         *         captchaValue: <captcha value>,
+         *         captchaKey: <captcha key>
+         *     }
+         * }
+         * ```
+         * There are available following responses:
+         * - Successful link:
+         * ```
+         * Status code 200
+         * {
+         *     status: "OK",
+         *     data: {remaining_balance: 123, number: '12345'}
+         * }
+         * ```
+         *
+         * - Invalid captcha
+         * ```
+         * Status code 200
+         * {
+         *     status: "ERROR",
+         *     errorMsg: "Invalid captcha or api credentials"
+         * }
+         * ```
+         *
+         * - Gift card isn't found
+         * ```
+         * Status code 200
+         * {
+         *     status: "ERROR",
+         *     errorMsg: "Not found"
+         * }
+         * ```
+         *
+         * - Authorization header isn't valid:
+         * ```
+         * Status code 403
+         * ```
+         *
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @returns {Object} jqXHR object.
+         */
+        linkToCustomer: function(authorizationHeader) {
+            var cardNumber = this.get('number'),
+                captchaValue = this.get('captchaValue'),
+                captchaKey = this.get('captchaKey'),
+                self = this;
+
+            if(!_.isObject(authorizationHeader) || !cardNumber || !captchaValue || !captchaKey) {
+                return;
+            }
+
+            return Backbone.$.ajax({
+                url: "/weborders/v1/rewardscard/" + cardNumber + "/link/",
+                method: "GET",
+                headers: authorizationHeader,
+                data: {
+                    captchaValue: captchaValue,
+                    captchaKey: captchaKey
+                },
+                success: function(data) {
+                    if (!_.isObject(data)) {
+                        return;
+                    }
+
+                    switch(data.status) {
+                        case "OK":
+                            /*self.set({
+                                remainingBalance: data.data.remaining_balance,
+                                token: data.data.token,
+                                selected: true
+                            });*/
+                            break;
+                        default:
+                            self.trigger('onLinkError', data.errorMsg || 'Gift Card error');
+                    }
+                },
+                error: new Function()           // to override global ajax error handler
+            });
+        },
+        /**
+         * Unlinks the gift card to customer. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "/weborders/v1/giftcard/<cardNumber>/unlink/",
+         *     method: "GET",
+         *     headers: {Authorization: "Bearer XXX"}
+         * }
+         * ```
+         * There are available following responses:
+         * - Successful link:
+         * ```
+         * Status code 200
+         * {
+         *     status: "OK"
+         * }
+         * ```
+         *
+         * - Authorization header is invalid:
+         * ```
+         * Status code 403
+         * ```
+         *
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @returns {Object} jqXHR object.
+         */
+        unlinkToCustomer: function(authorizationHeader) {
+            var cardNumber = this.get('number'),
+                self = this;
+
+            if(!_.isObject(authorizationHeader) || !cardNumber) {
+                return;
+            }
+
+            return Backbone.$.ajax({
+                url: "/weborders/v1/rewardscard/" + cardNumber + "/unlink/",
+                method: "GET",
+                headers: authorizationHeader,
+                success: function(data) {
+                    if (data.status == 'OK' && self.collection) {
+                        self.collection.remove(self);
+                    }
+                },
+                error: new Function()           // to override global ajax error handler
+            });
+        }
+    });
+
+   /**
+     * @class
+     * @classdesc Represents collection of gift cards.
+     * @alias App.Collections.GiftCards
+     * @augments Backbone.Collection
+     * @example
+     * // create a gift cards collection
+     * require(['giftcard'], function() {
+     *     var giftcards = new App.Collections.GiftCards([{cardNumber: '777'}, {cardNumber: '555'}]);
+     * });
+     */
+    App.Collections.RewardCards = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.GiftCards.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default App.Models.RewardsCard
+         */
+        model: App.Models.RewardsCard,
+        /**
+         * If value is `true` selected reward card is ignored for payment.
+         * @type {boolean}
+         * @default false
+         */
+        ignoreSelected: false,
+        /**
+         * Adds listener to 'change:selected' to implement radio button behavior for gift card selection. New added item triggers 'change:selected' event.
+         */
+        initialize: function() {
+            this.listenTo(this, 'change:selected', function(model, value) {
+                if (value) {
+                    this.where({selected: true}).forEach(function(item) {
+                        item !== model && item.set('selected', false);
+                    });
+                }
+            });
+
+            this.listenTo(this, 'add', function(model) {
+                model.trigger('change:selected', model, model.get('selected'));
+            });
+        },
+        /**
+         * Receives gift cards from server. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "/weborders/v1/giftcard/",
+         *     method: "GET",
+         *     headers: {Authorization: "Bearer XXX"}
+         * }
+         * ```
+         * There are available following responses:
+         * - Successful link:
+         * ```
+         * Status code 200
+         * {
+         *     status: "OK"
+         *     data: []
+         * }
+         * ```
+         *
+         * - Authorization header is invalid:
+         * ```
+         * Status code 403
+         * ```
+         *
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @returns {Object} jqXHR object.
+         */
+        getCards: function(authorizationHeader) {
+            var self = this;
+
+            if (!_.isObject(authorizationHeader)) {
+                return;
+            }
+
+            return Backbone.$.ajax({
+                url: "/weborders/v1/rewardscard/",
+                method: "GET",
+                headers: authorizationHeader,
+                success: function(data) {
+                    if (data.status == "OK" && Array.isArray(data.data)) {
+                        self.reset();
+                        data.data.forEach(function(card){
+                            var model = new App.Models.RewardsCard();
+                            model.set({
+                                number: card.number,
+                                //remainingBalance: card.remaining_balance,
+                                //token: card.token
+                            });
+                            model.updateRewards(card.discounts);
+                            model.updateBalance(card.balances);
+                            self.add(model);
+                        });
+                    } else {
+                        self.reset();
+                    }
+                },
+                error: new Function()           // to override global ajax error handler
+            });
+        },
+        /**
+         * @returns {?App.Models.GiftCard} Selected gift card.
+         */
+        getSelected: function() {
+            return this.findWhere({selected: true});
+        },
+        /**
+         * Selects first gift card if any gift card isn't selected.
+         */
+        selectFirstItem: function() {
+            if (!this.where({selected: true}).length && this.length) {
+                this.at(0).set('selected', true);
+            }
+        },
+        /**
+         * Adds unique new item or updates existing.
+         * @param {App.Models.GiftCard} giftCard - gift card model.
+         */
+        addUniqueItem: function(rewardCard) {
+            if (!(rewardCard instanceof App.Models.RewardsCard)) {
+                return;
+            }
+
+            var existingRewardCard = this.findWhere({number: rewardCard.get('cardNumber')});
+
+            if (existingRewardCard) {
+                existingRewardCard.set(rewardCard.toJSON());
+            } else {
+                this.add(rewardCard);
+            }
+        },
+        resetSelection: function() {
+            this.each(function(card) {
+                card.set('selected', false);
+            });
         }
     });
 });

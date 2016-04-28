@@ -84,19 +84,24 @@
       return new_class;
   }
 
-  Backbone.Collection.prototype.deepClone = function() {
+  Backbone.Collection.prototype.clone = function() {
       var copy = new this.constructor();
-      this.each(function(model) {
-         copy.add(model.clone());
+      this.each(function(model, index) {
+          trace("collection: clone a model, index:", index);
+          copy.add(model.clone());
       });
       return copy;
   }
 
-  Backbone.Model.prototype.deepClone = function() {
+  Backbone.Model.prototype.clone = function() {
       var copy = new this.constructor();
       for (var key in this.attributes) {
           var value = this.get(key);
-          if (value && value.clone) { value = value.clone(); }
+          if (value && value.clone) {
+              trace("deep clone for key: ", key);
+              value = value.clone();
+          }
+          trace("set value for key: ", key);
           copy.set(key, value, {silent: true });
       }
       return copy;
@@ -106,12 +111,12 @@
       for (var key in newModel.attributes) {
           var value = newModel.get(key);
           if (value && value.update) {
+            trace("update depper for key: ", key);
             this.get(key).update(value);
-            //trace("update depper for key: ", key);
           }
           else {
             this.set(key, value, {silent: true});
-            //trace("update key: ", key);
+            trace("update key: ", key);
           }
       }
       return this;
@@ -125,7 +130,7 @@
           var value = newCollection.models[key];
           if (value && value.update) {
              this.models[key].update(value);
-             //trace("update depper for key: ", key);
+             trace("update depper for key: ", key);
           }
       }
       return this;

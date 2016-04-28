@@ -180,6 +180,7 @@
 <script type="text/template" id="profile_payments-template">
     <div class="payments-box profile-payments-edition text-center"></div>
     <div class="gift-cards-box profile-payments-edition text-center"></div>
+    <div class="reward-cards-box profile-payments-edition text-center"></div>
 </script>
 
 <script type="text/template" id="profile_gift_card_selection-template">
@@ -229,7 +230,54 @@
             <div class="captcha-spinner"></div>
         </div>
         <span class="btn btn-reload link regular-text">
-            <span class="font-size4"> <%= _lp.GIFTCARD_RELOAD %> </span>
+            <span class="font-size3"> <%= _lp.GIFTCARD_RELOAD %> </span>
+        </span>
+    </div>
+</script>
+
+<script type="text/template" id="profile_reward_card_selection-template">
+    <span class="card-number"></span>
+    <span class="apply-link link"><%= _lp.CHECKOUT_APPLY %></span>
+</script>
+
+<script type="text/template" id="profile_reward_cards_selection-template">
+    <ul class="reward-cards-list"></ul>
+</script>
+
+<script type="text/template" id="profile_reward_card_edition-template">
+    <span class="card-number"></span>
+    <div class="remove-btn"></div>
+</script>
+
+<script type="text/template" id="profile_reward_cards_edition-template">
+    <div class="reward-cards editgroup primary-text text-center primary-bg">
+        <span class="font-size1"><%= _lp.REWARD_CARDS %></span>
+    </div>
+    <div class="reward-cards-list-wrap">
+        <ul class="reward-cards-list"></ul>
+        <div class="add_reward_card_title_wrap">
+            <div class="add_reward_card_title primary-text"><span class="plus_sign"></span><%= _loc.PROFILE_ADD_NEW_REWARD_CARD %></div>
+        </div>
+        <div class="profile-form primary-text text-center">
+            <div class="new_reward_card"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="profile_rewardcard-template">
+    <label class="required font-size2">
+        <input type="text" placeholder="<%= _lp.GIFTCARD_NUMBER %>" class="rewards-input ios-safari-caret input-colors">
+    </label>
+    <label class="required font-size2">
+        <input type="text" placeholder="<%= _lp.GIFTCARD_CAPTCHA %>" class="ios-safari-caret rewards-captcha-input input-colors">
+    </label>
+    <div class="captcha_container">
+        <div class="captcha_wrap">
+            <img alt="" class="captcha captcha-image" width="100%" height="100%">
+            <div class="captcha-spinner"></div>
+        </div>
+        <span class="update-captcha btn btn-reload link regular-text">
+            <span class="font-size3"> <%= _lp.GIFTCARD_RELOAD %> </span>
         </span>
     </div>
 </script>
