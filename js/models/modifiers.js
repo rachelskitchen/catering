@@ -256,11 +256,6 @@ define(["backbone"], function(Backbone) {
      */
     {
         /**
-         * Key of modifiers group.
-         * @type {?string}
-         */
-        admin_mod_key: null,
-        /**
          * Item constructor.
          * @type {Function}
          * @default {@link App.Models.Modifier}
