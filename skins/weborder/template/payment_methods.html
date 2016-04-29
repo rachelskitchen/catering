@@ -1,21 +1,20 @@
 <script type="text/template" id="payment_methods_main-template">
-    <h2 class="title"><%= _lp.CHECKOUT_PAYMENT_INFORMATION %></h2>
     <div class="label payment-methods-label"><%= _lp.CHECKOUT_PAYMENT_METHODS_LABEL %></div>
-    <ul class="payment-methods text-center">
+    <ul class="payment-methods text-left">
         <% if(credit_card_button) { %>
-        <li class="payment-method fl-left item" data-payment="credit_card_button"><%= _lp.CHECKOUT_PAYMENT_METHOD_CREDIT_CARD %></li>
+        <li class="payment-method item text-center" data-payment="credit_card_button"><%= _lp.CHECKOUT_PAYMENT_METHOD_CREDIT_CARD %></li>
         <% } %>
         <% if(gift_card) { %>
-        <li class="payment-method fl-left item" data-payment="gift_card"><%= _lp.CHECKOUT_PAYMENT_METHOD_GIFT_CARD %></li>
+        <li class="payment-method item text-center" data-payment="gift_card"><%= _lp.CHECKOUT_PAYMENT_METHOD_GIFT_CARD %></li>
         <% } %>
         <% if(cash) { %>
-        <li class="payment-method cash fl-left item" data-payment="cash"></li>
+        <li class="payment-method cash item text-center" data-payment="cash"></li>
         <% } %>
         <% if(paypal) { %>
-        <li class="payment-method fl-left item" data-payment="paypal"><%= _lp.PAYPAL %></li>
+        <li class="payment-method item text-center" data-payment="paypal"><%= _lp.PAYPAL %></li>
         <% } %>
         <% if(stanford) { %>
-        <li class="payment-method fl-left item" data-payment="stanford"><%= _lp.CHECKOUT_PAYMENT_METHOD_STANFORD_CARD %></li>
+        <li class="payment-method item text-center" data-payment="stanford"><%= _lp.CHECKOUT_PAYMENT_METHOD_STANFORD_CARD %></li>
         <% } %>
     </ul>
 </script>

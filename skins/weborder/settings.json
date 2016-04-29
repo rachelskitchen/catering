@@ -33,9 +33,9 @@
         },
         "checkout": {
             "css": ["checkout", "confirm", "card", "rewards", "pikaday"],
-            "views": ["cart", "checkout", "cart", "confirm", "rewards", "stanfordcard"],
+            "views": ["cart", "checkout", "cart", "confirm", "tips", "rewards", "stanfordcard"],
             "templates": ["cart", "checkout", "cart", "tips", "confirm", "card", "giftcard", "rewards", "payment_methods"],
-            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "card_view", "giftcard_view", "tips_view", "pikaday", "payment_methods_view"]
+            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "card_view", "giftcard_view", "pikaday", "payment_methods_view"]
         },
         "confirm": {
             "views": [],

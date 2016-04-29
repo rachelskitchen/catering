@@ -45,7 +45,8 @@ define(["checkout_view"], function(checkout_view) {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
 
             var orderDetails = this.$('.order-details'),
-                order_type, pickup, main;
+                paymentInfo = this.$('.payment-info'),
+                order_type, pickup, main, paymentMethods, tips, discount, rewards;
 
             order_type = App.Views.GeneratorView.create('Checkout', {
                 mod: 'OrderType',
@@ -57,22 +58,62 @@ define(["checkout_view"], function(checkout_view) {
             pickup = App.Views.GeneratorView.create('Checkout', {
                 model: this.collection.checkout,
                 timetable: this.options.timetable,
-                mod: 'Pickup',
-                className: 'fl-left'
+                mod: 'Pickup'
             });
 
             main = App.Views.GeneratorView.create('Checkout', {
                 model: this.collection.checkout,
                 customer: this.options.customer,
                 rewardsCard: this.collection.rewardsCard,
-                mod: 'Main'
+                mod: 'Main',
+                className: 'clear'
             });
+
 
             this.subViews.push(order_type, pickup, main);
 
-            orderDetails.append(order_type.el);
-            orderDetails.append(pickup.el);
-            orderDetails.append(main.el);
+            orderDetails.prepend(main.el);
+            orderDetails.prepend(pickup.el);
+            orderDetails.prepend(order_type.el);
+
+            paymentMethods = App.Views.GeneratorView.create('PaymentMethods', {
+                mod: 'Main',
+                model: this.options.paymentMethods
+            });
+
+            this.subViews.push(paymentMethods);
+            paymentInfo.append(paymentMethods.el);
+
+            if(this.options.acceptTips) {
+                tips = App.Views.GeneratorView.create('Tips', {
+                    model: this.collection.total.get('tip'),
+                    mod: 'Line',
+                    total: this.collection.total
+                });
+                this.subViews.push(tips);
+                paymentInfo.append(tips.el);
+            }
+
+            if (this.options.discountAvailable) {
+                discount = App.Views.GeneratorView.create('Checkout', {
+                    model: this.collection.checkout,
+                    mod: 'DiscountCode',
+                    myorder: this.collection,
+                    className: 'item'
+                });
+                this.subViews.push(discount);
+                paymentInfo.append(discount.el);
+            }
+
+            if(this.options.enableRewardCard) {
+                rewards = App.Views.GeneratorView.create('Checkout', {
+                    model: this.collection.rewardsCard,
+                    mod: 'RewardsCard',
+                    className: 'item'
+                });
+                this.subViews.push(rewards);
+                paymentInfo.append(rewards.el);
+            }
 
             this.iOSSafariCaretFix();
 
@@ -80,8 +121,32 @@ define(["checkout_view"], function(checkout_view) {
         }
     });
 
+    var CheckoutRewardsCardView = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'rewards_card',
+        bindings: {
+            '.see-rewards': 'classes: {hide: select(length(discounts), false, true)}',
+            '.rewardCard': 'value: number, events: ["input"], attr: {readonly: select(length(discounts), true, false)}, restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^\\d*$/'
+        },
+        events: {
+            'click .rewards-card-apply': 'applyRewardsCard',
+            'click .see-rewards': 'showRewards',
+            'click .cancel-input': 'resetRewards'
+        },
+        applyRewardsCard: function() {
+            this.model.trigger('onApplyRewardsCard');
+        },
+        showRewards: function() {
+            this.model.trigger('onRewardsReceived');
+        },
+        resetRewards: function() {
+            this.model.resetData();
+        }
+    });
+
     return new (require('factory'))(checkout_view.initViews.bind(checkout_view), function() {
         App.Views.CheckoutView.CheckoutMainView = CheckoutMainView;
         App.Views.CheckoutView.CheckoutPageView = CheckoutPageView;
+        App.Views.CheckoutView.CheckoutRewardsCardView = CheckoutRewardsCardView;
     });
 });
