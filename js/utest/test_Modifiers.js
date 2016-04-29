@@ -742,9 +742,8 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
         });
         
         it('get_modifiers()', function() {
-            var success, error, arg,
+            var success, error,
                 ajaxStub = function() {
-                    arg = arguments;
                     success = arguments[0].successResp;
                     error = arguments[0].error;
                     return ajaxStub;
@@ -765,6 +764,48 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             model.addJSON(exBlocks);
 
             expect(model.find_modifier('122')).toEqual(model.get('12').get('modifiers').get('122'));
+        });
+
+        describe('get_quick_modifiers()', function() {
+            var success, error, fetching, add,
+                ajaxStub = function() {
+                    success = arguments[0].successResp;
+                    error = arguments[0].error;
+                    return ajaxStub;
+                };
+
+            beforeEach(function() {
+                add = spyOn(App.Models.ModifierBlock.prototype, 'addJSON').and.returnValue(new App.Models.ModifierBlock);
+                spyOn($, 'ajax').and.callFake(ajaxStub);
+                spyOn(App.Data.errors, 'alert');
+            });
+
+            it('ajax success', function() {
+                fetching = model.get_quick_modifiers();
+                success(load);
+
+                expect(model.length).toBe(1);
+                expect(add.calls.count()).toBe(1);
+                expect(add.calls.mostRecent().args[0]).toBe(load[0]);
+                expect(fetching.state()).toBe('resolved');
+            });
+
+            it('ajax success, admin_mod_key is `DISCOUNT`', function() {
+                load[0].admin_mod_key = 'DISCOUNT';
+                fetching = model.get_quick_modifiers();
+                success(load);
+                expect(model.length).toBe(0);
+                expect(add.calls.count()).toBe(0);
+                expect(fetching.state()).toBe('resolved');
+            });
+
+            it('ajax error', function() {
+                fetching = model.get_quick_modifiers();
+                error();
+
+                expect(fetching.state()).toBe('pending');
+                expect(App.Data.errors.alert).toHaveBeenCalled();
+            });
         });
         
         it('get_modifierList()', function() {
