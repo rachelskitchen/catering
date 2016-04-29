@@ -389,9 +389,15 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             });
             
             it('for not special modifier', function() {
-                var collection = new App.Collections.Modifiers();
+                var collection = new App.Collections.Modifiers([{admin_modifier: true}, {test: null}]);
+                model.set('admin_mod_key', 'test');
                 spyOn(App.Collections.Modifiers.prototype, 'modifiers_submit').and.returnValue(collection);
-                expect(model.modifiers_submit()).toBe(collection);
+                var result = model.modifiers_submit();
+
+                expect(result.length).toBe(2);
+                expect(result.at(0).admin_mod_key).toBe('test');
+                expect(result.at(1).admin_mod_key).toBe('test');
+
             });
         });
         
