@@ -19,26 +19,27 @@
 </script>
 
 <script type="text/template" id="rewards_info-template">
-    <div class="popup-background">
-        <h3><%= _lp.REWARDS_INFORMATION %></h3>
-        <span class='rewards-title'><%= _lp.REWARDS_NUMBER %>:</span>
-        <span class="rewards-number"></span>
-        <ul class="rewards-total">
+    <h2 class="redeem-rewards"><%= _lp.REWARDS_REDEEM_REWARD %></h2>
+    <div class="redeem-rewards-info"><%= _lp.REWARDS_CLOSE_WINDOW %></div>
+    <div class="header">
+        <ul class="rewards-total fl-right text-left">
             <li class="rewards-total__item rewards-total__item_points">
-                <div class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_POINTS %></div>
-                <span class='total-points color-style1'></span>
+                <span class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_POINTS %></span>
+                <span class='total-points fl-right'></span>
             </li>
             <li class="rewards-total__item rewards-total__item_visits">
-                <div class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_VISITS %></div>
-                <span class='total-visits color-style1'></span>
+                <span class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_VISITS %></span>
+                <span class='total-visits fl-right'></span>
             </li>
             <li class="rewards-total__item rewards-total__item_purchases">
-                <div class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_PURCHASES %></div>
-                <span class='total-purchases color-style1'></span>
+                <span class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_PURCHASES %></span>
+                <span class='total-purchases fl-right'></span>
             </li>
         </ul>
+        <h3 class="title">REWARDS_POINTS_INFO</h3>
+        <span class="subtitle"><%= _lp.REWARDS_NUMBER %> &ndash;</span>
+        <span class="subtitle rewards-number"></span>
     </div>
-    <span class="info"><%= _lp.REWARDS_SELECTION_INFO %></span>
     <div class="popup-background">
         <h3 class="rewards-available"><%= _lp.REWARDS_AVAILABLE %></h3>
         <div class="reward-selection-wrapper">
@@ -48,7 +49,7 @@
         </div>
         <span class="rewards-unavailable"><%= _lp.REWARDS_UNAVAILABLE %></span>
     </div>
-    <div class="btn apply-reward"><%= _lp.REWARDS_APPLY %></div>
+    <div class="btn apply-reward text-center"><%= _lp.REWARDS_APPLY %></div>
 </script>
 
 <script type="text/template" id="rewards_item-template">

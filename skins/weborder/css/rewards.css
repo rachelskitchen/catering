@@ -1,5 +1,5 @@
 .rewards-info .captcha-header {
-	min-height: 40px;
+    min-height: 40px;
     margin-top: 58px;
     padding: 10px 16px;
     border-width: 1px 0;
@@ -9,13 +9,13 @@
 }
 
 .rewards-info .row {
-	display: block;
-	width: 400px;
+    display: block;
+    width: 400px;
     margin: 20px auto;
 }
 
 .rewards-info .label {
-	display: inline-block;
+    display: inline-block;
     padding-left: 16px;
     padding-bottom: 3px;
 }
@@ -29,7 +29,7 @@
 }
 
 .rewards-info .captcha-spinner {
-	width: 100%;
+    width: 100%;
     height: 100%;
     position: absolute !important;
     top: 0;
@@ -46,4 +46,28 @@
     display: inline-block;
     width: 138px;
     padding: 10px 0;
+}
+
+.rewards-info .redeem-rewards {
+    padding: 9px 27px 0 17px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.rewards-info .redeem-rewards-info {
+    padding: 0 27px 13px 17px;
+    font-size: 11px;
+}
+
+.rewards-info .header {
+    min-height: 70px;
+    padding: 9px 17px;
+    border-width: 1px 0;
+    border-style: solid;
+}
+
+.rewards-info .title {
+    padding-bottom: 3px;
+    font-size: 16px;
+    font-weight: 600;
 }

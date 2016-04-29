@@ -159,6 +159,9 @@
             'Points will be redeemed'
         ],
         'REWARDS_EMPTY_CART': 'Rewards can not be applied while your cart is empty.',
+        'REWARDS_REDEEM_REWARD': 'Redeem your Reward!',
+        'REWARDS_CLOSE_WINDOW': 'Or close this window to save your points.',
+        'REWARDS_POINTS_INFO': 'Reward Points Info',
         'SEARCH_ENTER_STRING': 'Search',
         'PRODUCTS_NOT_FOUND': 'No products found',
         'STANFORD_RELOAD_INFO1': "Please specify the Card # and the amount you'd like to add",
