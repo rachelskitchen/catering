@@ -1,26 +1,26 @@
 <script type="text/template" id="checkout_main-template">
-    <div class="personal clear">
-        <div class="fl-left item size1">
+    <div class="personal">
+        <div class="item size1">
             <div class="label required"><%= _lp.PROFILE_FIRST_NAME %></div>
             <input type="text" class="firstName input ios-safari-caret">
         </div>
-        <div class="fl-left item size1">
+        <div class="item size1">
             <div class="label required"><%= _lp.PROFILE_LAST_NAME %></div>
             <input type="text" class="lastName input ios-safari-caret">
         </div>
-        <div class="fl-left item size1">
+        <div class="item size1">
             <div class="label required"><%= _lp.PROFILE_PHONE %></div>
             <input type="tel" id="phone" class="phone input ios-safari-caret">
         </div>
-        <div class="fl-left item size2">
+        <div class="item size2">
             <div class="label required"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
             <input type="email" class="email input ios-safari-caret" autocorrect="off" autocapitalize="none">
         </div>
     </div>
 
-    <div class="delivery_address clear"></div>
+    <div class="delivery_address"></div>
 
-    <div class="delivery_other clear"></div>
+    <div class="delivery_other"></div>
 </script>
 
 <script type="text/template" id="checkout_pickup-template">
@@ -43,20 +43,20 @@
 </script>
 
 <script type="text/template" id="checkout_address-template">
-    <div class="fl-left item size2">
+    <div class="item size2">
         <div class="label required"><%= _lp.CHECKOUT_ADDRESS %></div>
         <input type="text" name="street_1" class="input ios-safari-caret">
     </div>
-    <div class="fl-left item size3">
+    <div class="item size3">
         <div class="label"><%= _lp.CHECKOUT_APT %></div>
         <input type="text" name="street_2" class="input ios-safari-caret">
     </div>
-    <div class="fl-left item size1">
+    <div class="item size1">
         <div class="label required"><%= _lp.PROFILE_CITY %></div>
         <input type="text" name="city" class="input ios-safari-caret">
     </div>
     <% if(isShippingServices) { %>
-    <div class="fl-left item size2">
+    <div class="item size2">
         <div class="label required"><%= _lp.PROFILE_COUNTRY %>:</div>
         <div class="select-wrapper size2">
             <select class="country">
@@ -68,7 +68,7 @@
     </div>
     <% } %>
     <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
-    <div class="fl-left item ">
+    <div class="item ">
         <div class="label required"><%= _lp.PROFILE_STATE %></div>
         <div class="select-wrapper">
             <select class="states" id="states">
@@ -80,17 +80,17 @@
     </div>
     <% } %>
     <% if(typeof province == 'string') { %>
-    <div class="fl-left item size1">
+    <div class="item size1">
         <div class="label required"><%= _lp.PROFILE_PROVINCE %></div>
         <input type="text" name="province" class="input ios-safari-caret">
     </div>
     <% } %>
-    <div class="fl-left item size4">
+    <div class="item size4">
         <div class="label required"><% if(country == 'US') {print(_lp.PROFILE_ZIP_CODE);} else {print(_lp.PROFILE_POSTAL_CODE);} %></div>
         <input type="text" name="zipcode" class="input ios-safari-caret">
     </div>
     <% if(isShippingServices) { %>
-    <div class="fl-left item">
+    <div class="item">
         <div class="label required"><%= _lp.CHECKOUT_SHIPPING_HANDLING %></div>
         <div class="select-wrapper">
             <select class="shipping-select select"></select>
@@ -101,11 +101,11 @@
 </script>
 
 <script type="text/template" id="checkout_other-template">
-    <div class="list clear"></div>
+    <div class="list"></div>
 </script>
 
 <script type="text/template" id="checkout_other_item-template">
-    <div class="fl-left item">
+    <div class="item">
         <div class="label" data-isrequired><%= name %></div>
         <% if (Array.isArray(choices) && choices.length) { %>
             <div class="select-wrapper">
@@ -165,20 +165,35 @@
 
 <script type="text/template" id="checkout_page-template">
     <h2 class="title"><%= _lp.CHECKOUT_TITLE %></h2>
-    <div class="order-details"></div>
-    <div class="clear order-notes">
-        <div class="label"><%= _lp.CHECKOUT_ORDER_NOTES %></div>
-        <textarea class="notes textarea ios-safari-caret"></textarea>
+    <div class="order-details">
+        <div class="order-notes">
+            <div class="label"><%= _lp.CHECKOUT_ORDER_NOTES %></div>
+            <textarea class="notes textarea ios-safari-caret"></textarea>
+        </div>
     </div>
+    <h2 class="title"><%= _lp.CHECKOUT_PAYMENT_INFORMATION %></h2>
+    <div class="payment-info"></div>
 </script>
 
 <script type="text/template" id="checkout_discount_code-template">
-    <label class="discount-label"> <span> <%= _lp.CHECKOUT_DISCOUNT_CODE %>: </span> </label>
-    <div class="input_beauty discount-code-input">
-        <span class="cancel-input hide"></span>
-        <input type="text" name="discount_code" class="ios-safari-caret <% if (iPad) print('ipad'); %>" value="<%= discount_code %>">
+    <div class="label"><%= _lp.CHECKOUT_DISCOUNT_CODE %></div>
+    <div class="ctrl-box item size1">
+        <input type="text" name="discount_code" class="input ctrl-input ios-safari-caret">
+        <label class="ctrl-wrapper cancel">
+            <input type="button" class="ctrl cancel-input">
+        </label>
     </div>
-    <div class="fl-right text-left btn-container">
-        <span class="btnApply discount-code-btn"> <%= _lp.CHECKOUT_DISC_CODE_APPLY %> </span>
+    <span class="btnApply link"><%= _lp.CHECKOUT_DISC_CODE_APPLY %></span>
+</script>
+
+<script type="text/template" id="checkout_rewards_card-template">
+    <div class="label"><%= _lp.CHECKOUT_REWARD_CARD %></div>
+    <div class="ctrl-box item size1">
+        <input type="text" class="rewardCard input ctrl-input ios-safari-caret">
+        <label class="ctrl-wrapper cancel">
+            <input type="button" class="ctrl cancel-input">
+        </label>
     </div>
+    <span class="rewards-card-apply link"> <%= _lp.CHECKOUT_DISC_CODE_APPLY %> </span>
+    <span class="see-rewards link"> <%= _lp.CHECKOUT_SEE_REWARDS %> </span>
 </script>

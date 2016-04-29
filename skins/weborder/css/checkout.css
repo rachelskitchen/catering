@@ -1,7 +1,3 @@
-.checkout-order-details {
-    padding-bottom: 25px;
-}
-
 .checkout-order-details .title {
     padding: 13px 25px;
     border-width: 1px 0;
@@ -11,8 +7,8 @@
 }
 
 .checkout-order-details .order-details,
-.checkout-order-details .order-notes {
-    padding: 0 25px;
+.checkout-order-details .payment-info {
+    padding: 0 25px 25px;
 }
 
 .checkout-order-details .label {
@@ -21,7 +17,9 @@
 }
 
 .checkout-order-details .item {
-    margin-right: 17px;
+    display: inline-block;
+    margin-right: 15px;
+    vertical-align: middle;
 }
 
 .checkout-order-details .size1 {
@@ -48,14 +46,6 @@
     width: 466px;
 }
 
-.checkout-order-details .payment-methods-label {
-    padding-left: 39px;
-}
-
-.payment-methods {
-    padding: 0 25px;
-}
-
 .payment-method {
     min-width: 116px;
     padding: 11px;
@@ -78,4 +68,50 @@
     font-family: 'FontAwesome';
     font-size: 16px;
     padding-right: 5px;
+}
+
+.tip-amount-box {
+    width: 110px;
+    position: relative;
+}
+
+.tip-amount-box::before {
+    content: attr(data-currency);
+    display: block;
+    width: 30px;
+    font-size: 16px;
+    padding: 9px 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    text-align: right;
+}
+
+.tip-amount-box .tipAmount {
+    padding-left: 30px;
+}
+
+.checkout-order-details .cancel::before {
+    display: block;
+    padding: 8px 11px 8px 4px;
+    font-size: 21px;
+}
+
+.checkout-order-details .types {
+    min-width: 144px;
+}
+
+.ctrl-box {
+    position: relative;
+}
+
+.checkout-order-details .ctrl-input {
+    padding-right: 30px;
+}
+
+.checkout-order-details .link {
+    display: inline-block;
+    padding: 10px 15px 10px 0;
+    margin-left: -5px;
+    font-size: 13px;
 }

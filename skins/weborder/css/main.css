@@ -249,7 +249,7 @@ background: green; /* remove */
 
 .select-wrapper[class] select {
     width: auto;
-    padding-right: 23px;
+    padding-right: 27px;
     background: inherit;
 }
 
@@ -276,11 +276,16 @@ background: green; /* remove */
 
 .btn.disabled {
     cursor: default;
-    pointer-events: none;
 }
 
 .btn-half {
     width: 50%;
+}
+
+.disabled {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    pointer-events: none;
 }
 
 .link {
@@ -319,6 +324,23 @@ background: green; /* remove */
 .cancel::before {
     content: '\f057';
     font-family: "FontAwesome";
+}
+
+.ctrl-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+}
+
+.ctrl-wrapper .ctrl {
+    padding: 0!important;
+    margin: 0!important;
+    width: 0!important;
+    height: 0!important;
+    border: none!important;
+    outline: 0!important;
+    background: transparent!important;
 }
 
 .popup {

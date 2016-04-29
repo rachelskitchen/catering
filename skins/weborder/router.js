@@ -267,7 +267,7 @@ define(["main_router"], function(main_router) {
                         modelName: 'Rewards',
                         mod: 'Info',
                         model: rewardsCard,
-                        className: 'rewards-info',
+                        className: 'rewards-info text-left',
                         collection: App.Data.myorder,
                         balance: rewardsCard.get('balance'),
                         rewards: rewardsCard.get('rewards'),
@@ -284,7 +284,7 @@ define(["main_router"], function(main_router) {
                     modelName: 'Rewards',
                     mod: 'Card',
                     model: App.Data.myorder.rewardsCard,
-                    className: 'rewards-info'
+                    className: 'rewards-info text-left'
                 });
             });
 
@@ -561,27 +561,21 @@ define(["main_router"], function(main_router) {
                 App.Data.mainModel.set({
                     header: headers.main,
                     cart: carts.checkout,
-                    content: [
-                        {
-                            modelName: 'Checkout',
-                            collection: App.Data.myorder,
-                            mod: 'Page',
-                            className: 'checkout-order-details',
-                            DINING_OPTION_NAME: this.LOC_DINING_OPTION_NAME,
-                            timetable: App.Data.timetables,
-                            customer: App.Data.customer,
-                            acceptTips: settings.accept_tips_online,
-                            noteAllow:  settings.order_notes_allow,
-                            discountAvailable: settings.accept_discount_code,
-                            checkout: App.Data.myorder.checkout
-                        },
-                        {
-                            modelName: 'PaymentMethods',
-                            mod: 'Main',
-                            model: App.Data.paymentMethods,
-                            className: 'checkout-order-details'
-                        }
-                    ]
+                    content: {
+                        modelName: 'Checkout',
+                        collection: App.Data.myorder,
+                        mod: 'Page',
+                        className: 'checkout-order-details',
+                        DINING_OPTION_NAME: this.LOC_DINING_OPTION_NAME,
+                        timetable: App.Data.timetables,
+                        customer: App.Data.customer,
+                        acceptTips: settings.accept_tips_online,
+                        noteAllow:  settings.order_notes_allow,
+                        discountAvailable: settings.accept_discount_code,
+                        checkout: App.Data.myorder.checkout,
+                        paymentMethods: App.Data.paymentMethods,
+                        enableRewardCard: settings.enable_reward_cards_collecting
+                    }
                 });
                 this.change_page();
             });
