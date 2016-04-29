@@ -2584,6 +2584,37 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 delete card.nonce;
             });
 
+            it('send "encrypted_customer_input" to backend', function() {
+                card.encrypted_customer_input = "12345";
+                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                expect(ajax.data.paymentInfo.cardInfo.encrypted_customer_input).toEqual(card.encrypted_customer_input);
+                delete card.encrypted_customer_input;
+            });
+
+            it('send billing address to backend', function() {
+                var address = {
+                    street_1: 1,
+                    street_2: 2,
+                    city: 'city',
+                    state: 'state',
+                    zipcode: 123,
+                    country: 'United States',
+                    country_code: 'US',
+                    extra: 'extra'
+                };
+                spyOn(PaymentProcessor, 'isBillingAddressCard').and.returnValue(true);
+                spyOn(window, 'get_billing_address').and.returnValue(address);
+                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                expect(ajax.data.paymentInfo.cardInfo.address).toEqual({
+                    street_1: 1,
+                    city: 'city',
+                    state: 'state',
+                    zipcode: 123,
+                    country: 'US'
+                });
+                delete card.address;
+            });
+
             it('`checkout.last_discount_code` exists', function() {
                 checkout.last_discount_code = 'last discount code';
                 model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
@@ -2622,6 +2653,99 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     last_name: '',
                     address: 'address'
                 });
+            });
+
+            describe('type of request to backend', function() {
+                var validationOnly;
+
+                beforeEach(function() {
+                    App.Data.customer.payWithToken = function() {
+                        return Backbone.$.Deferred();
+                    };
+
+                    spyOn(App.Data.customer, 'payWithToken').and.callThrough();
+                });
+
+                describe('weborders/pre_validate/', function() {
+                    it('"validationOnly" param is true', function() {
+                        validationOnly = true;
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT, validationOnly);
+                        expect(ajax.url.indexOf('weborders/pre_validate')).not.toBe(-1);
+                    });
+                });
+
+                describe('weborders/create_order_and_pay_v1/', function() {
+                    it('payment type is not credit', function() {
+                        model.submit_order_and_pay(PAYMENT_TYPE.NO_PAYMENT);
+                        expectCreateOrderAndPay();
+                    });
+
+                    it('payment type is credit, customer is not authorized', function() {
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                        App.Data.customer.isAuthorized.and.returnValue(false);
+                        expectCreateOrderAndPay();
+                    });
+
+                    it('payment type is credit, customer is not authorized', function() {
+                        App.Data.customer.isAuthorized.and.returnValue(false);
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                        expectCreateOrderAndPay();
+                    });
+
+                    it('payment type is credit, customer is authorized, customer.doPayWithToken() is false, card.rememberCard is false, payment.credit_card_dialog is false, card.cardNumber is empty', function() {
+                        App.Data.customer.isAuthorized.and.returnValue(true);
+                        App.Data.customer.doPayWithToken.and.returnValue(false);
+                        App.Data.settings.get_payment_process.and.returnValue({credit_card_dialog: false});
+                        App.Data.card.toJSON.and.returnValue({rememberCard: false, cardNumber: ''});
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                        expectCreateOrderAndPay();
+                    });
+
+                    it('payment type is credit, customer is authorized, customer.doPayWithToken() is false, card.rememberCard is false, payment.credit_card_dialog is true, card.cardNumber exists', function() {
+                        App.Data.customer.isAuthorized.and.returnValue(true);
+                        App.Data.customer.doPayWithToken.and.returnValue(false);
+                        App.Data.settings.get_payment_process.and.returnValue({credit_card_dialog: true});
+                        App.Data.card.toJSON.and.returnValue({rememberCard: false, cardNumber: 123});
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                        expectCreateOrderAndPay();
+                    });
+                });
+
+                describe('customer.payWithToken()', function() {
+                    it('payment type is credit, customer is authorized, customer.doPayWithToken() is true', function() {
+                        App.Data.customer.isAuthorized.and.returnValue(true);
+                        App.Data.customer.doPayWithToken.and.returnValue(true);
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                        expectPayWithToken();
+                    });
+
+                    it('payment type is credit, customer is authorized, customer.doPayWithToken() is false, card.rememberCard is true', function() {
+                        App.Data.customer.isAuthorized.and.returnValue(true);
+                        App.Data.customer.doPayWithToken.and.returnValue(false);
+                        App.Data.card.toJSON.and.returnValue({rememberCard: true});
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                        expectPayWithToken();
+                    });
+
+                    it('payment type is credit, customer is authorized, customer.doPayWithToken() is false, card.rememberCard is false, payment.credit_card_dialog is false, card.cardNumber is empty', function() {
+                        App.Data.customer.isAuthorized.and.returnValue(true);
+                        App.Data.customer.doPayWithToken.and.returnValue(false);
+                        App.Data.settings.get_payment_process.and.returnValue({credit_card_dialog: true});
+                        App.Data.card.toJSON.and.returnValue({rememberCard: false, cardNumber: ''});
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                        expectPayWithToken();
+                    });
+                });
+
+                function expectCreateOrderAndPay() {
+                    expect(ajax.url.indexOf('weborders/create_order_and_pay_v1')).not.toBe(-1);
+                    expect(App.Data.customer.payWithToken).not.toHaveBeenCalled();
+                }
+
+                function expectPayWithToken() {
+                    expect($.ajax).not.toHaveBeenCalled();
+                    expect(App.Data.customer.payWithToken).toHaveBeenCalled();
+                }
             });
 
             describe('skin paypal', function() {
