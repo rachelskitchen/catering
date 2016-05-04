@@ -71,3 +71,11 @@
     font-size: 16px;
     font-weight: 600;
 }
+
+.rewards-info .total-row {
+    margin: 6px 0;
+}
+
+.rewards-info .value {
+    padding-left: 30px;
+}
