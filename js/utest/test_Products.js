@@ -1042,8 +1042,8 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable'], functi
                 expect(model.get('images')).toEqual(images.map(addHost));
                 expect(model.get('image')).toEqual(addHost(images[0]));
 
-                function addHost(url) {
-                    return host + url.replace(/^([^\/])/, '/$1');
+                function addHost(image) {
+                    return /^https?:\/\//.test(image) ? image : host + encodeURIComponent(image).replace(/^([^\/])/, '/$1');
                 }
             });
 
@@ -1152,6 +1152,14 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable'], functi
                 has_upsell: false
             });
             expect(model.isComboBased()).toBe(false);
+        });
+
+        it('isUpsellProduct()', function() {
+            model.set('has_upsell', false);
+            expect(model.isUpsellProduct()).toBe(false);
+
+            model.set('has_upsell', true);
+            expect(model.isUpsellProduct()).toBe(true);
         });
     });
 

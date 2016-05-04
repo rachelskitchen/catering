@@ -104,18 +104,34 @@
 </script>
 
 <script type="text/template" id="checkout_order_type_short-template">
-    <span class="title font-size3 regular-text"><%= _lp.CHECKOUT_ORDER_TYPE %></span>
-    <div class="block text-center">
-        <div class="select-wrapper font-size2 input-colors">
-            <select class="order-type-select"></select>
+    <div class="checkout-short-left">
+        <span class="title font-size3 regular-text"><%= _lp.CHECKOUT_ORDER_TYPE %></span>
+        <div class="block text-center">
+            <div class="select-wrapper font-size2 input-colors">
+                <select class="order-type-select"></select>
+            </div>
         </div>
     </div>
+
+    <div class="address-selection checkout-short-right fl-right"></div>
+
+    <div class="address-form"></div>
+</script>
+
+<script type="text/template" id="checkout_address_selection-template">
+
+        <span class="title font-size3 regular-text"><%= _lp.PROFILE_ADDRESS %></span>
+        <div class="block text-center">
+            <div class="select-wrapper font-size2 input-colors">
+                <select id="addresses"></select>
+            </div>
+        </div>
+
 </script>
 
 <script type="text/template" id="checkout_address-template">
-    <ul class="text-center">
+    <div class="address-edit text-center">
         <% if(isShippingServices) { %>
-        <li>
             <div class="select-wrapper input-colors">
                 <select class="country" id="countries">
                 <% for (var i in countries) { %>
@@ -123,19 +139,17 @@
                 <% } %>
                 </select>
             </div>
-        </li>
         <% } %>
-        <li class="required">
-            <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE1 %>" name="street_1" value="<%= street_1 %>" class="ios-safari-caret input-colors">
-        </li>
-        <li>
-            <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE2 %>" name="street_2" value="<%= street_2 %>" class="ios-safari-caret input-colors">
-        </li>
-        <li class="required">
-            <input type="text" placeholder="<%= _lp.PROFILE_CITY %>" name="city" value="<%= city %>" class="ios-safari-caret input-colors">
-        </li>
+        <div class="required">
+            <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE1 %>" name="street_1" class="ios-safari-caret input-colors">
+        </div>
+        <div>
+            <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE2 %>" name="street_2" class="ios-safari-caret input-colors">
+        </div>
+        <div class="required">
+            <input type="text" placeholder="<%= _lp.PROFILE_CITY %>" name="city" class="ios-safari-caret input-colors">
+        </div>
         <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
-        <li>
             <div class="select-wrapper shipping-state input-colors">
                 <select class="states">
                 <% for(var i in states) { %>
@@ -143,24 +157,22 @@
                 <% } %>
                 </select>
             </div>
-        </li>
         <% } %>
         <% if(typeof province == 'string') { %>
-        <li class="required province">
+        <div class="required province">
            <input type="text" placeholder="<%= _lp.PROFILE_PROVINCE %>" name="province" value="<%= province %>" class="ios-safari-caret input-colors">
-       </li>
+       </div>
         <% } %>
-        <li class="required">
-            <input type="text" placeholder="<% if(country == 'US') {print(_lp.PROFILE_ZIP_CODE);} else {print(_lp.PROFILE_POSTAL_CODE);} %>" name="zipcode" value="<%= zipcode %>" class="ios-safari-caret input-colors">
-        </li>
-        <% if(isShippingServices) { %>
-        <li>
-            <div class="select-wrapper shipping-services input-colors">
-                <select class="shipping-select"></select>
-                <span class="shipping-status img-spinner"></span>
-            </div>
-        </li>
-        <% } %>
+        <div class="required">
+            <input type="text" placeholder="<% if(country == 'US') {print(_lp.PROFILE_ZIP_CODE);} else {print(_lp.PROFILE_POSTAL_CODE);} %>" name="zipcode" class="ios-safari-caret input-colors">
+        </div>
+    </div>
+    <% if(isShippingServices) { %>
+        <div class="select-wrapper shipping-services input-colors">
+            <select class="shipping-select"></select>
+            <span class="shipping-status img-spinner"></span>
+        </div>
+    <% } %>
 </script>
 
 <script type="text/template" id="checkout_address_short-template">

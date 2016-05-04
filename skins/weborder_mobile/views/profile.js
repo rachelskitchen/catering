@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["profile_view"], function(profile_view) {
+define(["profile_view", "giftcard_view"], function(profile_view) {
     'use strict';
 
     var ProfilePaymentSelectionView = App.Views.CoreProfileView.CoreProfilePaymentSelectionView.extend({
@@ -58,6 +58,43 @@ define(["profile_view"], function(profile_view) {
         }
     });
 
+    var ProfilePaymentsView = App.Views.CoreProfileView.CoreProfilePaymentsView.extend({
+        bindings: {
+            '.left-side': '', //to disable base class bindings
+            '.right-side': '',
+            '.successful-update': ''
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            if (this.model.payments) {
+                var paymentsEdition = App.Views.GeneratorView.create('Profile', {
+                    el: this.$('.payments-box'),
+                    mod: 'PaymentsEdition',
+                    collection: this.model.payments,
+                    removeToken: this.options.removeToken,
+                    changeToken: this.options.changeToken,
+                    className: 'profile-payments-edition text-center',
+                });
+                this.subViews.push(paymentsEdition);
+            }
+
+            if (this.model.giftCards) {
+                this.newGiftCard = new App.Models.GiftCard({add_new_card: false});
+                var giftCardsEdition = App.Views.GeneratorView.create('Profile', {
+                    el: this.$('.gift-cards-box'),
+                    mod: 'GiftCardsEdition',
+                    collection: this.model.giftCards,
+                    unlinkGiftCard: this.options.unlinkGiftCard,
+                    newCard: this.newGiftCard,
+                    customer: this.options.model,
+                    className: 'profile-payments-edition text-center',
+                });
+                this.subViews.push(giftCardsEdition);
+            }
+            return this;
+        },
+    });
+
     var ProfileGiftCardSelectionView = App.Views.CoreProfileView.CoreProfileGiftCardSelectionView.extend({
         className: 'payment-item font-size3 primary-bg primary-text'
     });
@@ -76,7 +113,8 @@ define(["profile_view"], function(profile_view) {
     var ProfileGiftCardsEditionView = App.Views.CoreProfileView.CoreProfileGiftCardsEditionView.extend({
         bindings: {
             '.gift-cards': 'classes: {collapsed: ui_collapsed}',
-            '.gift-cards-list': 'toggle: not(ui_collapsed), collection: $collection'
+            '.gift-cards-list': 'collection: $collection',
+            '.gift-cards-list-wrap': 'toggle: not(ui_collapsed)'
         },
         bindingSources: {
             ui: function() {

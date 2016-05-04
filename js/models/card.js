@@ -231,13 +231,11 @@ define(["backbone"], function(Backbone) {
          * @returns {Object} A validation result. Object literal is one of the following sets of key<->value pairs:
          * - All values are valid: `{status: 'OK'}`
          * - Has empty fields: `{status: 'ERROR_EMPTY_FIELDS', errorMsg: 'message string', errorList: 'array of empty fields'}`
-         * - Invalid card expiration values: `{status: 'ERROR', errorMsg: 'message string'}`
          */
         check_billing_address: function() {
             var card = this.toJSON(),
-                err = [];
-
-            var billing_address = get_billing_address();
+                err = [],
+                billing_address = get_billing_address();
 
             !billing_address.street_1 && err.push(_loc.PROFILE_ADDRESS_LINE1);
             !billing_address.city && err.push(_loc.PROFILE_CITY);

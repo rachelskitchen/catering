@@ -396,7 +396,10 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     quantity: 'quan',
                     weight: 1,
                     selected: false,
-                    is_child_product: false
+                    is_child_product: false,
+                    upcharge_name: 'Upcharge',
+                    combo_name: 'Combo',
+                    upcharge_price: 100
                 };
                 mod = spyOn(App.Collections.ModifierBlocks.prototype, 'addJSON').and.returnValue(data.modifiers)
                 prod = spyOn(App.Models.Product.prototype, 'addJSON').and.returnValue(data.product)
@@ -1053,6 +1056,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 App.Data.customer = {
                     isDefaultShippingSelected: function() {return true;}
                 };
+
                 model.change_dining_option(checkout, 'DINING_OPTION_SHIPPING');
                 expect(model.update_cart_totals).toHaveBeenCalledWith({update_shipping_options: true});
             });
@@ -2106,6 +2110,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             });
 
             it('`isShipping` is true, params.update_shipping_options is true', function() {
+                spyOn(model, 'getCustomerAddress').and.returnValue('address');
                 this.customer = App.Data.customer;
                 checkout = new Backbone.Model({
                     dining_option: 'DINING_OPTION_SHIPPING'
@@ -2403,12 +2408,17 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
         });
 
         describe('submit_order_and_pay()', function() {
-            var ajax, total, checkout, card, rewardsCard, customer, payment_process;
+            var ajax, total, checkout, card, rewardsCard, customer, payment_process,
+                dfd = new Backbone.$.Deferred(),
+                customer;
 
             beforeEach(function() {
+                dfd = new Backbone.$.Deferred();
                 spyOn($, 'ajax').and.callFake(function(opts) {
                     ajax = opts;
                     ajax.data = JSON.parse(ajax.data);
+
+                    return dfd;
                 });
                 this.mobile = $.mobile;
                 $.mobile = {
@@ -2480,11 +2490,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });
 
                 this.customer = App.Data.customer;
-                App.Data.customer = {
-                    toJSON: function() {},
-                    get_customer_name: function() {},
-                    isDefaultShippingAddress: function() {}
-                };
+
                 customer = {
                     phone: '',
                     first_name: 'customer name',
@@ -2495,10 +2501,17 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     shipping_services: [],
                     shipping_selected: -1
                 };
-                spyOn(App.Data.customer, 'toJSON').and.callFake(function() {
-                    return customer;
-                });
-                spyOn(App.Data.customer, 'get_customer_name').and.returnValue('customer name');
+
+                App.Data.customer = {
+                    toJSON: jasmine.createSpy().and.callFake(function() {
+                        return customer;
+                    }),
+                    get_customer_name: jasmine.createSpy().and.returnValue('customer name'),
+                    isDefaultShippingAddress: function() {},
+                    isAuthorized: jasmine.createSpy(),
+                    doPayWithToken: jasmine.createSpy().and.returnValue(dfd)
+                };
+
                 //spyOn(App.Models.Myorder.prototype, 'getCustomerData').and.returnValue({call_name: 'customer call name'});
 
                 payment_process = {
@@ -2571,6 +2584,37 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 delete card.nonce;
             });
 
+            it('send "encrypted_customer_input" to backend', function() {
+                card.encrypted_customer_input = "12345";
+                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                expect(ajax.data.paymentInfo.cardInfo.encrypted_customer_input).toEqual(card.encrypted_customer_input);
+                delete card.encrypted_customer_input;
+            });
+
+            it('send billing address to backend', function() {
+                var address = {
+                    street_1: 1,
+                    street_2: 2,
+                    city: 'city',
+                    state: 'state',
+                    zipcode: 123,
+                    country: 'United States',
+                    country_code: 'US',
+                    extra: 'extra'
+                };
+                spyOn(PaymentProcessor, 'isBillingAddressCard').and.returnValue(true);
+                spyOn(window, 'get_billing_address').and.returnValue(address);
+                model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                expect(ajax.data.paymentInfo.cardInfo.address).toEqual({
+                    street_1: 1,
+                    city: 'city',
+                    state: 'state',
+                    zipcode: 123,
+                    country: 'US'
+                });
+                delete card.address;
+            });
+
             it('`checkout.last_discount_code` exists', function() {
                 checkout.last_discount_code = 'last discount code';
                 model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
@@ -2597,6 +2641,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             });
 
             it('`checkout.dining_option` is `DINING_OPTION_SHIPPING`', function() {
+                spyOn(model, 'getCustomerAddress').and.returnValue('address');
                 checkout.dining_option = 'DINING_OPTION_SHIPPING';
                 customer.shipping_services = ['shipping service 1', 'shipping service 2'];
                 customer.shipping_selected = 1;
@@ -2604,9 +2649,103 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                 expect(ajax.data.orderInfo.shipping).toBe('shipping service 2');
                 expect(ajax.data.orderInfo.customer).toEqual({
-                         first_name: 'customer name',
-                         last_name: ''
-                       });
+                    first_name: 'customer name',
+                    last_name: '',
+                    address: 'address'
+                });
+            });
+
+            describe('type of request to backend', function() {
+                var validationOnly;
+
+                beforeEach(function() {
+                    App.Data.customer.payWithToken = function() {
+                        return Backbone.$.Deferred();
+                    };
+
+                    spyOn(App.Data.customer, 'payWithToken').and.callThrough();
+                });
+
+                describe('weborders/pre_validate/', function() {
+                    it('"validationOnly" param is true', function() {
+                        validationOnly = true;
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT, validationOnly);
+                        expect(ajax.url.indexOf('weborders/pre_validate')).not.toBe(-1);
+                    });
+                });
+
+                describe('weborders/create_order_and_pay_v1/', function() {
+                    it('payment type is not credit', function() {
+                        model.submit_order_and_pay(PAYMENT_TYPE.NO_PAYMENT);
+                        expectCreateOrderAndPay();
+                    });
+
+                    it('payment type is credit, customer is not authorized', function() {
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                        App.Data.customer.isAuthorized.and.returnValue(false);
+                        expectCreateOrderAndPay();
+                    });
+
+                    it('payment type is credit, customer is not authorized', function() {
+                        App.Data.customer.isAuthorized.and.returnValue(false);
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                        expectCreateOrderAndPay();
+                    });
+
+                    it('payment type is credit, customer is authorized, customer.doPayWithToken() is false, card.rememberCard is false, payment.credit_card_dialog is false, card.cardNumber is empty', function() {
+                        App.Data.customer.isAuthorized.and.returnValue(true);
+                        App.Data.customer.doPayWithToken.and.returnValue(false);
+                        App.Data.settings.get_payment_process.and.returnValue({credit_card_dialog: false});
+                        App.Data.card.toJSON.and.returnValue({rememberCard: false, cardNumber: ''});
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                        expectCreateOrderAndPay();
+                    });
+
+                    it('payment type is credit, customer is authorized, customer.doPayWithToken() is false, card.rememberCard is false, payment.credit_card_dialog is true, card.cardNumber exists', function() {
+                        App.Data.customer.isAuthorized.and.returnValue(true);
+                        App.Data.customer.doPayWithToken.and.returnValue(false);
+                        App.Data.settings.get_payment_process.and.returnValue({credit_card_dialog: true});
+                        App.Data.card.toJSON.and.returnValue({rememberCard: false, cardNumber: 123});
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                        expectCreateOrderAndPay();
+                    });
+                });
+
+                describe('customer.payWithToken()', function() {
+                    it('payment type is credit, customer is authorized, customer.doPayWithToken() is true', function() {
+                        App.Data.customer.isAuthorized.and.returnValue(true);
+                        App.Data.customer.doPayWithToken.and.returnValue(true);
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                        expectPayWithToken();
+                    });
+
+                    it('payment type is credit, customer is authorized, customer.doPayWithToken() is false, card.rememberCard is true', function() {
+                        App.Data.customer.isAuthorized.and.returnValue(true);
+                        App.Data.customer.doPayWithToken.and.returnValue(false);
+                        App.Data.card.toJSON.and.returnValue({rememberCard: true});
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                        expectPayWithToken();
+                    });
+
+                    it('payment type is credit, customer is authorized, customer.doPayWithToken() is false, card.rememberCard is false, payment.credit_card_dialog is false, card.cardNumber is empty', function() {
+                        App.Data.customer.isAuthorized.and.returnValue(true);
+                        App.Data.customer.doPayWithToken.and.returnValue(false);
+                        App.Data.settings.get_payment_process.and.returnValue({credit_card_dialog: true});
+                        App.Data.card.toJSON.and.returnValue({rememberCard: false, cardNumber: ''});
+                        model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                        expectPayWithToken();
+                    });
+                });
+
+                function expectCreateOrderAndPay() {
+                    expect(ajax.url.indexOf('weborders/create_order_and_pay_v1')).not.toBe(-1);
+                    expect(App.Data.customer.payWithToken).not.toHaveBeenCalled();
+                }
+
+                function expectPayWithToken() {
+                    expect($.ajax).not.toHaveBeenCalled();
+                    expect(App.Data.customer.payWithToken).toHaveBeenCalled();
+                }
             });
 
             describe('skin paypal', function() {
@@ -2687,23 +2826,24 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });
             });
 
-            describe('set address for dining option delivery', function() {
+            describe('set address for dining option delivery or catering', function() {
                 beforeEach(function() {
                     spyOn(App.Data.customer, 'isDefaultShippingAddress');
+                    spyOn(model, 'getCustomerAddress').and.returnValue('address');
+                });
+
+                it('dining option delivery', function() {
                     checkout.dining_option = 'DINING_OPTION_DELIVERY';
-                    customer.addresses = ['1', '2'];
+                    model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
+                    expect(model.getCustomerAddress).toHaveBeenCalled();
+                    expect(ajax.data.orderInfo.customer.address).toBe('address');
                 });
 
-                it('other delivery address', function() {
-                    customer.shipping_address = 1;
+                it('dining option catering', function() {
+                    checkout.dining_option = 'DINING_OPTION_CATERING';
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                    expect(ajax.data.orderInfo.customer.address).toBe('2');
-                });
-
-                it('selected first delivery address', function() {
-                    customer.shipping_address = 0;
-                    model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                    expect(ajax.data.orderInfo.customer.address).toBe('1');
+                    expect(model.getCustomerAddress).toHaveBeenCalled();
+                    expect(ajax.data.orderInfo.customer.address).toBe('address');
                 });
             });
 
@@ -2920,6 +3060,46 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });
             });
 
+            describe('payment type = 5 (giftcard)', function() {
+                var giftCard = new Backbone.Model({
+                    token: 'some token',
+                    cardNumber: '123',
+                    captchaKey: 'key',
+                    captchaValue: 'value'
+                });
+
+                beforeEach(function() {
+                    this.customer = App.Data.customer;
+                    this.giftCard = App.Data.giftcard;
+
+                    App.Data.customer.doPayWithGiftCard = jasmine.createSpy();
+                    App.Data.customer.giftCards = {
+                        getSelected: function() {
+                            return giftCard;
+                        }
+                    };
+
+                    App.Data.giftcard = giftCard;
+                });
+
+                afterEach(function() {
+                    App.Data.customer = this.customer;
+                    App.Data.giftcard = this.giftCard;
+                });
+
+                it('customer.doPayWithGiftCard() returns true', function() {
+                    App.Data.customer.doPayWithGiftCard.and.returnValue(true);
+                    model.submit_order_and_pay(5);
+                    expect(ajax.data.paymentInfo.cardInfo).toEqual({token: 'some token'});
+                });
+
+                it('customer.doPayWithGiftCard() returns false', function() {
+                    App.Data.customer.doPayWithGiftCard.and.returnValue(false);
+                    model.submit_order_and_pay(5);
+                    expect(ajax.data.paymentInfo.cardInfo).toEqual({cardNumber : '123', captchaKey : 'key', captchaValue : 'value'});
+                });
+            });
+
             describe('ajax success', function() {
 
                 beforeEach(function() {
@@ -2928,7 +3108,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                 it('status doesn\'t exist or emtpy', function() {
                     var data = {};
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                     expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(MSG.ERROR_INCORRECT_AJAX_DATA)).not.toBe(-1);
@@ -2936,7 +3116,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                 it('status OK', function() {
                     var data = {status: 'OK'};
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(model.paymentResponse).toBe(data);
                     expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
@@ -2945,8 +3125,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 it('status OK, `validationOnly` is true', function() {
                     model.submit_order_and_pay(2, true);
                     var data = {status: 'OK'};
-                    ajax.success(data);
-                    ajax.complete();
+                    dfd.resolve(data);
 
                     expect(model.trigger).toHaveBeenCalledWith('paymentResponseValid');
                 });
@@ -2971,7 +3150,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                             stanford: 'stanford balance'
                         }
                     };
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(updatePlans).toHaveBeenCalledWith('stanford balance');
                     expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
@@ -2993,7 +3172,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                             rewards: 'rewards balance'
                         }
                     };
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(resetDataAfterPayment).toHaveBeenCalled();
                     expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
@@ -3009,7 +3188,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                         }
                     };
                     spyOn(PaymentProcessor, 'handleRedirect');
-                    ajax.success(data);
+                    dfd.resolve(data);
                     //expect(model.checkout.set.calls.allArgs()).toEqual([['payment_id', 'id'],['payment_type', 5]]);
                     expect(PaymentProcessor.handleRedirect).toHaveBeenCalled();
                 });
@@ -3017,7 +3196,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 it('status PAYMENT_INFO_REQUIRED', function() {
                     spyOn(PaymentProcessor, 'handlePaymentDataRequest');
                     var data = {status: 'PAYMENT_INFO_REQUIRED'};
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(PaymentProcessor.handlePaymentDataRequest).toHaveBeenCalled();
                 });
@@ -3064,7 +3243,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                             status: 'INSUFFICIENT_STOCK',
                             responseJSON: []
                         };
-                        ajax.success(data);
+                        dfd.resolve(data);
                         expect(model.trigger.calls.argsFor(0)[1][0].indexOf(MSG.ERROR_INSUFFICIENT_STOCK)).not.toBe(-1);
                     });
 
@@ -3076,7 +3255,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                                 stock_amount: 0
                             }]
                         };
-                        ajax.success(data);
+                        dfd.resolve(data);
                         expect(set.set).toHaveBeenCalledWith('active', false);
                         expect(model.length).toBe(1);
                     });
@@ -3089,7 +3268,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                                 stock_amount: 1
                             }]
                         };
-                        ajax.success(data);
+                        dfd.resolve(data);
                         expect(set.set).toHaveBeenCalledWith('stock_amount', 1);
                         expect(model.length).toBe(2);
 
@@ -3103,7 +3282,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                             asap_pickup_time: '12/21/2015 03:46'
                         }]
                     };
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                     expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf('Selected time is not available. Next available time')).not.toBe(-1);
@@ -3111,7 +3290,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                 it('status ORDERS_PICKUPTIME_LIMIT', function() {
                     var data = {status: 'ORDERS_PICKUPTIME_LIMIT'};
-                    ajax.success(data);
+                    dfd.resolve(data);
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                 });
 
@@ -3119,7 +3298,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     var data = {
                         status: 'REWARD CARD UNDEFINED'
                     };
-                    ajax.success(data);
+                    dfd.resolve(data);
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                 });
 
@@ -3128,7 +3307,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                         status: 'DELIVERY_ADDRESS_ERROR',
                         errorMsg: 'delivery address error'
                     };
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                     expect(App.Data.errors.alert.calls.mostRecent().args[0]).toBe('delivery address error');
@@ -3144,7 +3323,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                         }
                     };
                     spyOn(window, 'format_timetables');
-                    ajax.success(data);
+                    dfd.resolve(data);
 
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                     expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(errorMsg)).not.toBe(-1);
@@ -3152,13 +3331,13 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                 it('status OTHER', function() {
                     var data = {status: 'OTHER', errorMsg: 'other'};
-                    ajax.success(data);
+                    dfd.resolve(data);
                     expect(model.trigger).toHaveBeenCalledWith('paymentFailed');
                 });
 
                 describe('ajax error', function() {
                     it('general', function() {
-                        ajax.error();
+                        dfd.reject();
 
                         expect(model.paymentResponse).toEqual({
                             status: 'ERROR',
@@ -3171,14 +3350,14 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                     it('`validationOnly` is true', function() {
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT, true);
-                        ajax.error();
+                        dfd.reject();
 
                         expect(model.trigger.calls.mostRecent().args[0]).toBe('paymentFailedValid');
                     });
 
                     it('`validationOnly` is false, `capturePhase` is true', function() {
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT, false, true);
-                        ajax.error();
+                        dfd.reject();
 
                         expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
                         expect(model.paymentResponse.status).toBe('error');
@@ -3352,9 +3531,8 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             }
         });
 
-        describe('setShippingAddress()', function() {
-            var checkout = new Backbone.Model(),
-                diningOption = '';
+        describe('getShippingAddress()', function() {
+            var diningOption = '';
 
             beforeEach(function() {
                 this.customer = App.Data.customer;
@@ -3374,38 +3552,164 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
             afterEach(function() {
                 App.Data.customer = this.customer;
-            })
+            });
+
+            it('App.Data.customer does not exist', function() {
+                App.Data.customer = undefined;
+                expect(model.getShippingAddress(diningOption)).toBeUndefined();
+            });
+
+            it('dining option is delivery', function() {
+                diningOption = 'DINING_OPTION_DELIVERY';
+                expect(App.Data.customer.get('deliveryAddressIndex')).toBe(0);
+                expect(model.getShippingAddress(diningOption)).toBe(0);
+            });
+
+            it('dining option is shipping', function() {
+                diningOption = 'DINING_OPTION_SHIPPING';
+                expect(App.Data.customer.get('shippingAddressIndex')).toBe(1);
+                expect(model.getShippingAddress(diningOption)).toBe(1);
+            });
+
+            it('dining option is catering', function() {
+                diningOption = 'DINING_OPTION_CATERING';
+                expect(App.Data.customer.get('cateringAddressIndex')).toBe(2);
+                expect(model.getShippingAddress(diningOption)).toBe(2);
+            });
+
+            it('dining option is not shipping or delivery', function() {
+                diningOption = 'DINING_OPTION_TOGO';
+                expect(model.getShippingAddress(diningOption)).toBe(-1);
+                expect(App.Data.customer.get('shipping_address')).toBe(-1);
+            });
+        });
+
+        describe('setShippingAddress()', function() {
+            var checkout = new Backbone.Model(),
+                diningOption = '',
+                getShippingAddress, isProfileAddressSelected;
+
+            beforeEach(function() {
+                this.customer = App.Data.customer;
+                App.Data.customer = new Backbone.Model({
+                    shipping_address: -1,
+                    addresses: ['address 1', 'address 2'],
+                    shipping_selected: -1,
+                    shipping_services: ['shipping service 1', 'shipping service 2'],
+                    deliveryAddressIndex: 0,
+                    shippingAddressIndex: 1,
+                    cateringAddressIndex: 2
+                });
+                App.Data.customer.defaults = {
+                    shipping_address: -1
+                };
+                App.Data.customer.isProfileAddressSelected = jasmine.createSpy();
+                getShippingAddress = spyOn(model, 'getShippingAddress');
+            });
+
+            afterEach(function() {
+                App.Data.customer = this.customer;
+            });
 
             it('App.Data.customer does not exist', function() {
                 App.Data.customer = undefined;
                 expect(model.setShippingAddress(checkout, diningOption)).toBeUndefined();
             });
 
-            it('dining option is delivery', function() {
+            it('selected address is not from profile', function() {
                 diningOption = 'DINING_OPTION_DELIVERY';
-                expect(App.Data.customer.get('deliveryAddressIndex')).toBe(0);
-                expect(model.setShippingAddress(checkout, diningOption)).toBe(0);
-                expect(App.Data.customer.get('shipping_address')).toBe(0);
+                shipping_address = App.Data.customer.get('deliveryAddressIndex');
+                expect(shipping_address).toBe(0);
+                getShippingAddress.and.returnValue(shipping_address);
+                App.Data.customer.isProfileAddressSelected.and.returnValue(false);
+
+                expect(model.setShippingAddress(checkout, diningOption)).toBe(shipping_address);
+                expect(model.getShippingAddress).toHaveBeenCalledWith(diningOption);
+                expect(App.Data.customer.get('shipping_address')).toBe(shipping_address);
             });
 
-            it('dining option is shipping', function() {
-                diningOption = 'DINING_OPTION_SHIPPING';
-                expect(App.Data.customer.get('shippingAddressIndex')).toBe(1);
-                expect(model.setShippingAddress(checkout, diningOption)).toBe(1);
-                expect(App.Data.customer.get('shipping_address')).toBe(1);
+            it('selected address is from profile', function() {
+                shipping_address = 4;
+                App.Data.customer.set('shipping_address', shipping_address, {silent: true});
+                diningOption = 'DINING_OPTION_DELIVERY';
+                getShippingAddress.and.returnValue(0);
+                App.Data.customer.isProfileAddressSelected.and.returnValue(true);
+
+                expect(model.setShippingAddress(checkout, diningOption)).toBe(shipping_address);
+                expect(model.getShippingAddress).not.toHaveBeenCalled();
+                expect(App.Data.customer.get('shipping_address')).toBe(shipping_address);
+            });
+        });
+
+        describe('getCustomerAddress()', function() {
+            var address;
+
+            beforeEach(function() {
+                this.customer = App.Data.customer;
+
+                App.Data.customer = new Backbone.Model();
+                App.Data.customer.isDefaultShippingAddress = jasmine.createSpy();
+
+                address = {
+                    address: 'test',
+                    city: 'test',
+                    country: 'test',
+                    province: '',
+                    state: 'test',
+                    street_1: 'test',
+                    street_2: '',
+                    zipcode: 'test'
+                };
             });
 
-            it('dining option is catering', function() {
-                diningOption = 'DINING_OPTION_CATERING';
-                expect(App.Data.customer.get('cateringAddressIndex')).toBe(2);
-                expect(model.setShippingAddress(checkout, diningOption)).toBe(2);
-                expect(App.Data.customer.get('cateringAddressIndex')).toBe(2);
+            afterEach(function() {
+                App.Data.customer = this.customer;
             });
 
-            it('dining option is not shipping or delivery', function() {
-                diningOption = 'DINING_OPTION_TOGO';
-                expect(model.setShippingAddress(checkout, diningOption)).toBe(-1);
-                expect(App.Data.customer.get('shipping_address')).toBe(-1);
+            it('shipping address is selected', function() {
+                App.Data.customer.isDefaultShippingAddress.and.returnValue(false);
+                App.Data.customer.set({
+                    shipping_address: 1,
+                    addresses: [undefined, address]
+                });
+
+                expect(model.getCustomerAddress()).toEqual(address);
+            });
+
+            it('shipping address is selected, some fields do not exist', function() {
+                App.Data.customer.isDefaultShippingAddress.and.returnValue(false);
+
+                delete address.address;
+                App.Data.customer.set({
+                    shipping_address: 1,
+                    addresses: [undefined, address]
+                });
+
+                address.address = '';
+                expect(model.getCustomerAddress()).toEqual(address);
+            });
+
+            it('shipping address is not selected, address with last index should be used', function() {
+                App.Data.customer.isDefaultShippingAddress.and.returnValue(true);
+                App.Data.customer.set({
+                    shipping_address: -1,
+                    addresses: [undefined, address]
+                });
+
+                expect(model.getCustomerAddress()).toEqual(address);
+            });
+
+            it('shipping address is not selected, address with last index should be used, extra fields should be ignored', function() {
+                App.Data.customer.isDefaultShippingAddress.and.returnValue(true);
+
+                address.id = 123;
+                App.Data.customer.set({
+                    shipping_address: -1,
+                    addresses: [undefined, undefined, undefined, address]
+                });
+
+                delete address.id;
+                expect(model.getCustomerAddress()).toEqual(address);
             });
         });
 
