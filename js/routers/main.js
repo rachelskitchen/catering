@@ -807,7 +807,7 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             // gift cards are available
-            if (customer.rewardCards && customer.rewardCardsRequest) {
+            if (customer.get('rewardCards') && customer.rewardCardsRequest) {
                 customer.rewardCardsRequest.always(rewardCardsDef.resolve.bind(rewardCardsDef));
                 promises.push(rewardCardsDef);
             }

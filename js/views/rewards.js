@@ -100,7 +100,7 @@
         name: 'rewards',
         mod: 'card',
         bindings: {
-            '.rewards-input': 'value: number, events: ["input"]',
+            '.rewards-input': 'value: number, events: ["input"], disabled: length(customer_rewardCards), classes: {disabled: length(customer_rewardCards)}',
             '.rewards-captcha-input': 'value: captchaValue, events: ["input"]',
             '.submit-card': 'classes: {disabled: disableBtn}',
             '.captcha-image': 'updateCaptcha: url'
@@ -165,7 +165,10 @@
 
     var RewardsCardProfileView = RewardsCardView.extend({
         name: 'profile',
-        mod: 'rewardcard'
+        mod: 'rewardcard',
+        bindings: {
+            '.rewards-input': 'value: number, events: ["input"]'
+        }
     });
 
     var RewardsItemApplicationView = App.Views.FactoryView.extend({
