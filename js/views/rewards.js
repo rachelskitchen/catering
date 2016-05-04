@@ -23,7 +23,9 @@
  define(["factory", "myorder_view"], function(factory) {
     'use strict';
 
-    var RewardsItemView = App.Views.ItemView.extend({
+    App.Views.CoreRewardsView = {};
+
+    var RewardsItemView = App.Views.CoreRewardsView.CoreRewardsItemView = App.Views.ItemView.extend({
         name: 'rewards',
         mod: 'item',
         el: '<li class="reward-selection__item"></li>',
@@ -33,7 +35,7 @@
             '.reward__discount-amount': 'text: discountAmount(amount, type)',
             '.reward__discount-text': 'text: select(is_item_level, _lp_REWARDS_ITEM_LEVEL_DISCOUNT, _lp_REWARDS_ENTIRE_ORDER_DISCOUNT)',
             '.reward__redemption-amount': 'text: points',
-            '.reward__redemption-text': 'text: redemptionText(points)'
+            '.reward__redemption-text': 'text: redemptionText(points, _lp.REWARDS_POINTS_REDEMPTION_AMOUNT)'
         },
         events: {
             'click': 'selectReward'
@@ -41,14 +43,15 @@
         bindingFilters: {
             /**
              * Sets text that reflects reward type and amount of points to be redeemed.
-             * 
+             *
              * @param  {string} rewardType - Reward type.
              * @param  {Number} points - Amount of points.
-             * @returns {string} - 
+             * @returns {string} -
              */
-            redemptionText: function(points) {
-                var text = _loc.REWARDS_POINTS_REDEMPTION_AMOUNT,
-                    text1, text2;
+            redemptionText: function(points, text) {
+                var text1, text2;
+
+                text = _loc.REWARDS_POINTS_REDEMPTION_AMOUNT
 
                 if (Array.isArray(text)) {
                     text1 = text[0];
@@ -88,7 +91,7 @@
                 var selectedModels = this.model.collection.where(criteria);
                 // remove selection
                 selectedModels.length && _.invoke(selectedModels, 'set', {selected: false});
-            } 
+            }
 
             // toggle selection
             this.model.set('selected', !selected);

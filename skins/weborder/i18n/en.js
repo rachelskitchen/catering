@@ -154,14 +154,25 @@
         'REWARDS_ITEM_LEVEL_DISCOUNT': 'off All Eligible Items',
         'REWARDS_APPLY': 'Apply Reward',
         'REWARDS_OFF': 'Off',
-        'REWARDS_POINTS_REDEMPTION_AMOUNT': [
-            'Point will be redeemed',
-            'Points will be redeemed'
+        'REWARDS_ITEM_POINTS': [
+            'Item Point',
+            'Item Points'
+        ],
+        'REWARDS_VISIT_POINTS': [
+            'Visit Point',
+            'Visit Points'
+        ],
+        'REWARDS_PURCHASE_POINTS': [
+            'Purchase Point',
+            'Purchase Points',
         ],
         'REWARDS_EMPTY_CART': 'Rewards can not be applied while your cart is empty.',
         'REWARDS_REDEEM_REWARD': 'Redeem your Reward!',
         'REWARDS_CLOSE_WINDOW': 'Or close this window to save your points.',
         'REWARDS_POINTS_INFO': 'Reward Points Info',
+        'REWARDS_ITEM_REWARDS': 'Item Rewards',
+        'REWARDS_VISIT_REWARDS': 'Visit Rewards',
+        'REWARDS_PURCHASE_REWARDS': 'Purchase Rewards',
         'SEARCH_ENTER_STRING': 'Search',
         'PRODUCTS_NOT_FOUND': 'No products found',
         'STANFORD_RELOAD_INFO1': "Please specify the Card # and the amount you'd like to add",

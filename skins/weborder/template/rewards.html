@@ -23,43 +23,59 @@
     <div class="redeem-rewards-info"><%= _lp.REWARDS_CLOSE_WINDOW %></div>
     <div class="header">
         <ul class="rewards-total fl-right text-left">
-            <li class="rewards-total__item rewards-total__item_points">
-                <span class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_POINTS %></span>
-                <span class='total-points fl-right'></span>
+            <li class="total-row total-row-points">
+                <span><%= _lp.REWARDS_TOTAL_POINTS %></span>
+                <span class='total-points value fl-right'></span>
             </li>
-            <li class="rewards-total__item rewards-total__item_visits">
-                <span class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_VISITS %></span>
-                <span class='total-visits fl-right'></span>
+            <li class="total-row total-row-visits">
+                <span><%= _lp.REWARDS_TOTAL_VISITS %></span>
+                <span class='total-visits value fl-right'></span>
             </li>
-            <li class="rewards-total__item rewards-total__item_purchases">
-                <span class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_PURCHASES %></span>
-                <span class='total-purchases fl-right'></span>
+            <li class="total-row total-row-purchase">
+                <span><%= _lp.REWARDS_TOTAL_PURCHASES %></span>
+                <span class='total-purchases value fl-right'></span>
             </li>
         </ul>
-        <h3 class="title">REWARDS_POINTS_INFO</h3>
+        <h3 class="title"><%= _lp.REWARDS_POINTS_INFO %></h3>
         <span class="subtitle"><%= _lp.REWARDS_NUMBER %> &ndash;</span>
         <span class="subtitle rewards-number"></span>
     </div>
-    <div class="popup-background">
-        <h3 class="rewards-available"><%= _lp.REWARDS_AVAILABLE %></h3>
-        <div class="reward-selection-wrapper">
-            <div class="reward-selection-inner">
-                <ul class="reward-selection"></ul>
-            </div>
-        </div>
-        <span class="rewards-unavailable"><%= _lp.REWARDS_UNAVAILABLE %></span>
+    <div class="item-rewards-box">
+        <h3 class="rewards-group"><%= _lp.REWARDS_ITEM_REWARDS %></h3>
+        <ul class="item-rewards"></ul>
     </div>
+    <div class="visit-rewards-box">
+        <h3 class="rewards-group"><%= _lp.REWARDS_VISIT_REWARDS %></h3>
+        <ul class="visit-rewards"></ul>
+    </div>
+    <div>
+        <h3 class="rewards-group"><%= _lp.REWARDS_PURCHASE_REWARDS %></h3>
+        <ul class="purchase-rewards"></ul>
+    </div>
+    <span class="rewards-unavailable"><%= _lp.REWARDS_UNAVAILABLE %></span>
     <div class="btn apply-reward text-center"><%= _lp.REWARDS_APPLY %></div>
 </script>
 
-<script type="text/template" id="rewards_item-template">
-    <div class="reward color-style1">
-        <div class="reward__name"></div>
-        <div class="reward__discount">
-            <span class="reward__discount-amount"></span> <span class="reward__discount-text"></span>
-        </div>
-        <div class="reward__redemption">
-            (<span class="reward__redemption-amount"></span>&nbsp;<span class="reward__redemption-text"></span>)
-        </div>
-    </div>
+<script type="text/template" id="rewards_item_item-template">
+    <span class="checkbox"></span>
+    <span class="reward__discount-amount"></span> <span class="reward__discount-text"></span>
+    <span class="fl-right">
+        <span class="reward__redemption-amount"></span>&nbsp;<span class="reward__redemption-text"></span>
+    </span>
+</script>
+
+<script type="text/template" id="rewards_item_visit-template">
+    <span class="checkbox"></span>
+    <span class="reward__discount-amount"></span> <span class="reward__discount-text"></span>
+    <span class="fl-right">
+        <span class="reward__redemption-amount"></span>&nbsp;<span class="reward__redemption-text"></span>
+    </span>
+</script>
+
+<script type="text/template" id="rewards_item_purchase-template">
+    <span class="checkbox"></span>
+    <span class="reward__discount-amount"></span>&nbsp;<span class="reward__discount-text"></span>
+    <span class="fl-right">
+        <span class="reward__redemption-amount"></span>&nbsp;<span class="reward__redemption-text"></span>
+    </span>
 </script>
