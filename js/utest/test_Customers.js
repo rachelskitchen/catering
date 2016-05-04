@@ -22,6 +22,8 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
         });
 
         it("Create model", function() {
+            spyOn(App.Models.Customer.prototype, 'setCustomerFromCookie'); // avoid setting model values from cookie
+            model = new App.Models.Customer();
             expect(model.toJSON()).toEqual(def);
         });
 
@@ -383,10 +385,12 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
             beforeEach(function() {
                 address = deepClone(App.Data.settings.get('settings_system').address);
+                model.set('shipping_address', 0);
             });
 
             afterEach(function() {
                 App.Data.settings.get('settings_system').address = deepClone(address);
+                model.set('shipping_address', -1);
             });
 
             it("Address is correctly filled out", function() {
@@ -954,6 +958,95 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             it("`dining_option` param is neither 'DINING_OPTION_DELIVERY' nor 'DINING_OPTION_SHIPPING' nor 'DINING_OPTION_CATERING', `shipping_address` is neither delivery nor shipping nor catering address index", function() {
                 model.set('shipping_address', -1);
                 expect(model.isNewAddressSelected('DINING_OPTION_TOGO')).toBe(false);
+            });
+        });
+
+        describe('isProfileAddressSelected()', function() {
+            it('`shipping_address` is less than 3', function() {
+                model.set('shipping_address', 2);
+                expect(model.isProfileAddressSelected()).toBe(false);
+            });
+
+            it('`shipping_address` is 3', function() {
+                model.set('shipping_address', 3);
+                expect(model.isProfileAddressSelected()).toBe(true);
+            });
+
+            it('`shipping_address` is more than 3', function() {
+                model.set('shipping_address', 4);
+                expect(model.isProfileAddressSelected()).toBe(true);
+            });
+        });
+
+        describe('getCheckoutAddress()', function() {
+            var address,
+                isDefaultShippingAddress,
+                emptyAddress = {
+                    country: 'US',
+                    state: 'CA',
+                    province: '',
+                    street_1: '',
+                    street_2: '',
+                    city: '',
+                    zipcode: ''
+                },
+                filledAddress = {
+                    country: 'US',
+                    state: 'CA',
+                    province: '',
+                    street_1: '170 Columbus Ave',
+                    street_2: '',
+                    city: 'San Francisco',
+                    zipcode: '94133'
+                },
+                filledProfileAddress = _.extend(filledAddress, {street_1: '123 Main St'});
+
+            beforeEach(function() {
+                model.set('addresses', [emptyAddress, emptyAddress, emptyAddress, filledAddress]);
+                isDefaultShippingAddress = spyOn(model, 'isDefaultShippingAddress');
+                this.defaultAddress = App.Settings.address;
+                App.Settings.address = filledAddress;
+            });
+
+            afterEach(function() {
+                App.Settings.address = this.defaultAddress;
+            });
+
+            it('shipping address isn\'t selected, street_1 of last address is not string', function() {
+                model.set('addresses', [emptyAddress, emptyAddress, undefined]);
+                isDefaultShippingAddress.and.returnValue(true);
+                expect(model.getCheckoutAddress()).toBeUndefined();
+            });
+
+            it('shipping address isn\'t selected, street_1 of last address is string', function() {
+                isDefaultShippingAddress.and.returnValue(true);
+                expect(model.getCheckoutAddress()).toEqual(filledAddress);
+            });
+
+            it('selected address if fully filled', function() {
+                model.set('shipping_address', 3);
+                expect(model.getCheckoutAddress()).toEqual(filledAddress);
+            });
+
+            it('selected address is empty', function() {
+                model.set('addresses', [emptyAddress, filledAddress, emptyAddress]);
+                model.set('shipping_address', 0);
+                expect(model.getCheckoutAddress()).toEqual(filledAddress);
+            });
+
+            it('selected address is undefined, other addresses are undefined, profile address is filled, `fromProfile` param is falsy', function() {
+                model.set('addresses', [undefined, undefined, undefined, filledProfileAddress]);
+                model.set('shipping_address', 0);
+                expect(model.getCheckoutAddress()).toBeUndefined;
+            });
+
+            it('selected address is empty, other addresses is empty, profile address is filled, `fromProfile` param is true', function() {
+                model.set('addresses', [undefined, undefined, undefined, filledProfileAddress]);
+                model.set('shipping_address', 0);
+                model.profileAddressIndex = 3;
+                spyOn(model, 'isAuthorized').and.returnValue(true);
+                delete filledProfileAddress.country;
+                expect(model.getCheckoutAddress(true)).toEqual(filledProfileAddress);
             });
         });
 
@@ -3080,6 +3173,76 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             it("failure removing, `jqXHR` is 404", function() {
                 var result = model.removePayment(token_id);
                 removeRequest.reject({status: 404});
+                commonExpectations(result);
+                expect(model.trigger).toHaveBeenCalledWith('onTokenNotFound');
+                expect(model.logout).not.toHaveBeenCalled();
+            });
+        });
+
+        describe("changePayment()", function() {
+            var authHeader = {Authorization: "Bearer SADSADASDSA"},
+                token_id = 2,
+                originalPayments,
+                req;
+
+            beforeEach(function() {
+                originalPayments = model.payments;
+                model.payments = {
+                    changePayment: new Function()
+                };
+                req = Backbone.$.Deferred();
+
+                spyOn(model.payments, 'changePayment').and.callFake(function() {
+                    return req;
+                });
+                spyOn(model, 'getAuthorizationHeader').and.returnValue(authHeader);
+                spyOn(model, 'trigger');
+                spyOn(model, 'logout');
+                spyOn(req, 'fail').and.callThrough();
+            });
+
+            afterEach(function() {
+                model.payments = originalPayments;
+            });
+
+            function commonExpectations(result) {
+                expect(req.fail).toHaveBeenCalled();
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(model.payments.changePayment).toHaveBeenCalledWith(token_id, authHeader);
+                expect(result).toBe(req);
+            }
+
+            it("successful removing", function() {
+                commonExpectations(model.changePayment(token_id));
+            });
+
+            it("`payments.changePayment()` doesn't return request", function() {
+                req = undefined;
+                var result = model.changePayment(token_id);
+                expect(model.getAuthorizationHeader).toHaveBeenCalled();
+                expect(model.payments.changePayment).toHaveBeenCalledWith(token_id, authHeader);
+                expect(result).toBe(req);
+            });
+
+            it("failure removing, `jqXHR` is neither 403 nor 404", function() {
+                var result = model.changePayment(token_id);
+                req.reject({status: 400});
+                commonExpectations(result);
+                expect(model.trigger).not.toHaveBeenCalled();
+                expect(model.logout).not.toHaveBeenCalled();
+            });
+
+            it("failure removing, `jqXHR` is 403", function() {
+                var result = model.changePayment(token_id);
+                req.reject({status: 403});
+                commonExpectations(result);
+                expect(model.trigger).toHaveBeenCalledWith('onUserSessionExpired');
+                expect(model.logout).toHaveBeenCalled();
+            });
+
+            it("failure removing, `jqXHR` is 404", function() {
+                var result = model.changePayment(token_id);
+                req.reject({status: 404});
                 commonExpectations(result);
                 expect(model.trigger).toHaveBeenCalledWith('onTokenNotFound');
                 expect(model.logout).not.toHaveBeenCalled();

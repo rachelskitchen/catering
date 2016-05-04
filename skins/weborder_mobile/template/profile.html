@@ -102,7 +102,7 @@
         <li>
             <input type="text" placeholder="<%= _lp.PROFILE_CITY %>" class="city ios-safari-caret input-colors">
         </li>
-        <li>
+        <li class="country-row">
             <div class="select-wrapper input-colors country-wrapper" data-placeholder="<%= _lp.CHOOSE_COUNTRY %>">
                 <select class="country"></select>
             </div>
@@ -164,6 +164,9 @@
 
 <script type="text/template" id="profile_payment_edition-template">
     <span class="card-type"></span> &mdash; ****<span class="card-number"></span>
+    <label class="profile-checkbox">
+        <input type="checkbox" class="card-default"><i class="input checkbox"></i> <%= _lp.PROFILE_DEFAULT_CARD %>
+    </label>
     <div class="remove-btn"></div>
 </script>
 
@@ -172,6 +175,11 @@
         <span class="font-size1"><%= _lp.PROFILE_CREDIT_CARDS %></span>
     </div>
     <ul class="payments-list"></ul>
+</script>
+
+<script type="text/template" id="profile_payments-template">
+    <div class="payments-box profile-payments-edition text-center"></div>
+    <div class="gift-cards-box profile-payments-edition text-center"></div>
 </script>
 
 <script type="text/template" id="profile_gift_card_selection-template">
@@ -194,7 +202,36 @@
     <div class="gift-cards primary-text text-center primary-bg">
         <span class="font-size1"><%= _lp.GIFT_CARDS %></span>
     </div>
-    <ul class="gift-cards-list"></ul>
+    <div class="gift-cards-list-wrap">
+        <ul class="gift-cards-list"></ul>
+        <div class="add_gift_card_title_wrap">
+            <div class="add_gift_card_title primary-text"><span class="plus_sign"></span><%= _loc.PROFILE_ADD_NEW_GIFT_CARD %></div>
+        </div>
+        <div class="profile-form primary-text text-center">
+            <div class="new_gift_card"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="profile_giftcard-template">
+    <ul class="card font-size2 <% if(isFirefox) { %>firefox<% } %>">
+        <li class="required">
+            <input type="text" placeholder="<%= _lp.GIFTCARD_NUMBER %>" class="number number-input ios-safari-caret input-colors" value="<%= cardNumber %>" min="0">
+        </li>
+        <li class="required">
+            <input type="hidden" value="<%=cardNumber%>" id="id_captcha_key" name="captcha_key" />
+            <input type="text" placeholder="<%= _lp.GIFTCARD_CAPTCHA %>" class="captcha-input ios-safari-caret input-colors" min="0" id="id_captcha_value" name="captcha_value">
+        </li>
+    </ul>
+    <div class="captcha_container">
+        <div class="captcha_wrap">
+            <img alt="" class="captcha" width="100%" height="100%">
+            <div class="captcha-spinner"></div>
+        </div>
+        <span class="btn btn-reload link regular-text">
+            <span class="font-size4"> <%= _lp.GIFTCARD_RELOAD %> </span>
+        </span>
+    </div>
 </script>
 
 <script type="text/template" id="profile_payment_cvv-template">

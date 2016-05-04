@@ -469,24 +469,25 @@ define(["backbone", "factory"], function(Backbone) {
             var items = App.Data.myorder.map(function(order) {
                     return order.item_submit();
                 }),
-                promotions = App.Data.promotions = App.Collections.Promotions.init(items),
                 myorder = App.Data.myorder,
-                checkout = myorder.checkout;
+                checkout = myorder.checkout,
+                discount_code = checkout.get('discount_code'),
+                promotions = App.Data.promotions = App.Collections.Promotions.init(items, discount_code, App.Data.customer.getAuthorizationHeader());
 
             // listen to change of promotions selection
-            this.listenTo(promotions, 'change:is_applied', function(appliedPromotion, is_applied) {
+            this.listenTo(promotions, 'change:is_applied', function(model, is_applied) {
                 // promotion is seleted
                 if (is_applied) {
                     if (myorder.get_only_product_quantity()) {
-                        checkout.set({discount_code: appliedPromotion.get('code')});
+                        checkout.set({discount_code: model.get('code')});
                         myorder.get_cart_totals({apply_discount: true});
                     }
                     else {
-                        checkout.set({last_discount_code: appliedPromotion.get('code')});
+                        checkout.set({last_discount_code: model.get('code')});
                     }
                 }
-                // promotion is unselected
-                else {
+                // promotion is deselected
+                else if (!promotions.where({is_applied: true}).length) {
                     checkout.set({
                         last_discount_code: '',
                         discount_code: ''
@@ -495,16 +496,40 @@ define(["backbone", "factory"], function(Backbone) {
                 }
             });
 
+            this.listenTo(promotions, 'remove', function(model) {
+                model.set('is_applied', false); // remove a selection on promotion removal to fire corresponding event
+            });
+
             this.listenTo(App.Data.myorder, 'add remove change', function() {
                 // need to update promotions since 'is_applicable' attribute could be changed after changing order
                 promotions.needToUpdate = true;
             });
 
-            this.listenTo(checkout, 'change:discount_code change:last_discount_code', function(model, value) {
+            this.listenTo(checkout, 'change:last_discount_code', function(model, value) {
                 if (!value) {
                     promotions.invoke('set', {is_applied: false});
                 }
+                else {
+                    promotions.applyByCode(value);
+                }
             });
+
+            this.listenTo(App.Data.customer, 'change:access_token', function(customer, access_token) {
+                if (access_token) {
+                    promotions.needToUpdate = true; // logged in user can have some unique promotions
+                }
+                else {
+                    // need to update promotions on logout
+                    // obsolete ones will be removed
+                    items = App.Data.myorder.map(function(order) {
+                        return order.item_submit();
+                    });
+                    discount_code = checkout.get('discount_code');
+                    promotions.update(items, discount_code);
+                }
+            });
+
+            return promotions;
         },
         /**
          * Handler of a payment response.
@@ -884,6 +909,7 @@ define(["backbone", "factory"], function(Backbone) {
                 updateBasicDetails = false,
                 updateAddress = false,
                 updatePassword = false,
+                updateBtn = new Backbone.Model({disabled: true}),
                 self = this;
 
             App.Data.mainModel.set({
@@ -896,6 +922,7 @@ define(["backbone", "factory"], function(Backbone) {
                     model: customer,
                     address: address,
                     updateAction: update,
+                    updateBtn: updateBtn,
                     ui: ui,
                     className: 'profile-edit text-center'
                 }
@@ -903,7 +930,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             window.setTimeout(function() {
                 var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email',
-                    passwordEvents = 'change:password, change:confirm_password';
+                    passwordEvents = 'change:password change:confirm_password';
                 self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
                 self.listenTo(customer, passwordEvents, accountPasswordChanged);
                 self.listenTo(address, 'change', addressChanged);
@@ -926,17 +953,22 @@ define(["backbone", "factory"], function(Backbone) {
 
             function basicDetailsChanged() {
                 updateBasicDetails = true;
+                updateBtn.set('disabled', false);
                 ui.set('show_response', false);
             }
 
             function accountPasswordChanged() {
                 updatePassword = Boolean(customer.get('password')) && Boolean(customer.get('confirm_password'));
+                updateBtn.set('disabled', updateBtn.get('disabled') && !updatePassword);
                 ui.set('show_response', false);
             }
 
             function addressChanged() {
-                updateAddress = true;
-                ui.set('show_response', false);
+                if (address.get('country')) { // country is the only required field
+                    updateAddress = true;
+                    updateBtn.set('disabled', false);
+                    ui.set('show_response', false);
+                }
             }
 
             function update() {
@@ -994,6 +1026,7 @@ define(["backbone", "factory"], function(Backbone) {
                 function hideSpinner() {
                     if(--requests <= 0) {
                         mainModel.trigger('loadCompleted');
+                        updateBtn.set('disabled', true);
                         ui.set('show_response', true);
                     }
                 }
@@ -1012,6 +1045,8 @@ define(["backbone", "factory"], function(Backbone) {
                         modelName: 'Profile',
                         mod: 'Payments',
                         model: customer,
+                        changeToken: changeToken,
+                        ui: new Backbone.Model({show_response: false}),
                         removeToken: removeToken,
                         unlinkGiftCard: unlinkGiftCard,
                         className: 'profile-edit text-center'
@@ -1020,6 +1055,20 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             return promises;
+
+            function changeToken(token_id)
+            {
+                var req = customer.changePayment(token_id),
+                    mainModel = App.Data.mainModel;
+
+                if (req)
+                {
+                    mainModel.trigger('loadStarted');
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                }
+
+                return req;
+            }
 
             function removeToken(token_id) {
                 var req = customer.removePayment(token_id),
@@ -1246,8 +1295,10 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             function addressChanged() {
-                updateAddress = true;
-                App.Data.header.set({enableLink: true});
+                if (address.get('country')) { // country is the only required field
+                    updateAddress = true;
+                    App.Data.header.set({enableLink: true});
+                }
             }
 
             function update() {
@@ -1404,45 +1455,59 @@ define(["backbone", "factory"], function(Backbone) {
         setProfilePaymentsContent: function() {
             var customer = App.Data.customer,
                 promises = this.getProfilePaymentsPromises(),
-                content = [];
+                self=this, content = [];
 
-            if (customer.payments) {
-                content.push({
-                    modelName: 'Profile',
-                    mod: 'PaymentsEdition',
-                    collection: customer.payments,
-                    removeToken: removeToken,
-                    className: 'profile-payments-edition text-center',
-                    cacheId: true
-                });
-            }
+            content.push({
+                modelName: 'Profile',
+                mod: 'Payments',
+                model: customer,
+                changeToken: changeToken,
+                ui: new Backbone.Model({show_response: false}),
+                removeToken: removeToken,
+                unlinkGiftCard: unlinkGiftCard,
+                className: 'profile-edit text-center'
+            });
 
-            if (customer.giftCards) {
-                content.push({
-                    modelName: 'Profile',
-                    mod: 'GiftCardsEdition',
-                    collection: customer.giftCards,
-                    unlinkGiftCard: unlinkGiftCard,
-                    className: 'profile-payments-edition text-center',
-                    cacheId: true
-                });
-            }
+            App.Data.header.set({
+                page_title: _loc.PAYMENT_METHODS,
+                back_title: _loc.BACK,
+                back: window.history.back.bind(window.history),
+                link: save,
+                link_title: _loc.SAVE,
+                enableLink: false
+            });
 
-            if (promises.length) {
-                App.Data.header.set({
-                    page_title: _loc.PAYMENT_METHODS,
-                    back_title: _loc.BACK,
-                    back: window.history.back.bind(window.history),
-                    link: new Function(),
-                    link_title: ''
-                });
-            }
+            // to enable 'Save' link
+            preValidateData();
+            window.setTimeout(function() {
+                self.listenTo(customer, 'change_cards', preValidateData);
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'change_cards', preValidateData));
+                self.listenToOnce(self, 'route', App.Data.header.set.bind(App.Data.header, 'enableLink', true));
+            }, 0);
 
             return {
                 content: content,
                 promises: promises
             };
 
+            function preValidateData(data) {
+                App.Data.header.set('enableLink', data ? data.status == 'OK' : false);
+            }
+
+            function save() {
+                customer.trigger('payments_save_cards');
+            }
+
+            function changeToken(token_id)
+            {
+                var req = customer.changePayment(token_id),
+                    mainModel = App.Data.mainModel;
+                if (req)
+                {
+                    mainModel.trigger('loadStarted');
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                }
+            }
             function removeToken(token_id) {
                 var req = customer.removePayment(token_id),
                     mainModel = App.Data.mainModel;

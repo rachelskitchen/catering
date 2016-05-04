@@ -42,9 +42,6 @@ define(["backbone", "factory"], function(Backbone) {
             });
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
-        events: {
-            'click .checkbox-outer': 'changeRememberCard',
-        },
         bindings: {
             '.first_name': 'value: firstLetterToUpperCase(firstName), events: ["input"], trackCaretPosition: firstName',
             '.last_name': 'value: firstLetterToUpperCase(secondName), events: ["input"], trackCaretPosition: secondName',
@@ -53,7 +50,7 @@ define(["backbone", "factory"], function(Backbone) {
             '.card-expiration-month': 'value: expMonth',
             '.card-expiration-year': 'value: expDate, options: years',
             '.card__remember': 'toggle: customerPayments',
-            '#rememberCard': "attr: {checked: select(rememberCard, 'checked', false)}"
+            '#rememberCard': "checkedSpan: {value: rememberCard, outer_elem: '.checkbox-outer'}"
         },
         computeds: {
             years: function() {
@@ -104,13 +101,6 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             return this;
-        },
-        changeRememberCard: function() {
-            event.stopImmediatePropagation();
-            event.preventDefault();
-            var el = this.$(".checkbox"),
-                checked = el.attr('checked') == "checked" ? false : true;
-            this.model.set('rememberCard', checked);
         }
     });
 
@@ -119,7 +109,6 @@ define(["backbone", "factory"], function(Backbone) {
         mod: 'billing_address',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.update_use_profile_address(this.model.get('use_profile_address'));
 
             var model = this.options.customer.toJSON(),
                 defaultAddress = App.Settings.address,
@@ -136,13 +125,10 @@ define(["backbone", "factory"], function(Backbone) {
         start: function() {
             this.options.customer.trigger("change:addresses");
         },
-        events: {
-            'click #use_profile_address': 'change',
-        },
         bindings: {
             "#use_profile_address": "classes: {hide: hide_profile_address}",
             "#use_profile_address .title": "text: use_profile_address_title",
-            ".checkbox": "classes: {checked: use_profile_address, unchecked: not(use_profile_address)}",
+            '.checkbox': "checkedSpan: {value: use_profile_address, outer_elem: '.checkbox-outer'}",
             ".address input": "attr: {disabled: select(use_profile_address, 'disabled', false)}",
             ".address": "classes: {inactive: use_profile_address}",
             ".address select": "attr: {disabled: select(use_profile_address, 'disabled', false)}",
@@ -218,17 +204,6 @@ define(["backbone", "factory"], function(Backbone) {
                     return country_code ? _loc['COUNTRIES'][country_code] : null;
                 }
             },
-        },
-        change: function(event) {
-            event.stopImmediatePropagation();
-            event.preventDefault();
-            var el = this.$(".checkbox"),
-                checked = el.attr('checked') == "checked" ? false : true;
-            this.update_use_profile_address(checked);
-        },
-        update_use_profile_address: function(checked) {
-            this.model.set('use_profile_address', checked);
-            this.$('.checkbox').attr('checked', checked ? 'checked' : false);
         }
     });
 

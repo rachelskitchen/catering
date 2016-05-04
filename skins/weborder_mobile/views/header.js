@@ -246,7 +246,7 @@ define(["factory"], function() {
         bindings: {
             '.title': 'text:page_title',
             '.btn-back-title': 'text: back_title',
-            '.btn-cart': 'toggle: all(not(link), select(hideCart, false, true)), attr: {"data-count": cartItemsQuantity}, classes: {"qty-visible": cartItemsQuantity}'
+            '.btn-cart': 'toggle: all(not(link), not(hideCart)), attr: {"data-count": cartItemsQuantity}, classes: {"qty-visible": cartItemsQuantity}'
         },
         events: {
             'click .btn-link': setCallback('link'),

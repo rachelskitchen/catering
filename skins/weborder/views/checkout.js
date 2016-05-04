@@ -144,9 +144,29 @@ define(["checkout_view"], function(checkout_view) {
         }
     });
 
+    var CheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView.extend({
+        name: 'checkout',
+        mod: 'address',
+        render: function() {
+            App.Views.CoreCheckoutView.CoreCheckoutAddressView.prototype.render.apply(this, arguments);
+
+            var addressSelection = App.Views.GeneratorView.create('Checkout', {
+                mod: 'AddressSelection',
+                checkout: this.options.checkout,
+                customer: this.options.customer,
+                address_index: this.options.address_index
+            });
+            this.subViews.push(addressSelection);
+            this.$('.address-selection').html(addressSelection.el);
+
+            return this;
+        }
+    });
+
     return new (require('factory'))(checkout_view.initViews.bind(checkout_view), function() {
         App.Views.CheckoutView.CheckoutMainView = CheckoutMainView;
         App.Views.CheckoutView.CheckoutPageView = CheckoutPageView;
         App.Views.CheckoutView.CheckoutRewardsCardView = CheckoutRewardsCardView;
+        App.Views.CheckoutView.CheckoutAddressView = CheckoutAddressView;
     });
 });

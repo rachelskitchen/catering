@@ -517,23 +517,31 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             return (shipping_address == this.get('deliveryAddressIndex') || shipping_address == this.get('shippingAddressIndex') || shipping_address == this.get('cateringAddressIndex')) && isDelivery ? true : false;
         },
         /**
+         * Checks whether the selected address is from user profile.
+         * @returns {boolean}
+         */
+        isProfileAddressSelected: function() {
+            return this.get('shipping_address') > 2;
+        },
+        /**
          * Get address set for shipping/delivery or default address set in backend.
+         * @param {boolean} [fromProfile] - indicates whether to use fields from profile address
          * @returns {object} with state, province, city, street_1, street_2, zipcode, contry fields
          */
-        getCheckoutAddress: function() {
+        getCheckoutAddress: function(fromProfile) {
             var customer = this.toJSON(),
                 shipping_address = customer.shipping_address,
                 reverse_addr;
 
             // if shipping address isn't selected take last index
-            if(this.isDefaultShippingAddress()) {
+            if (this.isDefaultShippingAddress()) {
                 shipping_address = customer.addresses.length - 1;
             } else {
                 var addr = customer.addresses[shipping_address];
                 customer.addresses.some(function(el, index) {
                     return index != shipping_address && index != customer.profileAddressIndex && (reverse_addr = el); // use the first existing address
                 });
-                if (!reverse_addr && this.isAuthorized()) {
+                if (!reverse_addr && fromProfile && this.isAuthorized()) {
                     reverse_addr = customer.addresses[customer.profileAddressIndex]; // use profile address
                 }
                 addr == undefined && (addr = {});
@@ -1712,6 +1720,34 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         initPayments: function() {
             typeof this._setPayments == 'function' && this._setPayments();
             this.payments && this.getPayments();
+        },
+        /**
+         * Changes payment token.
+         * @param {number} token_id - token id.
+         * @return {Object} jqXHR object.
+         */
+        changePayment: function(token_id)
+        {
+            var req = this.payments.changePayment(token_id, this.getAuthorizationHeader()),
+                self = this;
+
+            if (req)
+            {
+                req.fail(function(jqXHR)
+                {
+                    if (jqXHR.status == 403)
+                    {
+                        self.trigger('onUserSessionExpired');
+                        self.logout(); // need to reset current account to allow to re-log in
+                    }
+                    else if (jqXHR.status == 404)
+                    {
+                        self.trigger('onTokenNotFound');
+                    }
+                });
+            }
+
+            return req;
         },
         /**
          * Aborts payments request and deletes {@link App.Models.Customer#payments payments},

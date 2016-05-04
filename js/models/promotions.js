@@ -106,36 +106,45 @@ define(['backbone'], function(Backbone) {
          */
         model: App.Models.Promotion,
         /**
-         * Adds listener to track when some promotion gets applied and unselect previously selected promotion
-         * (assume that only 1 promotion can be applied).
+         * Adds listener to track changes of 'is_applied' attribute.
          */
         initialize: function() {
-            this.listenTo(this, 'change:is_applied', function(appliedPromotion, is_applied) {
-                if (is_applied) {
-                    this.where({is_applied: true}).forEach(function(item) {
-                        if (item !== appliedPromotion) {
-                            item.set('is_applied', false);
-                        }
-                    });
-                }
-            });
+            this.listenTo(this, 'change:is_applied', this.radioSelection);
+        },
+        /**
+         * When promotion is selected, deselects all other promotions (radio button behavior).
+         * @param {App.Models.Promotion} model - Selected/deselected promotion.
+         * @param {boolean} is_applied - model.is_applied attribute value.
+         */
+        radioSelection: function(model, is_applied) {
+            if (is_applied) {
+                this.where({is_applied: true}).forEach(function(item) {
+                    if (item !== model) {
+                        item.set('is_applied', false);
+                    }
+                });
+            }
         },
         /**
          * Updates the promotions list.
          * @param {array} items - array of cart items for submitting to server.
+         * @param {string} discount_code - code of applied discount.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
          * @returns {Object} Deferred object.
          */
-        update: function(items) {
-            return this.getPromotions(items);
+        update: function(items, discount_code, authorizationHeader) {
+            return this.getPromotions(items, discount_code, authorizationHeader);
         },
         /**
-         * Initialization through a json object, used after the server is requested for promotions list.
+         * Initialization through a json object, used after the server is requested for the promotions list.
          * @param {array} promotions - list of promotions.
          */
         addAjaxJson: function(promotions) {
             if (!Array.isArray(promotions)) return;
             var self = this,
-                modelToUpdate;
+                modelToUpdate,
+                modelsToRemove = [],
+                ids = [];
 
             promotions.forEach(function(promotion, index) {
                 if (!(promotion instanceof Object)) {
@@ -145,16 +154,23 @@ define(['backbone'], function(Backbone) {
                     promotion = promotion.toJSON();
                 }
 
-                modelToUpdate = self.find(function(model) {
-                    return promotion.id === model.get('id') && !_.isEqual(model.toJSON(), promotion);
-                });
+                ids.push(promotion.id);
+                modelToUpdate = self.get(promotion.id); // update existing campaign ('is_applicable' flag could be changed)
 
                 modelToUpdate ? modelToUpdate.set(promotion) : self.add(promotion);
             });
+
+            // find and remove obsolete campaigns from collection
+            modelsToRemove = this.filter(function(model) {
+                return ids.indexOf(model.id) === -1;
+            });
+            this.remove(modelsToRemove);
         },
         /**
          * Loads the promotions list from backend.
          * @param {array} items - array of cart items for submitting to server.
+         * @param {string} discount_code - code of applied discount.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
          *
          * Used parameters of the request are:
          * ```
@@ -171,7 +187,7 @@ define(['backbone'], function(Backbone) {
          *
          * @returns {object} jqXHR object, returned by $.ajax().
          */
-        getPromotions: function(items) {
+        getPromotions: function(items, discount_code, authorizationHeader) {
             var self = this;
             items = items || [];
 
@@ -181,6 +197,7 @@ define(['backbone'], function(Backbone) {
                 url: '/weborders/campaigns/',
                 type: 'POST',
                 dataType: 'json',
+                headers: authorizationHeader,
                 data: JSON.stringify({
                     establishmentId: App.Data.settings.get('establishment'),
                     items: items
@@ -188,10 +205,22 @@ define(['backbone'], function(Backbone) {
                 success: function(response) {
                     if (response.status === 'OK') {
                         self.addAjaxJson(response.data);
+                        // apply a promotion that match the applied discount code
+                        discount_code && self.applyByCode(discount_code);
                         self.trigger('promotionsLoaded');
                     }
                 }
             });
+        },
+        /**
+         * Applies a promotion that match the applied discount code.
+         * @param {string} code - code of applied discount.
+         * @param {boolean} [silent=true] - indicates whether to use silent mode.
+         */
+        applyByCode: function(code, silent) {
+            silent !== undefined || (silent = true);
+            var model = this.findWhere({code: code, is_applicable: true});
+            model && model.set('is_applied', true, {silent: silent});
         }
     });
 
@@ -199,12 +228,14 @@ define(['backbone'], function(Backbone) {
      * Loads the promotions list.
      * @static
      * @alias App.Collections.Promotions.init
+     * @param {array} items - array of cart items for submitting to server.
+     * @param {string} discount_code - code of applied discount.
+     * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
      * @returns {Object} Deferred object.
      */
-    App.Collections.Promotions.init = function(items) {
+    App.Collections.Promotions.init = function(items, discount_code, authorizationHeader) {
         var promotions = new App.Collections.Promotions();
-        promotions.fetching = promotions.getPromotions(items);
-
+        promotions.fetching = promotions.getPromotions(items, discount_code, authorizationHeader);
         return promotions;
     };
 

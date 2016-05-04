@@ -35,19 +35,44 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
         });
 
         describe('initialize()', function() {
-            describe('`change:is_applied` event', function() {
-                beforeEach(function() {
-                    App.Models.Promotion.prototype.listenTo = jasmine.createSpy();
-                    collection = new App.Collections.Promotions();
-                });
+            it('call radioselection() on change:is_applied event', function() {
+                spyOn(App.Collections.Promotions.prototype, 'radioSelection');
+                collection = new App.Collections.Promotions();
+                collection.set(promotionsData.campaigns);
+                var campaign1 = collection.at(1);
+                campaign1.set('is_applied', true);
+                expect(App.Collections.Promotions.prototype.radioSelection).toHaveBeenCalledWith(campaign1, true, {});
+            });
+        });
 
-                it('some promotion is applied, another promotion gets applied', function() {
-                    collection.add(promotionsData.campaigns);
-                    collection.models[0].set('is_applied', true, {silent: true});
-                    collection.models[1].set('is_applied', true);
-                    expect(collection.models[1].get('is_applied')).toBe(true);
-                    expect(collection.models[0].get('is_applied')).toBe(false);
-                });
+        describe('radioSelection()', function() {
+            var campaign1, campaign2;
+
+            beforeEach(function() {
+                collection.set([{is_applied: false}, {is_applied: true}]);
+                campaign1 = collection.at(0);
+                campaign2 = collection.at(1);
+            });
+
+            it('`is_applied` param is false', function() {
+                collection.radioSelection(campaign1, false);
+                collection.radioSelection(campaign2, false);
+
+                expect(campaign1.get('is_applied')).toBe(false);
+                expect(campaign2.get('is_applied')).toBe(true);
+            });
+
+            it('`is_applied` param is true', function() {
+                // campaign2 is selected
+                collection.radioSelection(campaign2, true);
+                expect(campaign1.get('is_applied')).toBe(false);
+                expect(campaign2.get('is_applied')).toBe(true);
+
+                // campaign1 is selected
+                campaign1.set('is_applied', true, {silent: true});
+                collection.radioSelection(campaign1, true);
+                expect(campaign1.get('is_applied')).toBe(true);
+                expect(campaign2.get('is_applied')).toBe(false);
             });
         });
 
@@ -131,6 +156,7 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
 
                     spyOn(App.Data.errors, 'alert');
                     spyOn(collection, 'addAjaxJson');
+                    spyOn(collection, 'applyByCode');
                     spyOn(collection, 'trigger');
                 });
 
@@ -150,8 +176,23 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
 
                 it('ajax error', function() {
                     collection.getPromotions();
+                    data = {status: 'OK', data: data};
                     jqXHR.reject();
                     expect(collection.trigger).not.toHaveBeenCalledWith('promotionsLoaded');
+                });
+
+                it('ajax success, `discount_code` param is falsy', function() {
+                    data = {status: 'OK', data: data};
+                    collection.getPromotions([], '');
+                    jqXHR.resolve();
+                    expect(collection.applyByCode).not.toHaveBeenCalled();
+                });
+
+                it('ajax success, `discount_code` param is specified', function() {
+                    data = {status: 'OK', data: data};
+                    collection.getPromotions([], 'code1');
+                    jqXHR.resolve();
+                    expect(collection.applyByCode).toHaveBeenCalledWith('code1');
                 });
 
                 function expectRequestParameters() {
@@ -174,8 +215,50 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
 
             it('update()', function() {
                 spyOn(collection, 'getPromotions');
-                collection.update();
-                expect(collection.getPromotions).toHaveBeenCalled();
+                collection.update([], 'code1', {});
+                expect(collection.getPromotions).toHaveBeenCalledWith([], 'code1', {});
+            });
+
+            describe('applyByCode()', function() {
+                var campaign1, campaign2;
+
+                beforeEach(function() {
+                    collection.set([{code: 'code1', is_applicable: true}, {code: 'code2', is_applicable: true}]);
+                    campaign1 = collection.at(0);
+                    campaign2 = collection.at(1);
+                    spyOn(campaign1, 'set').and.callThrough();
+                    spyOn(campaign2, 'set').and.callThrough();
+                });
+
+                it('`silent` param is undefined', function() {
+                    collection.applyByCode('code1');
+                    expect(campaign1.set).toHaveBeenCalledWith('is_applied', true, {silent: true});
+                    expect(campaign2.set).not.toHaveBeenCalled();
+                });
+
+                it('`silent` param is true', function() {
+                    collection.applyByCode('code1', true);
+                    expect(campaign1.set).toHaveBeenCalledWith('is_applied', true, {silent: true});
+                    expect(campaign2.set).not.toHaveBeenCalled();
+                });
+
+                it('`silent` param is false', function() {
+                    collection.applyByCode('code1', false);
+                    expect(campaign1.set).toHaveBeenCalledWith('is_applied', true, {silent: false});
+                    expect(campaign2.set).not.toHaveBeenCalled();
+                });
+
+                it('promotion is not applicable', function() {
+                    campaign1.set('is_applicable', false, {silent: true});
+                    collection.applyByCode('code1');
+                    expect(campaign1.set.calls.mostRecent().args).not.toEqual(['is_applied', true, {silent: true}]);
+                });
+
+                it('there is no promotion with specified code', function() {
+                    collection.applyByCode('not existing code');
+                    expect(campaign1.set).not.toHaveBeenCalled();
+                    expect(campaign2.set).not.toHaveBeenCalled();
+                });
             });
 
             it('init()', function() {
@@ -184,8 +267,8 @@ define(['js/utest/data/Promotions', 'promotions'], function(promotionsData) {
 
                 spyOn(App.Collections.Promotions.prototype, 'getPromotions').and.returnValue(fetching);
                 App.Data.promotions = undefined;
-                promotions = App.Collections.Promotions.init();
-                expect(App.Collections.Promotions.prototype.getPromotions).toHaveBeenCalled();
+                promotions = App.Collections.Promotions.init([], 'code1', {});
+                expect(App.Collections.Promotions.prototype.getPromotions).toHaveBeenCalledWith([], 'code1', {});
                 expect(promotions instanceof App.Collections.Promotions).toBe(true);
                 expect(promotions.fetching.state()).toBe('pending');
             });

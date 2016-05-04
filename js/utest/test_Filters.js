@@ -114,6 +114,59 @@ define(['filters'], function() {
 
             loadDataResult = loadDataResultOld;
         });
+
+        describe('is_filter_available()', function() {
+            var settings_directory;
+
+            beforeEach(function() {
+                this.settings_directory = App.Data.settings.get('settings_directory');
+            });
+
+            afterEach(function() {
+                App.Data.settings.set('settings_directory', this.settings_directory);
+            });
+
+            it('uid is not set', function() {
+                filterItem.set('uid', '');
+                expect(filterItem.is_filter_available()).toBe(true);
+            });
+
+            it('uid is set and match setting, filter is permited', function() {
+                filterItem.set('uid', 'directory.storeTypes.grocery');
+                expect(filterItem.is_filter_available()).toBe(true);
+
+                filterItem.set('uid', 'directory.sortOptions.a-z');
+                expect(filterItem.is_filter_available()).toBe(true);
+
+                filterItem.set('uid', 'directory.distance.all-stores');
+                expect(filterItem.is_filter_available()).toBe(true);
+
+                filterItem.set('uid', 'directory.search-by-name.search');
+                expect(filterItem.is_filter_available()).toBe(true);
+
+                filterItem.set('uid', 'directory.online_and_app_orders.active');
+                expect(filterItem.is_filter_available()).toBe(true);
+
+                filterItem.set('uid', 'directory.delivery.active');
+                expect(filterItem.is_filter_available()).toBe(true);
+
+                filterItem.set('uid', 'directory.open_now.inactive');
+                expect(filterItem.is_filter_available()).toBe(true);
+            });
+
+            it('uid is set and match setting, filter is not permited', function() {
+                settings_directory = deepClone(this.settings_directory);
+                delete settings_directory.store_type_filter;
+                App.Data.settings.set('settings_directory', settings_directory);
+                filterItem.set('uid', 'directory.storeTypes.grocery');
+                expect(filterItem.is_filter_available()).toBe(false);
+            });
+
+            it('uid is set but does not match any setting', function() {
+                filterItem.set('uid', '23etwgojesrt');
+                expect(filterItem.is_filter_available()).toBe(true);
+            });
+        });
     });
 
     describe('App.Collections.FilterItems', function() {

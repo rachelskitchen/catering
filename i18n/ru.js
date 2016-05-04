@@ -598,6 +598,7 @@
         "PROFILE_CREDIT_CARDS": "Кредитные карты",
         "PROFILE_ADD_ANOTHER_CARD": "Добавить другую карту",
         "PROFILE_UPDATE_SUCCESSFUL": "Успешно обновлено",
+        "PROFILE_ADD_NEW_GIFT_CARD": "Добавить подарочную карту",
         'BILLING_ADDRESS_TITLE': 'Задайте билинг-адрес',
         'USE_PROFILE_ADDRESS_TITLE_1': 'Исользовать адрес профиля',
         'CVV_REQUIRED': 'Требуется CVV',

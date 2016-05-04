@@ -117,8 +117,14 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
+    App.Views.CoreGiftCardView.CoreGiftCardProfileView = App.Views.CoreGiftCardView.CoreGiftCardMainView.extend({
+        name: 'profile',
+        mod: 'giftcard'
+    })
+
     return new (require('factory'))(function() {
         App.Views.GiftCardView = {};
         App.Views.GiftCardView.GiftCardMainView = App.Views.CoreGiftCardView.CoreGiftCardMainView;
+        App.Views.GiftCardView.GiftCardProfileView  = App.Views.CoreGiftCardView.CoreGiftCardProfileView;
     });
 });

@@ -30,8 +30,8 @@ define(["total_view"], function(total_view) {
             '.have-discount-code': 'html: haveDiscountCode, toggle: all(showDiscountCode, not(showRewards))',
             '.have-rewards': 'html: haveRewards, toggle: all(not(showDiscountCode), showRewards)',
             '.remove-discount-code': 'toggle: checkout_last_discount_code',
-            '.remove-reward-redemption': 'toggle: length(rewardsCard_discounts)'
-
+            '.remove-reward-redemption': 'toggle: length(rewardsCard_discounts)',
+            '.total_discounts': 'toggle: any(checkout_last_discount_code, length(rewardsCard_discounts))'
         }),
         computeds: extendProto('computeds', {
             haveDiscountCodeOrRewards: {

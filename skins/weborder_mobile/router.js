@@ -128,18 +128,6 @@ define(["main_router"], function(main_router) {
 
                 // run history tracking
                 this.triggerInitializedEvent();
-
-                /**
-                 * Promotions
-                 */
-                if (App.Settings.has_campaigns) {
-                    this.promotions = {
-                        modelName: 'Promotions',
-                        model: new Backbone.Model(),
-                        mod: 'TopLine',
-                        cacheId: true
-                    };
-                }
             });
 
             var checkout = App.Data.myorder.checkout;
@@ -373,6 +361,8 @@ define(["main_router"], function(main_router) {
             return App.Data.categories.loadData;
         },
         index: function() {
+            var self = this;
+
             this.prepare('index', function() {
                 // load categories
                 this.initCategories().then(this.change_page.bind(this));
@@ -382,6 +372,7 @@ define(["main_router"], function(main_router) {
                     back: App.Data.dirMode ? this.navigateDirectory.bind(this) : null,
                     back_title: App.Data.dirMode ? _loc.BACK : '',
                     showMenuBtn: true,
+                    hideCart: false,
                     tab: 0
                 });
 
@@ -397,7 +388,51 @@ define(["main_router"], function(main_router) {
                     className: 'content_scrollable'
                 }];
 
-                this.promotions && content.unshift(this.promotions);
+
+                /**
+                 * Promotions
+                 */
+                if (!this.promotions) {
+                    // current establishment has campaigns for non authorized users, so any user can access them
+                    if (App.Settings.has_campaigns) {
+                        initPromotionsLink();
+                    }
+                    // need to check if there are any available campaigns for current user
+                    else if (App.Data.customer.isAuthorized()) {
+                        this.prepare('promotions', function() {
+                            var promotions = self.initPromotions();
+
+                            promotions.fetching.always(function() {
+                                if (promotions.length) {
+                                    initPromotionsLink();
+
+                                    App.Data.mainModel.set({
+                                        content: _.union([self.promotions], content)
+                                    });
+                                }
+                            });
+                        });
+                    }
+                }
+                // 'has_campaigns' is false and the user is not authorized, so there are no available campaigns
+                else if (!App.Settings.has_campaigns && !App.Data.customer.isAuthorized()) {
+                    delete this.promotions;
+                    content.length > 1 && content.shift();
+                }
+
+                // this.promotions exists, need to display it
+                if (this.promotions) {
+                    content.unshift(this.promotions);
+                }
+
+                function initPromotionsLink() {
+                    self.promotions = {
+                        modelName: 'Promotions',
+                        model: new Backbone.Model(),
+                        mod: 'TopLine',
+                        cacheId: true
+                    };
+                }
 
                 var footerMode;
                 if (App.Settings.promo_message) {
@@ -909,7 +944,10 @@ define(["main_router"], function(main_router) {
                 page_title: _loc.HEADER_CHECKOUT_PT,
                 back_title: _loc.BACK,
                 back: this.navigate.bind(this, 'cart', true),
-                promotions: this.navigate.bind(this, 'promotions', true)
+                promotions: function goToPromotions() {
+                    self.navigate('promotions', true);
+                    App.Data.header.set('hideCart', true);
+                }
             });
 
             App.Data.mainModel.set({
@@ -933,10 +971,12 @@ define(["main_router"], function(main_router) {
                     App.Data.customer.loadAddresses();
                 }
 
-                // Need to specify shipping address (Bug 34676)
-                App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+                if (!App.Data.customer.isProfileAddressSelected()) {
+                    // Need to specify shipping address (Bug 34676)
+                    App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+                }
 
-                App.Data.header.set('showPromotionsLink', App.Settings.has_campaigns);
+                App.Data.header.set('showPromotionsLink', !!self.promotions);
                 this.listenToOnce(this, 'route', function() {
                     App.Data.header.set('showPromotionsLink', false); // hide Promotions link
                 });
@@ -955,8 +995,7 @@ define(["main_router"], function(main_router) {
                             collection: App.Data.myorder,
                             mod: 'OrderType',
                             DINING_OPTION_NAME: self.LOC_DINING_OPTION_NAME,
-                            className: 'checkout',
-                            cacheId: true
+                            className: 'checkout'
                         },
                         {
                             modelName: 'Checkout',
@@ -964,16 +1003,14 @@ define(["main_router"], function(main_router) {
                             customer: App.Data.customer,
                             rewardsCard: App.Data.myorder.rewardsCard,
                             mod: 'Main',
-                            className: 'checkout',
-                            cacheId: true
+                            className: 'checkout'
                         },
                         {
                             modelName: 'Checkout',
                             model: App.Data.myorder.checkout,
                             timetable: App.Data.timetables,
                             mod: 'Pickup',
-                            className: 'checkout',
-                            cacheId: true
+                            className: 'checkout'
                         }
                     ]
                 });
@@ -1011,7 +1048,10 @@ define(["main_router"], function(main_router) {
                 page_title: _loc.HEADER_CHECKOUT_PT,
                 back_title: _loc.BACK,
                 back: App.Data.customer.isAuthorized() ? this.navigate.bind(this, 'cart', true) : this.navigate.bind(this, 'checkout', true),
-                promotions: this.navigate.bind(this, 'promotions', true)
+                promotions: function goToPromotions() {
+                    self.navigate('promotions', true);
+                    App.Data.header.set('hideCart', true);
+                }
             });
 
             App.Data.mainModel.set({
@@ -1050,15 +1090,9 @@ define(["main_router"], function(main_router) {
                         collection: App.Data.myorder,
                         mod: 'OrderTypeShort',
                         DINING_OPTION_NAME: self.LOC_DINING_OPTION_NAME,
-                        className: 'checkout-short checkout-short-left',
-                        cacheId: true
-                    },
-                    {
-                        modelName: 'Checkout',
-                        model: App.Data.myorder.checkout,
+                        checkout: myorder.checkout,
                         customer: App.Data.customer,
-                        mod: 'AddressShort',
-                        className: 'checkout checkout-lines font-size2',
+                        className: 'checkout-short',
                         cacheId: true
                     },
                     {
@@ -1079,7 +1113,7 @@ define(["main_router"], function(main_router) {
                     });
                 }
 
-                App.Data.header.set('showPromotionsLink', App.Settings.has_campaigns);
+                App.Data.header.set('showPromotionsLink', !!self.promotions);
                 this.listenToOnce(this, 'route', function() {
                     App.Data.header.set('showPromotionsLink', false); // hide Promotions link
                 });
@@ -1168,11 +1202,13 @@ define(["main_router"], function(main_router) {
                         className: 'checkout-discount-code'
                     }),
                     callback: function(res) {
-                        if(!res) {
+                        if (!res) {
                             return;
                         }
 
-                        if (!/^[\d\w]{1,200}$/.test(myorder.checkout.get("discount_code")) ) {
+                        var codeLength = myorder.checkout.get('discount_code').length;
+
+                        if (codeLength < 1 || codeLength > 200) {
                             return App.Data.errors.alert(MSG.ERROR_INCORRECT_DISCOUNT_CODE); // user notification
                         }
 
@@ -1935,7 +1971,7 @@ define(["main_router"], function(main_router) {
                         items = App.Data.myorder.map(function(order) {
                             return order.item_submit();
                         });
-                        promotions.update(items).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                        promotions.update(items, checkout.get('discount_code'), App.Data.customer.getAuthorizationHeader()).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                     }
 
                     App.Data.header.set({
@@ -1943,14 +1979,13 @@ define(["main_router"], function(main_router) {
                         back_title: backToMenu ? _loc.MENU : _loc.BACK,
                         back: back,
                         cart: cart,
-                        hideCart: App.Data.myorder.get_only_product_quantity() < 1
+                        hideCart: App.Data.header.get('hideCart') || App.Data.myorder.get_only_product_quantity() < 1
                     });
 
                     content = {
                         modelName: 'Promotions',
                         mod: 'List',
-                        collection: promotions,
-                        cacheId: true
+                        collection: promotions
                     };
 
                     App.Data.mainModel.set({

@@ -141,7 +141,7 @@ define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], funct
                 tip: true,
                 customer: true,
                 checkout: true,
-                card_billing_address: PaymentProcessor.isBillingAddressCard() && !doPayWithToken
+                card_billing_address: self.options.submode == 'Credit' && !doPayWithToken && PaymentProcessor.isBillingAddressCard()
             }, function() {
                 if (self.options.submode == 'Gift' && customer.isAuthorized() && !doPayWithGiftCard) {
                     customer.linkGiftCard(self.options.card).done(function(data) {
