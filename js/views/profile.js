@@ -687,12 +687,12 @@ define(["factory"], function() {
                 this.subViews.push(giftCardsEdition);
             }
 
-            if (this.model.rewardCards) {
+            if (this.model.get('rewardCards')) {
                 this.newRewardCard = new App.Models.RewardsCard({add_new_card: false});
                 var rewardCardsEdition = App.Views.GeneratorView.create('Profile', {
                     el: this.$('.reward-cards-box'),
                     mod: 'RewardCardsEdition',
-                    collection: this.model.rewardCards,
+                    collection: this.model.get('rewardCards'),
                     unlinkRewardCard: this.options.unlinkRewardCard,
                     newCard: this.newRewardCard,
                     customer: this.options.model

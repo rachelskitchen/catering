@@ -1001,7 +1001,7 @@ define(["main_router"], function(main_router) {
             var self = this,
                 load = $.Deferred(),
                 myorder = App.Data.myorder,
-                rewardCards = App.Data.customer.rewardCards;
+                rewardCards = App.Data.customer.get('rewardCards');
 
             if (myorder.length === 0) {
                 load = this.loadData();
@@ -1647,10 +1647,8 @@ define(["main_router"], function(main_router) {
                 this.change_page();
             });
         },
-        rewards_card_submit: function(rewardsCard) {
-            if (!rewardsCard) {
-                rewardsCard = App.Data.myorder.rewardsCard;
-            }
+        rewards_card_submit: function() {
+            var rewardsCard = App.Data.myorder.rewardsCard;
             this.rewardsPageReferrerHash = this.lastHash;
 
             App.Data.header.set({
@@ -1686,7 +1684,7 @@ define(["main_router"], function(main_router) {
                         balance: rewardsCard.get('balance'),
                         rewards: rewardsCard.get('rewards'),
                         discount: rewardsCard.get('discount'),
-                        cacheId: true
+                        customer: App.Data.customer,
                     }]
                 });
 
@@ -1695,7 +1693,7 @@ define(["main_router"], function(main_router) {
         },
         reward_cards_select: function() {
             var self = this,
-                rewardCards = App.Data.customer.rewardCards;
+                rewardCards = App.Data.customer.get('rewardCards');
             this.rewardsPageReferrerHash = this.lastHash;
 
             if (!rewardCards.length) {
@@ -1743,10 +1741,8 @@ define(["main_router"], function(main_router) {
                 }
             }
         },
-        rewards: function(rewardsCard) {
-            if (!rewardsCard) {
-                rewardsCard = App.Data.myorder.rewardsCard;
-            }
+        rewards: function() {
+            var rewardsCard = App.Data.myorder.rewardsCard;
 
             App.Data.header.set({
                 page_title: _loc.HEADER_REWARDS_PT,

@@ -92,7 +92,7 @@ define(["profile_view", "giftcard_view"], function(profile_view) {
                 this.subViews.push(giftCardsEdition);
             }
 
-            if (this.model.rewardCards) {
+            if (this.model.get('rewardCards')) {
                 this.newRewardCard = new App.Models.RewardsCard({add_new_card: false});
                 var rewardCardsEdition = App.Views.GeneratorView.create('Profile', {
                     el: this.$('.reward-cards-box'),

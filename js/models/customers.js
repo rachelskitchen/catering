@@ -1801,19 +1801,19 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.isAuthorized() && this.initGiftCards();
         },
         setRewardCards: function() {
-            if (!this.rewardCards) {
-                this.rewardCards = new App.Collections.RewardCards();
+            if (!this.get('rewardCards')) {
+                this.set('rewardCards', new App.Collections.RewardCards());
             }
             if (this.isAuthorized()) {
                 this.getRewardCards();
             }
         },
         getRewardCards: function() {
-            if (!this.rewardCards) {
+            if (!this.get('rewardCards')) {
                 return console.error("Rewards cards have not been initialized");
             }
             var self = this,
-                req = this.rewardCards.getCards(this.getAuthorizationHeader());
+                req = this.get('rewardCards').getCards(this.getAuthorizationHeader());
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
@@ -1855,7 +1855,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         removeRewardCards: function() {
             this.rewardCardsRequest && this.rewardCardsRequest.abort();
             delete this.rewardCardsRequest;
-            this.rewardCards.reset();
+            this.get('rewardCards').reset();
         },
         /**
          * Receives gift cards from server.
@@ -1953,15 +1953,11 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 return;
             }
 
-            var def = $.Deferred();//EE-DEBUG
-            self.rewardCards.addUniqueItem(rewardCard);
-            return def.resolve();
-
             var req = rewardCard.linkToCustomer(this.getAuthorizationHeader());
 
             req.done(function(data) {
                 if (_.isObject(data) && data.status == 'OK') {
-                    self.rewardCards.addUniqueItem(rewardCard);
+                    self.get('rewardCards').addUniqueItem(rewardCard);
                 }
             });
 

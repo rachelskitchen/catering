@@ -163,13 +163,15 @@
     margin: 1.5em 0;
 }
 
-.payments-list,
-.gift-cards-list {
+.profile-payments-edition .payments-list,
+.profile-payments-edition .gift-cards-list,
+.profile-payments-edition .reward-cards-list {
     margin: 3em -1.8em 0;
 }
 
 .profile-payments-edition .payments-list,
-.profile-payments-edition .gift-cards-list {
+.profile-payments-edition .gift-cards-list,
+.profile-payments-edition .reward-cards-list {
     margin-top: 2px;
 }
 
