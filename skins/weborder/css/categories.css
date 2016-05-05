@@ -41,7 +41,6 @@
     left: 50%;
     z-index: 2;
     margin-left: -6%;
-    background: url("./img/arrow-down.svg") no-repeat 0 0 transparent;
 }
 
 .categories input {
@@ -51,9 +50,11 @@
 
 .categories_slider .arrow {
     width: 15px;
+    height: 40px;
     position: absolute;
     top: 0px;
-    font-size: 34px;
+    z-index: 1;
+    font-size: 30px;
     cursor: pointer;
 }
 

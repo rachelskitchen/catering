@@ -62,8 +62,11 @@ define(["quantity_view"], function(quantity_view) {
                 selectWrapper.removeClass('disabled');
             }
 
-            if(product.isParent())
+            if (product.isParent()) {
                 this.$el.hide();
+            } else {
+                this.$el.show();
+            }
 
             if (this.combobox) {
                 this.combobox.destroy();

@@ -11,14 +11,14 @@
 <script type="text/template" id="myorder_item-template">
     <% var isUsualProduct = id_product !== null && is_child_product != true; %>
     <% if(!is_service_fee && isUsualProduct) { %>
-    <div class="qty-box fl-left text-center">
-        <div class="btn-up"></div>
+    <div class="qty-box fl-left text-center secondary-border">
+        <div class="btn-up primary-text"></div>
         <span class="qty"><%= quantity %></span>
-        <div class="btn-down"></div>
+        <div class="btn-down primary-text"></div>
     </div>
     <% } %>
     <% if(isUsualProduct) { %>
-    <div class="remove cancel fl-right"><%= _lp.MYORDER_REMOVE %></div>
+    <div class="remove cancel fl-right link"><%= _lp.MYORDER_REMOVE %></div>
     <% } %>
     <% if(is_child_product != true) { %>
     <div class="item-sum fl-right"><%= currency_symbol %><%= product_sum %></div>
@@ -29,7 +29,7 @@
             <%= sizeModifier %> <%= name %>
         </span>
         <% if(isUsualProduct) { %>
-        <span class="edit"><% _lp.MYORDER_EDIT %></span>
+        <span class="edit primary-text link"><% _lp.MYORDER_EDIT %></span>
         <% } %>
     </h3>
     <ul class="modifier_place">
@@ -98,7 +98,7 @@
 
 <script type="text/template" id="myorder_matrix-template">
     <div id='modifiers_popup'>
-        <div class='product product_info text-left'></div>
+        <div class='product product_info text-left popup-header-bg primary-border'></div>
         <div class='modifiers_table'>
             <div class='modifiers_table_scroll'>
                 <div class='product_attribute_info'></div>
@@ -113,7 +113,7 @@
 
 <script type="text/template" id="myorder_matrix_combo-template">
     <div id='modifiers_popup'>
-        <div class='product product_info text-left'></div>
+        <div class='product product_info text-left popup-header-bg primary-border'></div>
         <div class='modifiers_table'>
             <div class='modifiers_table_scroll'>
                 <div class='modifiers_info modifiers text-left'></div>
@@ -126,20 +126,20 @@
 </script>
 
 <script type="text/template" id="myorder_matrix_footer-template">
-    <div class="product_instructions text-left"></div>
-    <div class="footer-line text-left">
-        <div class="quantity quantity_info"></div>
+    <div class="product_instructions text-left primary-border"></div>
+    <div class="footer-line text-left primary-border">
         <div class="product_price fl-right"></div>
+        <div class="quantity quantity_info"></div>
     </div>
     <div class="action_button btn" tabindex="0"><%= _lp.MYORDER_ADD_ITEM %></div>
 </script>
 
 <script type="text/template" id="myorder_matrix_footer_upsell-template">
-    <div class="product_instructions"></div>
-    <div class="footer-line text-left">
-        <div class="quantity quantity_info"></div>
+    <div class="product_instructions text-left primary-border"></div>
+    <div class="footer-line text-left primary-border">
         <div class="product_price fl-right"></div>
-        <div class="no_combo_link fl-right link"><%= _lp.UPSELL_DONT_WANT_COMBO %></div>
+        <div class="no_combo_link fl-right link primary-text"><%= _lp.UPSELL_DONT_WANT_COMBO %></div>
+        <div class="quantity quantity_info"></div>
     </div>
     <div class="action_button btn" tabindex="0"><%= _lp.MYORDER_ADD_ITEM %></div>
 </script>

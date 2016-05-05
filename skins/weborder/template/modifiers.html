@@ -5,28 +5,28 @@
             <span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
         </span>
         <% } else if(!isSpecial && !isInventoryMatrix) { %>
-        <span class="cost">
+        <span class="cost special-text">
             <span class="plus">+</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
         </span>
         <% } %>
         <% if (!isInventoryMatrix && _settings.online_orders) { %>
-        <span class="free"><span class="value"></span></span>
+        <span class="free special-text"><span class="value"></span></span>
         <% } %>
     </div>
     <div class="mdf_spacer fl-right">
-        <div class="mdf_split select-wrapper selected_option"><select></select></div>
-        <div class="mdf_quantity select-wrapper"><select></select></div>
+        <div class="mdf_split select-wrapper selected_option primary-text"><select class="regular-text"></select></div>
+        <div class="mdf_quantity select-wrapper primary-text"><select></select></div>
     </div>
     <label for="modifier<%= id %>" class="label <% if(isSpecial) { %>special_label<% } %> <% if(!_settings.online_orders) {print('no-controls');} %>">
         <% if (!isSpecial) { %>
         <input type="<%= type %>" id="modifier<%= id %>" name="modifier<%= id %>">
-        <span class="<%= type %>"></span>
+        <span class="<%= type %> primary-border"></span>
         <% } else { %>
-            <span class="special_button fl-right"><%= _lp.MODIFIERS_BUTTON_ADD %></span>
+            <span class="special_button fl-right primary-text link"><%= _lp.MODIFIERS_BUTTON_ADD %></span>
         <% } %>
         <span class="title <% if(isSpecial) { %>special<% } %> "><%= name %></span>
         <% if (!isInventoryMatrix && description) { %>
-        <span class="info"><span class="tooltip transparent"><%= description %></span></span>
+        <span class="info"><span class="tooltip transparent alternate-text"><%= description %></span></span>
         <% } %>
     </label>
 </script>
@@ -37,38 +37,42 @@
 
 <script type="text/template" id="modifiers_classes_item-template">
     <div class='modifiers_classes_title'>
-        <h3 class="title"><%= name %></h3>
-        <% if (_settings.online_orders) { %>
-            <span class='modifiers_classes_subtitle'>
-            <%  var text = '';
-                if (type === 0 && (typeof maximum_amount != 'number' || maximum_amount === 0) && (typeof minimum_amount != 'number' || minimum_amount === 0)) {
-                    text = _lp.MODIFIERS_OPTIONAL;
-                } else if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) {
-                    text = _lp.MODIFIERS_CHOOSE + ' ' + minimum_amount;
-                } else if (type === 0 && typeof maximum_amount == 'number' && maximum_amount != 0 && typeof minimum_amount == 'number' && minimum_amount != 0) {
-                    text = _lp.MODIFIERS_CHOOSE + ' ' + minimum_amount + ' ' + _lp.MODIFIERS_CHOOSE_TO + ' ' + maximum_amount;
-                } else if (type === 0 && typeof maximum_amount == 'number' && (typeof minimum_amount != 'number' || minimum_amount === 0)) {
-                    text = _lp.MODIFIERS_OPTIONAL + ', ' + _lp.MODIFIERS_OPTIONAL_UP + ' ' + maximum_amount;
-                } else if (type === 0 && typeof maximum_amount != 'number' && typeof minimum_amount == 'number') {
-                    text = _lp.MODIFIERS_CHOOSE + ' ' + _lp.MODIFIERS_CHOOSE_LEAST + ' ' + minimum_amount;
-                } else if (type === 1) {
-                    text = _lp.MODIFIERS_CHOOSE + ' ' + _lp.MODIFIERS_CHOOSE_ONE;
-                } else if (type === 2) {
-                    text = _lp.MODIFIERS_OPTIONAL;
-                }
-            %>
-                (<%= text %><% if (free_modifiers) { %><span class="free">. <%= free_modifiers %>.</span><% } %>)
-            </span>
+        <h3 class="title header-text"><%= name %></h3>
+        <% if (_settings.online_orders) {
+            var text = '',
+                class_name = 'special-text';
+            if (type === 0 && (typeof maximum_amount != 'number' || maximum_amount === 0) && (typeof minimum_amount != 'number' || minimum_amount === 0)) {
+                text = _lp.MODIFIERS_OPTIONAL;
+                class_name = 'optional-text';
+            } else if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) {
+                text = _lp.MODIFIERS_CHOOSE + ' ' + minimum_amount;
+            } else if (type === 0 && typeof maximum_amount == 'number' && maximum_amount != 0 && typeof minimum_amount == 'number' && minimum_amount != 0) {
+                text = _lp.MODIFIERS_CHOOSE + ' ' + minimum_amount + ' ' + _lp.MODIFIERS_CHOOSE_TO + ' ' + maximum_amount;
+            } else if (type === 0 && typeof maximum_amount == 'number' && (typeof minimum_amount != 'number' || minimum_amount === 0)) {
+                text = _lp.MODIFIERS_OPTIONAL + ', ' + _lp.MODIFIERS_OPTIONAL_UP + ' ' + maximum_amount;
+                class_name = 'optional-text';
+            } else if (type === 0 && typeof maximum_amount != 'number' && typeof minimum_amount == 'number') {
+                text = _lp.MODIFIERS_CHOOSE + ' ' + _lp.MODIFIERS_CHOOSE_LEAST + ' ' + minimum_amount;
+            } else if (type === 1) {
+                text = _lp.MODIFIERS_CHOOSE + ' ' + _lp.MODIFIERS_CHOOSE_ONE;
+            } else if (type === 2) {
+                text = _lp.MODIFIERS_OPTIONAL;
+                class_name = 'optional-text';
+            }
+        %>
+        <span class='modifiers_classes_subtitle <%= class_name %>'>
+            (<%= text %><% if (free_modifiers) { %><span class="free">. <%= free_modifiers %>.</span><% } %>)
+        </span>
         <% } %>
     </div>
     <div class="modifier_class_list"></div>
 </script>
 
 <script type="text/template" id="modifiers_classes_list-template">
-    <div class="modifier_classes"></div>
+    <div class="modifier_classes primary-border"></div>
 </script>
 
 <script type="text/template" id="modifiers_classes_matrix-template">
-    <div class="text-left"><%= _lp.MODIFIERS_SELECT %>: <%= attributes %></div>
-    <div class="modifier_classes text-left"></div>
+    <div class="text-left special-text"><%= _lp.MODIFIERS_SELECT %>: <%= attributes %></div>
+    <div class="modifier_classes text-left primary-border"></div>
 </script>

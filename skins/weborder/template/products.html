@@ -3,7 +3,7 @@
 </script>
 
 <script type="text/template" id="product_list_item-template">
-    <div class="product_list_item s<%= price_length %>">
+    <div class="product_list_item primary-border s<%= price_length %>">
         <% if(!hide_images) { %>
         <div class="product_image text-center fl-left">
             <img src="<%= image %>" alt="logo for <%= name %>[<%= id %>]" class="img <% if(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent)) print('safaris'); %>">
@@ -28,14 +28,14 @@
             <img class="img" src="<%=image%>" alt="<%= name %> <%= id %> " />
         </div>
     <% } %>
-    <h3 class="name"><%= name %></h3>
+    <h3 class="name header-text"><%= name %></h3>
     <% if(!_settings.hide_products_description) { %>
     <p class="description"><%= description %></p>
     <% } %>
     <div class="size_chart_wrapper fl-right">
-        <a href="#" target="_blank" class="link size_chart"><%= _lp.PRODUCTS_SIZE_CHART %></a>
+        <a href="#" target="_blank" class="link size_chart primary-text"><%= _lp.PRODUCTS_SIZE_CHART %></a>
     </div>
-    <div class="customize link hide fl-right">Customize</div>
+    <div class="customize link hide fl-right primary-text">Customize</div>
     <% if (timetables) { %>
     <div class="timetables"><%= _lp.PRODUCTS_AVAILABLE %>: <%= timetables %> </div>
     <% } %>
@@ -45,7 +45,7 @@
 </script>
 
 <script type="text/template" id="product_list_none-template">
-     <span> <%= _lp.PRODUCTS_NOT_FOUND %> </span>
+    <span><%= _lp.PRODUCTS_NOT_FOUND %></span>
 </script>
 
 <script type="text/template" id="product_price-template">

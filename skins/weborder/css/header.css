@@ -29,6 +29,9 @@
     border-style: solid;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
+    position: relative;
+    z-index: 2;
+
 }
 
 #header .tab {
@@ -42,6 +45,7 @@
     position: relative;
 }
 
+#header .tab.active::before,
 #header .tab.active::after {
     content: '';
     display: block;
@@ -50,14 +54,23 @@
     left: -1px;
     bottom: -1px;
     right: -1px;
-    border-width: 5px 1px 1px;
     border-style: solid;
 }
 
+#header .tab.active::before {
+    border-width: 0 1px 1px;
+}
+
+#header .tab.active::after {
+    border-width: 5px 0 0;
+}
+
+#header .menu::before,
 #header .menu::after {
     border-top-left-radius: 5px;
 }
 
+#header .map::before,
 #header .map::after {
     border-top-right-radius: 5px;
 }

@@ -58,7 +58,8 @@ define(["checkout_view"], function(checkout_view) {
             pickup = App.Views.GeneratorView.create('Checkout', {
                 model: this.collection.checkout,
                 timetable: this.options.timetable,
-                mod: 'Pickup'
+                mod: 'Pickup',
+                className: 'fl-left'
             });
 
             main = App.Views.GeneratorView.create('Checkout', {
