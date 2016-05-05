@@ -2,12 +2,12 @@
     <div class="logo vertical-align fl-left">
         <img src='<%= logo %>' alt="<%= business_name %>" class="img" data-default-index="1">
     </div>
-    <ul class="tabs fl-right text-center">
-        <li class="menu tab fl-left <% if (typeof tab_index == 'number' && tab_index === 0) { %> active <% } %>">
+    <ul class="tabs fl-right text-center primary-border">
+        <li class="menu tab fl-left animation <% if (typeof tab_index == 'number' && tab_index === 0) { %> active <% } %>">
             <%= _lp.HEADER_MENU %></li>
-        <li class="about tab fl-left <% if (typeof tab_index == 'number' && tab_index === 1) { %> active <% } %>">
+        <li class="about tab fl-left animation <% if (typeof tab_index == 'number' && tab_index === 1) { %> active <% } %>">
             <%= _lp.HEADER_ABOUT %></li>
-        <li class="map tab fl-left <% if (typeof tab_index == 'number' && tab_index === 2) { %> active <% } %>">
+        <li class="map tab fl-left animation <% if (typeof tab_index == 'number' && tab_index === 2) { %> active <% } %>">
             <%= _lp.HEADER_MAP %></li>
     </ul>
     <div>

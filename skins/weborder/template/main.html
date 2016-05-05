@@ -1,13 +1,13 @@
 <script type="text/template" id="main_main-template">
     <section id="section">
         <header id="header"></header>
-        <div id="content"></div>
+        <div id="content" class="primary-border"></div>
     </section>
-    <aside id="cart"> </aside>
-    <footer id="footer">
+    <aside id="cart" class="primary-border"> </aside>
+    <footer id="footer" class="primary-border">
         <div class="store_choice fl-left">
             <%= _lp.MAIN_CURRENT_STORE %>: <%= _settings.business_name %>
-            <a class="change_establishment" href="javascript: void(0);"><%= _lp.MAIN_CHANGE %></a>
+            <a class="change_establishment link primary-text" href="javascript: void(0);"><%= _lp.MAIN_CHANGE %></a>
         </div>
         <div class="fl-right">
             <% if (_settings.payment_processor.credit_card_button && Array.isArray(_settings.online_credit_card_types)) { %>
@@ -49,12 +49,12 @@
                 <% } %>
             </ul>
             <% } %>
-            <a class="powered-by" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
+            <a class="powered-by link primary-text" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
         </div>
     </footer>
-    <div class="popup text-center vertical-align">
-        <div id="popup">
-            <div class="cancel fl-right"></div>
+    <div class="popup text-center vertical-align shadow-bg">
+        <div id="popup" class="popup-bg">
+            <div class="cancel fl-right link"></div>
         </div>
     </div>
     <div id="main-spinner"></div>
@@ -64,12 +64,12 @@
 <script type="text/template" id="main_maintenance-template">
     <section class="maintenance">
         <header id="header"> <div class="btn back" tabindex="0"> <span class="clip"> <%= _lp.MAIN_BACK %> </span> </div> </header>
-        <div id="content" class="text-center">
+        <div id="content" class="text-center primary-border">
             <p> <%= errMsg %> </p>
             <div class="btn reload" tabindex="0"><span><%= _lp.MAIN_RESTART %></span></div>
         </div>
     </section>
-    <footer>
+    <footer class="primary-border">
     </footer>
 </script>
 
@@ -80,7 +80,7 @@
                 <img src="<%= logo %>" alt="<%= business_name %> logo" class="logo">
             </div>
         </header>
-        <div id="content">
+        <div id="content primary-border">
             <div class="confirm_order">
                 <div>
                     <% if (status !== 'error') { %>
@@ -165,8 +165,8 @@
             </div>
         </div>
     </section>
-    <footer>
-        <a class="powered-by" target="_blank" href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"> </a>
+    <footer class="primary-border">
+        <a class="powered-by link primary-text" target="_blank" href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"> </a>
     </footer>
     <% if (_settings.payment_processor.credit_card_button && Array.isArray(_settings.online_credit_card_types)) { %>
     <ul class="mercury-accepted-credit-cards">
@@ -215,10 +215,10 @@
             <div class="back-btn primary-text fade-out-hover"><span class="label"><%= _lp.BACK %></span></div>
             <h1 class="title text-center"><%= _lp.PROFILE_EDIT_TITLE %></h1>
         </header>
-        <div id="content"></div>
+        <div id="content" class="primary-border"></div>
     </section>
-    <footer class="profile-container">
-        <a class="powered-by" target="_blank" href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"> </a>
+    <footer class="profile-container primary-border">
+        <a class="powered-by link primary-text" target="_blank" href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"> </a>
     </footer>
     <div id="main-spinner"></div>
     <div id="profile-panel"></div>

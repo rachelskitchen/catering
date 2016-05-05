@@ -140,6 +140,7 @@ define(["generator", "list"], function() {
             if (sliderWidth <= 0) {
                 return;
             }
+
             this.slider_count = Math.floor(sliderWidth / elemWidth);
             this.slider_elem_count = lis.length;
             this.slider_index = this.slider_index || 0;

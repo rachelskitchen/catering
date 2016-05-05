@@ -32,6 +32,7 @@
     display: inline-block;
     text-transform: uppercase;
     position: relative;
+    color: inherit;
 }
 
 #profile-panel .signup-link {
@@ -49,7 +50,9 @@
     border-right-style: solid;
 }
 
-#profile-panel .active::before {
+#profile-panel .active::before,
+#profile-panel .signup-link:hover::before,
+#profile-panel .login-link:hover::before {
     content: '';
     display: block;
     width: 100%;
@@ -120,4 +123,28 @@
 
 #profile-panel .reset-password-info {
     padding: 0 20px 15px;
+}
+
+#profile-panel .logged-as {
+    font-size: 13px;
+    letter-spacing: 1.1px;
+}
+
+#profile-panel .logged-as::after {
+    content: '\f0d7';
+    font-family: 'FontAwesome';
+    padding-left: 4px;
+}
+
+#profile-panel .menu-items.box {
+    width: auto;
+    padding: 0;
+}
+
+#profile-panel .menu-item {
+    margin: 10px 6px;
+    padding: 7px 18px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    cursor: pointer;
 }

@@ -1,19 +1,19 @@
 <script type="text/template" id="checkout_main-template">
     <div class="personal">
         <div class="item size1">
-            <div class="label required"><%= _lp.PROFILE_FIRST_NAME %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_FIRST_NAME %></div>
             <input type="text" class="firstName input ios-safari-caret">
         </div>
         <div class="item size1">
-            <div class="label required"><%= _lp.PROFILE_LAST_NAME %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_LAST_NAME %></div>
             <input type="text" class="lastName input ios-safari-caret">
         </div>
         <div class="item size1">
-            <div class="label required"><%= _lp.PROFILE_PHONE %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_PHONE %></div>
             <input type="tel" id="phone" class="phone input ios-safari-caret">
         </div>
         <div class="item size2">
-            <div class="label required"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
             <input type="email" class="email input ios-safari-caret" autocorrect="off" autocapitalize="none">
         </div>
     </div>
@@ -24,7 +24,7 @@
 </script>
 
 <script type="text/template" id="checkout_pickup-template">
-    <div class="pickup label required"><%= pickupTimeLabel %></div>
+    <div class="pickup label required optional-text"><%= pickupTimeLabel %></div>
     <div>
         <div class="select-wrapper item">
             <input type="text" id="datepicker" readonly="readonly" data-day="0" class="pikaday input ios-safari-caret">
@@ -36,7 +36,7 @@
 </script>
 
 <script type="text/template" id="checkout_order_type-template">
-    <div class="label required"><%= _lp.CHECKOUT_ORDER_TYPE %></div>
+    <div class="label required optional-text"><%= _lp.CHECKOUT_ORDER_TYPE %></div>
     <div class="select-wrapper item">
         <select class="order-type-select"></select>
     </div>
@@ -47,20 +47,20 @@
 
     <div class="address-edit">
         <div class="item size2">
-            <div class="label required"><%= _lp.CHECKOUT_ADDRESS %></div>
+            <div class="label required optional-text"><%= _lp.CHECKOUT_ADDRESS %></div>
             <input type="text" name="street_1" class="input ios-safari-caret">
         </div>
         <div class="item size3">
-            <div class="label"><%= _lp.CHECKOUT_APT %></div>
+            <div class="label optional-text"><%= _lp.CHECKOUT_APT %></div>
             <input type="text" name="street_2" class="input ios-safari-caret">
         </div>
         <div class="item size1">
-            <div class="label required"><%= _lp.PROFILE_CITY %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_CITY %></div>
             <input type="text" name="city" class="input ios-safari-caret">
         </div>
         <% if(isShippingServices) { %>
         <div class="item size2">
-            <div class="label required"><%= _lp.PROFILE_COUNTRY %>:</div>
+            <div class="label required optional-text"><%= _lp.PROFILE_COUNTRY %>:</div>
             <div class="select-wrapper size2">
                 <select class="country">
                 <% for (var i in countries) { %>
@@ -72,7 +72,7 @@
         <% } %>
         <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
         <div class="item ">
-            <div class="label required"><%= _lp.PROFILE_STATE %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_STATE %></div>
             <div class="select-wrapper">
                 <select class="states" id="states">
                 <% for(var i in states) { %>
@@ -84,19 +84,19 @@
         <% } %>
         <% if(typeof province == 'string') { %>
         <div class="item size1">
-            <div class="label required"><%= _lp.PROFILE_PROVINCE %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_PROVINCE %></div>
             <input type="text" name="province" class="input ios-safari-caret">
         </div>
         <% } %>
         <div class="item size4">
-            <div class="label required"><% if(country == 'US') {print(_lp.PROFILE_ZIP_CODE);} else {print(_lp.PROFILE_POSTAL_CODE);} %></div>
+            <div class="label required optional-text"><% if(country == 'US') {print(_lp.PROFILE_ZIP_CODE);} else {print(_lp.PROFILE_POSTAL_CODE);} %></div>
             <input type="text" name="zipcode" class="input ios-safari-caret">
         </div>
     </div>
 
     <% if(isShippingServices) { %>
     <div class="item">
-        <div class="label required"><%= _lp.CHECKOUT_SHIPPING_HANDLING %></div>
+        <div class="label required optional-text"><%= _lp.CHECKOUT_SHIPPING_HANDLING %></div>
         <div class="select-wrapper">
             <select class="shipping-select select"></select>
         </div>
@@ -120,7 +120,7 @@
 
 <script type="text/template" id="checkout_other_item-template">
     <div class="item">
-        <div class="label" data-isrequired><%= name %></div>
+        <div class="label optional-text" data-isrequired><%= name %></div>
         <% if (Array.isArray(choices) && choices.length) { %>
             <div class="select-wrapper">
                 <select class="section-select" name="<%= name %>"></select>
@@ -178,14 +178,14 @@
 </script>
 
 <script type="text/template" id="checkout_page-template">
-    <h2 class="title"><%= _lp.CHECKOUT_TITLE %></h2>
+    <h2 class="title primary-border category-bg"><%= _lp.CHECKOUT_TITLE %></h2>
     <div class="order-details">
         <div class="order-notes">
             <div class="label"><%= _lp.CHECKOUT_ORDER_NOTES %></div>
             <textarea class="notes textarea ios-safari-caret"></textarea>
         </div>
     </div>
-    <h2 class="title"><%= _lp.CHECKOUT_PAYMENT_INFORMATION %></h2>
+    <h2 class="title primary-border category-bg"><%= _lp.CHECKOUT_PAYMENT_INFORMATION %></h2>
     <div class="payment-info"></div>
 </script>
 

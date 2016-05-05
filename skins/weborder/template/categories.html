@@ -8,24 +8,24 @@
 </script>
 
 <script type="text/template" id="categories_slider-template">
-    <div class='categories_slider'>
-        <div class='arrow arrow_left'>&lsaquo;</div>
+    <div class='categories_slider secondary-border primary-bg'>
+        <div class='arrow arrow_left primary-bg'>&lsaquo;</div>
         <div class='slider_wrapper'>
             <ul class="categories"></ul>
         </div>
-        <div class='arrow arrow_right'>&rsaquo;</div>
+        <div class='arrow arrow_right primary-bg'>&rsaquo;</div>
     </div>
 </script>
 
 <script type="text/template" id="categories_item-template">
-    <label for="categories<%= id %>">
+    <label for="categories<%= id %>" class="animation">
         <input type="radio" id="categories<%= id %>" name="categories">
         <%= parent_name %>
     </label>
 </script>
 
 <script type="text/template" id="categories_products_item-template">
-    <div class="category_description">
+    <div class="category_description category-bg">
         <h2 class="category_name"></h2>
         <% if(timetables) { %>
         <span class="timetables"><%=timetables%></span>
@@ -34,5 +34,5 @@
         <%=description%>
         </p>
     </div>
-    <div class="product_table"></div>
+    <div class="product_table primary-border"></div>
 </script>

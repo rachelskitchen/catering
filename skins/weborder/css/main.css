@@ -191,7 +191,6 @@ input[type="radio"]:checked + .radio::before,
     height: 9px;
     margin: 2px;
     border-radius: inherit;
-background: green; /* remove */
 }
 
 .radio {
@@ -226,6 +225,10 @@ background: green; /* remove */
     filter: alpha(opacity=50);
 }
 
+.pos-relative {
+    position: relative;
+}
+
 .select-wrapper {
     display: inline-block;
     overflow: hidden;
@@ -238,8 +241,8 @@ background: green; /* remove */
     font-size: 20px;
     display: block;
     padding: 7px 9px 7px 3px;
-    border-top-right-radius: 50%;
-    border-bottom-right-radius: 50%;
+    border-top-right-radius: 5em;
+    border-bottom-right-radius: 5em;
     position: absolute;
     top: 1px;
     right: 1px;
@@ -272,6 +275,7 @@ background: green; /* remove */
     font-size: 16px;
     padding: 16px 10px;
     cursor: pointer;
+    letter-spacing: 0.3px;
 }
 
 .btn.disabled {
@@ -365,7 +369,6 @@ background: green; /* remove */
     max-height: 96%;
     vertical-align: middle;
     overflow: hidden;
-background: red; /* remove */
 }
 
 #popup .cancel {
@@ -450,7 +453,6 @@ background: red; /* remove */
     min-width: 400px;
     max-width: 600px;
     vertical-align: middle;
-background: yellow; /*remove*/
 }
 
 #alert .icon::before {

@@ -9,6 +9,15 @@
     border-bottom-style: solid;
 }
 
+.modifier_classes .modifier_class_wrapper:last-child {
+    border: none;
+}
+
+.modifier_classes {
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+}
+
 .modifiers_classes_title {
     padding: 10px 0 5px;
 }
@@ -135,6 +144,10 @@
     padding-bottom: 2px;
 }
 
+.mdf_split.select-wrapper select {
+    width: 100% !important;
+}
+
 .mdf_quantity.select-wrapper select {
     padding-right: 22px;
 }
@@ -144,7 +157,7 @@
     font-family: "FontAwesome";
     display: block;
     font-size: 18px;
-    padding: 2px 12px;
+    padding: 3px 12px 1px;
     border-radius: 50%;
     position: absolute;
     top: 1px;
