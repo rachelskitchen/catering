@@ -1822,6 +1822,12 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 }
             });
 
+            req.success(function(jqXHR) {
+                if (jqXHR.status == "OK" && self.get('rewardCards').length == 1) {
+                    App.Data.myorder.rewardsCard.selectRewardCard(self.get('rewardCards').at(0));
+                }
+            })
+
             /**
              * Reward cards request.
              * @alias App.Models.Customer#rewardCardsRequest

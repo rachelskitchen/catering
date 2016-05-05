@@ -23,6 +23,8 @@
  define(["factory", "myorder_view"], function(factory) {
     'use strict';
 
+    App.Views.CoreRewardsView = {};
+
     var RewardsItemView = App.Views.ItemView.extend({
         name: 'rewards',
         mod: 'item',
@@ -96,11 +98,11 @@
         }
     });
 
-    var RewardsCardView = App.Views.FactoryView.extend({
+    App.Views.CoreRewardsView.CoreRewardsCardView = App.Views.FactoryView.extend({
         name: 'rewards',
         mod: 'card',
         bindings: {
-            '.rewards-input': 'value: number, events: ["input"], disabled: length(customer_rewardCards), classes: {disabled: length(customer_rewardCards)}',
+            '.rewards-input': 'value: number, events: ["input"]',
             '.rewards-captcha-input': 'value: captchaValue, events: ["input"]',
             '.submit-card': 'classes: {disabled: disableBtn}',
             '.captcha-image': 'updateCaptcha: url'
@@ -123,6 +125,7 @@
             this.listenTo(this.model, 'onResetData', this.updateCaptcha);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             inputTypeMask(this.$('.rewards-input'), /^\d*$/, this.model.get('number'), 'numeric');
+            this.listenTo(this.model, 'updateCaptcha', this.updateCaptcha, this);
             this.updateCaptcha();
         },
         computeds: {
@@ -163,12 +166,9 @@
         }
     });
 
-    var RewardsCardProfileView = RewardsCardView.extend({
+    var RewardsCardProfileView = App.Views.CoreRewardsView.CoreRewardsCardView.extend({
         name: 'profile',
-        mod: 'rewardcard',
-        bindings: {
-            '.rewards-input': 'value: number, events: ["input"]'
-        }
+        mod: 'rewardcard'
     });
 
     var RewardsItemApplicationView = App.Views.FactoryView.extend({
@@ -238,7 +238,7 @@
 
     return new (require('factory'))(function() {
         App.Views.RewardsView = {}
-        App.Views.RewardsView.RewardsCardView = RewardsCardView;
+        App.Views.RewardsView.RewardsCardView = App.Views.CoreRewardsView.CoreRewardsCardView;
         App.Views.RewardsView.RewardsCardProfileView = RewardsCardProfileView;
         App.Views.RewardsView.RewardsItemApplicationView = RewardsItemApplicationView;
         App.Views.RewardsView.RewardsOrderApplicationView = RewardsOrderApplicationView;

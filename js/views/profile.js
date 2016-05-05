@@ -586,7 +586,7 @@ define(["factory"], function() {
         bindings: {
             '.reward-cards-list': 'collection: $collection'
         },
-        itemView: App.Views.CoreProfileView.CoreProfileRewardCardSelectionView,
+        itemView: App.Views.CoreProfileView.CoreProfileRewardCardSelectionView
     });
 
     App.Views.CoreProfileView.CoreProfileRewardCardEditionView = App.Views.FactoryView.extend({
@@ -618,7 +618,7 @@ define(["factory"], function() {
             'click .add_reward_card_title': 'hide_show_NewRewardCard'
         },
         bindings: {
-            '.gift-cards-list': 'collection: $collection',
+            '.reward-cards-list': 'collection: $collection',
             '.add_reward_card_title .plus_sign': 'text:select(newCard_add_new_card,"- ","+ ")',
             '.new_reward_card': "toggle:newCard_add_new_card"
         },
@@ -760,18 +760,29 @@ define(["factory"], function() {
             var self = this,
                 mainModel = App.Data.mainModel,
                 req = this.model.linkRewardCard(rewardcard);
-            this.listenTo(rewardcard, 'onLinkError', App.Data.errors.alert.bind(App.Data.errors));
+            this.listenTo(rewardcard, 'onLinkError', onError);
             if (req) {
                 this.incrementUpdateCounter();
                 mainModel.trigger('loadStarted');
                 req.done(function(data){
                     if (data && data.status == 'OK') {
                         self.checkUpdateStatus();
+                        self.options.myorder.rewardsCard.selectRewardCard(rewardcard);
                         self.newRewardCard.set({ add_new_card: false, number: ''});
                         self.newRewardCard.trigger('updateCaptcha');
                     }
 
+                }).error(function(){
+                    onError();
                 }).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+            }
+
+            function onError(errorMsg) {
+                if (!errorMsg && self.options.model.get('rewardCards').length > 0) {
+                    App.Data.errors.alert("You can't add a new reward card while another one is linked. Please remove the current card then try again.");
+                } else if (errorMsg){
+                    App.Data.errors.alert(errorMsg);
+                }
             }
         },
         checkUpdateStatus: function() {
@@ -837,7 +848,9 @@ define(["factory"], function() {
         App.Views.ProfileView.ProfileGiftCardsSelectionView = App.Views.CoreProfileView.CoreProfileGiftCardsSelectionView;
         App.Views.ProfileView.ProfileGiftCardEditionView = App.Views.CoreProfileView.CoreProfileGiftCardEditionView;
         App.Views.ProfileView.ProfileGiftCardsEditionView = App.Views.CoreProfileView.CoreProfileGiftCardsEditionView;
+        App.Views.ProfileView.ProfileRewardCardSelectionView = App.Views.CoreProfileView.CoreProfileRewardCardSelectionView;
         App.Views.ProfileView.ProfileRewardCardsSelectionView = App.Views.CoreProfileView.CoreProfileRewardCardsSelectionView;
-        App.Views.ProfileView.ProfilePaymentCVVView = App.Views.CoreProfileView.CoreProfilePaymentCVVView
+        App.Views.ProfileView.ProfileRewardCardsEditionView = App.Views.CoreProfileView.CoreProfileRewardCardsEditionView;
+        App.Views.ProfileView.ProfilePaymentCVVView = App.Views.CoreProfileView.CoreProfilePaymentCVVView;
     });
 });

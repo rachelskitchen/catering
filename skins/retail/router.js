@@ -344,7 +344,8 @@ define(["main_router"], function(main_router) {
                     modelName: 'Rewards',
                     mod: 'Card',
                     model: App.Data.myorder.rewardsCard,
-                    className: 'rewards-info'
+                    className: 'rewards-info',
+                    customer: App.Data.customer
                 });
             });
 

@@ -1707,7 +1707,12 @@ define(["main_router"], function(main_router) {
 
             App.Data.mainModel.set({
                 header: headerModes.Cart,
-                footer: footerModes.None
+                footer: {   className: 'footer' }
+            });
+
+            App.Data.footer.set({
+                btn_title: _loc.CHECKOUT,
+                action: this.navigate.bind(this, 'confirm', true)
             });
 
             this.prepare('rewards', function() {
