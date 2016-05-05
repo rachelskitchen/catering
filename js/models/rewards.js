@@ -397,6 +397,15 @@ define(['backbone', 'captcha'], function(Backbone) {
             this.get('rewards').reset(); // reset rewards collection
         },
         /**
+         * select Reward Card
+         */
+        selectRewardCard: function(rewardCard) {
+            this.resetData();
+            this.set({
+                number: rewardCard.get('number')
+            });
+        },
+        /**
          * Checks `cardNumber`, `captchaValue` values.
          * @returns {Object} One of the following objects:
          * - If all attributes aren't empty: `{status: "OK"}`
@@ -429,11 +438,11 @@ define(['backbone', 'captcha'], function(Backbone) {
                 };
             };
         },
-               /**
-         * Links the gift card to customer. Sends request with following parameters:
+        /**
+         * Links the reward card to customer. Sends request with following parameters:
          * ```
          * {
-         *     url: "/weborders/v1/giftcard/<cardNumber>/link/",
+         *     url: "/weborders/v1/rewardscard/<cardNumber>/link/",
          *     method: "GET",
          *     headers: {Authorization: "Bearer XXX"},
          *     data: {
@@ -447,8 +456,7 @@ define(['backbone', 'captcha'], function(Backbone) {
          * ```
          * Status code 200
          * {
-         *     status: "OK",
-         *     data: {remaining_balance: 123, number: '12345'}
+         *     status: "OK"
          * }
          * ```
          *
@@ -461,7 +469,7 @@ define(['backbone', 'captcha'], function(Backbone) {
          * }
          * ```
          *
-         * - Gift card isn't found
+         * - Reward card isn't found
          * ```
          * Status code 200
          * {
@@ -503,24 +511,19 @@ define(['backbone', 'captcha'], function(Backbone) {
 
                     switch(data.status) {
                         case "OK":
-                            /*self.set({
-                                remainingBalance: data.data.remaining_balance,
-                                token: data.data.token,
-                                selected: true
-                            });*/
                             break;
                         default:
-                            self.trigger('onLinkError', data.errorMsg || 'Gift Card error');
+                            self.trigger('onLinkError', data.errorMsg || 'Reward Card error');
                     }
                 },
-                error: new Function()           // to override global ajax error handler
+                error: new Function // to override global ajax error handler
             });
         },
         /**
-         * Unlinks the gift card to customer. Sends request with following parameters:
+         * Unlinks the reward card to customer. Sends request with following parameters:
          * ```
          * {
-         *     url: "/weborders/v1/giftcard/<cardNumber>/unlink/",
+         *     url: "/weborders/v1/rewardscard/<cardNumber>/unlink/",
          *     method: "GET",
          *     headers: {Authorization: "Bearer XXX"}
          * }
@@ -566,18 +569,18 @@ define(['backbone', 'captcha'], function(Backbone) {
 
    /**
      * @class
-     * @classdesc Represents collection of gift cards.
-     * @alias App.Collections.GiftCards
+     * @classdesc Represents collection of reward cards.
+     * @alias App.Collections.RewardCards
      * @augments Backbone.Collection
      * @example
-     * // create a gift cards collection
-     * require(['giftcard'], function() {
-     *     var giftcards = new App.Collections.GiftCards([{cardNumber: '777'}, {cardNumber: '555'}]);
+     * // create a reward cards collection
+     * require(['rewards'], function() {
+     *     var rewardcards = new App.Collections.RewardCards([{number: '777'}, {number: '555'}]);
      * });
      */
     App.Collections.RewardCards = Backbone.Collection.extend(
     /**
-     * @lends App.Collections.GiftCards.prototype
+     * @lends App.Collections.RewardCards.prototype
      */
     {
         /**
@@ -609,10 +612,10 @@ define(['backbone', 'captcha'], function(Backbone) {
             });
         },
         /**
-         * Receives gift cards from server. Sends request with following parameters:
+         * Receives reward cards from server. Sends request with following parameters:
          * ```
          * {
-         *     url: "/weborders/v1/giftcard/",
+         *     url: "/weborders/v1/rewardscard/",
          *     method: "GET",
          *     headers: {Authorization: "Bearer XXX"}
          * }
@@ -653,7 +656,6 @@ define(['backbone', 'captcha'], function(Backbone) {
                             var model = new App.Models.RewardsCard();
                             model.set({
                                 number: card.number,
-                                //remainingBalance: card.remaining_balance,
                                 //token: card.token
                             });
                             model.updateRewards(card.discounts);
@@ -668,13 +670,13 @@ define(['backbone', 'captcha'], function(Backbone) {
             });
         },
         /**
-         * @returns {?App.Models.GiftCard} Selected gift card.
+         * @returns {?App.Models.RewardCard} Selected reward card.
          */
         getSelected: function() {
             return this.findWhere({selected: true});
         },
         /**
-         * Selects first gift card if any gift card isn't selected.
+         * Selects first reward card if any reward card isn't selected.
          */
         selectFirstItem: function() {
             if (!this.where({selected: true}).length && this.length) {
@@ -683,14 +685,14 @@ define(['backbone', 'captcha'], function(Backbone) {
         },
         /**
          * Adds unique new item or updates existing.
-         * @param {App.Models.GiftCard} giftCard - gift card model.
+         * @param {App.Models.RewardCard} rewardCard - reward card model.
          */
         addUniqueItem: function(rewardCard) {
             if (!(rewardCard instanceof App.Models.RewardsCard)) {
                 return;
             }
 
-            var existingRewardCard = this.findWhere({number: rewardCard.get('cardNumber')});
+            var existingRewardCard = this.findWhere({number: rewardCard.get('number')});
 
             if (existingRewardCard) {
                 existingRewardCard.set(rewardCard.toJSON());
