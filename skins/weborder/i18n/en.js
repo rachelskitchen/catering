@@ -152,7 +152,7 @@
         'REWARDS_UNAVAILABLE': 'You do not qualify for a reward at this time.',
         'REWARDS_ENTIRE_ORDER_DISCOUNT': 'off Entire Order',
         'REWARDS_ITEM_LEVEL_DISCOUNT': 'off All Eligible Items',
-        'REWARDS_APPLY': 'Apply Reward',
+        'REWARDS_APPLY': 'Apply Reward(s)',
         'REWARDS_OFF': 'Off',
         'REWARDS_ITEM_POINTS': [
             'Item Point',
