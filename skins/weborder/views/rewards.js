@@ -108,13 +108,13 @@
             this.model.trigger('onRedemptionApplied');
         },
         setItemRewards: function() {
-            this.bindingSources.itemRewards.reset(this.model.get('rewards').where({type: 1}));
+            this.getBinding('$itemRewards').reset(this.model.get('rewards').where({type: 1}));
         },
         setVisitsRewards: function() {
-            this.bindingSources.visitmRewards.reset(this.model.get('rewards').where({type: 2}));
+            this.getBinding('$visitRewards').reset(this.model.get('rewards').where({type: 2}));
         },
         setPurchaseRewards: function() {
-            this.bindingSources.purchaseRewards.reset(this.model.get('rewards').where({type: 0}));
+            this.getBinding('$purchaseRewards').reset(this.model.get('rewards').where({type: 0}));
         }
     });
 
