@@ -89,7 +89,7 @@
                 return value === null;
             }
         },
-        rewardItem: ItemRewardsView,
+        itemRewards: ItemRewardsView,
         visitRewards: VisitRewardsView,
         purchaseRewards: PurchaseRewardsView,
         initialize: function() {
