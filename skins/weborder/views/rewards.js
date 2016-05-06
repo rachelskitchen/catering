@@ -27,7 +27,7 @@
         name: 'rewards',
         mod: 'item_item',
         bindings: {
-            '.reward__redemption-text': 'text: redemptionText(points, _lp.REWARDS_ITEM_POINTS)'
+            '.reward__redemption-text': 'text: redemptionText(points, _lp_REWARDS_ITEM_POINTS)'
         }
     });
 
@@ -35,7 +35,7 @@
         name: 'rewards',
         mod: 'item_visit',
         bindings: {
-            '.reward__redemption-text': 'text: redemptionText(points, _lp.REWARDS_VISIT_POINTS)'
+            '.reward__redemption-text': 'text: redemptionText(points, _lp_REWARDS_VISIT_POINTS)'
         }
     });
 
@@ -43,7 +43,7 @@
         name: 'rewards',
         mod: 'item_purchase',
         bindings: {
-            '.reward__redemption-text': 'text: redemptionText(points, _lp.REWARDS_PURCHASE_POINTS)'
+            '.reward__redemption-text': 'text: redemptionText(points, _lp_REWARDS_PURCHASE_POINTS)'
         }
     });
 
@@ -99,6 +99,9 @@
                 this.setVisitsRewards();
                 this.setPurchaseRewards();
             });
+            this.setItemRewards();
+            this.setVisitsRewards();
+            this.setPurchaseRewards();
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         apply: function() {
