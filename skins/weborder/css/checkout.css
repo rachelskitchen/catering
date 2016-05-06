@@ -109,7 +109,9 @@
     padding-right: 30px;
 }
 
-.checkout-order-details .link {
+.checkout-order-details .btnApply,
+.checkout-order-details .rewards-card-apply,
+.checkout-order-details .see-rewards {
     display: inline-block;
     padding: 10px 15px 10px 0;
     margin-left: -5px;

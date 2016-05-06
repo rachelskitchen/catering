@@ -79,3 +79,16 @@
 .rewards-info .value {
     padding-left: 30px;
 }
+
+.rewards-info .box {
+    padding: 19px 0 5px;
+    margin: 0 25px;
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+}
+
+.rewards-info .rewards-group {
+    padding-bottom: 5px;
+    font-size: 12px;
+    text-transform: uppercase;
+}

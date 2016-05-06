@@ -43,9 +43,9 @@
 </script>
 
 <script type="text/template" id="checkout_address-template">
-    <div class="address-selection row"></div>
+    <div class="address-selection item fl-left"></div>
 
-    <div class="address-edit">
+    <div class="address-edit fl-left">
         <div class="item size2">
             <div class="label required optional-text"><%= _lp.CHECKOUT_ADDRESS %></div>
             <input type="text" name="street_1" class="input ios-safari-caret">
@@ -106,10 +106,8 @@
 </script>
 
 <script type="text/template" id="checkout_address_selection-template">
-    <label class="select">
-        <span class="bold"><%= _lp.PROFILE_ADDRESS %>:</span>
-    </label>
-    <div class="select select-wrapper">
+    <div class="label required optional-text"><%= _lp.CHECKOUT_CHOOSE_ADDRESS %></div>
+    <div class="select-wrapper">
         <select id="addresses"></select>
     </div>
 </script>
@@ -119,7 +117,7 @@
 </script>
 
 <script type="text/template" id="checkout_other_item-template">
-    <div class="item">
+    <div class="item fl-left">
         <div class="label optional-text" data-isrequired><%= name %></div>
         <% if (Array.isArray(choices) && choices.length) { %>
             <div class="select-wrapper">
@@ -180,8 +178,8 @@
 <script type="text/template" id="checkout_page-template">
     <h2 class="title primary-border category-bg"><%= _lp.CHECKOUT_TITLE %></h2>
     <div class="order-details">
-        <div class="order-notes">
-            <div class="label"><%= _lp.CHECKOUT_ORDER_NOTES %></div>
+        <div class="order-notes clear">
+            <div class="label optional-text"><%= _lp.CHECKOUT_ORDER_NOTES %></div>
             <textarea class="notes textarea ios-safari-caret"></textarea>
         </div>
     </div>
@@ -190,24 +188,24 @@
 </script>
 
 <script type="text/template" id="checkout_discount_code-template">
-    <div class="label"><%= _lp.CHECKOUT_DISCOUNT_CODE %></div>
+    <div class="label optional-text"><%= _lp.CHECKOUT_DISCOUNT_CODE %></div>
     <div class="ctrl-box item size1">
         <input type="text" name="discount_code" class="input ctrl-input ios-safari-caret">
         <label class="ctrl-wrapper cancel">
             <input type="button" class="ctrl cancel-input">
         </label>
     </div>
-    <span class="btnApply link"><%= _lp.CHECKOUT_DISC_CODE_APPLY %></span>
+    <span class="btnApply"><%= _lp.CHECKOUT_DISC_CODE_APPLY %></span>
 </script>
 
 <script type="text/template" id="checkout_rewards_card-template">
-    <div class="label"><%= _lp.CHECKOUT_REWARD_CARD %></div>
+    <div class="label optional-text"><%= _lp.CHECKOUT_REWARD_CARD %></div>
     <div class="ctrl-box item size1">
         <input type="text" class="rewardCard input ctrl-input ios-safari-caret">
         <label class="ctrl-wrapper cancel">
             <input type="button" class="ctrl cancel-input">
         </label>
     </div>
-    <span class="rewards-card-apply link"> <%= _lp.CHECKOUT_DISC_CODE_APPLY %> </span>
-    <span class="see-rewards link"> <%= _lp.CHECKOUT_SEE_REWARDS %> </span>
+    <span class="rewards-card-apply link primary-text"><%= _lp.CHECKOUT_DISC_CODE_APPLY %></span>
+    <span class="see-rewards link primary-text"><%= _lp.CHECKOUT_SEE_REWARDS %></span>
 </script>

@@ -1,7 +1,8 @@
 /* [regular_text] reqular text */
 body,
 .price.input,
-.modifier .tooltip::before {
+.modifier .tooltip::before,
+.payment-method.regular-button {
     .resolve-color(@regular_text);
 }
 
@@ -22,7 +23,8 @@ body,
 }
 
 /* [optional_text] optional text (additional info, modifier class instruction), input label */
-.optional-text[class] {
+.optional-text[class],
+#alert .icon {
     .resolve-color(@optional_text);
 }
 
@@ -40,7 +42,8 @@ body,
 .primary-text[class],
 .tab.active, .tab:hover,
 .categories .checked,
-.categories label:hover, {
+.categories label:hover,
+.payment-method.primary-button {
     .resolve-color(@primary_text);
 }
 
@@ -82,7 +85,8 @@ input[type="radio"]:checked + .radio::before,
 /* [primary_background] main background ('body' tag) */
 body,
 .primary-bg,
-.order-items li {
+.order-items li,
+.alert_wrapper {
     .resolve-background(@primary_background);
 }
 
@@ -123,7 +127,8 @@ body,
 }
 
 /* [shadow_background] background behind popup window */
-.shadow-bg[class] {
+.shadow-bg[class],
+#alert {
     .resolve-background-alpha(@shadow_background, 60%);
 }
 
