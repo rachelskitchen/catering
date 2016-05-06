@@ -225,6 +225,7 @@
 .profile-edit .gift-cards-box .new_gift_card,
 .profile-edit .reward-cards-box .new_reward_card {
     text-align: left;
+    margin-bottom: 10px;
 }
 
 .profile-edit .flat-btn.btn-reload {
