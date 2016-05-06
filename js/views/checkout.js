@@ -738,7 +738,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         mod: 'discount_code',
         bindings: {
             'input[name=discount_code]': 'value: discount_code, events: ["input"], attr: {readonly: select(last_discount_code, true, false)}',
-            '.btnApply': 'classes: {applied: last_discount_code}, text: select(last_discount_code, _lp_CHECKOUT_DISC_CODE_APPLIED, _lp_CHECKOUT_DISC_CODE_APPLY)',
+            '.btnApply': 'classes: {applied: last_discount_code, "primary-text": not(last_discount_code), link: not(last_discount_code)}, text: select(last_discount_code, _lp_CHECKOUT_DISC_CODE_APPLIED, _lp_CHECKOUT_DISC_CODE_APPLY)',
             '.cancel-input': 'classes: {hide: not(last_discount_code)}'
         },
         render: function() {

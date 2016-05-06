@@ -1,7 +1,7 @@
 <script type="text/template" id="rewards_card-template">
-    <h3 class="captcha-header"><%= _lp.REWARDS_INFORMATION %></h3>
+    <h3 class="captcha-header popup-header-bg primary-border header-text"><%= _lp.REWARDS_INFORMATION %></h3>
     <label class="row">
-        <span class="label"><%= _lp.REWARDS_NUMBER %></span>
+        <span class="label optional-text required"><%= _lp.REWARDS_NUMBER %></span>
         <input type="text" class="rewards-input input ios-safari-caret">
     </label>
     <div class="row">
@@ -10,46 +10,46 @@
             <div class="captcha-spinner"></div>
         </div>
         <label class="captcha-label">
-            <span class="label"><%= _lp.GIFTCARD_CAPTCHA %></span>
+            <span class="label optional-text required"><%= _lp.GIFTCARD_CAPTCHA %></span>
             <input type="text" class="rewards-captcha-input input ios-safari-caret">
         </label>
-        <span class="update-captcha link text-center"><%= _lp.GIFTCARD_RELOAD %></span>
+        <span class="update-captcha link text-center primary-text"><%= _lp.GIFTCARD_RELOAD %></span>
     </div>
     <div class="btn submit-card text-center"><%= _lp.CONFIRM_SUBMIT %></div>
 </script>
 
 <script type="text/template" id="rewards_info-template">
     <h2 class="redeem-rewards"><%= _lp.REWARDS_REDEEM_REWARD %></h2>
-    <div class="redeem-rewards-info"><%= _lp.REWARDS_CLOSE_WINDOW %></div>
-    <div class="header">
+    <div class="redeem-rewards-info optional-text"><%= _lp.REWARDS_CLOSE_WINDOW %></div>
+    <div class="header popup-header-bg primary-border">
         <ul class="rewards-total fl-right text-left">
             <li class="total-row total-row-points">
                 <span><%= _lp.REWARDS_TOTAL_POINTS %></span>
-                <span class='total-points value fl-right'></span>
+                <span class='total-points value fl-right primary-text'></span>
             </li>
             <li class="total-row total-row-visits">
                 <span><%= _lp.REWARDS_TOTAL_VISITS %></span>
-                <span class='total-visits value fl-right'></span>
+                <span class='total-visits value fl-right primary-text'></span>
             </li>
             <li class="total-row total-row-purchase">
                 <span><%= _lp.REWARDS_TOTAL_PURCHASES %></span>
-                <span class='total-purchases value fl-right'></span>
+                <span class='total-purchases value fl-right primary-text'></span>
             </li>
         </ul>
-        <h3 class="title"><%= _lp.REWARDS_POINTS_INFO %></h3>
+        <h3 class="title header-text"><%= _lp.REWARDS_POINTS_INFO %></h3>
         <span class="subtitle"><%= _lp.REWARDS_NUMBER %> &ndash;</span>
         <span class="subtitle rewards-number"></span>
     </div>
-    <div class="item-rewards-box">
-        <h3 class="rewards-group"><%= _lp.REWARDS_ITEM_REWARDS %></h3>
+    <div class="item-rewards-box box primary-border">
+        <h3 class="rewards-group header-text"><%= _lp.REWARDS_ITEM_REWARDS %></h3>
         <ul class="item-rewards"></ul>
     </div>
-    <div class="visit-rewards-box">
-        <h3 class="rewards-group"><%= _lp.REWARDS_VISIT_REWARDS %></h3>
+    <div class="visit-rewards-box box primary-border">
+        <h3 class="rewards-group header-text"><%= _lp.REWARDS_VISIT_REWARDS %></h3>
         <ul class="visit-rewards"></ul>
     </div>
-    <div>
-        <h3 class="rewards-group"><%= _lp.REWARDS_PURCHASE_REWARDS %></h3>
+    <div class="purchase-rewards-box box primary-border">
+        <h3 class="rewards-group header-text"><%= _lp.REWARDS_PURCHASE_REWARDS %></h3>
         <ul class="purchase-rewards"></ul>
     </div>
     <span class="rewards-unavailable"><%= _lp.REWARDS_UNAVAILABLE %></span>
