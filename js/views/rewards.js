@@ -35,7 +35,7 @@
             '.reward__discount-amount': 'text: discountAmount(amount, type)',
             '.reward__discount-text': 'text: select(is_item_level, _lp_REWARDS_ITEM_LEVEL_DISCOUNT, _lp_REWARDS_ENTIRE_ORDER_DISCOUNT)',
             '.reward__redemption-amount': 'text: points',
-            '.reward__redemption-text': 'text: redemptionText(points, _lp.REWARDS_POINTS_REDEMPTION_AMOUNT)'
+            '.reward__redemption-text': 'text: redemptionText(points, _lp_REWARDS_POINTS_REDEMPTION_AMOUNT)'
         },
         events: {
             'click': 'selectReward'
@@ -50,8 +50,6 @@
              */
             redemptionText: function(points, text) {
                 var text1, text2;
-
-                text = _loc.REWARDS_POINTS_REDEMPTION_AMOUNT
 
                 if (Array.isArray(text)) {
                     text1 = text[0];
@@ -78,20 +76,23 @@
             var selected = this.model.get('selected'),
                 allowMultiple = App.Data.settings.get('settings_system').allow_multiple_reward_redemptions_per_order;
 
-            // reward is getting selected
-            if (!selected) {
-                var criteria = {selected: true};
+            // var criteria = {selected: true};
 
-                if (allowMultiple) {
-                    // need  to find selected reward only with the same level
-                    criteria.is_item_level = this.model.get('is_item_level')
-                }
+            // if (allowMultiple) {
+            //     // need  to find selected reward only with the same level
+            //     criteria.is_item_level = this.model.get('is_item_level')
+            // }
 
-                // find selected reward(s)
-                var selectedModels = this.model.collection.where(criteria);
-                // remove selection
-                selectedModels.length && _.invoke(selectedModels, 'set', {selected: false});
-            }
+            // // find selected reward(s)
+            // var selectedModels = this.model.collection.where(criteria);
+
+            // // reward is getting selected
+            // if (!selected) {
+            //     // remove selection
+            //     selectedModels.length && _.invoke(selectedModels, 'set', {selected: false, disabled: true});
+            // } else {
+            //     selectedModels.length && _.invoke(selectedModels, 'set', {disabled: false});
+            // }
 
             // toggle selection
             this.model.set('selected', !selected);

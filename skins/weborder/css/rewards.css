@@ -92,3 +92,25 @@
     font-size: 12px;
     text-transform: uppercase;
 }
+
+.rewards-info .reward-selection__item {
+    margin: 10px;
+    cursor: pointer;
+}
+
+.rewards-info .reward-selection__item > * {
+    vertical-align: middle;
+}
+
+.rewards-info .checkbox {
+    margin-right: 10px;
+}
+
+.rewards-info .points {
+    padding-left: 10px;
+}
+
+.rewards-info .points.selected::before {
+    content: '-';
+    padding-right: 5px;
+}

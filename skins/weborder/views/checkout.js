@@ -126,7 +126,8 @@ define(["checkout_view"], function(checkout_view) {
         name: 'checkout',
         mod: 'rewards_card',
         bindings: {
-            '.see-rewards': 'classes: {hide: select(length(discounts), false, true)}',
+            '.rewards-card-apply': 'classes: {hide: length(discounts)}',
+            '.see-rewards': 'classes: {hide: not(length(discounts))}',
             '.rewardCard': 'value: number, events: ["input"], attr: {readonly: select(length(discounts), true, false)}, restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^\\d*$/'
         },
         events: {

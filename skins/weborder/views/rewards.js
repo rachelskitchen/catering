@@ -23,25 +23,27 @@
  define(["rewards_view"], function(rewards_view) {
     'use strict';
 
-    var ItemRewardsView = App.Views.CoreRewardsView.CoreRewardsItemView.extend({
-        name: 'rewards',
-        mod: 'item_item',
+    var ItemView = App.Views.CoreRewardsView.CoreRewardsItemView.extend({
+        bindings: {
+            ':el': 'classes: {disabled: disabled, animation: true}',
+            '.checkbox': 'classes: {checked: selected}',
+            '.points': 'classes: {"optional-text": not(selected), "attention-text": selected, selected: selected}'
+        }
+    });
+
+    var ItemRewardsView = ItemView.extend({
         bindings: {
             '.reward__redemption-text': 'text: redemptionText(points, _lp_REWARDS_ITEM_POINTS)'
         }
     });
 
-    var VisitRewardsView = App.Views.CoreRewardsView.CoreRewardsItemView.extend({
-        name: 'rewards',
-        mod: 'item_visit',
+    var VisitRewardsView = ItemView.extend({
         bindings: {
             '.reward__redemption-text': 'text: redemptionText(points, _lp_REWARDS_VISIT_POINTS)'
         }
     });
 
-    var PurchaseRewardsView = App.Views.CoreRewardsView.CoreRewardsItemView.extend({
-        name: 'rewards',
-        mod: 'item_purchase',
+    var PurchaseRewardsView = ItemView.extend({
         bindings: {
             '.reward__redemption-text': 'text: redemptionText(points, _lp_REWARDS_PURCHASE_POINTS)'
         }
@@ -55,11 +57,11 @@
             '.total-points': 'text: balance_points',
             '.total-visits': 'text: balance_visits',
             '.total-purchases': 'text: currencyFormat(balance_purchases)',
-            '.item-rewards-box': 'toggle: length($itemRewards)',
+            '.item-rewards-box': 'classes: {hide: not(length($itemRewards))}',
             '.item-rewards': 'collection: $itemRewards, itemView: "itemRewards"',
-            '.visit-rewards-box': 'toggle: length($visitRewards)',
+            '.visit-rewards-box': 'classes: {hide: not(length($visitRewards))}',
             '.visit-rewards': 'collection: $visitRewards, itemView: "visitRewards"',
-            '.purchase-rewards-box': 'toggle: length($purchaseRewards)',
+            '.purchase-rewards-box': 'classes: {hide: not(length($purchaseRewards))}',
             '.purchase-rewards': 'collection: $purchaseRewards, itemView: "purchaseRewards"',
             '.rewards-unavailable': 'toggle: not(length(rewards))',
             '.total-row-points': 'classes: {hide: isNull(balance_points)}',
@@ -93,6 +95,7 @@
         visitRewards: VisitRewardsView,
         purchaseRewards: PurchaseRewardsView,
         initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'onResetData', this.remove);
             this.listenTo(this.model.get('rewards'), 'add remove', function() {
                 this.setItemRewards();
@@ -102,7 +105,6 @@
             this.setItemRewards();
             this.setVisitsRewards();
             this.setPurchaseRewards();
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         apply: function() {
             this.model.trigger('onRedemptionApplied');
