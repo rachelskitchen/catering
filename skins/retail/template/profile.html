@@ -169,6 +169,8 @@
     <div class="right-side side text-center border-box">
         <h2 class="title"><%= _lp.GIFT_CARDS %></h2>
         <div class="gift-cards-box"></div>
+        <h2 class="title"><%= _lp.REWARD_CARDS %></h2>
+        <div class="reward-cards-box"></div>
     </div>
     <div class="successful-update animation clear"><%= _lp.PROFILE_UPDATE_SUCCESSFUL %></div>
     <div class="update-btn flat-btn"><%= _lp.UPDATE %></div>
@@ -239,6 +241,49 @@
             <div class="captcha-spinner"></div>
         </div>
         <div class="flat-btn btn-reload" tabindex="0"> <span> <%= _lp.GIFTCARD_RELOAD %> </span> </div>
+    </div>
+</script>
+
+<script type="text/template" id="profile_reward_card_selection-template">
+    <span class="card-number"></span>
+    <span class="apply-link link"><%= _lp.CHECKOUT_APPLY %></span>
+</script>
+
+<script type="text/template" id="profile_reward_cards_selection-template">
+    <ul class="reward-cards-list"></ul>
+</script>
+
+<script type="text/template" id="profile_reward_card_edition-template">
+    <span class="card-number"></span>
+    <div class="remove-btn"></div>
+</script>
+
+<script type="text/template" id="profile_reward_cards_edition-template">
+    <div class="reward-cards-list-wrap">
+        <ul class="reward-cards-list"></ul>
+        <div class="add_reward_card_title_wrap">
+            <div class="add_reward_card_title primary-text"><span class="plus_sign"></span><%= _loc.PROFILE_ADD_NEW_REWARD_CARD %></div>
+        </div>
+        <div class="profile-form">
+            <div class="new_reward_card"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="profile_rewardcard-template">
+    <div>
+        <input type="text" placeholder="<%= _lp.GIFTCARD_NUMBER %>" class="number number-input rewards-input">
+    </div>
+    <div>
+        <input autocomplete="off" id="id_captcha_key" name="captcha_key" type="hidden">
+        <input autocomplete="off" id="id_captcha_value" name="captcha_value" type="text" placeholder="<%= _lp.GIFTCARD_CAPTCHA %>" class="captcha-input rewards-captcha-input ios-safari-caret input-colors">
+    </div>
+    <div class="captcha_container">
+        <div class="captcha_wrap">
+            <img src="" alt="" width="100%" height="100%" class="captcha-image">
+            <div class="captcha-spinner"></div>
+        </div>
+        <div class="flat-btn btn-reload update-captcha" tabindex="0"> <span> <%= _lp.GIFTCARD_RELOAD %> </span> </div>
     </div>
 </script>
 
