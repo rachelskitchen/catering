@@ -746,6 +746,7 @@ define(["factory"], function() {
                     this.incrementUpdateCounter();
 
                     req.done(function() {
+                        primaryPaymentsModel.setPrimaryAsSelected();
                         self.checkUpdateStatus();
                     });
                 }
