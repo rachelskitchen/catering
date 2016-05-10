@@ -550,6 +550,8 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(myorder, 'paymentResponse', function() {
                 var is_gift, card = App.Data.card,
                     customer = App.Data.customer,
+                    payments = customer.payments, 
+                    payment = payments.getSelectedPayment(),
                     stanfordCard = App.Data.stanfordCard;
 
                 App.Data.settings.usaepayBack = true;
@@ -565,6 +567,16 @@ define(["backbone", "factory"], function(Backbone) {
                             myorder.checkout.revert_dining_option();   //restore dinin_option from selected_dining_option
                         }
                         customer && customer.resetShippingServices();  // clear shipping service selected
+
+                        // set selected customer's payment as primary
+                        if (payment) {
+                            payment.setSelectedAsPrimary();
+                            
+                            _.each(payments.models, function(model) {
+                                model.setOriginalAttributes();
+                            });
+                        }
+
                         stanfordCard && stanfordCard.clearData();      // clear Stanford card data
                         break;
                     case 'error':

@@ -660,6 +660,8 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             }
 
             function card_popup() {
+                payments.getPrimaryPayment().setPrimaryAsSelected();
+
                 App.Data.mainModel.set('popup', {
                     modelName: 'Confirm',
                     mod: 'PayCard',

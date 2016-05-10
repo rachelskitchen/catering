@@ -141,13 +141,25 @@ define(['backbone'], function(Backbone) {
             cvv: ''
         },
         /**
-         * Makes the payment token is selected if `is_primary` attribute is `true`.
+         * Initialization flow
          */
         initialize: function() {
-            this.get('is_primary') && this.set('selected', true);
+            this.setPrimaryAsSelected();
             this.setOriginalAttributes();
 
             Backbone.Model.prototype.initialize.apply(this, arguments);
+        },
+        /**
+         * Makes the payment token is selected if `is_primary` attribute is `true`
+         */
+        setPrimaryAsSelected: function() {
+            this.get('is_primary') && this.set('selected', true);
+        },
+        /**
+         * Makes the payment token is primary if `selected` attribute is `true`
+         */
+        setSelectedAsPrimary: function() {
+            this.get('selected') && this.set('is_primary', true);
         },
         /**
          * Reverts model's original attrbutes
