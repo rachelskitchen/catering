@@ -408,7 +408,8 @@ define(['backbone'], function(Backbone) {
             }
 
             var payment = !this.ignoreSelectedToken ? this.getSelectedPayment() : null,
-                cardInfo = _.isObject(order.paymentInfo) && order.paymentInfo.cardInfo;
+                cardInfo = _.isObject(order.paymentInfo) && order.paymentInfo.cardInfo,
+                self = this;
 
             if (_.isObject(cardInfo)) {
                 if (payment) {
@@ -424,7 +425,16 @@ define(['backbone'], function(Backbone) {
                 data: JSON.stringify(order),
                 headers: authorizationHeader,
                 contentType: "application/json",
-                success: new Function(),           // to override global ajax success handler
+                success: function() {
+                    // if selected customer's payment exists set it as primary
+                    if (payment) {
+                        payment.setSelectedAsPrimary();
+
+                        _.each(self.models, function(model) {
+                            model.setOriginalAttributes();
+                        });
+                    }
+                },
                 error: new Function()              // to override global ajax error handler
             });
         },
