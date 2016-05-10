@@ -102,7 +102,7 @@
         name: 'rewards',
         mod: 'card',
         bindings: {
-            '.rewards-input': 'value: number, events: ["input"]',
+            '.rewards-input': 'value: number, events: ["input"], disabled: length(customer_rewardCards)',
             '.rewards-captcha-input': 'value: captchaValue, events: ["input"]',
             '.submit-card': 'classes: {disabled: disableBtn}',
             '.captcha-image': 'updateCaptcha: url'
@@ -122,10 +122,14 @@
             }
         },
         initialize: function() {
+            var self = this;
             this.listenTo(this.model, 'onResetData', this.updateCaptcha);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             inputTypeMask(this.$('.rewards-input'), /^\d*$/, this.model.get('number'), 'numeric');
             this.listenTo(this.model, 'updateCaptcha', this.updateCaptcha, this);
+            this.listenTo(this.options.customer.get('rewardCards'), "add remove reset", function() {
+                self.options.customer.trigger('change:rewardCards'); //it's to update binding value customer_rewardCards
+            });
             this.updateCaptcha();
         },
         computeds: {

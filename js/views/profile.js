@@ -613,14 +613,24 @@ define(["factory"], function() {
             this.listenTo(this.options.newCard, "change:captchaValue change:number", function() {
                 self.options.customer.trigger('change_cards', this.options.newCard.check());
             });
+
+            this.listenTo(this.options.customer.get('rewardCards'), "add remove reset", function() {
+                self.options.customer.trigger('change:rewardCards');
+            });
         },
         events: {
             'click .add_reward_card_title': 'hide_show_NewRewardCard'
         },
         bindings: {
             '.reward-cards-list': 'collection: $collection',
+            '.add_reward_card_title': 'toggle:add_reward_card_link',
             '.add_reward_card_title .plus_sign': 'text:select(newCard_add_new_card,"- ","+ ")',
             '.new_reward_card': "toggle:newCard_add_new_card"
+        },
+        computeds: {
+            add_reward_card_link: function() {
+                return this.getBinding('customer_rewardCards').length == 0;
+            }
         },
         itemView: App.Views.CoreProfileView.CoreProfileRewardCardEditionView,
         hide_show_NewRewardCard: function() {
@@ -635,6 +645,7 @@ define(["factory"], function() {
                     el: this.$('.new_reward_card'),
                     model: this.options.newCard,
                     mod: 'CardProfile',
+                    customer: this.options.customer,
                     cacheId: true });
                 }
                 this.options.customer.trigger('change_cards', this.options.newCard.check());
@@ -778,9 +789,7 @@ define(["factory"], function() {
             }
 
             function onError(errorMsg) {
-                if (!errorMsg && self.options.model.get('rewardCards').length > 0) {
-                    App.Data.errors.alert("You can't add a new reward card while another one is linked. Please remove the current card then try again.");
-                } else if (errorMsg){
+                if (errorMsg){
                     App.Data.errors.alert(errorMsg);
                 }
             }
