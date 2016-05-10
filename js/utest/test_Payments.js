@@ -18,14 +18,34 @@ define(['payments', 'js/utest/data/Payments', 'js/utest/data/Timetable'], functi
         });
 
         describe("initialize()", function() {
+            
+        });
+
+        describe("setPrimaryAsSelected()", function() {
             it("`is_primary` is false", function() {
-                model = new App.Models.PaymentToken();
+                var model = new App.Models.PaymentToken();
+                model.setPrimaryAsSelected();
                 expect(model.get('selected')).toBe(data.ModelPaymentToken.defaults.selected);
             });
 
             it("`is_primary` is true", function() {
-                model = new App.Models.PaymentToken({is_primary: true});
+                var model = new App.Models.PaymentToken({is_primary: true});
+                model.setPrimaryAsSelected();
                 expect(model.get('selected')).toBe(true);
+            });
+        });
+
+        describe("setSelectedAsPrimary()", function() {
+            it("`selected` is false", function() {
+                var model = new App.Models.PaymentToken();
+                model.setSelectedAsPrimary();
+                expect(model.get('is_primary')).toBe(data.ModelPaymentToken.defaults.is_primary);
+            });
+
+            it("`selected` is true", function() {
+                var model = new App.Models.PaymentToken({selected: true});
+                model.setSelectedAsPrimary();
+                expect(model.get('is_primary')).toBe(true);
             });
         });
 
