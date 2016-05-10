@@ -38,6 +38,10 @@
     vertical-align: middle;
 }
 
+.rewards-info .reward_card_number.disabled {
+    opacity: 0.5;
+}
+
 .rewards-info .captcha {
     display: inline-block;
     height: 48px;
