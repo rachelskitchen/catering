@@ -555,8 +555,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.listenTo(myorder, 'paymentResponse', function() {
                 var is_gift, card = App.Data.card,
                     customer = App.Data.customer,
-                    payments = customer.payments, 
-                    payment = payments.getSelectedPayment(),
+                    payments = customer.payments,
                     stanfordCard = App.Data.stanfordCard;
 
                 App.Data.settings.usaepayBack = true;
@@ -574,8 +573,8 @@ define(["backbone", "factory"], function(Backbone) {
                         customer && customer.resetShippingServices();  // clear shipping service selected
 
                         // set selected customer's payment as primary
-                        if (payment) {
-                            payment.setSelectedAsPrimary();
+                        if (payments) {
+                            payments.getSelectedPayment().setSelectedAsPrimary();
                             
                             _.each(payments.models, function(model) {
                                 model.setOriginalAttributes();
