@@ -664,6 +664,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          *         "addresses": [...]                                                   // array of addresses
          *     }
          * ```
+         * Emits 'onLogin' event.
+         *
          * - Username or password is invalid:
          * ```
          * Status: 400
@@ -754,6 +756,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     this.setCustomerFromAPI(data);
                     this.initPayments();
                     this.initGiftCards();
+                    this.trigger('onLogin');
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {

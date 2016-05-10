@@ -269,10 +269,13 @@ define(["backbone", "factory"], function(Backbone) {
             function initTheme() {
                 var app = require('app'),
                     local_theme = app.get['local_theme'] == "true" ? true : false;
-                if (App.skin != App.Skins.WEBORDER_MOBILE && App.skin != App.Skins.DIRECTORY_MOBILE) {
+                if (App.skin != App.Skins.WEBORDER_MOBILE
+                    && App.skin != App.Skins.DIRECTORY_MOBILE
+                    && App.skin != App.Skins.WEBORDER) {
                     local_theme = true;
                 }
                 var server_color_schemes = {};
+                server_color_schemes[ App.Skins.WEBORDER ] = 'weborder-desktop-colors';
                 server_color_schemes[ App.Skins.WEBORDER_MOBILE ] = 'weborder-mobile-colors';
                 server_color_schemes[ App.Skins.DIRECTORY_MOBILE ] = 'directory-mobile-colors';
 
@@ -285,7 +288,7 @@ define(["backbone", "factory"], function(Backbone) {
                         css.push('themes/default/colors');
                     }
                 } else {
-                    externCss.push(settings.get('host') + '/weborders/css/' + server_color_schemes[ App.skin ] );
+                    externCss.push(settings.get('host') + '/weborders/css/' + encodeURIComponent(system_settings.color_scheme) + '/' + server_color_schemes[ App.skin ] );
                 }
                 this.prepare.initialized = true;
             }

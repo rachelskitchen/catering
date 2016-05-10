@@ -190,6 +190,8 @@
         'CHECKOUT_PAYMENT_METHOD_CREDIT_CARD': 'Credit Card',
         'CHECKOUT_PAYMENT_METHOD_GIFT_CARD': 'Gift Card',
         'CHECKOUT_PAYMENT_METHOD_STANFORD_CARD': 'Stanford Card',
-        'CHECKOUT_CHOOSE_ADDRESS': 'Choose Address'
+        'CHECKOUT_CHOOSE_ADDRESS': 'Choose Address',
+        'CHECKOUT_CHOOSE_CARD': 'Choose Card',
+        'CHECKOUT_ENTER_NEW_CARD': 'Enter New Card'
     } // end of locale
 }); // end of module

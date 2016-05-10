@@ -1,37 +1,24 @@
 <script type="text/template" id="card_main-template">
-    <div class="card_title"> <%= _lp.CARD_TITLE %> </div>
-    <div>
-        <label for="firstName">
-            <span class="bold"><%= _lp.CARD_FIRST_NAME %>:</span>
-        </label>
-        <div class="input_beauty">
-            <input type="text" id="firstName" class="first_name" maxlength="20" name="firstName">
-        </div>
+    <div class="item">
+        <div class="label required optional-text"><%= _lp.CARD_FIRST_NAME %></div>
+        <input type="text" class="first_name input size1" maxlength="20" name="firstName">
     </div>
-    <div>
-        <label for="lastName">
-            <span class="bold"><%= _lp.CARD_LAST_NAME %>:</span>
-        </label>
-        <div class="input_beauty">
-            <input type="text" id="lastName" class="last_name" maxlength="20" name="lastName">
-        </div>
+    <div class="item">
+        <div class="label required optional-text"><%= _lp.CARD_LAST_NAME %></div>
+        <input type="text" class="last_name input size1" maxlength="20" name="lastName">
     </div>
-    <div>
-        <label for="cardNumber"> <span class="bold required"><%= _lp.CARD_NUMBER %>:</span> </label>
-        <div class="input_beauty">
-            <input type="tel" id="cardNumber" class="number" name="cardName">
-        </div>
+    <div class="item">
+        <div class="label required optional-text"><%= _lp.CARD_NUMBER %></div>
+        <input type="tel" class="number input size2" name="cardName">
     </div>
-    <div>
-        <label for="securityCode"> <span class="bold required"><%= _lp.CARD_SECURITY_CODE %>:</span> </label>
-        <div class="input_beauty">
-            <input type="tel" id="securityCode" class="secure" name="secureCode">
-        </div>
+    <div class="item">
+        <div class="label required optional-text"><%= _lp.CARD_SECURITY_CODE %></div>
+        <input type="tel" class="secure input size3" name="secureCode">
     </div>
-    <div>
-        <label for="ccMonth"> <span class="pickup bold required"><%= _lp.CARD_EXP_DATE %>:</span> </label>
-        <div class="select month select-wrapper" style="display: inline-block;">
-            <select class="month card-expiration-month" id="ccMonth">
+    <div class="item">
+        <div class="label required optional-text"><%= _lp.CARD_EXP_DATE %></div>
+        <div class="select-wrapper item">
+            <select class="card-expiration-month">
                 <option value="01">01</option>
                 <option value="02">02</option>
                 <option value="03">03</option>
@@ -46,15 +33,13 @@
                 <option value="12">12</option>
             </select>
         </div>
-        <div class="select year select-wrapper">
-            <select class="time card-expiration-year" id="ccYear"></select>
+        <div class="select-wrapper item">
+            <select class="card-expiration-year"></select>
         </div>
     </div>
-    <div class="card__remember checkbox-outer">
-        <label for="rememberCard">
-            <span class="bold"><%= _lp.CARD_SAVE %></span>
-        </label>
-        <span class="input checkbox" id="rememberCard"></span>
+    <div class="checkbox-outer item">
+        <span class="checkbox"></span>
+        <span><%= _lp.CARD_SAVE %></span>
     </div>
 </script>
 

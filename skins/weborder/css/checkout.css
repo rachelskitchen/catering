@@ -1,3 +1,11 @@
+.checkout-order-details {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
+}
+
 .checkout-order-details .title {
     padding: 13px 25px;
     border-width: 1px 0;
@@ -49,6 +57,7 @@
 .payment-method {
     min-width: 116px;
     padding: 11px;
+    margin-bottom: 15px;
     border-width: 1px;
     border-style: solid;
     border-radius: 5px;
