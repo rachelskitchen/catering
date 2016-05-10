@@ -552,7 +552,7 @@ define(["main_router"], function(main_router) {
 
                 this.initGiftCard();
 
-                var settings = App.Data.settings.get('settings_system');
+                var settings = App.Settings;
 
                 App.Data.header.set('tab_index', null);
 
@@ -578,9 +578,12 @@ define(["main_router"], function(main_router) {
                         discountAvailable: settings.accept_discount_code,
                         checkout: App.Data.myorder.checkout,
                         paymentMethods: App.Data.paymentMethods,
-                        enableRewardCard: settings.enable_reward_cards_collecting
+                        enableRewardCard: settings.enable_reward_cards_collecting,
+                        card: App.Data.card,
+                        promises: this.getProfilePaymentsPromises.bind(this)
                     }
                 });
+
                 this.change_page();
             });
         },

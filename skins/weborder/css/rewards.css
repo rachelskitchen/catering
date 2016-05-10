@@ -80,6 +80,11 @@
     padding-left: 30px;
 }
 
+.rewards-info .rewards-box {
+    max-height: 520px;
+    overflow-y: auto;
+}
+
 .rewards-info .box {
     padding: 19px 0 5px;
     margin: 0 25px;

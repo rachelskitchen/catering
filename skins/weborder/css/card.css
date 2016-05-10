@@ -1,0 +1,8 @@
+.cc-box .checkbox-outer {
+	padding-top: 33px;
+	cursor: pointer;
+}
+
+.cc-box .checkbox-outer > * {
+	vertical-align: middle;
+}

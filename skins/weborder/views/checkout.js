@@ -39,14 +39,33 @@ define(["checkout_view"], function(checkout_view) {
         name: 'checkout',
         mod: 'page',
         bindings: {
-            '.notes': 'value: checkout_notes, events: ["input"], toggle: _system_settings_order_notes_allow'
+            '.notes': 'value: checkout_notes, events: ["input"], toggle: _system_settings_order_notes_allow',
+            '.cc-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false))}',
+            '.choose-cc-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), not(length($tokens)))}'
+        },
+        initialize: function() {
+            this.tokens = new Backbone.Collection();
+            this.giftCards = new Backbone.Collection();
+            this.token = new Backbone.Model({selected: false});
+            this.giftCard = new Backbone.Model({selected: false});
+            _.extend(this.bindingSources, {
+                token: this.token,           // indicates any token is selected or not
+                tokens: this.tokens,         // tokens
+                giftCard: this.giftCard,     // indicated any saved gift card is selected or not
+                giftCards: this.giftCards    // saved gift cards
+            });
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.options.customer, 'onLogin', this.setProfileData);
+            this.listenTo(this.options.customer, 'onLogout', this.removeProfileData);
+            this.setProfileData();
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
 
             var orderDetails = this.$('.order-details'),
                 paymentInfo = this.$('.payment-info'),
-                order_type, pickup, main, paymentMethods, tips, discount, rewards;
+                order_type, pickup, main, paymentMethods, tips, discount, rewards,
+                chooseCreditCard, creditCard;
 
             order_type = App.Views.GeneratorView.create('Checkout', {
                 mod: 'OrderType',
@@ -85,6 +104,29 @@ define(["checkout_view"], function(checkout_view) {
             this.subViews.push(paymentMethods);
             paymentInfo.append(paymentMethods.el);
 
+            if (this.options.paymentMethods.get('credit_card_button')) {
+                chooseCreditCard = App.Views.GeneratorView.create('Profile', {
+                    mod: 'PaymentsSelection',
+                    collection: this.tokens,
+                    model: this.token,
+                    className: 'choose-cc-box item'
+                });
+
+                this.subViews.push(chooseCreditCard);
+                paymentInfo.append(chooseCreditCard.el);
+            }
+
+            if (this.options.paymentMethods.get('credit_card_dialog')) {
+                creditCard = App.Views.GeneratorView.create('Card', {
+                    mod: 'Main',
+                    model: this.options.card,
+                    className: 'cc-box item'
+                });
+
+                this.subViews.push(creditCard);
+                paymentInfo.append(creditCard.el);
+            }
+
             if(this.options.acceptTips) {
                 tips = App.Views.GeneratorView.create('Tips', {
                     model: this.collection.total.get('tip'),
@@ -119,6 +161,26 @@ define(["checkout_view"], function(checkout_view) {
             this.iOSSafariCaretFix();
 
             return this;
+        },
+        setProfileData: function() {
+            var promises = this.options.promises(),
+                customer = this.options.customer,
+                tokens = this.tokens,
+                giftCards = this.giftCards;
+
+            if (promises.length) {
+                Backbone.$.when.apply(Backbone.$, promises).then(function() {
+                    if (customer.payments) {
+                        customer.payments.selectFirstItem();
+                        tokens.reset(customer.payments.models);
+                    }
+                    customer.giftCards && giftCards.reset(customer.giftCards.toJSON());
+                });
+            }
+        },
+        removeProfileData: function() {
+            this.tokens.reset();
+            this.giftCards.reset();
         }
     });
 
