@@ -555,6 +555,106 @@ define(["factory"], function() {
         }
     });
 
+    App.Views.CoreProfileView.CoreProfileRewardCardSelectionView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'reward_card_selection',
+        tagName: 'li',
+        bindings: {
+            ':el': 'classes: {selected: selected}',
+            '.card-number': 'text: number',
+            '.apply-link': 'text: select(selected, _lp_CHECKOUT_SEE_REWARDS, _lp_CHECKOUT_APPLY)'
+        },
+        events: {
+            'click': 'select',
+            'click .apply-link': 'onApply'
+        },
+        select: function() {
+            if (!this.model.get('selected')) {
+                this.onApply();
+            }
+        },
+        onApply: function(event) {
+            if (event) {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+            }
+            this.options.collectionView.options.applyRewardCard(this.model);
+        }
+    });
+
+    App.Views.CoreProfileView.CoreProfileRewardCardsSelectionView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'reward_cards_selection',
+        bindings: {
+            '.reward-cards-list': 'collection: $collection'
+        },
+        itemView: App.Views.CoreProfileView.CoreProfileRewardCardSelectionView
+    });
+
+    App.Views.CoreProfileView.CoreProfileRewardCardEditionView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'reward_card_edition',
+        tagName: 'li',
+        bindings: {
+            '.card-number': 'text: number'
+        },
+        events: {
+            'click .remove-btn': 'unlinkRewardCard',
+        },
+        unlinkRewardCard: function() {
+            this.options.collectionView.options.unlinkRewardCard(this.model);
+        }
+    });
+
+    App.Views.CoreProfileView.CoreProfileRewardCardsEditionView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'reward_cards_edition',
+        initialize: function() {
+            var self = this;
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.options.newCard, "change:captchaValue change:number", function() {
+                self.options.customer.trigger('change_cards', this.options.newCard.check());
+            });
+
+            this.listenTo(this.options.customer.get('rewardCards'), "add remove reset", function() {
+                self.options.customer.trigger('change:rewardCards');
+            });
+        },
+        events: {
+            'click .add_reward_card_title': 'hide_show_NewRewardCard'
+        },
+        bindings: {
+            '.reward-cards-list': 'collection: $collection',
+            '.add_reward_card_title': 'toggle:add_reward_card_link',
+            '.add_reward_card_title .plus_sign': 'text:select(newCard_add_new_card,"- ","+ ")',
+            '.new_reward_card': "toggle:newCard_add_new_card"
+        },
+        computeds: {
+            add_reward_card_link: function() {
+                return this.getBinding('customer_rewardCards').length == 0;
+            }
+        },
+        itemView: App.Views.CoreProfileView.CoreProfileRewardCardEditionView,
+        hide_show_NewRewardCard: function() {
+            var card = this.options.newCard,
+                cur_add_new_card = !card.get('add_new_card');
+
+            card.set('add_new_card', cur_add_new_card);
+
+            if (cur_add_new_card) {
+                if (!this.newCardView) {
+                  this.newCardView = App.Views.GeneratorView.create('Rewards', {
+                    el: this.$('.new_reward_card'),
+                    model: this.options.newCard,
+                    mod: 'CardProfile',
+                    customer: this.options.customer,
+                    cacheId: true });
+                }
+                this.options.customer.trigger('change_cards', this.options.newCard.check());
+            }
+        }
+    });
+
 
     App.Views.CoreProfileView.CoreProfilePaymentsView = App.Views.FactoryView.extend({
         name: 'profile',
@@ -600,6 +700,18 @@ define(["factory"], function() {
                 this.subViews.push(giftCardsEdition);
             }
 
+            if (this.model.get('rewardCards')) {
+                this.newRewardCard = new App.Models.RewardsCard({add_new_card: false});
+                var rewardCardsEdition = App.Views.GeneratorView.create('Profile', {
+                    el: this.$('.reward-cards-box'),
+                    mod: 'RewardCardsEdition',
+                    collection: this.model.get('rewardCards'),
+                    unlinkRewardCard: this.options.unlinkRewardCard,
+                    newCard: this.newRewardCard,
+                    customer: this.options.model
+                });
+                this.subViews.push(rewardCardsEdition);
+            }
             return this;
         },
         onUpdate: function() {
@@ -607,27 +719,36 @@ define(["factory"], function() {
             var clone;
             this.resetUpdateStatus();
             if (this.newGiftCard.get('cardNumber')) {
-                clone = this.newGiftCard.deepClone();
+                clone = this.newGiftCard.clone();
                 this.addCardToServer(clone);
             }
 
             // Saving Credit Cards data
             this.saveCreditCard();
+
+            // Saving Reward Cards data
+            if (this.newRewardCard.get('number')) {
+                clone = this.newRewardCard.clone();
+                this.saveRewardCard(clone);
+            }
         },
         saveCreditCard: function()
         {
-            var self = this,
+            var self = this, req,
                 collection = this.model.payments,
-                primaryPaymentsModel = collection.getPrimaryPayment(),
+                primaryPaymentsModel = collection.getPrimaryPayment();
+
+            if (primaryPaymentsModel) {
                 req = this.options.changeToken(primaryPaymentsModel.id);
 
-            if (req)
-            {
-                this.incrementUpdateCounter();
+                if (req)
+                {
+                    this.incrementUpdateCounter();
 
-                req.done(function() {
-                    self.checkUpdateStatus();
-                });
+                    req.done(function() {
+                        self.checkUpdateStatus();
+                    });
+                }
             }
         },
         addCardToServer: function(giftcard) {
@@ -646,6 +767,33 @@ define(["factory"], function() {
                     }
 
                 }).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+            }
+        },
+        saveRewardCard: function(rewardcard) {
+            var self = this,
+                mainModel = App.Data.mainModel,
+                req = this.model.linkRewardCard(rewardcard);
+            this.listenTo(rewardcard, 'onLinkError', onError);
+            if (req) {
+                this.incrementUpdateCounter();
+                mainModel.trigger('loadStarted');
+                req.done(function(data){
+                    if (data && data.status == 'OK') {
+                        self.checkUpdateStatus();
+                        self.options.myorder.rewardsCard.selectRewardCard(rewardcard);
+                        self.newRewardCard.set({ add_new_card: false, number: ''});
+                        self.newRewardCard.trigger('updateCaptcha');
+                    }
+
+                }).error(function(){
+                    onError();
+                }).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+            }
+
+            function onError(errorMsg) {
+                if (errorMsg){
+                    App.Data.errors.alert(errorMsg);
+                }
             }
         },
         checkUpdateStatus: function() {
@@ -711,6 +859,9 @@ define(["factory"], function() {
         App.Views.ProfileView.ProfileGiftCardsSelectionView = App.Views.CoreProfileView.CoreProfileGiftCardsSelectionView;
         App.Views.ProfileView.ProfileGiftCardEditionView = App.Views.CoreProfileView.CoreProfileGiftCardEditionView;
         App.Views.ProfileView.ProfileGiftCardsEditionView = App.Views.CoreProfileView.CoreProfileGiftCardsEditionView;
-        App.Views.ProfileView.ProfilePaymentCVVView = App.Views.CoreProfileView.CoreProfilePaymentCVVView
+        App.Views.ProfileView.ProfileRewardCardSelectionView = App.Views.CoreProfileView.CoreProfileRewardCardSelectionView;
+        App.Views.ProfileView.ProfileRewardCardsSelectionView = App.Views.CoreProfileView.CoreProfileRewardCardsSelectionView;
+        App.Views.ProfileView.ProfileRewardCardsEditionView = App.Views.CoreProfileView.CoreProfileRewardCardsEditionView;
+        App.Views.ProfileView.ProfilePaymentCVVView = App.Views.CoreProfileView.CoreProfilePaymentCVVView;
     });
 });

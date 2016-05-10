@@ -2422,6 +2422,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                             if (payment_type == PAYMENT_TYPE.GIFT && App.Data.customer.isAuthorized()) {
                                 App.Data.customer.getGiftCards();
                             }
+                            if (App.Data.customer.isAuthorized()) {
+                                App.Data.customer.getRewardCards();
+                            }
                             myorder.trigger('paymentResponse');
                         }
 
