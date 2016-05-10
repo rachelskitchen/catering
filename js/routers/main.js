@@ -346,6 +346,11 @@ define(["backbone", "factory"], function(Backbone) {
                 customer.setGiftCards(App.Collections.GiftCards);
             }
 
+            // set reward cards
+            if (App.SettingsDirectory.saved_reward_cards) {
+                customer.setRewardCards();
+            }
+
             // replace business name
             _loc.PROFILE_USER_CREATED = _loc.PROFILE_USER_CREATED.replace('%s', App.Settings.business_name || '');
 
@@ -807,7 +812,8 @@ define(["backbone", "factory"], function(Backbone) {
             var customer = App.Data.customer,
                 promises = [],
                 paymentsDef = Backbone.$.Deferred(),
-                giftCardsDef = Backbone.$.Deferred();
+                giftCardsDef = Backbone.$.Deferred(),
+                rewardCardsDef = Backbone.$.Deferred();
 
             // payments are available
             if (customer.payments && customer.paymentsRequest) {
@@ -819,6 +825,12 @@ define(["backbone", "factory"], function(Backbone) {
             if (customer.giftCards && customer.giftCardsRequest) {
                 customer.giftCardsRequest.always(giftCardsDef.resolve.bind(giftCardsDef));
                 promises.push(giftCardsDef);
+            }
+
+            // gift cards are available
+            if (customer.get('rewardCards') && customer.rewardCardsRequest) {
+                customer.rewardCardsRequest.always(rewardCardsDef.resolve.bind(rewardCardsDef));
+                promises.push(rewardCardsDef);
             }
 
             return promises;
@@ -1034,7 +1046,8 @@ define(["backbone", "factory"], function(Backbone) {
         },
         setProfilePaymentsContent: function() {
             var promises = this.getProfilePaymentsPromises(),
-                customer = App.Data.customer;
+                customer = App.Data.customer,
+                mainModel = App.Data.mainModel;
 
             if (promises.length) {
                 App.Data.mainModel.set({
@@ -1049,7 +1062,9 @@ define(["backbone", "factory"], function(Backbone) {
                         ui: new Backbone.Model({show_response: false}),
                         removeToken: removeToken,
                         unlinkGiftCard: unlinkGiftCard,
-                        className: 'profile-edit text-center'
+                        unlinkRewardCard: unlinkRewardCard,
+                        className: 'profile-edit text-center',
+                        myorder: App.Data.myorder
                     }
                 });
             }
@@ -1058,8 +1073,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             function changeToken(token_id)
             {
-                var req = customer.changePayment(token_id),
-                    mainModel = App.Data.mainModel;
+                var req = customer.changePayment(token_id);
 
                 if (req)
                 {
@@ -1071,8 +1085,7 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             function removeToken(token_id) {
-                var req = customer.removePayment(token_id),
-                    mainModel = App.Data.mainModel;
+                var req = customer.removePayment(token_id);
                 if (req) {
                     mainModel.trigger('loadStarted');
                     req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
@@ -1080,8 +1093,16 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             function unlinkGiftCard(giftCard) {
-                var req = customer.unlinkGiftCard(giftCard),
-                    mainModel = App.Data.mainModel;
+                var req = customer.unlinkGiftCard(giftCard);
+
+                if (req) {
+                    mainModel.trigger('loadStarted');
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                }
+            }
+
+            function unlinkRewardCard(rewardCard) {
+                var req = customer.unlinkRewardCard(rewardCard);
                 if (req) {
                     mainModel.trigger('loadStarted');
                     req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
@@ -1455,6 +1476,7 @@ define(["backbone", "factory"], function(Backbone) {
         setProfilePaymentsContent: function() {
             var customer = App.Data.customer,
                 promises = this.getProfilePaymentsPromises(),
+                mainModel = App.Data.mainModel,
                 self=this, content = [];
 
             content.push({
@@ -1465,7 +1487,9 @@ define(["backbone", "factory"], function(Backbone) {
                 ui: new Backbone.Model({show_response: false}),
                 removeToken: removeToken,
                 unlinkGiftCard: unlinkGiftCard,
-                className: 'profile-edit text-center'
+                unlinkRewardCard: unlinkRewardCard,
+                className: 'profile-edit text-center',
+                myorder: App.Data.myorder
             });
 
             App.Data.header.set({
@@ -1500,8 +1524,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             function changeToken(token_id)
             {
-                var req = customer.changePayment(token_id),
-                    mainModel = App.Data.mainModel;
+                var req = customer.changePayment(token_id);
                 if (req)
                 {
                     mainModel.trigger('loadStarted');
@@ -1509,8 +1532,7 @@ define(["backbone", "factory"], function(Backbone) {
                 }
             }
             function removeToken(token_id) {
-                var req = customer.removePayment(token_id),
-                    mainModel = App.Data.mainModel;
+                var req = customer.removePayment(token_id);
                 if (req) {
                     mainModel.trigger('loadStarted');
                     req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
@@ -1518,8 +1540,15 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             function unlinkGiftCard(giftCard) {
-                var req = customer.unlinkGiftCard(giftCard),
-                    mainModel = App.Data.mainModel;
+                var req = customer.unlinkGiftCard(giftCard);
+                if (req) {
+                    mainModel.trigger('loadStarted');
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                }
+            }
+
+            function unlinkRewardCard(rewardCard) {
+                var req = customer.unlinkRewardCard(rewardCard);
                 if (req) {
                     mainModel.trigger('loadStarted');
                     req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));

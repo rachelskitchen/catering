@@ -175,35 +175,42 @@
 .profile-edit .profile-form input:disabled {
     color: #999;
 }
-.profile-edit .gift-cards-box .add_gift_card_title_wrap {
+.profile-edit .gift-cards-box .add_gift_card_title_wrap,
+.profile-edit .reward-cards-box .add_reward_card_title_wrap {
     display: block;
     margin: 8px auto 10px auto;
     width: 300px;
 }
-.profile-edit .gift-cards-box .add_gift_card_title {
+.profile-edit .gift-cards-box .add_gift_card_title,
+.profile-edit .reward-cards-box .add_reward_card_title {
     font-size: 14px;
     margin-left: 15px;
     text-align: left;
 }
 
-.profile-edit .gift-cards-box .add_gift_card_title .plus_sign {
+.profile-edit .gift-cards-box .add_gift_card_title .plus_sign,
+.profile-edit .reward-cards-box .add_reward_card_title .plus_sign {
     width: 12px;
     display: inline-block;
 }
 
-.profile-edit .gift-cards-box .add_gift_card_title:hover {
+.profile-edit .gift-cards-box .add_gift_card_title:hover,
+.profile-edit .reward-cards-box .add_reward_card_title:hover {
     cursor: pointer;
 }
 
-.profile-edit .gift-cards-box input {
+.profile-edit .gift-cards-box input,
+.profile-edit .reward-cards-box input {
     margin-bottom: 8px;
 }
 
-.profile-edit .gift-cards-box .captcha_container {
+.profile-edit .gift-cards-box .captcha_container,
+.profile-edit .reward-cards-box .captcha_container {
     text-align: left;
 }
 
-.profile-edit .gift-cards-box .captcha_wrap {
+.profile-edit .gift-cards-box .captcha_wrap ,
+.profile-edit .reward-cards-box .captcha_wrap{
     display: inline-block;
     vertical-align: middle;
     width: 110px;
@@ -213,18 +220,24 @@
     top: 37px;
     left: 10px;
 }
-.profile-edit .gift-cards-box .ui-spinner {
+.profile-edit .gift-cards-box .ui-spinner,
+.profile-edit .reward-cards-box .ui-spinner {
     width: 50px;
     height: 50px;
 }
+.profile-edit .reward-cards-box .ui-spinner {
+    top: -15px;
+}
 
-.profile-edit .gift-cards-box .new_gift_card {
+.profile-edit .gift-cards-box .new_gift_card,
+.profile-edit .reward-cards-box .new_reward_card {
     text-align: left;
+    margin-bottom: 10px;
 }
 
 .profile-edit .flat-btn.btn-reload {
-    width: 80px;
-    padding: 5px 4px;
+    font-size: 12px;
+    padding: 5px 15px;
     text-align: center;
     margin-left: 5px;
 }
@@ -291,7 +304,8 @@
 }
 
 .profile-edit .payments-list,
-.profile-edit .gift-cards-list {
+.profile-edit .gift-cards-list,
+.profile-edit .reward-cards-list {
     font-size: 14px;
     width: 300px;
 }
@@ -302,7 +316,8 @@
 }
 
 .profile-edit .payments-list > li,
-.profile-edit .gift-cards-list > li {
+.profile-edit .gift-cards-list > li ,
+.profile-edit .reward-cards-list > li{
     text-align: left;
 }
 
@@ -344,14 +359,16 @@
 }
 
 .payments-list,
-.gift-cards-list {
+.gift-cards-list,
+.reward-cards-list {
     display: inline-block;
     width: 95%;
     vertical-align: middle;
 }
 
 .payments-list > li,
-.gift-cards-list > li {
+.gift-cards-list > li,
+.reward-cards-list > li {
     border-color: #fff;
     border-style: solid;
     border-width: 1px;
@@ -364,7 +381,8 @@
 }
 
 .payments-list > li.selected::after,
-.gift-cards-list > li.selected::after {
+.gift-cards-list > li.selected::after,
+.reward-cards-list > li.selected::after {
     content: '';
     display: block;
     width: 30px;

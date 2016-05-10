@@ -340,11 +340,17 @@ define(["main_router"], function(main_router) {
 
             // onApplyRewardsCard event occurs when Rewards Card's 'Apply' button is clicked on #checkout page
             this.listenTo(App.Data.myorder.rewardsCard, 'onApplyRewardsCard', function() {
+                var rewardsCard = App.Data.myorder.rewardsCard,
+                    customer = App.Data.customer;
+                if (!rewardsCard.get('number') && customer.isAuthorized() && customer.get('rewardCards').length) {
+                    rewardsCard.set('number', customer.get('rewardCards').at(0).get('number'));
+                }
                 App.Data.mainModel.set('popup', {
                     modelName: 'Rewards',
                     mod: 'Card',
-                    model: App.Data.myorder.rewardsCard,
-                    className: 'rewards-info'
+                    model: rewardsCard,
+                    className: 'rewards-info',
+                    customer: customer
                 });
             });
 
