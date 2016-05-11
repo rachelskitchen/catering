@@ -616,19 +616,22 @@ define(["factory"], function() {
         },
         saveCreditCard: function()
         {
-            var self = this,
+            var self = this, req,
                 collection = this.model.payments,
-                primaryPaymentsModel = collection.getPrimaryPayment(),
+                primaryPaymentsModel = collection.getPrimaryPayment();
+
+            if (primaryPaymentsModel) {
                 req = this.options.changeToken(primaryPaymentsModel.id);
 
-            if (req)
-            {
-                this.incrementUpdateCounter();
+                if (req)
+                {
+                    this.incrementUpdateCounter();
 
-                req.done(function() {
-                    primaryPaymentsModel.setPrimaryAsSelected();
-                    self.checkUpdateStatus();
-                });
+                    req.done(function() {
+                        primaryPaymentsModel.setPrimaryAsSelected();
+                        self.checkUpdateStatus();
+                    });
+                }
             }
         },
         addCardToServer: function(giftcard) {
