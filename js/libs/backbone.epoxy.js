@@ -136,9 +136,28 @@
       return this;
   }
 
-  //function isObject(obj) {
-  //  return obj && typeof obj == 'object';
-  //}
+  Backbone.Model.prototype.addJSON = function(data) {
+      var value;
+      for (var key in data) {
+          value = data[key];
+          if (this.get(key) instanceof Backbone.Model || this.get(key) instanceof Backbone.Collection) {
+              this.get(key).addJSON(value)
+          } else {
+              this.set(key, value, {silent: true});
+          }
+      }
+      return this;
+  }
+
+  Backbone.Collection.prototype.addJSON = function(data) {
+      var self = this, obj, type;
+      Array.isArray(data) && data.forEach(function(item) {
+          obj = new self.model({}, {collection: self});
+          obj.addJSON(item);
+          self.add(obj);
+      });
+      return this;
+  }
 
   if (App.Data.devMode) {
     // alias for toJSON function

@@ -245,7 +245,11 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         loadCustomer: function() {
             var data = getData('customer');
             data = data instanceof Object ? data : {};
+            var rewardCards = data.rewardCards;
+            delete data.rewardCards;
             this.set(data);
+            var rewardCardsCol = new App.Collections.RewardCards;
+            this.set('rewardCards', rewardCardsCol.addJSON(rewardCards));
             var shipping_services = this.get("shipping_services");
             if(Array.isArray(shipping_services) && shipping_services.length && this.get("shipping_selected") > -1) {
                 this.set("load_shipping_status", "restoring", {silent: true});
