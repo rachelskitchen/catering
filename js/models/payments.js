@@ -430,7 +430,7 @@ define(['backbone'], function(Backbone) {
                     if (payment) {
                         payment.setSelectedAsPrimary();
 
-                        _.each(self.models, function(model) {
+                        self.each(function(model) {
                             model.setOriginalAttributes();
                         });
                     }
