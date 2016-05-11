@@ -289,17 +289,16 @@ define(['payments', 'js/utest/data/Payments', 'js/utest/data/Timetable'], functi
                         cardInfo: {}
                     }
                 };
-                selectedToken = new Backbone.Model({id: token_id, vault_id: vault_id});
+                collection.add([
+                    new App.Models.PaymentToken({ id: token_id, vault_id: vault_id, 'selected': true }),
+                    new App.Models.PaymentToken({ id: 56, vault_id: 78, 'selected': false })
+                ]);
                 ajaxReq = Backbone.$.Deferred();
                 collection.paymentProcessor = "testPP";
                 collection.ignoreSelectedToken = false;
-
-                spyOn(collection, 'getSelectedPayment').and.callFake(function() {
-                    return selectedToken;
-                });
-
                 spyOn(Backbone.$, 'ajax').and.callFake(function() {
                     ajaxParams = arguments[0];
+                    ajaxParams.success();
                     return ajaxReq;
                 });
             });
