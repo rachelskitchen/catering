@@ -37,7 +37,8 @@ body,
 .tab:hover,
 .categories .checked,
 .categories label:hover,
-.payment-method.primary-button {
+.payment-method.primary-button,
+.payment-method:hover {
   color: #33b5e6;
 }
 .tab.active::after {
@@ -133,6 +134,10 @@ body,
 .popup-header-bg[class] {
   background: #fafafa;
 }
+/* [card_background] stanford card plan background, card balance background */
+.stanford-plans-box .stanford-plan {
+  background: rgba(209, 229, 237, 0.2);
+}
 /* [input_border] input border color */
 .input-border[class],
 .textarea,
@@ -159,6 +164,18 @@ body,
 .select-wrapper,
 .select-wrapper select {
   color: #373b40;
+}
+/* [input_highlighted] input text color */
+.textarea:focus,
+.input:focus,
+.select-wrapper:focus,
+.select-wrapper select:focus,
+.stanford-plans-box .stanford-plan.active,
+.stanford-plans-box .stanford-plan:hover,
+.payment-method.primary-button,
+.payment-method:hover {
+  box-shadow: 0 0 4px 0 #33b5e6;
+  border-color: #33b5e6;
 }
 /* images */
 .categories label.checked::before {

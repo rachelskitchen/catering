@@ -89,7 +89,7 @@
 #profile-panel .label {
     display: block;
     font-size: 12px;
-    padding: 0 14px 4px;
+    padding: 0 14px;
 }
 
 #profile-panel .input {
