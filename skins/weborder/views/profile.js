@@ -23,6 +23,25 @@
 define(["profile_view"], function(profile_view) {
     'use strict';
 
+    var computedsSelection = {
+        deps: ['$collection'],
+        get: function(collection) {
+            var selected = collection.findWhere({selected: true});
+            return selected ? selected.id : -1;
+        },
+        set: function(value) {
+            var model = this.collection.get(value),
+                selected = this.collection.findWhere({selected: true});
+            if (model) {
+                model.set('selected', true);
+                this.model.set('selected', true);
+            } else if (selected) {
+                selected.set('selected', false);
+                this.model.set('selected', false);
+            }
+        }
+    };
+
     var ProfilePaymentsSelectionView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'payments_selection',
@@ -49,20 +68,51 @@ define(["profile_view"], function(profile_view) {
                     return data;
                 }
             },
+            selection: computedsSelection
+        }
+    });
+
+    var ProfileGiftCardsSelectionView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'gift_cards_selection',
+        bindings: {
+            '.gift-cards-list': 'value: selection, options: options'
+        },
+        computeds: {
+            options: {
+                deps: ['$collection', '_lp_CHECKOUT_ENTER_NEW_CARD', '_lp_BALANCE', '_system_settings_currency_symbol'],
+                get: function(collection, label_new_card, label_balance, currency) {
+                    var data = [];
+                    collection.each(function(model) {
+                        model = model.toJSON();
+                        model.remainingBalance > 0 && data.push({
+                            label: model.cardNumber + ' - ' + label_balance + ': ' + currency + round_monetary_currency(model.remainingBalance),
+                            value: model.cardNumber
+                        });
+                    });
+                    data.push({
+                        label: label_new_card,
+                        value: -1
+                    });
+                    return data;
+                }
+            },
             selection: {
                 deps: ['$collection'],
                 get: function(collection) {
                     var selected = collection.findWhere({selected: true});
-                    return selected ? selected.id : -1;
+                    return selected ? selected.get('cardNumber') : -1;
                 },
                 set: function(value) {
-                    var model = this.collection.get(value),
+                    var model = this.collection.findWhere({cardNumber: value}),
                         selected = this.collection.findWhere({selected: true});
                     if (model) {
                         model.set('selected', true);
                         this.model.set('selected', true);
                     } else if (selected) {
                         selected.set('selected', false);
+                        this.model.set('selected', false);
+                    } else {
                         this.model.set('selected', false);
                     }
                 }
@@ -77,5 +127,6 @@ define(["profile_view"], function(profile_view) {
 
     return new (require('factory'))(profile_view.initViews.bind(profile_view), function() {
         App.Views.ProfileView.ProfilePaymentsSelectionView = ProfilePaymentsSelectionView;
+        App.Views.ProfileView.ProfileGiftCardsSelectionView = ProfileGiftCardsSelectionView;
     });
 });

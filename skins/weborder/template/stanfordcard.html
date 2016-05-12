@@ -1,30 +1,29 @@
 <script type="text/template" id="stanfordcard_main-template">
-    <div class="card_title"> <%= _lp.STANFORDCARD_TITLE %> </div>
-    <div>
-        <label for="stanfordCardNumber"> <span class="bold required"><%= _lp.GIFTCARD_NUMBER %>:</span> </label>
-        <div class="input_beauty">
-            <input type="text" id="stanfordCardNumber" class="number-input">
+    <div class="item">
+        <div class="label required optional-text"><%= _lp.GIFTCARD_NUMBER %></div>
+        <div class="ctrl-box">
+            <input type="text" id="stanfordCardNumber" class="number-input input ctrl-input size2">
+            <label class="ctrl-wrapper cancel">
+                <input type="button" class="ctrl cancel-input hide">
+            </label>
         </div>
-        <span class="cancel-input"></span>
+
     </div>
-    <div class="captcha_input_line">
-        <label for="stanfordCaptchaValue"> <span class="bold required"><%= _lp.GIFTCARD_CAPTCHA %>:</span> </label>
-        <div class="input_beauty">
-            <input type="text" autocomplete="off" id="stanfordCaptchaValue" name="captcha-input" class="captcha-input">
-        </div>
+    <div class="item captcha_input_line">
+        <div class="label required optional-text"><%= _lp.GIFTCARD_CAPTCHA %></div>
+        <input type="text" autocomplete="off" name="captcha-input" class="captcha-input input size3">
     </div>
-    <div class="captcha_container">
-        <div class="captcha_wrap">
-            <img class="captcha" width="100%" height="100%">
-            <div class="captcha-spinner"></div>
-        </div>
-        <div class="btn btn-reload" tabindex="0"> <span> <%= _lp.GIFTCARD_RELOAD %> </span> </div>
+    <div class="captcha_wrap captcha_container item">
+        <img class="captcha img" alt="captcha">
+        <div class="captcha-spinner"></div>
     </div>
+    <span class="btn-reload link primary-text" tabindex="0"><%= _lp.GIFTCARD_RELOAD %></span>
+    <div class="btn-submit btn item text-center" tabindex="0"><%= _lp.STANFORD_VERIFY %></div>
 </script>
 
 <script type="text/template" id="stanfordcard_plans-template">
     <div class="card_title"><%= _lp.STANFORD_PLANS %></div>
-    <ul class="list"></ul>
+    <ul class="list primary-border"></ul>
 </script>
 
 <script type="text/template" id="stanfordcard_plan-template">
@@ -33,6 +32,11 @@
         <span class="name"></span>
         <span class="row-balance">(<%= _lp.STANFORD_BALANCE %> <span class="balance"></span>)</span>
     </span>
+</script>
+
+<script type="text/template" id="stanfordcard_payment_plan-template">
+    <span class="name optional-text"></span>
+    <span class="balance"></span>
 </script>
 
 <script type="text/template" id="stanfordcard_student-template">

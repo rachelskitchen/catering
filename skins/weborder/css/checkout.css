@@ -20,7 +20,7 @@
 }
 
 .checkout-order-details .label {
-    padding: 15px 0 5px 14px;
+    padding: 15px 0 1px 14px;
     font-size: 13px;
 }
 
@@ -52,6 +52,10 @@
 
 .checkout-order-details .notes {
     width: 466px;
+}
+
+.checkout-order-details .payment-methods-label[class] {
+    padding-bottom: 5px;
 }
 
 .payment-method {
@@ -89,7 +93,7 @@
     display: block;
     width: 30px;
     font-size: 16px;
-    padding: 9px 0;
+    padding: 13px 0;
     position: absolute;
     top: 0;
     left: 0;
@@ -102,7 +106,7 @@
 
 .checkout-order-details .cancel::before {
     display: block;
-    padding: 8px 11px 8px 4px;
+    padding: 12px 7px 12px 4px;
     font-size: 21px;
 }
 
@@ -125,4 +129,27 @@
     padding: 10px 15px 10px 0;
     margin-left: -5px;
     font-size: 13px;
+}
+
+.checkout-order-details .captcha_wrap {
+    width: 88px;
+    height: 38px;
+    padding-top: 33px;
+    font-size: 10px;
+}
+
+.checkout-order-details .img {
+    width: 100%;
+    height: 100%;
+}
+
+.checkout-order-details .captcha-spinner {
+    top: 50%;
+}
+
+.checkout-order-details .btn-reload {
+    display: inline-block;
+    padding-top: 35px;
+    font-size: 13px;
+    vertical-align: middle;
 }

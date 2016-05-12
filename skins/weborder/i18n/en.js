@@ -179,6 +179,7 @@
         'STANFORD_RELOAD_INFO2': "Please specify the plan you'd like to add value to",
         'STANFORD_CARD_NUMBER': 'Stanford Card #',
         'STANFORD_CARD_CHOOSE_PLAN': 'Stanford Card: Choose Plan',
+        'STANFORD_VERIFY': 'Verify',
         'COMBO_CUSTOMIZE': 'Customize',
         'PRODUCT_SETS_SELECT_1': 'Please choose your "',
         'PRODUCT_SETS_SELECT_2': '" options',

@@ -580,6 +580,8 @@ define(["main_router"], function(main_router) {
                         paymentMethods: App.Data.paymentMethods,
                         enableRewardCard: settings.enable_reward_cards_collecting,
                         card: App.Data.card,
+                        giftcard: App.Data.giftcard,
+                        stanfordcard: App.Data.stanfordCard,
                         promises: this.getProfilePaymentsPromises.bind(this)
                     }
                 });

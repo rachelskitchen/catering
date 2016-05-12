@@ -41,12 +41,16 @@ define(["checkout_view"], function(checkout_view) {
         bindings: {
             '.notes': 'value: checkout_notes, events: ["input"], toggle: _system_settings_order_notes_allow',
             '.cc-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false))}',
-            '.choose-cc-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), not(length($tokens)))}'
+            '.choose-cc-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), not(length($tokens)))}',
+            '.gift-card-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "gift_card")), select(length($giftCards), giftCard_selected, false))}',
+            '.choose-gift-card-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "gift_card")), not(length($giftCards)))}',
+            '.stanford-card-box': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"))}',
+            '.stanford-plans-box': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"))}'
         },
         initialize: function() {
             this.tokens = new Backbone.Collection();
             this.giftCards = new Backbone.Collection();
-            this.token = new Backbone.Model({selected: false});
+            this.token = new Backbone.Model({selected: false, paymentsExist: false});
             this.giftCard = new Backbone.Model({selected: false});
             _.extend(this.bindingSources, {
                 token: this.token,           // indicates any token is selected or not
@@ -65,7 +69,8 @@ define(["checkout_view"], function(checkout_view) {
             var orderDetails = this.$('.order-details'),
                 paymentInfo = this.$('.payment-info'),
                 order_type, pickup, main, paymentMethods, tips, discount, rewards,
-                chooseCreditCard, creditCard;
+                chooseCreditCard, creditCard, chooseGiftCard, giftCard,
+                stanfordCard, stanfordPlans;
 
             order_type = App.Views.GeneratorView.create('Checkout', {
                 mod: 'OrderType',
@@ -120,11 +125,54 @@ define(["checkout_view"], function(checkout_view) {
                 creditCard = App.Views.GeneratorView.create('Card', {
                     mod: 'Main',
                     model: this.options.card,
+                    token: this.token,
                     className: 'cc-box item'
                 });
 
                 this.subViews.push(creditCard);
                 paymentInfo.append(creditCard.el);
+            }
+
+            if (this.options.paymentMethods.get('gift_card')) {
+                chooseGiftCard = App.Views.GeneratorView.create('Profile', {
+                    mod: 'GiftCardsSelection',
+                    collection: this.giftCards,
+                    model: this.giftCard,
+                    className: 'choose-gift-card-box item'
+                });
+
+                this.subViews.push(chooseGiftCard);
+                paymentInfo.append(chooseGiftCard.el);
+
+                giftCard = App.Views.GeneratorView.create('GiftCard', {
+                    mod: 'Main',
+                    model: this.options.giftcard,
+                    className: 'gift-card-box item'
+                });
+
+                this.subViews.push(giftCard);
+                paymentInfo.append(giftCard.el);
+            }
+
+            if (this.options.paymentMethods.get('stanford')) {
+                stanfordCard = App.Views.GeneratorView.create('StanfordCard', {
+                    mod: 'Main',
+                    model: this.options.stanfordcard,
+                    myorder: this.collection,
+                    className: 'stanford-card-box'
+                });
+
+                stanfordPlans = App.Views.GeneratorView.create('StanfordCard', {
+                    mod: 'PaymentPlans',
+                    model: this.options.stanfordcard,
+                    collection: this.options.stanfordcard.get('plans'),
+                    className: 'stanford-plans-box'
+                });
+
+                this.subViews.push(stanfordCard);
+                this.subViews.push(stanfordPlans);
+                paymentInfo.append(stanfordCard.el);
+                paymentInfo.append(stanfordPlans.el);
             }
 
             if(this.options.acceptTips) {
@@ -165,20 +213,32 @@ define(["checkout_view"], function(checkout_view) {
         setProfileData: function() {
             var promises = this.options.promises(),
                 customer = this.options.customer,
-                tokens = this.tokens,
-                giftCards = this.giftCards;
+                self = this;
 
             if (promises.length) {
                 Backbone.$.when.apply(Backbone.$, promises).then(function() {
                     if (customer.payments) {
                         customer.payments.selectFirstItem();
-                        tokens.reset(customer.payments.models);
+                        self.token.set({
+                            selected: customer.payments.length > 0,
+                            paymentsExist: true
+                        });
+                        self.tokens.reset(customer.payments.models);
                     }
-                    customer.giftCards && giftCards.reset(customer.giftCards.toJSON());
+                    if (customer.giftCards) {
+                        customer.giftCards.selectFirstItem();
+                        self.giftCard.set('selected', true);
+                        self.giftCards.reset(customer.giftCards.models);
+                    }
                 });
             }
         },
         removeProfileData: function() {
+            this.token.set({
+                paymentsExist: false,
+                selected: false
+            });
+            this.giftCard.set('selected', false);
             this.tokens.reset();
             this.giftCards.reset();
         }

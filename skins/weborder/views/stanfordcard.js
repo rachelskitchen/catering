@@ -23,33 +23,21 @@
 define(["factory", "stanfordcard_view"], function(factory, stanfordcard_view) {
     'use strict';
 
-    var CoreStanfordCardMainView = App.Views.CoreStanfordCardView.CoreStanfordCardMainView,
-        StanfordCardPopupView = CoreStanfordCardMainView.extend({
-        name: 'stanfordcard',
-        mod: 'popup',
-        bindings: _.extend({}, CoreStanfordCardMainView.prototype.bindings, {
-            '.btn-submit': 'classes: {disabled: any(not(number), not(captchaKey), not(captchaValue))}'
-        }),
-        events: _.extend({}, CoreStanfordCardMainView.prototype.events, {
-            'click .btn-cancel': 'cancel',
-            'keydown .btn-cancel': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.cancel();
-                }
-            },
-            'click .btn-submit': 'submit',
-            'keydown .btn-submit': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.submit();
-                }
-            }
-        }),
+    var CoreStanfordCardMainView = App.Views.CoreStanfordCardView.CoreStanfordCardMainView.extend({
+        bindings: {
+            '.btn-submit': 'classes: {disabled: any(not(number), not(captchaKey), not(captchaValue)), hide: validated}',
+            '.btn-reload': 'classes: {hide: validated}',
+            '.ctrl-wrapper': 'toggle: validated'
+        },
+        events: {
+            'click .btn-submit': 'submit'
+        },
+        onEnterListeners: {
+            '.btn-submit': 'submit'
+        },
         initialize: function() {
             this.listenTo(this.model, 'onStanfordCardError', this.showErrorMsg, this);
-            CoreStanfordCardMainView.prototype.initialize.apply(this, arguments);
-        },
-        cancel: function() {
-            this.model.trigger('onCancelStudentVerification');
+            App.Views.CoreStanfordCardView.CoreStanfordCardMainView.prototype.initialize.apply(this, arguments);
         },
         submit: function() {
             var myorder = this.options.myorder;
@@ -58,6 +46,20 @@ define(["factory", "stanfordcard_view"], function(factory, stanfordcard_view) {
         },
         showErrorMsg: function(msg) {
             App.Data.errors.alert(msg);
+        }
+    });
+
+    var StanfordCardPopupView = CoreStanfordCardMainView.extend({
+        name: 'stanfordcard',
+        mod: 'popup',
+        events: {
+            'click .btn-cancel': 'cancel'
+        },
+        onEnterListeners: {
+            '.btn-cancel': 'cancel'
+        },
+        cancel: function() {
+            this.model.trigger('onCancelStudentVerification');
         }
     });
 
@@ -71,9 +73,21 @@ define(["factory", "stanfordcard_view"], function(factory, stanfordcard_view) {
         itemView: StanfordCardPlanView
     });
 
+    var StanfordCardPaymentPlanView = App.Views.CoreStanfordCardView.CoreStanfordCardPlanView.extend({
+        name: 'stanfordcard',
+        mod: 'payment_plan',
+        className: 'stanford-plan primary-border'
+    });
+
+    var StanfordCardPaymentPlansView = App.Views.CoreStanfordCardView.CoreStanfordCardPlansView.extend({
+        itemView: StanfordCardPaymentPlanView
+    });
+
     return new (require('factory'))(stanfordcard_view.initViews.bind(stanfordcard_view), function() {
+        App.Views.StanfordCardView.StanfordCardMainView = CoreStanfordCardMainView;
         App.Views.StanfordCardView.StanfordCardPopupView = StanfordCardPopupView;
         App.Views.StanfordCardView.StanfordCardPlanView = StanfordCardPlanView;
         App.Views.StanfordCardView.StanfordCardPlansView = StanfordCardPlansView;
+        App.Views.StanfordCardView.StanfordCardPaymentPlansView = StanfordCardPaymentPlansView;
     });
 });
