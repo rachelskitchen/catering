@@ -445,6 +445,8 @@ define(["factory"], function() {
             this.options.collectionView.options.removeToken(this.model.get('id'));
         },
         setDefaultCard: function(e) {
+            e.stopPropagation();
+
             var element = e.target,
                 checked = !element.checked;
 
