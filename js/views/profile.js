@@ -439,22 +439,17 @@ define(["factory"], function() {
         },
         events: {
             'click .remove-btn': 'removeToken',
-            'click .card-default': 'setDefaultCard'
+            'change .card-default': 'setDefaultCard'
         },
         removeToken: function() {
             this.options.collectionView.options.removeToken(this.model.get('id'));
         },
         setDefaultCard: function(e) {
-            e.stopPropagation();
-
-            var element = e.target,
-                checked = !element.checked;
-
-            if (checked) {
-                element.checked = true;
+            if (e.target.checked) {
+                this.model.collection.trigger('change:is_primary');
             }
             else {
-                this.model.collection.trigger('change:is_primary');
+                this.model.set('is_primary', true);
             }
         }
     });
