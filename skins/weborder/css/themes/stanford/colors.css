@@ -38,7 +38,8 @@ body,
 .categories .checked,
 .categories label:hover,
 .payment-method.primary-button,
-.payment-method:hover {
+.payment-method:hover,
+.payment-method:focus {
   color: #33b5e6;
 }
 .tab.active::after {
@@ -173,7 +174,8 @@ body,
 .stanford-plans-box .stanford-plan.active,
 .stanford-plans-box .stanford-plan:hover,
 .payment-method.primary-button,
-.payment-method:hover {
+.payment-method:hover,
+.payment-method:focus {
   box-shadow: 0 0 4px 0 #33b5e6;
   border-color: #33b5e6;
 }

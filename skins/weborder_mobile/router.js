@@ -142,7 +142,7 @@ define(["main_router"], function(main_router) {
         paymentsHandlers: function() {
             var mainModel = App.Data.mainModel,
                 myorder = App.Data.myorder,
-                paymentCanceled = false
+                paymentCanceled = false;
 
             this.listenTo(myorder, 'cancelPayment', function() {
                 paymentCanceled = true;

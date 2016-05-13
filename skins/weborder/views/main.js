@@ -174,6 +174,7 @@ define(["done_view", "generator"], function(done_view) {
         cart_defaults: function() {
             return {
                 collection: this.options.cartCollection,
+                model: this.options.paymentMethods,
                 className: 'cart',
                 modelName: 'Cart'
             };

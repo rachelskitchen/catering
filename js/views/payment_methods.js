@@ -29,6 +29,9 @@ define(["factory"], function(factory) {
         events: {
             'click .payment': 'selectPayment'
         },
+        onEnterListeners: {
+            '.payment': 'selectPayment'
+        },
         bindings: {
             '.cash': 'text: cash',
             '[data-payment="cash"]': 'classes: {"primary-button": equal(selected, "cash"), "regular-button": not(equal(selected, "cash"))}',

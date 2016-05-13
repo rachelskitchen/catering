@@ -84,17 +84,16 @@ define(["main_router"], function(main_router) {
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
                     model: mainModel,
                     headerModel: App.Data.header,
-                    cartCollection: App.Data.myorder
+                    cartCollection: App.Data.myorder,
+                    paymentMethods: App.Data.paymentMethods
                 });
                 ests.getModelForView().set('clientName', mainModel.get('clientName'));
 
                 // Once the route is initialized need to set profile panel
                 this.listenToOnce(this, 'initialized', this.initProfilePanel.bind(this));
 
-                // init Stanford Card model if it's turned on
-                if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
-                    App.Data.stanfordCard = new App.Models.StanfordCard();
-                }
+                // init payments handlers
+                !App.Data.settings.get('isMaintenance') && this.paymentsHandlers();
 
                 // listen to navigation control
                 this.navigationControl();
@@ -102,24 +101,113 @@ define(["main_router"], function(main_router) {
                 // run history tracking
                 this.triggerInitializedEvent();
             });
-//retail, weborder
-            this.listenTo(App.Data.myorder, "paymentInProcess", function() {
-                App.Data.mainModel.trigger('loadStarted');
-            }, this);
-//retail, weborder
-            this.listenTo(App.Data.myorder, "paymentInProcessValid", function() {
-                App.Data.mainModel.trigger('loadCompleted');
-            }, this);
-//retail, weborder
-            this.listenTo(App.Data.myorder, "paymentFailed cancelPayment", function(message) {
-                App.Data.mainModel.trigger('loadCompleted');
-                message && App.Data.errors.alert(message); // user notification
-            }, this);
 
             var checkout = App.Data.myorder.checkout;
                 checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
             App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
+        },
+        paymentsHandlers: function() {
+            var mainModel = App.Data.mainModel,
+                myorder = App.Data.myorder,
+                paymentCanceled = false;
+
+            this.listenTo(myorder, 'cancelPayment', function() {
+                paymentCanceled = true;
+            });
+
+            this.listenTo(myorder, "paymentFailed", function(message) {
+                mainModel.trigger('loadCompleted');
+                message && App.Data.errors.alert(message); // user notification
+            }, this);
+
+            // invokes when user chooses the 'Credit Card' payment processor on the #payments screen
+            this.listenTo(App.Data.paymentMethods, 'payWithCreditCard', function() {
+                var customer = App.Data.customer,
+                    paymentProcessor = App.Data.settings.get_payment_process(),
+                    doPayWithToken = customer.doPayWithToken();
+                myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                    card_billing_address: PaymentProcessor.isBillingAddressCard() && !doPayWithToken,
+                    card: doPayWithToken ? false : paymentProcessor.credit_card_dialog
+                }, sendRequest.bind(window, PAYMENT_TYPE.CREDIT));
+            }, this);
+
+            /* Gift Card */
+            this.initGiftCard();
+
+            // invokes when user chooses the 'Gift Card' payment processor on the #payments screen
+            this.listenTo(App.Data.payments, 'payWithGiftCard', function() {
+                var customer = App.Data.customer,
+                    doPayWithGiftCard = customer.doPayWithGiftCard();
+                myorder.check_order({
+                    giftcard: !doPayWithGiftCard,
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true
+                }, function() {
+                    if (customer.isAuthorized() && !doPayWithGiftCard) {
+                        customer.linkGiftCard(App.Data.giftcard).done(function(data) {
+                            if (_.isObject(data) && data.status == 'OK') {
+                                customer.giftCards.ignoreSelected = false;
+                                sendRequest(PAYMENT_TYPE.GIFT);
+                            }
+                        });
+                    } else {
+                        sendRequest(PAYMENT_TYPE.GIFT);
+                    }
+                });
+            }, this);
+
+            /* Cash Card */
+            // invokes when user chooses the 'Cash' payment processor on the #payments screen
+            this.listenTo(App.Data.payments, 'payWithCash', function() {
+                myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                }, sendRequest.bind(window, PAYMENT_TYPE.NO_PAYMENT));
+            }, this);
+
+            /* PayPal */
+            // invokes when user chooses the 'PayPal' payment processor on the #payments screen
+            this.listenTo(App.Data.payments, 'payWithPayPal', function() {
+                App.Data.myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                }, sendRequest.bind(window, PAYMENT_TYPE.PAYPAL));
+            }, this);
+
+            /* Stanford Card */
+            if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
+                // init Stanford Card model if it's turned on
+                App.Data.stanfordCard = new App.Models.StanfordCard();
+
+                // invokes when user chooses the 'Stanford Card' payment processor
+                this.listenTo(App.Data.payments, 'payWithStanfordCard', function() {
+                    myorder.check_order({
+                        order: true,
+                        tip: true,
+                        customer: true,
+                        checkout: true,
+                    }, sendRequest.bind(window, PAYMENT_TYPE.STANFORD));
+                }, this);
+            }
+
+            function sendRequest(paymentType) {
+                saveAllData();
+                mainModel.trigger('loadStarted');
+                myorder.create_order_and_pay(paymentType);
+                paymentCanceled && mainModel.trigger('loadCompleted');
+                paymentCanceled = false;
+            }
         },
         /**
          * Navigate on #confirm when payment is completed.
@@ -550,8 +638,6 @@ define(["main_router"], function(main_router) {
                     App.Data.card = new App.Models.Card;
                 }
 
-                this.initGiftCard();
-
                 var settings = App.Settings;
 
                 App.Data.header.set('tab_index', null);
@@ -582,7 +668,8 @@ define(["main_router"], function(main_router) {
                         card: App.Data.card,
                         giftcard: App.Data.giftcard,
                         stanfordcard: App.Data.stanfordCard,
-                        promises: this.getProfilePaymentsPromises.bind(this)
+                        promises: this.getProfilePaymentsPromises.bind(this),
+                        needShowBillingAddess: PaymentProcessor.isBillingAddressCard()
                     }
                 });
 

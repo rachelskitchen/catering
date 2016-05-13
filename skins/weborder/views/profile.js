@@ -38,6 +38,8 @@ define(["profile_view"], function(profile_view) {
             } else if (selected) {
                 selected.set('selected', false);
                 this.model.set('selected', false);
+            } else {
+                this.model.set('selected', false);
             }
         }
     };
@@ -97,26 +99,7 @@ define(["profile_view"], function(profile_view) {
                     return data;
                 }
             },
-            selection: {
-                deps: ['$collection'],
-                get: function(collection) {
-                    var selected = collection.findWhere({selected: true});
-                    return selected ? selected.get('cardNumber') : -1;
-                },
-                set: function(value) {
-                    var model = this.collection.findWhere({cardNumber: value}),
-                        selected = this.collection.findWhere({selected: true});
-                    if (model) {
-                        model.set('selected', true);
-                        this.model.set('selected', true);
-                    } else if (selected) {
-                        selected.set('selected', false);
-                        this.model.set('selected', false);
-                    } else {
-                        this.model.set('selected', false);
-                    }
-                }
-            }
+            selection: computedsSelection
         }
     });
 
