@@ -193,6 +193,11 @@
         'CHECKOUT_PAYMENT_METHOD_STANFORD_CARD': 'Stanford Card',
         'CHECKOUT_CHOOSE_ADDRESS': 'Choose Address',
         'CHECKOUT_CHOOSE_CARD': 'Choose Card',
-        'CHECKOUT_ENTER_NEW_CARD': 'Enter New Card'
+        'CHECKOUT_ENTER_NEW_CARD': 'Enter New Card',
+        'CARD_PROFILE_ADDRESS': 'Profile Address',
+        'CARD_DELIVERY_ADDRESS': 'Delivery Address',
+        'CARD_SHIPPING_ADDRESS': 'Shipping Address',
+        'CARD_CATERING_ADDRESS': 'Catering Address',
+        'CARD_NEW_ADDRESS': 'Enter New Address'
     } // end of locale
 }); // end of module

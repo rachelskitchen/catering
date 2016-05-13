@@ -1,20 +1,20 @@
 <script type="text/template" id="checkout_main-template">
     <div class="personal">
-        <div class="item size1">
+        <div class="item">
             <div class="label required optional-text"><%= _lp.PROFILE_FIRST_NAME %></div>
-            <input type="text" class="firstName input ios-safari-caret">
+            <input type="text" class="firstName input ios-safari-caret size1">
         </div>
-        <div class="item size1">
+        <div class="item">
             <div class="label required optional-text"><%= _lp.PROFILE_LAST_NAME %></div>
-            <input type="text" class="lastName input ios-safari-caret">
+            <input type="text" class="lastName input ios-safari-caret size1">
         </div>
-        <div class="item size1">
+        <div class="item">
             <div class="label required optional-text"><%= _lp.PROFILE_PHONE %></div>
-            <input type="tel" id="phone" class="phone input ios-safari-caret">
+            <input type="tel" id="phone" class="phone input ios-safari-caret size1">
         </div>
-        <div class="item size2">
+        <div class="item">
             <div class="label required optional-text"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
-            <input type="email" class="email input ios-safari-caret" autocorrect="off" autocapitalize="none">
+            <input type="email" class="email input ios-safari-caret size2" autocorrect="off" autocapitalize="none">
         </div>
     </div>
 
@@ -46,23 +46,23 @@
     <div class="address-selection item fl-left"></div>
 
     <div class="address-edit fl-left">
-        <div class="item size2">
+        <div class="item">
             <div class="label required optional-text"><%= _lp.CHECKOUT_ADDRESS %></div>
-            <input type="text" name="street_1" class="input ios-safari-caret">
+            <input type="text" name="street_1" class="input ios-safari-caret size2">
         </div>
-        <div class="item size3">
+        <div class="item">
             <div class="label optional-text"><%= _lp.CHECKOUT_APT %></div>
-            <input type="text" name="street_2" class="input ios-safari-caret">
+            <input type="text" name="street_2" class="input ios-safari-caret size3">
         </div>
-        <div class="item size1">
+        <div class="item">
             <div class="label required optional-text"><%= _lp.PROFILE_CITY %></div>
-            <input type="text" name="city" class="input ios-safari-caret">
+            <input type="text" name="city" class="input ios-safari-caret size1">
         </div>
         <% if(isShippingServices) { %>
-        <div class="item size2">
+        <div class="item">
             <div class="label required optional-text"><%= _lp.PROFILE_COUNTRY %>:</div>
-            <div class="select-wrapper size2">
-                <select class="country">
+            <div class="select-wrapper">
+                <select class="country size2">
                 <% for (var i in countries) { %>
                     <option value="<%= i %>" <% if(i.toLowerCase() == country.toLowerCase()) { %>selected="selected"<% } %>><%= countries[i] %></option>
                 <% } %>
@@ -71,7 +71,7 @@
         </div>
         <% } %>
         <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
-        <div class="item ">
+        <div class="item">
             <div class="label required optional-text"><%= _lp.PROFILE_STATE %></div>
             <div class="select-wrapper">
                 <select class="states" id="states">
@@ -83,14 +83,14 @@
         </div>
         <% } %>
         <% if(typeof province == 'string') { %>
-        <div class="item size1">
+        <div class="item">
             <div class="label required optional-text"><%= _lp.PROFILE_PROVINCE %></div>
-            <input type="text" name="province" class="input ios-safari-caret">
+            <input type="text" name="province" class="input ios-safari-caret size1">
         </div>
         <% } %>
-        <div class="item size4">
+        <div class="item">
             <div class="label required optional-text"><% if(country == 'US') {print(_lp.PROFILE_ZIP_CODE);} else {print(_lp.PROFILE_POSTAL_CODE);} %></div>
-            <input type="text" name="zipcode" class="input ios-safari-caret">
+            <input type="text" name="zipcode" class="input ios-safari-caret size4">
         </div>
     </div>
 
@@ -127,52 +127,6 @@
             <input type="text" name="<%= name %>" class="input ios-safari-caret size1">
         <% } %>
     </div>
-</script>
-
-<script type="text/template" id="checkout_pay-template">
-    <div id='pay_popup'>
-        <h2> <%= _lp.CHECKOUT_PAY_QUESTION %> </h2>
-        <div class='btn_wrapper'>
-        </div>
-    </div>
-</script>
-
-<script type="text/template" id="checkout_pay_button-template">
-    <% if (payment_count === 1 && flag) {%>
-        <% if(paypal) { %>
-            <div class="btn paypal" tabindex="0"> <%= _lp.CHECKOUT_PAYPAL %> </div>
-        <% } %>
-        <% if(credit_card_button) { %>
-            <div class="btn credit-card" tabindex="0"> <span> <%= _lp.CHECKOUT_PAY_CREDIT_CARD %> </span> </div>
-        <% } %>
-        <% if(cash) { %>
-            <div class="btn cash" tabindex="0"> <span> </span> </div>
-        <% } %>
-        <% if(gift_card) { %>
-            <div class="btn gift-card" tabindex="0"> <span> <%= _lp.CHECKOUT_PAY_GIFT_CARD %> </span> </div>
-        <% } %>
-        <% if(stanford) { %>
-            <div class="btn stanford-card" tabindex="0"> <span> <%= _lp.CHECKOUT_PAY_STANFORD_CARD %> </span> </div>
-        <% } %>
-    <% } else if (flag) { %>
-        <div class="btn pay place-order unselectable" tabindex="0"> <span> <%= _lp.CHECKOUT_PAY %> </span> </div>
-    <% } else { %>
-        <% if(paypal) { %>
-        <div class='btn paypal' tabindex="0"></div>
-        <% } %>
-        <% if(credit_card_button) { %>
-            <div class="btn credit-card" tabindex="0"> <span> <%= _lp.CHECKOUT_CREDIT_CARD %> </span> </div>
-        <% } %>
-        <% if(gift_card) { %>
-            <div class="btn gift-card" tabindex="0"> <span> <%= _lp.CHECKOUT_GIFT_CARD %> </span> </div>
-        <% } %>
-        <% if(cash) { %>
-            <div class="btn cash" tabindex="0"> <span> </span> </div>
-        <% } %>
-        <% if(stanford) { %>
-            <div class="btn stanford-card" tabindex="0"> <span> <%= _lp.CHECKOUT_STANFORD_CARD %> </span> </div>
-        <% } %>
-    <% } %>
 </script>
 
 <script type="text/template" id="checkout_page-template">

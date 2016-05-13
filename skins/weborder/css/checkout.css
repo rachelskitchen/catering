@@ -30,24 +30,24 @@
     vertical-align: middle;
 }
 
-.checkout-order-details .size1 {
+.checkout-order-details .item .select-wrapper {
+    vertical-align: middle;
+}
+
+.checkout-order-details .size1[class] {
     width: 144px;
 }
 
-.checkout-order-details .size2 {
+.checkout-order-details .size2[class] {
     width: 200px;
 }
 
-.checkout-order-details .size3 {
+.checkout-order-details .size3[class] {
     width: 87px;
 }
 
-.checkout-order-details .size4 {
+.checkout-order-details .size4[class] {
     width: 100px;
-}
-
-.checkout-order-details select.country {
-    width: 100% !important;
 }
 
 .checkout-order-details .notes {

@@ -115,15 +115,11 @@ define(["products_view"], function() {
     var CartCheckoutView = CartCoreView.extend({
         name: 'cart',
         mod: 'checkout',
+        events: {
+            '.pay-button': 'pay'
+        },
         render: function() {
             App.Views.CartView.CartCoreView.prototype.render.apply(this, arguments);
-            this.subViews.push(App.Views.GeneratorView.create('Checkout', {
-                el: this.$('.pay_button'),
-                mod: 'PayButton',
-                collection: this.collection,
-                checkout: this.collection.checkout,
-                flag: 'checkout'
-            }));
 
             this.subViews.push(App.Views.GeneratorView.create('Total', {
                 el: this.$('.total_block'),
@@ -132,6 +128,9 @@ define(["products_view"], function() {
                 collection: this.collection,
                 checkout: this.collection.checkout
             }));
+        },
+        pay: function() {
+            this.model.onPay();
         }
     });
 

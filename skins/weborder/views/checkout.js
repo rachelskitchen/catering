@@ -45,7 +45,8 @@ define(["checkout_view"], function(checkout_view) {
             '.gift-card-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "gift_card")), select(length($giftCards), giftCard_selected, false))}',
             '.choose-gift-card-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "gift_card")), not(length($giftCards)))}',
             '.stanford-card-box': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"))}',
-            '.stanford-plans-box': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"))}'
+            '.stanford-plans-box': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"))}',
+            '.billing-address-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false))}'
         },
         initialize: function() {
             this.tokens = new Backbone.Collection();
@@ -70,7 +71,7 @@ define(["checkout_view"], function(checkout_view) {
                 paymentInfo = this.$('.payment-info'),
                 order_type, pickup, main, paymentMethods, tips, discount, rewards,
                 chooseCreditCard, creditCard, chooseGiftCard, giftCard,
-                stanfordCard, stanfordPlans;
+                stanfordCard, stanfordPlans, billingAddress;
 
             order_type = App.Views.GeneratorView.create('Checkout', {
                 mod: 'OrderType',
@@ -93,7 +94,6 @@ define(["checkout_view"], function(checkout_view) {
                 mod: 'Main',
                 className: 'clear'
             });
-
 
             this.subViews.push(order_type, pickup, main);
 
@@ -131,6 +131,20 @@ define(["checkout_view"], function(checkout_view) {
 
                 this.subViews.push(creditCard);
                 paymentInfo.append(creditCard.el);
+
+                if (this.options.needShowBillingAddess) {
+                    billingAddress = App.Views.GeneratorView.create('Card', {
+                        mod: 'BillingAddress',
+                        model: this.options.card.get("billing_address"),
+                        customer: this.options.customer,
+                        card: this.options.card,
+                        checkout: this.collection.checkout,
+                        className: 'billing-address-box'
+                    });
+
+                    this.subViews.push(billingAddress);
+                    paymentInfo.append(billingAddress.el);
+                }
             }
 
             if (this.options.paymentMethods.get('gift_card')) {

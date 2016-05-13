@@ -1,8 +1,14 @@
 .cc-box .checkbox-outer {
-	padding-top: 33px;
-	cursor: pointer;
+    padding-top: 33px;
+    cursor: pointer;
 }
 
 .cc-box .checkbox-outer > * {
-	vertical-align: middle;
+    vertical-align: middle;
+}
+
+.billing-address-box .title {
+    padding: 0;
+    border: none;
+    font: inherit;
 }

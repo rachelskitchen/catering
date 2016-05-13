@@ -44,54 +44,34 @@
 </script>
 
 <script type="text/template" id="card_billing_address-template">
-    <div class="card_title"> <%= _lp.BILLING_ADDRESS_TITLE %> </div>
-    <div id="use_profile_address" class="checkbox-outer">
-        <span class="input checkbox"></span>
-        <span class="title_wrapper">
-            <span class="title">
-            </span>
-        </span>
+    <div class="item">
+        <div class="label required optional-text"><%= _lp.BILLING_ADDRESS_TITLE %></div>
+        <div class="select-wrapper">
+            <select class="addresses"></select>
+        </div>
     </div>
-    <div class="address">
-        <div>
-            <label for="countries">
-                <span class="required bold"><%= _lp.PROFILE_COUNTRY %>:</span>
-            </label>
-            <div class="select select-wrapper">
-                <select id="countries" class="countries"></select>
-            </div>
+    <div class="item new-address">
+        <div class="label required optional-text"><%= _lp.PROFILE_ADDRESS_LINE1 %></div>
+        <input type="text" class="street_1 input ios-safari-caret size2">
+    </div>
+    <div class="item new-address">
+        <div class="label required optional-text"><%= _lp.PROFILE_CITY %></div>
+        <input type="text" class="city input ios-safari-caret size1">
+    </div>
+    <div class="item new-address">
+        <div class="label required optional-text"><%= _lp.PROFILE_COUNTRY %></div>
+        <div class="select select-wrapper">
+            <select class="countries size2"></select>
         </div>
-        <div>
-            <label for="street_1">
-                <span class="required bold"><%= _lp.PROFILE_ADDRESS_LINE1 %>:</span>
-            </label>
-            <div class="input_beauty">
-                <input type="text" id="street_1" class="street_1 ios-safari-caret">
-            </div>
+    </div>
+    <div class="item new-address states-wrap">
+        <div class="label required optional-text"><%= _lp.PROFILE_STATE %></div>
+        <div class="select-wrapper">
+            <select class="states"></select>
         </div>
-        <div>
-            <label for="city">
-                <span class="required bold"><%= _lp.PROFILE_CITY %>:</span>
-            </label>
-            <div class="input_beauty">
-                <input type="text" id="city" class="city ios-safari-caret">
-            </div>
-        </div>
-        <div class="states-wrap">
-            <label for="states">
-                <span class="required bold"><%= _lp.PROFILE_STATE %>:</span>
-            </label>
-            <div class="select select-wrapper">
-                <select id="states" class="states"></select>
-            </div>
-        </div>
-        <div>
-            <label for="zipcode">
-                <span class="required bold"><%= _lp.PROFILE_ZIP_CODE %>:</span>
-            </label>
-            <div class="input_beauty">
-                <input type="text" id="zipcode" class="zipcode ios-safari-caret">
-            </div>
-        </div>
+    </div>
+    <div class="item new-address">
+        <div class="label required optional-text zip-code-label"><%= _lp.PROFILE_ZIP_CODE %></div>
+        <input type="text" id="zipcode" class="zipcode input ios-safari-caret size4">
     </div>
 </script>
