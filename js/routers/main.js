@@ -1061,8 +1061,7 @@ define(["backbone", "factory"], function(Backbone) {
                 var req = customer.changePayment(token_id),
                     mainModel = App.Data.mainModel;
 
-                if (req)
-                {
+                if (req) {
                     mainModel.trigger('loadStarted');
                     req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                 }
@@ -1502,11 +1501,13 @@ define(["backbone", "factory"], function(Backbone) {
             {
                 var req = customer.changePayment(token_id),
                     mainModel = App.Data.mainModel;
-                if (req)
-                {
+
+                if (req) {
                     mainModel.trigger('loadStarted');
                     req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                 }
+
+                return req;
             }
             function removeToken(token_id) {
                 var req = customer.removePayment(token_id),
