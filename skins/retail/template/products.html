@@ -28,8 +28,8 @@
         </div>
     <% } %>
     <dl class="vertical-scrollbar">
-        <dt class='name'>
-            <%= name %>
+        <dt class='title'>
+            <span class="name"><%= name %></span>
             <span class="cost">
                 <span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
                 <% if(sold_by_weight && uom) { %>
