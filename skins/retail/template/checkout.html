@@ -74,6 +74,15 @@
     </div>
 </script>
 
+<script type="text/template" id="checkout_address_selection-template">
+    <label class="select">
+        <span class="bold"><%= _lp.PROFILE_ADDRESS %>:</span>
+    </label>
+    <div class="select select-wrapper">
+        <select id="addresses"></select>
+    </div>
+</script>
+
 <script type="text/template" id="checkout_address-template">
     <div class="address-selection row">
         <label class="select"> <span class="bold"><%= _lp.PROFILE_ADDRESS %>:</span> </label>
@@ -140,14 +149,19 @@
                 <input type="text" id="zip" name="zipcode" class='zipcode ios-safari-caret' value="<%= zipcode %>">
             </div>
         </div>
-        <label class="select shipping"> <span class="required bold"><%= _lp.CHECKOUT_SHIPPING %>:</span> </label>
-        <div class="shipping-select-wrap">
+    </div>
+
+    <% if(isShippingServices) { %>
+    <label class="select shipping">
+        <span class="required bold"><%= _lp.CHECKOUT_SHIPPING %>:</span>
+    </label>
+    <div class="shipping-select-wrap">
         <div class="select shipping select-wrapper">
             <select class="shipping-select select"></select>
         </div>
         <div class="shipping-status img-spinner"></div>
-        </div>
     </div>
+    <% } %>
 </script>
 
 <script type="text/template" id="checkout_pay-template">
