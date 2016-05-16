@@ -1,7 +1,8 @@
 <script type="text/template" id="combo_item-template">
   <div class = "combo_item_wrap <% if(!_settings.online_orders) {print('no-controls');} %>">
     <div type="checkbox" class="input checkbox" id="product<%= id_product %>"></div>
-    <div class="title"><%= name %></div>
+    <div class="name"><%= name %></div>
+    <div class="customize link link1"><%= _lp.COMBO_CUSTOMIZE %></div>
     <div class="cost">
             <span class="plus">+</span><span class="price"></span>
     </div>
@@ -12,7 +13,6 @@
         </span>
     </div>
      <% } %>
-    <div class="customize link link1"><%= _lp.COMBO_CUSTOMIZE %></div>
   </div>
 </script>
 
