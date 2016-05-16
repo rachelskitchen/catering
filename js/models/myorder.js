@@ -2660,8 +2660,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             this.total.empty(); //this is for reliability cause of raunding errors exist.
 
-            this.checkout.set('dining_option', 'DINING_OPTION_ONLINE');
-            this.checkout.set('notes', '');
+            this.checkout.set({
+                dining_option: 'DINING_OPTION_ONLINE',
+                notes: '',
+                discount_code: '',
+                last_discount_code: ''
+            });
         },
         /**
          * Removes free modifiers of each order item.
