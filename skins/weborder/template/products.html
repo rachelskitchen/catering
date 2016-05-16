@@ -41,8 +41,9 @@
         </div>
     <% } %>
     <dl>
-        <dt class='name'>
-            <%= name %>
+        <dt class='title'>
+            <span class="name"><%= name %></span>
+            <span class="customize link link1 hide"><%= _lp.COMBO_CUSTOMIZE %></span>
             <span class="cost">
                 <% if (is_gift && not_size && _settings.online_orders) { %>
                     <span class='currency_symbol gift_card_symbol' ><%=currency_symbol%></span>
@@ -56,7 +57,6 @@
                 <span class="uom">/ <%= uom %></span>
                 <% } %>
             </span>
-            <span class="customize link link1 hide">Customize</span>
         </dt>
         <dd><%= description %></dd>
         <% if (timetables) { %>
