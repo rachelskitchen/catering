@@ -390,6 +390,14 @@ define(["factory"], function() {
     });
 
     App.Views.CoreProfileView.CoreProfilePaymentsSelectionView = App.Views.FactoryView.extend({
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+
+            var primaryPayment = this.collection.getPrimaryPayment();
+            if (primaryPayment) {
+                primaryPayment.setPrimaryAsSelected();
+            }
+        },
         name: 'profile',
         mod: 'payments_selection',
         bindings: {
@@ -732,6 +740,7 @@ define(["factory"], function() {
         saveCreditCard: function()
         {
             var self = this, req,
+                mainModel = App.Data.mainModel,
                 collection = this.model.payments,
                 primaryPaymentsModel = collection.getPrimaryPayment();
 
@@ -741,11 +750,12 @@ define(["factory"], function() {
                 if (req)
                 {
                     this.incrementUpdateCounter();
+                    mainModel.trigger('loadStarted');
 
                     req.done(function() {
                         primaryPaymentsModel.setPrimaryAsSelected();
                         self.checkUpdateStatus();
-                    });
+                    }).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                 }
             }
         },
@@ -797,6 +807,7 @@ define(["factory"], function() {
         checkUpdateStatus: function() {
             if(--this.updateCounter <= 0) {
                 this.options.ui.set('show_response', true);
+                App.Data.header.set('enableLink', false);
             }
         },
         resetUpdateStatus: function() {
