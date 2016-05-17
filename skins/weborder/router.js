@@ -562,6 +562,11 @@ define(["main_router"], function(main_router) {
         },
         checkout: function() {
             this.prepare('checkout', function() {
+                this.listenTo(App.Data.customer, 'change:access_token', function() {
+                    // update shipping address on login/logout
+                    App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+                });
+
                 if(!App.Data.card) {
                     App.Data.card = new App.Models.Card;
                 }
