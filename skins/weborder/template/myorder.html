@@ -12,9 +12,9 @@
     <% var isUsualProduct = id_product !== null && is_child_product != true; %>
     <% if(!is_service_fee && isUsualProduct) { %>
     <div class="qty-box fl-left text-center secondary-border">
-        <div class="btn-up primary-text"></div>
+        <div class="btn-up primary-icon"></div>
         <span class="qty"><%= quantity %></span>
-        <div class="btn-down primary-text"></div>
+        <div class="btn-down primary-icon"></div>
     </div>
     <% } %>
     <% if(isUsualProduct) { %>
@@ -29,7 +29,7 @@
             <%= sizeModifier %> <%= name %>
         </span>
         <% if(isUsualProduct) { %>
-        <span class="edit primary-text link"><% _lp.MYORDER_EDIT %></span>
+        <span class="edit primary-icon link"><% _lp.MYORDER_EDIT %></span>
         <% } %>
     </h3>
     <ul class="modifier_place">

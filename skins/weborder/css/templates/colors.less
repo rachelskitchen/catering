@@ -42,7 +42,6 @@ body,
 
 /* [primary_text] active tab, active category, quantity vertical arrows, pencil */
 .primary-text[class],
-.tab.active, .tab:hover,
 .categories .checked,
 .categories label:hover,
 .payment-method.primary-button,
@@ -51,12 +50,6 @@ body,
     .resolve-color(@primary_text);
 }
 
-.tab.active::after {
-    border-top-color: @primary_text;
-}
-
-.mdf_split select,
-.mdf_quantity select,
 #profile-panel .active::before,
 #profile-panel .signup-link:hover::before,
 #profile-panel .login-link:hover::before {
@@ -110,6 +103,11 @@ body,
 .tab.active::before {
     border-right-color: @primary_border;
     border-left-color: @primary_border;
+}
+
+/* [primary_icon] edit, arrows icons */
+.primary-icon[class] {
+    .resolve-color(@primary_icon);
 }
 
 /* [secondary_border] categories list bottom border, 'Your Order' bottom line, dotted vertical line at item quantity */
@@ -214,6 +212,25 @@ body,
 /* [secondary_button] */
 #popup_cancel[id] {
     .resolve-background(@secondary_button);
+}
+
+/* [tab_active] active tab (Menu, About, Map) */
+.tab.active, .tab:hover {
+    .resolve-color(@tab_active);
+}
+
+.tab.active::after {
+    border-top-color: @tab_active;
+}
+
+/* [secondary_text] delivery info highlighted, modifier quantity border */
+.secondary-text[class] {
+    .resolve-color(@secondary_text);
+}
+
+.mdf_split select,
+.mdf_quantity select {
+    .resolve-border-color(@secondary_text);
 }
 
 /* images */

@@ -3,10 +3,10 @@ body,
 .price.input,
 .modifier .tooltip::before,
 .payment-method.regular-button {
-  color: #5f6266;
+  color: #5F6266;
 }
 .modifier .tooltip {
-  background: #5f6266;
+  background: #5F6266;
 }
 /* [alternate_text] primary button text */
 .alternate-text[class],
@@ -14,48 +14,41 @@ body,
 #profile-panel .menu-item:hover,
 #popup_ok[id],
 #popup_cancel[id] {
-  color: #ffffff;
+  color: #FFFFFF;
 }
 /* [header_text] title in popup window (product name, modifier class name), dropdown box */
 .header-text[class] {
-  color: #373b40;
+  color: #373B40;
 }
 /* [optional_text] optional text (additional info, modifier class instruction), input label */
 .optional-text[class],
 #alert .icon {
-  color: #9b9d9f;
+  color: #9B9D9F;
 }
 /* [attention_text] attention text */
 .attention-text[class] {
-  color: #d0021b;
+  color: #D0021B;
 }
 /* [special_text] special text (modifier price) */
 .special-text[class] {
-  color: #32bb21;
+  color: #2EBC1C;
 }
 /* [primary_text] active tab, active category, quantity vertical arrows, pencil */
 .primary-text[class],
-.tab.active,
-.tab:hover,
 .categories .checked,
 .categories label:hover,
 .payment-method.primary-button,
 .payment-method:hover,
 .payment-method:focus {
-  color: #33b5e6;
+  color: #00A3E0;
 }
-.tab.active::after {
-  border-top-color: #33b5e6;
-}
-.mdf_split select,
-.mdf_quantity select,
 #profile-panel .active::before,
 #profile-panel .signup-link:hover::before,
 #profile-panel .login-link:hover::before {
-  border-color: #33b5e6;
+  border-color: #00A3E0;
 }
 #profile-panel .menu-item:hover {
-  background: #33b5e6;
+  background: #00A3E0;
 }
 /* [primary_button] all primary buttons */
 .btn,
@@ -67,59 +60,63 @@ input[type="radio"]:checked + .radio::before,
 .checkbox.checked::before,
 .radio.checked::before,
 #popup_ok[id] {
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ebbf1), color-stop(1, #00a3e0));
-  background: -o-linear-gradient(bottom, #2ebbf1 0%, #00a3e0 100%);
-  background: -moz-linear-gradient(bottom, #2ebbf1 0%, #00a3e0 100%);
-  background: -webkit-linear-gradient(bottom, #2ebbf1 0%, #00a3e0 100%);
-  background: -ms-linear-gradient(bottom, #2ebbf1 0%, #00a3e0 100%);
-  background: linear-gradient(to bottom, #2ebbf1 0%, #00a3e0 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #818181), color-stop(1, #5F6266));
+  background: -o-linear-gradient(bottom, #818181 0%, #5F6266 100%);
+  background: -moz-linear-gradient(bottom, #818181 0%, #5F6266 100%);
+  background: -webkit-linear-gradient(bottom, #818181 0%, #5F6266 100%);
+  background: -ms-linear-gradient(bottom, #818181 0%, #5F6266 100%);
+  background: linear-gradient(to bottom, #818181 0%, #5F6266 100%);
 }
 /* [primary_button_highlighted] */
 .btn:hover,
 .btn-qty:hover,
 #popup_ok[id]:hover {
-  background: #00a9dd;
+  background: #5F6266;
 }
 /* [primary_background] main background ('body' tag) */
 body,
 .primary-bg,
 .order-items li,
 .alert_wrapper {
-  background: #ffffff;
+  background: #FFFFFF;
 }
 .tab.active::before {
-  border-bottom-color: #ffffff;
+  border-bottom-color: #FFFFFF;
 }
 /* [primary_border] primary border */
 .primary-border[class],
 .input,
 .modifier_class_wrapper {
-  border-color: #d7d8d9;
+  border-color: #D7D8D9;
 }
 .tab.active::before {
-  border-right-color: #d7d8d9;
-  border-left-color: #d7d8d9;
+  border-right-color: #D7D8D9;
+  border-left-color: #D7D8D9;
+}
+/* [primary_icon] edit, arrows icons */
+.primary-icon[class] {
+  color: #5F6266;
 }
 /* [secondary_border] categories list bottom border, 'Your Order' bottom line, dotted vertical line at item quantity */
 .secondary-border[class] {
-  border-color: #9b9d9f;
+  border-color: #9B9D9F;
 }
 /* [footer_background] footer background */
 #footer {
-  background: #fbfbfb;
+  background: #FBFBFB;
 }
 /* [cart_background] cart background */
 #cart {
-  background: #f4f4f4;
+  background: #F4F4F4;
 }
 /* [category_background] category background, order details, payment information */
 .category-bg {
-  background: #f1f1f1;
+  background: #F1F1F1;
 }
 /* [shadow_background] background behind popup window */
 .shadow-bg[class],
 #alert {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(55, 59, 64, 0.6);
 }
 /* [shadow_profile_background] profile shadow  background */
 .shadow-profile-bg {
@@ -127,18 +124,18 @@ body,
 }
 /* [cancel_button] cancel button */
 .cancel {
-  color: #c2c6ce;
+  color: #C2C6CE;
 }
 /* [popup_background] popup window background */
 .popup-bg[class],
 .mdf_split,
 .mdf_quantity,
 #popup_container[id] {
-  background: #ffffff;
+  background: #FFFFFF;
 }
 /* [popup_header_background] product info background in popup window */
 .popup-header-bg[class] {
-  background: #fafafa;
+  background: #FAFAFA;
 }
 /* [card_background] stanford card plan background, card balance background */
 .stanford-plans-box .stanford-plan {
@@ -151,10 +148,10 @@ body,
 .select-wrapper,
 .select-wrapper select,
 .selectbox {
-  border-color: #9b9d9f;
+  border-color: #9B9D9F;
 }
 .select-wrapper::after {
-  color: #9b9d9f;
+  color: #9B9D9F;
 }
 /* [input_background] input background */
 .input-bg[class],
@@ -162,14 +159,14 @@ body,
 .input,
 .select-wrapper,
 .select-wrapper select {
-  background: #ffffff;
+  background: #FFFFFF;
 }
 /* [input_text] input text color */
 .textarea,
 .input,
 .select-wrapper,
 .select-wrapper select {
-  color: #373b40;
+  color: #373B40;
 }
 /* [input_highlighted] input text color */
 .textarea:focus,
@@ -181,21 +178,37 @@ body,
 .payment-method.primary-button,
 .payment-method:hover,
 .payment-method:focus {
-  box-shadow: 0 0 4px 0 #33b5e6;
-  border-color: #33b5e6;
+  box-shadow: 0 0 4px 0 #00A3E0;
+  border-color: #00A3E0;
 }
 /* [secondary_button] */
 #popup_cancel[id] {
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #b5b5b5), color-stop(1, #989898));
-  background: -o-linear-gradient(bottom, #b5b5b5 0%, #989898 100%);
-  background: -moz-linear-gradient(bottom, #b5b5b5 0%, #989898 100%);
-  background: -webkit-linear-gradient(bottom, #b5b5b5 0%, #989898 100%);
-  background: -ms-linear-gradient(bottom, #b5b5b5 0%, #989898 100%);
-  background: linear-gradient(to bottom, #b5b5b5 0%, #989898 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #B5B5B5), color-stop(1, #989898));
+  background: -o-linear-gradient(bottom, #B5B5B5 0%, #989898 100%);
+  background: -moz-linear-gradient(bottom, #B5B5B5 0%, #989898 100%);
+  background: -webkit-linear-gradient(bottom, #B5B5B5 0%, #989898 100%);
+  background: -ms-linear-gradient(bottom, #B5B5B5 0%, #989898 100%);
+  background: linear-gradient(to bottom, #B5B5B5 0%, #989898 100%);
+}
+/* [tab_active] active tab (Menu, About, Map) */
+.tab.active,
+.tab:hover {
+  color: #363636;
+}
+.tab.active::after {
+  border-top-color: #363636;
+}
+/* [secondary_text] delivery info highlighted, modifier quantity border */
+.secondary-text[class] {
+  color: #5F6266;
+}
+.mdf_split select,
+.mdf_quantity select {
+  border-color: #5F6266;
 }
 /* images */
 .categories label.checked::before {
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTMiIGhlaWdodD0iOCI+PHBvbHlnb24gcG9pbnRzPSIwLDAgIDEzLDAgIDcsOCIgc3R5bGU9ImZpbGw6I2ZmZmZmZiIvPjxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjciIHkyPSI4IiBzdHlsZT0ic3Ryb2tlLXdpZHRoOjE7c3Ryb2tlOiM5YjlkOWYiLz48bGluZSB4MT0iNyIgeTE9IjgiIHgyPSIxMyIgeTI9IjAiIHN0eWxlPSJzdHJva2Utd2lkdGg6MTtzdHJva2U6IzliOWQ5ZiIvPjxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjEzIiB5Mj0iMCIgc3R5bGU9InN0cm9rZS13aWR0aDoxO3N0cm9rZTojZmZmZmZmIi8+PC9zdmc+");
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTMiIGhlaWdodD0iOCI+PHBvbHlnb24gcG9pbnRzPSIwLDAgIDEzLDAgIDcsOCIgc3R5bGU9ImZpbGw6I0ZGRkZGRiIvPjxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjciIHkyPSI4IiBzdHlsZT0ic3Ryb2tlLXdpZHRoOjE7c3Ryb2tlOiM5QjlEOUYiLz48bGluZSB4MT0iNyIgeTE9IjgiIHgyPSIxMyIgeTI9IjAiIHN0eWxlPSJzdHJva2Utd2lkdGg6MTtzdHJva2U6IzlCOUQ5RiIvPjxsaW5lIHgxPSIwIiB5MT0iMCIgeDI9IjEzIiB5Mj0iMCIgc3R5bGU9InN0cm9rZS13aWR0aDoxO3N0cm9rZTojRkZGRkZGIi8+PC9zdmc+");
   background-repeat: no-repeat;
   background-position: 0 0;
   background-color: transparent;
