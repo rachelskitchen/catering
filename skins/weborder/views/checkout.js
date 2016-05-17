@@ -121,30 +121,29 @@ define(["checkout_view"], function(checkout_view) {
                 paymentInfo.append(chooseCreditCard.el);
             }
 
-            if (this.options.paymentMethods.get('credit_card_dialog')) {
-                creditCard = App.Views.GeneratorView.create('Card', {
-                    mod: 'Main',
-                    model: this.options.card,
-                    token: this.token,
-                    className: 'cc-box item'
+            creditCard = App.Views.GeneratorView.create('Card', {
+                mod: 'Main',
+                model: this.options.card,
+                token: this.token,
+                paymentMethods: this.options.paymentMethods,
+                className: 'cc-box item'
+            });
+
+            this.subViews.push(creditCard);
+            paymentInfo.append(creditCard.el);
+
+            if (this.options.paymentMethods.get('credit_card_dialog') && this.options.needShowBillingAddess) {
+                billingAddress = App.Views.GeneratorView.create('Card', {
+                    mod: 'BillingAddress',
+                    model: this.options.card.get("billing_address"),
+                    customer: this.options.customer,
+                    card: this.options.card,
+                    checkout: this.collection.checkout,
+                    className: 'billing-address-box'
                 });
 
-                this.subViews.push(creditCard);
-                paymentInfo.append(creditCard.el);
-
-                if (this.options.needShowBillingAddess) {
-                    billingAddress = App.Views.GeneratorView.create('Card', {
-                        mod: 'BillingAddress',
-                        model: this.options.card.get("billing_address"),
-                        customer: this.options.customer,
-                        card: this.options.card,
-                        checkout: this.collection.checkout,
-                        className: 'billing-address-box'
-                    });
-
-                    this.subViews.push(billingAddress);
-                    paymentInfo.append(billingAddress.el);
-                }
+                this.subViews.push(billingAddress);
+                paymentInfo.append(billingAddress.el);
             }
 
             if (this.options.paymentMethods.get('gift_card')) {

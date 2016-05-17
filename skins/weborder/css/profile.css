@@ -148,3 +148,18 @@
     letter-spacing: 1px;
     cursor: pointer;
 }
+
+.profile-cvv-container {
+    width: 300px;
+    padding: 10px;
+}
+
+.profile-cvv-container .cvv-required-info {
+    display: block;
+    padding: 10px 0 20px;
+}
+
+.profile-cvv-container .cvv {
+    width: 100px;
+    margin: 0 auto 20px;
+}

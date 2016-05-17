@@ -105,6 +105,10 @@ select:focus,
     outline: none;
 }
 
+.inline-block {
+    display: inline-block;
+}
+
 .clear {
     clear: both;
 }
@@ -485,9 +489,9 @@ input[type="radio"]:checked + .radio::before,
 #popup_container[id] {
     border: none;
     border-radius: 0;
-    background: red;
     font-family: inherit;
     font-size: inherit;
+    color: inherit;
 }
 
 #popup_content[id] {

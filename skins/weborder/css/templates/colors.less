@@ -13,7 +13,9 @@ body,
 /* [alternate_text] primary button text */
 .alternate-text[class],
 .btn,
-#profile-panel .menu-item:hover {
+#profile-panel .menu-item:hover,
+#popup_ok[id],
+#popup_cancel[id] {
     .resolve-color(@alternate_text);
 }
 
@@ -73,13 +75,15 @@ input[type="radio"]:checked + .radio::before,
 .checkbox[checked="checked"]::before,
 .radio[checked="checked"]::before,
 .checkbox.checked::before,
-.radio.checked::before {
+.radio.checked::before,
+#popup_ok[id] {
     .resolve-background(@primary_button);
 }
 
 /* [primary_button_highlighted] */
 .btn:hover,
-.btn-qty:hover  {
+.btn-qty:hover,
+#popup_ok[id]:hover  {
     .resolve-background(@primary_button_highlighted);
 }
 
@@ -147,7 +151,8 @@ body,
 /* [popup_background] popup window background */
 .popup-bg[class],
 .mdf_split,
-.mdf_quantity {
+.mdf_quantity,
+#popup_container[id] {
     .resolve-background(@popup_background);
 }
 
@@ -204,6 +209,11 @@ body,
 .payment-method:focus {
     box-shadow: 0 0 4px 0 @input_highlighted;
     .resolve-border-color(@input_highlighted);
+}
+
+/* [secondary_button] */
+#popup_cancel[id] {
+    .resolve-background(@secondary_button);
 }
 
 /* images */

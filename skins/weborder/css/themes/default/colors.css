@@ -11,7 +11,9 @@ body,
 /* [alternate_text] primary button text */
 .alternate-text[class],
 .btn,
-#profile-panel .menu-item:hover {
+#profile-panel .menu-item:hover,
+#popup_ok[id],
+#popup_cancel[id] {
   color: #ffffff;
 }
 /* [header_text] title in popup window (product name, modifier class name), dropdown box */
@@ -63,7 +65,8 @@ input[type="radio"]:checked + .radio::before,
 .checkbox[checked="checked"]::before,
 .radio[checked="checked"]::before,
 .checkbox.checked::before,
-.radio.checked::before {
+.radio.checked::before,
+#popup_ok[id] {
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2ebbf1), color-stop(1, #00a3e0));
   background: -o-linear-gradient(bottom, #2ebbf1 0%, #00a3e0 100%);
   background: -moz-linear-gradient(bottom, #2ebbf1 0%, #00a3e0 100%);
@@ -73,7 +76,8 @@ input[type="radio"]:checked + .radio::before,
 }
 /* [primary_button_highlighted] */
 .btn:hover,
-.btn-qty:hover {
+.btn-qty:hover,
+#popup_ok[id]:hover {
   background: #00a9dd;
 }
 /* [primary_background] main background ('body' tag) */
@@ -128,7 +132,8 @@ body,
 /* [popup_background] popup window background */
 .popup-bg[class],
 .mdf_split,
-.mdf_quantity {
+.mdf_quantity,
+#popup_container[id] {
   background: #ffffff;
 }
 /* [popup_header_background] product info background in popup window */
@@ -178,6 +183,15 @@ body,
 .payment-method:focus {
   box-shadow: 0 0 4px 0 #33b5e6;
   border-color: #33b5e6;
+}
+/* [secondary_button] */
+#popup_cancel[id] {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #b5b5b5), color-stop(1, #989898));
+  background: -o-linear-gradient(bottom, #b5b5b5 0%, #989898 100%);
+  background: -moz-linear-gradient(bottom, #b5b5b5 0%, #989898 100%);
+  background: -webkit-linear-gradient(bottom, #b5b5b5 0%, #989898 100%);
+  background: -ms-linear-gradient(bottom, #b5b5b5 0%, #989898 100%);
+  background: linear-gradient(to bottom, #b5b5b5 0%, #989898 100%);
 }
 /* images */
 .categories label.checked::before {

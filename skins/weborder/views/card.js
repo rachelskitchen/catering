@@ -30,7 +30,8 @@ define(["card_view"], function(card_view) {
     var CardMainView = App.Views.CoreCardView.CoreCardMainView.extend({
     	bindings: {
     		'.checkbox-outer': 'classes: {hide: not(token_paymentsExist)}',
-    		'.checkbox': "checkedSpan: {value: rememberCard, outer_elem: '.checkbox-outer'}"
+    		'.checkbox': "checkedSpan: {value: rememberCard, outer_elem: '.checkbox-outer'}",
+            '.dialog-input': 'classes: {hide: not(paymentMethods_credit_card_dialog)}'
     	}
     });
 

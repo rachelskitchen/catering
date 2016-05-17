@@ -28,6 +28,40 @@ define(["products_view"], function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection, "add remove", this.onChangeOrder, this);
         },
+        bindings: {
+            '.btn': 'classes: {disabled: any(not(orderItems_quantity), orderItems_pending, shippingPending)}',
+            '.animate-spin': 'classes: {hide: all(not(orderItems_pending), not(shippingPending))}'
+        },
+        computeds: {
+            shippingPending: {
+                deps: ['checkout_dining_option', 'customer_shipping_selected'],
+                get: function(checkout_dining_option, customer_shipping_selected) {
+                    return checkout_dining_option == 'DINING_OPTION_SHIPPING' && customer_shipping_selected == -1;
+                }
+            }
+        },
+        bindingSources: {
+            orderItems: function() {
+                var model = new Backbone.Model({
+                    pending: App.Data.myorder.pending,
+                    quantity: App.Data.myorder.get_only_product_quantity()
+                });
+
+                model.listenTo(App.Data.myorder, 'add change remove', function() {
+                    model.set('quantity', App.Data.myorder.get_only_product_quantity());
+                });
+                // update_cart_totals is in progress
+                model.listenTo(App.Data.myorder, 'onCartTotalsUpdate', function() {
+                    model.set('pending', true);
+                });
+                // update_cart_totals completed
+                model.listenTo(App.Data.myorder, 'DiscountsComplete NoRequestDiscountsComplete', function() {
+                    model.set('pending', false);
+                });
+
+                return model;
+            }
+        },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.listenTo(App.Data.mainModel, 'loadCompleted', this.resize.bind(this));
@@ -68,7 +102,6 @@ define(["products_view"], function() {
             }));
         },
         bindings: {
-            '.btn': 'classes: {disabled: any(not(orderItems_quantity), orderItems_pending)}',
             '.subtotal-subline': 'toggle: orderItems_quantity'
         },
         events: {
@@ -76,28 +109,6 @@ define(["products_view"], function() {
         },
         onEnterListeners: {
             '.btn': 'checkout_event'
-        },
-        bindingSources: {
-            orderItems: function() {
-                var model = new Backbone.Model({
-                    pending: App.Data.myorder.pending,
-                    quantity: App.Data.myorder.get_only_product_quantity()
-                });
-
-                model.listenTo(App.Data.myorder, 'add change remove', function() {
-                    model.set('quantity', App.Data.myorder.get_only_product_quantity());
-                });
-                // update_cart_totals is in progress
-                model.listenTo(App.Data.myorder, 'onCartTotalsUpdate', function() {
-                    model.set('pending', true);
-                });
-                // update_cart_totals completed
-                model.listenTo(App.Data.myorder, 'DiscountsComplete NoRequestDiscountsComplete', function() {
-                    model.set('pending', false);
-                });
-
-                return model;
-            }
         },
         checkout_event: function() {
             var self = this;
@@ -116,7 +127,10 @@ define(["products_view"], function() {
         name: 'cart',
         mod: 'checkout',
         events: {
-            '.pay-button': 'pay'
+            'click .pay-btn': 'pay'
+        },
+        onEnterListeners: {
+            '.pay-btn': 'pay'
         },
         render: function() {
             App.Views.CartView.CartCoreView.prototype.render.apply(this, arguments);

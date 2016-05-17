@@ -198,6 +198,11 @@
         'CARD_DELIVERY_ADDRESS': 'Delivery Address',
         'CARD_SHIPPING_ADDRESS': 'Shipping Address',
         'CARD_CATERING_ADDRESS': 'Catering Address',
-        'CARD_NEW_ADDRESS': 'Enter New Address'
+        'CARD_NEW_ADDRESS': 'Enter New Address',
+        'DONE_THANK_YOU': 'Thank you, %s!',
+        'DONE_ORDER_SUBMITTED': 'Your Order from %s has been Submitted!',
+        'DONE_ARRIVE_TIME': 'It should arrive at %s.',
+        'DONE_PICKUP_TIME': 'You can pickup your order at %s.',
+        'DONE_DETAILS_INFO': 'Checkout out the details below about your order.'
     } // end of locale
 }); // end of module
