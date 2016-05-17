@@ -33,6 +33,9 @@ define(["quantity_view"], function(quantity_view) {
             'input .quantity_edit_input': 'change_quantity',
             'blur .quantity_edit_input': 'blur_quantity'
         },
+        bindings: {
+            '.decrease': 'classes: {"disabled": equal(quantity, 1)}'
+        },
         initialize: function() {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.options.model, 'combo_weight_product_change', this.combo_weight_product_change);
@@ -47,7 +50,9 @@ define(["quantity_view"], function(quantity_view) {
                 this.$('.quantity_edit_input').addClass('disabled').prop('disabled', true);
                 disallowNegativeInventory && this.model.set('quantity', 1); // bug 13494
             } else {
-                this.$('.decrease').removeClass('disabled');
+                if (this.model.get('quantity') > 1) {
+                    this.$('.decrease').removeClass('disabled');
+                }
                 this.$('.increase').removeClass('disabled');
                 this.$('.quantity_edit_input').removeClass('disabled').prop('disabled', false);
             }
