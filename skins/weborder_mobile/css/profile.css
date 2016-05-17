@@ -21,6 +21,20 @@
     margin-bottom: 1.4em;
 }
 
+.profile-form .account-password-input {
+    position: relative;
+}
+
+.profile-form .show-password {
+    display: block;
+    position: absolute;
+    right: 1%;
+    top: 1px;
+    padding: .6em 1em .6em .6em;
+    font-size: inherit;
+    cursor: pointer;
+}
+
 .profile-basic-details .profile-form {
     margin: 1.4em 0;
 }
