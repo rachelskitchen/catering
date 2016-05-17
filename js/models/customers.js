@@ -154,6 +154,12 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
              */
             confirm_password: "",
             /**
+             * User's password visibility
+             * @type {boolean}
+             * @default false
+             */
+            show_password: false,
+            /**
              * Customer's id.
              * @type {?number}
              * @default null

@@ -347,6 +347,21 @@
     font-size: 14px;
 }
 
+.profile-form .account-password-field {
+    position: relative;
+}
+
+.profile-form .show-password {
+    display: block;
+    position: absolute;
+    right: 10px;
+    top: 0;
+    line-height: 26px;
+    padding: 0 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
 .reset-password-info {
     font-size: 14px;
     padding-bottom: 15px;

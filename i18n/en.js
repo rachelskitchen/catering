@@ -610,6 +610,8 @@
         "PROFILE_USER_ADDRESS_NOT_FOUND": "Address not found",
         "PROFILE_ENTER_CURRENT_PASSWORD": "Enter current password",
         "PROFILE_ENTER_NEW_PASSWORD": "Enter new password",
+        "PROFILE_SHOW_PASSWORD": "Show",
+        "PROFILE_HIDE_PASSWORD": "Hide",
         "PROFILE_CONTACT": "Contact",
         "PROFILE_WEBSITE": "Website",
         "PROFILE_INVALID_PASSWORD": "Invalid password",

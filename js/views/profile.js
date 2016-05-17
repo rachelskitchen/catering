@@ -252,8 +252,20 @@ define(["factory"], function() {
         mod: 'account_password',
         bindings: {
             '.current-password': 'value: password, events:["input"], pattern: /^.{0,255}$/',
-            '.new-password': 'value: confirm_password, events:["input"], pattern: /^.{0,255}$/',
-            '.account-password-field': 'classes: {required: any(password, confirm_password)}'
+            '.new-password': 'value: confirm_password, events:["input"], pattern: /^.{0,255}$/, attr: {type: getFieldType(show_password)}',
+            '.account-password-field': 'classes: {required: any(password, confirm_password)}',
+            '.show-password': 'text: getButtonText(show_password)'
+        },
+        bindingFilters: {
+            getFieldType: function(show_password) {
+                return show_password ? 'text' : 'password';
+            },
+            getButtonText: function(show_password) {
+                return show_password ? _loc.PROFILE_HIDE_PASSWORD : _loc.PROFILE_SHOW_PASSWORD;
+            }
+        },
+        events: {
+            'click .show-password': 'setPasswordVisibility'
         },
         onEnterListeners: {
             ':el': 'onEnter'
@@ -263,6 +275,10 @@ define(["factory"], function() {
                 password = this.model.get('password'),
                 confirm_password = this.model.get('confirm_password');
             password && confirm_password && action.apply(this, arguments);
+        },
+        setPasswordVisibility: function() {
+            var show_password = !this.model.get('show_password');
+            this.model.set('show_password', show_password);
         }
     });
 
