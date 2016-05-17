@@ -315,6 +315,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             var settings = App.Settings,
                 empty = [],
                 address = this.get('addresses'),
+                shipping_addr_index = this.isDefaultShippingAddress() ? address.length - 1 : this.get('shipping_address'),
                 req = {
                     street_1: _loc.PROFILE_ADDRESS_LINE1,
                     city: _loc.PROFILE_CITY,
@@ -323,7 +324,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     zipcode: _loc.PROFILE_ZIP_CODE
                 };
 
-            address = address[this.get('shipping_address')];
+            address = address[shipping_addr_index];
 
             // if not USA exclude state property
             if(address.country != 'US')
