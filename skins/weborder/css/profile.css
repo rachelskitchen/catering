@@ -62,8 +62,7 @@
     padding: 0;
 }
 
-#profile-panel .phone-privacy,
-#profile-panel .passwords-mismatch {
+#profile-panel .field-description {
     display: block;
     padding: 0px 14px 5px;
     font-size: 10px;
@@ -71,6 +70,7 @@
 
 #profile-panel .passwords-mismatch {
     position: absolute;
+    bottom: -15px;
 }
 
 #profile-panel .flat-btn {

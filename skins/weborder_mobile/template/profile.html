@@ -31,7 +31,7 @@
         </li>
         <li class="required">
             <input type="tel" placeholder="<%= _lp.PROFILE_PHONE %>" class="phone ios-safari-caret input-colors">
-            <span class="phone-privacy regular-text fl-left"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
+            <span class="field-description regular-text fl-left"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
         </li>
     </ul>
 </script>
@@ -50,7 +50,7 @@
         </li>
         <li class="required">
             <input type="tel" placeholder="<%= _lp.PROFILE_PHONE %>" class="phone ios-safari-caret input-colors">
-            <span class="phone-privacy regular-text fl-left"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
+            <span class="field-description regular-text"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
         </li>
     </ul>
     <span class="profile-info account-password regular-text font-size3"><%= _lp.PROFILE_ACCOUNT_PASSWORD %></span>
@@ -60,9 +60,10 @@
         </li>
         <li class="required">
             <input type="password" placeholder="<%= _lp.PROFILE_REENTER_PASSWORD %>" class="password-confirm ios-safari-caret input-colors">
+            <span class="field-description regular-text"><%= _lp.PROFILE_PASSWORDS_REQUIREMENTS %></span>
         </li>
     </ul>
-    <div class="passwords-mismatch font-size3 attention-text"><%= _lp.PROFILE_PASSWORDS_MISMATCH %></div>
+    <div class="field-description passwords-mismatch font-size2 attention-text"><%= _lp.PROFILE_PASSWORDS_MISMATCH %></div>
 </script>
 
 <script type="text/template" id="profile_create-template">
