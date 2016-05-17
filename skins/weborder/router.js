@@ -107,6 +107,10 @@ define(["main_router"], function(main_router) {
 
             App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
         },
+        triggerInitializedEvent: function() {
+            App.Routers.RevelOrderingRouter.prototype.triggerInitializedEvent.apply(this, arguments);
+            App.Data.mainModel.set({customer: App.Data.customer});
+        },
         paymentsHandlers: function() {
             var mainModel = App.Data.mainModel,
                 myorder = App.Data.myorder,
@@ -140,7 +144,7 @@ define(["main_router"], function(main_router) {
             this.initGiftCard();
 
             // invokes when user chooses the 'Gift Card' payment processor on the #payments screen
-            this.listenTo(App.Data.payments, 'payWithGiftCard', function() {
+            this.listenTo(App.Data.paymentMethods, 'payWithGiftCard', function() {
                 var customer = App.Data.customer,
                     doPayWithGiftCard = customer.doPayWithGiftCard();
                 myorder.check_order({
@@ -165,7 +169,7 @@ define(["main_router"], function(main_router) {
 
             /* Cash Card */
             // invokes when user chooses the 'Cash' payment processor on the #payments screen
-            this.listenTo(App.Data.payments, 'payWithCash', function() {
+            this.listenTo(App.Data.paymentMethods, 'payWithCash', function() {
                 myorder.check_order({
                     order: true,
                     tip: true,
@@ -176,7 +180,7 @@ define(["main_router"], function(main_router) {
 
             /* PayPal */
             // invokes when user chooses the 'PayPal' payment processor on the #payments screen
-            this.listenTo(App.Data.payments, 'payWithPayPal', function() {
+            this.listenTo(App.Data.paymentMethods, 'payWithPayPal', function() {
                 App.Data.myorder.check_order({
                     order: true,
                     tip: true,
@@ -191,7 +195,7 @@ define(["main_router"], function(main_router) {
                 App.Data.stanfordCard = new App.Models.StanfordCard();
 
                 // invokes when user chooses the 'Stanford Card' payment processor
-                this.listenTo(App.Data.payments, 'payWithStanfordCard', function() {
+                this.listenTo(App.Data.paymentMethods, 'payWithStanfordCard', function() {
                     myorder.check_order({
                         order: true,
                         tip: true,
@@ -692,8 +696,19 @@ define(["main_router"], function(main_router) {
                 if(!App.Data.customer) {
                     this.loadCustomer();
                 }
+                App.Data.header.set('tab_index', null);
                 App.Data.mainModel.set({
-                    mod: 'Done'
+                    mod: 'Main',
+                    header: headers.main,
+                    cart: carts.checkout,
+                    content: {
+                        modelName: 'Main',
+                        mod: 'Done',
+                        model: App.Data.mainModel,
+                        header: App.Data.header,
+                        customer: App.Data.customer,
+                        checkout: App.Data.myorder.checkout
+                    }
                 });
                 this.change_page();
             });

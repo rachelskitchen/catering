@@ -27,6 +27,16 @@
 	bottom: 0;
 }
 
+#cart .btn .animate-spin {
+    margin-left: 5px;
+}
+
+#cart .btn .animate-spin::before {
+    content: '\f021';
+    font-family: "FontAwesome";
+
+}
+
 .order-items_wrapper {
     position: absolute;
     top: 51px;

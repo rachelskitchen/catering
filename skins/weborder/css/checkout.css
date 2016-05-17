@@ -50,6 +50,12 @@
     width: 100px;
 }
 
+.checkout-order-details .shipping-status {
+    width: 44px;
+    height: 44px;
+    position: relative;
+}
+
 .checkout-order-details .notes {
     width: 466px;
 }

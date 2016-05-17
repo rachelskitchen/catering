@@ -175,6 +175,8 @@ define(["done_view", "generator"], function(done_view) {
             return {
                 collection: this.options.cartCollection,
                 model: this.options.paymentMethods,
+                customer: this.options.customer,
+                checkout: this.options.cartCollection.checkout,
                 className: 'cart',
                 modelName: 'Cart'
             };
@@ -263,6 +265,30 @@ define(["done_view", "generator"], function(done_view) {
     });
 
     var MainDoneView = App.Views.CoreMainView.CoreMainDoneView.extend({
+        bindings: {
+            '.header-underline': 'text: insertPlaceholder(_lp_DONE_THANK_YOU, customer_first_name)',
+            '.submitted': 'html: insertPlaceholder(_lp_DONE_ORDER_SUBMITTED, format(boldTmp, header_business_name))',
+            '.pickup-time': 'classes: {hide: not(inList(checkout_dining_option, "DINING_OPTION_ONLINE", "DINING_OPTION_SHIPPING"))}, html: insertPlaceholder(select(isDelivery, _lp_DONE_ARRIVE_TIME, _lp_DONE_PICKUP_TIME), format(boldTmp, checkout_pickupTime))',
+            '.email-sent-to': 'text: customer_email'
+        },
+        bindingFilters: {
+            insertPlaceholder: function(pattern, value) {
+                return pattern.replace('%s', value);
+            }
+        },
+        computeds: {
+            isDelivery: {
+                deps: ['checkout_dining_option'],
+                get: function(dining_option) {
+                    return dining_option == 'DINING_OPTION_DELIVERY'
+                        || dining_option == 'DINING_OPTION_SHIPPING'
+                        || dining_option == 'DINING_OPTION_CATERING';
+                }
+            },
+            boldTmp: function() {
+                return '<span class="bold">$1</span>';
+            }
+        },
         return_menu: function() {
             this.model.unset('popup');
             App.Views.CoreMainView.CoreMainDoneView.prototype.return_menu.apply(this, arguments);
