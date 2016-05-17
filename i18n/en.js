@@ -587,6 +587,7 @@
         'PROFILE_GENDER': "Gender",
         'PROFILE_PHONE_PRIVATE': "We will not share your phone # with any third parties",
         'PROFILE_PASSWORDS_MISMATCH': "The passwords mismatch",
+        'PROFILE_PASSWORDS_REQUIREMENTS': "Minimum of 8 characters with 1 number",
         'PROFILE_LOGIN_ERROR': "Email address or password is invalid",
         'PROFILE_USER_EXISTS': 'User %s already exists',
         'PROFILE_MORE': "More",
