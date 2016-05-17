@@ -68,15 +68,15 @@
     margin-top: -0.7em;
 }
 
-.passwords-mismatch {
-    padding: 0 2%;
-    margin-top: -1em;
-}
-
-.phone-privacy {
+.field-description {
     display: block;
     padding: 0 2%;
     margin-top: -1em;
+    text-align: left;
+}
+
+.passwords-mismatch {
+    margin-top: 5px;
 }
 
 .profile-menu {
