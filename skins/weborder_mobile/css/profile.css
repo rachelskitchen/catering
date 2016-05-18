@@ -177,6 +177,9 @@
     margin: 1.5em 0;
 }
 
+.reward-cards-list {
+    margin: 0 -1.8em;
+}
 .profile-payments-edition .payments-list,
 .profile-payments-edition .gift-cards-list,
 .profile-payments-edition .reward-cards-list {
@@ -194,6 +197,7 @@
     margin-bottom: 2px;
     position: relative;
     text-align: left;
+    white-space: nowrap;
 }
 
 .payment-item.selected::after  {
