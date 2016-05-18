@@ -434,8 +434,10 @@ define(["factory"], function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.model.resetAttributes();
 
-            this.listenTo(this.model, 'change:is_primary', function() {
-                customer.trigger('change_cards', self.model.checkAttributesDiff());
+            this.listenTo(this.model, 'change:is_primary', function(model) {
+                if (model.get('is_primary')) {
+                    customer.trigger('change_cards', self.model.checkAttributesDiff());
+                }
             });
 
             return this;
