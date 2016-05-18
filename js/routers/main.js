@@ -387,7 +387,22 @@ define(["backbone", "factory"], function(Backbone) {
             });
 
             this.listenTo(customer, 'onUserValidationError onUserAPIError', function(msg) {
-                _.isObject(msg) && App.Data.errors.alert(JSON.stringify(msg));
+                if (_.isObject(msg)) {
+                    var messages = [];
+
+                    _.each(msg, function(message) {
+                        if (_.isObject(message)) {
+                            for (var i in message) {
+                                messages.push( message[i] );
+                            }
+                        }
+                        else {
+                            messages.push( message.toString() );
+                        }
+                    });
+
+                    App.Data.errors.alert(messages.length ? messages.join(' ') : null);
+                }
             });
 
             this.listenTo(customer, 'onPasswordInvalid', function() {
