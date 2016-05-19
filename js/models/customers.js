@@ -89,7 +89,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             id: null,
             /**
              * Array of addresses assigned to the customer.
-             * @type {Array}
+             * @type {@link App.Collections.CustomerAddresses}
              * @default []
              */
             addresses: [],
@@ -201,8 +201,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * Sets indexes of addresses used for "Delivery" and "Shipping" dinign options.
          */
         initialize: function() {
-            // init addresses indexes
-            this.setAddressesIndexes();
+            this.set('addresses', new App.Collections.CustomerAddresses());
 
             // trim for `first_name`, `last_name`
             this.listenTo(this, 'change:first_name', this._trimValue.bind(this, 'first_name'));
@@ -239,7 +238,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             return (first_name + last_name);
         },
         /**
-         * Saves attributes values of the customer in a storage.
+         * Saves attributes values of the customer to a storage.
          */
         saveCustomer: function() {
             setData('customer', this);
@@ -262,23 +261,16 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             }
         },
         /**
-         * Saves addresses in a storage.
+         * Saves addresses to a storage.
          */
         saveAddresses: function() {
-            setData('address', new Backbone.Model({addresses: this.get('addresses')}), true);
+            this.get('addresses').saveAddresses();
         },
         /**
          * Loads addresses from a storage.
          */
         loadAddresses: function() {
-            var data = getData('address', true);
-            if (data instanceof Object && Array.isArray(data.addresses) && data.addresses.length == 1 && App.skin != App.Skins.RETAIL) {
-                if (data.addresses[0].country != App.Settings.address.country) {
-                    //the thread come here e.g. when we navigate from 'Retail' skin with other country payment previously submitted to weborder_mobile skin
-                    data = undefined;
-                }
-            }
-            this.set('addresses', data instanceof Object ? (data.addresses || []) : []);
+            this.get('addresses').loadAddresses();
         },
         /**
          * Converts address object literal to full address line.
@@ -488,22 +480,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.trigger('change:shipping_services');
         },
         /**
-         * Sets indexes for delivery and shipping addresses in `addresses` array.
-         * If initially addresses is empty array deliveryAddressIndex is 0, shippingAddressIndex is 1, cateringAddressIndex is 2
-         */
-        setAddressesIndexes: function() {
-            var addresses = this.get('addresses');
-            if(Array.isArray(addresses)) {
-                this.set({
-                    deliveryAddressIndex: addresses.length,
-                    shippingAddressIndex: addresses.length + 1,
-                    cateringAddressIndex: addresses.length + 2,
-                    profileAddressIndex: addresses.length + 3
-                });
-            }
-
-        },
-        /**
          * Checks `shipping_address` attribute has default value or not.
          * @returns {boolean} `true` if `shipping_address` is default or `false` otherwise.
          */
@@ -532,7 +508,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * @returns {boolean}
          */
         isProfileAddressSelected: function() {
-            return this.get('shipping_address') > 2;
+            return this.get('addresses').get('id') !== null;
         },
         /**
          * Get address set for shipping/delivery or default address set in backend.
@@ -759,6 +735,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     try {
                         delete data.customer.payments;
                         delete data.token.scope;
+                        delete data.addresses;
                     } catch(e) {}
 
                     this.updateCookie(data);
@@ -874,7 +851,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         signup: function(address) {
             var attrs = this.toJSON();
 
-            address = this.convertAddressToAPIFormat(address);
+            address = App.Models.CustomerAddress.prototype.convertToAPIFormat(address);
 
             return Backbone.$.ajax({
                 url: attrs.serverURL + "/v1/customers/register-customer/",
@@ -916,32 +893,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             });
         },
         /**
-         * Creates an object containing empty address data (address object template).
-         * @returns {Object}
-         * ```
-         * {
-         *     country: '',
-         *     state: '',
-         *     province: '',
-         *     street_1: '',
-         *     street_2: '',
-         *     city: '',
-         *     zipcode: ''
-         * }
-         * ```
-         */
-        getEmptyAddress: function() {
-            return {
-                country: '',
-                state: '', //null,
-                province: '', //null,
-                street_1: '',
-                street_2: '',
-                city: '',
-                zipcode: ''
-            };
-        },
-        /**
          * @returns {Object} An object with Authorization HTTP header if the customer has access token.
          */
         getAuthorizationHeader: function() {
@@ -954,31 +905,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             }
 
             return header;
-        },
-        /**
-         * Sets profile address.
-         *
-         * @param {Object} address - address data.
-         */
-        setProfileAddress: function(address) {
-            if(!_.isObject(address)) {
-                return;
-            }
-
-            address = this.convertAddressFromAPIFormat(address);
-
-            var addresses = this.get('addresses'),
-                profileAddressIndex = this.get('profileAddressIndex');
-
-            addresses[profileAddressIndex] = address;
-        },
-        /**
-         * @returns {Object} profile address object.
-         */
-        getProfileAddress: function() {
-            var addresses = this.get('addresses'),
-                profileAddressIndex = this.get('profileAddressIndex');
-            return addresses[profileAddressIndex];
         },
         /**
          * Updates the customer. Sends request with following parameters:
@@ -1153,8 +1079,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 headers: this.getAuthorizationHeader(),
                 data: JSON.stringify(address),
                 success: function(data) {
-                    this.setProfileAddress(data);
-                    this.updateCookie(this.getCustomerInAPIFormat());
+                    // @TODO
+                    //this.setProfileAddress(data);
                     this.trigger('onUserAddressCreated');
                 },
                 error: function(jqXHR) {
@@ -1259,8 +1185,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 headers: this.getAuthorizationHeader(),
                 data: JSON.stringify(address),
                 success: function(data) {
-                    this.setProfileAddress(data);
-                    this.updateCookie(this.getCustomerInAPIFormat());
+                    // @TODO 
+                    // this.setProfileAddress(data);
                     this.trigger('onUserAddressUpdate');
                 },
                 error: function(jqXHR) {
@@ -1526,10 +1452,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 return;
             }
 
-            // set profile address
-            var address = Array.isArray(data.customer.addresses) && _.isObject(data.customer.addresses[0]) ? data.customer.addresses[0] : this.getEmptyAddress();
-            this.setProfileAddress(this.convertAddressFromAPIFormat(address));
-
             // need to reset password and set `email` attribute as username
             this.set({
                 email: data.customer.email,
@@ -1541,6 +1463,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 token_type: data.token.token_type,
                 expires_in: data.token.expires_in
             });
+
+            this.get('addresses').updateFromAPI(data.customer.addresses);
 
             this.clearPasswords();
         },
@@ -1592,7 +1516,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     first_name: attrs.first_name,
                     last_name: attrs.last_name,
                     phone_number: attrs.phone,
-                    addresses: [this.getProfileAddress()]
+                    addresses: attrs.addresses
                 },
                 token: {
                     user_id: attrs.user_id,
@@ -2010,4 +1934,118 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             return req;
         },
     });
+
+
+        App.Models.CustomerAddress = Backbone.Model.extend(
+
+        {
+            defaults: {
+                id: null,
+                is_primary: false,
+                dining_option: null,
+                selected: false,
+                zipcode: '',
+                country: '',
+                state: '',
+                province: '',
+                street_1: '',
+                street_2: '',
+                city: ''
+            },
+            /**
+             * Converts the address objects from API to model format.
+             * This method gets called when {parse: true} is passed to the model concstructor.
+             * @param   {object} address
+             * @param   {object} options
+             * @returns {object} converted address
+             */
+            parse: function(address, options) {
+                return this.convertFromAPIFormat(address);
+            },
+            /**
+             * Converts address to 'customers/addresses/' API format. Changes `zipcode` property to `postal_code`,
+             * `country` -> `country_code`, `state`/`province` -> `region`.
+             *
+             * @param {Object} address - an object containing address data
+             * @returns {Object} Modified address object.
+             */
+            convertToAPIFormat: function(address) {
+                if (!_.isObject(address)) {
+                    return address;
+                }
+
+                address.postal_code = address.zipcode;
+                address.country_code = address.country;
+                address.region = address.country == 'US' ? address.state
+                               : address.country == 'CA' ? address.province
+                               : null;
+
+                return address;
+            },
+            /**
+             * Converts address from 'customers/addresses/' API format. Changes `postal_code` property to `zipcode`,
+             * `country_code` -> `country`, `region` -> `state`/`province`.
+             *
+             * @param {Object} address - an object containing address data
+             * @returns {Object} Modified address object.
+             */
+            convertFromAPIFormat: function(address) {
+                if (!_.isObject(address)) {
+                    return address;
+                }
+
+                address.zipcode = address.postal_code;
+                address.country = address.country_code;
+                address.state = address.country == 'US' ? address.region : '';
+                address.province = address.country == 'CA' ? address.region : '';
+
+                return address;
+            },
+        });
+
+        App.Collections.CustomerAddresses = Backbone.Collection.extend(
+
+        {
+            model: App.Models.CustomerAddress,
+            /**
+             * Coverts the array of addresses objects from API to model format.
+             * This method gets called when {parse: true} is passed to the collection concstructor.
+             * @param   {array} addresses
+             * @param   {object} options
+             * @returns {array} converted addresses
+             */
+            parse: function(addresses, options) {
+                return _.map(addresses, App.Models.CustomerAddress.prototype.convertFromAPIFormat);
+            },
+            /**
+             * Saves addresses to a storage.
+             */
+            saveAddresses: function() {
+                setData('address', new Backbone.Model({addresses: this.toJSON()}), true);
+            },
+            /**
+             * Loads addresses from a storage.
+             */
+            loadAddresses: function() {
+                var data = getData('address', true);
+                if (data instanceof Object && Array.isArray(data.addresses) && data.addresses.length == 1 && App.skin != App.Skins.RETAIL) {
+                    if (data.addresses[0].country != App.Settings.address.country) {
+                        //the thread come here e.g. when we navigate from 'Retail' skin with other country payment previously submitted to weborder_mobile skin
+                        data = undefined;
+                    }
+                }
+                this.set(data instanceof Object ? (data.addresses || []) : []);
+            },
+            /**
+             * Returns default profile address.
+             * @returns {?object}
+             *   - default address object, if it exists
+             *   - undefined otherwise
+             */
+            getDefaultProfileAddress: function() {
+                var addr = this.findWhere({is_primary: true});
+                return addr ? addr.toJSON() : undefined;
+            }
+        });
+
 });

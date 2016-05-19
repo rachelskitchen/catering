@@ -157,7 +157,7 @@ define(["backbone", "factory"], function(Backbone) {
                 deps: ["customer_addresses"],
                 get: function() {
                     var customer = this.options.customer;
-                    var addr = customer.getProfileAddress();
+                    var addr = customer.get('addresses').getDefaultProfileAddress();
                     if (!customer.isAuthorized() || !addr) {
                         return "";
                     }
@@ -169,7 +169,7 @@ define(["backbone", "factory"], function(Backbone) {
                 deps: ["customer_addresses"],
                 get: function() {
                     var customer = this.options.customer;
-                    var addr = customer.getProfileAddress();
+                    var addr = customer.get('addresses').getDefaultProfileAddress();
                     if (!customer.isAuthorized() || !addr || !addr.city || !addr.country_code || !addr.street_1 || !addr.zipcode)
                         return true;
                     else
