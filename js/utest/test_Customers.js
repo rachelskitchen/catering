@@ -961,23 +961,6 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
         });
 
-        describe('isProfileAddressSelected()', function() {
-            it('`shipping_address` is less than 3', function() {
-                model.set('shipping_address', 2);
-                expect(model.isProfileAddressSelected()).toBe(false);
-            });
-
-            it('`shipping_address` is 3', function() {
-                model.set('shipping_address', 3);
-                expect(model.isProfileAddressSelected()).toBe(true);
-            });
-
-            it('`shipping_address` is more than 3', function() {
-                model.set('shipping_address', 4);
-                expect(model.isProfileAddressSelected()).toBe(true);
-            });
-        });
-
         describe('getCheckoutAddress()', function() {
             var address,
                 isDefaultShippingAddress,
@@ -1617,16 +1600,6 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(model.convertAddressFromAPIFormat).toHaveBeenCalledWith(address);
                 expect(model.get('addresses')[model.get('profileAddressIndex')]).toBe(address);
             });
-        });
-
-        it("getProfileAddress()", function() {
-            var addresses = model.get('addresses'),
-                address = {city: 'SF'};
-
-            spyOn(model, 'convertAddressFromAPIFormat').and.returnValue(address);
-            model.setProfileAddress(address);
-
-            expect(model.getProfileAddress()).toBe(address);
         });
 
         describe("updateCustomer()", function() {

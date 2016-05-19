@@ -312,10 +312,9 @@ define(['backbone', 'factory'], function(Backbone) {
 
     var DeliveryAddressesSelectionView = App.Views.FactoryView.extend({
         initialize: function() {
-            this.listenTo(this.options.customer, 'change:access_token onUserAddressCreated onUserAddressUpdate', function() {
+            this.listenTo(this.options.customer, 'change:access_token change:addresses', function() {
                 delete this.options.address_index;
                 this.updateAddressesOptions();
-                this.options.customer.trigger('change:addresses');
             });
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
