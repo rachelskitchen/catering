@@ -1817,10 +1817,13 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     return 0;
                 }
 
+                // need to use only time zone offset, difference in minutes between client and server time is already considered
+                var TimeZoneOffset = App.Settings.time_zone_offset + (new Date()).getTimezoneOffset() * 60 * 1000;
+
                 if (isASAP) {
                     lastPT = App.Data.timetables.getLastPTforWorkPeriod(currentTime);
                     if (lastPT instanceof Date){
-                        lastPickupTime = format_date_1(lastPT.getTime() - App.Settings.server_time);
+                        lastPickupTime = format_date_1(lastPT.getTime() - TimeZoneOffset);
                     }
                     if (lastPT === 'not-found') {
                        //TODO: test this case by unit tests and remove this trace:
@@ -1831,7 +1834,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 this.checkout.set({
                     'pickupTime': isASAP ? (_loc.TIME_PREFIXES.ASAP + ' (' + pickupToString(pickup) + ')') : pickupToString(pickup),
                     'createDate': format_date_1(Date.now()),
-                    'pickupTimeToServer': pickup ? format_date_1(pickup.getTime() - App.Settings.server_time) : undefined,
+                    'pickupTimeToServer': pickup ? format_date_1(pickup.getTime() - TimeZoneOffset) : undefined,
                     'lastPickupTime': lastPickupTime
                 });
 
@@ -2422,6 +2425,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                             if (payment_type == PAYMENT_TYPE.GIFT && App.Data.customer.isAuthorized()) {
                                 App.Data.customer.getGiftCards();
                             }
+                            if (App.Data.customer.isAuthorized()) {
+                                App.Data.customer.getRewardCards();
+                            }
                             myorder.trigger('paymentResponse');
                         }
 
@@ -2654,8 +2660,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             this.total.empty(); //this is for reliability cause of raunding errors exist.
 
-            this.checkout.set('dining_option', 'DINING_OPTION_ONLINE');
-            this.checkout.set('notes', '');
+            this.checkout.set({
+                dining_option: 'DINING_OPTION_ONLINE',
+                notes: '',
+                discount_code: '',
+                last_discount_code: ''
+            });
         },
         /**
          * Removes free modifiers of each order item.

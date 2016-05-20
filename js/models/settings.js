@@ -675,7 +675,8 @@ define(["backbone", "async"], function(Backbone) {
                 "owner_website": "",
                 "owner_contact": "",
                 "saved_credit_cards": true,
-                "saved_gift_cards": true
+                "saved_gift_cards": true,
+                "saved_reward_cards": true
             };
 
             self.loadCustomerSettings = $.Deferred();

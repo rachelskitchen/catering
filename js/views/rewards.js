@@ -76,35 +76,17 @@
             var selected = this.model.get('selected'),
                 allowMultiple = App.Data.settings.get('settings_system').allow_multiple_reward_redemptions_per_order;
 
-            // var criteria = {selected: true};
-
-            // if (allowMultiple) {
-            //     // need  to find selected reward only with the same level
-            //     criteria.is_item_level = this.model.get('is_item_level')
-            // }
-
-            // // find selected reward(s)
-            // var selectedModels = this.model.collection.where(criteria);
-
-            // // reward is getting selected
-            // if (!selected) {
-            //     // remove selection
-            //     selectedModels.length && _.invoke(selectedModels, 'set', {selected: false, disabled: true});
-            // } else {
-            //     selectedModels.length && _.invoke(selectedModels, 'set', {disabled: false});
-            // }
-
             // toggle selection
             this.model.set('selected', !selected);
-            App.Data.myorder.rewardsCard.trigger('onSelectReward');
+            this.options.collectionView.model.trigger('onSelectReward');
         }
     });
 
-    var RewardsCardView = App.Views.FactoryView.extend({
+    App.Views.CoreRewardsView.CoreRewardsCardView = App.Views.FactoryView.extend({
         name: 'rewards',
         mod: 'card',
         bindings: {
-            '.rewards-input': 'value: number, events: ["input"]',
+            '.rewards-input': 'value: number, events: ["input"], disabled: length(customer_rewardCards)',
             '.rewards-captcha-input': 'value: captchaValue, events: ["input"]',
             '.submit-card': 'classes: {disabled: disableBtn}',
             '.captcha-image': 'updateCaptcha: url'
@@ -124,9 +106,14 @@
             }
         },
         initialize: function() {
+            var self = this;
             this.listenTo(this.model, 'onResetData', this.updateCaptcha);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             inputTypeMask(this.$('.rewards-input'), /^\d*$/, this.model.get('number'), 'numeric');
+            this.listenTo(this.model, 'updateCaptcha', this.updateCaptcha, this);
+            this.listenTo(this.options.customer.get('rewardCards'), "add remove reset", function() {
+                self.options.customer.trigger('change:rewardCards'); //it's to update binding value customer_rewardCards
+            });
             this.updateCaptcha();
         },
         computeds: {
@@ -165,6 +152,11 @@
             this.captchaSpinner && this.captchaSpinner.remove();
             delete this.captchaSpinner;
         }
+    });
+
+    var RewardsCardProfileView = App.Views.CoreRewardsView.CoreRewardsCardView.extend({
+        name: 'profile',
+        mod: 'rewardcard'
     });
 
     var RewardsItemApplicationView = App.Views.FactoryView.extend({
@@ -214,6 +206,10 @@
             this.listenTo(this.model, 'onResetData', function() {
                 self.remove();
             });
+            this.listenTo(this.appData.mainModel, 'change:popup', function() {
+                var selectedCard = self.options.rewards.findWhere({selected: true});
+                !selectedCard && self.apply();
+            });
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
 
@@ -234,7 +230,8 @@
 
     return new (require('factory'))(function() {
         App.Views.RewardsView = {}
-        App.Views.RewardsView.RewardsCardView = RewardsCardView;
+        App.Views.RewardsView.RewardsCardView = App.Views.CoreRewardsView.CoreRewardsCardView;
+        App.Views.RewardsView.RewardsCardProfileView = RewardsCardProfileView;
         App.Views.RewardsView.RewardsItemApplicationView = RewardsItemApplicationView;
         App.Views.RewardsView.RewardsOrderApplicationView = RewardsOrderApplicationView;
         App.Views.RewardsView.RewardsInfoView = RewardsInfoView;

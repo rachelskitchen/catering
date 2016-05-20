@@ -18,14 +18,34 @@ define(['payments', 'js/utest/data/Payments', 'js/utest/data/Timetable'], functi
         });
 
         describe("initialize()", function() {
+            
+        });
+
+        describe("setPrimaryAsSelected()", function() {
             it("`is_primary` is false", function() {
-                model = new App.Models.PaymentToken();
+                var model = new App.Models.PaymentToken();
+                model.setPrimaryAsSelected();
                 expect(model.get('selected')).toBe(data.ModelPaymentToken.defaults.selected);
             });
 
             it("`is_primary` is true", function() {
-                model = new App.Models.PaymentToken({is_primary: true});
+                var model = new App.Models.PaymentToken({is_primary: true});
+                model.setPrimaryAsSelected();
                 expect(model.get('selected')).toBe(true);
+            });
+        });
+
+        describe("setSelectedAsPrimary()", function() {
+            it("`selected` is false", function() {
+                var model = new App.Models.PaymentToken();
+                model.setSelectedAsPrimary();
+                expect(model.get('is_primary')).toBe(data.ModelPaymentToken.defaults.is_primary);
+            });
+
+            it("`selected` is true", function() {
+                var model = new App.Models.PaymentToken({selected: true});
+                model.setSelectedAsPrimary();
+                expect(model.get('is_primary')).toBe(true);
             });
         });
 
@@ -269,17 +289,16 @@ define(['payments', 'js/utest/data/Payments', 'js/utest/data/Timetable'], functi
                         cardInfo: {}
                     }
                 };
-                selectedToken = new Backbone.Model({id: token_id, vault_id: vault_id});
+                collection.add([
+                    new App.Models.PaymentToken({ id: token_id, vault_id: vault_id, 'selected': true }),
+                    new App.Models.PaymentToken({ id: 56, vault_id: 78, 'selected': false })
+                ]);
                 ajaxReq = Backbone.$.Deferred();
                 collection.paymentProcessor = "testPP";
                 collection.ignoreSelectedToken = false;
-
-                spyOn(collection, 'getSelectedPayment').and.callFake(function() {
-                    return selectedToken;
-                });
-
                 spyOn(Backbone.$, 'ajax').and.callFake(function() {
                     ajaxParams = arguments[0];
+                    ajaxParams.success();
                     return ajaxReq;
                 });
             });

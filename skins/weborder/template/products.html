@@ -28,14 +28,16 @@
             <img class="img" src="<%=image%>" alt="<%= name %> <%= id %> " />
         </div>
     <% } %>
-    <h3 class="name header-text"><%= name %></h3>
+    <h3 class="name header-text">
+        <%= name %>
+        <span class="customize link hide fl-right primary-text"><%= _lp.COMBO_CUSTOMIZE %></span>
+    </h3>
     <% if(!_settings.hide_products_description) { %>
     <p class="description"><%= description %></p>
     <% } %>
     <div class="size_chart_wrapper fl-right">
         <a href="#" target="_blank" class="link size_chart primary-text"><%= _lp.PRODUCTS_SIZE_CHART %></a>
     </div>
-    <div class="customize link hide fl-right primary-text">Customize</div>
     <% if (timetables) { %>
     <div class="timetables"><%= _lp.PRODUCTS_AVAILABLE %>: <%= timetables %> </div>
     <% } %>

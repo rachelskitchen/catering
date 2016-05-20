@@ -154,6 +154,12 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
              */
             confirm_password: "",
             /**
+             * User's password visibility
+             * @type {boolean}
+             * @default false
+             */
+            show_password: false,
+            /**
              * Customer's id.
              * @type {?number}
              * @default null
@@ -245,7 +251,11 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         loadCustomer: function() {
             var data = getData('customer');
             data = data instanceof Object ? data : {};
+            var rewardCards = data.rewardCards;
+            delete data.rewardCards;
             this.set(data);
+            var rewardCardsCol = new App.Collections.RewardCards;
+            this.set('rewardCards', rewardCardsCol.addJSON(rewardCards));
             var shipping_services = this.get("shipping_services");
             if(Array.isArray(shipping_services) && shipping_services.length && this.get("shipping_selected") > -1) {
                 this.set("load_shipping_status", "restoring", {silent: true});
@@ -309,6 +319,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             var settings = App.Settings,
                 empty = [],
                 address = this.get('addresses'),
+                shipping_addr_index = this.isDefaultShippingAddress() ? address.length - 1 : this.get('shipping_address'),
                 req = {
                     street_1: _loc.PROFILE_ADDRESS_LINE1,
                     city: _loc.PROFILE_CITY,
@@ -317,7 +328,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     zipcode: _loc.PROFILE_ZIP_CODE
                 };
 
-            address = address[this.get('shipping_address')];
+            address = address[shipping_addr_index];
 
             // if not USA exclude state property
             if(address.country != 'US')
@@ -756,6 +767,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     this.setCustomerFromAPI(data);
                     this.initPayments();
                     this.initGiftCards();
+                    this.getRewardCards();
                     this.trigger('onLogin');
                 },
                 error: function(jqXHR) {
@@ -796,6 +808,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             this.removePayments();
             this.removeGiftCards();
+            this.removeRewardCards();
             this.trigger('onLogout');
         },
         /**
@@ -1801,6 +1814,44 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             };
             this.isAuthorized() && this.initGiftCards();
         },
+        setRewardCards: function() {
+            if (!this.get('rewardCards')) {
+                this.set('rewardCards', new App.Collections.RewardCards());
+            }
+            if (this.isAuthorized()) {
+                this.getRewardCards();
+            }
+        },
+        getRewardCards: function() {
+            if (!this.get('rewardCards')) {
+                return console.error("Rewards cards have not been initialized");
+            }
+            var self = this,
+                req = this.get('rewardCards').getCards(this.getAuthorizationHeader());
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.trigger('onUserSessionExpired');
+                    self.logout(); // need to reset current account to allow to re-log in
+                }
+            });
+
+            req.success(function(jqXHR) {
+                if (jqXHR.status == "OK" && self.get('rewardCards').length == 1) {
+                    App.Data.myorder.rewardsCard.selectRewardCard(self.get('rewardCards').at(0));
+                }
+            })
+
+            /**
+             * Reward cards request.
+             * @alias App.Models.Customer#rewardCardsRequest
+             * @type {Backbone.$.Deferred}
+             * @default undefined
+             */
+            this.rewardCardsRequest = req;
+
+            return req;
+        },
         /**
          * Sets gift cards collection and receives data.
          */
@@ -1816,6 +1867,15 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.giftCardsRequest && this.giftCardsRequest.abort();
             delete this.giftCardsRequest;
             delete this.giftCards;
+        },
+        /**
+         * Aborts reward cards request and deletes {@link App.Models.Customer#rewardCards rewardCards},
+         * {@link App.Models.Customer#rewardCardsRequest rewardCardsRequest} properties.
+         */
+        removeRewardCards: function() {
+            this.rewardCardsRequest && this.rewardCardsRequest.abort();
+            delete this.rewardCardsRequest;
+            this.get('rewardCards').reset();
         },
         /**
          * Receives gift cards from server.
@@ -1901,6 +1961,56 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          */
         doPayWithGiftCard: function() {
             return Boolean(this.isAuthorized() && this.giftCards && !this.giftCards.ignoreSelected && this.giftCards.getSelected());
-        }
+        },
+         /**
+         * Links reward card with the customer.
+         * @param {App.Models.RewardCard} rewardCard - reward card model
+         * @returns {Object|undefined} jqXHR object.
+         */
+        linkRewardCard: function(rewardCard) {
+            var self = this;
+            if (!_.isObject(rewardCard) || typeof rewardCard.linkToCustomer != 'function') {
+                return;
+            }
+
+            var req = rewardCard.linkToCustomer(this.getAuthorizationHeader());
+
+            req.done(function(data) {
+                if (_.isObject(data) && data.status == 'OK') {
+                    self.get('rewardCards').addUniqueItem(rewardCard);
+                }
+            });
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.trigger('onUserSessionExpired');
+                    self.logout(); // need to reset current account to allow to re-log in
+                }
+            });
+
+            return req;
+        },
+        /**
+         * Unlinks reward card with the customer.
+         * @param {App.Models.RewardCard} rewardCard - reward card model
+         * @returns {Object|undefined} jqXHR object.
+         */
+        unlinkRewardCard: function(rewardCard) {
+            if (!_.isObject(rewardCard) || typeof rewardCard.unlinkToCustomer != 'function') {
+                return;
+            }
+
+            var req = rewardCard.unlinkToCustomer(this.getAuthorizationHeader()),
+                self = this;
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.trigger('onUserSessionExpired');
+                    self.logout(); // need to reset current account to allow to re-log in
+                }
+            });
+
+            return req;
+        },
     });
 });

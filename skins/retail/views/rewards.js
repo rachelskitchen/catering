@@ -23,5 +23,14 @@
  define(["rewards_view"], function(rewards_view) {
     'use strict';
 
-    return new (require('factory'))(rewards_view.initViews.bind(rewards_view), function() {});
+       var RewardsCardView = App.Views.CoreRewardsView.CoreRewardsCardView.extend({
+        bindings: {
+            '.reward_card_number': 'classes: {disabled: length(customer_rewardCards)}',
+            '.rewards-input': 'value: number, events: ["input"], disabled: length(customer_rewardCards)'
+        }
+    });
+
+    return new (require('factory'))(rewards_view.initViews.bind(rewards_view), function() {
+        App.Views.RewardsView.RewardsCardView = RewardsCardView;
+    });
 });

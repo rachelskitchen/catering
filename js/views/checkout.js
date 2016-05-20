@@ -32,7 +32,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             '.rewards-card-apply': 'classes: {hide: length(rewardsCard_discounts)}',
             '.see-rewards':  'classes: {hide: not(length(rewardsCard_discounts))}',
             '.cancel-input': 'classes: {hide: not(length(rewardsCard_discounts))}',
-            '.rewardCard': 'attr: {readonly: select(length(rewardsCard_discounts), true, false)}, restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^\\d*$/',
+            '.rewardCard': 'attr: {readonly: reward_card_readonly}, restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^\\d*$/',
             '.phone': 'restrictInput: "0123456789+", kbdSwitcher: "tel", pattern: /^\\+?\\d{0,15}$/',
             '.personal': 'toggle: not(isAuthorized)'
         },
@@ -42,9 +42,16 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 get: function() {
                     return this.getBinding('$customer').isAuthorized();
                 }
+            },
+            reward_card_readonly: {
+                deps: ["rewardsCard_discounts", "customer_rewardCards"],
+                get: function() {
+                    return this.getBinding('rewardsCard_discounts').length > 0 || this.getBinding('customer_rewardCards').length > 0;
+                }
             }
         },
         initialize: function() {
+            var self = this;
             this.listenTo(this.model, 'change:dining_option', this.controlAddress, this);
             this.listenTo(this.model, 'change:dining_option', this.controlDeliveryOther, this);
             this.listenTo(this.options.rewardsCard, 'change:number', this.updateData, this);
@@ -65,6 +72,10 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
             this.model.get('dining_option') === 'DINING_OPTION_OTHER' &&
                  this.controlDeliveryOther(null, 'DINING_OPTION_OTHER');
+
+            this.listenTo(this.options.customer.get('rewardCards'), "add remove reset", function() {
+                self.options.customer.trigger('change:rewardCards'); //it's to update binding value customer_rewardCards
+            });
         },
         render: function() {
             var settings = App.Data.settings.get('settings_system'),
