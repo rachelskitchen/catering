@@ -74,6 +74,11 @@ define({
         backbone: "js/libs/backbone",
         /**
          * @type {string}
+         * @description The actual path of [backbone]{@link module:backbone_extensions} module.
+         */
+        backbone_extensions: "js/libs/backbone.extensions",
+        /**
+         * @type {string}
          * @description The actual path of [backbone_epoxy]{@link module:backbone_epoxy} module.
          */
         backbone_epoxy: "js/libs/backbone.epoxy",
@@ -459,6 +464,10 @@ define({
         },
         "backbone": {
             deps: ["underscore", "jquery"],
+            exports: "Backbone"
+        },
+        "backbone_extensions": {
+            deps: ["backbone"],
             exports: "Backbone"
         },
         "backbone_epoxy": {

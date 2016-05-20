@@ -508,6 +508,12 @@ define(["backbone", "async"], function(Backbone) {
                                     : settings_system.address.state;
                             };
 
+                            self.getRegion = function(address) {
+                                return $.inArray(address.country, country) !== -1
+                                    ? address.province
+                                    : address.state;
+                            };
+
                             var srvDate = new Date(settings_system.server_time);
                             var clientDate = new Date();
 

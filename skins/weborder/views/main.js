@@ -78,6 +78,7 @@ define(["done_view", "generator"], function(done_view) {
         },
         events: {
             'click #popup .cancel': 'hide_popup',
+            'click .popup .shadow-bg': 'hide_popup',
             'click .change_establishment': 'change_establishment'
         },
         content_change: function() {

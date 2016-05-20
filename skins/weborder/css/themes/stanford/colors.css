@@ -59,7 +59,8 @@ input[type="radio"]:checked + .radio::before,
 .radio[checked="checked"]::before,
 .checkbox.checked::before,
 .radio.checked::before,
-#popup_ok[id] {
+#popup_ok[id],
+.about-box .image-point.selected {
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #8C1515), color-stop(1, #660F0F));
   background: -o-linear-gradient(bottom, #8C1515 0%, #660F0F 100%);
   background: -moz-linear-gradient(bottom, #8C1515 0%, #660F0F 100%);
@@ -68,9 +69,12 @@ input[type="radio"]:checked + .radio::before,
   background: linear-gradient(to bottom, #8C1515 0%, #660F0F 100%);
 }
 /* [primary_button_highlighted] */
-.btn:hover,
-.btn-qty:hover,
-#popup_ok[id]:hover {
+.btn:active,
+.btn:focus,
+.btn-qty:active,
+.btn-qty:focus,
+#popup_ok[id]:active,
+#popup_ok[id]:focus {
   background: #660F0F;
 }
 /* [primary_background] main background ('body' tag) */
@@ -86,7 +90,8 @@ body,
 /* [primary_border] primary border */
 .primary-border[class],
 .input,
-.modifier_class_wrapper {
+.modifier_class_wrapper,
+.header-underline {
   border-color: #D7D8D9;
 }
 .tab.active::before {

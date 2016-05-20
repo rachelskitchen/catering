@@ -1582,17 +1582,25 @@ define(["main_router"], function(main_router) {
             });
 
             this.prepare('store_info', function() {
+                var stores = this.getStoresForMap();
+
                 App.Data.mainModel.set({
                     contentClass: '',
                     content: {
                         modelName: 'StoreInfo',
                         mod: 'Map',
+                        collection: stores,
                         className: 'map',
                         cacheId: true
                     }
                 });
 
                 this.change_page();
+
+                if (stores.request.state() == 'pending') {
+                    App.Data.mainModel.trigger('loadStarted');
+                    stores.request.then(App.Data.mainModel.trigger.bind(App.Data.mainModel, 'loadCompleted'));
+                }
             });
         },
         about: function() {

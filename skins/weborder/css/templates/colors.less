@@ -69,14 +69,15 @@ input[type="radio"]:checked + .radio::before,
 .radio[checked="checked"]::before,
 .checkbox.checked::before,
 .radio.checked::before,
-#popup_ok[id] {
+#popup_ok[id],
+.about-box .image-point.selected {
     .resolve-background(@primary_button);
 }
 
 /* [primary_button_highlighted] */
-.btn:hover,
-.btn-qty:hover,
-#popup_ok[id]:hover  {
+.btn:active, .btn:focus,
+.btn-qty:active, .btn-qty:focus,
+#popup_ok[id]:active, #popup_ok[id]:focus  {
     .resolve-background(@primary_button_highlighted);
 }
 
@@ -96,7 +97,8 @@ body,
 /* [primary_border] primary border */
 .primary-border[class],
 .input,
-.modifier_class_wrapper {
+.modifier_class_wrapper,
+.header-underline {
     .resolve-border-color(@primary_border);
 }
 

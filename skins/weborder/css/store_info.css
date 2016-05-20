@@ -1,0 +1,136 @@
+.store-info {
+    padding: 8px 25px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+}
+
+.store-info .left-col {
+    height: 100%;
+    min-width: 275px;
+    padding-right: 25px;
+}
+
+.store-info .right-col {
+    margin-left: 300px;
+}
+
+.store-info .header-underline {
+    margin-bottom: 29px;
+}
+
+.store-info.map-box .left-col {
+    width: 275px;
+    position: relative;
+}
+
+.about-box .left-col * {
+    vertical-align: top;
+}
+
+.about-box .inline-block {
+    line-height: 1.3;
+}
+
+.about-box .block {
+    margin-bottom: 15px;
+}
+
+.about-box .desc {
+    line-height: 1.5;
+}
+
+.about-box .label {
+    display: inline-block;
+    min-width: 70px;
+}
+
+.about-box .weekDay {
+    display: inline-block;
+    min-width: 60px;
+}
+
+.about-box .day-line {
+    margin-bottom: 5px;
+}
+
+.about-box .closed {
+    text-transform: uppercase;
+}
+
+.about-box .images {
+    width: 80%;
+    max-width: 640px;
+    height: 320px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.about-box .points {
+    margin: 15px auto 20px;
+}
+
+.about-box .image-point {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin: 3px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.about-box .app-gallery-scroll,
+.about-box .app-gallery-scroll:active {
+    width: 50%;
+    background: transparent;
+}
+
+.about-box .app-gallery-scroll:before {
+    display: none;
+}
+
+.map-box .stores-box {
+    width: 275px;
+    position: absolute;
+    top: 77px;
+    bottom: 0;
+    overflow-y: auto;
+}
+
+.map-box .right-col {
+    height: 100%;
+    position: relative;
+}
+
+.map-box .store-item {
+    margin-bottom: 15px;
+    cursor: pointer;
+}
+
+.map-box .store-item > * {
+    vertical-align: top;
+}
+
+.map-box .radio {
+    margin-right: 10px;
+}
+
+.map-box .name {
+    margin-bottom: 5px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#mapBox {
+    position: absolute;
+    left: 0;
+    top: 77px;
+    bottom: 76px;
+    right: 0;
+}
