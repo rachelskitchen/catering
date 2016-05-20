@@ -2740,9 +2740,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * @returns {object} address object.
          */
         getCustomerAddress: function() {
-            var customer = App.Data.customer.toJSON(),
-                shipping_address = App.Data.customer.isDefaultShippingAddress() ? customer.addresses.length - 1 : customer.shipping_address,
-                address = customer.addresses[shipping_address];
+            var addresses = App.Data.customer.get('addresses').getSelectedAddress().toJSON();
 
             return {
                 // here we need only the following fields (no need for extra fields from profile address.

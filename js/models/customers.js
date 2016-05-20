@@ -94,12 +94,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
              */
             addresses: [],
             /**
-             * Index of address selected for shipping. -1 means no address selected.
-             * @type {number}
-             * @default -1
-             */
-            shipping_address: -1,
-            /**
              * Array of available shipping services. This array depends on order items.
              * @type {Array}
              * @default []
@@ -698,9 +692,12 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             docCookies.removeItem(cookieName, cookiePath, cookieDomain);
 
-            for(var attr in this.defaults) {
-                this.set(attr, this.defaults[attr]);
+            for (var attr in this.defaults) {
+                if (attr != 'addresses') {
+                    this.set(attr, this.defaults[attr]);
+                }
             }
+            this.get('addresses').removeProfileAddresses();
 
             this.removePayments();
             this.removeGiftCards();
@@ -1948,6 +1945,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         {
             model: App.Models.CustomerAddress,
             initialize: function() {
+                this.listenTo(this, 'change:selected', this.radioSelect);
                 this.listenTo(App.Data.myorder.checkout, 'change:dining_option', this.changeSelection);
             },
             /**
@@ -2074,6 +2072,16 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                         return model.get('dining_option') == dining_option && model.set('selected', true);
                     })
                 }
+            },
+            radioSelect: function(model, selected) {
+                selected && this.some(function(el) {
+                    el !== model && el.get('selected') && el.set('selected', false);
+                })
+            },
+            removeProfileAddresses: function() {
+                this.remove(this.filter(function(model) {
+                    return model.get('id') !== null;
+                }))
             }
         });
 

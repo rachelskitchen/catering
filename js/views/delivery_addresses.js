@@ -84,21 +84,6 @@ define(['backbone', 'factory'], function(Backbone) {
             'input[name=zipcode]': 'value: zipcode, pattern: /^((\\w|\\s){0,20})$/', // all requirements are in Bug 33655
             '.zip-label-text': 'text: select(equal(country, "US"), _lp_PROFILE_ZIP_CODE, _lp_PROFILE_POSTAL_CODE)'
         },
-        computeds: {
-            zipcodeValue: {
-                deps: ['customer_shippingAddressIndex', 'customer_deliveryAddressIndex', 'customer_addresses'],
-                get: function(customer_shippingAddressIndex, customer_deliveryAddressIndex, customer_addresses) {
-                    if (customer_addresses.length > 0) {
-                        var addr_index = customer_deliveryAddressIndex;
-                        if (this.options.checkout.get('dining_option')  === 'DINING_OPTION_SHIPPING') {
-                            addr_index = customer_shippingAddressIndex;
-                        }
-                        return _.isUndefined(customer_addresses[addr_index]) ? "" : customer_addresses[addr_index].zipcode;
-                    }
-                    return '';
-                }
-            }
-        },
         events: {
             'change select.country': 'countryChange',
             'change select.states': 'changeState',
@@ -195,6 +180,16 @@ define(['backbone', 'factory'], function(Backbone) {
         events: {
             'change #addresses': 'updateAddress'
         },
+        bindingSources: _.extend({}, AddressView.prototype.bindingSources, {
+            addresses: function() {
+                var model = new Backbone.Model({selected: null}),
+                    addresses = App.Data.customer.get('addresses');
+                model.listenTo(addresses, 'change:selected', function(addr, value) {
+                    model.trigger('change:selected');
+                });
+                return model;
+            }
+        }),
         computeds: {
             /**
              * Indicates whether the user is logged in.
@@ -206,13 +201,23 @@ define(['backbone', 'factory'], function(Backbone) {
                 }
             },
             /**
+             * Indicates whether the profile address is selected.
+             */
+            isProfileAddressSelected: {
+                deps: ['customer_addresses', 'addresses_selected'],
+                get: function(customer_addresses) {
+                    return customer_addresses.isProfileAddressSelected();
+                }
+            },
+            /**
              * Indicates whether the address selection drop-down list should be shown.
              */
             showAddressSelection: {
                 deps: ['isAuthorized', 'customer_addresses', 'checkout_dining_option'],
                 get: function(isAuthorized, customer_addresses, checkout_dining_option) {
-                    return isAuthorized && customer_addresses.filter(function(addr, index) {
-                        return index > 2 && addr && addr.street_1 && addr.city && addr.country && addr.zipcode
+                    return isAuthorized && customer_addresses.filter(function(addr) {
+                        addr = addr.toJSON();
+                        return addr.id !== null && addr.street_1 && addr.city && addr.country && addr.zipcode
                             && (checkout_dining_option == 'DINING_OPTION_DELIVERY' ? addr.country == App.Settings.address.country : true)
                             && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true);
                     }).length;
@@ -222,9 +227,9 @@ define(['backbone', 'factory'], function(Backbone) {
              * Indicates whether the address edit form should be shown.
              */
             showAddressEdit: {
-                deps: ['isAuthorized', 'customer_shipping_address', 'showAddressSelection'],
-                get: function(isAuthorized, customer_shipping_address, showAddressSelection) {
-                    return !isAuthorized || !this.options.customer.get('addresses').isProfileAddressSelected() || !showAddressSelection;
+                deps: ['isAuthorized', 'isProfileAddressSelected', 'showAddressSelection'],
+                get: function(isAuthorized, isProfileAddressSelected, showAddressSelection) {
+                    return !isAuthorized || !isProfileAddressSelected || !showAddressSelection;
                 }
             }
         },
@@ -331,9 +336,23 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         bindings: {
             ':el': 'toggle: showAddressSelection', // wrapper of the address selection drop-down
-            '#addresses': 'value: customer_shipping_address', // the address selection drop-down
+            '#addresses': 'value: selectedAddressId', // the address selection drop-down
         },
-        computeds: _.extend({}, DeliveryAddressesView.prototype.computeds),
+        computeds: _.extend({}, DeliveryAddressesView.prototype.computeds, {
+            selectedAddressId: {
+                deps: ['customer_addresses'],
+                get: function(customer_addresses) {
+                    var selectedAddr = customer_addresses.getSelectedAddress();
+                    return selectedAddr ? selectedAddr.get('id') : 0;
+                },
+                set: function(value) {
+                    value = Number(value);
+                    var addresses = this.getBinding('customer_addresses'),
+                        addr = value ? addresses.findWhere({id: value}) : addresses.findWhere({dining_option: this.getBinding('checkout_dining_option')});
+                    addr && addr.set('selected', true);
+                }
+            }
+        }),
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
 
@@ -358,12 +377,13 @@ define(['backbone', 'factory'], function(Backbone) {
 
             var addresses = customer.get('addresses'),
                 optionsStr = '',
-                options = _.map(addresses, function(addr, index) {
-                    if (addr && addr.street_1 && index > 2) {
+                options = addresses.map(function(addr) {
+                    addr = addr.toJSON();
+                    if (addr.id !== null && addr.street_1) {
                         return addr && addr.street_1 && addr.city && addr.country && addr.zipcode
                             && (dining_option == 'DINING_OPTION_DELIVERY' ? addr.country == App.Settings.address.country : true)
                             && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true)
-                            ? {label: addr.street_1, value: index} : undefined;
+                            ? {label: addr.street_1, value: addr.id} : undefined;
                     }
                     else {
                         return undefined;
@@ -374,7 +394,8 @@ define(['backbone', 'factory'], function(Backbone) {
 
             if (options.length) {
                 if (this.options.address_index == -1) { // default profile address should be selected
-                    customer.set('shipping_address', options[0].value);
+                    var addr = addresses.findWhere({id: options[0].value});
+                    addr && addr.set('selected', true);
                     delete this.options.address_index;
                 }
 
@@ -384,7 +405,6 @@ define(['backbone', 'factory'], function(Backbone) {
                 optionsStr += '<option value="' + App.Data.myorder.getShippingAddress(dining_option) + '">Enter New Address</option>';
 
                 this.$('#addresses').html(optionsStr);
-                customer.trigger('change:shipping_address');
             }
         },
         /**
