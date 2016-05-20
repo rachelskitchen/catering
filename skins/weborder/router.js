@@ -564,7 +564,7 @@ define(["main_router"], function(main_router) {
             this.prepare('checkout', function() {
                 this.listenTo(App.Data.customer, 'change:access_token', function() {
                     // update shipping address on login/logout
-                    App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+                    App.Data.customer.get('addresses').changeSelection(App.Data.myorder.checkout.get('dining_option'));
                 });
 
                 if(!App.Data.card) {
@@ -575,9 +575,9 @@ define(["main_router"], function(main_router) {
 
                 var settings = App.Data.settings.get('settings_system');
 
-                if (!App.Data.customer.isProfileAddressSelected()) {
+                if (!App.Data.customer.get('addresses').isProfileAddressSelected()) {
                     // Need to specify shipping address (Bug 34676)
-                    App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+                    App.Data.customer.get('addresses').changeSelection(App.Data.myorder.checkout.get('dining_option'));
                 }
 
                 App.Data.mainModel.set('mod', 'Main');

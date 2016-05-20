@@ -1310,7 +1310,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             this.checkout = new App.Models.Checkout();
             this.checkout.set('dining_option', App.Settings.default_dining_option);
 
-            this.listenTo(this.checkout, 'change:dining_option', this.setShippingAddress, this);
             this.listenTo(this.checkout, 'change:dining_option', this.change_dining_option, this);
 
             this.listenTo(this, 'add', this.onModelAdded);
@@ -2735,27 +2734,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             };
 
             return shipping_addresses[dining_option] !== undefined ? shipping_addresses[dining_option] : customer.defaults.shipping_address;
-        },
-        /*
-         * Updates App.Data.customer.attributes.shipping_address according to the specified dining option.
-         * If profle address is selected, do not change it.
-         * @param {App.Models.Checkout} model - {@link App.Collections.Myorders#checkout} object
-         * @param {string} value - dining option
-         * @returns {numder} index of selected shipping address
-         */
-        setShippingAddress: function(model, value) {
-            var customer = App.Data.customer;
-
-            if (!customer) {
-                return;
-            }
-
-            // if profile address is selected, do not change the selection
-            if (!customer.isProfileAddressSelected()) {
-                customer.set('shipping_address', this.getShippingAddress(value));
-            }
-
-            return customer.get('shipping_address');
         },
         /**
          * Returns customer address for sending to create_order_and_pay/.
