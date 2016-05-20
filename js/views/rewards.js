@@ -210,6 +210,10 @@
             this.listenTo(this.model, 'onResetData', function() {
                 self.remove();
             });
+            this.listenTo(this.appData.mainModel, 'change:popup', function() {
+                var selectedCard = self.options.rewards.findWhere({selected: true});                
+                !selectedCard && self.apply();
+            });
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
 
