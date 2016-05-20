@@ -374,10 +374,16 @@ define(["main_router"], function(main_router) {
 
             // onApplyRewardsCard event occurs when Rewards Card's 'Apply' button is clicked on #checkout page
             this.listenTo(App.Data.myorder.rewardsCard, 'onApplyRewardsCard', function() {
+                var rewardsCard = App.Data.myorder.rewardsCard,
+                    customer = App.Data.customer;
+                if (!rewardsCard.get('number') && customer.isAuthorized() && customer.get('rewardCards').length) {
+                    rewardsCard.set('number', customer.get('rewardCards').at(0).get('number'));
+                }
                 App.Data.mainModel.set('popup', {
                     modelName: 'Rewards',
                     mod: 'Card',
-                    model: App.Data.myorder.rewardsCard,
+                    model: rewardsCard,
+                    customer: customer,
                     className: 'rewards-info text-left'
                 });
             });
@@ -648,6 +654,11 @@ define(["main_router"], function(main_router) {
         },
         checkout: function() {
             this.prepare('checkout', function() {
+                this.listenTo(App.Data.customer, 'change:access_token', function() {
+                    // update shipping address on login/logout
+                    App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+                });
+
                 if(!App.Data.card) {
                     App.Data.card = new App.Models.Card;
                 }

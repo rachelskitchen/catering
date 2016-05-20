@@ -183,13 +183,6 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             return qty;
         },
         /**
-         * Clone product set, deep clonning is used
-         * @return {Object} - new product set object
-         */
-        clone: function() {
-            return this.deepClone();
-        },
-        /**
          * Get json for cart_totals/create_order_and_pay requests
          * @param {boolean} for_discount = true when cart totals is used, false - when create_order_and_pay request used
          * @return {Object} - json
@@ -229,13 +222,6 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
      * @lends App.Collections.ProductSetModels.prototype
      */
     {
-        /**
-         * Clone product collection, deep clonning is used
-         * @return {Object} - new collection object
-         */
-        clone: function() {
-            return this.deepClone();
-        }
     });
 
     /**
@@ -298,13 +284,6 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
                     prod_set.addJSON(pset);
                     self.add(prod_set);
                 });
-        },
-        /**
-         * Clone product collection, deep clonning is used
-         * @return {object} - new collection object
-         */
-        clone: function() {
-            return this.deepClone();
         },
         /**
          * Get all selected products.

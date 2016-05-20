@@ -120,7 +120,15 @@
         }
     });
 
+    var RewardsCardView = App.Views.CoreRewardsView.CoreRewardsCardView.extend({
+        bindings: {
+            '.reward_card_number': 'classes: {disabled: length(customer_rewardCards)}',
+            '.rewards-input': 'value: number, events: ["input"], disabled: length(customer_rewardCards)'
+        }
+    });
+
     return new (require('factory'))(rewards_view.initViews.bind(rewards_view), function() {
         App.Views.RewardsView.RewardsInfoView = RewardsInfoView;
+        App.Views.RewardsView.RewardsCardView = RewardsCardView;
     });
 });

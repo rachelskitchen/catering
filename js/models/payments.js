@@ -141,13 +141,25 @@ define(['backbone'], function(Backbone) {
             cvv: ''
         },
         /**
-         * Makes the payment token is selected if `is_primary` attribute is `true`.
+         * Initialization flow
          */
         initialize: function() {
-            this.get('is_primary') && this.set('selected', true);
+            this.setPrimaryAsSelected();
             this.setOriginalAttributes();
 
             Backbone.Model.prototype.initialize.apply(this, arguments);
+        },
+        /**
+         * Makes the payment token is selected if `is_primary` attribute is `true`
+         */
+        setPrimaryAsSelected: function() {
+            this.get('is_primary') && this.set('selected', true);
+        },
+        /**
+         * Makes the payment token is primary if `selected` attribute is `true`
+         */
+        setSelectedAsPrimary: function() {
+            this.get('selected') && this.set('is_primary', true);
         },
         /**
          * Reverts model's original attrbutes
@@ -396,7 +408,8 @@ define(['backbone'], function(Backbone) {
             }
 
             var payment = !this.ignoreSelectedToken ? this.getSelectedPayment() : null,
-                cardInfo = _.isObject(order.paymentInfo) && order.paymentInfo.cardInfo;
+                cardInfo = _.isObject(order.paymentInfo) && order.paymentInfo.cardInfo,
+                self = this;
 
             if (_.isObject(cardInfo)) {
                 if (payment) {
@@ -412,7 +425,16 @@ define(['backbone'], function(Backbone) {
                 data: JSON.stringify(order),
                 headers: authorizationHeader,
                 contentType: "application/json",
-                success: new Function(),           // to override global ajax success handler
+                success: function() {
+                    // if selected customer's payment exists set it as primary
+                    if (payment) {
+                        payment.setSelectedAsPrimary();
+
+                        self.each(function(model) {
+                            model.setOriginalAttributes();
+                        });
+                    }
+                },
                 error: new Function()              // to override global ajax error handler
             });
         },
