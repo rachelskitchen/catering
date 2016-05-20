@@ -6,14 +6,6 @@
     overflow-y: auto;
 }
 
-.checkout-order-details .title {
-    padding: 13px 25px;
-    border-width: 1px 0;
-    border-style: solid;
-    font-size: 18px;
-    font-weight: 600;
-}
-
 .checkout-order-details .order-details,
 .checkout-order-details .payment-info {
     padding: 0 25px 25px;

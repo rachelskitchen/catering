@@ -89,9 +89,6 @@ define(["main_router"], function(main_router) {
                 });
                 ests.getModelForView().set('clientName', mainModel.get('clientName'));
 
-                // Once the route is initialized need to set profile panel
-                this.listenToOnce(this, 'initialized', this.initProfilePanel.bind(this));
-
                 // init payments handlers
                 !App.Data.settings.get('isMaintenance') && this.paymentsHandlers();
 
@@ -110,6 +107,11 @@ define(["main_router"], function(main_router) {
         triggerInitializedEvent: function() {
             App.Routers.RevelOrderingRouter.prototype.triggerInitializedEvent.apply(this, arguments);
             App.Data.mainModel.set({customer: App.Data.customer});
+        },
+        initCustomer: function() {
+            App.Routers.RevelOrderingRouter.prototype.initCustomer.apply(this, arguments);
+            // Once the customer is initialized need to set profile panel
+            this.initProfilePanel();
         },
         paymentsHandlers: function() {
             var mainModel = App.Data.mainModel,
@@ -601,7 +603,7 @@ define(["main_router"], function(main_router) {
         about: function() {
             this.prepare('about', function() {
                 if (!App.Data.AboutModel) {
-                    App.Data.AboutModel = new App.Models.AboutModel();
+                    App.Data.aboutModel = new App.Models.AboutModel();
                 }
                 App.Data.header.set('tab_index', 1);
                 App.Data.mainModel.set('mod', 'Main');
@@ -609,9 +611,10 @@ define(["main_router"], function(main_router) {
                     header: headers.main,
                     content: {
                         modelName: 'StoreInfo',
-                        model: App.Data.AboutModel,
-                        mod: 'About',
-                        className: 'about'
+                        model: App.Data.timetables,
+                        mod: 'Main',
+                        about: App.Data.aboutModel,
+                        className: 'store-info about-box'
                     },
                     cart: carts.main
                 });
@@ -620,20 +623,27 @@ define(["main_router"], function(main_router) {
         },
         map: function() {
             this.prepare('map', function() {
+                var stores = this.getStoresForMap();
+
                 App.Data.header.set('tab_index', 2);
                 App.Data.mainModel.set('mod', 'Main');
                 App.Data.mainModel.set({
                     header: headers.main,
                     content: {
                         modelName: 'StoreInfo',
-                        model: App.Data.timetables,
                         mod: 'Map',
-                        className: 'map'
+                        collection: stores,
+                        className: 'store-info map-box'
                     },
                     cart: carts.main
                 });
 
                 this.change_page();
+
+                if (stores.request.state() == 'pending') {
+                    App.Data.mainModel.trigger('loadStarted');
+                    stores.request.then(App.Data.mainModel.trigger.bind(App.Data.mainModel, 'loadCompleted'));
+                }
             });
         },
         checkout: function() {
@@ -725,7 +735,13 @@ define(["main_router"], function(main_router) {
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         },
         profile_edit: function() {
-            this.setProfileEditContent();
+            App.Data.header.set('tab_index', null);
+            App.Data.mainModel.set({
+                mod: 'Main',
+                header: headers.main,
+                cart: carts.main
+            });
+            this.setProfileEditContent(true);
             this.change_page();
         },
         promotions_list: function() {
@@ -739,7 +755,14 @@ define(["main_router"], function(main_router) {
             this.change_page();
         },
         profile_payments: function() {
-            var promises = this.setProfilePaymentsContent();
+            App.Data.header.set('tab_index', null);
+            App.Data.mainModel.set({
+                mod: 'Main',
+                header: headers.main,
+                cart: carts.main
+            });
+
+            var promises = this.setProfilePaymentsContent(true);
 
             if (!promises.length) {
                 return this.navigate('index', true);

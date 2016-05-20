@@ -163,3 +163,65 @@
     width: 100px;
     margin: 0 auto 20px;
 }
+
+.profile-edit {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.profile-edit .cols {
+    position: absolute;
+    top: 51px;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+}
+
+.profile-edit .col-left {
+    width: 50%;
+    padding: 8px 15px 8px 25px;
+}
+
+.profile-edit .col-right {
+    width: 50%;
+    padding: 8px 25px 8px 15px;
+}
+
+.profile-edit .label {
+    padding: 15px 0 1px 14px;
+    font-size: 13px;
+}
+
+.profile-edit .select-wrapper {
+    max-width: 308px;
+    width: 100%;
+}
+
+.profile-edit .input,
+.profile-edit .select-wrapper[class] select {
+    max-width: 300px;
+    width: 100%;
+}
+
+.profile-edit .header-underline {
+    max-width: 320px;
+    width: 100%;
+}
+
+.profile-edit .basic-details-box {
+    margin-bottom: 20px;
+}
+
+.profile-edit .phone-privacy {
+    display: block;
+    padding-left: 14px;
+    font-size: 12px;
+}
+.profile-edit .update-btn {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}

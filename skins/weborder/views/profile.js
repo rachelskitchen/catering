@@ -103,6 +103,12 @@ define(["profile_view"], function(profile_view) {
         }
     });
 
+   var ProfileEditView =  App.Views.CoreProfileView.CoreProfileEditView.extend({
+        bindings: {
+            '.update-btn': 'classes: {disabled: updateBtn_disabled}, text: select(ui_show_response, _lp_PROFILE_UPDATE_SUCCESSFUL, _lp_UPDATE)'
+        }
+    });
+
     function creditCardType(card_type) {
         var code = _.invert(ACCEPTABLE_CREDIT_CARD_TYPES)[card_type];
         return _loc.CREDIT_CARD_TYPES[code];
@@ -111,5 +117,6 @@ define(["profile_view"], function(profile_view) {
     return new (require('factory'))(profile_view.initViews.bind(profile_view), function() {
         App.Views.ProfileView.ProfilePaymentsSelectionView = ProfilePaymentsSelectionView;
         App.Views.ProfileView.ProfileGiftCardsSelectionView = ProfileGiftCardsSelectionView;
+        App.Views.ProfileView.ProfileEditView = ProfileEditView;
     });
 });

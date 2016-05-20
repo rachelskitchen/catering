@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory"], function(Backbone) {
+define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
     'use strict';
     // flag for maintenance mode
     var isMaintenance;
@@ -636,6 +636,7 @@ define(["backbone", "factory"], function(Backbone) {
                     ests.models[0].get("id") != App.Data.settings.get("establishment"))) {
                     self.getEstablishmentsCallback();
                 }
+                ests.trigger('onEstablishmentsReceived');
             });
         },
         /**
@@ -825,6 +826,59 @@ define(["backbone", "factory"], function(Backbone) {
             }
 
             return promises;
+        },
+        /**
+         * Returns collection of stores which can be shown on map
+         */
+        getStoresForMap: function() {
+            var stores = new Backbone.RadioCollection(),
+                ests = App.Data.establishments;
+
+            stores.request = Backbone.$.Deferred();
+
+            // set stores if they are already received
+            if (ests.length) {
+                setData();
+            }
+
+            // set stores once establishments are received.
+            stores.listenTo(ests, 'onEstablishmentsReceived', setData);
+
+            return stores;
+
+            function setData() {
+                var settings = App.Data.settings,
+                    _stores = [];
+                ests.each(function(store) {
+                    store = store.toJSON();
+                    var selected = store.id === settings.get('establishment');
+                    if (typeof store.latitude == 'number' && !isNaN(store.latitude)
+                        && typeof store.longitude == 'number' && !isNaN(store.longitude)) {
+                        var data = {
+                            id: store.id,
+                            name: store.business_name || store.name,
+                            line_1: store.line_1,
+                            line_2: store.line_2,
+                            city: store.city_name,
+                            province: store.province,
+                            state: store.state,
+                            country: store.country,
+                            zipcode: store.zipcode,
+                            latitude: store.latitude,
+                            longitude: store.longitude,
+                            selected: selected
+                        };
+                        data.region = settings.getRegion(data);
+                        if (selected) {
+                            _stores.unshift(data);
+                        } else {
+                            _stores.push(data);
+                        }
+                    }
+                });
+                stores.reset(_stores);
+                stores.request.resolve();
+            }
         }
     });
 
@@ -905,7 +959,7 @@ define(["backbone", "factory"], function(Backbone) {
                 mainModel.trigger('loadCompleted');
             }
         },
-        setProfileEditContent: function() {
+        setProfileEditContent: function(doNotChangeMod) {
             var customer = App.Data.customer,
                 address = new Backbone.Model(customer.getProfileAddress() || customer.getEmptyAddress()),
                 ui = new Backbone.Model({show_response: false}),
@@ -915,21 +969,36 @@ define(["backbone", "factory"], function(Backbone) {
                 updateBtn = new Backbone.Model({disabled: true}),
                 self = this;
 
-            App.Data.mainModel.set({
-                mod: 'Profile',
-                className: 'profile-container',
-                profile_title: _loc.PROFILE_EDIT_TITLE,
-                profile_content: {
-                    modelName: 'Profile',
-                    mod: 'Edit',
-                    model: customer,
-                    address: address,
-                    updateAction: update,
-                    updateBtn: updateBtn,
-                    ui: ui,
-                    className: 'profile-edit text-center'
-                }
-            });
+            if (doNotChangeMod) {
+                App.Data.mainModel.set({
+                    content: {
+                        modelName: 'Profile',
+                        mod: 'Edit',
+                        model: customer,
+                        address: address,
+                        updateAction: update,
+                        updateBtn: updateBtn,
+                        ui: ui,
+                        className: 'profile-edit'
+                    }
+                });
+            } else {
+                App.Data.mainModel.set({
+                    mod: 'Profile',
+                    className: 'profile-container',
+                    profile_title: _loc.PROFILE_EDIT_TITLE,
+                    profile_content: {
+                        modelName: 'Profile',
+                        mod: 'Edit',
+                        model: customer,
+                        address: address,
+                        updateAction: update,
+                        updateBtn: updateBtn,
+                        ui: ui,
+                        className: 'profile-edit text-center'
+                    }
+                });
+            }
 
             window.setTimeout(function() {
                 var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email',
@@ -1035,26 +1104,41 @@ define(["backbone", "factory"], function(Backbone) {
                 }
             }
         },
-        setProfilePaymentsContent: function() {
+        setProfilePaymentsContent: function(doNotChangeMod) {
             var promises = this.getProfilePaymentsPromises(),
                 customer = App.Data.customer;
 
             if (promises.length) {
-                App.Data.mainModel.set({
-                    mod: 'Profile',
-                    className: 'profile-container',
-                    profile_title: _loc.PAYMENT_METHODS,
-                    profile_content: {
-                        modelName: 'Profile',
-                        mod: 'Payments',
-                        model: customer,
-                        changeToken: changeToken,
-                        ui: new Backbone.Model({show_response: false}),
-                        removeToken: removeToken,
-                        unlinkGiftCard: unlinkGiftCard,
-                        className: 'profile-edit text-center'
-                    }
-                });
+                if (doNotChangeMod) {
+                     App.Data.mainModel.set({
+                        content: {
+                            modelName: 'Profile',
+                            mod: 'Payments',
+                            model: customer,
+                            changeToken: changeToken,
+                            ui: new Backbone.Model({show_response: false}),
+                            removeToken: removeToken,
+                            unlinkGiftCard: unlinkGiftCard,
+                            className: 'profile-edit'
+                        }
+                    });
+                } else {
+                    App.Data.mainModel.set({
+                        mod: 'Profile',
+                        className: 'profile-container',
+                        profile_title: _loc.PAYMENT_METHODS,
+                        profile_content: {
+                            modelName: 'Profile',
+                            mod: 'Payments',
+                            model: customer,
+                            changeToken: changeToken,
+                            ui: new Backbone.Model({show_response: false}),
+                            removeToken: removeToken,
+                            unlinkGiftCard: unlinkGiftCard,
+                            className: 'profile-edit text-center'
+                        }
+                    });
+                }
             }
 
             return promises;
