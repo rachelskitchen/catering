@@ -273,37 +273,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.get('addresses').loadAddresses();
         },
         /**
-         * Converts address object literal to full address line.
-         * @param {number} index=index of last element - index of addresses array
-         * @see {@link http://mediawiki.middlebury.edu/wiki/LIS/Address_Standards} for detail format information.
-         * @returns {string} full address line
-         */
-        address_str: function(index) {
-            var addresses = this.get('addresses'),
-                settings = App.Settings,
-                str = [];
-
-            if (!Array.isArray(addresses) || addresses.length <= 0) {
-                return '';
-            }
-
-            index = index >= 0 ? index : addresses.length - 1;
-
-            addresses = addresses[index];
-
-            if (!(addresses instanceof Object)) {
-                return '';
-            }
-
-            addresses.street_1 && str.push(addresses.street_1);
-            addresses.street_2 && str.push(addresses.street_2);
-            addresses.city && str.push(addresses.city);
-            settings.address && settings.address.state && addresses.state && str.push(addresses.state);
-            addresses.zipcode && str.push(addresses.zipcode);
-
-            return str.join(', ');
-        },
-        /**
          * Validates values of address object properties `street_1`, `city`, `state`, `province`, `zipcode`.
          * @returns {Array} empty array if all properties pass validation or array with invalid properties.
          */
@@ -502,53 +471,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING' || dining_option === 'DINING_OPTION_CATERING',
                 shipping_address = this.get('shipping_address');
             return (shipping_address == this.get('deliveryAddressIndex') || shipping_address == this.get('shippingAddressIndex') || shipping_address == this.get('cateringAddressIndex')) && isDelivery ? true : false;
-        },
-        /**
-         * Checks whether the selected address is from user profile.
-         * @returns {boolean}
-         */
-        isProfileAddressSelected: function() {
-            return this.get('addresses').get('id') !== null;
-        },
-        /**
-         * Get address set for shipping/delivery or default address set in backend.
-         * @param {boolean} [fromProfile] - indicates whether to use fields from profile address
-         * @returns {object} with state, province, city, street_1, street_2, zipcode, contry fields
-         */
-        getCheckoutAddress: function(fromProfile) {
-            var customer = this.toJSON(),
-                shipping_address = customer.shipping_address,
-                reverse_addr;
-
-            // if shipping address isn't selected take last index
-            if (this.isDefaultShippingAddress()) {
-                shipping_address = customer.addresses.length - 1;
-            } else {
-                var addr = customer.addresses[shipping_address];
-                customer.addresses.some(function(el, index) {
-                    return index != shipping_address && index != customer.profileAddressIndex && (reverse_addr = el); // use the first existing address
-                });
-                if (!reverse_addr && fromProfile && this.isAuthorized()) {
-                    reverse_addr = customer.addresses[customer.profileAddressIndex]; // use profile address
-                }
-                addr == undefined && (addr = {});
-                if (reverse_addr) {
-                    if ((addr.country && reverse_addr.country && addr.country == reverse_addr.country) ||
-                        (!addr.country && reverse_addr.country == App.Settings.address.country)) { //if country was changed then we can't copy address
-                        if (!addr.province && !addr.street_1 && !addr.street_2 && !addr.city && !addr.zipcode) { //and we will copy address if all target fields are empty only
-                            return _.extend(addr, { state: reverse_addr.state,
-                                                    province: reverse_addr.province,
-                                                    street_1: reverse_addr.street_1,
-                                                    street_2: reverse_addr.street_2,
-                                                    city: reverse_addr.city,
-                                                    zipcode: reverse_addr.zipcode });
-                        }
-                    }
-                }
-            }
-
-            // return last address
-            return customer.addresses[shipping_address] && typeof customer.addresses[shipping_address].street_1 === 'string' ? customer.addresses[shipping_address] : undefined;
         },
         /**
          * Validates `first_name`, `last_name`, `email` and `password` attributes for Sign Up.
@@ -1950,7 +1872,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 province: '',
                 street_1: '',
                 street_2: '',
-                city: ''
+                city: '',
+                address: ''
             },
             /**
              * Converts the address objects from API to model format.
@@ -2001,12 +1924,32 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
                 return address;
             },
+            /**
+             * Converts address to full address line.
+             * @see {@link http://mediawiki.middlebury.edu/wiki/LIS/Address_Standards} for detail format information.
+             * @returns {string} full address line
+             */
+            toString: function(address) {
+                var address = address || this.toJSON(),
+                    settings = App.Settings,
+                    str = [];
+                address.street_1 && str.push(address.street_1);
+                address.street_2 && str.push(address.street_2);
+                address.city && str.push(address.city);
+                settings.address && settings.address.state && address.state && str.push(address.state);
+                address.zipcode && str.push(address.zipcode);
+
+                return str.join(', ');
+            },
         });
 
         App.Collections.CustomerAddresses = Backbone.Collection.extend(
 
         {
             model: App.Models.CustomerAddress,
+            initialize: function() {
+                this.listenTo(App.Data.myorder.checkout, 'change:dining_option', this.changeSelection);
+            },
             /**
              * Coverts the array of addresses objects from API to model format.
              * This method gets called when {parse: true} is passed to the collection concstructor.
@@ -2016,6 +1959,19 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
              */
             parse: function(addresses, options) {
                 return _.map(addresses, App.Models.CustomerAddress.prototype.convertFromAPIFormat);
+            },
+            updateFromAPI: function(addresses) {
+                var self = this;
+                // remove from collection addresses not presented in api response
+                this.each(function(model) {
+                    if (model.id !== null && !_.findWhere(addresses, {id: model.id})) {
+                        self.remove(model);
+                    }
+                });
+                // add all addreesses
+                _.each(addresses, function(address) {
+                    self.add(App.Models.CustomerAddress.prototype.convertFromAPIFormat(address));
+                });
             },
             /**
              * Saves addresses to a storage.
@@ -2045,6 +2001,79 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             getDefaultProfileAddress: function() {
                 var addr = this.findWhere({is_primary: true});
                 return addr ? addr.toJSON() : undefined;
+            },
+            getSelectedAddress: function() {
+                return this.findWhere({selected: true});
+            },
+            /**
+             * Checks whether the selected address is from user profile.
+             * @returns {boolean}
+             */
+            isProfileAddressSelected: function() {
+                return this.getSelectedAddress() ? (this.getSelectedAddress().get('id') !== null) : false;
+            },
+            /**
+             * Get address set for shipping/delivery or default address set in backend.
+             * @param {string} [dining_option] - dining option.
+             * @param {boolean} [fromProfile] - indicates whether to use fields from profile address
+             * @returns {object} with state, province, city, street_1, street_2, zipcode, contry fields
+             */
+            getCheckoutAddress: function(dining_option, fromProfile) {
+                var customer = App.Data.customer.toJSON(),
+                    addr = this.getSelectedAddress(),
+                    addrJson,
+                    reverse_addr,
+                    newAddr;
+
+                // if shipping address isn't selected take last index
+                if (!addr) {
+                    addr = this.findWhere({dining_option: dining_option});
+                    if (!addr) {
+                        addr = new App.Models.CustomerAddress({
+                            dining_option: dining_option,
+                            selected: true,
+                            country : App.Settings.address.country,
+                            state: App.Settings.address.state
+                        });
+                        this.add(addr);
+                    }
+                }
+
+                addrJson = addr.toJSON();
+                this.some(function(model, index) {
+                    var el = model.toJSON();
+                    return el.id === null && el.dining_option != dining_option && (reverse_addr = el); // use the first existing address
+                });
+                if (!reverse_addr && fromProfile && this.isAuthorized()) {
+                    reverse_addr = addresses.getDefaultProfileAddress().toJSON(); // use profile address
+                }
+                addrJson == undefined && (addrJson = {});
+                if (reverse_addr) {
+                    if ((addrJson.country && reverse_addr.country && addrJson.country == reverse_addr.country) ||
+                        (!addrJson.country && reverse_addr.country == App.Settings.address.country)) { //if country was changed then we can't copy address
+                        if (!addrJson.province && !addrJson.street_1 && !addrJson.street_2 && !addrJson.city && !addrJson.zipcode) { //and we will copy address if all target fields are empty only
+                            newAddr = _.extend(addrJson, { state: reverse_addr.state,
+                                                    province: reverse_addr.province,
+                                                    street_1: reverse_addr.street_1,
+                                                    street_2: reverse_addr.street_2,
+                                                    city: reverse_addr.city,
+                                                    zipcode: reverse_addr.zipcode });
+                            addr.set(newAddr);
+                            return newAddr;
+                        }
+                    }
+                }
+
+                return addrJson && typeof addrJson.street_1 === 'string' ? addrJson : undefined;
+            },
+            changeSelection: function(dining_option) {
+                var selectedAddr = this.getSelectedAddress();
+                if (!this.isProfileAddressSelected()) {
+                    this.invoke('set', {selected: false});
+                    this.some(function(model) {
+                        return model.get('dining_option') == dining_option && model.set('selected', true);
+                    })
+                }
             }
         });
 

@@ -38,23 +38,26 @@ define(['backbone', 'factory'], function(Backbone) {
         initModel: function() {
             var model = {},
                 customer = this.options.customer,
+                addresses = customer.get('addresses'),
                 checkout = this.options.checkout,
+                dining_option = checkout.get('dining_option'),
                 defaultAddress = App.Settings.address,
                 address;
 
-            if (!customer.isAuthorized() || !customer.isProfileAddressSelected()) { // do not touch profile addresses
-                address = customer.getCheckoutAddress();
+            if (!customer.isAuthorized() || !addresses.isProfileAddressSelected()) { // do not touch profile addresses
+                address = addresses.getCheckoutAddress(dining_option);
                 model = _.extend(model, customer.toJSON());
             }
             if (customer.isAuthorized()) {
                 // use only not fully filled address from profile to populate address fields
                 var fullyFilledAddresses = customer.get('addresses').filter(function(addr) {
+                    addr = addr.toJSON();
                     return addr && addr.street_1 && addr.city && addr.country && addr.zipcode
                         && (checkout.get('dining_option') == 'DINING_OPTION_DELIVERY' ? addr.country == App.Settings.address.country : true)
                         && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true);
                 });
                 if (!fullyFilledAddresses.length) {
-                    address = customer.getCheckoutAddress(true);
+                    address = customer.getCheckoutAddress(dining_option, true);
                     model = _.extend(model, customer.toJSON());
                 }
             }
@@ -141,20 +144,26 @@ define(['backbone', 'factory'], function(Backbone) {
                 shipping_address = customer.get('shipping_address'),
                 addresses = customer.get('addresses'),
                 model = this.model.toJSON(),
-                address;
+                updatedAddressObj,
+                selectedAddress = addresses.getSelectedAddress();
 
-            // do not change profile addresses, only generate address_str
-            if (customer.isProfileAddressSelected()) {
-                addresses[shipping_address].address = customer.address_str(shipping_address);
+            // do not change profile addresses
+            if (addresses.isProfileAddressSelected()) {
                 return;
             }
 
-            // if shipping_address isn't selected take the last index
-            if (customer.isDefaultShippingAddress()) {
-                shipping_address = addresses.length ? addresses.length - 1 : 0;
+            // if shipping_address isn't selected
+            if (!selectedAddress) {
+                var dining_option = this.options.checkout.get('dining_option');
+                selectedAddress = addresses.findWhere({dining_option: dining_option});
+                if (!selectedAddress) {
+                    // create the empty address for the selected dining option
+                    selectedAddress = new App.Models.CustomerAddress({dining_option: dining_option, selected: true});
+                    addresses.add(selectedAddress);
+                }
             }
 
-            address = {
+            updatedAddressObj = {
                 street_1: model.street_1,
                 street_2: model.street_2,
                 city: model.city,
@@ -163,9 +172,9 @@ define(['backbone', 'factory'], function(Backbone) {
                 zipcode: model.zipcode,
                 country: model.country
             };
+            updatedAddressObj.address = selectedAddress.toString(updatedAddressObj);
 
-            addresses[shipping_address] = address;
-            addresses[shipping_address].address = customer.address_str(shipping_address);
+            selectedAddress.set(updatedAddressObj);
         }
     });
 
@@ -215,7 +224,7 @@ define(['backbone', 'factory'], function(Backbone) {
             showAddressEdit: {
                 deps: ['isAuthorized', 'customer_shipping_address', 'showAddressSelection'],
                 get: function(isAuthorized, customer_shipping_address, showAddressSelection) {
-                    return !isAuthorized || !this.options.customer.isProfileAddressSelected() || !showAddressSelection;
+                    return !isAuthorized || !this.options.customer.get('addresses').isProfileAddressSelected() || !showAddressSelection;
                 }
             }
         },
@@ -298,7 +307,8 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         updateAddress: function() {
             App.Views.AddressView.prototype.updateAddress.apply(this, arguments);
-            var model = this.options.customer.getCheckoutAddress();
+            var dining_option = this.options.checkout.get('dining_option'),
+                model = this.options.customer.get('addresses').getCheckoutAddress(dining_option);
             // need to reset shipping services before updating them
             // due to server needs a no shipping service specified to return a new set of shipping services.
             this.options.customer.resetShippingServices();

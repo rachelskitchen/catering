@@ -710,7 +710,7 @@ define(["main_router"], function(main_router) {
 
                 var settings = App.Data.settings.get('settings_system');
 
-                if (!App.Data.customer.isProfileAddressSelected()) {
+                if (!App.Data.customer.get('addresses').isProfileAddressSelected()) {
                     // Need to specify shipping address (Bug 34676)
                     App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
                 }
