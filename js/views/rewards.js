@@ -224,9 +224,7 @@
         },
 
         apply: function() {
-            var rewardsCard = this.collection.rewardsCard;
-            rewardsCard.update(this.model);
-            rewardsCard.trigger('onRedemptionApplied');
+            this.model.trigger('onRedemptionApplied');
         }
     });
 

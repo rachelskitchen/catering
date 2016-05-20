@@ -323,17 +323,15 @@ define(["main_router"], function(main_router) {
                 if (!rewardsCard.get('rewards').length) {
                     App.Data.errors.alert(MSG.NO_REWARDS_AVAILABLE);
                 } else {
-                    var clone = rewardsCard.clone();
-
                     App.Data.mainModel.set('popup', {
                         modelName: 'Rewards',
                         mod: 'Info',
-                        model: clone,
+                        model: rewardsCard,
                         className: 'rewards-info',
                         collection: App.Data.myorder,
-                        balance: clone.get('balance'),
-                        rewards: clone.get('rewards'),
-                        discounts: clone.get('discounts')
+                        balance: rewardsCard.get('balance'),
+                        rewards: rewardsCard.get('rewards'),
+                        discounts: rewardsCard.get('discounts')
                     });
                 }
 
