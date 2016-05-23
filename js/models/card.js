@@ -310,7 +310,8 @@ define(["backbone"], function(Backbone) {
         var billing_address,
             use_profile_address = App.Data.card.get("use_profile_address");
         if (use_profile_address) {
-            return App.Data.customer.get('addresses').getDefaultProfileAddress();
+            billing_address = App.Data.customer.get('addresses').getDefaultProfileAddress();
+            return billing_address ? billing_address.toJSON() : null;
         } else {
             billing_address = App.Data.card.get("billing_address");
             return _.isObject(billing_address) ? billing_address.toJSON() : null;

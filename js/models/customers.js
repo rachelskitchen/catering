@@ -112,30 +112,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
              */
             load_shipping_status: "",
             /**
-             * Index of address used for "Delivery" dining option.
-             * @type {number}
-             * @default 0
-             */
-            deliveryAddressIndex: 0,
-            /**
-             * Index of address used for "Shipping" dining option.
-             * @type {number}
-             * @default 1
-             */
-            shippingAddressIndex: 1,
-            /**
-             * Index of address used for "Catering" dining option.
-             * @type {number}
-             * @default 2
-             */
-            cateringAddressIndex: 2,
-            /**
-             * Index of primary address used in "Profile".
-             * @type {?number}
-             * @default null
-             */
-            profileAddressIndex: 3,
-            /**
              * User's password
              * @type {string}
              * @default ""
@@ -244,11 +220,15 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         loadCustomer: function() {
             var data = getData('customer');
             data = data instanceof Object ? data : {};
-            var rewardCards = data.rewardCards;
+            var rewardCards = data.rewardCards,
+                addresses = data.addresses;
             delete data.rewardCards;
+            delete data.addresses;
             this.set(data);
-            var rewardCardsCol = new App.Collections.RewardCards;
+            var rewardCardsCol = new App.Collections.RewardCards,
+                addressesCol = new App.Collections.CustomerAddresses;
             this.set('rewardCards', rewardCardsCol.addJSON(rewardCards));
+            this.set('addresses', addressesCol.addJSON(addresses));
             var shipping_services = this.get("shipping_services");
             if(Array.isArray(shipping_services) && shipping_services.length && this.get("shipping_selected") > -1) {
                 this.set("load_shipping_status", "restoring", {silent: true});
@@ -258,13 +238,14 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * Saves addresses to a storage.
          */
         saveAddresses: function() {
-            this.get('addresses').saveAddresses();
+            this.get('addresses').saveToStorage();
         },
         /**
          * Loads addresses from a storage.
          */
         loadAddresses: function() {
-            this.get('addresses').loadAddresses();
+            var addresses = this.get('addresses') || this.set('addresses', new App.Collections.CustomerAddresses());
+            this.get('addresses').loadFromStorage();
         },
         /**
          * Validates values of address object properties `street_1`, `city`, `state`, `province`, `zipcode`.
@@ -273,8 +254,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         _check_delivery_fields: function() {
             var settings = App.Settings,
                 empty = [],
-                address = this.get('addresses'),
-                shipping_addr_index = this.isDefaultShippingAddress() ? address.length - 1 : this.get('shipping_address'),
+                address = this.get('addresses').getSelectedAddress().toJSON(),
                 req = {
                     street_1: _loc.PROFILE_ADDRESS_LINE1,
                     city: _loc.PROFILE_CITY,
@@ -283,15 +263,15 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     zipcode: _loc.PROFILE_ZIP_CODE
                 };
 
-            address = address[shipping_addr_index];
-
             // if not USA exclude state property
-            if(address.country != 'US')
+            if (address.country != 'US') {
                 delete req.state;
+            }
             // if not Canada exclude province property
-            if(address.country != 'CA')
+            if (address.country != 'CA') {
                 delete req.province;
-            for(var i in req) {
+            }
+            for (var i in req) {
                 !address[i] && empty.push(req[i]);
             }
 
@@ -324,7 +304,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.PROFILE_EMAIL_ADDRESS);
             !this.get('phone') && err.push(_loc.PROFILE_PHONE);
 
-            if(this.isNewAddressSelected(dining_option)) {
+            if(this.isShippingAddressSelected(dining_option)) {
                 err = err.concat(this._check_delivery_fields());
             }
 
@@ -360,18 +340,18 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         get_shipping_services: function(jqXHR, getShippingOptions) {
             var self = this,
                 data = {},
-                address = this.get('addresses'),
-                shipping_addr_index = this.isDefaultShippingAddress() ? address.length - 1 : this.get('shipping_address');
+                address = this.get('addresseses').getOrderAddress();
 
-            if (!address.length)
+            if (!address) {
                 return;
+            }
 
             // restore saved values
-            if(this.get("load_shipping_status") == "restoring") {
+            if (this.get("load_shipping_status") == "restoring") {
                 return complete();
             }
 
-            data.address = address[shipping_addr_index];
+            data.address = address;
             data.items = [];
             data.establishment = App.Data.settings.get("establishment");
             App.Data.myorder.each(function(model) {
@@ -443,13 +423,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.trigger('change:shipping_services');
         },
         /**
-         * Checks `shipping_address` attribute has default value or not.
-         * @returns {boolean} `true` if `shipping_address` is default or `false` otherwise.
-         */
-        isDefaultShippingAddress: function() {
-            return this.get('shipping_address') === this.defaults.shipping_address;
-        },
-        /**
          * Checks `shipping_selected` attribute has default value or not.
          * @returns {boolean} `true` if `shipping_selected` is default or `false` otherwise.
          */
@@ -457,14 +430,13 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             return this.get('shipping_selected') === this.defaults.shipping_selected;
         },
         /**
-         * Checks `shipping_address` attribute value is new.
+         * Checks whether dining_option requires shipping address and it's selected.
          * @param {string} dining_option - selected order type.
-         * @returns {boolean} true is a new address selected or false if address already exists in DB.
+         * @returns {boolean}
          */
-        isNewAddressSelected: function(dining_option) {
-            var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING' || dining_option === 'DINING_OPTION_CATERING',
-                shipping_address = this.get('shipping_address');
-            return (shipping_address == this.get('deliveryAddressIndex') || shipping_address == this.get('shippingAddressIndex') || shipping_address == this.get('cateringAddressIndex')) && isDelivery ? true : false;
+        isShippingAddressSelected: function(dining_option) {
+            var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING' || dining_option === 'DINING_OPTION_CATERING';
+            return isDelivery && this.get('addresses').isShippingAddressSelected();
         },
         /**
          * Validates `first_name`, `last_name`, `email` and `password` attributes for Sign Up.
@@ -651,7 +623,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     try {
                         delete data.customer.payments;
                         delete data.token.scope;
-                        delete data.addresses;
                     } catch(e) {}
 
                     this.updateCookie(data);
@@ -1397,6 +1368,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 return;
             }
 
+            delete data.addresses;
+
             var expires_in = this.get('keepCookie') ? data.token.expires_in : 0;
 
             docCookies.setItem(cookieName, utf8_to_b64(JSON.stringify(data)), expires_in, cookiePath, cookieDomain, true);
@@ -1959,6 +1932,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             parse: function(addresses, options) {
                 return _.map(addresses, App.Models.CustomerAddress.prototype.convertFromAPIFormat);
             },
+            addJSON: function(data) {
+                data instanceof Array && this.set(data);
+            },
             updateFromAPI: function(addresses) {
                 var self = this;
                 // remove from collection addresses not presented in api response
@@ -1975,13 +1951,13 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             /**
              * Saves addresses to a storage.
              */
-            saveAddresses: function() {
+            saveToStorage: function() {
                 setData('address', new Backbone.Model({addresses: this.toJSON()}), true);
             },
             /**
              * Loads addresses from a storage.
              */
-            loadAddresses: function() {
+            loadFromStorage: function() {
                 var data = getData('address', true);
                 if (data instanceof Object && Array.isArray(data.addresses) && data.addresses.length == 1 && App.skin != App.Skins.RETAIL) {
                     if (data.addresses[0].country != App.Settings.address.country) {
@@ -1993,13 +1969,12 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             },
             /**
              * Returns default profile address.
-             * @returns {?object}
-             *   - default address object, if it exists
+             * @returns {?@link App.Models.CustomerAddress}
+             *   - default address, if it exists
              *   - undefined otherwise
              */
             getDefaultProfileAddress: function() {
-                var addr = this.findWhere({is_primary: true});
-                return addr ? addr.toJSON() : undefined;
+                return this.findWhere({is_primary: true});
             },
             getSelectedAddress: function() {
                 return this.findWhere({selected: true});
@@ -2010,6 +1985,13 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
              */
             isProfileAddressSelected: function() {
                 return this.getSelectedAddress() ? (this.getSelectedAddress().get('id') !== null) : false;
+            },
+            /**
+             * Checks whether the selected address has 'dining_option' attribute.
+             * @returns {Boolean} [description]
+             */
+            isShippingAddressSelected: function() {
+                return this.getSelectedAddress() ? (this.getSelectedAddress().get('dining_option')) : false;
             },
             /**
              * Get address set for shipping/delivery or default address set in backend.
@@ -2064,6 +2046,26 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 }
 
                 return addrJson && typeof addrJson.street_1 === 'string' ? addrJson : undefined;
+            },
+            /**
+             * Returns customer address for sending to create_order_and_pay/.
+             * @returns {object} address object.
+             */
+            getOrderAddress: function() {
+                var address = App.Data.customer.get('addresses').getSelectedAddress().toJSON();
+
+                return {
+                    // here we need only the following fields (no need for extra fields from profile address.
+                    // once Backend receives customer.address.id, it will look for this address in the database, but it could be saved on another instance.)
+                    address: address.address || '',
+                    city: address.city || '',
+                    country: address.country || '',
+                    province: address.province || '',
+                    state: address.state || '',
+                    street_1: address.street_1 || '',
+                    street_2: address.street_2 || '',
+                    zipcode: address.zipcode || ''
+                };
             },
             changeSelection: function(dining_option) {
                 var selectedAddr = this.getSelectedAddress();

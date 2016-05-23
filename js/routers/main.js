@@ -931,7 +931,8 @@ define(["backbone", "factory"], function(Backbone) {
         },
         setProfileEditContent: function() {
             var customer = App.Data.customer,
-                address = new Backbone.Model(customer.getProfileAddress() || customer.getEmptyAddress()),
+                addresses = customer.get('addresses'),
+                address = addresses.getDefaultProfileAddress() || new App.Model.CustomerAddress(),
                 ui = new Backbone.Model({show_response: false}),
                 updateBasicDetails = false,
                 updateAddress = false,
@@ -1280,8 +1281,9 @@ define(["backbone", "factory"], function(Backbone) {
         },
         profileEditContent: function() {
             var customer = App.Data.customer,
+                addresses = customer.get('addresses'),
+                address = addresses.getDefaultProfileAddress() || new App.Model.CustomerAddress(),
                 mainModel = App.Data.mainModel,
-                address = new Backbone.Model(customer.getProfileAddress() || customer.getEmptyAddress()),
                 content = [],
                 updateBasicDetails = false,
                 updateAddress = false,
