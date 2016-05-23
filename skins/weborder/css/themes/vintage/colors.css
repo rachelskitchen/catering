@@ -39,7 +39,8 @@ body,
 .categories label:hover,
 .payment-method.primary-button,
 .payment-method:hover,
-.payment-method:focus {
+.payment-method:focus,
+#search-input:focus + .cancel {
   color: #8A780C;
 }
 #profile-panel .active::before,
@@ -143,6 +144,7 @@ body,
   background: #FAFAFA;
 }
 /* [card_background] stanford card plan background, card balance background */
+.card-bg[class],
 .stanford-plans-box .stanford-plan {
   background: rgba(209, 229, 237, 0.2);
 }

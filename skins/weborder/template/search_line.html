@@ -1,6 +1,9 @@
 <script type="text/template" id="search_line_main-template">
-	<div class="btn btn-search text-center"></div>
-    <form class="search hidden" onsubmit="return false;">
-        <input id="search-input" type="search" placeholder="<%= _lp.SEARCH_ENTER_STRING %>" name="search" autocomplete="off">
+    <div class="btn btn-search text-center fl-left"></div>
+    <form class="search" onsubmit="return false;">
+        <input id="search-input" type="search" placeholder="<%= _lp.SEARCH_ENTER_STRING %>" name="search" autocomplete="off" class="input ctrl-input border-none">
+        <label class="ctrl-wrapper cancel input-bg">
+            <input type="button" class="ctrl cancel-input">
+        </label>
     </form>
 </script>

@@ -18,9 +18,18 @@
     position: relative;
 }
 
+.product_table[data-length="0"]::before,
+.product_table[data-length="0"]::after {
+    display: none;
+}
+
 .product_table .product {
     display: inline-block;
     vertical-align: top;
+}
+
+.product_table .product.list-none {
+    padding: 13px 25px;
 }
 
 .product_list_item {
