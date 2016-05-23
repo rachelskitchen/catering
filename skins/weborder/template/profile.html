@@ -68,7 +68,7 @@
     </div>
     <div class="right-side side text-center border-box">
         <h2 class="title"><%= _lp.PROFILE_ADDRESS %></h2>
-        <div class="address-box"></div>
+        <div class="addresses-box"></div>
     </div>
     <div class="successful-update animation"><%= _lp.PROFILE_UPDATE_SUCCESSFUL %></div>
     <div class="update-btn flat-btn"><%= _lp.UPDATE %></div>
@@ -90,6 +90,10 @@
             <span class="phone-privacy regular-text fl-left"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
         </li>
     </ul>
+</script>
+
+<script type="text/template" id="profile_addresses-template">
+    <ul class="addresses-list"></ul>
 </script>
 
 <script type="text/template" id="profile_address-template">
