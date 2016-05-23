@@ -344,15 +344,12 @@ define(['backbone', 'factory'], function(Backbone) {
                     // set -1 if no address is selected or if selected address id is null
                     // value -1 corresponds the 'Enter new address' option
                     return selectedAddr ? selectedAddr.get('id') || -1 : -1;
-                },
-                set: function(value) {
-                    value = Number(value);
-                    var addresses = this.getBinding('customer_addresses'),
-                        addr = value != -1 ? addresses.findWhere({id: value}) : addresses.findWhere({dining_option: this.getBinding('checkout_dining_option')});
-                    addr && addr.set('selected', true);
                 }
             }
         }),
+        events: {
+            'change #addresses': 'changeSelection'
+        },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
 
@@ -362,6 +359,12 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         resetShippingServices: function() {
             this.options.customer.resetShippingServices();
+        },
+        changeSelection: function(e) {
+            var value = Number(e.target.value),
+                addresses = this.getBinding('customer_addresses'),
+                addr = value != -1 ? addresses.findWhere({id: value}) : addresses.findWhere({dining_option: this.getBinding('checkout_dining_option')});
+            addr && addr.set('selected', true);
         },
         /**
          * Rendering of 'Address' drop-down list.
