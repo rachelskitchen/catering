@@ -567,17 +567,18 @@ define(["main_router"], function(main_router) {
                     App.Data.customer.get('addresses').changeSelection(App.Data.myorder.checkout.get('dining_option'));
                 });
 
-                if(!App.Data.card) {
+                if (!App.Data.card) {
                     App.Data.card = new App.Models.Card;
                 }
 
                 this.initGiftCard();
 
-                var settings = App.Data.settings.get('settings_system');
+                var settings = App.Data.settings.get('settings_system'),
+                    addresses = App.Data.customer.get('addresses');
 
-                if (!App.Data.customer.get('addresses').isProfileAddressSelected()) {
+                if (!addresses.isProfileAddressSelected()) {
                     // Need to specify shipping address (Bug 34676)
-                    App.Data.customer.get('addresses').changeSelection(App.Data.myorder.checkout.get('dining_option'));
+                    addresses.changeSelection(App.Data.myorder.checkout.get('dining_option'));
                 }
 
                 App.Data.mainModel.set('mod', 'Main');

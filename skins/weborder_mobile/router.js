@@ -960,22 +960,23 @@ define(["main_router"], function(main_router) {
             });
 
             this.prepare('checkout', function() {
-                self.listenToOnce(self, 'route', function()
-                {
+                self.listenToOnce(self, 'route', function() {
                     App.Data.myorder.checkout.trigger('hide:datepicker');
                 });
 
-                if(!App.Data.card)
+                if (!App.Data.card)
                     App.Data.card = new App.Models.Card();
 
-                if(!App.Data.customer) {
+                if (!App.Data.customer) {
                     App.Data.customer =  new App.Models.Customer();
                     App.Data.customer.loadAddresses();
                 }
 
-                if (!App.Data.customer.get('addresses').isProfileAddressSelected()) {
+                var addresses = App.Data.customer.get('addresses');
+
+                if (!addresses.isProfileAddressSelected()) {
                     // Need to specify shipping address (Bug 34676)
-                    App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+                    addresses.changeSelection(App.Data.myorder.checkout.get('dining_option'));
                 }
 
                 App.Data.header.set('showPromotionsLink', !!self.promotions);
