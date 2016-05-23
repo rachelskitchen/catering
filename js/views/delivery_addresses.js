@@ -184,8 +184,8 @@ define(['backbone', 'factory'], function(Backbone) {
             addresses: function() {
                 var model = new Backbone.Model({selected: null}),
                     addresses = App.Data.customer.get('addresses');
-                model.listenTo(addresses, 'change:selected', function(addr, value) {
-                    model.trigger('change:selected');
+                model.listenTo(addresses, 'change reset add remove', function(addr, value) {
+                    model.trigger('change');
                 });
                 return model;
             }
@@ -201,19 +201,10 @@ define(['backbone', 'factory'], function(Backbone) {
                 }
             },
             /**
-             * Indicates whether the profile address is selected.
-             */
-            isProfileAddressSelected: {
-                deps: ['customer_addresses', 'addresses_selected'],
-                get: function(customer_addresses) {
-                    return customer_addresses.isProfileAddressSelected();
-                }
-            },
-            /**
              * Indicates whether the address selection drop-down list should be shown.
              */
             showAddressSelection: {
-                deps: ['isAuthorized', 'customer_addresses', 'checkout_dining_option'],
+                deps: ['isAuthorized', 'customer_addresses', 'checkout_dining_option', '$addresses'],
                 get: function(isAuthorized, customer_addresses, checkout_dining_option) {
                     return isAuthorized && customer_addresses.filter(function(addr) {
                         addr = addr.toJSON();
@@ -227,9 +218,9 @@ define(['backbone', 'factory'], function(Backbone) {
              * Indicates whether the address edit form should be shown.
              */
             showAddressEdit: {
-                deps: ['isAuthorized', 'isProfileAddressSelected', 'showAddressSelection'],
-                get: function(isAuthorized, isProfileAddressSelected, showAddressSelection) {
-                    return !isAuthorized || !isProfileAddressSelected || !showAddressSelection;
+                deps: ['isAuthorized', 'customer_addresses', 'showAddressSelection', '$addresses'],
+                get: function(isAuthorized, customer_addresses, showAddressSelection) {
+                    return !isAuthorized || !customer_addresses.isProfileAddressSelected() || !showAddressSelection;
                 }
             }
         },
@@ -327,8 +318,14 @@ define(['backbone', 'factory'], function(Backbone) {
 
     var DeliveryAddressesSelectionView = App.Views.FactoryView.extend({
         initialize: function() {
-            this.listenTo(this.options.customer, 'change:access_token change:addresses', function() {
+            this.listenTo(this.options.customer, 'change:access_token', function(customer, value) {
+                if (!value) {
+                    return this.$('#addresses').html('');
+                }
                 delete this.options.address_index;
+                this.updateAddressesOptions();
+            });
+            this.listenTo(this.options.customer.get('addresses'), 'reset add remove', function() {
                 this.updateAddressesOptions();
             });
 
@@ -338,17 +335,20 @@ define(['backbone', 'factory'], function(Backbone) {
             ':el': 'toggle: showAddressSelection', // wrapper of the address selection drop-down
             '#addresses': 'value: selectedAddressId', // the address selection drop-down
         },
+        bindingSources: _.extend({}, DeliveryAddressesView.prototype.bindingSources),
         computeds: _.extend({}, DeliveryAddressesView.prototype.computeds, {
             selectedAddressId: {
-                deps: ['customer_addresses'],
+                deps: ['customer_addresses', '$addresses'],
                 get: function(customer_addresses) {
                     var selectedAddr = customer_addresses.getSelectedAddress();
-                    return selectedAddr ? selectedAddr.get('id') : 0;
+                    // set -1 if no address is selected or if selected address id is null
+                    // value -1 corresponds the 'Enter new address' option
+                    return selectedAddr ? selectedAddr.get('id') || -1 : -1;
                 },
                 set: function(value) {
                     value = Number(value);
                     var addresses = this.getBinding('customer_addresses'),
-                        addr = value ? addresses.findWhere({id: value}) : addresses.findWhere({dining_option: this.getBinding('checkout_dining_option')});
+                        addr = value != -1 ? addresses.findWhere({id: value}) : addresses.findWhere({dining_option: this.getBinding('checkout_dining_option')});
                     addr && addr.set('selected', true);
                 }
             }
@@ -393,18 +393,21 @@ define(['backbone', 'factory'], function(Backbone) {
                 });
 
             if (options.length) {
+                optionsStr = _.reduce(options, function(memo, option) {
+                    return memo + '<option value="' + option.value + '">' + option.label + '</option>';
+                }, '');
+                optionsStr += '<option value="-1">Enter New Address</option>';
+
+                this.$('#addresses').html(optionsStr);
+
                 if (this.options.address_index == -1) { // default profile address should be selected
                     var addr = addresses.findWhere({id: options[0].value});
                     addr && addr.set('selected', true);
                     delete this.options.address_index;
                 }
-
-                optionsStr = _.reduce(options, function(memo, option) {
-                    return memo + '<option value="' + option.value + '">' + option.label + '</option>';
-                }, '');
-                optionsStr += '<option value="' + App.Data.myorder.getShippingAddress(dining_option) + '">Enter New Address</option>';
-
-                this.$('#addresses').html(optionsStr);
+                else {
+                    this.$('#addresses').val(-1);
+                }
             }
         },
         /**

@@ -1918,6 +1918,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 address.country = address.country_code;
                 address.state = address.country == 'US' ? address.region : '';
                 address.province = address.country == 'CA' ? address.region : '';
+                address.address = this.toString(address);
 
                 return address;
             },
