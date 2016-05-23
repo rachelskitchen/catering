@@ -90,9 +90,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             /**
              * Array of addresses assigned to the customer.
              * @type {@link App.Collections.CustomerAddresses}
-             * @default []
+             * @default null
              */
-            addresses: [],
+            addresses: null,
             /**
              * Array of available shipping services. This array depends on order items.
              * @type {Array}
@@ -171,8 +171,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * Sets indexes of addresses used for "Delivery" and "Shipping" dinign options.
          */
         initialize: function() {
-            this.set('addresses', new App.Collections.CustomerAddresses());
-
             // trim for `first_name`, `last_name`
             this.listenTo(this, 'change:first_name', this._trimValue.bind(this, 'first_name'));
             this.listenTo(this, 'change:last_name', this._trimValue.bind(this, 'last_name'));
@@ -233,19 +231,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             if(Array.isArray(shipping_services) && shipping_services.length && this.get("shipping_selected") > -1) {
                 this.set("load_shipping_status", "restoring", {silent: true});
             }
-        },
-        /**
-         * Saves addresses to a storage.
-         */
-        saveAddresses: function() {
-            this.get('addresses').saveToStorage();
-        },
-        /**
-         * Loads addresses from a storage.
-         */
-        loadAddresses: function() {
-            var addresses = this.get('addresses') || this.set('addresses', new App.Collections.CustomerAddresses());
-            this.get('addresses').loadFromStorage();
         },
         /**
          * Validates values of address object properties `street_1`, `city`, `state`, `province`, `zipcode`.
@@ -628,6 +613,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     this.updateCookie(data);
                     this.setCustomerFromAPI(data);
                     this.initPayments();
+                    this.getAddresses();
                     this.initGiftCards();
                     this.getRewardCards();
                 },
@@ -669,7 +655,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 }
             }
             this.get('addresses').removeProfileAddresses();
-
             this.removePayments();
             this.removeGiftCards();
             this.removeRewardCards();
@@ -876,8 +861,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
                         case 403:
-                            this.trigger('onUserSessionExpired');
-                            this.logout(); // need to reset current account to allow to re-log in
+                            this.onForbidden();
                             break;
                         case 404:
                             this.trigger('onUserNotFound');
@@ -969,15 +953,15 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 headers: this.getAuthorizationHeader(),
                 data: JSON.stringify(address),
                 success: function(data) {
-                    // @TODO
-                    //this.setProfileAddress(data);
+                    if (Object.isObject(data)) {
+                        this.get('addresses').updateFromAPI([data]);
+                    }
                     this.trigger('onUserAddressCreated');
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
                         case 403:
-                            this.trigger('onUserSessionExpired');
-                            this.logout(); // need to reset current account to allow to re-log in
+                            this.onForbidden();
                             break;
                         case 400:
                             this.trigger('onUserValidationError', getResponse());
@@ -1075,15 +1059,101 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 headers: this.getAuthorizationHeader(),
                 data: JSON.stringify(address),
                 success: function(data) {
-                    // @TODO 
-                    // this.setProfileAddress(data);
+                    if (Object.isObject(data) && data.id == address.id) {
+                        this.get('addresses').findWhere({id: data.id}).set(data);
+                    }
                     this.trigger('onUserAddressUpdate');
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
                         case 403:
-                            this.trigger('onUserSessionExpired');
-                            this.logout(); // need to reset current account to allow to re-log in
+                            this.onForbidden();
+                            break;
+                        case 404:
+                            this.trigger('onUserAddressNotFound');
+                            break;
+                        case 400:
+                            this.trigger('onUserValidationError', getResponse());
+                            break;
+                        default:
+                            this.trigger('onUserAPIError', getResponse());
+                    }
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
+                    }
+                }
+            });
+        },
+        /**
+         * Deletes customer's address. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/addresses/<id>/",
+         *     method: "DELETE",
+         *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"}
+         * }
+         * ```
+         * Server may return the following response:
+         * - Address is successfully deleted:
+         * ```
+         * Status: 200
+         * ```
+         * The model emits `onUserAddressDelete` event in this case.
+         *
+         * - Session is already expired or invalid token is used:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * The model emits `onUserSessionExpired` event in this case. Method `.logout()` is automatically called in this case.
+         *
+         * - The address isn't found:
+         * ```
+         * Status: 404
+         * {
+         *     "detail":"Not found."
+         * }
+         * ```
+         * The model emits `onUserAddressNotFound` event in this case.
+         *
+         * - New data is invalid:
+         * ```
+         * Status: 400
+         * {
+         *     <field name>: <validation error>
+         * }
+         * ```
+         * The model emits `onUserValidationError` event in this case.
+         *
+         * @param {Object} address - an object containing address data
+         *
+         * @returns {Object} jqXHR object.
+         */
+        deleteAddress: function(address) {
+            if (!_.isObject(address) || !address.id) {
+                return;
+            }
+
+            address = {id: address.id};
+
+            return Backbone.$.ajax({
+                url: this.get('serverURL') + "/v1/customers/addresses/" + address.id + "/",
+                method: "PATCH",
+                context: this,
+                contentType: "application/json",
+                headers: this.getAuthorizationHeader(),
+                data: JSON.stringify(address),
+                success: function(data) {
+                    this.get('addresses').remove(address.id);
+                    this.trigger('onUserAddressUpdate');
+                },
+                error: function(jqXHR) {
+                    switch(jqXHR.status) {
+                        case 403:
+                            this.onForbidden();
                             break;
                         case 404:
                             this.trigger('onUserAddressNotFound');
@@ -1173,8 +1243,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
                         case 403:
-                            this.trigger('onUserSessionExpired');
-                            this.logout(); // need to reset current account to allow to re-log in
+                            this.onForbidden();
                             break;
                         case 404:
                             this.trigger('onPasswordInvalid');
@@ -1354,8 +1423,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 expires_in: data.token.expires_in
             });
 
-            this.get('addresses').updateFromAPI(data.customer.addresses);
-
             this.clearPasswords();
         },
         /**
@@ -1407,8 +1474,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     email: attrs.email,
                     first_name: attrs.first_name,
                     last_name: attrs.last_name,
-                    phone_number: attrs.phone,
-                    addresses: attrs.addresses
+                    phone_number: attrs.phone
                 },
                 token: {
                     user_id: attrs.user_id,
@@ -1480,12 +1546,83 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             function ifSessionIsExpired(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             }
 
             return def;
+        },
+        /**
+         * Receives customer addresses from server. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "/weborders/v1/addresses/",
+         *     method: "GET",
+         *     headers: {Authorization: "Bearer XXX"}
+         * }
+         * ```
+         * There are available following responses:
+         * - Success:
+         * ```
+         * Status code 200
+         * {
+         *     status: "OK"
+         *     data: []
+         * }
+         * ```
+         *
+         * - Authorization header is invalid:
+         * ```
+         * Status code 403
+         * ```
+         */
+        getAddresses: function() {
+            var self = this,
+                authorizationHeader = this.getAuthorizationHeader(),
+                req;
+
+            if (!_.isObject(authorizationHeader)) {
+                return;
+            }
+
+            req = Backbone.$.ajax({
+                url: this.get('serverURL') + '/v1/customers/addresses/',
+                method: "GET",
+                headers: authorizationHeader,
+                success: function(data) {
+                    if (Array.isArray(data)) {
+                        self.get('addresses').updateFromAPI(data);
+                    }
+                },
+                error: new Function() // to override global ajax error handler
+            });
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.onForbidden();
+                }
+            });
+
+            /**
+             * Reward cards request.
+             * @alias App.Models.Customer#addressesRequest
+             * @type {Backbone.$.Deferred}
+             * @default undefined
+             */
+            this.addressesRequest = req;
+
+            return req;
+        },
+        /**
+         * Sets {@link App.Models.Customer#addresses addresses} collection.
+         */
+        setAddresses: function() {
+            if (!this.get('addresses')) {
+                this.set('addresses', new App.Collections.CustomerAddresses());
+            }
+            if (this.isAuthorized()) {
+                this.getAddresses();
+            }
         },
         /**
          * Receives payments from server.
@@ -1501,8 +1638,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             });
 
@@ -1555,22 +1691,17 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * @param {number} token_id - token id.
          * @return {Object} jqXHR object.
          */
-        changePayment: function(token_id)
-        {
+        changePayment: function(token_id) {
             var req = this.payments.changePayment(token_id, this.getAuthorizationHeader()),
                 self = this;
 
-            if (req)
-            {
+            if (req) {
                 req.fail(function(jqXHR)
                 {
-                    if (jqXHR.status == 403)
-                    {
-                        self.trigger('onUserSessionExpired');
-                        self.logout(); // need to reset current account to allow to re-log in
+                    if (jqXHR.status == 403) {
+                        self.onForbidden();
                     }
-                    else if (jqXHR.status == 404)
-                    {
+                    else if (jqXHR.status == 404) {
                         self.trigger('onTokenNotFound');
                     }
                 });
@@ -1599,8 +1730,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             if (req) {
                 req.fail(function(jqXHR) {
                     if (jqXHR.status == 403) {
-                        self.trigger('onUserSessionExpired');
-                        self.logout(); // need to reset current account to allow to re-log in
+                        self.onForbidden();
                     } else if (jqXHR.status == 404) {
                         self.trigger('onTokenNotFound');
                     }
@@ -1644,8 +1774,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             });
 
@@ -1653,7 +1782,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 if (jqXHR.status == "OK" && self.get('rewardCards').length == 1) {
                     App.Data.myorder.rewardsCard.selectRewardCard(self.get('rewardCards').at(0));
                 }
-            })
+            });
 
             /**
              * Reward cards request.
@@ -1704,8 +1833,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             });
 
@@ -1740,8 +1868,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             });
 
@@ -1762,8 +1889,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             });
 
@@ -1796,8 +1922,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             });
 
@@ -1818,12 +1943,18 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             });
 
             return req;
+        },
+        /**
+         * Handler of jqXHR.status 403 of customer-related ajax requests.
+         */
+        onForbidden: function() {
+            this.trigger('onUserSessionExpired');
+            this.logout(); // need to reset current account to allow to re-log in
         },
     });
 
@@ -1924,7 +2055,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             },
             /**
              * Coverts the array of addresses objects from API to model format.
-             * This method gets called when {parse: true} is passed to the collection concstructor.
+             * This method gets called when {parse: true} is passed to the collection constructor.
              * @param   {array} addresses
              * @param   {object} options
              * @returns {array} converted addresses

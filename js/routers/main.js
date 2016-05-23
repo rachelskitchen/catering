@@ -341,6 +341,9 @@ define(["backbone", "factory"], function(Backbone) {
                 App.SettingsDirectory.saved_credit_cards = false;
             }
 
+            // set addresses
+            customer.setAddresses();
+
             // set gift cards
             if (App.SettingsDirectory.saved_gift_cards) {
                 customer.setGiftCards(App.Collections.GiftCards);
@@ -479,7 +482,6 @@ define(["backbone", "factory"], function(Backbone) {
          */
         loadCustomer: function() {
             App.Data.customer.loadCustomer();
-            App.Data.customer.loadAddresses();
         },
         /**
          * Init App.Data.promotions.
@@ -930,9 +932,9 @@ define(["backbone", "factory"], function(Backbone) {
             }
         },
         setProfileEditContent: function() {
-            var customer = App.Data.customer,
+            var promises = this.getProfilePaymentsPromises(),
+                customer = App.Data.customer,
                 addresses = customer.get('addresses'),
-                address = addresses.getDefaultProfileAddress() || new App.Model.CustomerAddress(),
                 ui = new Backbone.Model({show_response: false}),
                 updateBasicDetails = false,
                 updateAddress = false,
@@ -940,36 +942,39 @@ define(["backbone", "factory"], function(Backbone) {
                 updateBtn = new Backbone.Model({disabled: true}),
                 self = this;
 
-            App.Data.mainModel.set({
-                mod: 'Profile',
-                className: 'profile-container',
-                profile_title: _loc.PROFILE_EDIT_TITLE,
-                profile_content: {
-                    modelName: 'Profile',
-                    mod: 'Edit',
-                    model: customer,
-                    address: address,
-                    updateAction: update,
-                    updateBtn: updateBtn,
-                    ui: ui,
-                    className: 'profile-edit text-center'
-                }
-            });
+            if (promises.length) {
+                App.Data.mainModel.set({
+                    mod: 'Profile',
+                    className: 'profile-container',
+                    profile_title: _loc.PROFILE_EDIT_TITLE,
+                    profile_content: {
+                        modelName: 'Profile',
+                        mod: 'Edit',
+                        model: customer,
+                        updateAction: update,
+                        updateBtn: updateBtn,
+                        ui: ui,
+                        className: 'profile-edit text-center'
+                    }
+                });
+            }
 
             window.setTimeout(function() {
                 var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email',
                     passwordEvents = 'change:password change:confirm_password';
                 self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
                 self.listenTo(customer, passwordEvents, accountPasswordChanged);
-                self.listenTo(address, 'change', addressChanged);
+                self.listenTo(addresses, 'change', addressChanged);
                 self.listenTo(customer, 'onCookieChange', updateAddressAttributes);
                 self.listenTo(customer, 'onLogout', logout);
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, passwordEvents, accountPasswordChanged));
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, address, 'change', addressChanged));
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, addresses, 'change', addressChanged));
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddressAttributes));
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onLogout', logout));
             }, 0);
+
+            return promises;
 
             function updateAddressAttributes() {
                 address.set(customer.getProfileAddress());
@@ -991,7 +996,7 @@ define(["backbone", "factory"], function(Backbone) {
                 ui.set('show_response', false);
             }
 
-            function addressChanged() {
+            function addressChanged(address) {
                 if (address.get('country')) { // country is the only required field
                     updateAddress = true;
                     updateBtn.set('disabled', false);
@@ -1059,6 +1064,18 @@ define(["backbone", "factory"], function(Backbone) {
                     }
                 }
             }
+        },
+        setProfileAddressesPromises: function() {
+            var customer = App.Data.customer,
+            promises = [],
+            addressesDef = Backbone.$.Deferred();
+
+            if (customer.get('addresses') && customer.addressesRequest) {
+                customer.addressesRequest.always(addressesDef.resolve.bind(addressesDef));
+                promises.push(addressesDef);
+            }
+
+            return promises;
         },
         setProfilePaymentsContent: function() {
             var promises = this.getProfilePaymentsPromises(),

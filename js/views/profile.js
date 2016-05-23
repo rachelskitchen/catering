@@ -207,6 +207,15 @@ define(["factory"], function() {
         }
     });
 
+    App.Views.CoreProfileView.CoreProfileAddressesView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'addresses',
+        itemView: App.Views.CoreProfileView.CoreProfileAddressView,
+        bindings: {
+            '.addresses-list': 'collection: $collection'
+        }
+    });
+
     App.Views.CoreProfileView.CoreProfileEditView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'edit',
@@ -232,13 +241,21 @@ define(["factory"], function() {
                 model: this.model
             });
 
+            this.newAddress = new App.Models.CustomerAddress();
+            var addresses = App.Views.GeneratorView.create('Profile', {
+                el: this.$('.addresses-box'),
+                mod: 'Addresses',
+                collection: this.model.get('addresses'),
+                newAddress: this.newAddress
+            });
+
             var address = App.Views.GeneratorView.create('Profile', {
                 el: this.$('.address-box'),
                 mod: 'Address',
-                model: this.options.address
+                model: this.model.get('addresses').getDefaultProfileAddress() || new App.Models.CustomerAddress(),
             });
 
-            this.subViews.push(basicDetails, address);
+            this.subViews.push(basicDetails, addresses);
 
             return this;
         },
@@ -870,6 +887,7 @@ define(["factory"], function() {
         App.Views.ProfileView.ProfileCreateView = App.Views.CoreProfileView.CoreProfileCreateView;
         App.Views.ProfileView.ProfileEditView = App.Views.CoreProfileView.CoreProfileEditView;
         App.Views.ProfileView.ProfileAddressView = App.Views.CoreProfileView.CoreProfileAddressView;
+        App.Views.ProfileView.ProfileAddressesView = App.Views.CoreProfileView.CoreProfileAddressesView;
         App.Views.ProfileView.ProfileAccountPasswordView = App.Views.CoreProfileView.CoreProfileAccountPasswordView;
         App.Views.ProfileView.ProfilePWDResetView = App.Views.CoreProfileView.CoreProfilePWDResetView;
         App.Views.ProfileView.ProfileMenuView = App.Views.CoreProfileView.CoreProfileMenuView;
