@@ -398,6 +398,13 @@ define(["main_router"], function(main_router) {
             this.listenTo(App.Data.myorder.rewardsCard, 'onResetData', function() {
                 App.Data.myorder.get_cart_totals();
             });
+
+            // when user clicks on any category need to hide search input
+            this.listenTo(App.Data.categories, 'show_subcategory', function() {
+                if (App.Data.searchLine) {
+                    App.Data.searchLine.set('collapsed', true);
+                }
+            });
         },
         /**
          * Enable browser history for navigation through categories, subcategories and search screens.
@@ -557,7 +564,10 @@ define(["main_router"], function(main_router) {
                 });
 
                 if (!App.Data.searchLine) {
-                    App.Data.searchLine = new App.Models.SearchLine({search: App.Data.search});
+                    App.Data.searchLine = new App.Models.SearchLine({
+                        search: App.Data.search,
+                        collapsed: true
+                    });
                 }
 
                 App.Data.header.set('tab_index', 0);
@@ -576,17 +586,11 @@ define(["main_router"], function(main_router) {
                             search: App.Data.search,
                             loaded: dfd
                         },
-                        // {
-                        //     modelName: 'SubCategories',
-                        //     collection: App.Data.categories,
-                        //     search: App.Data.search,
-                        //     mod: 'Select'
-                        // },
                         {
                             modelName: 'SearchLine',
                             model: App.Data.searchLine,
                             mod: 'Main',
-                            className: 'content search_line'
+                            className: 'content search_line primary-border animation'
                         },
                         {
                             modelName: 'Categories',

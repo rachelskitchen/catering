@@ -28,11 +28,11 @@ define(["card_view"], function(card_view) {
         newAddress = -1;
 
     var CardMainView = App.Views.CoreCardView.CoreCardMainView.extend({
-    	bindings: {
-    		'.checkbox-outer': 'classes: {hide: not(token_paymentsExist)}',
-    		'.checkbox': "checkedSpan: {value: rememberCard, outer_elem: '.checkbox-outer'}",
+        bindings: {
+            '.checkbox-outer': 'classes: {hide: not(token_paymentsExist)}',
+            '.checkbox': "checkedSpan: {value: rememberCard, outer_elem: '.checkbox-outer'}",
             '.dialog-input': 'classes: {hide: not(paymentMethods_credit_card_dialog)}'
-    	}
+        }
     });
 
     var CardBillingAddressView = App.Views.FactoryView.extend({
@@ -143,7 +143,7 @@ define(["card_view"], function(card_view) {
         return result;
     }
 
-	return new (require('factory'))(card_view.initViews.bind(card_view), function() {
+    return new (require('factory'))(card_view.initViews.bind(card_view), function() {
         App.Views.CardView.CardMainView = CardMainView;
         App.Views.CardView.CardBillingAddressView = CardBillingAddressView;
     });

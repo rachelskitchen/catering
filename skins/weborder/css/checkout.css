@@ -6,6 +6,10 @@
     overflow-y: auto;
 }
 
+.checkout-order-details .order-details-title {
+    border-top: none;
+}
+
 .checkout-order-details .order-details,
 .checkout-order-details .payment-info {
     padding: 0 25px 25px;

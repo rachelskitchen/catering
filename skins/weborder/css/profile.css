@@ -200,7 +200,13 @@
 }
 
 .profile-edit .input,
-.profile-edit .select-wrapper[class] select {
+.profile-edit .card-title,
+.profile-edit .card-details,
+.profile-edit .select-wrapper[class] select,
+.profile-edit .new_gift_card,
+.profile-edit .reward-cards-list,
+.profile-edit .new_reward_card,
+.profile-edit .gift-cards-list {
     max-width: 300px;
     width: 100%;
 }
@@ -219,9 +225,90 @@
     padding-left: 14px;
     font-size: 12px;
 }
+
 .profile-edit .update-btn {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
+}
+
+.profile-edit .cancel {
+    font-size: 18px;
+}
+
+.profile-edit .card-title {
+    padding: 13px 0;
+}
+
+.profile-edit .card-details {
+    padding: 0 15px 15px;
+    margin-bottom: 25px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+}
+
+.profile-edit .card-details .input {
+    max-width: 292px;
+    width: 96%;
+}
+
+.profile-edit .profile-checkbox {
+    display: block;
+    padding: 5px 14px 0;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.profile-edit .card-default {
+    position: absolute;
+    top: -500px;
+}
+
+.profile-edit .checkbox {
+    position: relative;
+    top: 2px;
+}
+
+.profile-edit .captcha_wrap {
+    width: 88px;
+    height: 38px;
+    font-size: 10px;
+    margin-bottom: 5px;
+    position: relative
+}
+
+.profile-edit .captcha-spinner {
+    position: absolute !important;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.profile-edit .btn-reload {
+    font-size: 13px;
+}
+
+.profile-edit .new-card {
+    margin-top: 13px;
+}
+
+.profile-edit .captcha_container {
+    padding: 16px 0px 0 10px;
+}
+
+.profile-edit .captcha-box {
+    margin-left: 108px;
+}
+
+.profile-edit .rewards-title {
+    margin-top: 25px;
+}
+
+.profile-edit .reward-cards-list > li,
+.profile-edit .gift-cards-list > li {
+    margin: 13px 0;
 }

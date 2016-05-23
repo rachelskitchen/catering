@@ -7,6 +7,7 @@
         'CARD_SECURITY_CODE': 'Security Code',
         'CARD_EXP_DATE': 'Exp. Date',
         'CARD_SAVE': 'Save for future payments',
+        'CARD_NAME': 'Card Name (First & Last)',
         'CART_CART': 'Your Order',
         'CART_CHECKOUT': 'Checkout',
         'CART_ORDER_SUMMARY': 'Order Summary',
