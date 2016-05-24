@@ -1062,7 +1062,8 @@ define(["backbone", "factory"], function(Backbone) {
         setProfilePaymentsContent: function() {
             var promises = this.getProfilePaymentsPromises(),
                 customer = App.Data.customer,
-                mainModel = App.Data.mainModel;
+                mainModel = App.Data.mainModel,
+                self = this;
 
             if (promises.length) {
                 App.Data.mainModel.set({
@@ -1082,9 +1083,17 @@ define(["backbone", "factory"], function(Backbone) {
                         myorder: App.Data.myorder
                     }
                 });
+
+                window.setTimeout(function() {
+                    self.listenTo(customer, 'onLogout', logout);
+                }, 0);
             }
 
             return promises;
+
+            function logout() {
+                self.navigate('index', true);
+            }
 
             function changeToken(token_id)
             {
