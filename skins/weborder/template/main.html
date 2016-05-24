@@ -75,30 +75,8 @@
 </script>
 
 <script type="text/template" id="main_done-template">
-    <div class="col fl-left">
-        <h2 class="header-underline"></h2>
-        <div class="submitted"></div>
-        <div class="pickup-time"></div>
-        <div class="details-info"><%= _lp.DONE_DETAILS_INFO %></div>
-        <div class="details-box">
-            <div><%= _lp.MAIN_ORDER_ID %>: <span class="bold order-id"></span></div>
-            <div><%= _lp.MAIN_TOTAL_AMOUNT_CHARGED %>: <span class="bold charged"></span></div>
-            <div class="address-box">
-                <span class="address-label"></span>:
-                <div class="address-value">
-                    <div class="contact-person"></div>
-                    <div class="address-line"></div>
-                    <div class="phone"></div>
-                </div>
-        </div>
-        <div><%= _lp.MAIN_RECEIPT_SENT_TO %> <span class="email-sent-to"></span></div>
-    </div>
-    <% if (status !== 'error') { %>
-    <h2 class="confirmed_order_title"> <%= _lp.MAIN_ORDER_SUBMITTED %> </h2>
-    <% } else { %>
-    <h2 class="confirmed_order_title confirmed_title_red"> <%= _lp.MAIN_ORDER_NOT_SUBMITTED %> </h2>
-    <% } %>
     <% if (status === 'error') { %>
+    <h2 class="header-underline attention-text"> <%= _lp.MAIN_ORDER_NOT_SUBMITTED %> </h2>
     <p class="confirmed-order-txt">
         <%=message%>
     </p>
@@ -106,69 +84,64 @@
         <span class="clip"> <%= buttonText %> </span>
     </div>
     <% } else { %>
-    <table class="order-confirmed-detail">
-        <tr>
-            <td colspan="2" class="email"> <%= _lp.MAIN_RECEIPT_SENT_TO %> <%= email %> </td>
-        </tr>
-        <tr>
-            <td> <%= _lp.MAIN_ORDER_ID %>: </td>
-            <td><%= order_id %></td>
-        </tr>
-        <% if (!isOnlyGift && !isDiningOptionShipping) { %>
-        <tr>
-            <td><%= pickup_type %>:</td>
-            <td><%= pickup_time_date %></td>
-        </tr>
-        <% } %>
-        <% if (isDiningOptionOther && other_dining_options.length) { %>
-        <tr>
-            <td> <%= _lp.MAIN_DELIVERY_INFO %>: </td>
-            <td>
-                <% for (var i = 0; i < other_dining_options.length; i++) { %>
-                    <%= other_dining_options[i].name %> <span><%= other_dining_options[i].value %></span><% if(i < other_dining_options.length - 1) print(","); %>
-                <% } %>
-            </td>
-        </tr>
-        <% } %>
-        <% if(reward_items) { %>
-        <tr>
-            <td> <%= _lp.MAIN_REWARD_CARD_POINTS %>: </td>
-            <td><%= reward_items %></td>
-        </tr>
-        <% } %>
-        <% if(reward_visits) { %>
-        <tr>
-            <td> <%= _lp.MAIN_REWARD_CARD_VISITS %>: </td>
-            <td><%= reward_visits %></td>
-        </tr>
-        <% } %>
-        <% if(reward_purchases) { %>
-        <tr>
-            <td> <%= _lp.MAIN_REWARD_CARD_PURCHASES %>: </td>
-            <td><%= reward_purchases %></td>
-        </tr>
+    <div class="top primary-border" tabindex="0">
+        <span class="btnReturn primary-text link">&lang;&nbsp;&nbsp;<%= _lp.MAIN_RETURN_TO_MENU %></span>
+    </div>
+    <div class="col fl-left border-box">
+        <h2 class="thanks header-underline"></h2>
+        <div class="submitted"></div>
+        <div class="pickup-time"></div>
+        <div class="details-info"><%= _lp.DONE_DETAILS_INFO %></div>
+        <div class="details-box primary-border card-bg">
+            <div><%= _lp.MAIN_ORDER_ID %>: <span class="bold order-id value"><%= order_id %></span></div>
+            <div class="other-options-line"><%= _lp.MAIN_DELIVERY_INFO %>: <span class="bold other-options value"></span></div>
+            <div><%= _lp.MAIN_TOTAL_AMOUNT_CHARGED %>: <span class="bold charged value"><%= symbol %><%= total %></span></div>
+            <div class="address-box">
+                <span class="address-label"></span>:
+                <div class="address-value inline-block value">
+                    <div class="contact-person bold"></div>
+                    <div class="address-line"></div>
+                    <div class="phone"></div>
+                </div>
+            </div>
+        </div>
+        <div><%= _lp.MAIN_RECEIPT_SENT_TO %> <span class="email-sent-to"><%= email %></span></div>
+    </div>
+    <div class="col text-center fl-left border-box">
+        <% if (reward_items || reward_visits || reward_purchases) { %>
+            <h2 class="header-underline text-left"><%= _lp.REWARDS_TITLE %></h2>
+            <% if(reward_items) { %>
+            <div class="points-box">
+                <div class="points primary-text"><%= reward_items %></div>
+                <div><%= _lp.MAIN_REWARD_CARD_POINTS %></div>
+            </div>
+            <% } %>
+            <% if(reward_visits) { %>
+            <div class="points-box">
+                <div class="points primary-text"><%= reward_visits %></div>
+                <div><%= _lp.MAIN_REWARD_CARD_VISITS %></div>
+            </div>
+            <% } %>
+            <% if(reward_purchases) { %>
+            <div class="points-box">
+                <div class="points primary-text"><%= reward_purchases %></div>
+                <div><%= _lp.MAIN_REWARD_CARD_PURCHASES %></div>
+            </div>
+            <% } %>
         <% } %>
         <% if(stanfordCardBalances) { %>
-        <% _.each(stanfordCardBalances, function(stanfordCard) { %>
-        <tr>
-            <td>&ldquo;<%= stanfordCard.name %>&rdquo; <%= _lp.MAIN_STANFORD_CARD_BALANCE %>: </td>
+            <h2 class="header-underline text-left"><%= _lp.REWARDS_TITLE %></h2>
+            <% _.each(stanfordCardBalances, function(stanfordCard) { %>
+            <div>&ldquo;<%= stanfordCard.name %>&rdquo; <%= _lp.MAIN_STANFORD_CARD_BALANCE %></div>
             <% if(stanfordCard.type == 'D') { %>
-            <td><%= symbol %><%= stanfordCard.balance %></td>
+            <div><%= symbol %><%= stanfordCard.balance %></div>
             <% } else if(stanfordCard.balance == 1) { %>
-            <td><%= stanfordCard.balance %> <%= _lp.MAIN_STANFORD_CARD_BALANCE_MEAL %></td>
+            <div><%= stanfordCard.balance %> <%= _lp.MAIN_STANFORD_CARD_BALANCE_MEAL %></div>
             <%} else { %>
-            <td><%= stanfordCard.balance %> <%= _lp.MAIN_STANFORD_CARD_BALANCE_MEALS %></td>
+            <div><%= stanfordCard.balance %> <%= _lp.MAIN_STANFORD_CARD_BALANCE_MEALS %></div>
             <% } %>
-        </tr>
-        <% }); %>
+            <% }); %>
         <% } %>
-        <tr>
-            <td> <%= _lp.MAIN_TOTAL_AMOUNT_CHARGED %>: </td>
-            <td class='bold'><%= symbol %><%= total %></td>
-        </tr>
-    </table>
-    <div class="btn-wrapper">
-    <div class="btn btnReturn" tabindex="0"> <span class="clip"> <%= _lp.MAIN_RETURN_TO_MENU %> </span> </div>
     </div>
     <% } %>
 </script>
