@@ -31,7 +31,6 @@ define(["main_router"], function(main_router) {
      */
     function defaultRouterData() {
         headers.main = {mod: 'Main', className: 'main'};
-        headers.checkout = {mod: 'Checkout', className: 'checkout'};
         carts.main = {mod: 'Main', className: 'main'};
         carts.checkout = {mod: 'Checkout', className: 'checkout'};
     }
