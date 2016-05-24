@@ -289,7 +289,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.PROFILE_EMAIL_ADDRESS);
             !this.get('phone') && err.push(_loc.PROFILE_PHONE);
 
-            if(this.isShippingAddressSelected(dining_option)) {
+            if (this.isNewAddressSelected(dining_option)) {
                 err = err.concat(this._check_delivery_fields());
             }
 
@@ -325,7 +325,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         get_shipping_services: function(jqXHR, getShippingOptions) {
             var self = this,
                 data = {},
-                address = this.get('addresseses').getOrderAddress();
+                address = this.get('addresses').getOrderAddress();
 
             if (!address) {
                 return;
@@ -419,9 +419,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * @param {string} dining_option - selected order type.
          * @returns {boolean}
          */
-        isShippingAddressSelected: function(dining_option) {
+        isNewAddressSelected: function(dining_option) {
             var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING' || dining_option === 'DINING_OPTION_CATERING';
-            return isDelivery && this.get('addresses').isShippingAddressSelected();
+            return isDelivery && this.get('addresses').isNewAddressSelected();
         },
         /**
          * Validates `first_name`, `last_name`, `email` and `password` attributes for Sign Up.
@@ -645,8 +645,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * Changes attributes values on default values. Emits `onLogout` event.
          */
         logout: function() {
-            this.defaults.addresses = [];
-
             docCookies.removeItem(cookieName, cookiePath, cookieDomain);
 
             for (var attr in this.defaults) {
@@ -1394,13 +1392,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             return address;
         },
         /**
-         * @param {Object} address - an object containing address data
-         * @returns {boolean} `true` if the address has `id`, `customer` properties and `false` otherwise.
-         */
-        isProfileAddress: function(address) {
-            return _.isObject(address) && typeof address.id != 'undefined' && typeof address.customer != 'undefined';
-        },
-        /**
          * Set attributes values.
          *
          * @param {Object} data - object corresponding to response of `v1/authorization/token-customer/` {@link App.Models.Customer#login request}
@@ -1449,6 +1440,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             try {
                 data = docCookies.getItem(cookieName);
+                delete data.addresses;
             } catch(e) {
                 console.error(e);
             }
@@ -1959,270 +1951,266 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
     });
 
 
-        App.Models.CustomerAddress = Backbone.Model.extend(
+    App.Models.CustomerAddress = Backbone.Model.extend(
 
-        {
-            defaults: {
-                id: null,
-                customer: null,
-                is_primary: false,
-                dining_option: null,
-                selected: false,
-                zipcode: '',
-                country: '',
-                state: '',
-                province: '',
-                street_1: '',
-                street_2: '',
-                city: '',
-                address: ''
-            },
-            /**
-             * Converts the address objects from API to model format.
-             * This method gets called when {parse: true} is passed to the model concstructor.
-             * @param   {object} address
-             * @param   {object} options
-             * @returns {object} converted address
-             */
-            parse: function(address, options) {
-                return this.convertFromAPIFormat(address);
-            },
-            /**
-             * Converts address to 'customers/addresses/' API format. Changes `zipcode` property to `postal_code`,
-             * `country` -> `country_code`, `state`/`province` -> `region`.
-             *
-             * @param {Object} address - an object containing address data
-             * @returns {Object} Modified address object.
-             */
-            convertToAPIFormat: function(address) {
-                if (!_.isObject(address)) {
-                    return address;
-                }
-
-                address.postal_code = address.zipcode;
-                address.country_code = address.country;
-                address.region = address.country == 'US' ? address.state
-                               : address.country == 'CA' ? address.province
-                               : null;
-
+    {
+        defaults: {
+            id: null,
+            customer: null,
+            is_primary: false,
+            selected: false,
+            zipcode: '',
+            country: '',
+            state: '',
+            province: '',
+            street_1: '',
+            street_2: '',
+            city: '',
+            address: ''
+        },
+        /**
+         * Converts the address objects from API to model format.
+         * This method gets called when {parse: true} is passed to the model concstructor.
+         * @param   {object} address
+         * @param   {object} options
+         * @returns {object} converted address
+         */
+        parse: function(address, options) {
+            return this.convertFromAPIFormat(address);
+        },
+        /**
+         * Converts address to 'customers/addresses/' API format. Changes `zipcode` property to `postal_code`,
+         * `country` -> `country_code`, `state`/`province` -> `region`.
+         *
+         * @param {Object} address - an object containing address data
+         * @returns {Object} Modified address object.
+         */
+        convertToAPIFormat: function(address) {
+            if (!_.isObject(address)) {
                 return address;
-            },
-            /**
-             * Converts address from 'customers/addresses/' API format. Changes `postal_code` property to `zipcode`,
-             * `country_code` -> `country`, `region` -> `state`/`province`.
-             *
-             * @param {Object} address - an object containing address data
-             * @returns {Object} Modified address object.
-             */
-            convertFromAPIFormat: function(address) {
-                if (!_.isObject(address)) {
-                    return address;
-                }
-
-                address.zipcode = address.postal_code;
-                address.country = address.country_code;
-                address.state = address.country == 'US' ? address.region : '';
-                address.province = address.country == 'CA' ? address.region : '';
-
-                return address;
-            },
-            /**
-             * Converts address to full address line.
-             * @see {@link http://mediawiki.middlebury.edu/wiki/LIS/Address_Standards} for detail format information.
-             * @returns {string} full address line
-             */
-            toString: function(address) {
-                var address = address || this.toJSON(),
-                    settings = App.Settings,
-                    str = [];
-                address.street_1 && str.push(address.street_1);
-                address.street_2 && str.push(address.street_2);
-                address.city && str.push(address.city);
-                settings.address && settings.address.state && address.state && str.push(address.state);
-                address.zipcode && str.push(address.zipcode);
-
-                return str.join(', ');
-            },
-            /**
-             * @returns {boolean} `true` if the address has `id`, `customer` properties and `false` otherwise.
-             */
-            isProfileAddress: function() {
-                return this.get('id') != 'null' && this.get('customer');
-            },
-        });
-
-        App.Collections.CustomerAddresses = Backbone.Collection.extend(
-
-        {
-            model: App.Models.CustomerAddress,
-            initialize: function() {
-                this.listenTo(this, 'change:selected', this.radioSelect);
-                this.listenTo(App.Data.myorder.checkout, 'change:dining_option', this.changeSelection);
-            },
-            /**
-             * Coverts the array of addresses objects from API to model format.
-             * This method gets called when {parse: true} is passed to the collection constructor.
-             * @param   {array} addresses
-             * @param   {object} options
-             * @returns {array} converted addresses
-             */
-            parse: function(addresses, options) {
-                return _.map(addresses, App.Models.CustomerAddress.prototype.convertFromAPIFormat);
-            },
-            addJSON: function(data) {
-                data instanceof Array && this.set(data);
-            },
-            updateFromAPI: function(addresses) {
-                var self = this;
-                // remove from collection addresses not presented in api response
-                this.each(function(model) {
-                    if (model.id !== null && !_.findWhere(addresses, {id: model.id})) {
-                        self.remove(model);
-                    }
-                });
-                // add all addreesses
-                _.each(addresses, function(address) {
-                    self.add(App.Models.CustomerAddress.prototype.convertFromAPIFormat(address));
-                });
-            },
-            /**
-             * Saves addresses to a storage.
-             */
-            saveToStorage: function() {
-                setData('address', new Backbone.Model({addresses: this.toJSON()}), true);
-            },
-            /**
-             * Loads addresses from a storage.
-             */
-            loadFromStorage: function() {
-                var data = getData('address', true);
-                if (data instanceof Object && Array.isArray(data.addresses) && data.addresses.length == 1 && App.skin != App.Skins.RETAIL) {
-                    if (data.addresses[0].country != App.Settings.address.country) {
-                        //the thread come here e.g. when we navigate from 'Retail' skin with other country payment previously submitted to weborder_mobile skin
-                        data = undefined;
-                    }
-                }
-                this.set(data instanceof Object ? (data.addresses || []) : []);
-            },
-            /**
-             * Returns default profile address.
-             * @returns {?@link App.Models.CustomerAddress}
-             *   - default address, if it exists
-             *   - undefined otherwise
-             */
-            getDefaultProfileAddress: function() {
-                return this.findWhere({is_primary: true});
-            },
-            getSelectedAddress: function() {
-                return this.findWhere({selected: true});
-            },
-            /**
-             * Checks whether the selected address is from user profile.
-             * @returns {boolean}
-             */
-            isProfileAddressSelected: function() {
-                return this.getSelectedAddress() ? (this.getSelectedAddress().isProfileAddress()) : false;
-            },
-            /**
-             * Checks whether the selected address has 'dining_option' attribute.
-             * @returns {Boolean} [description]
-             */
-            isShippingAddressSelected: function() {
-                return this.getSelectedAddress() ? (this.getSelectedAddress().get('dining_option')) : false;
-            },
-            /**
-             * Get address set for shipping/delivery or default address set in backend.
-             * @param {string} [dining_option] - dining option.
-             * @param {boolean} [fromProfile] - indicates whether to use fields from profile address
-             * @returns {object} with state, province, city, street_1, street_2, zipcode, contry fields
-             */
-            getCheckoutAddress: function(dining_option, fromProfile) {
-                var customer = App.Data.customer.toJSON(),
-                    addr = this.getSelectedAddress(),
-                    addrJson,
-                    reverse_addr,
-                    newAddr;
-
-                // if shipping address isn't selected take last index
-                if (!addr) {
-                    addr = this.findWhere({dining_option: dining_option});
-                    if (!addr) {
-                        addr = new App.Models.CustomerAddress({
-                            dining_option: dining_option,
-                            selected: true,
-                            country : App.Settings.address.country,
-                            state: App.Settings.address.state
-                        });
-                        this.add(addr);
-                    }
-                }
-
-                addrJson = addr.toJSON();
-                this.some(function(model, index) {
-                    var el = model.toJSON();
-                    return el.id === null && el.dining_option != dining_option && (reverse_addr = el); // use the first existing address
-                });
-                if (!reverse_addr && fromProfile && this.isAuthorized()) {
-                    reverse_addr = addresses.getDefaultProfileAddress().toJSON(); // use profile address
-                }
-                addrJson == undefined && (addrJson = {});
-                if (reverse_addr) {
-                    if ((addrJson.country && reverse_addr.country && addrJson.country == reverse_addr.country) ||
-                        (!addrJson.country && reverse_addr.country == App.Settings.address.country)) { //if country was changed then we can't copy address
-                        if (!addrJson.province && !addrJson.street_1 && !addrJson.street_2 && !addrJson.city && !addrJson.zipcode) { //and we will copy address if all target fields are empty only
-                            newAddr = _.extend(addrJson, { state: reverse_addr.state,
-                                                    province: reverse_addr.province,
-                                                    street_1: reverse_addr.street_1,
-                                                    street_2: reverse_addr.street_2,
-                                                    city: reverse_addr.city,
-                                                    zipcode: reverse_addr.zipcode });
-                            addr.set(newAddr);
-                            return newAddr;
-                        }
-                    }
-                }
-
-                return addrJson && typeof addrJson.street_1 === 'string' ? addrJson : undefined;
-            },
-            /**
-             * Returns customer address for sending to create_order_and_pay/.
-             * @returns {object} address object.
-             */
-            getOrderAddress: function() {
-                var address = App.Data.customer.get('addresses').getSelectedAddress().toJSON();
-
-                return {
-                    // here we need only the following fields (no need for extra fields from profile address.
-                    // once Backend receives customer.address.id, it will look for this address in the database, but it could be saved on another instance.)
-                    address: address.address || '',
-                    city: address.city || '',
-                    country: address.country || '',
-                    province: address.province || '',
-                    state: address.state || '',
-                    street_1: address.street_1 || '',
-                    street_2: address.street_2 || '',
-                    zipcode: address.zipcode || ''
-                };
-            },
-            changeSelection: function(dining_option) {
-                var selectedAddr = this.getSelectedAddress();
-                if (!this.isProfileAddressSelected()) {
-                    this.invoke('set', {selected: false});
-                    this.some(function(model) {
-                        return model.get('dining_option') == dining_option && model.set('selected', true);
-                    })
-                }
-            },
-            radioSelect: function(model, selected) {
-                selected && this.some(function(el) {
-                    el !== model && el.get('selected') && el.set('selected', false);
-                })
-            },
-            removeProfileAddresses: function() {
-                this.remove(this.filter(function(model) {
-                    return model.get('id') !== null;
-                }))
             }
-        });
+
+            address.postal_code = address.zipcode;
+            address.country_code = address.country;
+            address.region = address.country == 'US' ? address.state
+                           : address.country == 'CA' ? address.province
+                           : null;
+
+            return address;
+        },
+        /**
+         * Converts address from 'customers/addresses/' API format. Changes `postal_code` property to `zipcode`,
+         * `country_code` -> `country`, `region` -> `state`/`province`.
+         *
+         * @param {Object} address - an object containing address data
+         * @returns {Object} Modified address object.
+         */
+        convertFromAPIFormat: function(address) {
+            if (!_.isObject(address)) {
+                return address;
+            }
+
+            address.zipcode = address.postal_code;
+            address.country = address.country_code;
+            address.state = address.country == 'US' ? address.region : '';
+            address.province = address.country == 'CA' ? address.region : '';
+
+            return address;
+        },
+        /**
+         * Converts address to full address line.
+         * @see {@link http://mediawiki.middlebury.edu/wiki/LIS/Address_Standards} for detail format information.
+         * @returns {string} full address line
+         */
+        toString: function(address) {
+            var address = address || this.toJSON(),
+                settings = App.Settings,
+                str = [];
+            address.street_1 && str.push(address.street_1);
+            address.street_2 && str.push(address.street_2);
+            address.city && str.push(address.city);
+            settings.address && settings.address.state && address.state && str.push(address.state);
+            address.zipcode && str.push(address.zipcode);
+
+            return str.join(', ');
+        },
+        /**
+         * @returns {boolean} `true` if the address has `id`, `customer` properties and `false` otherwise.
+         */
+        isProfileAddress: function() {
+            return !isNaN(this.get('id')) && this.get('customer');
+        },
+    });
+
+    App.Collections.CustomerAddresses = Backbone.Collection.extend(
+
+    {
+        model: App.Models.CustomerAddress,
+        initialize: function() {
+            this.listenTo(this, 'change:selected', this.radioSelect);
+        },
+        /**
+         * Coverts the array of addresses objects from API to model format.
+         * This method gets called when {parse: true} is passed to the collection constructor.
+         * @param   {array} addresses
+         * @param   {object} options
+         * @returns {array} converted addresses
+         */
+        parse: function(addresses, options) {
+            return _.map(addresses, App.Models.CustomerAddress.prototype.convertFromAPIFormat);
+        },
+        addJSON: function(data) {
+            data instanceof Array && this.set(data);
+        },
+        updateFromAPI: function(addresses) {
+            var self = this;
+            // remove from collection addresses not presented in api response
+            this.each(function(model) {
+                if (!isNaN(model.id) && !_.findWhere(addresses, {id: model.id})) {
+                    self.remove(model);
+                }
+            });
+            // add all addreesses
+            _.each(addresses, function(address) {
+                self.add(App.Models.CustomerAddress.prototype.convertFromAPIFormat(address));
+            });
+        },
+        /**
+         * Saves addresses to a storage.
+         */
+        saveToStorage: function() {
+            setData('address', new Backbone.Model({addresses: this.toJSON()}), true);
+        },
+        /**
+         * Loads addresses from a storage.
+         */
+        loadFromStorage: function() {
+            var data = getData('address', true);
+            if (data instanceof Object && Array.isArray(data.addresses) && data.addresses.length == 1 && App.skin != App.Skins.RETAIL) {
+                if (data.addresses[0].country != App.Settings.address.country) {
+                    //the thread come here e.g. when we navigate from 'Retail' skin with other country payment previously submitted to weborder_mobile skin
+                    data = undefined;
+                }
+            }
+            this.set(data instanceof Object ? (data.addresses || []) : []);
+        },
+        /**
+         * Returns default profile address.
+         * @returns {?@link App.Models.CustomerAddress}
+         *   - default address, if it exists
+         *   - undefined otherwise
+         */
+        getDefaultProfileAddress: function() {
+            return this.findWhere({is_primary: true});
+        },
+        getSelectedAddress: function() {
+            return this.findWhere({selected: true});
+        },
+        /**
+         * Checks whether the selected address is from user profile.
+         * @returns {boolean}
+         */
+        isProfileAddressSelected: function() {
+            return this.getSelectedAddress() ? (this.getSelectedAddress().isProfileAddress()) : false;
+        },
+        /**
+         * Checks whether the selected address is new (filled on checkout screen) and not from user profile.
+         * @returns {Boolean} [description]
+         */
+        isNewAddressSelected: function() {
+            return this.getSelectedAddress() ? !this.getSelectedAddress().isProfileAddress() : false;
+        },
+        /**
+         * Get address set for shipping/delivery or default address set in backend.
+         * @param {string} [dining_option] - dining option.
+         * @param {boolean} [fromProfile] - indicates whether to use fields from profile address
+         * @returns {object} with state, province, city, street_1, street_2, zipcode, contry fields
+         */
+        getCheckoutAddress: function(dining_option, fromProfile) {
+            var customer = App.Data.customer.toJSON(),
+                addr = this.getSelectedAddress(),
+                addrJson,
+                reverse_addr,
+                newAddr;
+
+            // if shipping address isn't selected take last index
+            if (!addr) {
+                addr = this.get(dining_option);
+                if (!addr) {
+                    addr = new App.Models.CustomerAddress({
+                        id: dining_option,
+                        selected: true,
+                        country : App.Settings.address.country,
+                        state: App.Settings.address.state
+                    });
+                    this.add(addr);
+                }
+            }
+
+            addrJson = addr.toJSON();
+            this.some(function(model, index) {
+                var el = model.toJSON();
+                return typeof el.id == 'string' && isNaN(el.id) && el.id != dining_option && (reverse_addr = el); // use the first existing address
+            });
+            if (!reverse_addr && fromProfile && this.isAuthorized()) {
+                reverse_addr = addresses.getDefaultProfileAddress().toJSON(); // use profile address
+            }
+            addrJson == undefined && (addrJson = {});
+            if (reverse_addr) {
+                if ((addrJson.country && reverse_addr.country && addrJson.country == reverse_addr.country) ||
+                    (!addrJson.country && reverse_addr.country == App.Settings.address.country)) { //if country was changed then we can't copy address
+                    if (!addrJson.province && !addrJson.street_1 && !addrJson.street_2 && !addrJson.city && !addrJson.zipcode) { //and we will copy address if all target fields are empty only
+                        newAddr = _.extend(addrJson, { state: reverse_addr.state,
+                                                province: reverse_addr.province,
+                                                street_1: reverse_addr.street_1,
+                                                street_2: reverse_addr.street_2,
+                                                city: reverse_addr.city,
+                                                zipcode: reverse_addr.zipcode });
+                        addr.set(newAddr);
+                        return newAddr;
+                    }
+                }
+            }
+
+            return addrJson && typeof addrJson.street_1 === 'string' ? addrJson : undefined;
+        },
+        /**
+         * Returns customer address for sending to create_order_and_pay/.
+         * @returns {object} address object.
+         */
+        getOrderAddress: function() {
+            var address = App.Data.customer.get('addresses').getSelectedAddress().toJSON();
+
+            return {
+                // here we need only the following fields (no need for extra fields from profile address.
+                // once Backend receives customer.address.id, it will look for this address in the database, but it could be saved on another instance.)
+                address: address.address || '',
+                city: address.city || '',
+                country: address.country || '',
+                province: address.province || '',
+                state: address.state || '',
+                street_1: address.street_1 || '',
+                street_2: address.street_2 || '',
+                zipcode: address.zipcode || ''
+            };
+        },
+        changeSelection: function(dining_option) {
+            if (!this.isProfileAddressSelected()) {
+                this.invoke('set', {selected: false});
+                this.get(dining_option) && this.get(dining_option).set('selected', true);
+
+            }
+        },
+        radioSelect: function(model, selected) {
+            selected && this.some(function(el) {
+                el !== model && el.get('selected') && el.set('selected', false);
+            });
+        },
+        removeProfileAddresses: function() {
+            this.remove(this.filter(function(model) {
+                return !isNaN(model.get('id'));
+            }));
+        }
+    });
 
 });

@@ -509,19 +509,19 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
             it("need to check address fields", function() {
                 var dining_option = 'dining_option';
-                spyOn(model, 'isShippingAddressSelected').and.returnValue(true);
+                spyOn(model, 'isNewAddressSelected').and.returnValue(true);
                 spyOn(model, '_check_delivery_fields');
                 model.check(dining_option);
-                expect(model.isShippingAddressSelected).toHaveBeenCalledWith(dining_option);
+                expect(model.isNewAddressSelected).toHaveBeenCalledWith(dining_option);
                 expect(model._check_delivery_fields).toHaveBeenCalled();
             });
 
             it("do not need to check address fields", function() {
                 var dining_option = 'dining_option';
-                spyOn(model, 'isShippingAddressSelected').and.returnValue(false);
+                spyOn(model, 'isNewAddressSelected').and.returnValue(false);
                 spyOn(model, '_check_delivery_fields');
                 model.check(dining_option);
-                expect(model.isShippingAddressSelected).toHaveBeenCalledWith(dining_option);
+                expect(model.isNewAddressSelected).toHaveBeenCalledWith(dining_option);
                 expect(model._check_delivery_fields).not.toHaveBeenCalled();
             });
 
@@ -869,7 +869,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             expect(model.isDefaultShippingSelected()).toBe(false);
         });
 
-        describe("isShippingAddressSelected()", function() {
+        describe("isNewAddressSelected()", function() {
             var originalShippingAddress;
 
             beforeEach(function() {
@@ -882,82 +882,82 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
             it("`dining_option` param is 'DINING_OPTION_DELIVERY', `shipping_address` is delivery address index", function() {
                 model.set('shipping_address', model.get('deliveryAddressIndex'));
-                expect(model.isShippingAddressSelected('DINING_OPTION_DELIVERY')).toBe(true);
+                expect(model.isNewAddressSelected('DINING_OPTION_DELIVERY')).toBe(true);
             });
 
             it("`dining_option` param is 'DINING_OPTION_DELIVERY', `shipping_address` is shipping address index", function() {
                 model.set('shipping_address', model.get('shippingAddressIndex'));
-                expect(model.isShippingAddressSelected('DINING_OPTION_DELIVERY')).toBe(true);
+                expect(model.isNewAddressSelected('DINING_OPTION_DELIVERY')).toBe(true);
             });
 
             it("`dining_option` param is 'DINING_OPTION_DELIVERY', `shipping_address` is catering address index", function() {
                 model.set('shipping_address', model.get('cateringAddressIndex'));
-                expect(model.isShippingAddressSelected('DINING_OPTION_DELIVERY')).toBe(true);
+                expect(model.isNewAddressSelected('DINING_OPTION_DELIVERY')).toBe(true);
             });
 
             it("`dining_option` param is 'DINING_OPTION_DELIVERY', `shipping_address` is neither delivery nor shipping nor catering address index", function() {
                 model.set('shipping_address', -1);
-                expect(model.isShippingAddressSelected('DINING_OPTION_DELIVERY')).toBe(false);
+                expect(model.isNewAddressSelected('DINING_OPTION_DELIVERY')).toBe(false);
             });
 
             it("`dining_option` param is 'DINING_OPTION_SHIPPING', `shipping_address` is delivery address index", function() {
                 model.set('shipping_address', model.get('deliveryAddressIndex'));
-                expect(model.isShippingAddressSelected('DINING_OPTION_SHIPPING')).toBe(true);
+                expect(model.isNewAddressSelected('DINING_OPTION_SHIPPING')).toBe(true);
             });
 
             it("`dining_option` param is 'DINING_OPTION_SHIPPING', `shipping_address` is shipping address index", function() {
                 model.set('shipping_address', model.get('shippingAddressIndex'));
-                expect(model.isShippingAddressSelected('DINING_OPTION_SHIPPING')).toBe(true);
+                expect(model.isNewAddressSelected('DINING_OPTION_SHIPPING')).toBe(true);
             });
 
             it("`dining_option` param is 'DINING_OPTION_SHIPPING', `shipping_address` is catering address index", function() {
                 model.set('shipping_address', model.get('cateringAddressIndex'));
-                expect(model.isShippingAddressSelected('DINING_OPTION_SHIPPING')).toBe(true);
+                expect(model.isNewAddressSelected('DINING_OPTION_SHIPPING')).toBe(true);
             });
 
             it("`dining_option` param is 'DINING_OPTION_SHIPPING', `shipping_address` is neither delivery nor shipping nor catering address index", function() {
                 model.set('shipping_address', -1);
-                expect(model.isShippingAddressSelected('DINING_OPTION_SHIPPING')).toBe(false);
+                expect(model.isNewAddressSelected('DINING_OPTION_SHIPPING')).toBe(false);
             });
 
             it("`dining_option` param is 'DINING_OPTION_CATERING', `shipping_address` is delivery address index", function() {
                 model.set('shipping_address', model.get('deliveryAddressIndex'));
-                expect(model.isShippingAddressSelected('DINING_OPTION_CATERING')).toBe(true);
+                expect(model.isNewAddressSelected('DINING_OPTION_CATERING')).toBe(true);
             });
 
             it("`dining_option` param is 'DINING_OPTION_CATERING', `shipping_address` is shipping address index", function() {
                 model.set('shipping_address', model.get('shippingAddressIndex'));
-                expect(model.isShippingAddressSelected('DINING_OPTION_CATERING')).toBe(true);
+                expect(model.isNewAddressSelected('DINING_OPTION_CATERING')).toBe(true);
             });
 
             it("`dining_option` param is 'DINING_OPTION_CATERING', `shipping_address` is catering address index", function() {
                 model.set('shipping_address', model.get('cateringAddressIndex'));
-                expect(model.isShippingAddressSelected('DINING_OPTION_CATERING')).toBe(true);
+                expect(model.isNewAddressSelected('DINING_OPTION_CATERING')).toBe(true);
             });
 
             it("`dining_option` param is 'DINING_OPTION_CATERING', `shipping_address` is neither delivery nor shipping nor catering address index", function() {
                 model.set('shipping_address', -1);
-                expect(model.isShippingAddressSelected('DINING_OPTION_CATERING')).toBe(false);
+                expect(model.isNewAddressSelected('DINING_OPTION_CATERING')).toBe(false);
             });
 
             it("`dining_option` param is neither 'DINING_OPTION_DELIVERY' nor 'DINING_OPTION_SHIPPING' nor 'DINING_OPTION_CATERING', `shipping_address` is delivery address index", function() {
                 model.set('shipping_address', model.get('deliveryAddressIndex'));
-                expect(model.isShippingAddressSelected('DINING_OPTION_TOGO')).toBe(false);
+                expect(model.isNewAddressSelected('DINING_OPTION_TOGO')).toBe(false);
             });
 
             it("`dining_option` param is neither 'DINING_OPTION_DELIVERY' nor 'DINING_OPTION_SHIPPING' nor 'DINING_OPTION_CATERING', `shipping_address` is shipping address index", function() {
                 model.set('shipping_address', model.get('shippingAddressIndex'));
-                expect(model.isShippingAddressSelected('DINING_OPTION_TOGO')).toBe(false);
+                expect(model.isNewAddressSelected('DINING_OPTION_TOGO')).toBe(false);
             });
 
             it("`dining_option` param is neither 'DINING_OPTION_DELIVERY' nor 'DINING_OPTION_SHIPPING' nor 'DINING_OPTION_CATERING', `shipping_address` is catering address index", function() {
                 model.set('shipping_address', model.get('cateringAddressIndex'));
-                expect(model.isShippingAddressSelected('DINING_OPTION_TOGO')).toBe(false);
+                expect(model.isNewAddressSelected('DINING_OPTION_TOGO')).toBe(false);
             });
 
             it("`dining_option` param is neither 'DINING_OPTION_DELIVERY' nor 'DINING_OPTION_SHIPPING' nor 'DINING_OPTION_CATERING', `shipping_address` is neither delivery nor shipping nor catering address index", function() {
                 model.set('shipping_address', -1);
-                expect(model.isShippingAddressSelected('DINING_OPTION_TOGO')).toBe(false);
+                expect(model.isNewAddressSelected('DINING_OPTION_TOGO')).toBe(false);
             });
         });
 
@@ -2268,30 +2268,6 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                     state: '',
                     province: address.region
                 }));
-            });
-        });
-
-        describe("isProfileAddress()", function() {
-            it("`address` param isn't object", function() {
-                values = [1, '', 0, '123', NaN, Infinity, false, undefined, null];
-                values.forEach(function(value) {
-                    expect(model.isProfileAddress(value)).toBe(false);
-                });
-            });
-
-            it("`address` param is object, `address.id` is undefined", function() {
-                var address = {};
-                expect(model.isProfileAddress(address)).toBe(false);
-            });
-
-            it("`address` param is object, `address.id` is specified, `address.customer` is undefined", function() {
-                var address = {id: 123};
-                expect(model.isProfileAddress(address)).toBe(false);
-            });
-
-            it("`address` param is object, `address.id` is specified, `address.customer` is specified", function() {
-                var address = {id: 123, customer: 2123};
-                expect(model.isProfileAddress(address)).toBe(true);
             });
         });
 

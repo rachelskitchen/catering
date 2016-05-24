@@ -2426,6 +2426,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                             }
                             if (App.Data.customer.isAuthorized()) {
                                 App.Data.customer.getRewardCards();
+                                App.Data.customer.getAddresses();
                             }
                             myorder.trigger('paymentResponse');
                         }
