@@ -1873,6 +1873,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.rewardCardsRequest && this.rewardCardsRequest.abort();
             delete this.rewardCardsRequest;
             this.get('rewardCards').reset();
+            App.Data.myorder.rewardsCard.resetData(); // bug_43982
         },
         /**
          * Receives gift cards from server.
