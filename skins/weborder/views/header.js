@@ -35,7 +35,8 @@ define(["backbone", "factory"], function() {
         bindings: {
             '.menu': 'classes: {active: strictEqual(tab_index, 0)}',
             '.about': 'classes: {active: strictEqual(tab_index, 1)}',
-            '.map': 'classes: {active: strictEqual(tab_index, 2)}'
+            '.map': 'classes: {active: strictEqual(tab_index, 2)}',
+            '.title': 'text: business_name'
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
