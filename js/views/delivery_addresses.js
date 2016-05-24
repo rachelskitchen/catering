@@ -141,10 +141,10 @@ define(['backbone', 'factory'], function(Backbone) {
             // if shipping_address isn't selected
             if (!selectedAddress) {
                 var dining_option = this.options.checkout.get('dining_option');
-                selectedAddress = addresses.findWhere({dining_option: dining_option});
+                selectedAddress = addresses.get(dining_option);
                 if (!selectedAddress) {
                     // create the empty address for the selected dining option
-                    selectedAddress = new App.Models.CustomerAddress({dining_option: dining_option, selected: true});
+                    selectedAddress = new App.Models.CustomerAddress({id: dining_option, selected: true});
                     addresses.add(selectedAddress);
                 }
             }
@@ -183,7 +183,7 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         bindingSources: _.extend({}, AddressView.prototype.bindingSources, {
             addresses: function() {
-                var model = new Backbone.Model({selected: null}),
+                var model = new Backbone.Model(),
                     addresses = App.Data.customer.get('addresses');
                 model.listenTo(addresses, 'change reset add remove', function(addr, value) {
                     model.trigger('change');
@@ -208,10 +208,10 @@ define(['backbone', 'factory'], function(Backbone) {
                 deps: ['isAuthorized', 'customer_addresses', 'checkout_dining_option', '$addresses'],
                 get: function(isAuthorized, customer_addresses, checkout_dining_option) {
                     return isAuthorized && customer_addresses.filter(function(addr) {
-                        addr = addr.toJSON();
-                        return addr.id !== null && addr.street_1 && addr.city && addr.country && addr.zipcode
-                            && (checkout_dining_option == 'DINING_OPTION_DELIVERY' ? addr.country == App.Settings.address.country : true)
-                            && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true);
+                        var address = addr.toJSON();
+                        return addr.isProfileAddress() && address.street_1 && address.city && address.country && address.zipcode
+                            && (checkout_dining_option == 'DINING_OPTION_DELIVERY' ? address.country == App.Settings.address.country : true)
+                            && (address.country == 'US' ? address.state : true) && (address.country == 'CA' ? address.province : true);
                     }).length;
                 }
             },
@@ -342,9 +342,12 @@ define(['backbone', 'factory'], function(Backbone) {
                 deps: ['customer_addresses', '$addresses'],
                 get: function(customer_addresses) {
                     var selectedAddr = customer_addresses.getSelectedAddress();
-                    // set -1 if no address is selected or if selected address id is null
+                    // set -1 if no address is selected or if selected address is not from profile
                     // value -1 corresponds the 'Enter new address' option
-                    return selectedAddr ? selectedAddr.get('id') || -1 : -1;
+                    if (selectedAddr && !isNaN(selectedAddr.get('id'))) {
+                        return selectedAddr.get('id');
+                    }
+                    return -1;
                 }
             }
         }),
@@ -364,7 +367,7 @@ define(['backbone', 'factory'], function(Backbone) {
         changeSelection: function(e) {
             var value = Number(e.target.value),
                 addresses = this.getBinding('customer_addresses'),
-                addr = value != -1 ? addresses.findWhere({id: value}) : addresses.findWhere({dining_option: this.getBinding('checkout_dining_option')});
+                addr = value != -1 ? addresses.get(value) : addresses.get(this.getBinding('checkout_dining_option'));
             addr && addr.set('selected', true);
         },
         /**
@@ -380,14 +383,15 @@ define(['backbone', 'factory'], function(Backbone) {
             }
 
             var addresses = customer.get('addresses'),
+                address,
                 optionsStr = '',
                 options = addresses.map(function(addr) {
-                    addr = addr.toJSON();
-                    if (addr.id !== null && addr.street_1) {
-                        return addr && addr.street_1 && addr.city && addr.country && addr.zipcode
-                            && (dining_option == 'DINING_OPTION_DELIVERY' ? addr.country == App.Settings.address.country : true)
-                            && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true)
-                            ? {label: addr.street_1, value: addr.id} : undefined;
+                    address = addr.toJSON();
+                    if (addr.isProfileAddress() && address.street_1) {
+                        return address && address.street_1 && address.city && address.country && address.zipcode
+                            && (dining_option == 'DINING_OPTION_DELIVERY' ? address.country == App.Settings.address.country : true)
+                            && (address.country == 'US' ? address.state : true) && (address.country == 'CA' ? address.province : true)
+                            ? {label: address.street_1, value: address.id} : undefined;
                     }
                     else {
                         return undefined;
@@ -405,7 +409,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 this.$('#addresses').html(optionsStr);
 
                 if (this.options.address_index == -1) { // default profile address should be selected
-                    var addr = addresses.findWhere({id: options[0].value});
+                    var addr = addresses.get(options[0].value);
                     addr && addr.set('selected', true);
                     delete this.options.address_index;
                 }

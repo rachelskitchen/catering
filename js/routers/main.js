@@ -344,6 +344,11 @@ define(["backbone", "factory"], function(Backbone) {
             // set addresses
             customer.setAddresses();
 
+            // change address selection according to selected dining option
+            this.listenTo(App.Data.myorder.checkout, 'change:dining_option', function(dining_option) {
+                customer.get('addresses').changeSelection(dining_option);
+            });
+
             // set gift cards
             if (App.SettingsDirectory.saved_gift_cards) {
                 customer.setGiftCards(App.Collections.GiftCards);
