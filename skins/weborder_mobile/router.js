@@ -1971,16 +1971,19 @@ define(["main_router"], function(main_router) {
             this.change_page();
         },
         profile_edit: function() {
-            var content = this.profileEditContent();
+            var data = this.profileEditContent();
 
-            App.Data.mainModel.set({
-                header: headerModes.Modifiers,
-                footer: footerModes.None,
-                contentClass: 'primary-bg',
-                content: content
-            });
-
-            this.change_page();
+            if (!data.promises.length) {
+                return this.navigate('index', true);
+            } else {
+                App.Data.mainModel.set({
+                    header: headerModes.Modifiers,
+                    footer: footerModes.None,
+                    contentClass: 'primary-bg',
+                    content: data.content
+                });
+                Backbone.$.when.apply(Backbone.$, data.promises).then(this.change_page.bind(this));
+            }
         },
         profile_settings: function() {
             var content = this.profileSettingsContent();

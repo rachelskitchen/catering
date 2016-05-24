@@ -133,7 +133,8 @@ define(['backbone', 'factory'], function(Backbone) {
                 selectedAddress = addresses.getSelectedAddress();
 
             // do not change profile addresses
-            if (addresses.isProfileAddressSelected()) {
+            if (selectedAddress.isProfileAddress()) {
+                selectedAddress.set('address', selectedAddress.toString());
                 return;
             }
 

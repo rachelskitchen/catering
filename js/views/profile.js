@@ -249,12 +249,6 @@ define(["factory"], function() {
                 newAddress: this.newAddress
             });
 
-            var address = App.Views.GeneratorView.create('Profile', {
-                el: this.$('.address-box'),
-                mod: 'Address',
-                model: this.model.get('addresses').getDefaultProfileAddress() || new App.Models.CustomerAddress(),
-            });
-
             this.subViews.push(basicDetails, addresses);
 
             return this;
