@@ -953,7 +953,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 headers: this.getAuthorizationHeader(),
                 data: JSON.stringify(address),
                 success: function(data) {
-                    if (Object.isObject(data)) {
+                    if (_.isObject(data)) {
                         this.get('addresses').updateFromAPI([data]);
                     }
                     this.trigger('onUserAddressCreated');
@@ -1059,7 +1059,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 headers: this.getAuthorizationHeader(),
                 data: JSON.stringify(address),
                 success: function(data) {
-                    if (Object.isObject(data) && data.id == address.id) {
+                    if (_.isObject(data) && data.id == address.id) {
                         this.get('addresses').findWhere({id: data.id}).set(data);
                     }
                     this.trigger('onUserAddressUpdate');
@@ -1964,6 +1964,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         {
             defaults: {
                 id: null,
+                customer: null,
                 is_primary: false,
                 dining_option: null,
                 selected: false,
@@ -2022,7 +2023,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 address.country = address.country_code;
                 address.state = address.country == 'US' ? address.region : '';
                 address.province = address.country == 'CA' ? address.region : '';
-                address.address = this.toString(address);
 
                 return address;
             },
@@ -2042,6 +2042,12 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 address.zipcode && str.push(address.zipcode);
 
                 return str.join(', ');
+            },
+            /**
+             * @returns {boolean} `true` if the address has `id`, `customer` properties and `false` otherwise.
+             */
+            isProfileAddress: function() {
+                return this.get('id') != 'null' && this.get('customer');
             },
         });
 
@@ -2115,7 +2121,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
              * @returns {boolean}
              */
             isProfileAddressSelected: function() {
-                return this.getSelectedAddress() ? (this.getSelectedAddress().get('id') !== null) : false;
+                return this.getSelectedAddress() ? (this.getSelectedAddress().isProfileAddress()) : false;
             },
             /**
              * Checks whether the selected address has 'dining_option' attribute.

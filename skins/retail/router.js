@@ -771,8 +771,13 @@ define(["main_router"], function(main_router) {
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         },
         profile_edit: function() {
-            this.setProfileEditContent();
-            this.change_page();
+            var promises = this.setProfileEditContent();
+
+            if (!promises.length) {
+                return this.navigate('index', true);
+            } else {
+                Backbone.$.when.apply(Backbone.$, promises).then(this.change_page.bind(this));
+            }
         },
         profile_payments: function() {
             var promises = this.setProfilePaymentsContent();
