@@ -589,10 +589,6 @@ define(["backbone", "async"], function(Backbone) {
                             {
                                 App.Data.is_stanford_mode = true;
                             }
-                            if (App.Data.is_stanford_mode) {
-                                // set color_scheme to "Stanford"
-                                settings_system.color_scheme = "Custom";
-                            }
 
                             self.set("settings_system", settings_system);
                             App.Settings = App.Data.settings.get("settings_system");
