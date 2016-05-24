@@ -721,6 +721,9 @@ define(["main_router"], function(main_router) {
                 if(!App.Data.customer) {
                     this.loadCustomer();
                 }
+
+                var other_dining_options = App.Data.myorder.checkout.get('other_dining_options');
+
                 App.Data.header.set('tab_index', null);
                 App.Data.mainModel.set({
                     mod: 'Main',
@@ -730,9 +733,11 @@ define(["main_router"], function(main_router) {
                         modelName: 'Main',
                         mod: 'Done',
                         model: App.Data.mainModel,
-                        header: App.Data.header,
                         customer: App.Data.customer,
-                        checkout: App.Data.myorder.checkout
+                        checkout: App.Data.myorder.checkout,
+                        other_options: other_dining_options || new Backbone.Collection(),
+                        className: 'main-done',
+                        noCache: true
                     }
                 });
                 this.change_page();

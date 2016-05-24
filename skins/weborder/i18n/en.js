@@ -87,9 +87,9 @@
         'MAIN_SECTION': 'Section',
         'MAIN_ROW': 'Row',
         'MAIN_SEAT': 'Seat',
-        'MAIN_REWARD_CARD_POINTS': 'Reward Card Points',
-        'MAIN_REWARD_CARD_VISITS': 'Points for Visits',
-        'MAIN_REWARD_CARD_PURCHASES': 'Points for Purchases',
+        'MAIN_REWARD_CARD_POINTS': 'Item Points',
+        'MAIN_REWARD_CARD_VISITS': 'Visit Points',
+        'MAIN_REWARD_CARD_PURCHASES': 'Purchase Points',
         'MAIN_TOTAL_AMOUNT_CHARGED': 'Total Amount Charged',
         'MAIN_RETURN_TO_MENU': 'Return to Menu',
         'MAIN_STANFORD_CARD_BALANCE': 'balance',
@@ -174,6 +174,7 @@
         'REWARDS_REDEEM_REWARD': 'Redeem your Reward!',
         'REWARDS_CLOSE_WINDOW': 'Or close this window to save your points.',
         'REWARDS_POINTS_INFO': 'Reward Points Info',
+        'REWARDS_TITLE': 'Rewards',
         'REWARDS_ITEM_REWARDS': 'Item Rewards',
         'REWARDS_VISIT_REWARDS': 'Visit Rewards',
         'REWARDS_PURCHASE_REWARDS': 'Purchase Rewards',
@@ -184,6 +185,7 @@
         'STANFORD_CARD_NUMBER': 'Stanford Card #',
         'STANFORD_CARD_CHOOSE_PLAN': 'Stanford Card: Choose Plan',
         'STANFORD_VERIFY': 'Verify',
+        'STANFORD_CARD_PLANS': 'Stanford Card Plans',
         'COMBO_CUSTOMIZE': 'Customize',
         'PRODUCT_SETS_SELECT_1': 'Please choose your "',
         'PRODUCT_SETS_SELECT_2': '" options',
@@ -207,6 +209,7 @@
         'DONE_ORDER_SUBMITTED': 'Your Order from %s has been Submitted!',
         'DONE_ARRIVE_TIME': 'It should arrive at %s.',
         'DONE_PICKUP_TIME': 'You can pickup your order at %s.',
-        'DONE_DETAILS_INFO': 'Checkout out the details below about your order.'
+        'DONE_DETAILS_INFO': 'Checkout out the details below about your order.',
+        'DONE_STORE_ADDRESS': 'Store Address'
     } // end of locale
 }); // end of module

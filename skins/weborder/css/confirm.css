@@ -1,0 +1,57 @@
+.main-done .top {
+    padding: 12px 25px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.main-done .col {
+    width: 50%;
+    padding: 0 25px 10px;
+}
+
+.main-done .header-underline {
+    margin-bottom: 23px;
+}
+
+.main-done .submitted,
+.main-done .pickup-time {
+    margin-bottom: 8px;
+}
+
+.main-done .details-box {
+    margin: 23px 0;
+    padding: 10px 15px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+}
+
+.main-done .details-box > * {
+    margin: 10px 0;
+}
+
+.main-done .points-box {
+    display: inline-block;
+    margin: 20px 30px;
+}
+
+.main-done .points {
+    font-size: 30px;
+}
+
+.main-done .address-label,
+.main-done .address-value {
+    vertical-align: top;
+}
+
+.main-done .value {
+    padding-left: 5px;
+}
+
+.main-done .contact-person {
+    margin-bottom: 5px;
+}
+
+.main-done .phone {
+    margin-top: 5px;
+}

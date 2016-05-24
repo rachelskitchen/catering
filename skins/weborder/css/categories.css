@@ -65,7 +65,8 @@
 
 .categories_slider .arrow_right {
     text-align: left;
-    right: 40px;
+    right: 38px;
+    padding-left: 5px;
 }
 
 .categories_products_wrapper {
