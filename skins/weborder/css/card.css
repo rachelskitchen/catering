@@ -1,120 +1,14 @@
-/* styles for Card elements */
-.card-block label {
-    display: inline-block;
-    width: 200px;
-    margin: 10px 0;
-    padding-left: 30px;
-    font-weight: bold;
-}
-.card-block label > span {
-    padding-right: 8px;
-    padding-left: 5px;
-    float: left;
+.cc-box .checkbox-outer {
+    padding-top: 33px;
+    cursor: pointer;
 }
 
-.card-block > div,
-.card-block .address > div {
-    position: relative;
-    margin-bottom: 5px;
-}
-.card-block.no_top_margin > div,
-.card-block.no_top_address .address > div {
-    position: relative;
-    margin-bottom: 2px;
+.cc-box .checkbox-outer > * {
+    vertical-align: middle;
 }
 
-.card-block.no_top_margin > div.card_title {
-    margin-bottom: 7px;
-}
-
-#billing-address .inactive
-{
-    opacity: 0.5;
-}
-.card-block div.input_beauty {
-    position: absolute;
-    top: 6px;
-    bottom: 6px;
-    left: 230px;
-    right: 30px;
-}
-.card-block div.select {
-    display: inline-block;
-    width: 78px;
-    position: relative;
-    left: -7px;
-}
-.card-block .address .select-wrapper {
-    width: 200px;
-    height: 24px;
-}
-.card-block div.select {
-    position: relative;
-    top: 6px;
-    vertical-align: top;
-}
-.card-block div.select:last-child {
-    margin-bottom: 10px;
-}
-.card-block div.select[disabled="disabled"] {
-    opacity: .5;
-    opacity: filter(50);
-}
-.card-block ul.card.firefox label {
-    line-height: 2.4em;
-}
-.card-block ul.card.firefox label:before {
-    top: 0;
-}
-.card-block .select-wrapper {
-    margin-right: 10px;
-}
-#exp-year {
-    padding-right: 22px;
-}
-.card-block .card__remember {
-    width: 60%;
-}
-.card-block .card__remember label{
-    margin-top: 0.1em;
-    margin-bottom: 0.1em;
-}
-#rememberCard {
-    display: inline-block;
-    vertical-align: top;
-    position: relative;
-    font-size: 2em;
-    top: 0.2em;
-}
-#use_profile_address {
-    margin: 0px 30px 3px 30px;
-}
-#use_profile_address .checkbox {
-    display: inline-block;
-    height: 21px;
-    width: 21px;
-    border-radius: 4px;
-    float: left;
-    margin-right: 12px;
-}
-.input.checkbox {
-    height: 21px;
-    width: 21px;
-    border-radius: 4px;
-}
-.card-block .select-wrapper select[disabled=disabled] {
-    color: rgba(0, 0, 0, 0.7);
-}
-/* for tablets */
-@media only screen and (max-device-width: 949px) {
-    .card-block label {
-        width: 150px !important;
-    }
-    .card-block div.input_beauty,
-    .card-block div.tips {
-        left: 180px !important;
-    }
-    div.select.month {
-        margin-left: 12px !important;
-    }
+.billing-address-box .title {
+    padding: 0;
+    border: none;
+    font: inherit;
 }

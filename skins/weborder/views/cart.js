@@ -28,74 +28,17 @@ define(["products_view"], function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection, "add remove", this.onChangeOrder, this);
         },
-        render: function() {
-            App.Views.FactoryView.prototype.render.apply(this, arguments);
-            $(window).on('resize.cart', this.resize.bind(this));
-            this.listenTo(App.Data.mainModel, 'loadCompleted', this.resize.bind(this));
-
-            this.subViews.push(App.Views.GeneratorView.create('MyOrder', {
-                el: this.$('.order-items'),
-                mod: 'List',
-                collection: this.collection
-            }));
-
-            this.$('.order-items').contentarrow();
-            this.onChangeOrder();
-        },
-        onChangeOrder: function() {
-            if (this.collection.get_only_product_quantity() > 0)
-                this.$(".order-items_wrapper, .total_block").show();
-            else
-                this.$(".order-items_wrapper, .total_block").hide();
-        },
-        resize: function() {
-            var self = this;
-            this.timeouts = this.timeouts || [];
-
-            this.timeouts.push(setTimeout(function() {
-                while (self.timeouts.length) {
-                    clearTimeout(self.timeouts.pop());
-                }
-                var main = self.$el.outerHeight(true),
-                    title = self.$('.cart_title').outerHeight(true),
-                    button = self.$('.btn').outerHeight(true),
-                    total = self.$('.total_block').outerHeight(true),
-                    height = main - title - button - total - 10,
-                    items = self.$('.order-items');
-
-                items.css('max-height', height);
-            },50));
-        },
-        remove: function() {
-            this.$('.order-items').contentarrow('destroy');
-            $(window).off('resize.cart');
-            App.Views.FactoryView.prototype.remove.apply(this, arguments);
-        }
-    });
-
-    var CartMainView = CartCoreView.extend({
-        name: 'cart',
-        mod: 'main',
-        render: function() {
-            App.Views.CartView.CartCoreView.prototype.render.apply(this, arguments);
-
-            this.subViews.push(App.Views.GeneratorView.create('Total', {
-                el: this.$('.total_block'),
-                mod: 'Main',
-                model: this.collection.total,
-                collection: this.collection
-            }));
-        },
         bindings: {
-            '.btn': 'classes:{disabled: any(not(orderItems_quantity), orderItems_pending)}'
+            '.btn': 'classes: {disabled: any(not(orderItems_quantity), orderItems_pending, shippingPending)}',
+            '.animate-spin': 'classes: {hide: all(not(orderItems_pending), not(shippingPending))}'
         },
-        events: {
-            'click .btn': 'checkout_event',
-            'keydown .btn': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.checkout_event();
+        computeds: {
+            shippingPending: {
+                deps: ['checkout_dining_option', 'customer_shipping_selected'],
+                get: function(checkout_dining_option, customer_shipping_selected) {
+                    return checkout_dining_option == 'DINING_OPTION_SHIPPING' && customer_shipping_selected == -1;
                 }
-            },
+            }
         },
         bindingSources: {
             orderItems: function() {
@@ -119,6 +62,54 @@ define(["products_view"], function() {
                 return model;
             }
         },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.listenTo(App.Data.mainModel, 'loadCompleted', this.resize.bind(this));
+
+            this.subViews.push(App.Views.GeneratorView.create('MyOrder', {
+                el: this.$('.order-items'),
+                mod: 'List',
+                collection: this.collection
+            }));
+
+            this.onChangeOrder();
+        },
+        onChangeOrder: function() {
+            if (this.collection.get_only_product_quantity() > 0)
+                this.$(".order-items_wrapper, .total_block").show();
+            else
+                this.$(".order-items_wrapper, .total_block").hide();
+        },
+        resize: function() {
+            var button = this.$('.btn').outerHeight(true),
+                totalBlock = this.$('.total_block').outerHeight(true);
+            this.$('.order-items_wrapper').css('bottom', (button + totalBlock) + 'px');
+            this.$('.total_block').css('bottom', button + 'px');
+        }
+    });
+
+    var CartMainView = CartCoreView.extend({
+        name: 'cart',
+        mod: 'main',
+        render: function() {
+            App.Views.CartView.CartCoreView.prototype.render.apply(this, arguments);
+
+            this.subViews.push(App.Views.GeneratorView.create('Total', {
+                el: this.$('.subtotal-box'),
+                mod: 'Main',
+                model: this.collection.total,
+                collection: this.collection
+            }));
+        },
+        bindings: {
+            '.subtotal-subline': 'toggle: orderItems_quantity'
+        },
+        events: {
+            'click .btn': 'checkout_event'
+        },
+        onEnterListeners: {
+            '.btn': 'checkout_event'
+        },
         checkout_event: function() {
             var self = this;
 
@@ -135,15 +126,14 @@ define(["products_view"], function() {
     var CartCheckoutView = CartCoreView.extend({
         name: 'cart',
         mod: 'checkout',
+        events: {
+            'click .pay-btn': 'pay'
+        },
+        onEnterListeners: {
+            '.pay-btn': 'pay'
+        },
         render: function() {
             App.Views.CartView.CartCoreView.prototype.render.apply(this, arguments);
-            this.subViews.push(App.Views.GeneratorView.create('Checkout', {
-                el: this.$('.pay_button'),
-                mod: 'PayButton',
-                collection: this.collection,
-                checkout: this.collection.checkout,
-                flag: 'checkout'
-            }));
 
             this.subViews.push(App.Views.GeneratorView.create('Total', {
                 el: this.$('.total_block'),
@@ -152,6 +142,9 @@ define(["products_view"], function() {
                 collection: this.collection,
                 checkout: this.collection.checkout
             }));
+        },
+        pay: function() {
+            this.model.onPay();
         }
     });
 

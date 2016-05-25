@@ -1,11 +1,5 @@
 <script type="text/template" id="instructions_modifiers-template">
-    <div class='instruction_block'>
-        <div class="title"> <%= _lp.INSTRUCTIONS_TITLE %> </div>
-        <div class="textarea input_beauty">
-            <textarea class="instructions"><%= special %></textarea>
-        </div>
-    </div>
-    <div class="add_instructions <% if (sold_by_weight) { print('sold_by_weight'); } %>" tabindex="0">
-        <%= _lp.INSTRUCTIONS_ADD_SPECIAL %>
-    </div>
+    <h3 class="title header-text"><%= _lp.INSTRUCTIONS_TITLE %></h3>
+    <span class="tip optional-text">(<%= _lp.OPTIONAL %>)</span>
+    <textarea class="instructions textarea"><%= special %></textarea>
 </script>

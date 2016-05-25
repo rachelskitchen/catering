@@ -78,7 +78,7 @@ define(["products_view"], function(products_view) {
                 }
             }
         },
-        initialize: function() {window.product = this.model.get_product();
+        initialize: function() {
             this.extendBindingSources({_product: this.model.get_product()});
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         }

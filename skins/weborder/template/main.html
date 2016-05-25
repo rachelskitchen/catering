@@ -1,33 +1,17 @@
 <script type="text/template" id="main_main-template">
-    <section class='main_el'>
-        <% if (_settings.promo_message) { %>
-            <div class='promo_message promo_text'> <span> <%= _settings.promo_message %> </span> </div>
-            <div class='promo_message promo_marquee'> <marquee behavior='scroll' direction='left' scrollamount='6' loop='-1'> <%= _settings.promo_message %> </marquee> </div>
-        <% } %>
+    <section id="section">
         <header id="header"></header>
-        <div id="content"></div>
+        <div id="content" class="primary-border"></div>
     </section>
-    <aside id="cart" class="main_el"> </aside>
-    <footer class='main_el<% if(_settings.payment_processor.credit_card_button && Array.isArray(_settings.online_credit_card_types)) { %> footer_mercury<% } %>'>
-        <div class="footer__left">
-            <div class="footer__left-inner">
-                <span class="footer__line current_establishment store_choice">
-                    <%= _lp.MAIN_CURRENT_STORE %>: <%= _settings.business_name %>
-                </span>
-                <span class="footer__line footer__directory">
-                    <span class="store_choice">
-                        <a class="change_establishment link1" href="javascript: void(0);"><%= _lp.MAIN_CHANGE %></a>
-                        <% if(isDirMode) { %> <%= _lp.MAIN_OR %> <% } %>
-                    </span>
-                    <% if(isDirMode) { %>
-                        <a class="go-to-directory link1" href="javascript: void(0);"> <%= _lp.MAIN_GOTO_DIRECTORY %> </a>
-                    <% } %>
-                </span>
-            </div>
+    <aside id="cart" class="primary-border"> </aside>
+    <footer id="footer" class="primary-border">
+        <div class="store_choice fl-left">
+            <%= _lp.MAIN_CURRENT_STORE %>: <%= _settings.business_name %>
+            <a class="change_establishment link primary-text" href="javascript: void(0);"><%= _lp.MAIN_CHANGE %></a>
         </div>
-        <div class="footer__right">
+        <div class="fl-right">
             <% if (_settings.payment_processor.credit_card_button && Array.isArray(_settings.online_credit_card_types)) { %>
-            <ul class="mercury-accepted-credit-cards">
+            <ul class="mercury-accepted-credit-cards fl-left">
                 <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.VISA.toString()) > -1) { %>
                 <li class="card-logo">
                     <img class="imgCardLogo" src="img/visa.png">
@@ -65,16 +49,13 @@
                 <% } %>
             </ul>
             <% } %>
-            <a class="powered-by" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
+            <a class="powered-by link primary-text" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
         </div>
     </footer>
-    <div class="popup">
-        <div class='popoup_align'>
-        </div>
-        <div class='popup_wrapper'>
-            <div id="popup">
-                <div class="cancel"></div>
-            </div>
+    <div class="popup text-center vertical-align">
+        <div class="shadow-bg"></div>
+        <div id="popup" class="popup-bg">
+            <div class="cancel fl-right link"></div>
         </div>
     </div>
     <div id="main-spinner"></div>
@@ -84,156 +65,84 @@
 <script type="text/template" id="main_maintenance-template">
     <section class="maintenance">
         <header id="header"> <div class="btn back" tabindex="0"> <span class="clip"> <%= _lp.MAIN_BACK %> </span> </div> </header>
-        <div id="content" class="text-center">
+        <div id="content" class="text-center primary-border">
             <p> <%= errMsg %> </p>
             <div class="btn reload" tabindex="0"><span><%= _lp.MAIN_RESTART %></span></div>
         </div>
     </section>
-    <footer>
-        <span class="store_choice">
-            <a class="change_establishment link1" href="javascript: void(0);"><%= _lp.MAIN_CHANGE_ESTABLISHMENT %></a>
-            <% if(isDirMode) { %> <%= _lp.MAIN_OR %> <% } %>
-        </span>
-        <% if(isDirMode) { %>
-            <a class="go-to-directory link1" href="javascript: void(0);"><%= _lp.MAIN_GOTO_DIRECTORY %></a>
-        <% } %>
-        <a class="powered-by" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
+    <footer class="primary-border">
     </footer>
 </script>
 
 <script type="text/template" id="main_done-template">
-    <section class="confirm">
-        <header id="header">
-            <div class="logo">
-                <img src="<%= logo %>" alt="<%= business_name %> logo" class="logo">
-            </div>
-        </header>
-        <div id="content">
-            <div class="confirm_order">
-                <div>
-                    <% if (status !== 'error') { %>
-                        <h2 class="confirmed_order_title"> <%= _lp.MAIN_ORDER_SUBMITTED %> </h2>
-                    <% } else { %>
-                        <h2 class="confirmed_order_title confirmed_title_red"> <%= _lp.MAIN_ORDER_NOT_SUBMITTED %> </h2>
-                    <% } %>
-                     <% if (status === 'error') { %>
-                        <p class="confirmed-order-txt">
-                            <%=message%>
-                        </p>
-                        <div class="btn btn-long btnReturn" tabindex="0">
-                            <span class="clip"> <%= buttonText %> </span>
-                        </div>
-                     <% } else { %>
-                        <table class="order-confirmed-detail">
-                            <tr>
-                                <td colspan="2" class="email"> <%= _lp.MAIN_RECEIPT_SENT_TO %> <%= email %> </td>
-                            </tr>
-                            <tr>
-                                <td> <%= _lp.MAIN_ORDER_ID %>: </td>
-                                <td><%= order_id %></td>
-                            </tr>
-                            <% if (!isOnlyGift && !isDiningOptionShipping) { %>
-                            <tr>
-                                <td><%= pickup_type %>:</td>
-                                <td><%= pickup_time_date %></td>
-                            </tr>
-                            <% } %>
-                            <% if (isDiningOptionOther && other_dining_options.length) { %>
-                            <tr>
-                                <td> <%= _lp.MAIN_DELIVERY_INFO %>: </td>
-                                <td>
-                                    <% for (var i = 0; i < other_dining_options.length; i++) { %>
-                                        <%= other_dining_options[i].name %> <span><%= other_dining_options[i].value %></span><% if(i < other_dining_options.length - 1) print(","); %>
-                                    <% } %>
-                                </td>
-                            </tr>
-                            <% } %>
-                            <% if(reward_items) { %>
-                            <tr>
-                                <td> <%= _lp.MAIN_REWARD_CARD_POINTS %>: </td>
-                                <td><%= reward_items %></td>
-                            </tr>
-                            <% } %>
-                            <% if(reward_visits) { %>
-                            <tr>
-                                <td> <%= _lp.MAIN_REWARD_CARD_VISITS %>: </td>
-                                <td><%= reward_visits %></td>
-                            </tr>
-                            <% } %>
-                            <% if(reward_purchases) { %>
-                            <tr>
-                                <td> <%= _lp.MAIN_REWARD_CARD_PURCHASES %>: </td>
-                                <td><%= reward_purchases %></td>
-                            </tr>
-                            <% } %>
-                            <% if(stanfordCardBalances) { %>
-                            <% _.each(stanfordCardBalances, function(stanfordCard) { %>
-                            <tr>
-                                <td>&ldquo;<%= stanfordCard.name %>&rdquo; <%= _lp.MAIN_STANFORD_CARD_BALANCE %>: </td>
-                                <% if(stanfordCard.type == 'D') { %>
-                                <td><%= symbol %><%= stanfordCard.balance %></td>
-                                <% } else if(stanfordCard.balance == 1) { %>
-                                <td><%= stanfordCard.balance %> <%= _lp.MAIN_STANFORD_CARD_BALANCE_MEAL %></td>
-                                <%} else { %>
-                                <td><%= stanfordCard.balance %> <%= _lp.MAIN_STANFORD_CARD_BALANCE_MEALS %></td>
-                                <% } %>
-                            </tr>
-                            <% }); %>
-                            <% } %>
-                            <tr>
-                                <td> <%= _lp.MAIN_TOTAL_AMOUNT_CHARGED %>: </td>
-                                <td class='bold'><%= symbol %><%= total %></td>
-                            </tr>
-                        </table>
-                        <div class="btn-wrapper">
-                        <div class="btn btnReturn" tabindex="0"> <span class="clip"> <%= _lp.MAIN_RETURN_TO_MENU %> </span> </div>
-                        </div>
-                    <% } %>
+    <% if (status === 'error') { %>
+    <h2 class="header-underline attention-text"> <%= _lp.MAIN_ORDER_NOT_SUBMITTED %> </h2>
+    <p class="confirmed-order-txt">
+        <%=message%>
+    </p>
+    <div class="btn btn-long btnReturn" tabindex="0">
+        <span class="clip"> <%= buttonText %> </span>
+    </div>
+    <% } else { %>
+    <div class="top primary-border" tabindex="0">
+        <span class="btnReturn primary-text link">&lang;&nbsp;&nbsp;<%= _lp.MAIN_RETURN_TO_MENU %></span>
+    </div>
+    <div class="col fl-left border-box">
+        <h2 class="thanks header-underline"></h2>
+        <div class="submitted"></div>
+        <div class="pickup-time"></div>
+        <div class="details-info"><%= _lp.DONE_DETAILS_INFO %></div>
+        <div class="details-box primary-border card-bg">
+            <div><%= _lp.MAIN_ORDER_ID %>: <span class="bold order-id value"><%= order_id %></span></div>
+            <div class="other-options-line"><%= _lp.MAIN_DELIVERY_INFO %>: <span class="bold other-options value"></span></div>
+            <div><%= _lp.MAIN_TOTAL_AMOUNT_CHARGED %>: <span class="bold charged value"><%= symbol %><%= total %></span></div>
+            <div class="address-box">
+                <span class="address-label"></span>:
+                <div class="address-value inline-block value">
+                    <div class="contact-person bold"></div>
+                    <div class="address-line"></div>
+                    <div class="phone"></div>
                 </div>
             </div>
         </div>
-    </section>
-    <footer>
-        <a class="powered-by" target="_blank" href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"> </a>
-    </footer>
-    <% if (_settings.payment_processor.credit_card_button && Array.isArray(_settings.online_credit_card_types)) { %>
-    <ul class="mercury-accepted-credit-cards">
-        <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.VISA.toString()) > -1) { %>
-        <li class="card-logo">
-            <img class="imgCardLogo" src="img/visa.png">
-        </li>
+        <div><%= _lp.MAIN_RECEIPT_SENT_TO %> <span class="email-sent-to"><%= email %></span></div>
+    </div>
+    <div class="col text-center fl-left border-box">
+        <% if (reward_items || reward_visits || reward_purchases) { %>
+            <h2 class="header-underline text-left"><%= _lp.REWARDS_TITLE %></h2>
+            <% if(reward_items) { %>
+            <div class="points-box">
+                <div class="points primary-text"><%= reward_items %></div>
+                <div><%= _lp.MAIN_REWARD_CARD_POINTS %></div>
+            </div>
+            <% } %>
+            <% if(reward_visits) { %>
+            <div class="points-box">
+                <div class="points primary-text"><%= reward_visits %></div>
+                <div><%= _lp.MAIN_REWARD_CARD_VISITS %></div>
+            </div>
+            <% } %>
+            <% if(reward_purchases) { %>
+            <div class="points-box">
+                <div class="points primary-text"><%= reward_purchases %></div>
+                <div><%= _lp.MAIN_REWARD_CARD_PURCHASES %></div>
+            </div>
+            <% } %>
         <% } %>
-        <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.MASTERCARD.toString()) > -1) { %>
-        <li class="card-logo">
-            <img class="imgCardLogo" src="img/mastercard.png">
-        </li>
+        <% if(stanfordCardBalances) { %>
+            <h2 class="header-underline text-left"><%= _lp.REWARDS_TITLE %></h2>
+            <% _.each(stanfordCardBalances, function(stanfordCard) { %>
+            <div>&ldquo;<%= stanfordCard.name %>&rdquo; <%= _lp.MAIN_STANFORD_CARD_BALANCE %></div>
+            <% if(stanfordCard.type == 'D') { %>
+            <div><%= symbol %><%= stanfordCard.balance %></div>
+            <% } else if(stanfordCard.balance == 1) { %>
+            <div><%= stanfordCard.balance %> <%= _lp.MAIN_STANFORD_CARD_BALANCE_MEAL %></div>
+            <%} else { %>
+            <div><%= stanfordCard.balance %> <%= _lp.MAIN_STANFORD_CARD_BALANCE_MEALS %></div>
+            <% } %>
+            <% }); %>
         <% } %>
-        <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.MAESTRO.toString()) > -1) { %>
-        <li class="card-logo">
-            <img class="imgCardLogo" src="img/maestro.png">
-        </li>
-        <% } %>
-        <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.AMERICANEXPRESS.toString()) > -1) { %>
-        <li class="card-logo">
-            <img class="imgCardLogo" src="img/amex.png">
-        </li>
-        <% } %>
-        <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.DISCOVER.toString()) > -1) { %>
-        <li class="card-logo">
-            <img class="imgCardLogo" src="img/discover.png">
-        </li>
-        <% } %>
-        <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.DINERS.toString()) > -1) { %>
-        <li class="card-logo">
-            <img class="imgCardLogo" src="img/dinersclub.png">
-        </li>
-        <% } %>
-        <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.JCB.toString()) > -1) { %>
-        <li class="card-logo">
-            <img class="imgCardLogo" src="img/jcb.png">
-        </li>
-        <% } %>
-    </ul>
+    </div>
     <% } %>
 </script>
 
@@ -243,10 +152,10 @@
             <div class="back-btn primary-text fade-out-hover"><span class="label"><%= _lp.BACK %></span></div>
             <h1 class="title text-center"><%= _lp.PROFILE_EDIT_TITLE %></h1>
         </header>
-        <div id="content"></div>
+        <div id="content" class="primary-border"></div>
     </section>
-    <footer class="profile-container">
-        <a class="powered-by" target="_blank" href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"> </a>
+    <footer class="profile-container primary-border">
+        <a class="powered-by link primary-text" target="_blank" href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"> </a>
     </footer>
     <div id="main-spinner"></div>
     <div id="profile-panel"></div>

@@ -171,8 +171,16 @@ define(["backbone"], function(Backbone) {
         },
         performSearch: function() {
             var search = this.get('search');
-            if(search) {
-                App.Data.router.navigate('search/' + encodeURIComponent(search), true);
+
+            if (search) {
+                var fragment = Backbone.history.getFragment(),
+                    options = { trigger: true };
+
+                if (fragment.indexOf('search/') != -1) {
+                    options.replace = true;
+                }
+
+                App.Data.router.navigate('search/' + encodeURIComponent(search), options);
             }
         }
     });

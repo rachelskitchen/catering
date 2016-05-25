@@ -508,6 +508,12 @@ define(["backbone", "async"], function(Backbone) {
                                     : settings_system.address.state;
                             };
 
+                            self.getRegion = function(address) {
+                                return $.inArray(address.country, country) !== -1
+                                    ? address.province
+                                    : address.state;
+                            };
+
                             var srvDate = new Date(settings_system.server_time);
                             var clientDate = new Date();
 
@@ -582,10 +588,6 @@ define(["backbone", "async"], function(Backbone) {
                                 || settings_system.payment_processor.stanford == true)
                             {
                                 App.Data.is_stanford_mode = true;
-                            }
-                            if (App.Data.is_stanford_mode) {
-                                // set color_scheme to "Stanford"
-                                settings_system.color_scheme = "stanford";
                             }
 
                             self.set("settings_system", settings_system);
