@@ -58,17 +58,6 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:cart', this.cart_change, this);
             this.listenTo(this.model, 'change:popup', this.popup_change, this);
             this.listenTo(this.model, 'change:profile_panel', this.profile_change, this);
-            this.listenTo(this.model, 'change:isShowPromoMessage', this.calculatePromoMessageWidth, this);
-            this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
-            this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
-            this.listenTo(App.Data.search, 'onRestore', function() {
-                this.model.get('popup') && this.hide_popup();
-                this.restoreSearchState();
-            });
-            this.listenTo(App.Data.categories, 'onRestore', function() {
-                this.model.get('popup') && this.hide_popup();
-                this.clearSearchLine();
-            });
 
             this.iOSFeatures();
 
@@ -76,8 +65,10 @@ define(["done_view", "generator"], function(done_view) {
 
             SpinnerView.prototype.initialize.apply(this, arguments);
         },
+        bindings: {
+            '.store_choice': 'toggle:needShowStoreChoice'
+        },
         render: function() {
-            if (App.Settings.promo_message) this.calculatePromoMessageWidth(); // calculate a promo message width
             SpinnerView.prototype.render.apply(this, arguments);
             this.profile_change();
             this.iPad7Feature();
@@ -87,8 +78,8 @@ define(["done_view", "generator"], function(done_view) {
         },
         events: {
             'click #popup .cancel': 'hide_popup',
-            'click .change_establishment': 'change_establishment',
-            'click .go-to-directory': 'goToDirectory'
+            'click .popup .shadow-bg': 'hide_popup',
+            'click .change_establishment': 'change_establishment'
         },
         content_change: function() {
             var content = this.$('#content'),
@@ -184,6 +175,9 @@ define(["done_view", "generator"], function(done_view) {
         cart_defaults: function() {
             return {
                 collection: this.options.cartCollection,
+                model: this.options.paymentMethods,
+                customer: this.options.customer,
+                checkout: this.options.cartCollection.checkout,
                 className: 'cart',
                 modelName: 'Cart'
             };
@@ -219,68 +213,6 @@ define(["done_view", "generator"], function(done_view) {
             if (/iPad|iPod|iPhone/.test(window.navigator.userAgent))
                 document.addEventListener('touchstart', new Function, false); // enable css :active pseudo-class for all elements
         },
-        remove: function() {
-            $(window).off('resize', this.resizePromoMessage);
-            SpinnerView.prototype.remove.apply(this, arguments);
-        },
-        /**
-         * Calculate a promo message width.
-         */
-        calculatePromoMessageWidth: function() {
-            if (this.model.get('isShowPromoMessage')) {
-                var promo_message = Backbone.$('<div class="promo_message promo_message_internal"> <span>' + App.Settings.promo_message + '</span> </div>');
-                $('body').append(promo_message);
-                this.model.set('widthPromoMessage', promo_message.find('span').width());
-                promo_message.remove();
-                this.model.set('widthWindow', $(window).width());
-                this.addPromoMessage(); // add a promo message
-                $(window).resize(this, this.resizePromoMessage);
-            } else {
-                this.$('.promo_message').hide();
-            }
-        },
-        /**
-         * Resize of a promo message.
-         */
-        resizePromoMessage: function() {
-            if (arguments[0].data.model.get('widthWindow') !== $(window).width()) {
-                arguments[0].data.model.set('widthWindow', $(window).width());
-                arguments[0].data.addPromoMessage(); // add a promo message
-            }
-        },
-        /**
-         * Add promo message.
-         */
-        addPromoMessage: function() {
-            var self = this;
-            window.setTimeout(function() {
-                var promo_text = self.$('.promo_text');
-                var promo_marquee = self.$('.promo_marquee');
-                if (self.model.get('widthPromoMessage') >= promo_text.parent().width() - 20) {
-                    var isFirefox = /firefox/g.test(navigator.userAgent.toLowerCase());
-                    if (isFirefox) {
-                        // bug #15981: "First Firefox displays long promo message completely then erases it and starts scrolling"
-                        $(document).ready(function() {
-                            promo_text.hide();
-                            promo_marquee.show();
-                        });
-                    } else {
-                        promo_text.hide();
-                        promo_marquee.show();
-                    }
-                } else {
-                    promo_text.show();
-                    promo_marquee.hide();
-                }
-            }, 0);
-        },
-        /**
-         * Show the "Store Choice" block if a brand have several stores.
-         */
-        checkBlockStoreChoice: function() {
-            var block = this.$('.store_choice');
-            this.model.get('needShowStoreChoice') ? block.css({display: 'inline-block'}) : block.css({display: 'none'});
-        },
         /**
          * Show the "Change Establishment" modal window.
          */
@@ -290,56 +222,27 @@ define(["done_view", "generator"], function(done_view) {
                 storeDefined: true
             }); // get a model for the stores list view
             ests.trigger('loadStoresList');
-            this.model.set('isBlurContent', true);
-        },
-        /**
-         * A blur effect of content.
-         * Blur effect supported on Firefox 35, Google Chrome 18, Safari 6, iOS Safari 6.1, Android browser 4.4, Chrome for Android 39.
-         */
-        blurEffect: function() {
-            // http://caniuse.com/#search=filter
-            var mainEl = this.$('.main_el');
-            this.model.get('isBlurContent') ? mainEl.addClass('blur') : mainEl.removeClass('blur');
-        },
-        goToDirectory: function() {
-            var goToDirectory = this.model.get('goToDirectory');
-            typeof goToDirectory == 'function' && goToDirectory();
-        },
-        restoreSearchState: function() {
-            var pattern = App.Data.search.lastPattern;
-            if (pattern && pattern.length) {
-                App.Data.searchLine.set('dummyString', pattern);
-                App.Data.search.search(pattern);
-            }
-        },
-        clearSearchLine: function() {
-            this.$('#search-input').val('').blur();
         }
     });
 
     var MainMaintenanceView = App.Views.FactoryView.extend({
         name: 'main',
         mod: 'maintenance',
-        initialize: function() {
-            this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        bindings: {
+            '.store_choice': 'toggle:needShowStoreChoice'
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            this.$('.store_choice').css({display: 'inline-block'});
             this.listenToOnce(App.Data.mainModel, 'loadCompleted', App.Data.myorder.check_maintenance);
             if (!App.Data.router.isNotFirstLaunch) this.$('.back').hide();
         },
         events: {
             'click .reload': 'reload',
-            'keydown .reload': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.reload();
-                }
-            },
-            'click .go-to-directory': 'goToDirectory',
             'click .back': 'back',
             'click .change_establishment': 'change_establishment'
+        },
+        onEnterListeners: {
+            ':el': 'reload'
         },
         /**
          * Go to the previous establishment.
@@ -350,10 +253,6 @@ define(["done_view", "generator"], function(done_view) {
         reload: function() {
             window.location.replace(window.location.href.replace(/#.*$/, ''));
         },
-        goToDirectory: function() {
-            var goToDirectory = this.model.get('goToDirectory');
-            typeof goToDirectory == 'function' && goToDirectory();
-        },
         /**
          * Show the "Change Establishment" modal window.
          */
@@ -363,23 +262,86 @@ define(["done_view", "generator"], function(done_view) {
                 storeDefined: true
             }); // get a model for the stores list view
             ests.trigger('loadStoresList');
-            this.model.set('isBlurContent', true);
-        },
-        /**
-         * A blur effect of content.
-         * Blur effect supported on Firefox 35, Google Chrome 18, Safari 6, iOS Safari 6.1, Android browser 4.4, Chrome for Android 39.
-         */
-        blurEffect: function() {
-            // http://caniuse.com/#search=filter
-            var mainEl = this.$('.maintenance');
-            this.model.get('isBlurContent') ? mainEl.addClass('blur') : mainEl.removeClass('blur');
         }
     });
 
     var MainDoneView = App.Views.CoreMainView.CoreMainDoneView.extend({
-        return_menu: function() {
-            this.model.unset('popup');
-            App.Views.CoreMainView.CoreMainDoneView.prototype.return_menu.apply(this, arguments);
+        bindings: {
+            '.thanks': 'text: insertPlaceholder(_lp_DONE_THANK_YOU, customer_first_name)',
+            '.submitted': 'html: insertPlaceholder(_lp_DONE_ORDER_SUBMITTED, format(boldTmp, _system_settings_business_name))',
+            '.pickup-time': 'classes: {hide: inList(checkout_dining_option, "DINING_OPTION_ONLINE", "DINING_OPTION_SHIPPING")}, html: insertPlaceholder(select(isDelivery, _lp_DONE_ARRIVE_TIME, _lp_DONE_PICKUP_TIME), format(boldTmp, checkout_pickupTime))',
+            '.email-sent-to': 'text: customer_email',
+            '.other-options-line': 'classes: {hide: not(equal(checkout_dining_option, "DINING_OPTION_OTHER"))}',
+            '.other-options': 'text: joinOtherDiningOptions($other_options)',
+            '.address-box': 'classes: {hide: equal(checkout_dining_option, "DINING_OPTION_OTHER")}',
+            '.address-label': 'text: addressLabel(checkout_dining_option)',
+            '.contact-person': 'text: select(isDelivery, format("$1 $2", customer_first_name, customer_last_name), _system_settings_business_name)',
+            '.phone': 'toggle: isDelivery, text: customer_phone',
+            '.address-line': 'text: getAddressLine($customer, checkout_dining_option, isDelivery)'
+        },
+        bindingFilters: {
+            insertPlaceholder: function(pattern, value) {
+                return pattern.replace('%s', value);
+            },
+            joinOtherDiningOptions: function(options) {
+                if (options instanceof Backbone.Collection) {
+                    return options.map(function(option) {
+                        option = option.toJSON();
+                        return option.name + ' ' + option.value;
+                    }).join(', ');
+                } else {
+                    return '';
+                }
+            },
+            addressLabel: function(dining_option) {
+                var label = '';
+                switch (dining_option) {
+                    case 'DINING_OPTION_DELIVERY':
+                        label = _loc.CARD_DELIVERY_ADDRESS;
+                        break;
+                    case 'DINING_OPTION_SHIPPING':
+                        label = _loc.CARD_SHIPPING_ADDRESS;
+                        break;
+                    case 'DINING_OPTION_CATERING':
+                        label = _loc.CARD_CATERING_ADDRESS;
+                        break;
+                    default:
+                        label = _loc.DONE_STORE_ADDRESS;
+                }
+                return label;
+            },
+            getAddressLine: function(customer, dining_option, isDelivery) {
+                var address = isDelivery ? customer.getCheckoutAddress() : App.Settings.address,
+                    line = [],
+                    street_1, street_2, zipcode, region;
+
+                if (address) {
+                    street_1 = address.street_1 || address.line_1;
+                    street_2 = address.street_2 || address.line_2;
+                    zipcode = address.zipcode || address.postal_code;
+                    street_1 && line.push(street_1);
+                    street_2 && line.push(street_2);
+                    address.city && line.push(address.city);
+                    region = App.Data.settings.getRegion(address),
+                    (region || zipcode) && line.push((region ? region + ' ' : '') + (zipcode ? zipcode : ''));
+                    address.country && dining_option == 'DINING_OPTION_SHIPPING' && line.push(address.country);
+                }
+
+                return line.join(', ');
+            }
+        },
+        computeds: {
+            isDelivery: {
+                deps: ['checkout_dining_option'],
+                get: function(dining_option) {
+                    return dining_option == 'DINING_OPTION_DELIVERY'
+                        || dining_option == 'DINING_OPTION_SHIPPING'
+                        || dining_option == 'DINING_OPTION_CATERING';
+                }
+            },
+            boldTmp: function() {
+                return '<span class="bold">$1</span>';
+            }
         }
     });
 

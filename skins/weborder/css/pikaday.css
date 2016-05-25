@@ -213,12 +213,6 @@ http://nicolasgallagher.com/micro-clearfix-hack/
 }
 
 .pikaday {
-    float: left;
-    width: 255px;
-    height: 100%;
-    color: #7d7d7d;
+    width: 144px;
     cursor: pointer;
-    border:none;
-    padding: 0 0 0 10px;
-    font-size: 16px;
 }

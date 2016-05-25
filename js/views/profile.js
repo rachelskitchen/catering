@@ -321,8 +321,8 @@ define(["factory"], function() {
         },
         bindings: {
             ':el': 'classes: {active: any(ui_showSignUp, ui_showLogIn, ui_showMenu, ui_showPWDReset)}',
-            '.signup-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showSignUp), "regular-text": ui_showSignUp}',
-            '.login-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showLogIn), "regular-text": ui_showLogIn}',
+            '.signup-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showSignUp), "regular-text": ui_showSignUp, active: ui_showSignUp}',
+            '.login-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showLogIn), "regular-text": ui_showLogIn, active: ui_showLogIn}',
             '.close': 'toggle: any(ui_showSignUp, ui_showLogIn, ui_showMenu, ui_showPWDReset)',
             '.sign-up-box': 'toggle: ui_showSignUp',
             '.log-in-box': 'toggle: ui_showLogIn',
@@ -445,8 +445,10 @@ define(["factory"], function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.model.resetAttributes();
 
-            this.listenTo(this.model, 'change:is_primary', function() {
-                customer.trigger('change_cards', self.model.checkAttributesDiff());
+            this.listenTo(this.model, 'change:is_primary', function(model) {
+                if (model.get('is_primary')) {
+                    customer.trigger('change_cards', self.model.checkAttributesDiff());
+                }
             });
 
             return this;

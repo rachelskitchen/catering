@@ -33,8 +33,8 @@ define(["factory", "giftcard_view"], function(factory) {
             '.captcha-input': 'value: captchaValue, events:["keyup", "blur", "touchend"], attr: {readonly: validated}, pattern: /^\\w{0,4}$/',
             '.btn-reload': 'classes: {disabled: validated}',
             '.cancel-input': 'toggle: validated',
-            '.captcha_input_line': 'toggle: not(validated)',
-            '.captcha_container': 'toggle: not(validated)',
+            '.captcha_input_line': 'classes: {hide: validated}',
+            '.captcha_container': 'classes: {hide: validated}',
             '.card_title': 'text:select(validated, _lp_STANFORDCARD_TITLE_INFO, _lp_STANFORDCARD_TITLE)'
         }),
         events: {
@@ -82,7 +82,7 @@ define(["factory", "giftcard_view"], function(factory) {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
-            ':el': 'classes: {active: selected, disabled: not(is_enough_funds)}, toggle: equal(type, "D")',
+            ':el': 'classes: {active: selected, disabled: not(is_enough_funds), hide: not(equal(type, "D"))}',
             '.name': 'text: name',
             '.balance': 'text: currencyFormat(balance)'
         },

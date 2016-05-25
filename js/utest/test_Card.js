@@ -28,6 +28,7 @@ define(['card'], function() {
                 img: App.Data.settings.get('img_path'),
                 billing_address: null,
                 use_profile_address: false,
+                use_checkout_address: false,
                 rememberCard: false
             };
         });
@@ -459,6 +460,30 @@ define(['card'], function() {
 
                 expect(window.get_billing_address()).toEqual(billing_address.toJSON());
                 expect(App.Data.customer.get('addresses').getDefaultProfileAddress).not.toHaveBeenCalled();
+
+                App.Data.card.set('billing_address', 'not object');
+                expect(window.get_billing_address()).toBe(null);
+
+            });
+
+            it('card.use_checkout_address is true', function() {
+                App.Data.card.set({
+                    use_profile_address: false,
+                    use_checkout_address: true
+                });
+
+                expect(window.get_billing_address()).toBe('checkout address');
+                expect(App.Data.customer.getCheckoutAddress).toHaveBeenCalled();
+            });
+
+            it('card.use_checkuot_address is false', function() {
+                App.Data.card.set({
+                    use_profile_address: false,
+                    use_checkout_address: false
+                });
+
+                expect(window.get_billing_address()).toEqual(billing_address.toJSON());
+                expect(App.Data.customer.getCheckoutAddress).not.toHaveBeenCalled();
 
                 App.Data.card.set('billing_address', 'not object');
                 expect(window.get_billing_address()).toBe(null);

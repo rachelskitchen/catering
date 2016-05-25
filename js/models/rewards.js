@@ -102,15 +102,12 @@ define(['backbone', 'captcha'], function(Backbone) {
              * Indicates whether the reward is selected.
              * @type {boolean}
              */
-            selected: false
-        },
-        /**
-         * Adds listener to track `selected` change and trigger `onSelectReward` event on {@link App.Collections.Rewards}.
-         */
-        initialize: function() {
-            this.listenTo(this, 'change:selected', function() {
-                this.collection.trigger('onSelectReward');
-            });
+            selected: false,
+            /**
+             * Indicates whether the reward is disabled for selection.
+             * @type {boolean}
+             */
+            disabled: false
         }
     });
 
@@ -135,7 +132,54 @@ define(['backbone', 'captcha'], function(Backbone) {
          * @type {App.Models.Rewards}
          * @default App.Models.Rewards
          */
-        model: App.Models.Rewards
+        model: App.Models.Rewards,
+        /**
+         * Adds listener to `change:selected` event to update `selected` and `disabled` attributes of items
+         * and trigger `onSelectReward` event.
+         *
+         */
+        initialize: function() {
+            this.listenTo(this, 'change:selected', function(model, value) {
+                this.updateDisabled(model, value);
+                this.deselect(model, value);
+                this.trigger('onSelectReward');
+            });
+            Backbone.Collection.prototype.initialize.apply(this, arguments);
+        },
+        /**
+         * Updates items `disabled` attribute.
+         *
+         * @param {App.Models.Rewards} model - changed model
+         * @param {boolean} value - value of `selected` attribute
+         */
+        updateDisabled: function(model, value) {
+            var criteria = {};
+
+            if (App.Settings.allow_multiple_reward_redemptions_per_order) {
+                criteria.is_item_level = model.get('is_item_level');
+            }
+
+            this.where(criteria).forEach(function(item) {
+                item !== model && item.set('disabled', value);
+            });
+        },
+        /**
+         * Changes items `selected` attribute on `false`.
+         *
+         * @param {App.Models.Rewards} model - changed model
+         * @param {boolean} value - value of `selected` attribute
+         */
+        deselect: function(model, value) {
+            var criteria = {selected: true};
+
+            if (App.Settings.allow_multiple_reward_redemptions_per_order) {
+                criteria.is_item_level = model.get('is_item_level');
+            }
+
+            value && this.where(criteria).forEach(function(item) {
+                item !== model && item.set('selected', false);
+            });
+        }
     });
 
     /**

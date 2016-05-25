@@ -488,6 +488,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          *         "addresses": [...]                                                   // array of addresses
          *     }
          * ```
+         * Emits 'onLogin' event.
+         *
          * - Username or password is invalid:
          * ```
          * Status: 400
@@ -580,6 +582,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     this.getAddresses();
                     this.initGiftCards();
                     this.getRewardCards();
+                    this.trigger('onLogin');
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
@@ -1774,6 +1777,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.rewardCardsRequest && this.rewardCardsRequest.abort();
             delete this.rewardCardsRequest;
             this.get('rewardCards').reset();
+            App.Data.myorder.rewardsCard.resetData(); // bug_43982
         },
         /**
          * Receives gift cards from server.

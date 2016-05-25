@@ -9,29 +9,39 @@
 </script>
 
 <script type="text/template" id="myorder_item-template">
+    <% var isUsualProduct = id_product !== null && is_child_product != true; %>
+    <% if(!is_service_fee && isUsualProduct) { %>
+    <div class="qty-box fl-left text-center secondary-border">
+        <div class="btn-up primary-icon"></div>
+        <span class="qty"><%= quantity %></span>
+        <div class="btn-down primary-icon"></div>
+    </div>
+    <% } %>
+    <% if(isUsualProduct) { %>
+    <div class="remove cancel fl-right link"><%= _lp.MYORDER_REMOVE %></div>
+    <% } %>
+    <% if(is_child_product != true) { %>
+    <div class="item-sum fl-right"><%= currency_symbol %><%= product_sum %></div>
+    <% } %>
     <h3 class="product_place">
-        <% if(sold_by_weight) { %>
-            <span class="name"><%= sizeModifier %> <%= name %></span>
-        <% } else { %>
-            <span class="name"><% if(!is_service_fee) { print(quantity + "x") }%> <%= sizeModifier %> <%= name %></span>
-        <% } %>
-        <span class="cost">
-            <span class="item-sum"><%= currency_symbol %><%= product_sum %></span>
+        <span class="name <% if(isUsualProduct || is_service_fee) {print('bold')} %>">
+            <% if(is_child_product && !is_service_fee && !sold_by_weight) { print(quantity + "x") } %>
+            <%= sizeModifier %> <%= name %>
         </span>
+        <% if(isUsualProduct) { %>
+        <span class="edit primary-icon link"><% _lp.MYORDER_EDIT %></span>
+        <% } %>
     </h3>
     <ul class="modifier_place">
         <% if(sold_by_weight) { %>
-        <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
+        <li><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
         <% } %>
         <% if(is_gift) { %>
             <% if(planId && stanford_card_number) { %>
-                <li class="special"> *** <%= _lp.STANFORD_CARD_NUMBER %>: <%= stanford_card_number %> </li>
+                <li><%= _lp.STANFORD_CARD_NUMBER %>: <%= stanford_card_number %></li>
             <% } else { %>
-                <li class="special"> *** <%= _lp.MYORDER_ADD_AMOUNT %> <%= gift_card_number %> </li>
+                <li><%= _lp.MYORDER_ADD_AMOUNT %> <%= gift_card_number %></li>
             <% } %>
-        <% } %>
-        <% if(special) { %>
-        <li class="special">*** <%= special %></li>
         <% } %>
     </ul>
     <% if(is_child_product != true) { %>
@@ -39,12 +49,8 @@
     <div class="combo_products_place"></div>
     <ul class="discount_place"></ul>
     <% } %>
-    <% if(id_product !== null && is_child_product != true) { %>
-    <div class="btns">
-        <span class="edit"> <% _lp.MYORDER_EDIT %> </span>
-        <span class="divider"></span>
-        <span class="remove"> <span> <%= _lp.MYORDER_REMOVE %> </span> </span>
-    </div>
+    <% if(special) { %>
+    <div class="special"><%= special %></div>
     <% } %>
 </script>
 
@@ -56,9 +62,6 @@
         <% } else { %>
             <span class="name"><% if(!is_service_fee) { print(quantity + "x") }%> <%= sizeModifier %> <%= name %></span>
         <% } %>
-        <span class="cost">
-            <span class="item-sum"><%= currency_symbol %><%= product_sum %></span>
-        </span>
     </h3>
     <ul class="modifier_place">
         <% if(sold_by_weight) { %>
@@ -69,22 +72,20 @@
 </script>
 
 <script type="text/template" id="myorder_discount-template">
-    <h3>
-        <span class="name"><%= discount_name %></span>
-        <span class="cost">
-            <span class="plus">&minus;</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= discount_sum %></span>
-        </span>
+    <div class="cost fl-right">
+        <span class="plus bold">&minus;</span><span class="currency_symbol bold"><%= currency_symbol %></span><span class="price bold"><%= discount_sum %></span>
+    </div>
+    <h3 class="product_place">
+        <span class="name bold"><%= discount_name %></span>
     </h3>
 </script>
 
 <script type="text/template" id="myorder_modifier-template">
     <span class="name">
+        <%= _lp.ADD %>
         <% if (_settings.enable_quantity_modifiers) { print(quantity + 'x') } %>
         <% if (qty_type > 0) { print('(' + half_price_str + ')') } %>
-        <%= _lp.MYORDER_WEIGHT %> <%= name %>
-    </span>
-    <span class="cost">
-        <span class="plus">+</span><span class="mdf-sum"></span>
+        <%= name %>
     </span>
 </script>
 
@@ -97,51 +98,50 @@
 
 <script type="text/template" id="myorder_matrix-template">
     <div id='modifiers_popup'>
-        <div class='product product_info'>
-        </div>
+        <div class='product product_info text-left popup-header-bg primary-border'></div>
         <div class='modifiers_table'>
             <div class='modifiers_table_scroll'>
-                <div class='product_attribute_info'>
-                </div>
-                <div class='modifiers_info modifiers'>
-                </div>
+                <div class='product_attribute_info'></div>
+                <div class='modifiers_info modifiers text-left'></div>
             </div>
         </div>
         <% if(_settings.online_orders) { %>
-        <div class='product_info_footer'> </div>
+        <div class='product_info_footer'></div>
         <% } %>
     </div>
 </script>
 
 <script type="text/template" id="myorder_matrix_combo-template">
     <div id='modifiers_popup'>
-        <div class='product product_info'>
-        </div>
+        <div class='product product_info text-left popup-header-bg primary-border'></div>
         <div class='modifiers_table'>
             <div class='modifiers_table_scroll'>
-                <div class='modifiers_info modifiers'>
-                </div>
+                <div class='modifiers_info modifiers text-left'></div>
             </div>
         </div>
         <% if(_settings.online_orders) { %>
-        <div class='product_info_footer'> </div>
+        <div class='product_info_footer'></div>
         <% } %>
     </div>
 </script>
 
 <script type="text/template" id="myorder_matrix_footer-template">
-    <div class='product_instructions'> </div>
-    <div class="quantity quantity_info"> </div>
-    <div class="action_button clip" tabindex="0"> <%= _lp.MYORDER_ADD_ITEM %> </div>
+    <div class="product_instructions text-left primary-border"></div>
+    <div class="footer-line text-left primary-border">
+        <div class="product_price fl-right"></div>
+        <div class="quantity quantity_info"></div>
+    </div>
+    <div class="action_button btn" tabindex="0"><%= _lp.MYORDER_ADD_ITEM %></div>
 </script>
 
 <script type="text/template" id="myorder_matrix_footer_upsell-template">
-    <div class='product_instructions'> </div>
-    <div class="quantity quantity_info"> </div>
-    <div class="myorder_actions">
-        <div class="no_combo_link"> <span class="link"> <%= _lp.UPSELL_DONT_WANT_COMBO %> </span> </div>
-        <div class="action_button clip" tabindex="0"> <%= _lp.MYORDER_ADD_ITEM %> </div>
+    <div class="product_instructions text-left primary-border"></div>
+    <div class="footer-line text-left primary-border">
+        <div class="product_price fl-right"></div>
+        <div class="no_combo_link fl-right link primary-text"><%= _lp.UPSELL_DONT_WANT_COMBO %></div>
+        <div class="quantity quantity_info"></div>
     </div>
+    <div class="action_button btn" tabindex="0"><%= _lp.MYORDER_ADD_ITEM %></div>
 </script>
 
 <script type="text/template" id="myorder_itemSpecial-template">
@@ -149,31 +149,35 @@
 </script>
 
 <script type="text/template" id="myorder_stanford_item-template">
-    <div class="view view-1">
-        <h3 class="name text-left"><%= name %></h3>
-        <span class="info"><%= _lp.STANFORD_RELOAD_INFO1 %></span>
+    <div class="view view-1 text-left">
+        <div class="header">
+            <h3 class="name"><%= name %></h3>
+            <span class="info"><%= _lp.STANFORD_RELOAD_INFO1 %></span>
+        </div>
         <div class="row">
-            <label for="stanford-card-amount"><%= _lp.AMOUNT %>:</label>
-            <div class="input_beauty">
-                <input id="stanford-card-amount" class="initial-price ios-safari-caret">
-            </div>
+            <label for="stanford-card-amount" class="label"><%= _lp.AMOUNT %></label>
+            <input id="stanford-card-amount" class="initial-price input ios-safari-caret">
         </div>
         <div class="card-wrapper"></div>
-        <div class="btn next btn-popup fl-right"><%= _lp.NEXT %></div>
+        <div class="btn next text-center"><%= _lp.NEXT %></div>
     </div>
-    <div class="view view-2">
-        <h3 class="name text-left"><%= _lp.STANFORD_CARD_CHOOSE_PLAN %></h3>
-        <span class="info"><%= _lp.STANFORD_RELOAD_INFO2 %></span>
-        <div class="plans-row">
-            <span class="label"><%= _lp.STANFORD_CARD_NUMBER %>:</span>
-            <span class="stanford-number"></span>
+    <div class="view view-2 text-left">
+        <div class="header text-left">
+            <h3 class="name"><%= _lp.STANFORD_CARD_CHOOSE_PLAN %></h3>
+            <span class="info"><%= _lp.STANFORD_RELOAD_INFO2 %></span>
         </div>
-        <div class="plans-row">
-            <span class="label"><%= _lp.AMOUNT %>:</span>
-            <span class="amount"></span>
+        <div class="info-block">
+            <div class="plans-row">
+                <span class="title"><%= _lp.STANFORD_CARD_NUMBER %>:</span>
+                <span class="stanford-number"></span>
+            </div>
+            <div class="plans-row">
+                <span class="title"><%= _lp.AMOUNT %>:</span>
+                <span class="amount"></span>
+            </div>
         </div>
         <div class="plans"></div>
-        <div class="btn add-item btn-popup fl-right"><%= _lp.MYORDER_ADD_ITEM %></div>
-        <div class="btn back btn-popup fl-left"><%= _lp.BACK %></div>
+        <div class="btn add-item btn-half border-box fl-right text-center"><%= _lp.MYORDER_ADD_ITEM %></div>
+        <div class="btn back btn-half border-box text-center"><%= _lp.BACK %></div>
     </div>
 </script>
