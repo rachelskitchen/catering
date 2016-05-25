@@ -127,6 +127,12 @@
     letter-spacing: 1px;
 }
 
+.map-box .show-delivery-area {
+    position: absolute;
+    bottom: 45px;
+    text-decoration: underline;
+}
+
 #mapBox {
     position: absolute;
     left: 0;
