@@ -368,6 +368,31 @@ input[type="radio"]:checked + .radio::before,
     font-weight: 600;
 }
 
+.maintenance #content {
+    right: 30px;
+    top: 30px;
+}
+
+.maintenance .back {
+    padding-left: 30px;
+    line-height: 30px;
+}
+
+.maintenance .box {
+    display: inline-block;
+    width: 90%;
+}
+
+.maintenance .btn {
+    display: inline-block;
+    min-width: 200px;
+    margin-top: 50px;
+}
+
+.maintenance .msg {
+    font-size: 18px;
+}
+
 .popup {
     width: 100%;
     position: absolute;
