@@ -57,7 +57,7 @@ define(['backbone', 'factory'], function(Backbone) {
                         && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true);
                 });
                 if (!fullyFilledAddresses.length) {
-                    address = customer.getCheckoutAddress(dining_option, true);
+                    address = addresses.getCheckoutAddress(dining_option, true);
                     model = _.extend(model, customer.toJSON());
                 }
             }

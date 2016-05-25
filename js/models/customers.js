@@ -88,12 +88,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
              */
             id: null,
             /**
-             * Array of addresses assigned to the customer.
-             * @type {@link App.Collections.CustomerAddresses}
-             * @default null
-             */
-            addresses: null,
-            /**
              * Array of available shipping services. This array depends on order items.
              * @type {Array}
              * @default []
@@ -228,39 +222,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.set('rewardCards', rewardCardsCol.addJSON(rewardCards));
             this.set('addresses', addressesCol.addJSON(addresses));
             var shipping_services = this.get("shipping_services");
-            if(Array.isArray(shipping_services) && shipping_services.length && this.get("shipping_selected") > -1) {
+            if (Array.isArray(shipping_services) && shipping_services.length && this.get("shipping_selected") > -1) {
                 this.set("load_shipping_status", "restoring", {silent: true});
             }
-        },
-        /**
-         * Validates values of address object properties `street_1`, `city`, `state`, `province`, `zipcode`.
-         * @returns {Array} empty array if all properties pass validation or array with invalid properties.
-         */
-        _check_delivery_fields: function() {
-            var settings = App.Settings,
-                empty = [],
-                address = this.get('addresses').getSelectedAddress().toJSON(),
-                req = {
-                    street_1: _loc.PROFILE_ADDRESS_LINE1,
-                    city: _loc.PROFILE_CITY,
-                    state: _loc.PROFILE_STATE,
-                    province: _loc.PROFILE_PROVINCE,
-                    zipcode: _loc.PROFILE_ZIP_CODE
-                };
-
-            // if not USA exclude state property
-            if (address.country != 'US') {
-                delete req.state;
-            }
-            // if not Canada exclude province property
-            if (address.country != 'CA') {
-                delete req.province;
-            }
-            for (var i in req) {
-                !address[i] && empty.push(req[i]);
-            }
-
-            return empty;
         },
         /**
          * Validates `first_name`, `last_name`, `email`, `phone` attributes values for checkout.
@@ -290,7 +254,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             !this.get('phone') && err.push(_loc.PROFILE_PHONE);
 
             if (this.isNewAddressSelected(dining_option)) {
-                err = err.concat(this._check_delivery_fields());
+                err = err.concat(this.get('addresses')._check_delivery_fields());
             }
 
             if (err.length) {
@@ -953,8 +917,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 success: function(data) {
                     if (_.isObject(data)) {
                         this.get('addresses').updateFromAPI([data]);
+                        this.trigger('onUserAddressCreated');
                     }
-                    this.trigger('onUserAddressCreated');
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
@@ -1440,7 +1404,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             try {
                 data = docCookies.getItem(cookieName);
-                delete data.addresses;
+                data && delete data.addresses;
             } catch(e) {
                 console.error(e);
             }
@@ -2095,14 +2059,20 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.set(data instanceof Object ? (data.addresses || []) : []);
         },
         /**
-         * Returns default profile address.
+         * Returns the default profile address.
          * @returns {?@link App.Models.CustomerAddress}
-         *   - default address, if it exists
+         *   - the default address, if it exists
          *   - undefined otherwise
          */
         getDefaultProfileAddress: function() {
             return this.findWhere({is_primary: true});
         },
+        /**
+         * Returns the selected address.
+         * @returns {?@link App.Models.CustomerAddress}
+         *   - the selected address, if it exists
+         *   - undefined otherwise
+         */
         getSelectedAddress: function() {
             return this.findWhere({selected: true});
         },
@@ -2127,7 +2097,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * @returns {object} with state, province, city, street_1, street_2, zipcode, contry fields
          */
         getCheckoutAddress: function(dining_option, fromProfile) {
-            var customer = App.Data.customer.toJSON(),
+            var customer = App.Data.customer,
                 addr = this.getSelectedAddress(),
                 addrJson,
                 reverse_addr,
@@ -2152,7 +2122,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 var el = model.toJSON();
                 return typeof el.id == 'string' && isNaN(el.id) && el.id != dining_option && (reverse_addr = el); // use the first existing address
             });
-            if (!reverse_addr && fromProfile && this.isAuthorized()) {
+            if (!reverse_addr && fromProfile && customer.isAuthorized()) {
                 reverse_addr = addresses.getDefaultProfileAddress().toJSON(); // use profile address
             }
             addrJson == undefined && (addrJson = {});
@@ -2210,7 +2180,37 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.remove(this.filter(function(model) {
                 return !isNaN(model.get('id'));
             }));
-        }
+        },
+        /**
+         * Validates values of address object properties `street_1`, `city`, `state`, `province`, `zipcode`.
+         * @returns {Array} empty array if all properties pass validation or array with invalid properties.
+         */
+        _check_delivery_fields: function() {
+            var settings = App.Settings,
+                empty = [],
+                address = this.getSelectedAddress().toJSON(),
+                req = {
+                    street_1: _loc.PROFILE_ADDRESS_LINE1,
+                    city: _loc.PROFILE_CITY,
+                    state: _loc.PROFILE_STATE,
+                    province: _loc.PROFILE_PROVINCE,
+                    zipcode: _loc.PROFILE_ZIP_CODE
+                };
+
+            // if not USA exclude state property
+            if (address.country != 'US') {
+                delete req.state;
+            }
+            // if not Canada exclude province property
+            if (address.country != 'CA') {
+                delete req.province;
+            }
+            for (var i in req) {
+                !address[i] && empty.push(req[i]);
+            }
+
+            return empty;
+        },
     });
 
 });
