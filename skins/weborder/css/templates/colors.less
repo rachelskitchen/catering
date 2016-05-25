@@ -1,0 +1,246 @@
+/* [regular_text] reqular text */
+body,
+.price.input,
+.modifier .tooltip::before,
+.payment-method.regular-button {
+    .resolve-color(@regular_text);
+}
+
+.modifier .tooltip {
+    .resolve-background(@regular_text);
+}
+
+/* [alternate_text] primary button text */
+.alternate-text[class],
+.btn,
+#profile-panel .menu-item:hover,
+#popup_ok[id],
+#popup_cancel[id] {
+    .resolve-color(@alternate_text);
+}
+
+/* [header_text] title in popup window (product name, modifier class name), dropdown box */
+.header-text[class] {
+    .resolve-color(@header_text);
+}
+
+/* [optional_text] optional text (additional info, modifier class instruction), input label */
+.optional-text[class],
+#alert .icon {
+    .resolve-color(@optional_text);
+}
+
+/* [attention_text] attention text */
+.attention-text[class] {
+    .resolve-color(@attention_text);
+}
+
+/* [special_text] special text (modifier price) */
+.special-text[class] {
+    .resolve-color(@special_text);
+}
+
+/* [primary_text] active tab, active category, quantity vertical arrows, pencil */
+.primary-text[class],
+.categories .checked,
+.categories label:hover,
+.payment-method.primary-button,
+.payment-method:hover,
+.payment-method:focus,
+#search-input:focus + .cancel {
+    .resolve-color(@primary_text);
+}
+
+#profile-panel .active::before,
+#profile-panel .signup-link:hover::before,
+#profile-panel .login-link:hover::before {
+    .resolve-border-color(@primary_text);
+}
+
+#profile-panel .menu-item:hover {
+    .resolve-background(@primary_text);
+}
+
+/* [primary_button] all primary buttons */
+.btn,
+.btn-qty,
+input[type="checkbox"]:checked + .checkbox::before,
+input[type="radio"]:checked + .radio::before,
+.checkbox[checked="checked"]::before,
+.radio[checked="checked"]::before,
+.checkbox.checked::before,
+.radio.checked::before,
+#popup_ok[id],
+.about-box .image-point.selected {
+    .resolve-background(@primary_button);
+}
+
+/* [primary_button_highlighted] */
+.btn:active, .btn:focus,
+.btn-qty:active, .btn-qty:focus,
+#popup_ok[id]:active, #popup_ok[id]:focus  {
+    .resolve-background(@primary_button_highlighted);
+}
+
+
+/* [primary_background] main background ('body' tag) */
+body,
+.primary-bg,
+.order-items li,
+.alert_wrapper {
+    .resolve-background(@primary_background);
+}
+
+.tab.active::before {
+    border-bottom-color: @primary_background;
+}
+
+/* [primary_border] primary border */
+.primary-border[class],
+.input,
+.modifier_class_wrapper,
+.header-underline {
+    .resolve-border-color(@primary_border);
+}
+
+.tab.active::before {
+    border-right-color: @primary_border;
+    border-left-color: @primary_border;
+}
+
+/* [primary_icon] edit, arrows icons */
+.primary-icon[class] {
+    .resolve-color(@primary_icon);
+}
+
+/* [secondary_border] categories list bottom border, 'Your Order' bottom line, dotted vertical line at item quantity */
+.secondary-border[class] {
+    .resolve-border-color(@secondary_border);
+}
+
+/* [footer_background] footer background */
+#footer {
+    .resolve-background(@footer_background);
+}
+
+/* [cart_background] cart background */
+#cart {
+    .resolve-background(@cart_background);
+}
+
+/* [category_background] category background, order details, payment information */
+.category-bg {
+    .resolve-background(@category_background);
+}
+
+/* [shadow_background] background behind popup window */
+.shadow-bg[class],
+#alert {
+    .resolve-background-alpha(@shadow_background, 60%);
+}
+
+/* [shadow_profile_background] profile shadow  background */
+.shadow-profile-bg {
+    .resolve-background-alpha(@shadow_profile_background, 10%);
+}
+
+/* [cancel_button] cancel button */
+.cancel {
+    .resolve-color(@cancel_button);
+}
+
+/* [popup_background] popup window background */
+.popup-bg[class],
+.mdf_split,
+.mdf_quantity,
+#popup_container[id] {
+    .resolve-background(@popup_background);
+}
+
+/* [popup_header_background] product info background in popup window */
+.popup-header-bg[class] {
+    .resolve-background(@popup_header_background);
+}
+
+/* [card_background] stanford card plan background, card balance background */
+.card-bg[class],
+.stanford-plans-box .stanford-plan {
+    .resolve-background-alpha(@card_background, 20%);
+}
+
+/* [input_border] input border color */
+.input-border[class],
+.textarea,
+.input,
+.select-wrapper,
+.select-wrapper select,
+.selectbox {
+    .resolve-border-color(@input_border);
+}
+
+.select-wrapper::after {
+    .resolve-color(@input_border);
+}
+
+/* [input_background] input background */
+.input-bg[class],
+.textarea,
+.input,
+.select-wrapper,
+.select-wrapper select {
+    .resolve-background(@input_background);
+}
+
+/* [input_text] input text color */
+.textarea,
+.input,
+.select-wrapper,
+.select-wrapper select {
+    .resolve-color(@input_text);
+}
+
+/* [input_highlighted] input text color */
+.textarea:focus,
+.input:focus,
+.select-wrapper:focus,
+.select-wrapper select:focus,
+.stanford-plans-box .stanford-plan.active,
+.stanford-plans-box .stanford-plan:hover,
+.payment-method.primary-button,
+.payment-method:hover,
+.payment-method:focus {
+    box-shadow: 0 0 4px 0 @input_highlighted;
+    .resolve-border-color(@input_highlighted);
+}
+
+/* [secondary_button] */
+#popup_cancel[id] {
+    .resolve-background(@secondary_button);
+}
+
+/* [tab_active] active tab (Menu, About, Map) */
+.tab.active, .tab:hover {
+    .resolve-color(@tab_active);
+}
+
+.tab.active::after {
+    border-top-color: @tab_active;
+}
+
+/* [secondary_text] delivery info highlighted, modifier quantity border */
+.secondary-text[class] {
+    .resolve-color(@secondary_text);
+}
+
+.mdf_split select,
+.mdf_quantity select {
+    .resolve-border-color(@secondary_text);
+}
+
+/* images */
+.categories label.checked::before {
+    background-image: data-uri('image/svg+xml;base64', 'img/arrow-down.svg');
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-color: transparent;
+}

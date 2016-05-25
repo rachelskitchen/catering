@@ -214,7 +214,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 return this;
 
             var view = App.Views.GeneratorView.create('Combo', {
-                el: $('<li class="combo_item"></li>'),
+                el: $('<li class="combo_item modifier"></li>'),
                 mod: 'Item',
                 model: model,
                 type: this.options.type,

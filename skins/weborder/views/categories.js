@@ -140,6 +140,7 @@ define(["generator", "list"], function() {
             if (sliderWidth <= 0) {
                 return;
             }
+
             this.slider_count = Math.floor(sliderWidth / elemWidth);
             this.slider_elem_count = lis.length;
             this.slider_index = this.slider_index || 0;
@@ -210,7 +211,8 @@ define(["generator", "list"], function() {
             this.show_hide();
         },
         bindings: {
-            ".category_name": "text:category_name"
+            '.category_name': 'text:category_name',
+            '.product_table': 'attr: {"data-length": length($collection)}'
         },
         computeds: {
             category_name: function() {
@@ -320,7 +322,7 @@ define(["generator", "list"], function() {
             App.Views.ListView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.collection, 'change:parent_selected', this.update_table);
             this.listenTo(this.options.search, 'onSearchComplete', this.update_table, this);
-            this.$('.categories_products_wrapper').contentarrow();
+            // this.$('.categories_products_wrapper').contentarrow();
             this.$('.products_spinner').css('position', 'absolute').spinner();
             this.listenTo(this.options.search, 'onSearchStart', this.showSearchSpinner, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.hideSpinner, this);
@@ -372,7 +374,7 @@ define(["generator", "list"], function() {
             }
         },
         remove: function() {
-            this.$('.categories_products_wrapper').contentarrow('destroy');
+            // this.$('.categories_products_wrapper').contentarrow('destroy');
             App.Views.ListView.prototype.remove.apply(this, arguments);
         }
     });

@@ -31,6 +31,14 @@ define(["modifiers_view"], function(modifiers_view) {
     });
 
     var ModifiersClassesListView = App.Views.CoreModifiersClassesView.CoreModifiersClassesListView.extend({
+        bindings: {
+            '.modifier_classes': 'classes: {"border-none": not(length(modifiers))}'
+        },
+        computeds: {
+            modifiers: function() {
+                return this.model.get_modifiers() || [];
+            }
+        },
         addItem: function() {
             App.Views.CoreModifiersClassesView.CoreModifiersClassesListView.prototype.addItem.apply(this, arguments);
             this.$el.parents('.modifiers_table').show();

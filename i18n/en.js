@@ -632,6 +632,10 @@
         'BILLING_ADDRESS_TITLE': 'Specify a card billing address',
         'USE_PROFILE_ADDRESS_TITLE_1': 'Use the profile address',
         'CVV_REQUIRED': 'CVV required',
-        'CVV_REQUIRED_INFO': 'Please enter security code'
+        'CVV_REQUIRED_INFO': 'Please enter security code',
+        "OPTIONAL": "Optional",
+        "DEFAULT": "Default",
+        "REQUIRED": "Required",
+        "ADD": "Add"
     }; // end of locale
 }); // end of module

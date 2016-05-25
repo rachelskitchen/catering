@@ -1271,6 +1271,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(model.setCustomerFromAPI).toHaveBeenCalledWith(_data);
                 expect(model.initPayments).toHaveBeenCalled();
                 expect(model.initGiftCards).toHaveBeenCalled();
+                expect(model.trigger).toHaveBeenCalledWith('onLogin');
             });
 
             it("failure log in, `jqXHR.responseJSON` isn't object", function() {

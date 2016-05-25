@@ -1,64 +1,68 @@
 <script type="text/template" id="rewards_card-template">
-    <div class="popup-background">
-        <h3 class="clip"> <%= _lp.REWARDS_INFORMATION %> </h3>
-        <label for="rewardsCardNumber"> <%= _lp.REWARDS_NUMBER %>: </label>
-        <div class="input_beauty reward_card_number">
-            <input type="text" id="rewardsCardNumber" class="ios-safari-caret rewards-input">
-        </div>
-        <div class="captcha">
+    <h3 class="captcha-header popup-header-bg primary-border header-text"><%= _lp.REWARDS_INFORMATION %></h3>
+    <label class="row">
+        <span class="label optional-text required"><%= _lp.REWARDS_NUMBER %></span>
+        <input type="text" class="rewards-input input ios-safari-caret">
+    </label>
+    <div class="row">
+        <div class="captcha-wrapper fl-left">
             <img src="" alt="" width="100%" height="100%" class="captcha-image">
             <div class="captcha-spinner"></div>
         </div>
-        <span class="rewards-card-btn update-captcha clip"><%= _lp.GIFTCARD_RELOAD %></span>
-        <label for="rewardsCaptcha" class="clip"> <%= _lp.GIFTCARD_CAPTCHA %>: </label>
-        <div class="input_beauty">
-            <input type="text" id="rewardsCaptcha" class="ios-safari-caret rewards-captcha-input">
-        </div>
+        <label class="captcha-label">
+            <span class="label optional-text required"><%= _lp.GIFTCARD_CAPTCHA %></span>
+            <input type="text" class="rewards-captcha-input input ios-safari-caret">
+        </label>
+        <span class="update-captcha link text-center primary-text"><%= _lp.GIFTCARD_RELOAD %></span>
     </div>
-    <div class="btn submit-card"> <span class="clip"> <%= _lp.CONFIRM_SUBMIT %> </span> </div>
+    <div class="btn submit-card text-center"><%= _lp.CONFIRM_SUBMIT %></div>
 </script>
 
 <script type="text/template" id="rewards_info-template">
-    <div class="popup-background">
-        <h3><%= _lp.REWARDS_INFORMATION %></h3>
-        <span class='rewards-title'><%= _lp.REWARDS_NUMBER %>:</span>
-        <span class="rewards-number"></span>
-        <ul class="rewards-total">
-            <li class="rewards-total__item rewards-total__item_points">
-                <div class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_POINTS %></div>
-                <span class='total-points color-style1'></span>
+    <h2 class="redeem-rewards bold"><%= _lp.REWARDS_REDEEM_REWARD %></h2>
+    <div class="redeem-rewards-info optional-text"><%= _lp.REWARDS_CLOSE_WINDOW %></div>
+    <div class="header popup-header-bg primary-border">
+        <ul class="rewards-total fl-right text-left">
+            <li class="total-row total-row-points">
+                <span><%= _lp.REWARDS_TOTAL_POINTS %></span>
+                <span class='total-points value fl-right primary-text'></span>
             </li>
-            <li class="rewards-total__item rewards-total__item_visits">
-                <div class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_VISITS %></div>
-                <span class='total-visits color-style1'></span>
+            <li class="total-row total-row-visits">
+                <span><%= _lp.REWARDS_TOTAL_VISITS %></span>
+                <span class='total-visits value fl-right primary-text'></span>
             </li>
-            <li class="rewards-total__item rewards-total__item_purchases">
-                <div class="rewards-total__item-title"><%= _lp.REWARDS_TOTAL_PURCHASES %></div>
-                <span class='total-purchases color-style1'></span>
+            <li class="total-row total-row-purchase">
+                <span><%= _lp.REWARDS_TOTAL_PURCHASES %></span>
+                <span class='total-purchases value fl-right primary-text'></span>
             </li>
         </ul>
+        <h3 class="title header-text bold"><%= _lp.REWARDS_POINTS_INFO %></h3>
+        <span class="subtitle"><%= _lp.REWARDS_NUMBER %> &ndash;</span>
+        <span class="subtitle rewards-number"></span>
     </div>
-    <span class="info"><%= _lp.REWARDS_SELECTION_INFO %></span>
-    <div class="popup-background">
-        <h3 class="rewards-available"><%= _lp.REWARDS_AVAILABLE %></h3>
-        <div class="reward-selection-wrapper">
-            <div class="reward-selection-inner">
-                <ul class="reward-selection"></ul>
-            </div>
+    <div class="rewards-box">
+        <div class="item-rewards-box box primary-border">
+            <h3 class="rewards-group header-text bold"><%= _lp.REWARDS_ITEM_REWARDS %></h3>
+            <ul class="item-rewards"></ul>
+        </div>
+        <div class="visit-rewards-box box primary-border">
+            <h3 class="rewards-group header-text bold"><%= _lp.REWARDS_VISIT_REWARDS %></h3>
+            <ul class="visit-rewards"></ul>
+        </div>
+        <div class="purchase-rewards-box box primary-border">
+            <h3 class="rewards-group header-text bold"><%= _lp.REWARDS_PURCHASE_REWARDS %></h3>
+            <ul class="purchase-rewards"></ul>
         </div>
         <span class="rewards-unavailable"><%= _lp.REWARDS_UNAVAILABLE %></span>
     </div>
-    <div class="btn apply-reward"><%= _lp.REWARDS_APPLY %></div>
+    <div class="btn apply-reward text-center"><%= _lp.REWARDS_APPLY %></div>
 </script>
 
 <script type="text/template" id="rewards_item-template">
-    <div class="reward color-style1">
-        <div class="reward__name"></div>
-        <div class="reward__discount">
-            <span class="reward__discount-amount"></span> <span class="reward__discount-text"></span>
-        </div>
-        <div class="reward__redemption">
-            (<span class="reward__redemption-amount"></span>&nbsp;<span class="reward__redemption-text"></span>)
-        </div>
-    </div>
+    <span class="checkbox primary-border"></span>
+    <span class="reward__discount-amount"></span> <span class="reward__discount-text"></span>
+    <span class="fl-right points">
+        <span class="reward__redemption-amount"></span>&nbsp;<span class="reward__redemption-text"></span>
+    </span>
+</script>
 </script>

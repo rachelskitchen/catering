@@ -143,7 +143,7 @@ define(["main_router"], function(main_router) {
         paymentsHandlers: function() {
             var mainModel = App.Data.mainModel,
                 myorder = App.Data.myorder,
-                paymentCanceled = false
+                paymentCanceled = false;
 
             this.listenTo(myorder, 'cancelPayment', function() {
                 paymentCanceled = true;
@@ -155,7 +155,7 @@ define(["main_router"], function(main_router) {
             }, this);
 
             /** [Credit Card] **/
-            App.Data.payments = new App.Models.Payments(App.Data.settings.get_payment_process());
+            App.Data.payments = new App.Models.PaymentMethods(App.Data.settings.get_payment_process());
 
             // invokes when user chooses the 'Credit Card' payment processor on the #payments screen
             this.listenTo(App.Data.payments, 'payWithCreditCard', function() {
@@ -1247,7 +1247,7 @@ define(["main_router"], function(main_router) {
                 });
 
                 var content = [{
-                    modelName: 'Payments',
+                    modelName: 'PaymentMethods',
                     model: App.Data.payments,
                     checkout: App.Data.myorder.checkout,
                     mod: 'Main',
@@ -1589,17 +1589,25 @@ define(["main_router"], function(main_router) {
             });
 
             this.prepare('store_info', function() {
+                var stores = this.getStoresForMap();
+
                 App.Data.mainModel.set({
                     contentClass: '',
                     content: {
                         modelName: 'StoreInfo',
                         mod: 'Map',
+                        collection: stores,
                         className: 'map',
                         cacheId: true
                     }
                 });
 
                 this.change_page();
+
+                if (stores.request.state() == 'pending') {
+                    App.Data.mainModel.trigger('loadStarted');
+                    stores.request.then(App.Data.mainModel.trigger.bind(App.Data.mainModel, 'loadCompleted'));
+                }
             });
         },
         about: function() {

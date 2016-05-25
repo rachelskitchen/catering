@@ -28,8 +28,6 @@ define(["quantity_view"], function(quantity_view) {
             'input.quantity_edit_input': 'restrictInput: "0123456789", kbdSwitcher: "numeric"'
         },
         events: {
-            'click .increase:not(.disabled)': 'increase',
-            'click .decrease:not(.disabled)': 'decrease',
             'input .quantity_edit_input': 'change_quantity',
             'blur .quantity_edit_input': 'blur_quantity'
         },
@@ -45,8 +43,6 @@ define(["quantity_view"], function(quantity_view) {
             var product = this.model.get_product(),
                 disallowNegativeInventory = App.Data.settings.get('settings_system').cannot_order_with_empty_inventory;
             if (product.get('stock_amount') === 1 || product.isParent() || isComboWithWeightProduct) {
-                this.$('.decrease').addClass('disabled');
-                this.$('.increase').addClass('disabled');
                 this.$('.quantity_edit_input').addClass('disabled').prop('disabled', true);
                 disallowNegativeInventory && this.model.set('quantity', 1); // bug 13494
             } else {
@@ -56,19 +52,6 @@ define(["quantity_view"], function(quantity_view) {
                 this.$('.increase').removeClass('disabled');
                 this.$('.quantity_edit_input').removeClass('disabled').prop('disabled', false);
             }
-        },
-        increase: function(event) {
-            if($(event.target).hasClass('disabled'))
-                return;
-            var q = this.model.get('quantity'),
-                stock_amount = this.model.get_product().get('stock_amount');
-            this.model.set('quantity', ++q <= stock_amount ? q : stock_amount);
-        },
-        decrease: function(event) {
-            if($(event.target).hasClass('disabled'))
-                return;
-            var q = this.model.get('quantity');
-            this.model.set('quantity', --q >= 1 ? q : 1);
         },
         update: function() {
             this.$('.quantity_edit_input').val(this.model.get('quantity'));
